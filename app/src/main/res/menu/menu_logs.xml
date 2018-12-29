@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.spike.bot.MainActivity">
+
+    <item
+        android:id="@+id/actionAll"
+        android:icon="@android:drawable/ic_menu_add"
+        android:orderInCategory="100"
+        android:title="All" />
+
+    <item
+        android:id="@+id/actionDevice"
+        android:icon="@android:drawable/ic_menu_add"
+        android:orderInCategory="100"
+        android:title="Device" />
+
+    <item
+        android:id="@+id/actionSensor"
+        android:orderInCategory="100"
+        android:title="Sensor" />
+
+</menu>

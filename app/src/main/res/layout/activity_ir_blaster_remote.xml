@@ -1,0 +1,704 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <!-- <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:layout_alignParentStart="true"
+         android:layout_alignParentTop="true"
+         android:orientation="vertical">
+
+         <LinearLayout
+             android:background="@color/sky_blue"
+             android:layout_width="match_parent"
+             android:layout_height="56dp"
+             android:orientation="horizontal">
+
+             <ImageView
+                 android:id="@+id/remote_toolbar_back"
+                 android:layout_weight="0.1"
+                 android:layout_gravity="center"
+                 android:layout_marginLeft="16dp"
+                 android:src="@drawable/ic_back"
+                 android:layout_width="0dp"
+                 android:padding="4dp"
+                 android:layout_height="28dp" />
+
+             <TextView
+                 android:id="@+id/remote_name"
+                 android:layout_marginLeft="16dp"
+                 android:layout_gravity="center"
+                 android:textSize="20sp"
+                 android:text="Remote"
+                 android:singleLine="true"
+                 android:maxLines="1"
+                 android:lines="1"
+                 android:ellipsize="end"
+                 android:textColor="@android:color/white"
+                 android:layout_weight="0.8"
+                 android:layout_width="0dp"
+                 android:layout_height="wrap_content" />
+
+             <LinearLayout
+                 android:layout_gravity="center"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:orientation="horizontal">
+
+                 <ImageView
+                     android:id="@+id/action_edit"
+                     android:layout_marginRight="8dp"
+                     android:src="@drawable/edit_blue"
+                     android:layout_gravity="center"
+                     android:tint="@color/automation_white"
+                     android:layout_width="28dp"
+                     android:layout_height="28dp" />
+
+                 <ImageView
+                     android:id="@+id/action_delete"
+                     android:layout_marginRight="8dp"
+                     android:src="@drawable/delete_blue"
+                     android:layout_gravity="center"
+                     android:tint="@color/automation_white"
+                     android:layout_width="28dp"
+                     android:layout_height="28dp" />
+
+             </LinearLayout>
+
+
+
+         </LinearLayout>
+
+         <LinearLayout
+             android:id="@+id/remote_temp_view"
+             android:visibility="visible"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_gravity="center"
+             android:layout_weight="1"
+             android:background="#20808080"
+             android:gravity="center"
+             android:orientation="vertical">
+
+             <RelativeLayout
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_gravity="center"
+                 android:gravity="center">
+
+                 <TextView
+                     android:id="@+id/remote_temp"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_centerHorizontal="true"
+                     android:text="26"
+                     android:textSize="112sp" />
+
+                 <TextView
+                     android:id="@+id/remote_temp_inc"
+                     android:text="℃"
+                     android:textSize="112sp"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_centerHorizontal="true"
+                     android:layout_marginTop="0dp"
+                     android:layout_toRightOf="@+id/remote_temp" />
+
+                 <TextView
+                     android:visibility="gone"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_alignBaseline="@+id/remote_temp"
+                     android:layout_toRightOf="@+id/remote_temp"
+                     android:text="Cooling" />
+
+             </RelativeLayout>
+
+             <LinearLayout
+                 android:layout_marginLeft="12dp"
+                 android:layout_marginTop="72dp"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:orientation="horizontal">
+
+                 <LinearLayout
+                     android:layout_weight="1"
+                     android:layout_width="1dp"
+                     android:layout_height="wrap_content"
+                     android:orientation="horizontal">
+
+                     <ImageView
+                         android:id="@+id/remote_speed_img"
+                         android:layout_gravity="center"
+                         android:src="@drawable/ic_conditionor_windcapacity_aoto"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content" />
+
+                     <TextView
+                         android:id="@+id/remote_speed_text"
+                         android:textSize="16sp"
+                         android:layout_gravity="center"
+                         android:layout_marginLeft="8dp"
+                         android:textColor="@android:color/black"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:text="Speed Normal" />
+
+                 </LinearLayout>
+
+
+                 <TextView
+                     android:visibility="invisible"
+                     android:layout_marginRight="32dp"
+                     android:gravity="right"
+                     android:layout_gravity="right"
+                     android:layout_weight="1"
+                     android:layout_width="1dp"
+                     android:layout_height="wrap_content"
+                     android:text="Swinging" />
+
+
+             </LinearLayout>
+
+         </LinearLayout>
+
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_weight="1"
+             android:background="@color/automation_white"
+             android:orientation="vertical">
+
+             <LinearLayout
+                 android:background="@drawable/view_border_bottom"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_weight="1"
+                 android:orientation="horizontal">
+
+                 <Button
+                     android:id="@+id/remote_power_button"
+                     android:background="@drawable/view_border_right"
+                     android:gravity="center"
+                     android:textSize="16sp"
+                     android:layout_gravity="center"
+                     style="@style/Widget.AppCompat.Button.Borderless"
+                     android:layout_width="wrap_content"
+                     android:layout_height="match_parent"
+                     android:layout_marginBottom="0.5dp"
+                     android:layout_weight="1"
+                     android:textColor="#808080"
+                     android:textAllCaps="false"
+                     android:text="" />
+
+                 <Button
+                     android:id="@+id/remote_speed_button"
+                     android:gravity="center"
+                     android:textSize="16sp"
+                     android:layout_gravity="center"
+                     style="@style/Widget.AppCompat.Button.Borderless"
+                     android:layout_width="wrap_content"
+                     android:layout_height="match_parent"
+                     android:layout_weight="1"
+                     android:textColor="#808080"
+                     android:textAllCaps="false"
+                     android:text="Speed" />
+
+
+             </LinearLayout>
+
+             <LinearLayout
+                 android:background="@drawable/view_border_bottom"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_weight="1"
+                 android:orientation="horizontal">
+
+                 <Button
+                     android:id="@+id/remote_temp_minus"
+                     style="@style/Widget.AppCompat.Button.Borderless"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_weight="1"
+                     android:text="-"
+                     android:textColor="#808080"
+                     android:textSize="30sp"
+                     android:layout_gravity="center"
+                     android:gravity="center"/>
+
+                 <Button
+                     style="@style/Widget.AppCompat.Button.Borderless"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_weight="1"
+                     android:textColor="#60808080"
+                     android:text="Temp"
+                     android:textSize="16sp"
+                     android:textAllCaps="false"
+                     android:layout_gravity="center"
+                     android:gravity="center"/>
+
+                 <Button
+                     android:id="@+id/remote_temp_plus"
+                     style="@style/Widget.AppCompat.Button.Borderless"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_weight="1"
+                     android:text="+"
+                     android:textSize="30sp"
+                     android:textColor="#808080"
+                     android:layout_gravity="center"
+                     android:gravity="center"/>
+
+
+             </LinearLayout>
+
+             <LinearLayout
+                 android:visibility="visible"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_weight="1"
+                 android:orientation="horizontal">
+
+                 <Button
+                     android:visibility="invisible"
+                     android:clickable="false"
+                     android:enabled="false"
+                     android:background="@drawable/view_border_right"
+                     style="@style/Widget.AppCompat.Button.Borderless"
+                     android:layout_width="wrap_content"
+                     android:layout_height="match_parent"
+                     android:layout_weight="1"
+                     android:text="Mode"
+                     android:textColor="#40808080"
+                     android:textAllCaps="false"
+                     android:layout_gravity="center"
+                     android:gravity="center"/>
+
+                 <Button
+                     android:id="@+id/brand_name_bottom"
+                     android:clickable="false"
+                     android:enabled="false"
+                     style="@style/Widget.AppCompat.Button.Borderless"
+                     android:layout_width="wrap_content"
+                     android:layout_height="match_parent"
+                     android:layout_weight="1"
+                     android:text="Direction"
+                     android:textColor="#111"
+                     android:textAllCaps="false"
+                     android:layout_gravity="center"
+                     android:gravity="center"/>
+
+                 <Button
+                     android:visibility="invisible"
+                     android:clickable="false"
+                     android:enabled="false"
+                     style="@style/Widget.AppCompat.Button.Borderless"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_weight="1"
+                     android:textColor="#40808080"
+                     android:text="Swing"
+                     android:textAllCaps="false"
+                     android:layout_gravity="center"
+                     android:gravity="center"/>
+
+
+             </LinearLayout>
+
+         </LinearLayout>
+
+     </LinearLayout>-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/new_screen_resolution"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@color/sky_blue"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/remote_toolbar_back"
+                android:layout_width="0dp"
+                android:layout_height="28dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="0.1"
+                android:padding="4dp"
+                android:src="@drawable/ic_back" />
+
+            <TextView
+                android:id="@+id/remote_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="0.8"
+                android:ellipsize="end"
+                android:lines="1"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:text="Remote"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginRight="5dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/action_edit"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="15dp"
+                    android:src="@drawable/edit_white_new" />
+
+                <ImageView
+                    android:id="@+id/action_delete"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="8dp"
+                    android:src="@drawable/delete_white_new"
+                    android:tint="@color/automation_white" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+        <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/_7sdp"
+            android:layout_weight="1"
+            android:background="@color/automation_white"
+            android:orientation="vertical"
+            app:cardCornerRadius="2dp"
+            app:cardElevation="5dp"
+            app:elevation="5dp">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/drawable_white_cornor"
+                android:orientation="vertical"
+                android:padding="@dimen/_5sdp"
+                android:paddingLeft="@dimen/_10sdp">
+
+                <TextView
+                    android:id="@+id/txtAcState"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="8dp"
+                    android:text="Ac state : Off"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <!--
+                     android:background="@android:drawable/dialog_holo_light_frame"
+                    android:background="@drawable/drawable_blue_temp"-->
+
+                    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:layout_width="@dimen/_110sdp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="@dimen/_10sdp"
+                        android:background="@drawable/drawable_blue_temp"
+                        android:orientation="vertical"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="7dp"
+                        app:elevation="7dp">
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@color/sensor_button"
+                            android:orientation="vertical">
+
+                            <!-- <android.support.v7.widget.CardView
+                                 android:layout_width="match_parent"
+                                 android:layout_height="match_parent"
+                                 android:orientation="vertical"
+                                 app:cardCornerRadius="10dp"
+                                 app:cardBackgroundColor="@color/device_button">
+         -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:layout_gravity="center"
+                                    android:orientation="vertical">
+
+                                    <Button
+                                        android:id="@+id/remote_temp_plus"
+                                        style="@style/Widget.AppCompat.Button.Borderless"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="@drawable/ic_add_black_24dp"
+                                        android:gravity="center"
+                                        android:layout_margin="@dimen/_5sdp"
+                                        android:textColor="@color/automation_white"/>
+
+                                </LinearLayout>
+
+
+
+                                <TextView
+                                    style="@style/Widget.AppCompat.Button.Borderless"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:text="TEMP"
+                                    android:textAllCaps="false"
+                                    android:textColor="@color/automation_white"
+                                    android:textSize="12sp" />
+
+                                <Button
+                                    android:id="@+id/remote_temp_minus"
+                                    style="@style/Widget.AppCompat.Button.Borderless"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/ic_remove_black_24dp"
+                                    android:gravity="center"
+                                    android:text="-"
+                                    android:layout_marginLeft="@dimen/_5sdp"
+                                    android:layout_marginRight="@dimen/_5sdp"
+                                    android:textColor="@color/automation_white"
+                                    android:textSize="12dp" />
+
+
+                            </LinearLayout>
+
+
+                            <!--  </android.support.v7.widget.CardView>-->
+                        </LinearLayout>
+                    </android.support.v7.widget.CardView>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+
+                        <TextView
+                            android:id="@+id/remote_temp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:text="Temp"
+                            android:textAllCaps="false"
+                            android:textColor="@color/sensor_button"
+                            android:textSize="70sp" />
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/remote_speed_img"
+                        android:layout_width="@dimen/_28sdp"
+                        android:layout_height="@dimen/_28sdp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_conditionor_windcapacity_aoto" />
+
+                    <TextView
+                        android:id="@+id/remote_speed_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="8dp"
+                        android:text="Speed Normal"
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/_7sdp"
+            android:layout_weight="1"
+            android:background="@color/automation_white"
+            android:orientation="vertical"
+            app:cardCornerRadius="2dp"
+            app:cardElevation="5dp"
+            app:elevation="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/remote_power_button"
+                    android:layout_width="@dimen/_200sdp"
+                    android:layout_height="@dimen/_38sdp"
+                    android:layout_gravity="center"
+                    android:layout_margin="@dimen/_10sdp"
+                    android:background="@drawable/drawable_turn_off_btn"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.4"
+                        android:gravity="center|right">
+
+                        <ImageView
+                            android:id="@+id/imgRemoteStatus"
+                            android:layout_width="@dimen/_23sdp"
+                            android:layout_height="@dimen/_23sdp"
+                            android:layout_gravity="center|right"
+                            android:layout_marginRight="@dimen/_8sdp"
+                            android:src="@drawable/power_green" />
+
+                    </LinearLayout>
+
+
+                    <TextView
+                        android:id="@+id/txtRemoteState"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.6"
+                        android:gravity="center|left"
+                        android:text="Turn off"
+                        android:textColor="@color/username4"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:background="@color/automation_dark_gray" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.6"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_5sdp">
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center|left"
+                        android:paddingLeft="@dimen/_5sdp"
+                        android:text="Mode"
+                        android:textColor="@color/automation_black"
+                        android:textSize="16sp" />
+
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recyclerMode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:layout_marginTop="@dimen/_5sdp" />
+
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="@color/automation_dark_gray" />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/brand_name_bottom"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:clickable="false"
+                        android:enabled="false"
+                        android:gravity="center"
+                        android:text="Carrier"
+                        android:textAllCaps="false"
+                        android:textColor="@color/sensor_button" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1.75"
+            android:orientation="vertical">
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

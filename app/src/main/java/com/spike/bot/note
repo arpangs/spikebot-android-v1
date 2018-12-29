@@ -1,0 +1,16 @@
+https://stackoverflow.com/questions/31759171/recyclerview-and-java-lang-indexoutofboundsexception-inconsistency-detected-in
+
+ webUrl = ""; //added by sagar
+
+//v3
+
+- display F&C mainSectoinAdapter
+- Input validation C & F Edittext
+- Sensor room name edit title
+- Start time , end time validation
+- Mood +Add room not expand view click on other view
+
+
+hide log isSettingEnable
+^((?!isSBSettingEnabled).)*$
+

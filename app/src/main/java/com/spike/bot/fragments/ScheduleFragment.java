@@ -1,0 +1,1617 @@
+package com.spike.bot.fragments;
+
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.TextUtils;
+import android.text.style.UnderlineSpan;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.spike.bot.ChatApplication;
+import com.spike.bot.R;
+import com.spike.bot.activity.CameraDeviceLogActivity;
+import com.spike.bot.activity.CameraNotificationActivity;
+import com.spike.bot.activity.DeviceLogActivity;
+import com.spike.bot.activity.Main2Activity;
+import com.spike.bot.activity.NotificationSetting;
+import com.spike.bot.activity.ProfileActivity;
+import com.spike.bot.activity.ScheduleActivity;
+import com.spike.bot.activity.ScheduleListActivity;
+import com.spike.bot.activity.SensorDoorLogActivity;
+import com.spike.bot.activity.SignUp;
+import com.spike.bot.adapter.ScheduleAdapter;
+import com.spike.bot.adapter.ScheduleClickListener;
+import com.spike.bot.adapter.SectionedExpandableLayoutHelper;
+import com.spike.bot.core.APIConst;
+import com.spike.bot.core.Common;
+import com.spike.bot.core.Constants;
+import com.spike.bot.core.JsonHelper;
+import com.spike.bot.listener.ResponseErrorCode;
+import com.spike.bot.listener.RunServiceInterface;
+import com.spike.bot.model.PanelVO;
+import com.spike.bot.model.PiDetailsModel;
+import com.spike.bot.model.RoomVO;
+import com.spike.bot.model.ScheduleVO;
+import com.kp.core.ActivityHelper;
+import com.kp.core.GetJsonTask;
+import com.kp.core.GetJsonTask2;
+import com.kp.core.ICallBack;
+import com.kp.core.ICallBack2;
+import com.kp.core.dialog.ConfirmDialog;
+import com.spike.bot.model.User;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import java.lang.reflect.Type;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
+
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
+
+/**
+ * A chat fragment containing messages view and input form.
+ */
+public class ScheduleFragment extends Fragment implements View.OnClickListener,ScheduleClickListener ,SwipeRefreshLayout.OnRefreshListener {
+
+    private static final String TAG = "ScheduleFragment";
+
+    private RecyclerView rv_mood,rv_room;
+    ImageView iv_mood_add,iv_room_add;
+    LinearLayout txt_empty_scheduler;
+    LinearLayout ll_room,linearMood;
+    LinearLayout ll_mood_view;
+    LinearLayout ll_recycler;
+    TextView txt_mood_title,txtRoomScdule;
+
+    private ImageView empty_add_image;
+
+    ScheduleAdapter scheduleRoomAdapter;
+    ArrayList<ScheduleVO> scheduleRoomArrayList = new ArrayList<>();
+
+    ScheduleAdapter scheduleMoodAdapter;
+    ArrayList<ScheduleVO>  scheduleMoodArrayList = new ArrayList<>();
+
+    private String webUrl = "",isActivityType="";
+
+    String moodId ="",moodId2="",moodId3="",roomId ="",userName="";
+    int selection = 0;
+    Menu mainMenu;
+
+    MainFragment.OnHeadlineSelectedListener mCallback;
+    private Socket mSocket;
+    private boolean isMood;
+    private boolean isMoodAdapter,isRefreshonScroll=false;
+
+    private FloatingActionButton mFab;
+    private CardView mFabMenuLayout;
+    private TextView fab_menu1,fab_menu2,fab_menu3,fab_menu4,fab_menu5,fab_menu6,fab_menu7;
+
+
+    public ScheduleFragment() {
+        super();
+    }
+    public static ScheduleFragment newInstance() {
+        ScheduleFragment fragment = new ScheduleFragment();
+        Bundle args = new Bundle();
+        args.putBoolean("isMood", false);
+        fragment.setArguments(args);
+        return fragment;
+    }
+    public static ScheduleFragment newInstance(boolean isMood, String moodId, String moodId2,String moodId3,int selection,String roomId,boolean isMoodAdapter,String isActivityType) {
+        ScheduleFragment fragment = new ScheduleFragment();
+        Bundle args = new Bundle();
+        args.putBoolean("isMood", isMood);
+        args.putString("moodId", moodId);
+        args.putString("moodId2", moodId2);
+        args.putString("moodId3", moodId3);
+        args.putString("roomId", roomId);
+        args.putString("isActivityType", isActivityType);
+        args.putInt("selection", selection);
+        args.putBoolean("isMoodAdapter", isMoodAdapter);
+        fragment.setArguments(args);
+        return fragment;
+    }
+    // This event fires 1st, before creation of fragment or any views
+    // The onAttach method is called when the Fragment instance is associated with an Activity.
+    // This does not mean the Activity is fully initialized.
+    RunServiceInterface runServiceInterface;
+    ResponseErrorCode responseErrorCode;
+
+    private static MainFragment instance = null;
+    private Activity activity;
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof Activity){
+            this.activity = (Activity) context;
+            if(activity instanceof ScheduleListActivity){
+            }else {
+                try {
+            /*if(activity instanceof Main2Activity){
+
+            }*/
+                    runServiceInterface = (RunServiceInterface) activity;
+                    responseErrorCode = (ResponseErrorCode) activity;
+                    mCallback = (MainFragment.OnHeadlineSelectedListener) activity;
+                } catch (ClassCastException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+       // startSocketConnection();
+    }
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        this.activity = activity;
+    }
+    private SwipeRefreshLayout swipeRefreshLayout;
+
+    public static MainFragment getInstance() {
+        return instance;
+    }
+
+    @Override
+    public void onRefresh() {
+        isRefreshonScroll=true;
+        if(Main2Activity.isCloudConnected && runServiceInterface!=null){
+            String jsonText = Common.getPrefValue(getActivity(), Common.USER_JSON);
+            if (!TextUtils.isEmpty(jsonText)) {
+                Gson gson = new Gson();
+                Type type = new TypeToken<List<User>>() {}.getType();
+                List<User> userList = gson.fromJson(jsonText, type);
+                if(userList.size()==1){
+                }else {
+                    ((Main2Activity)getActivity()).setCouldMethod();
+                  //  runServiceInterface.executeService();
+                }
+            }
+
+        }
+
+        swipeRefreshLayout.setRefreshing(true);
+        scheduleMoodAdapter.setClickable(false);
+        scheduleRoomAdapter.setClickable(false);
+        if(activity instanceof Main2Activity){
+            ((Main2Activity)getActivity()).invalidateToolbarCloudImage();
+            if(getUserList().size()>0){
+                displayTital();
+            }
+
+        }
+        if(isMood){
+            ll_room.setVisibility(View.GONE);
+            getScheduleFromMood();
+        }
+        else{
+            getDeviceList(1);
+        }
+    }
+
+    private void displayTital() {
+        for(int i=0; i<getUserList().size(); i++){
+            if(getUserList().get(i).getIsActive()){
+                //mCallback.onArticleSelected("" +userName);
+                break;
+            }
+        }
+    }
+
+    public List<User> getUserList(){
+        List<User> userList=new ArrayList<>();
+        String jsonText = Common.getPrefValue(getActivity(), Common.USER_JSON);
+        if (!TextUtils.isEmpty(jsonText)) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
+            userList = gson.fromJson(jsonText, type);
+        }
+        return userList;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_schedule, container, false);
+
+        try {
+
+
+            isMood = getArguments().getBoolean("isMood");
+            moodId = getArguments().getString("moodId");
+            roomId = getArguments().getString("roomId");
+            isActivityType = getArguments().getString("isActivityType");
+
+            try{
+                moodId2 = getArguments().getString("moodId2");
+                moodId3 = getArguments().getString("moodId3");
+                selection = getArguments().getInt("selection");
+                isMoodAdapter = getArguments().getBoolean("isMoodAdapter");
+
+            }catch (Exception ex){ ex.printStackTrace(); }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        rv_mood = (RecyclerView) view.findViewById(R.id.rv_mood);
+        rv_room = (RecyclerView) view.findViewById(R.id.rv_room);
+
+        rv_mood.setHasFixedSize(true);
+        rv_mood.setItemViewCacheSize(20);
+        rv_mood.setDrawingCacheEnabled(true);
+        rv_mood.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+
+        rv_room.setHasFixedSize(true);
+        rv_room.setItemViewCacheSize(20);
+        rv_room.setDrawingCacheEnabled(true);
+        rv_room.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+
+
+        ll_mood_view = (LinearLayout) view.findViewById(R.id.ll_mood_view);
+        ll_recycler = (LinearLayout) view.findViewById(R.id.ll_recycler);
+
+        txtRoomScdule = (TextView)view.findViewById(R.id.txtRoomScdule);
+        txt_mood_title = (TextView)view.findViewById(R.id.txt_mood_title);
+        empty_add_image = (ImageView) view.findViewById(R.id.empty_add_image);
+
+        if(!TextUtils.isEmpty(moodId3) || !TextUtils.isEmpty(moodId2)){
+            ll_mood_view.setVisibility(View.GONE);
+        }
+
+
+        iv_mood_add = (ImageView) view.findViewById(R.id.iv_mood_add);
+        iv_room_add = (ImageView) view.findViewById(R.id.iv_room_add);
+
+        if(isMood || !TextUtils.isEmpty(moodId) || !TextUtils.isEmpty(moodId2) ){
+
+            iv_mood_add.setVisibility(View.VISIBLE);
+            iv_room_add.setVisibility(View.VISIBLE);
+
+        }else{
+            iv_mood_add.setVisibility(View.GONE);
+            iv_room_add.setVisibility(View.GONE);
+        }
+
+        ll_room = (LinearLayout) view.findViewById(R.id.ll_room );
+
+        txt_empty_scheduler = (LinearLayout)view.findViewById(R.id.txt_empty_schedule);
+
+        linear_progress = (LinearLayout) view.findViewById(R.id.linear_progress);
+        linearMood = (LinearLayout) view.findViewById(R.id.linearMood);
+
+        rv_mood.setLayoutManager(new LinearLayoutManager(getActivity()));
+        rv_room.setLayoutManager(new LinearLayoutManager(getActivity()));
+        ChatApplication app = ChatApplication.getInstance();
+        webUrl = app.url;
+
+         /*scheduleRoomArrayList = new ArrayList<>();
+        ScheduleVO schedule =new ScheduleVO();
+        schedule.setSchedule_device_day("1,2,3,4");
+        schedule.setSchedule_name("Good Morning ");
+        scheduleRoomArrayList.add(schedule);*/
+
+        scheduleMoodAdapter = new ScheduleAdapter(getActivity(), scheduleMoodArrayList,ScheduleFragment.this,true);
+        rv_mood.setAdapter(scheduleMoodAdapter);
+
+        scheduleRoomAdapter = new ScheduleAdapter(getActivity(), scheduleRoomArrayList,ScheduleFragment.this,true);
+        rv_room.setAdapter(scheduleRoomAdapter);
+
+        iv_mood_add.setOnClickListener(this);
+        iv_room_add.setOnClickListener(this);
+
+        txt_empty_scheduler.setVisibility(View.GONE);
+        ll_recycler.setVisibility(View.VISIBLE);
+
+        txt_empty_scheduler.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        if(!isCallVisibleHint){
+            startSocketConnection();
+            onLoadFragment(); //uncomment
+        }
+
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
+
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+               /* swipeRefreshLayout.setRefreshing(true);
+
+                if(isMood){
+                    ll_room.setVisibility(View.GONE);
+                    getScheduleFromMood();
+                }
+                else{
+                    getDeviceList();
+                }*/
+            }
+        });
+
+        empty_add_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(getActivity(), ScheduleActivity.class);
+                if(selection!=0){
+                    intent.putExtra("selection",selection);
+                }else{
+                    intent.putExtra("selection",!isMood ? 1 : 2);
+                }
+
+                String moodIdPass = moodId3;
+                if(TextUtils.isEmpty(moodId3)){
+                    moodIdPass = moodId2;
+                }
+                intent.putExtra("isScheduleClick",true);
+                intent.putExtra("moodId",moodIdPass);
+                intent.putExtra("roomId",moodIdPass);
+                if(TextUtils.isEmpty(moodId) && TextUtils.isEmpty(moodId2) && TextUtils.isEmpty(moodId3)){
+                    intent.putExtra("isEditOpen",false);
+                }else{
+                    intent.putExtra("isEditOpen",true);
+                }
+                intent.putExtra("isMoodSelected",true);
+                intent.putExtra("isActivityType",""+2);
+                startActivity(intent);
+
+            }
+        });
+
+        //getDeviceList();
+
+        mFabMenuLayout = (CardView) view.findViewById(R.id.fabLayout1);
+        fab_menu1 = (TextView) view.findViewById(R.id.fab_menu1);
+        fab_menu2 = (TextView) view.findViewById(R.id.fab_menu2);
+        fab_menu3 = (TextView) view.findViewById(R.id.fab_menu3);
+        fab_menu4 = (TextView) view.findViewById(R.id.fab_menu4);
+
+        mFab = (FloatingActionButton) view.findViewById(R.id.fab);
+
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               /* if(!isFABOpen){
+                    showFABMenu();
+                }else{
+                    closeFABMenu();
+                }*/
+                showFABMenu();
+            }
+        });
+
+        fab_menu1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(activity, DeviceLogActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        fab_menu2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent logIntent = new Intent(getActivity(),SensorDoorLogActivity.class);
+                startActivity(logIntent);
+            }
+        });
+
+        fab_menu3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentNotification = new Intent(activity, NotificationSetting.class);
+                startActivity(intentNotification);
+            }
+        });
+
+        fab_menu4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentProfile = new Intent(activity, ProfileActivity.class);
+                startActivity(intentProfile);
+            }
+        });
+
+
+        return view;
+    }
+
+    /**
+     * Display Fab Menu with subFab Button
+     *
+     */
+    boolean isFABOpen = false;
+    private void showFABMenu(){
+
+        isFABOpen=true;
+      //  mFabMenuLayout.setVisibility(View.VISIBLE);
+      //  mFab.animate().rotationBy(180);
+      //  mFabMenuLayout.animate().translationY(-getResources().getDimension(R.dimen.appbar_padding_top));
+
+        ScheduleVO scheduleVO = new ScheduleVO();
+        if(scheduleMoodArrayList.size()>0){
+
+            for(ScheduleVO scheduleVOL : scheduleMoodArrayList){
+                if(scheduleVOL.getMood_id().equalsIgnoreCase(moodId2)){
+                    scheduleVO = scheduleVOL;
+                }
+            }
+        }else{
+
+            if(scheduleRoomArrayList.size()>0){
+                for(ScheduleVO scheduleVOL : scheduleRoomArrayList){
+
+                    if(scheduleVOL.getMood_id().equalsIgnoreCase(moodId)){
+                        scheduleVO = scheduleVOL;
+                    }
+                }
+            }
+        }
+        /*Intent intent = new Intent(getActivity(), ScheduleActivity.class);
+        //scheduleVO //moodId
+        intent.putExtra("isScheduleClick",true);
+        intent.putExtra("scheduleVO",scheduleVO);
+        if(!TextUtils.isEmpty(roomId)){
+            intent.putExtra("roomId",roomId);
+            intent.putExtra("isEditOpen",true);
+        }
+        intent.putExtra("moodId",moodId2);
+
+     //   intent.putExtra("selection",2);
+       // intent.putExtra("selection",2);
+        if(selection!=0){
+            intent.putExtra("selection",selection);
+        }else{
+            intent.putExtra("selection",!isMood ? 1 : 2);
+        }
+        intent.putExtra("isActivityType",isActivityType);
+        startActivity(intent);*/
+
+        Intent intent = new Intent(getActivity(), ScheduleActivity.class);
+        if(selection!=0){
+            intent.putExtra("selection",selection);
+        }else{
+            intent.putExtra("selection",!isMood ? 1 : 2);
+        }
+
+        String moodIdPass = moodId3;
+        if(TextUtils.isEmpty(moodId3)){
+            moodIdPass = moodId2;
+        }
+        intent.putExtra("isScheduleClick",true);
+        intent.putExtra("moodId",moodIdPass);
+        intent.putExtra("roomId",moodIdPass);
+        if(TextUtils.isEmpty(moodId) && TextUtils.isEmpty(moodId2) && TextUtils.isEmpty(moodId3)){
+            intent.putExtra("isEditOpen",false);
+        }else{
+            intent.putExtra("isEditOpen",true);
+        }
+        intent.putExtra("isMoodSelected",true);
+        intent.putExtra("isActivityType",""+2);
+        startActivity(intent);
+
+
+    }
+    private void closeFABMenu(){
+        isFABOpen=false;
+        mFabMenuLayout.setVisibility(View.GONE);
+        mFab.animate().rotationBy(-180);
+        mFabMenuLayout.animate().translationY(0);
+        if(!isFABOpen){
+            mFabMenuLayout.setVisibility(View.GONE);
+        }
+    }
+
+
+    private boolean isCallVisibleHint = false;
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        isCallVisibleHint = true;
+        Log.d("isVisibleToUser","isVisibleToUser sch : " + isVisibleToUser);
+        if(isVisibleToUser){
+            startSocketConnection();
+            //onLoadFragment(); //uncomment
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(activity instanceof Main2Activity){
+            userName= ((Main2Activity)getActivity()).toolbarTitle.getText().toString();
+        }
+
+        if(scheduleRoomArrayList.size()==0 && scheduleMoodArrayList.size()==0){
+            txt_empty_scheduler.setVisibility(View.VISIBLE);
+            ll_recycler.setVisibility(View.GONE);
+        }else if(scheduleRoomArrayList.size()>0 && scheduleMoodArrayList.size()>0){
+            txt_empty_scheduler.setVisibility(View.GONE);
+            ll_recycler.setVisibility(View.VISIBLE);
+        }else{
+            txt_empty_scheduler.setVisibility(View.GONE);
+            ll_recycler.setVisibility(View.VISIBLE);
+        }
+
+        if(ChatApplication.isScheduleNeedResume){
+            scheduleRoomArrayList.clear();
+            scheduleMoodArrayList.clear();
+            scheduleMoodAdapter.notifyDataSetChanged();
+            scheduleRoomAdapter.notifyDataSetChanged();
+
+            ChatApplication.isScheduleNeedResume = false;
+            onLoadFragment();
+        }
+
+        //ChatApplication.isRefreshHome
+    }
+
+    public void startSocketConnection() {
+
+        ChatApplication app = ChatApplication.getInstance();
+        webUrl = app.url;
+        Log.d(TAG, "startSocketConnection   startSocketConnection.." + webUrl);
+
+        if (mSocket != null && mSocket.connected()) {
+            Log.d("", "mSocket.connected  return.." + mSocket.id());
+            try {
+                mSocket.on("changeScheduleStatus", reloadScheduleList);
+                onLoadFragment();
+                //  mSocket.connect();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            mSocket = app.getSocket();
+        }
+
+    }
+
+    private Emitter.Listener reloadScheduleList = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (getActivity() == null) {
+                return;
+            }
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+
+                        try{
+
+                            if(args[0]!=null){
+
+                                Log.d("SocketEmit","MakeObj Args : " + args[0] );
+
+                                JSONObject jsonObject = new JSONObject(args[0].toString());
+                                String schedule_id = jsonObject.getString("schedule_id");
+                                String schedule_status = jsonObject.getString("schedule_status");
+                                String schedule_type = jsonObject.getString("schedule_type");
+
+                                Log.d("SocketEmit","isMood : " + isMood);
+                                Log.d("SCH_STATUS","status socket: " + schedule_status);
+
+                                if(isMood){
+                                    scheduleMoodAdapter.chandeScheduleStatus(schedule_id, schedule_status);
+                                }else{
+                                    if(schedule_type.equalsIgnoreCase("1")){ // 1 for mood
+                                        scheduleMoodAdapter.chandeScheduleStatus(schedule_id, schedule_status);
+                                    }else if(schedule_type.equalsIgnoreCase("0")){ // 0 for room
+                                        scheduleRoomAdapter.chandeScheduleStatus(schedule_id,schedule_status);
+                                    }
+                                }
+                            }
+
+
+                        }catch (Exception ex){ ex.printStackTrace(); }
+
+                    }
+                }
+            });
+        }
+    };
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mSocket != null) {
+
+            mSocket.off("ReloadDeviceStatusApp", reloadScheduleList);
+
+        }
+    }
+
+   // com.deep.automation.customview.ExpandableGridView exp_list;
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        Log.d(TAG,"onViewCreated onViewCreated ");
+        super.onViewCreated(view, savedInstanceState);
+
+        //String videoRtspUrl = "rtsp://192.168.175.101/video/play2.sdp";
+    }
+    @Override
+    public void onClick(View view) {
+        Log.d("setDataList","onClick " + moodId2);
+        if(view.getId()==R.id.btn_login){
+          //  loginCloud();
+            //Login
+        }
+        else  if(view.getId()==R.id.iv_mood_add){
+
+            ScheduleVO scheduleVO = new ScheduleVO();
+            if(scheduleMoodArrayList.size()>0){
+
+                for(ScheduleVO scheduleVOL : scheduleMoodArrayList){
+                    if(scheduleVOL.getMood_id().equalsIgnoreCase(moodId2)){
+                        scheduleVO = scheduleVOL;
+                    }
+                }
+            }else{
+
+                if(scheduleRoomArrayList.size()>0){
+                    for(ScheduleVO scheduleVOL : scheduleRoomArrayList){
+
+                        if(scheduleVOL.getMood_id().equalsIgnoreCase(moodId)){
+                            scheduleVO = scheduleVOL;
+                        }
+                    }
+                }
+            }
+            Intent intent = new Intent(getActivity(), ScheduleActivity.class);
+            //scheduleVO //moodId
+            intent.putExtra("isScheduleClick",true);
+            intent.putExtra("scheduleVO",scheduleVO);
+            intent.putExtra("moodId",moodId2);
+            intent.putExtra("selection",2);
+            intent.putExtra("isActivityType",""+1);
+            startActivity(intent);
+
+        }
+        else  if(view.getId()==R.id.iv_room_add){
+            Intent intent = new Intent(getActivity(), ScheduleActivity.class);
+            intent.putExtra("isScheduleClick",true);
+            intent.putExtra("roomId",roomId);
+            intent.putExtra("selection",1);
+            intent.putExtra("isActivityType",""+1);
+            startActivity(intent);
+        }
+
+    }
+    public void hideMenu(boolean isvisible){
+        try {
+            if(mainMenu!=null){
+              //  mainMenu.findItem(R.id.action_add).setVisible(isvisible);
+//                mainMenu.findItem(R.id.action_add).setVisible(false);
+               // mainMenu.findItem(R.id.action_setting).setVisible(false);
+            }
+         //   mainMenu.findItem(R.id.action_setting).setVisible(isvisible);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        hideMenu(!isMood);
+    }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        //inflater.inflate(R.menu.menu_main, menu);
+        mainMenu=menu;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_add) {
+            //openAddPopup(tv_header);
+            Intent intent = new Intent(getActivity(), ScheduleActivity.class);
+            if(selection!=0){
+                intent.putExtra("selection",selection);
+            }else{
+                intent.putExtra("selection",!isMood ? 1 : 2);
+            }
+
+            String moodIdPass = moodId3;
+            if(TextUtils.isEmpty(moodId3)){
+                moodIdPass = moodId2;
+            }
+            intent.putExtra("isScheduleClick",true);
+            intent.putExtra("moodId",moodIdPass);
+            intent.putExtra("roomId",moodIdPass);
+            if(TextUtils.isEmpty(moodId) && TextUtils.isEmpty(moodId2) && TextUtils.isEmpty(moodId3)){
+                intent.putExtra("isEditOpen",false);
+            }else{
+                intent.putExtra("isEditOpen",true);
+            }
+            intent.putExtra("isMoodSelected",true);
+            startActivity(intent);
+
+            return true;
+        }
+        else if (id == R.id.action_setting) {
+            //openSettingPopup(tv_header);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+////////////////////////////////////////////////////////////////////////////
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause()");
+    }
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    private LinearLayout  linear_progress;
+
+    private void showProgress(){
+        rv_mood.setVisibility(View.GONE);
+        rv_room.setVisibility(View.GONE);
+        linear_progress.setVisibility(View.VISIBLE);
+    }
+    private void hideProgress(){
+        rv_mood.setVisibility(View.VISIBLE);
+        rv_room.setVisibility(View.VISIBLE);
+        linear_progress.setVisibility(View.GONE);
+    }
+
+
+    public void onLoadFragment(){
+        Log.d("System out","onLoadFragment ScheduleFragment..." + isRefreshonScroll);
+//        if(isRefreshonScroll){
+//            isRefreshonScroll=false;
+//            return;
+//        }
+        hideMenu(!isMood);
+
+
+        //showProgress();
+        ChatApplication app = ChatApplication.getInstance();
+        if(mSocket!=null && mSocket.connected()){
+            Log.d("SchSocket","mSocket.connected  return.." + mSocket.id() );
+        }
+        else{
+            mSocket = app.getSocket();
+        }
+        webUrl = app.url;
+
+
+        if(isMood){
+            ll_room.setVisibility(View.GONE);
+            getScheduleFromMood();
+        }
+        else{
+            getDeviceList(2);
+        }
+
+        if(scheduleRoomArrayList.size()==0 && scheduleMoodArrayList.size()==0){
+            Log.d("isIconDelete","1...");
+            if(txt_empty_scheduler!=null){
+                txt_empty_scheduler.setVisibility(View.VISIBLE);
+                ll_recycler.setVisibility(View.GONE);
+            }
+        }else if(scheduleRoomArrayList.size()>0 && scheduleMoodArrayList.size()>0){
+            Log.d("isIconDelete","2...");
+            if(txt_empty_scheduler!=null){
+                txt_empty_scheduler.setVisibility(View.GONE);
+                ll_recycler.setVisibility(View.VISIBLE);
+            }
+        }else{
+            if(txt_empty_scheduler!=null){
+                Log.d("isIconDelete","3...");
+                txt_empty_scheduler.setVisibility(View.GONE);
+                ll_recycler.setVisibility(View.VISIBLE);
+            }
+        }
+
+     //   hideProgress();
+
+    }
+    public void sortSchedule(ArrayList<ScheduleVO> list){
+        Collections.sort(list, new Comparator<ScheduleVO>() {
+            @Override
+            public int compare(ScheduleVO o1, ScheduleVO o2) {
+                return o1.getId() - o2.getId();
+            }
+        });
+    }
+    /// all webservice call below.
+    public void getDeviceList(int count){
+        Log.d("System out", "getScheduleList is: "+count+"  " + webUrl);
+        if(getActivity()==null){
+            Log.d("SchSocket", "getScheduleList getActivity return");
+            return;
+        }
+
+        String url =  webUrl + Constants.GET_SCHEDULE_LIST;//+userId;
+
+        new GetJsonTask2(getActivity(),url ,"GET","", new ICallBack2() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                responseErrorCode.onSuccess();
+                scheduleMoodAdapter.setClickable(true);
+                scheduleRoomAdapter.setClickable(true);
+                swipeRefreshLayout.setRefreshing(false);
+                Log.d(TAG, " getScheduleList onSuccess " + result.toString());
+                try {
+                    //scheduleRoomArrayList = new ArrayList<>();
+
+                    Object objects = new JSONTokener(result.getJSONObject("data").toString()).nextValue();
+                    if(objects instanceof JSONObject){
+
+                        Log.d("isObject","JSONObject");
+
+                        if(result.getJSONObject("data")!=null){
+                            JSONObject scheduleObject  = result.getJSONObject("data");
+
+                            JSONArray moodArray = scheduleObject.getJSONArray("moodSchedule");
+                            JSONArray roomArray = scheduleObject.getJSONArray("roomSchedule");
+
+                            scheduleRoomArrayList.clear();
+                            scheduleRoomArrayList.addAll(JsonHelper.parseRoomScheduleArray(roomArray));
+
+                          //  sortSchedule(scheduleRoomArrayList);
+
+                            scheduleRoomAdapter.notifyDataSetChanged();
+                              /* JSONArray roomArray = dataObject.getJSONArray("moodDetails");
+                                  moodList = JsonHelper.parseMoodArray(roomArray);*/
+
+                            scheduleMoodArrayList.clear();
+                            scheduleMoodArrayList.addAll(JsonHelper.parseRoomScheduleArray(moodArray));
+
+                          //  sortSchedule(scheduleMoodArrayList);
+                            scheduleMoodAdapter.notifyDataSetChanged();
+
+                            if(scheduleRoomArrayList.size()>0){
+                                txt_empty_scheduler.setVisibility(View.GONE);
+                                ll_recycler.setVisibility(View.VISIBLE);
+                                showHeader();
+                            }
+                            if(scheduleMoodArrayList.size()>0){
+                                txt_empty_scheduler.setVisibility(View.GONE);
+                                ll_recycler.setVisibility(View.VISIBLE);
+                                showHeader();
+                            }
+
+                            if(isRefreshonScroll){
+                                isRefreshonScroll=false;
+                                getDeviceListUserData(13);
+                            }
+                        }
+
+                    }else if(objects instanceof JSONArray){
+                        Log.d("isObject","JSONArray");
+                    }
+
+
+                } catch (JSONException e) {
+                    ChatApplication.isScheduleNeedResume = true;
+                    Log.d("isNull","clear adapter");
+                    scheduleMoodArrayList.clear();
+                    scheduleMoodAdapter = new ScheduleAdapter(getActivity(), scheduleMoodArrayList,ScheduleFragment.this,false);
+                    rv_mood.setAdapter(scheduleMoodAdapter);
+                    scheduleMoodAdapter.notifyDataSetChanged();
+
+                    scheduleRoomArrayList.clear();
+                    scheduleRoomAdapter = new ScheduleAdapter(getActivity(), scheduleRoomArrayList,ScheduleFragment.this,true);
+                    rv_room.setAdapter(scheduleRoomAdapter);
+                    scheduleRoomAdapter.notifyDataSetChanged();
+
+
+
+                    e.printStackTrace();
+                }
+                finally {
+                    if(scheduleRoomArrayList.size()==0 && scheduleMoodArrayList.size()==0){
+                        txt_empty_scheduler.setVisibility(View.VISIBLE);
+                        ll_recycler.setVisibility(View.GONE);
+                        linearMood.setVisibility(View.GONE);
+                    }else if(scheduleRoomArrayList.size()>0 && scheduleMoodArrayList.size()>0){
+                        txt_empty_scheduler.setVisibility(View.GONE);
+                        ll_recycler.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Throwable throwable, String error , int responseCode) {
+                scheduleMoodAdapter.setClickable(true);
+                scheduleRoomAdapter.setClickable(true);
+                swipeRefreshLayout.setRefreshing(false);
+                if(responseCode == 503){
+                    responseErrorCode.onErrorCode(responseCode);
+                }
+                Log.d(TAG, "getScheduleList onFailure " + error );
+               // Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+        }).execute();
+
+        if(scheduleRoomArrayList.size()==0){
+            scheduleRoomArrayList.clear();
+            scheduleRoomAdapter.notifyDataSetChanged();
+        }else if(scheduleMoodArrayList.size()==0){
+            scheduleMoodArrayList.clear();
+            scheduleMoodAdapter.notifyDataSetChanged();
+        }
+    }
+
+
+    /*
+    *   set header for add sch... screen
+    *   @moodId3 for if intent come to EditDeviceActivity
+    *   @moodId2 for id intent come to Mood Sch edit fragment
+    *   set Mood text for if intent come to Sch fragment
+    * */
+
+    public void showHeader(){
+        underLine("Room",txtRoomScdule);
+        txt_empty_scheduler.setVisibility(View.GONE);
+        ll_recycler.setVisibility(View.VISIBLE);
+
+        ll_mood_view.setVisibility(View.VISIBLE);
+        if(!TextUtils.isEmpty(moodId3) || !TextUtils.isEmpty(moodId2)){
+            if(!TextUtils.isEmpty(moodId3)){
+                txt_mood_title.setText("Added Schedule on Room");
+            }else if(!TextUtils.isEmpty(moodId2)){
+                txt_mood_title.setText("Added Schedule on Mood");
+            }
+            linearMood.setVisibility(View.VISIBLE);
+            iv_mood_add.setVisibility(View.GONE);
+        }else{
+            underLine("Mood",txt_mood_title);
+         //   txt_mood_title.setText("Mood");
+//            String mystring=new String("Mood");
+//            SpannableString content = new SpannableString(mystring);
+//            content.setSpan(new UnderlineSpan(), 0, mystring.length(), 0);
+//            txt_mood_title.setText(content);
+        }
+    }
+    public void underLine(String text, TextView textTemp){
+        String mystring=new String(text);
+        SpannableString content = new SpannableString(mystring);
+        content.setSpan(new UnderlineSpan(), 0, mystring.length(), 0);
+        textTemp.setText(content);
+    }
+
+//
+    public void getScheduleFromMood(){
+        Log.d(TAG, "getScheduleFromMood");
+        if(getActivity()==null){
+            return;
+        }
+        JSONObject obj = new JSONObject();
+        try {
+            if(!TextUtils.isEmpty(moodId3)){
+                obj.put("room_id",moodId3);
+                obj.put("room_type",0);
+            }else{
+                obj.put("room_id",moodId2); //moodId1
+                obj.put("room_type",1);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        Log.d("getSCHID","" + obj.toString());
+
+        String url= "";
+        /*if(!TextUtils.isEmpty(moodId3)){
+            url =  webUrl + Constants.GET_SCHEDULE_ON_ROOM;//+userId;
+
+        }else{
+            url =  webUrl + Constants.GET_SCHEDULE_ON_MOOD;//+userId;
+
+        }*/
+        url =  webUrl + Constants.GET_SCHEDULE_ON_ROOM;
+
+        new GetJsonTask2(getActivity(),url ,"POST",obj.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                scheduleMoodArrayList.clear();
+
+                scheduleMoodAdapter.setClickable(true);
+                scheduleRoomAdapter.setClickable(true);
+
+                swipeRefreshLayout.setRefreshing(false);
+
+                Log.d(TAG, " getScheduleFromMood onSuccess " + result.toString());
+                try {
+                    //scheduleRoomArrayList = new ArrayList<>();
+
+                    // {"code":200,"message":"success"}
+
+                    if(result.has("data")){
+
+                        JSONObject scheduleObject  = result.getJSONObject("data");
+
+                        JSONArray moodArray = null;
+
+                        if(!TextUtils.isEmpty(moodId3)){
+                            moodArray = scheduleObject.getJSONArray("roomSchedule");
+                        }else{
+
+                            if(!TextUtils.isEmpty(moodId2)){
+                                moodArray = scheduleObject.getJSONArray("roomSchedule");
+                            }else{
+                                moodArray = scheduleObject.getJSONArray("moodSchedule");
+                            }
+                          //  moodArray = scheduleObject.getJSONArray("roomSchedule");
+                        }
+
+                        scheduleMoodArrayList.addAll(JsonHelper.parseRoomScheduleArray(moodArray));
+                      //  sortSchedule(scheduleMoodArrayList);
+                        scheduleMoodAdapter.notifyDataSetChanged();
+
+                        if(scheduleMoodArrayList.size()>0){
+                            txt_empty_scheduler.setVisibility(View.GONE);
+                            ll_recycler.setVisibility(View.VISIBLE);
+                            showHeader();
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    if(TextUtils.isEmpty(moodId3)){
+                        if(scheduleMoodArrayList.size()==0){
+                            if(!TextUtils.isEmpty(moodId3) || !TextUtils.isEmpty(moodId2)){
+                                ll_mood_view.setVisibility(View.GONE);
+                            }
+                        }
+                    }
+
+                }
+            }
+            @Override
+            public void onFailure(Throwable throwable, String error,int errorCode) {
+                scheduleMoodAdapter.setClickable(true);
+                scheduleRoomAdapter.setClickable(true);
+                swipeRefreshLayout.setRefreshing(false);
+                try{
+                    if(errorCode == 503){
+                        responseErrorCode.onErrorCode(errorCode);
+                    }
+                    Log.d(TAG, "getScheduleFromMood onFailure " + error );
+                    //   Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                }catch (Exception ex){ ex.printStackTrace(); }
+
+            }
+        }).execute();
+
+        if(scheduleMoodArrayList.size()==0){
+            scheduleMoodArrayList.clear();
+            scheduleMoodAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public void deleteSchedule(String schedule_id, int is_timer){
+        Log.d(TAG, "deleteSchedule deleteSchedule");
+        if(!ActivityHelper.isConnectingToInternet(getActivity())){
+            Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
+            return;
+        }
+        JSONObject obj = new JSONObject();
+        try {
+
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+
+            obj.put("schedule_id",schedule_id);
+            obj.put("is_timer",is_timer);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        ActivityHelper.showProgressDialog(getActivity(),"Please Wait.",false);
+        String url =  webUrl + Constants.DELETE_SCHEDULE;
+        new GetJsonTask(getActivity(),url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                ChatApplication.isScheduleNeedResume = true;
+                Log.d(TAG, "deleteSchedule onSuccess " + result.toString());
+                try {
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if(code == 200){
+                        if(!TextUtils.isEmpty(message)){
+                            Toast.makeText(getActivity().getApplicationContext(),  message , Toast.LENGTH_SHORT).show();
+                        }
+                       // getDeviceList();
+                        ChatApplication.isScheduleNeedResume = true;
+
+                        scheduleMoodArrayList.clear();
+                        scheduleMoodAdapter = new ScheduleAdapter(getActivity(), scheduleMoodArrayList,ScheduleFragment.this,false);
+                        rv_mood.setAdapter(scheduleMoodAdapter);
+                        scheduleMoodAdapter.notifyDataSetChanged();
+
+                        scheduleRoomArrayList.clear();
+                        scheduleRoomAdapter = new ScheduleAdapter(getActivity(), scheduleRoomArrayList,ScheduleFragment.this,true);
+                        rv_room.setAdapter(scheduleRoomAdapter);
+                        scheduleRoomAdapter.notifyDataSetChanged();
+                        ChatApplication.isScheduleNeedResume = false;
+
+                        onLoadFragment();
+                    }
+                    else{
+                        Toast.makeText(getActivity().getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                    }
+                    // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    ActivityHelper.dismissProgressDialog();
+                }
+            }
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                Log.d(TAG, "deleteSchedule onFailure " + error );
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+        }).execute();
+    }
+
+    public String convertDateStringFormat(String strDate, String fromFormat, String toFormat){
+        try{
+            SimpleDateFormat sdf = new SimpleDateFormat(fromFormat);
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            SimpleDateFormat dateFormat2 = new SimpleDateFormat(toFormat.trim());
+            return dateFormat2.format(sdf.parse(strDate));
+        }catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+    public void changeScheduleStatus(ScheduleVO scheduleVO){
+        Log.d(TAG, "changeScheduleStatus changeScheduleStatus");
+        if(!ActivityHelper.isConnectingToInternet(getActivity())){
+            Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ActivityHelper.showProgressDialog(getActivity(), "Please Wait.", false);
+
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("schedule_id",scheduleVO.getSchedule_id());
+            obj.put("schedule_status",scheduleVO.getSchedule_status());
+
+
+            obj.put("is_timer",scheduleVO.getIs_timer());
+
+            String schedule_device_on_time = "";
+            String timer_on_date = "";
+
+            String schedule_device_off_time = "";
+            String timer_off_date ="";
+
+            if(scheduleVO.getSchedule_status() == 0){
+
+                Log.d("MakeObj","Going to on");
+                if(scheduleVO.getIs_timer()==1){
+
+                    String sch_on_after = scheduleVO.getTimer_on_after();
+                    String sch_on_date = scheduleVO.getTimer_on_date();
+
+                    if(!TextUtils.isEmpty(sch_on_after) && !TextUtils.isEmpty(sch_on_date)){
+
+                        try{
+
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(new Date());
+                            calendar.add(Calendar.HOUR, Integer.parseInt(sch_on_after.split(":")[0]));
+                            calendar.add(Calendar.MINUTE, Integer.parseInt(sch_on_after.split(":")[1]));
+
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm aa");
+                            String formattedDate = dateFormat.format(calendar.getTime()).toString();
+
+                            SimpleDateFormat format = new SimpleDateFormat("MMM dd, yyyy");
+                            Date sendDate = null;
+                            try {
+                                sendDate = format.parse(formattedDate);
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            Calendar sendCalendar = Calendar.getInstance();
+                            sendCalendar.setTime(sendDate);
+
+                            schedule_device_on_time = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE));
+
+                            SimpleDateFormat sendDateFormat = new SimpleDateFormat("MMM dd, yyyy");
+                            timer_on_date = sendDateFormat.format(calendar.getTime()).toString();
+
+
+                        }catch (Exception ex){ ex.printStackTrace(); }
+
+
+                    }
+
+                    String sch_off_after = scheduleVO.getTimer_off_after();
+                    String sch_off_date = scheduleVO.getTimer_off_date();
+
+                    if(!TextUtils.isEmpty(sch_off_after) && !TextUtils.isEmpty(sch_off_date)){
+
+                        try{
+                            Log.d("SchEdit","sch_off_after : " + sch_off_after + " : sch_off_date : " + sch_off_date);
+
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(new Date());
+                            calendar.add(Calendar.HOUR, Integer.parseInt(sch_off_after.split(":")[0]));
+                            calendar.add(Calendar.MINUTE, Integer.parseInt(sch_off_after.split(":")[1]));
+
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm aa");
+                            String formattedDate = dateFormat.format(calendar.getTime()).toString();
+
+                            SimpleDateFormat format = new SimpleDateFormat("MMM dd, yyyy");
+                            Date sendDate = null;
+                            try {
+                                sendDate = format.parse(formattedDate);
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            Calendar sendCalendar = Calendar.getInstance();
+                            sendCalendar.setTime(sendDate);
+
+                            schedule_device_off_time = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE));
+
+                            SimpleDateFormat sendDateFormat = new SimpleDateFormat("MMM dd, yyyy");
+                            timer_off_date = sendDateFormat.format(calendar.getTime()).toString();
+
+
+                        }catch (Exception ex){ ex.printStackTrace(); }
+
+
+                    }else{
+
+                        Log.d("SchEdit","makeDate for off else null.....: ");
+                    }
+
+                    obj.put("schedule_device_on_time",schedule_device_on_time);
+                    obj.put("timer_on_date",timer_on_date);
+                    obj.put("schedule_device_off_time",schedule_device_off_time);
+                    obj.put("timer_off_date",timer_off_date);
+
+                }else{
+
+                    Log.d("SchEdit","mak elseelse");
+
+                    obj.put("schedule_device_on_time",scheduleVO.getSchedule_device_on_time());
+                    obj.put("timer_on_date",scheduleVO.getTimer_on_date());
+                    obj.put("schedule_device_off_time",scheduleVO.getSchedule_device_off_time());
+                    obj.put("timer_off_date",scheduleVO.getTimer_off_date());
+                }
+
+            }else{
+
+                Log.d("SchEdit","Going to off");
+
+                obj.put("schedule_device_on_time","");
+                obj.put("timer_on_date","");
+                obj.put("schedule_device_off_time","");
+                obj.put("timer_off_date","");
+
+            }
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        try {
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("SchEdit","obj :" + obj.toString());
+
+     //   ActivityHelper.showProgressDialog(getActivity(),"Please Wait.",false);
+        String url =  webUrl + Constants.CHANGE_SCHEDULE_STATUS;
+
+        new GetJsonTask(getActivity(),url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                Log.d(TAG, "SchEdit changeScheduleStatus onSuccess " + result.toString());
+                try {
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if(code==200){
+                      //  Toast.makeText(getActivity().getApplicationContext(), "Schedule status changed Successfully" , Toast.LENGTH_SHORT).show();
+                        if(!TextUtils.isEmpty(message)){
+                            Toast.makeText(getActivity().getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                        }
+
+                        JSONObject jsonObjectData = result.getJSONObject("data");
+                        String schedule_id = jsonObjectData.getString("schedule_id");
+                        int is_timer = jsonObjectData.getInt("is_timer");
+                        int schedule_status = jsonObjectData.getInt("schedule_status");
+                        String schedule_device_on_time = jsonObjectData.getString("schedule_device_on_time");
+                        String timer_on_date = jsonObjectData.getString("timer_on_date");
+                        String schedule_device_off_time = jsonObjectData.getString("schedule_device_off_time");
+                        String timer_off_date = jsonObjectData.getString("timer_off_date");
+
+                        ScheduleVO scheduleVO1 = new ScheduleVO();
+                        scheduleVO1.setSchedule_id(schedule_id);
+                        scheduleVO1.setIs_timer(is_timer);
+                        scheduleVO1.setSchedule_status(schedule_status);
+                        scheduleVO1.setSchedule_device_on_time(schedule_device_on_time);
+                        scheduleVO1.setTimer_on_date(timer_on_date);
+                        scheduleVO1.setSchedule_device_off_time(schedule_device_off_time);
+                        scheduleVO1.setTimer_off_date(timer_off_date);
+                       // scheduleVO1.setIs_active();
+
+                        Log.d("SCH_STATUS","api status : " + schedule_status);
+
+                        //onLoadFragment(); //uncomment
+                        if(isMood){
+                            ll_room.setVisibility(View.GONE);
+
+                            try{
+                                for (int i = 0; i < scheduleMoodArrayList.size(); i++) {
+                                    ScheduleVO scheduleVO2 = scheduleMoodArrayList.get(i);
+                                    if (scheduleVO2.getSchedule_id().equalsIgnoreCase(scheduleVO1.getSchedule_id())) {
+
+                                        schSetV02ToV01(scheduleVO1,scheduleVO2);
+
+                                        scheduleMoodArrayList.set(i,scheduleVO1);
+                                        scheduleMoodAdapter.notifyItemChanged(i,scheduleVO1);
+                                    }
+                                }
+                            }catch (Exception ex){
+                             //   getScheduleFromMood();
+                                ex.printStackTrace();
+                            }
+
+                        }else{
+
+                            try{
+                                for (int i = 0; i < scheduleMoodArrayList.size(); i++) {
+                                    ScheduleVO scheduleVO2 = scheduleMoodArrayList.get(i);
+                                    if (scheduleVO2.getSchedule_id().equalsIgnoreCase(scheduleVO1.getSchedule_id())) {
+
+                                        schSetV02ToV01(scheduleVO1,scheduleVO2);
+
+                                        scheduleMoodArrayList.set(i,scheduleVO1);
+                                        scheduleMoodAdapter.notifyItemChanged(i,scheduleVO1);
+                                    }
+                                }
+                                for (int i = 0; i < scheduleRoomArrayList.size(); i++) {
+                                    ScheduleVO scheduleVO2 = scheduleRoomArrayList.get(i);
+                                    if (scheduleVO2.getSchedule_id().equalsIgnoreCase(scheduleVO1.getSchedule_id())) {
+
+                                        schSetV02ToV01(scheduleVO1,scheduleVO2);
+
+                                        scheduleRoomArrayList.set(i,scheduleVO1);
+                                        scheduleRoomAdapter.notifyItemChanged(i,scheduleVO1);
+                                    }
+                                }
+
+                            }catch (Exception ex){
+                              //  getDeviceList();
+                                ex.printStackTrace();
+                            }
+
+
+                            //getDeviceList();
+                        }
+
+                    }
+                    else{
+                        Toast.makeText(getActivity().getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                    }
+                    // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    ActivityHelper.dismissProgressDialog();
+                }
+            }
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                Log.d(TAG, "changeScheduleStatus onFailure " + error );
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    /*
+    * Update ScheduleV0 data and notifyDataSetChanged
+    * @ScheduleV01 : Json api schedule data
+    * @ScheduleV02 : Old schedule data
+    * schV02 old data copy/set to schV01
+    *
+    * */
+
+    private void schSetV02ToV01(ScheduleVO scheduleVO1, ScheduleVO scheduleVO2){
+        scheduleVO1.setSchedule_name(scheduleVO2.getSchedule_name());
+        scheduleVO1.setId(scheduleVO2.getId());
+        scheduleVO1.setSchedule_type(scheduleVO2.getSchedule_type());
+        scheduleVO1.setRoom_id(scheduleVO2.getRoom_id());
+        scheduleVO1.setMood_id(scheduleVO2.getMood_id());
+        scheduleVO1.setRoom_device_id(scheduleVO2.getRoom_device_id());
+        scheduleVO1.setSchedule_device_day(scheduleVO2.getSchedule_device_day());
+
+        scheduleVO1.setRoom_name(scheduleVO2.getRoom_name());
+        scheduleVO1.setTimer_on_after(scheduleVO2.getTimer_on_after());
+        scheduleVO1.setTimer_off_after(scheduleVO2.getTimer_off_after());
+    }
+
+
+
+    //isMood boolean used for is intent direct in Room list
+
+    @Override
+    public void itemClicked(final ScheduleVO scheduleVO, String action, boolean isMood) {
+
+        Log.d(TAG," action " + action);
+        if(action.equalsIgnoreCase("active")){
+            changeScheduleStatus(scheduleVO);
+        }
+        else if(action.equalsIgnoreCase("edit")){
+            //edit schedule
+         //   Log.d("isEditOpen","edit sheduler : " + scheduleVO.getRoom_device_id());
+            ChatApplication.isScheduleNeedResume=true;
+            Intent intent = new Intent(getActivity(), ScheduleActivity.class);
+            intent.putExtra("scheduleVO",scheduleVO);
+            intent.putExtra("isMap",true);
+            intent.putExtra("isEdit",true);
+
+            Log.d("isMoodAdapter","isMood : " + isMood + " isAdapter : " + isMoodAdapter);
+
+            if(isMoodAdapter){
+                intent.putExtra("isMoodAdapter",isMoodAdapter);
+            }else{
+                intent.putExtra("isMoodAdapter",isMood);
+            }
+            startActivity(intent);
+        }
+        else if(action.equalsIgnoreCase("delete")){
+            ConfirmDialog newFragment = new ConfirmDialog("Yes","No" ,"Confirm", "Are you sure you want to Delete ?",new ConfirmDialog.IDialogCallback() {
+                @Override
+                public void onConfirmDialogYesClick() {
+                    deleteSchedule(scheduleVO.getSchedule_id(),scheduleVO.getIs_timer());
+                }
+                @Override
+                public void onConfirmDialogNoClick() {
+//                      Toast.makeText(activity, " Saved Successfully. " ,Toast.LENGTH_SHORT).show();
+                }
+
+            });
+            newFragment.show(getActivity().getFragmentManager(), "dialog");
+        }
+
+    }
+
+    @Override
+    public void itemClicked(final ScheduleVO scheduleVO, String action) {
+
+    }
+
+    /// all webservice call below.
+    public  void getDeviceListUserData(final int checkmessgae) {
+        //showProgress();
+
+        Log.d("CallAPIMainFragment", "getDeviceList getDeviceList scdule " + checkmessgae);
+        if (getActivity() == null) {
+            return;
+        }
+
+        if (checkmessgae == 1 || checkmessgae == 6 || checkmessgae == 7 || checkmessgae == 8 || checkmessgae == 9 || checkmessgae == 10) {
+            ActivityHelper.showProgressDialog(getActivity(), "Please Wait...", false);
+        }
+
+        String url = webUrl + Constants.GET_DEVICES_LIST + "/" + Constants.DEVICE_TOKEN + "/0/1";
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("room_type", 0);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        //responseErrorCode.onProgress();
+        Log.d("CouldFoundIP", "call api");
+        new GetJsonTask2(activity, url, "GET", "", new ICallBack2() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+
+                try {
+
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+
+                        JSONObject dataObject = result.getJSONObject("data");
+
+                        JSONArray userListArray = dataObject.getJSONArray("userList");
+
+                        JSONObject userObject = userListArray.getJSONObject(0);
+                        String userId = userObject.getString("user_id");
+                        String userFirstName = userObject.getString("first_name");
+                        String userLastName = userObject.getString("last_name");
+                        String camera_key = userObject.optString("camera_key");
+                        Common.savePrefValue(ChatApplication.getInstance(), Common.camera_key, camera_key);
+                        ChatApplication.currentuserId = userId;
+                        String userPassword = "";
+                        mCallback.onArticleSelected("" + userFirstName + " " + userLastName);
+
+                        MainFragment.saveCurrentId(getActivity(),userId);
+                        if (userObject.has("user_password")) {
+                            userPassword = userObject.getString("user_password");
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error, int reCode) {
+            }
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+}

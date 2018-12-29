@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/automation_gray_2"
+    android:orientation="vertical"
+    tools:context="com.spike.bot.activity.AddMoodActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="?android:attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:orientation="horizontal">
+
+
+        <AutoCompleteTextView
+            android:id="@+id/et_switch_name"
+            android:visibility="gone"
+            android:layout_marginTop="10dp"
+            android:imeOptions="actionDone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.60"
+            android:ems="10"
+            android:inputType="textCapSentences|textAutoCorrect|textMultiLine|textShortMessage"
+            android:text=""
+            android:hint="Mood Name"
+            android:completionThreshold="1"
+            android:layout_gravity="center_horizontal"
+            />
+
+        <!--Spinner START-->
+
+        <RelativeLayout
+            android:id="@+id/rel_spinner"
+            android:visibility="visible"
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/custome_spinner"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinner_mood_icon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:dropDownVerticalOffset="38dp"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:layout_marginLeft="5dp"
+                android:spinnerMode="dialog" />
+
+            <ImageView
+                android:id="@+id/spinner_mood_icon_img"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="8dp"
+                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@+id/spinner_room_list"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:src="@drawable/icn_arrow_down_spinner2" />
+
+        </RelativeLayout>
+
+
+        <!--Spinner END-->
+
+        <RelativeLayout
+            android:visibility="gone"
+            android:layout_weight="0.40"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="3dp"
+            android:background="@drawable/custome_spinner"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/sp_device_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:dropDownVerticalOffset="48dp"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:layout_marginLeft="5dp"
+                android:spinnerMode="dropdown" />
+
+            <ImageView
+                android:id="@+id/sp_drop_down"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_toRightOf="@+id/sp_device_type"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:src="@drawable/icn_arrow_down_spinner2" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+
+    <!--<include layout="@layout/content_device_list" />-->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/messages"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/camera_list"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:background="@color/automation_white"
+        android:padding="0dp"
+        android:scrollbarStyle="outsideOverlay"
+        android:scrollbars="none" />
+
+</LinearLayout>

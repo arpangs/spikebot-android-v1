@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.spike.bot.MainActivity">
+
+   <!-- <item
+        android:id="@+id/action_add_panel"
+        android:orderInCategory="100"
+        android:visible="false"
+        android:title="Add New Panel"
+        app:showAsAction="always" />-->
+
+    <item
+        android:id="@+id/action_add_existing"
+        android:icon="@drawable/add"
+        android:visible="false"
+        android:orderInCategory="100"
+        android:title="Add From Existing"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_add_schedule"
+        android:orderInCategory="100"
+        android:title="Schedule"
+        app:showAsAction="always" />
+</menu>

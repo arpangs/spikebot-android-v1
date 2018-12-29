@@ -2,7 +2,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:paddingTop="@dimen/spacing">
 
     <TextView
@@ -11,7 +11,7 @@
             android:textColor="?android:textColorPrimary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:singleLine="true"
+            android:singleLine="false"
             android:textStyle="bold"/>
     <TextView
             android:id="@+id/message"
@@ -19,8 +19,9 @@
             android:textColor="?android:textColorPrimary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minLines="2"
             android:paddingLeft="@dimen/spacing"
             android:paddingRight="@dimen/spacing"
-            android:singleLine="true"/>
+            android:singleLine="false"/>
 
 </LinearLayout>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/spinner_item"
+        style="?attr/spinnerDropDownItemStyle"
+        android:singleLine="true"
+        android:textSize="12sp"
+        android:gravity="center|start"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/dropdownListPreferredItemHeight"
+        android:ellipsize="marquee" />
+</RelativeLayout>

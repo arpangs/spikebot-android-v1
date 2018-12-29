@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="5dp"
+        android:orientation="horizontal"
+        android:paddingLeft="8dp">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="Add Room "
+            android:textColor="@color/automation_blue"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/iv_close"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:padding="3dp"
+            android:backgroundTint="@color/sensor_button"
+            app:srcCompat="@drawable/close_blue2" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/sky_blue" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:paddingBottom="8dp">
+
+        <LinearLayout
+            android:id="@+id/ll_room"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="8dp">
+
+            <TextView
+                android:id="@+id/tv_room_name"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.35"
+                android:gravity="center_vertical"
+                android:text="Room Name" />
+
+            <EditText
+                android:id="@+id/et_room_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.65"
+                android:hint="" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="8dp">
+
+            <TextView
+                android:id="@+id/tv_panel_name"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.35"
+                android:gravity="center_vertical"
+                android:text="Panel Name" />
+
+            <EditText
+                android:id="@+id/et_panel_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.65"
+                android:hint="" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_module_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@color/automation_gray"
+            android:orientation="horizontal"
+            android:paddingLeft="8dp">
+
+            <TextView
+                android:id="@+id/tv_module_id"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.35"
+                android:gravity="center_vertical"
+                android:text="Module Id" />
+
+            <EditText
+                android:id="@+id/et_module_id"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:layout_weight="0.65"
+                android:enabled="false"
+                android:hint="" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="8dp">
+
+            <TextView
+                android:id="@+id/tv_no_of_devices"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.35"
+                android:gravity="center_vertical"
+                android:text="No.of Devices" />
+
+            <EditText
+                android:id="@+id/et_no_of_devices"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.0"
+                android:hint=""
+                android:visibility="invisible" />
+
+            <Spinner
+                android:id="@+id/sp_no_of_devices"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.65"
+                android:entries="@array/device_array"
+                android:gravity="right"
+                android:textAlignment="gravity" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="8dp"
+            android:weightSum="1">
+
+            <Button
+                android:id="@+id/btn_save"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="0.30"
+                android:background="@drawable/button_radius"
+                android:clickable="true"
+                android:text="Save"
+                android:textColor="@color/automation_white"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>

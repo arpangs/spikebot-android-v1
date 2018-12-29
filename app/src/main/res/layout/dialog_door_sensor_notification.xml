@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_margin="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_height="wrap_content"
+                android:text="Alert"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_weight="0.9"
+                android:id="@+id/txt_notification_alert"
+                />
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:text="Close"
+                android:layout_weight="0.1"
+                android:layout_gravity="right"
+                android:backgroundTint="@color/sensor_button"
+                android:id="@+id/btn_close_notification"
+                android:src="@drawable/close_blue2"
+                />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_marginTop="1dp"
+            android:background="#808080" />
+
+        <TextView
+            android:text="Set time to Notify"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="20dp"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_marginTop="4dp"
+            android:layout_height="wrap_content">
+            <EditText
+                android:hint="Start Time"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:id="@+id/edit_start_time"
+                />
+            <EditText
+                android:hint="End Time"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/edit_end_time"
+                android:layout_gravity="right"
+                />
+        </LinearLayout>
+
+
+        <Button
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/automation_white"
+            android:background="@drawable/button_radius"
+            android:gravity="center"
+            android:layout_width="52dp"
+            android:layout_height="34dp"
+            android:text="Save"
+            android:id="@+id/button_save_notification"
+            />
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/actionBarSize"
+                android:background="@color/sky_blue"
+                app:popupTheme="@style/AppTheme.PopupOverlay">
+
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.design.widget.AppBarLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/_5sdp"
+            android:background="@color/automation_white"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/automation_black"
+                android:textStyle="bold"
+                android:textSize="@dimen/_16sdp"
+                android:text="First disable your mobile data"/>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/automation_black"
+                android:textStyle="bold"
+                android:textSize="@dimen/_16sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:text="Connect to your device in Wi-Fi settings for setup"/>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/txtPanal"
+                android:textSize="@dimen/_14sdp"
+                android:paddingTop="@dimen/_7sdp"
+                android:text="Your device has created a temporary Wi-Fi hotspot. To set it up, connect to it in the Wi-Fi settinds by the following the instructions below."/>
+
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/automation_black"
+                android:textStyle="bold"
+                android:paddingTop="@dimen/_10sdp"
+                android:textSize="@dimen/_15sdp"
+                android:text="1. Go to Settings> Wi-Fi"/>
+
+
+            <TextView
+                android:id="@+id/txtWifi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/automation_black"
+                android:textSize="@dimen/_14sdp"
+                android:paddingTop="@dimen/_7sdp"
+                android:text=""/>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/automation_black"
+                android:textStyle="bold"
+                android:paddingTop="@dimen/_10sdp"
+                android:textSize="@dimen/_15sdp"
+                android:text="2. Come back to the app to proceed with set up."/>
+
+
+            <Button
+                android:id="@+id/btnNext"
+                android:layout_width="@dimen/_120sdp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:background="@drawable/drawable_blue_schedule"
+                android:text="Next"
+                android:textAllCaps="false"
+                android:textColor="@color/automation_white" />
+
+
+
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

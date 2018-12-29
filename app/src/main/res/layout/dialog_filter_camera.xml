@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:background="@drawable/background_white_gray_border"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="5dp"
+            android:orientation="horizontal"
+            android:paddingLeft="8dp">
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="Filter"
+                android:textColor="@color/sensor_button"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/iv_close"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:padding="3dp"
+                android:backgroundTint="@color/sensor_button"
+                app:srcCompat="@drawable/close_blue2" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/sky_blue" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/_5sdp"
+            android:layout_marginLeft="@dimen/_5sdp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!--On Time Start-->
+                <LinearLayout
+                    android:id="@+id/ll_on_time"
+                    android:layout_weight="1"
+                    android:layout_marginRight="@dimen/_6sdp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:id="@+id/et_schedule_on_time"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="8dp"
+                        android:hint="Start Date"
+                        android:gravity="center|left"
+                        android:padding="@dimen/_8sdp"
+                        android:layout_weight="0.70"
+                        android:background="@drawable/edt_border"
+                        android:textSize="@dimen/_10sdp"
+                        android:inputType="textPersonName"
+                        android:text="" />
+
+                    <ImageView
+                        android:id="@+id/iv_schedule_on_time_clear"
+                        android:visibility="gone"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:adjustViewBounds="true"
+                        android:maxHeight="35dp"
+                        android:padding="1dp"
+                        android:src="@drawable/close_clear_gray" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/logs_arrow_long"/>
+
+                <LinearLayout
+                    android:id="@+id/ll_off_time"
+                    android:visibility="visible"
+                    android:layout_marginLeft="@dimen/_6sdp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:id="@+id/et_schedule_off_time"
+                        android:layout_width="0dp"
+                        android:background="@drawable/edt_border"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.70"
+                        android:hint="End Date"
+                        android:gravity="center|left"
+                        android:padding="@dimen/_8sdp"
+                        android:drawablePadding="8dp"
+                        android:inputType="textPersonName"
+                        android:textSize="@dimen/_10sdp"
+                        android:text="" />
+
+                    <ImageView
+                        android:id="@+id/iv_schedule_off_time_clear"
+                        android:visibility="gone"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:adjustViewBounds="true"
+                        android:maxHeight="35dp"
+                        android:padding="1dp"
+                        android:src="@drawable/close_clear_gray" />
+                </LinearLayout>
+                <!--Off Time End-->
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_margin="@dimen/_10sdp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_white_gray_border"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnerCamera"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:dropDownVerticalOffset="38dp"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:padding="@dimen/_10sdp"
+                android:spinnerMode="dialog" />
+
+            <ImageView
+                android:id="@+id/spinner_mood_icon_img"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="8dp"
+                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@+id/spinner_room_list"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:src="@drawable/icn_arrow_down_spinner2" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:background="@color/sky_blue" />
+
+
+        <TextView
+            android:id="@+id/txtSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Apply"
+            android:gravity="center"
+            android:padding="@dimen/_10sdp"
+            android:textSize="@dimen/_14sdp"
+            android:textColor="@color/sensor_button"/>
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@android:color/black">
+
+    <!--
+     the double FrameLayout is necessary here to do cropping on the bottom right
+     (which requires the surface not be centered), while keeping the result centered
+    -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="false">
+
+        <FrameLayout
+            android:id="@+id/player_surface_frame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:foregroundGravity="clip_horizontal|clip_vertical"
+            tools:ignore="true">
+
+            <SurfaceView
+                android:id="@+id/player_surface"
+                android:layout_width="480dp"
+                android:layout_height="360dp" />
+        </FrameLayout>
+    </FrameLayout>
+    <VideoView
+        android:id="@+id/video_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</RelativeLayout>
+
+
+<!--
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/background_dark"
+    android:keepScreenOn="true">
+
+    <FrameLayout
+        android:id="@+id/video_surface_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:foregroundGravity="clip_horizontal|clip_vertical"
+        tools:ignore="true">
+
+        <ViewStub
+            android:id="@+id/surface_stub"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout="@layout/surface_view" />
+
+        <ViewStub
+            android:id="@+id/subtitles_surface_stub"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:layout="@layout/surface_view" />
+
+        <ViewStub
+            android:id="@+id/texture_stub"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout="@layout/texture_view" />
+
+    </FrameLayout>
+</FrameLayout>
+-->

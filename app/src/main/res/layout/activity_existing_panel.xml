@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.spike.bot.activity.RoomEditActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/sky_blue"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_progress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:background="@color/automation_white"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/deepsImage"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:scaleType="centerInside"
+            android:src="@drawable/loader2"
+            android:visibility="visible" />
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:background="@color/automation_gray_2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/ll_un_view"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:textSize="16sp"
+                android:hint="Room Name"
+                android:layout_weight="0.4"
+                android:layout_width="0dp"
+                android:textColor="@color/automation_dark"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/txt_un_room"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="0.6"
+                android:editable="false"
+                android:layout_width="0dp"
+                android:textColor="@color/txtPanal"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_panel_view"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:hint="Panel Name"
+                android:textSize="16sp"
+                android:layout_weight="0.4"
+                android:layout_width="0dp"
+                android:textColor="@color/automation_dark"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/et_panel_name_existing"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="0.6"
+                android:layout_width="0dp"
+                android:imeOptions="actionDone"
+                android:singleLine="true"
+                android:ems="10"
+                android:textColor="@color/automation_black"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/camera_list"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+           />
+
+        <LinearLayout
+            android:id="@+id/ll_panel_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:textColor="#808080"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textSize="20dp"
+                android:text="No Panel Found"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

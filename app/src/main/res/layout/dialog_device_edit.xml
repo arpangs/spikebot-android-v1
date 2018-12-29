@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="5dp"
+        android:orientation="horizontal"
+        android:paddingLeft="8dp">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="Edit Switch"
+            android:textColor="@color/automation_blue"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/iv_close"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:padding="3dp"
+            android:backgroundTint="@color/sensor_button"
+            app:srcCompat="@drawable/close_blue2" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/sky_blue" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:orientation="vertical"
+        android:paddingBottom="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.30"
+            android:gravity="center_vertical"
+            android:paddingLeft="8dp"
+            android:text="Switch Name" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="8dp">
+
+
+            <EditText
+                android:id="@+id/et_switch_name"
+                android:layout_width="0dp"
+                android:layout_marginTop="10dp"
+                android:layout_height="wrap_content"
+                android:maxLength="8"
+                android:layout_weight="0.55"
+                android:ems="10"
+                android:imeOptions="actionDone"
+                android:inputType="textPersonName"
+                android:hint="Switch Name"/>
+
+            <LinearLayout
+                android:layout_weight="0.45"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="3dp"
+                android:background="@drawable/custome_spinner"
+                android:orientation="horizontal">
+
+                <Spinner
+                    android:id="@+id/sp_device_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.8"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:spinnerMode="dropdown" />
+
+                <ImageView
+                    android:id="@+id/spinner_arrow"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_weight="0.2"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_toRightOf="@+id/sp_device_type"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:src="@drawable/icn_arrow_down_spinner2" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/ll_auto_mode_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:paddingLeft="8dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="0.35"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Type" />
+
+            <RadioGroup
+                android:id="@+id/rg_auto_mode_type"
+                android:gravity="right"
+                android:visibility="gone"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.65"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rb_auto_mode_type_normal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Normal" />
+
+                <RadioButton
+                    android:id="@+id/rb_auto_mode_type_dimmer"
+                    android:layout_marginLeft="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Dimmer" />
+            </RadioGroup>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="8dp"
+            android:weightSum="1">
+
+            <Button
+                android:id="@+id/btn_save"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="12dp"
+                android:layout_weight="0.30"
+                android:background="@drawable/button_radius"
+                android:clickable="true"
+                android:text="Save"
+                android:textColor="@color/automation_white"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>

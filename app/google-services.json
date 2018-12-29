@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "46312103362",
+    "firebase_url": "https://spike-bot-637d2.firebaseio.com",
+    "project_id": "spike-bot-637d2",
+    "storage_bucket": "spike-bot-637d2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:46312103362:android:d42bdb0aaa0c1205",
+        "android_client_info": {
+          "package_name": "com.spike.bot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "46312103362-6spi86dorkvee13ccbre40ai897fmp0i.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "46312103362-6spi86dorkvee13ccbre40ai897fmp0i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArU0W1p3am8pOnIN4hSKBV94N5mhpfSig"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

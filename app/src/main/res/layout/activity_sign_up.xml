@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
+    tools:context="com.spike.bot.activity.RoomEditActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_camera"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/sky_blue"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+
+        <LinearLayout
+            android:layout_margin="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:text="First Name"
+                    android:layout_weight="0.4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/edt_first_name_su"
+                    android:layout_weight="0.6"
+                    android:singleLine="true"
+                    android:hint="Enter First Name"
+                    android:layout_width="0dp"
+                    android:text="vipul"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:text="Last Name"
+                    android:layout_weight="0.4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/edt_last_name_su"
+                    android:layout_weight="0.6"
+                    android:hint="Enter Last Name"
+                    android:singleLine="true"
+                    android:layout_width="0dp"
+                    android:text="patel"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:text="Email ID"
+                    android:layout_weight="0.4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/edt_emailid_su"
+                    android:layout_weight="0.6"
+                    android:inputType="textEmailAddress"
+                    android:hint="Enter Email ID"
+                    android:singleLine="true"
+                    android:layout_width="0dp"
+                    android:text="vipulkathiriya09@gmail.com"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:text="User Name"
+                    android:layout_weight="0.4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/edt_user_name_su"
+                    android:layout_weight="0.6"
+                    android:hint="Username for Login"
+                    android:singleLine="true"
+                    android:layout_width="0dp"
+                    android:text="vipul"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:text="Password"
+                    android:layout_weight="0.4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/edt_password_su"
+                    android:layout_weight="0.6"
+                    android:hint="Enter Password"
+                    android:inputType="textPassword"
+                    android:singleLine="true"
+                    android:layout_width="0dp"
+                    android:text="123"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:text="Confirm Password"
+                    android:layout_weight="0.4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/edt_con_password_su"
+                    android:layout_weight="0.6"
+                    android:hint="Retype Password"
+                    android:inputType="textPassword"
+                    android:singleLine="true"
+                    android:layout_width="0dp"
+                    android:text="123"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:text="Phone No"
+                    android:layout_weight="0.4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/edt_phone_no_su"
+                    android:layout_weight="0.6"
+                    android:singleLine="true"
+                    android:inputType="number"
+                    android:maxLength="12"
+                    android:hint="Enter Phone No"
+                    android:text="9662703130"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginTop="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+               <!-- <TextView
+                    android:visibility="invisible"
+                    android:layout_weight="0.4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />-->
+
+                <Button
+                    android:id="@+id/btn_sign_up_cancel"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="4dp"
+                    android:background="@drawable/button_radius"
+                    android:clickable="true"
+                    android:text="Cancel"
+                    android:textColor="@color/automation_white"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/btn_sign_up"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_radius"
+                    android:clickable="true"
+                    android:text="Sign Up"
+                    android:textColor="@color/automation_white"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+</android.support.design.widget.CoordinatorLayout>

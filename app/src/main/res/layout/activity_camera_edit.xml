@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
+    tools:context="com.spike.bot.activity.RoomEditActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_camera"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/sky_blue"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:text="Select Camera"
+                android:layout_gravity="center"
+                android:layout_weight="0.35"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_weight="0.65"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="3dp"
+                android:background="@drawable/custome_spinner"
+                android:orientation="horizontal">
+
+                <Spinner
+                    android:id="@+id/sp_camera_list"
+                    android:layout_weight="0.8"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:dropDownVerticalOffset="48dp"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:spinnerMode="dropdown" />
+
+                <ImageView
+                    android:id="@+id/sp_drop_down"
+                    android:layout_weight="0.2"
+                    android:layout_width="0dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/icn_arrow_down_spinner2" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.35"
+                android:gravity="center_vertical"
+                android:text="Camera Name" />
+
+            <EditText
+                android:id="@+id/edt_camera_name"
+                android:layout_width="0dp"
+                android:singleLine="true"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.65"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.35"
+                android:gravity="center_vertical"
+                android:text="Camera IP" />
+
+            <EditText
+                android:id="@+id/edt_camera_ip"
+                android:layout_width="0dp"
+                android:inputType="textUri"
+                android:singleLine="true"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.65"
+                android:hint="" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.35"
+                android:gravity="center_vertical"
+                android:text="Video Path" />
+
+            <EditText
+                android:id="@+id/edt_video_path"
+                android:layout_width="0dp"
+                android:singleLine="true"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.65"
+                android:hint="" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.35"
+                android:gravity="center_vertical"
+                android:text="User Name" />
+
+            <EditText
+                android:id="@+id/edt_user_name"
+                android:layout_width="0dp"
+                android:singleLine="true"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.65"
+                android:hint="" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.35"
+                android:gravity="center_vertical"
+                android:text="Password" />
+
+            <EditText
+                android:id="@+id/edt_password_old"
+                android:visibility="gone"
+                android:layout_width="0dp"
+                android:singleLine="true"
+                android:inputType="textPassword"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.65"
+                android:hint="" />
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.65"
+                android:layout_height="wrap_content"
+                app:passwordToggleEnabled="true">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/edt_password"
+                    android:singleLine="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"/>
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_marginTop="24dp"
+            android:text="DELETE"
+            android:textColor="@color/automation_white"
+            android:background="@drawable/button_red_border"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

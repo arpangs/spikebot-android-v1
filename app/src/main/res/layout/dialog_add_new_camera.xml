@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="5dp"
+                        android:orientation="horizontal"
+                        android:paddingLeft="8dp">
+
+                        <TextView
+                            android:id="@+id/tv_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:text="Add Alert"
+                            android:textColor="@color/sensor_button"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <ImageView
+                            android:id="@+id/iv_close"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:padding="3dp"
+                            android:backgroundTint="@color/sensor_button"
+                            app:srcCompat="@drawable/close_blue2" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/sky_blue" />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/_5sdp"
+                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:layout_marginBottom="@dimen/_10sdp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <!--On Time Start-->
+                            <LinearLayout
+                                android:id="@+id/ll_on_time"
+                                android:layout_weight="1"
+                                android:layout_marginRight="@dimen/_6sdp"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+
+                                <com.spike.bot.customview.CustomEditText
+                                    android:id="@+id/et_schedule_on_time"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:drawableRight="@drawable/icn_close"
+                                    android:drawablePadding="8dp"
+                                    android:hint="Start Time"
+                                    android:padding="@dimen/_8sdp"
+                                    android:layout_weight="0.70"
+                                    android:background="@drawable/edt_border"
+                                    android:focusable="false"
+                                    android:inputType="textPersonName"
+                                    android:text="" />
+
+                                <ImageView
+                                    android:id="@+id/iv_schedule_on_time_clear"
+                                    android:visibility="gone"
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    android:layout_gravity="center"
+                                    android:adjustViewBounds="true"
+                                    android:maxHeight="35dp"
+                                    android:padding="1dp"
+                                    android:src="@drawable/close_clear_gray" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/ll_off_time"
+                                android:visibility="visible"
+                                android:layout_marginLeft="@dimen/_6sdp"
+                                android:layout_weight="1"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+
+                                <com.spike.bot.customview.CustomEditText
+                                    android:id="@+id/et_schedule_off_time"
+                                    android:layout_width="0dp"
+                                    android:background="@drawable/edt_border"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.70"
+                                    android:hint="End Time"
+                                    android:padding="@dimen/_8sdp"
+                                    android:focusable="false"
+                                    android:drawableRight="@drawable/icn_close"
+                                    android:drawablePadding="8dp"
+                                    android:inputType="textPersonName"
+                                    android:text="" />
+
+                                <ImageView
+                                    android:id="@+id/iv_schedule_off_time_clear"
+                                    android:visibility="gone"
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    android:layout_gravity="center"
+                                    android:adjustViewBounds="true"
+                                    android:maxHeight="35dp"
+                                    android:padding="1dp"
+                                    android:src="@drawable/close_clear_gray" />
+                            </LinearLayout>
+                            <!--Off Time End-->
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Enter alert interval time (min)"
+                        android:gravity="center|left"
+                        android:textSize="@dimen/_12sdp"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:textColor="@color/sensor_button"/>
+
+                    <com.spike.bot.customview.CustomEditText
+                        android:id="@+id/edIntervalTime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="8dp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginRight="@dimen/_5sdp"
+                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:padding="@dimen/_8sdp"
+                        android:layout_weight="0.70"
+                        android:background="@drawable/edt_border"
+                        android:inputType="number"
+                        android:imeOptions="actionDone"
+                        android:maxLength="2"
+                        android:text="5" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:background="@color/txtPanal"></View>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Select Camera"
+                                android:textSize="@dimen/_13sdp"
+                                android:textColor="@color/txtPanal"/>
+
+                            <TextView
+                                android:id="@+id/txtSDevice"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0 device"
+                                android:paddingLeft="@dimen/_8sdp"
+                                android:textSize="@dimen/_13sdp"
+                                android:textColor="@color/sensor_button"/>
+
+
+                        </LinearLayout>
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/recyclerCamera"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_10sdp"/>
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+            </ScrollView>
+
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:background="@color/sky_blue" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtSave"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_30sdp"
+                android:text="Save"
+                android:gravity="center"
+                android:textSize="@dimen/_14sdp"
+                android:textColor="@color/sensor_button"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</android.support.constraint.ConstraintLayout>

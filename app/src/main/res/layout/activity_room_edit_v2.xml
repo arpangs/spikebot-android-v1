@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinator_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
+    tools:context="com.spike.bot.activity.RoomEditActivity_v2">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/sky_blue"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/new_screen_resolution"
+        tools:context="com.spike.bot.activity.RoomEditActivity_v2"
+        tools:showIn="@layout/activity_room_edit">
+
+        <android.support.v7.widget.CardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/edt_txt_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="2dp"
+            android:background="@color/automation_white"
+            android:orientation="vertical"
+            app:cardCornerRadius="2dp"
+            app:cardElevation="5dp"
+            app:elevation="5dp">
+
+                <EditText
+                    android:id="@+id/et_toolbar_title"
+                    android:padding="12dp"
+                    android:layout_marginTop="@dimen/_12sdp"
+                    android:layout_marginBottom="@dimen/_12sdp"
+                    android:layout_marginLeft="@dimen/_12sdp"
+                    android:layout_marginRight="@dimen/_12sdp"
+                    android:singleLine="true"
+                    android:maxLength="25"
+                    android:background="@drawable/edt_border"
+                    android:imeOptions="actionDone"
+                    android:hint="Room Name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"/>
+
+
+        </android.support.v7.widget.CardView>
+
+            <RelativeLayout
+                android:id="@+id/relativeRoom"
+                android:layout_below="@+id/edt_txt_layout"
+                android:layout_above="@+id/vv_delete_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:layout_gravity="right"
+                    android:visibility="invisible"
+                    android:gravity="right" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/list_room_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="2dp"
+                    android:scrollbarStyle="outsideOverlay"
+                    android:scrollbars="vertical" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_below="@+id/list_room_edit"
+                    android:orientation="vertical">
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:visibility="gone"
+                    android:id="@+id/txt_empty_room"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="120dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txt_empty_text"
+                        android:visibility="visible"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:textSize="24dp"
+                        android:textColor="#808080"
+                        android:text="Add Panel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <ImageView
+                        android:id="@+id/empty_add_image"
+                        android:src="@drawable/icn_empty_plus"
+                        android:layout_marginTop="16dp"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp" />
+
+            </RelativeLayout>
+
+
+        <LinearLayout
+            android:id="@+id/vv_delete_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:background="@color/automation_dark_gray">
+
+            <Button
+                android:id="@+id/btn_edit_room_delete"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="16dp"
+                android:text="DELETE ROOM"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/button_red_border_white_bg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <!--Fab Menu Star-->
+        <FrameLayout
+            android:layout_gravity="bottom|end"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/fabLayout1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:clipToPadding="false"
+                android:layout_marginRight="@dimen/_23sdp"
+                android:gravity="right"
+                android:layout_marginBottom="@dimen/_110sdp"
+                android:layout_gravity="bottom|end"
+                app:cardCornerRadius="2dp"
+                app:cardElevation="5dp"
+                app:elevation="5dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:paddingTop="@dimen/_4sdp"
+                    android:background="@color/sky_blue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+
+                    <TextView
+                        android:id="@+id/fab_menu1"
+                        android:layout_margin="@dimen/_2sdp"
+                        android:padding="@dimen/_6sdp"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/automation_white"
+                        android:text="Add Panel"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="#FFF" />
+
+                    <TextView
+                        android:id="@+id/fab_menu3"
+                        android:layout_margin="@dimen/_2sdp"
+                        android:padding="@dimen/_6sdp"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/automation_white"
+                        android:text="Add Door"/>
+
+                    <View
+                        android:background="#FFF"
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"/>
+
+                    <TextView
+                        android:id="@+id/fab_menu4"
+                        android:layout_margin="@dimen/_2sdp"
+                        android:padding="@dimen/_6sdp"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/automation_white"
+                        android:text="Add Temp. Sensor"/>
+
+                    <View
+                        android:background="#FFF"
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"/>
+
+                    <TextView
+                        android:id="@+id/fab_menu5"
+                        android:layout_margin="@dimen/_2sdp"
+                        android:padding="@dimen/_6sdp"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/automation_white"
+                        android:text="Add Remote"/>
+
+                    <View
+                        android:background="#FFF"
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"/>
+
+
+                    <TextView
+                        android:id="@+id/fab_menu6"
+                        android:layout_margin="@dimen/_2sdp"
+                        android:padding="@dimen/_6sdp"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/automation_white"
+                        android:text="Add IR Blaster"/>
+
+
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/fab_menu2"
+                        android:layout_margin="@dimen/_2sdp"
+                        android:padding="@dimen/_6sdp"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/automation_white"
+                        android:text="Schedule"/>
+
+                </LinearLayout>
+
+
+            </android.support.v7.widget.CardView>
+        </FrameLayout>
+
+
+
+
+        <!--Fab Menu End-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginRight="@dimen/fab_margin"
+            android:gravity="right"
+            android:clipToPadding="false"
+            android:padding="12dp"
+            android:layout_marginBottom="@dimen/_52sdp"
+            android:layout_gravity="bottom|end">
+
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab"
+                app:layout_behavior="com.spike.bot.core.MoveUpwardBehavior"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:background="@color/sky_blue"
+                app:backgroundTint="@color/sky_blue"
+                android:tint="@color/automation_white"
+                android:gravity="center_vertical"
+                app:srcCompat="@drawable/icn_add"
+                app:fabSize="normal"/>
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

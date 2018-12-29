@@ -1,0 +1,56 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.spike.bot.MainActivity">
+
+    <item
+        android:id="@+id/action_add_room"
+        android:icon="@android:drawable/ic_menu_add"
+        android:orderInCategory="100"
+        android:title="Add Room" />
+
+    <item
+        android:id="@+id/action_add_camera"
+        android:orderInCategory="100"
+        android:title="Add Camera" />
+
+    <item android:id="@+id/action_add_door_sensor"
+        android:orderInCategory="100"
+        android:title="Add Door Sensor"/>
+    <item
+        android:id="@+id/action_add_voice"
+        android:orderInCategory="100"
+        android:visible="false"
+        android:title="Add Voice" />
+
+
+    <item
+        android:id="@+id/action_add_temp"
+        android:orderInCategory="100"
+        android:title="Add Temp. Sensor" />
+
+    <item
+        android:id="@+id/action_add_remote"
+        android:title="Add Remote"
+        android:orderInCategory="100"
+        />
+
+    <item
+        android:id="@+id/action_ir_blaster"
+        android:title="IR Blaster"
+        android:orderInCategory="100"
+        />
+
+    <item
+        android:id="@+id/action_unassigned_panel"
+        android:title="Add Unassigned Panel"
+        android:orderInCategory="100"
+        />
+
+
+
+   <!-- <item
+        android:id="@+id/action_add_mood"
+        android:orderInCategory="100"
+        android:title="Add Mood" />-->
+</menu>

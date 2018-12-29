@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/new_screen_resolution"
+    tools:context="com.spike.bot.activity.DeviceLogActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/sky_blue"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background_white_gray_border"
+        android:layout_margin="@dimen/_5sdp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/_3sdp"
+            android:paddingLeft="@dimen/_5sdp"
+            android:paddingRight="@dimen/_5sdp">
+
+            <TextView
+                android:id="@+id/txtImage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.21"
+                android:paddingBottom="@dimen/_4sdp"
+                android:singleLine="true"
+                android:text="Image"
+                android:textColor="@color/automation_black"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tv_device_log_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.28"
+                android:paddingBottom="@dimen/_4sdp"
+                android:singleLine="true"
+                android:text="Date/Time"
+                android:textColor="@color/automation_black"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tv_device_log_type"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.3"
+                android:paddingBottom="@dimen/_4sdp"
+                android:singleLine="true"
+                android:paddingLeft="5dp"
+                android:gravity="center|left"
+                android:text="Action"
+                android:textColor="@color/automation_black"
+                android:textSize="15sp" />
+
+
+            <TextView
+                android:id="@+id/tv_device_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.4"
+                android:paddingBottom="@dimen/_4sdp"
+                android:text="Details(Camera)"
+                android:textColor="@color/automation_black"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/view_header"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/automation_dark_gray" />
+
+       <!-- <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/swiperefresh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">-->
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_device_log"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_3sdp"
+                android:layout_marginRight="@dimen/_3sdp" />
+
+       <!-- </android.support.v4.widget.SwipeRefreshLayout>-->
+
+        <LinearLayout
+            android:id="@+id/ll_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Device Log Not Found"
+                android:textColor="#40808080"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/automation_gray_2"
+    android:layout_height="match_parent"
+    tools:context="com.spike.bot.activity.RoomEditActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/sky_blue"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:background="@drawable/background_white_gray_border2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_above="@+id/btn_delete"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.30"
+                    android:ems="10"
+                    android:inputType="textPersonName"
+                    android:text="Sensor Type" />
+
+                <RadioGroup
+                    android:id="@+id/rg_sensor_type"
+                    android:layout_width="0dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.70"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/rb_door"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.4"
+                        android:layout_height="wrap_content"
+                        android:text="Door" />
+
+                    <RadioButton
+                        android:id="@+id/rb_temp"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.6"
+                        android:layout_height="wrap_content"
+                        android:text="Temprature" />
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="6dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_gravity="center"
+                    android:text="Sensor Name"
+                    android:layout_weight="0.35"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+                <RelativeLayout
+                    android:id="@+id/rel_spinner"
+                    android:layout_weight="0.65"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/custome_spinner"
+                    android:orientation="horizontal">
+
+                    <Spinner
+                        android:id="@+id/spinner_room_list"
+                        android:layout_width="160dp"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:dropDownVerticalOffset="38dp"
+                        android:background="@android:color/transparent"
+                        android:gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:spinnerMode="dropdown" />
+
+                    <ImageView
+                        android:id="@+id/sp_drop_down"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_toRightOf="@+id/spinner_room_list"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:src="@drawable/icn_arrow_down_spinner2" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginTop="6dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.spike.bot.customview.CustomEditText
+                    android:id="@+id/edt_start_date"
+                    android:hint="From Date/Time"
+                    android:textSize="12sp"
+                    android:drawableRight="@drawable/icn_close"
+                    android:focusable="false"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp" />
+
+                <com.spike.bot.customview.CustomEditText
+                    android:id="@+id/edt_end_date"
+                    android:hint="To Date/Time"
+                    android:textSize="12sp"
+                    android:drawableRight="@drawable/icn_close"
+                    android:focusable="false"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/view_bottom_line"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone"
+                android:background="#60808080"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/sensor_list"
+                android:visibility="gone"
+                android:scrollbars="vertical"
+                android:layout_width="match_parent"
+                android:layout_marginBottom="4dp"
+                android:layout_height="wrap_content">
+
+            </android.support.v7.widget.RecyclerView>
+
+            <TextView
+                android:id="@+id/txt_empty_notification"
+                android:textColor="#50808080"
+                android:textSize="20sp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Sensor Log list is Empty."
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <android.support.v4.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="5dp" />
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

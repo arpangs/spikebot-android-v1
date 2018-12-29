@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinator_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
+    tools:context="com.spike.bot.activity.RoomEditActivity_v2">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/sky_blue"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/automation_dark_gray"
+        tools:context="com.spike.bot.activity.RoomEditActivity_v2"
+        tools:showIn="@layout/activity_room_edit">
+
+        <android.support.v7.widget.CardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/edt_txt_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="2dp"
+            android:background="@color/automation_white"
+            android:orientation="vertical"
+            app:cardCornerRadius="2dp"
+            app:cardElevation="0dp"
+            app:elevation="0dp">
+
+
+        </android.support.v7.widget.CardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_header"
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:layout_gravity="right"
+                android:visibility="invisible"
+                android:gravity="right" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/list_blaster"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="2dp"
+                android:scrollbarStyle="outsideOverlay"
+                android:scrollbars="vertical" />
+
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/txt_empty_blaster"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="120dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txt_empty_text"
+                    android:visibility="visible"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:textSize="20dp"
+                    android:textColor="#808080"
+                    android:text="No IR Blaster Available"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="40dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/vv_delete_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:background="@color/automation_dark_gray">
+
+            <Button
+                android:id="@+id/btn_edit_room_delete"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="16dp"
+                android:text="DELETE ROOM"
+                android:textColor="#e90606"
+                android:background="@drawable/button_red_border_white_bg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_below="@+id/messages"
+            android:orientation="vertical">
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginRight="@dimen/fab_margin"
+            android:gravity="right"
+            android:clipToPadding="false"
+            android:padding="12dp"
+            android:layout_marginBottom="@dimen/_4sdp"
+            android:layout_gravity="bottom|end">
+
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab"
+                app:layout_behavior="com.spike.bot.core.MoveUpwardBehavior"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:background="@color/sky_blue"
+                app:backgroundTint="@color/sky_blue"
+                android:tint="@color/automation_white"
+                android:gravity="center_vertical"
+                app:srcCompat="@drawable/icn_add"
+                app:fabSize="normal"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+
+
+</android.support.design.widget.CoordinatorLayout>

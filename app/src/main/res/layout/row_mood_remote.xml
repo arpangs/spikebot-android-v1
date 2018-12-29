@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+
+    <LinearLayout
+        android:id="@+id/linearMood"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_35sdp"
+        android:gravity="center"
+        android:background="@drawable/drawable_black_boader"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtMoodName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_3sdp"
+            android:gravity="center"
+            android:textSize="12dp"
+            android:textColor="@color/automation_white"
+            android:text="text"/>
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

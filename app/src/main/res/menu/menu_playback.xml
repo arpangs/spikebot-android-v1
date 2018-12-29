@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_screenshot"
+        android:orderInCategory="100"
+        android:icon="@drawable/icn_screenshot"
+        android:title="Screenshot"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_mute"
+        android:orderInCategory="100"
+        android:icon="@drawable/icn_mute"
+        android:title="mute"
+        app:showAsAction="always" />
+</menu>

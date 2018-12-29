@@ -1,9 +1,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto"
-      xmlns:tools="http://schemas.android.com/tools"
-      tools:context=".MainActivity">
-    <item android:id="@+id/action_leave"
-          android:title="@string/action_leave"
-          android:orderInCategory="100"
-          app:showAsAction="never"/>
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.spike.bot.MainActivity">
+
+    <item
+        android:id="@+id/action_add"
+        android:icon="@drawable/add"
+        android:orderInCategory="100"
+        android:title="Add"
+        android:visible="false"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_setting"
+        android:visible="false"
+        android:icon="@drawable/settings_white"
+        android:orderInCategory="100"
+        android:title="setting"
+        app:showAsAction="always" />
 </menu>

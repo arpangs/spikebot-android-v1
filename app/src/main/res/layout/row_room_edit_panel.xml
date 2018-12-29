@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="0dp"
+    app:cardElevation="0dp"
+    app:elevation="0dp">
+
+    <View
+        android:id="@+id/view_panel_line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/automation_dark" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:paddingBottom="10dp"
+        android:paddingEnd="10dp"
+        android:paddingStart="10dp">
+
+        <TextView
+            android:id="@+id/heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:padding="7dp"
+            android:text="panel"
+            android:textSize="19sp"
+            android:visibility="gone" />
+
+        <EditText
+            android:id="@+id/et_panel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:imeOptions="actionDone"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:text=""
+            android:textSize="19sp" />
+
+        <ImageView
+            android:id="@+id/iv_room_panel_info"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center_vertical"
+            android:adjustViewBounds="true"
+            android:padding="3dp"
+            android:src="@drawable/info_blue"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/iv_room_panel_add"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical"
+            android:adjustViewBounds="true"
+            android:padding="2dp"
+            android:src="@drawable/edit_blue"
+            android:visibility="visible" />
+
+
+        <ImageView
+            android:id="@+id/iv_room_panel_delete"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center_vertical"
+            android:adjustViewBounds="true"
+            android:padding="1dp"
+            android:src="@drawable/delete_blue" />
+    </LinearLayout>
+</android.support.v7.widget.CardView>

@@ -14,4 +14,21 @@
     <color name="username10">#a700ff</color>
     <color name="username11">#d300e7</color>
 
+    <color name="automation_blue">#0098C0</color>
+    <color name="automation_white">#FFFFFF</color>
+    <color name="automation_black">#111111</color>
+    <color name="automation_gray">#F0F0F0</color>
+    <color name="automation_dark_gray">#E5E5E5</color>
+    <color name="automation_dark">#B9B9B9</color>
+    <color name="automation_gray_2">#EEEFF3</color>
+  <!--  <color name="sky_blue">#008BE0</color>-->
+    <color name="sky_blue">#0098C0</color>
+    <color name="sky_blue_transparent">#90008BE0</color>
+    <color name="automation_yellow">#FFBC38</color>
+    <color name="automation_red">#e90606</color>
+
+    <color name="device_button">#70808080</color>
+    <color name="sensor_button">#0098C0</color>
+    <color name="txtPanal">#808080</color>
+
 </resources>

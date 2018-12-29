@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/spinner_view_top"
+            android:layout_marginLeft="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_gravity="center"
+                android:src="@drawable/add"
+                android:tint="@color/sky_blue"
+                android:layout_width="18dp"
+                android:layout_height="18dp" />
+
+            <TextView
+                android:id="@+id/spinner_txt_top"
+                android:layout_gravity="center"
+                android:layout_marginLeft="8dp"
+                android:textSize="18dp"
+                android:textColor="@android:color/black"
+                android:text="Add Custom Mood"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txt_spinner_title"
+            android:text="Mood Name"
+            android:textSize="18dp"
+            android:textColor="@android:color/black"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_weight="0.9"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/txt_spinner_image"
+            android:src="@drawable/icn_checkmark"
+            android:visibility="invisible"
+            android:layout_gravity="center"
+            android:layout_marginRight="10dp"
+            android:layout_weight="0.1"
+            android:layout_width="0dp"
+            android:layout_height="24dp" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_marginTop="2dp"
+        android:background="#40808080"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"/>
+
+
+</LinearLayout>

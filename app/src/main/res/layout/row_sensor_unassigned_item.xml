@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginBottom="10dp"
+    android:layout_marginTop="2dp"
+    android:background="@color/automation_white"
+    android:orientation="vertical"
+    app:cardCornerRadius="2dp"
+    app:cardElevation="0dp"
+    app:elevation="0dp">
+
+    <LinearLayout
+        android:id="@+id/ll_sensor_view"
+        android:padding="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/img_un_sensor_type"
+            android:src="@drawable/on_temperature"
+            android:layout_weight="0.1"
+            android:layout_width="0dp"
+            android:layout_height="48dp" />
+
+        <TextView
+            android:id="@+id/txt_un_sensor_name_un"
+            android:text="Temprature Sensor 1"
+            android:layout_gravity="center"
+            android:layout_weight="0.3"
+            android:textSize="18sp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/img_un_sensor_selected"
+            android:src="@drawable/icn_circle_grey"
+            android:layout_gravity="center"
+            android:layout_weight="0.1"
+            android:layout_width="0dp"
+            android:layout_height="28dp" />
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

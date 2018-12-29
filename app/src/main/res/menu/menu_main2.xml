@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.spike.bot.activity.Main2Activity">
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="101"
+        android:icon="@drawable/settings_white"
+        android:title="@string/action_settings"
+        app:showAsAction="always"  />
+    <item
+        android:id="@+id/showIpDialog"
+        android:title="IP"
+        android:icon="@drawable/smily_yello"
+        app:showAsAction="always"
+        />
+</menu>

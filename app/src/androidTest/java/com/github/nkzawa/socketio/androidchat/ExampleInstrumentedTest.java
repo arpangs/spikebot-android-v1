@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.github.nkzawa.socketio.androidchat", appContext.getPackageName());
+        assertEquals("com.deep.automation.androidchat", appContext.getPackageName());
     }
 }

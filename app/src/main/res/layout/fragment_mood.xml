@@ -1,0 +1,150 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/new_screen_resolution"
+    android:orientation="vertical"
+    tools:context="com.spike.bot.fragments.MainFragment">
+
+    <TextView
+        android:id="@+id/tv_header"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="right"
+        android:gravity="right"
+        android:visibility="invisible" />
+
+    <LinearLayout
+        android:id="@+id/txt_empty_schedule"
+        android:layout_width="match_parent"
+        android:layout_marginTop="24dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:visibility="gone"
+        android:orientation="vertical">
+
+
+
+        <TextView
+            android:id="@+id/txt_empty_text"
+            android:visibility="visible"
+            android:layout_gravity="center"
+            android:layout_below="@+id/ll_recycler"
+            android:gravity="center"
+            android:textSize="24dp"
+            android:layout_marginTop="48dp"
+            android:textColor="#808080"
+            android:text="Add Mood"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/empty_add_image"
+            android:src="@drawable/icn_empty_plus"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_progress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/automation_white"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/deepsImage"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:scaleType="centerInside"
+            android:src="@drawable/loader2"
+            android:visibility="visible" />
+
+
+    </LinearLayout>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swiperefresh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_above="@+id/view_bottom"
+            android:id="@+id/main_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/new_screen_resolution"
+            tools:context="com.spike.bot.fragments.MainFragment">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:focusableInTouchMode="true"
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/messages"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/activity_horizontal_margin"
+                    android:nestedScrollingEnabled="false"
+                    android:background="@color/automation_white"
+                    android:scrollbarStyle="outsideOverlay"
+                    android:scrollbars="none" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_below="@+id/messages"
+                    android:orientation="vertical">
+
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </ScrollView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginRight="@dimen/fab_margin"
+        android:gravity="right"
+        android:clipToPadding="false"
+        android:padding="12dp"
+        android:layout_marginBottom="@dimen/_4sdp"
+        android:layout_gravity="bottom|end">
+
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            app:layout_behavior="com.spike.bot.core.MoveUpwardBehavior"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:background="@color/sky_blue"
+            app:backgroundTint="@color/sky_blue"
+            android:tint="@color/automation_white"
+            android:gravity="center_vertical"
+            app:srcCompat="@drawable/icn_add"
+            app:fabSize="normal"/>
+    </LinearLayout>
+
+
+
+</RelativeLayout>
