@@ -2269,15 +2269,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         if (linear_retry.getVisibility() == View.GONE) {
             mViewPager.setVisibility(View.GONE);
             linear_retry.setVisibility(View.VISIBLE);
-
-           /* if(menu!=null){
-                MenuItem menuItem = menu.findItem(R.id.showIpDialog);
-                menuItem.setVisible(Constants.isTesting);
-
-                MenuItem addMenu = menu.findItem(R.id.action_settings);
-                addMenu.setVisible(false);
-            }*/
-
         }
 
     }
