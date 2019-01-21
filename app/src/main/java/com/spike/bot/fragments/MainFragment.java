@@ -294,12 +294,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
         main_scroll = (NestedScrollView) view.findViewById(R.id.main_scroll);
 
-        //add custome LinearLayout for smooth scroll recyclerview
-        // mMessagesView.setLayoutManager(new SpeedyLinearLayoutManager(getActivity()));
-
-        // camera_list = (RecyclerView) view.findViewById(R.id.camera_list);
-        // camera_list.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-
         deepsImage = (ImageView) view.findViewById(R.id.deepsImage);
         txt_connection = (TextView) view.findViewById(R.id.txt_connection);
         //retry
