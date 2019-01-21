@@ -45,5 +45,6 @@
     <string name="menu_schedule1">SCHEDULE</string>
 
     <string name="Mood"> <u>Mood</u></string>
+    <string name="fan_error">Currently physical Fan on</string>
 
 </resources>

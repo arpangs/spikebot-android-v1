@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.spike.bot.R;
+import com.spike.bot.listener.FilterMarkAll;
 import com.spike.bot.model.Filter;
 
 import java.util.ArrayList;
@@ -26,10 +27,12 @@ public class FilterRootAdapter extends RecyclerView.Adapter<FilterRootAdapter.Fi
 
     ArrayList<Filter> filters;
     private Context context;
+    FilterMarkAll filterMarkAll;
 
 
-    public FilterRootAdapter(ArrayList<Filter> filters1){
+    public FilterRootAdapter(ArrayList<Filter> filters1,FilterMarkAll filterMarkAll){
         this.filters = filters1;
+        this.filterMarkAll = filterMarkAll;
     }
 
     @Override
@@ -99,6 +102,8 @@ public class FilterRootAdapter extends RecyclerView.Adapter<FilterRootAdapter.Fi
                 }
                 filter.setChecked(!filter.isChecked());
                 notifyItemChanged(position,filter);
+
+                filterMarkAll.filterAllMark(filters);
             }
         });
 

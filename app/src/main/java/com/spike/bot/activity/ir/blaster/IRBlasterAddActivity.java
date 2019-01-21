@@ -175,10 +175,6 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
 
                             ActivityHelper.dismissProgressDialog();
 
-                            com.spike.bot.core.Log.d("System out","ir blaster is found ir "+args[0]);
-
-                            Log.d("IRBlaster","Found sensor id ir : " + args[0]);
-
                             if (countDownTimer != null) {
                                 countDownTimer.cancel();
                             }

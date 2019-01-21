@@ -208,7 +208,8 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
                             }
                         }else{
                             if(item.getDevice_icon()!=null){
-                                holder.iv_icon.setImageResource(Common.getIcon(1,item.getDevice_icon()));//item.getDeviceStatus()
+                               // holder.iv_icon.setImageResource(Common.getIcon(1,item.getDevice_icon()));//item.getDeviceStatus()
+                                holder.iv_icon.setImageResource(Common.getIcon(0,item.getDevice_icon()));//item.getDeviceStatus()
                             }
                         }
                     }else{

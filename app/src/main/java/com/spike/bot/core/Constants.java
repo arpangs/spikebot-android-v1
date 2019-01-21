@@ -12,8 +12,8 @@ public class Constants {
     public static final String CLOUD_SERVER_URL = "http://52.24.23.7"; //IP used for login cloud and logout
 
 //    public static final String IP_END = "114"; //101 //117 //222
-//    public static final String  IP_END = "119"; //101 //117 //222
-    public static final String  IP_END = "222"; //101 //117 //222
+    public static final String  IP_END = "119"; //101 //117 //222
+//    public static final String  IP_END = "222"; //101 //117 //222
 //    public static final String  IP_END = "120"; //101 //117 //222
     public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";
     public static final String CAMERA_PATH = "/static/storage/volume/";
@@ -175,13 +175,14 @@ public class Constants {
     //  public static final String SHOW_CAMERA_RECORDING = "/showCameraRecording";
 
     //notifications
-    public static final String GET_NOTIFICATION_INFO = "/getNotificationInfo";
+   // public static final String GET_NOTIFICATION_INFO = "/getNotificationInfo";
     public static final String getScheduleNotification = "/getScheduleNotification";
     public static final String GET_FILTER_NOTIFICATION_INFO = "/filterNotificationInfo";
     public static final String GET_NOTIFICATION_LIST = "/getNotificationList";
     public static final String SAVE_NOTIFICATION_LIST = "/saveNotificationList";
     public static final String roomSensorUnreadLogs = "/roomSensorUnreadLogs";
     public static final String roomLogs = "/roomLogs";
+    public static final String updateBadgeCount = "/updateBadgeCount";
 
     /*----------------------------------------------------------------------*/
 

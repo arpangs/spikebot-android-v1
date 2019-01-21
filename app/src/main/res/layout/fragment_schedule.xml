@@ -78,6 +78,37 @@
                     android:orientation="vertical">
 
                     <LinearLayout
+                        android:id="@+id/linearTabSchedule"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btnRoomSchedule"
+                            android:background="@drawable/drawable_blue_schedule"
+                            android:text="Room"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:textAllCaps="false"
+                            android:textColor="@color/automation_white"
+                            android:layout_height="wrap_content" />
+
+                        <Button
+                            android:id="@+id/btnMoodSchedule"
+                            android:layout_marginLeft="@dimen/_8sdp"
+                            android:background="@drawable/drawable_gray_schedule"
+                            android:textColor="@color/txtPanal"
+                            android:text="Mood"
+                            android:layout_weight="1"
+                            android:textAllCaps="false"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:visibility="gone"
                         android:id="@+id/ll_mood_view"
                         android:layout_width="match_parent"
                         android:layout_height="54dp"
@@ -111,6 +142,7 @@
                     </LinearLayout>
 
                     <View
+                        android:visibility="gone"
                         android:background="@color/txtPanal"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"/>
@@ -126,6 +158,7 @@
                         android:layout_width="match_parent"
                         android:nestedScrollingEnabled="false"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
                         android:background="@android:color/transparent"
                         android:scrollbarStyle="outsideOverlay"
                         android:scrollbars="none" />
@@ -133,7 +166,7 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="15dp"
+                        android:layout_height="55dp"
                         android:layout_below="@+id/rv_mood"
                         android:orientation="vertical">
 
@@ -151,6 +184,7 @@
 
 
                     <LinearLayout
+                        android:visibility="gone"
                         android:id="@+id/ll_room"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -204,6 +238,7 @@
                             android:layout_height="wrap_content"
                             android:nestedScrollingEnabled="false"
                             android:layout_marginBottom="10dp"
+                            android:layout_marginTop="5dp"
                             android:scrollbarStyle="outsideOverlay"
                             android:background="@android:color/transparent"
                             android:scrollbars="none"

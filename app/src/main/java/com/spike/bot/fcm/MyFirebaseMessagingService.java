@@ -1,5 +1,6 @@
 package com.spike.bot.fcm;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,14 +13,23 @@ import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Main2Activity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import me.leolin.shortcutbadger.ShortcutBadger;
+
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "FCMNotification";
+    String badge="0";
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+    }
 
     /**
      * Called when message is received.
@@ -55,6 +65,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             }
 
             String message = remoteMessage.getData().get("default");
+            badge = remoteMessage.getData().get("badge");
+
+            Log.d(TAG, "Message data payload: badge " + badge);
 
             if(!TextUtils.isEmpty(message)){
                 sendNotification(message);
@@ -100,7 +113,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .build();
         dispatcher.schedule(myJob);*/
         // [END dispatch_job]
-        new SendNotificationAsync(getApplicationContext()).execute(body, "", attachment);
+        new SendNotificationAsync(getApplicationContext(),badge).execute(body, "", attachment);
     }
 
     /**
@@ -118,6 +131,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public static int id = 0;
     private void sendNotification(String messageBody) {
 
+        ChatApplication.isPushFound=true;
         Log.d("FCMID","id : " + id);
         Intent intent = new Intent(this, Main2Activity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -133,7 +147,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setContentText(messageBody)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
+                        .setNumber(Integer.parseInt(badge))
                 .setContentIntent(pendingIntent);
+
+
+//        int color = getResources().getColor(R.color.automation_red);
+//        notificationBuilder.setColor(color);
+
+
+        notificationBuilder.getNotification().flags |= Notification.FLAG_AUTO_CANCEL;
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -143,9 +165,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             NotificationChannel channel = new NotificationChannel(channelId,
                     "Spike Bot",
                     NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setShowBadge(true);
             notificationManager.createNotificationChannel(channel);
         }
         id ++;
+        ChatApplication.logDisplay("fcm id is "+id);
+        ShortcutBadger.applyCount(MyFirebaseMessagingService.this, Integer.parseInt(badge));
        notificationManager.notify(id /* ID of notification */, notificationBuilder.build());
     }
 }

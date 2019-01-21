@@ -64,11 +64,11 @@ public class ImageZoomActivity extends AppCompatActivity{
         progressBar=findViewById(R.id.progressBar);
 
 
-        //Get Image
+        //Get Image  override(500,400)
         Glide.with(this)
                 .load(imgUrl)
                 .dontAnimate()
-                .override(500,400)
+                .override(200,200)
                 .skipMemoryCache(true)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override

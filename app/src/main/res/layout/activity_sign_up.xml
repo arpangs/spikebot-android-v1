@@ -54,7 +54,6 @@
                     android:singleLine="true"
                     android:hint="Enter First Name"
                     android:layout_width="0dp"
-                    android:text="vipul"
                     android:layout_height="wrap_content" />
 
             </LinearLayout>
@@ -76,7 +75,6 @@
                     android:hint="Enter Last Name"
                     android:singleLine="true"
                     android:layout_width="0dp"
-                    android:text="patel"
                     android:layout_height="wrap_content" />
 
             </LinearLayout>
@@ -99,7 +97,6 @@
                     android:hint="Enter Email ID"
                     android:singleLine="true"
                     android:layout_width="0dp"
-                    android:text="vipulkathiriya09@gmail.com"
                     android:layout_height="wrap_content" />
 
             </LinearLayout>
@@ -121,7 +118,6 @@
                     android:hint="Username for Login"
                     android:singleLine="true"
                     android:layout_width="0dp"
-                    android:text="vipul"
                     android:layout_height="wrap_content" />
 
             </LinearLayout>
@@ -143,7 +139,6 @@
                     android:inputType="textPassword"
                     android:singleLine="true"
                     android:layout_width="0dp"
-                    android:text="123"
                     android:layout_height="wrap_content" />
 
             </LinearLayout>
@@ -166,7 +161,6 @@
                     android:inputType="textPassword"
                     android:singleLine="true"
                     android:layout_width="0dp"
-                    android:text="123"
                     android:layout_height="wrap_content" />
 
             </LinearLayout>
@@ -189,7 +183,6 @@
                     android:inputType="number"
                     android:maxLength="12"
                     android:hint="Enter Phone No"
-                    android:text="9662703130"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content" />
 

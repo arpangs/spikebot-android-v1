@@ -113,7 +113,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="No Data Found."
+                android:text="No Notification Found."
                 android:textColor="@color/automation_black"
                 android:textSize="20sp" />
 

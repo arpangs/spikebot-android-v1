@@ -20,6 +20,7 @@ import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -71,7 +72,22 @@ public class DeviceLogFilterActivity extends AppCompatActivity{
         }
         ActivityHelper.showProgressDialog(activity,"Please wait.",false);
 
-        String url = ChatApplication.url + Constants.GET_NOTIFICATION_INFO;
+        String url = ChatApplication.url + Constants.GET_FILTER_NOTIFICATION_INFO;
+
+        JSONObject object = new JSONObject();
+        try {
+            object.put("notification_number", 0);
+            object.put("start_datetime", "");
+            object.put("end_datetime", "");
+            object.put("filter_data", "");
+            object.put("room_id", "");
+            object.put("panel_id", "");
+            object.put("module_id", "");
+            object.put("is_room", 1);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
         new GetJsonTask(activity,url ,"GET","", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override

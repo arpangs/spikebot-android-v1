@@ -61,7 +61,7 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
         mSectionedExpandableGridAdapter.setClickabl(isClick);
     }
 
-    public void updateItem(String moduleId,String deviceId,String deviceStatus) {
+    public void updateItem(String moduleId,String deviceId,String deviceStatus,int is_locked) {
 
         Log.d("FoundKey","updateItem :moduleId : " + moduleId + " ::deviceId : " + deviceId);
 
@@ -84,6 +84,7 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
                 //    Log.d("","devicesList.contains " + key + "    size =  " + devicesList.size() );
                     for(int i=0;i<devicesList.size();i++) {
 
+                        devicesList.get(i).setIs_locked(is_locked);
 
                         if (devicesList.get(i).getModuleId().equalsIgnoreCase(moduleId)
                                 && devicesList.get(i).getDeviceId().equalsIgnoreCase(deviceId)) {

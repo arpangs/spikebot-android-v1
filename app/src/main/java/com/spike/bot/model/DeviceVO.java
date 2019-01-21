@@ -44,6 +44,16 @@ public class DeviceVO implements Serializable,Cloneable {
     private String original_room_device_id;
     private int oldStatus;
 
+    public int getIs_locked() {
+        return is_locked;
+    }
+
+    public void setIs_locked(int is_locked) {
+        this.is_locked = is_locked;
+    }
+
+    private int is_locked;
+
     private boolean isSensor;
     private String sensor_id;
     private String sensor_name;

@@ -11,7 +11,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,9 +27,6 @@ import com.kp.core.DateHelper;
 
 import java.util.ArrayList;
 
-import static com.spike.bot.R.drawable.blue_border_yellow_top;
-import static com.spike.bot.R.drawable.yellow_border_fill_rectangle;
-
 /**
  * Created by kaushal on 27/12/17.
  */
@@ -40,13 +36,14 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     Activity mContext;
     ArrayList<ScheduleVO> scheduleArrayList;
     ScheduleClickListener scheduleClickListener;
-    private boolean isMoodAdapter;
+    private boolean isMoodAdapter,isType=false;
 
-    public ScheduleAdapter(Activity context,ArrayList<ScheduleVO> scheduleArrayList , ScheduleClickListener scheduleClickListener,boolean isMood) {
+    public ScheduleAdapter(Activity context, ArrayList<ScheduleVO> scheduleArrayList, ScheduleClickListener scheduleClickListener, boolean isMood, boolean isType) {
         this.scheduleArrayList = scheduleArrayList;
         this.mContext = context;
         this.scheduleClickListener = scheduleClickListener;
         this.isMoodAdapter = isMood;
+        this.isType = isType;
         Log.d("", "AutoModeAdapter AutoModeAdapter ");
     }
 
@@ -262,7 +259,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 holder.tv_schedule_off_time.setTextColor(mContext.getResources().getColor(R.color.automation_white));
                 holder.tv_schedule_off.setTextColor(mContext.getResources().getColor(R.color.automation_white));
 
-                holder.linearRoomSchedule.setBackgroundColor(mContext.getResources().getColor(R.color.automation_white));
+              //  holder.linearRoomSchedule.setBackgroundColor(mContext.getResources().getColor(R.color.automation_white));
 
                 holder.tv_schedule_on.setTextColor(mContext.getResources().getColor(R.color.automation_white));
                // holder.tv_auto_on.setTextColor(mContext.getResources().getColor(R.color.automation_white));
@@ -392,7 +389,15 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                             case R.id.action_log:
                                 Intent intent = new Intent(mContext, DeviceLogActivity.class);
                                 intent.putExtra("Schedule_id",""+scheduleVO.getSchedule_id());
+                                intent.putExtra("ROOM_ID",""+scheduleVO.getSchedule_id());
                                 intent.putExtra("activity_type",""+scheduleVO.getIs_timer());
+                                intent.putExtra("isRoomName",""+scheduleVO.getSchedule_name());
+                                if(scheduleVO.getIs_timer()==0){
+                                    intent.putExtra("isCheckActivity","schedule");
+                                }else {
+                                    intent.putExtra("isCheckActivity","Timer");
+                                }
+
                                 mContext.startActivity(intent);
                                 break;
                         }

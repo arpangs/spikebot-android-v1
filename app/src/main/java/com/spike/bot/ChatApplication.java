@@ -4,7 +4,9 @@ import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.kp.core.DateHelper;
 import com.spike.bot.core.Constants;
 import com.spike.bot.core.CustomReportSender;
 import com.spike.bot.receiver.ConnectivityReceiver;
@@ -19,6 +21,11 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -60,6 +67,7 @@ public class ChatApplication extends Application {
 
     public static int ADAPTER_POSITION = -1;
     public static String currentuserId = "";
+    public static boolean isPushFound =true;
 
     /*{
         try {
@@ -172,5 +180,60 @@ public class ChatApplication extends Application {
 
     public void setConnectivityListener(ConnectivityReceiver.ConnectivityReceiverListener listener) {
         ConnectivityReceiver.connectivityReceiverListener = listener;
+    }
+
+    public static Integer checkActivity(String name){
+        int value=-1;
+        if(name.equals("mode") || name.equals("room")){
+            value=1;
+        }else if(name.equals("schedule") || name.equals("Timer")){
+            value=0;
+        }else if(name.equals("tempSensor") || name.equals("doorSensor")){
+            value=0;
+        }
+        return value;
+    }
+
+    public static Integer checkSelection(String name, List<String> mListRoomMood){
+        int value=0;
+        if(name.equalsIgnoreCase("room")){
+            name="Room";
+        }else if(name.equalsIgnoreCase("mode")){
+            name="Mood";
+        }else if(name.equalsIgnoreCase("schedule")){
+            name="Schedule";
+        }else if(name.equalsIgnoreCase("Timer")){
+            name="Timer";
+        }
+        for(int i=0;i<mListRoomMood.size(); i++){
+            if(name.equals(""+mListRoomMood.get(i))){
+                value=i;
+            }
+        }
+
+        return value;
+    }
+
+    public static String getCurrentDateTime(){
+        SimpleDateFormat sdf = new SimpleDateFormat(DateHelper.DATE_YYYY_MM_DD_HH_MM_SS);
+        String currentDateandTime = sdf.format(new Date());
+        return currentDateandTime;
+
+    }
+
+    public static String getCurrentDate(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDateandTime = sdf.format(new Date());
+//yyyy-MM-dd HH:mm:ss
+        return currentDateandTime+" 00:01:00";
+
+    }
+
+    public static void showToast(Context context,String message){
+        Toast.makeText(context,""+message,Toast.LENGTH_LONG).show();
+    }
+
+    public static void logDisplay(String message){
+        Log.d("System out",""+message);
     }
 }

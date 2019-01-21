@@ -377,8 +377,9 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
                             String module_id = object.getString("module_id");
                             String device_id = object.getString("device_id");
                             String device_status = object.getString("device_status");
+                            int is_locked = object.optInt("is_locked");
 
-                            sectionedExpandableLayoutHelper.updateItem(module_id, device_id, device_status);
+                            sectionedExpandableLayoutHelper.updateItem(module_id, device_id, device_status,is_locked);
                             // sectionedExpandableLayoutHelper.notifyDataSetChanged();
 
                         }catch (Exception ex){ ex.printStackTrace(); }
@@ -555,6 +556,8 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
         }else if(action.equalsIgnoreCase("imgLog")){
             Intent intent = new Intent(getActivity(),DeviceLogActivity.class);
             intent.putExtra("ROOM_ID",roomVO.getRoomId());
+            intent.putExtra("isCheckActivity","mode");
+            intent.putExtra("isRoomName",""+roomVO.getRoomName());
             startActivity(intent);
         }else if(action.equalsIgnoreCase("imgSch")){
 
@@ -924,8 +927,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
         ChatApplication app = ChatApplication.getInstance();
         if(mSocket!=null && mSocket.connected()){
             Log.d("","mSocket.connected  return.." + mSocket.id() );
-        }
-        else{
+        }else{
             mSocket = app.getSocket();
         }
         webUrl = app.url;

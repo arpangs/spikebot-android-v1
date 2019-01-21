@@ -115,7 +115,12 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_filter) {
 
-            showDialogFilter(toolbar);
+            Intent intent = new Intent(this,DeviceLogActivity.class);
+            intent.putExtra("ROOM_ID",ROOM_ID);
+            intent.putExtra("activity_type","room");
+            intent.putExtra("isCheckActivity","room");
+            startActivity(intent);
+            //showDialogFilter(toolbar);
         }
 
         return super.onOptionsItemSelected(item);

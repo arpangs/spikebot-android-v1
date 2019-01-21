@@ -120,13 +120,9 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
         new GetJsonTask(this, url, "GET", "", new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
-
                 hideProgress();
-
-               // Log.d(TAG,"onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
-
                     int code = result.getInt("code");
                     String message = result.getString("message");
 

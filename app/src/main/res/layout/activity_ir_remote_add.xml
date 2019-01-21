@@ -82,6 +82,16 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
+                <TextView
+                    android:id="@+id/txtNoBlaster"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:singleLine="true"
+                    android:text="No Ir Blaster added in room"
+                    android:paddingLeft="@dimen/_7sdp"/>
+
                 <Spinner
                     android:id="@+id/remote_add_blaster_spinner"
                     android:layout_width="match_parent"

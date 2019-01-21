@@ -1,17 +1,22 @@
 package com.spike.bot.fragments;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -130,7 +135,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         SwipeRefreshLayout.OnRefreshListener, OnSmoothScrollList, TempClickListener {
 
     private static final String TAG = "MainFragment";
-
+    public static int showDialog=1;
     private static final int REQUEST_LOGIN = 0;
     private static final int TYPING_TIMER_LENGTH = 600;
 
@@ -327,7 +332,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             //  startSocketConnection();
         }
 
-
         empty_add_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -345,6 +349,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         fab_menu7 = (TextView) view.findViewById(R.id.fab_menu7);
 
         mFab = (FloatingActionButton) view.findViewById(R.id.fab);
+
 
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -491,7 +496,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             ChatApplication.isMainFragmentNeedResume = false;
             onLoadFragment();
         }
-
     }
 
     @Override
@@ -555,7 +559,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 mSocket.on("panelStatus", panelStatus);
                 //    mSocket.on("configureGatewayDevice", configureGatewayDevice);
                 mSocket.on("saveEditSwitchSocket", saveEditSwitchSocket);
-                mSocket.on("configureDoorSensor", configureGatewayDoorSensor);
+             //   mSocket.on("configureDoorSensor", configureGatewayDoorSensor);
                 //   mSocket.on("configureTempSensor",configureTempSensor);
                 mSocket.on("changeDoorSensorStatus", changeDoorSensorStatus);
                 mSocket.on("changeTempSensorValue", changeTempSensorValue);
@@ -594,7 +598,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             mSocket.off("panelStatus", panelStatus);
             mSocket.off("saveEditSwitchSocket", saveEditSwitchSocket);
             //  mSocket.off("configureGatewayDevice", configureGatewayDevice);
-            mSocket.off("configureGatewayDoorSensor", configureGatewayDoorSensor);
+    //        mSocket.off("configureGatewayDoorSensor", configureGatewayDoorSensor);
             // mSocket.off("configureTempSensor",configureTempSensor);
             mSocket.off("changeDoorSensorStatus", changeDoorSensorStatus);
             mSocket.off("changeTempSensorValue", changeTempSensorValue);
@@ -607,7 +611,10 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     }
 
     @Override
-    public void onPause() {
+    public void onPause(){
+//        if(ChatApplication.isPushFound){
+//            getBadgeClear(getActivity());
+//        }
         super.onPause();
     }
 
@@ -1102,6 +1109,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                     case R.id.action_device_log:
                         // getconfigureData();
                         Intent intent = new Intent(activity, DeviceLogActivity.class);
+                        intent.putExtra("isCheckActivity","AllType");
                         startActivity(intent);
                         break;
                     case R.id.action_sensor_log:
@@ -1216,8 +1224,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             String module_id = object.getString("module_id");
                             String device_id = object.getString("device_id");
                             String device_status = object.getString("device_status");
+                            int is_locked = object.optInt("is_locked");
 
-                            sectionedExpandableLayoutHelper.updateItem(module_id, device_id, device_status);
+                            sectionedExpandableLayoutHelper.updateItem(module_id, device_id, device_status,is_locked);
                             //   sectionedExpandableLayoutHelper.notifyDataSetChanged();
 
 
@@ -2140,7 +2149,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void run() {
                 sectionedExpandableLayoutHelper.updateItem(deviceVO.getModuleId(),
-                        String.valueOf(deviceVO.getDeviceId()), String.valueOf(deviceVO.getOldStatus()));
+                        String.valueOf(deviceVO.getDeviceId()), String.valueOf(deviceVO.getOldStatus()),deviceVO.getIs_locked());
             }
         });
     }
@@ -2371,16 +2380,18 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             newFragment.show(getActivity().getFragmentManager(), "dialog");
 
         } else if (action.equalsIgnoreCase("icnLog")) {
-//            Intent intent = new Intent(getActivity(),DeviceLogActivity.class);
-//            intent.putExtra("ROOM_ID",roomVO.getRoomId());
-//            intent.putExtra("activity_type",roomVO.getType());
-//            startActivity(intent);
-            Intent intent = new Intent(getActivity(), DeviceLogRoomActivity.class);
-            intent.putExtra("ROOM_ID", roomVO.getRoomId());
-            intent.putExtra("IS_SENSOR", "" + false);
-            intent.putExtra("room_name", "" + roomVO.getRoomName());
-            intent.putExtra("isNotification", "roomLogs");
+            Intent intent = new Intent(getActivity(),DeviceLogActivity.class);
+            intent.putExtra("ROOM_ID",roomVO.getRoomId());
+            intent.putExtra("activity_type",roomVO.getType());
+            intent.putExtra("isCheckActivity","room");
+            intent.putExtra("isRoomName",""+roomVO.getRoomName());
             startActivity(intent);
+//            Intent intent = new Intent(getActivity(), DeviceLogRoomActivity.class);
+//            intent.putExtra("ROOM_ID", roomVO.getRoomId());
+//            intent.putExtra("IS_SENSOR", "" + false);
+//            intent.putExtra("room_name", "" + roomVO.getRoomName());
+//            intent.putExtra("isNotification", "roomLogs");
+//            startActivity(intent);
 
         } else if (action.equalsIgnoreCase("icnSch")) {
             Intent intent = new Intent(getActivity(), ScheduleListActivity.class);
@@ -2392,6 +2403,12 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             intent.putExtra("isActivityType", "1");
             startActivity(intent);
         } else if (action.equalsIgnoreCase("icnSensorLog")) {
+//            Intent intent = new Intent(getActivity(),DeviceLogActivity.class);
+//            intent.putExtra("ROOM_ID",roomVO.getRoomId());
+//            intent.putExtra("IS_SENSOR",true);
+//            intent.putExtra("isCheckActivity","room");
+//            intent.putExtra("isRoomName",""+roomVO.getRoomName());
+//            startActivity(intent);
             Intent intent = new Intent(getActivity(), DeviceLogRoomActivity.class);
             intent.putExtra("ROOM_ID", roomVO.getRoomId());
             intent.putExtra("IS_SENSOR", "" + true);
@@ -3166,12 +3183,15 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             return;
         }
 
-        if (checkmessgae == 1 || checkmessgae == 6 || checkmessgae == 7 || checkmessgae == 8 || checkmessgae == 9 || checkmessgae == 10) {
+        if (showDialog == 1 ||checkmessgae == 1 || checkmessgae == 6 || checkmessgae == 7 || checkmessgae == 8 || checkmessgae == 9 || checkmessgae == 10) {
             ActivityHelper.showProgressDialog(getActivity(), "Please Wait...", false);
         }
 
         roomList.clear();
         // mMessagesView.removeAllViews();
+        if(mMessagesView==null){
+            mMessagesView = (RecyclerView) view.findViewById(R.id.messages);
+        }
         mMessagesView.setClickable(false);
 //        if (mFab == null) {
 //            mFab = (FloatingActionButton) view.findViewById(R.id.fab);
@@ -3200,6 +3220,11 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         new GetJsonTask2(activity, url, "GET", "", new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
+                showDialog=0;
+                ActivityHelper.dismissProgressDialog();
+                if(ChatApplication.isPushFound){
+                    getBadgeClear(getActivity());
+                }
 
                 mMessagesView.setClickable(true);
 //                mFab.setClickable(true);
@@ -3293,121 +3318,18 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                                 }else if(flagisCould){
                                     flagisCould=false;
                                     getDeviceCould(12);
-                                    //  cloudClickListener.click(userList.get(0));
                                     return;
                                 } else {
-                                    loginPIEvent.showLogin();
-                                    return;
-                                }
-
-                            }
-                           /* if (flagIsLogin == false) {
-                                flagisCould=true;
-                                webUrl = userList.get(0).getCloudIP();
-                                ChatApplication.url = webUrl;
-                                isCloudConnected = true;
-                                //  invalidateToolbarCloudImage();
-                                Main2Activity.isClick = true;
-                                getDeviceCould(12);
-//                                if (checkLoginId(userId, checkmessgae)) {
-//                                    Log.d("System out", "pie details is isSignUp ");
-//                                }else if(flagisCould){
-//                                    flagisCould=false;
-//                                    getDeviceCould(12);
-//                                    //  cloudClickListener.click(userList.get(0));
-//                                    return;
-//                                } else {
+//                                    showDialog=1;
 //                                    loginPIEvent.showLogin();
 //                                    return;
-//                                }
+                                }
 
-                            }*/
+                            }
                         }else {
-                            loginPIEvent.showLogin();
+//                            showDialog=1;
+//                            loginPIEvent.showLogin();
                         }
-
-//                        JSONArray piDetailsArray = dataObject.optJSONArray("piDetails");
-                       /* if (piDetailsArray != null) {
-                            String jsonTextTemp = Common.getPrefValue(getContext(), Common.USER_JSON);
-                            Log.d("UserPass", "Json String  : " + jsonTextTemp);
-                            List<User> userList = new ArrayList<User>();
-                            if (!TextUtils.isEmpty(jsonTextTemp) && !jsonTextTemp.equals("null")) {
-                                Type type = new TypeToken<List<User>>() {
-                                }.getType();
-                                userList = gson.fromJson(jsonTextTemp, type);
-                            }
-
-                            boolean flagIsLogin = false;
-                            for (User user : userList) {
-                                if (user.getUser_id().equalsIgnoreCase(userId)) {
-                                    flagIsLogin = true;
-                                    break;
-                                }
-                            }
-
-                            for (int j = 0; j < piDetailsArray.length(); j++) {
-                                try {
-                                    JSONObject deviceObj = piDetailsArray.getJSONObject(j);
-
-                                    String wifi_user_name = deviceObj.optString("wifi_user_name");
-                                    String wifi_user_password = deviceObj.optString("wifi_user_password");
-                                    String home_controller_device_id = deviceObj.optString("mac_address");
-
-                                    PiDetailsModel piDetailsModel = new PiDetailsModel();
-                                    piDetailsModel.setWifi_user_name(wifi_user_name);
-                                    piDetailsModel.setWifi_user_password(wifi_user_password);
-                                    piDetailsModel.setHome_controller_device_id(home_controller_device_id);
-
-                                    piDetailsModelArrayList.add(piDetailsModel);
-
-                                    Log.d("System out", "pie details is ");
-                                    if (piUserList.size() == 0) {
-//                                        String jsonCurProduct = gson.toJson(piDetailsModelArrayList);
-//                                        Common.savePrefValue(getActivity(), Common.USER_PIDETAIL, jsonCurProduct);
-//                                       if(!ChatApplication.isSignUp){
-
-                                        if (flagIsLogin == false) {
-                                            if (checkLoginId(userId, checkmessgae)) {
-                                                Log.d("System out", "pie details is isSignUp ");
-                                            }else if(flagisCould){
-                                                flagisCould=false;
-                                                getDeviceCould(12);
-                                              //  cloudClickListener.click(userList.get(0));
-                                                return;
-                                            } else {
-                                                loginPIEvent.showLogin(piDetailsModel);
-                                                return;
-                                            }
-
-                                        }
-
-//                                       }
-                                    } else {
-                                        for (int i = 0; i < piUserList.size(); i++) {
-                                            if (!piUserList.get(i).getHome_controller_device_id().equalsIgnoreCase(home_controller_device_id)
-                                                    && piUserList.get(i).getWifi_user_password().equalsIgnoreCase(wifi_user_password)) {
-//                                                String jsonCurProduct = gson.toJson(piDetailsModelArrayList);
-//                                                Common.savePrefValue(getActivity(), Common.USER_PIDETAIL, jsonCurProduct);
-                                                if (flagIsLogin == false) {
-                                                    Log.d("System out", "pie details is isSignUp equal ");
-                                                    if (checkLoginId(userId, checkmessgae)) {
-
-                                                    } else {
-                                                        loginPIEvent.showLogin(piDetailsModel);
-                                                        return;
-                                                    }
-
-                                                }
-
-                                            }
-                                        }
-                                    }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }*/
-
 
                         /**
                          * If Network connected on cloud then check user password is changed or not
@@ -3559,7 +3481,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onFailure(Throwable throwable, String error, int reCode) {
                 swipeRefreshLayout.setRefreshing(false);
-
+                ActivityHelper.dismissProgressDialog();
                 //set custom homer controller not found error message on dashboard
                 if (reCode == 503 || reCode == 404) {
                     responseErrorCode.onErrorCode(reCode);
@@ -3593,7 +3515,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             return;
         }
 
-        if (checkmessgae == 1 || checkmessgae == 6 || checkmessgae == 7 || checkmessgae == 8 || checkmessgae == 9 || checkmessgae == 10) {
+        if (showDialog==1||checkmessgae == 1 || checkmessgae == 6 || checkmessgae == 7 || checkmessgae == 8 || checkmessgae == 9 || checkmessgae == 10) {
             ActivityHelper.showProgressDialog(getActivity(), "Please Wait...", false);
         }
 
@@ -3627,10 +3549,12 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         new GetJsonTask2(activity, url, "GET", "", new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
+                showDialog=0;
                 isRefredCheck = false;
                 mMessagesView.setClickable(true);
                 mFab.setClickable(true);
                 mFab.setClickable(true);
+                ActivityHelper.dismissProgressDialog();
                 ((Main2Activity)getActivity()).toolbarTitle.setClickable(true);
                 ((Main2Activity)getActivity()).toolbarImage.setClickable(true);
 
@@ -3933,7 +3857,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onFailure(Throwable throwable, String error, int reCode) {
                 swipeRefreshLayout.setRefreshing(false);
-
+                ActivityHelper.dismissProgressDialog();
                 //set custom homer controller not found error message on dashboard
                 if (reCode == 503 || reCode == 404) {
                     responseErrorCode.onErrorCode(reCode);
@@ -4000,5 +3924,33 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
         }
         return isFlag;
+    }
+
+    //getMoodList
+    public static void getBadgeClear(final Context context) {
+        String url = ChatApplication.url + Constants.updateBadgeCount;
+
+        ChatApplication.logDisplay("url is "+url);
+        new GetJsonTask(context, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                ChatApplication.isPushFound=false;
+
+                clearNotification(context);
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+
+            }
+        }).execute();
+
+
+    }
+
+    public static void clearNotification(Context context) {
+        // Clear all notification
+        NotificationManager nMgr = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        nMgr.cancelAll();
     }
 }

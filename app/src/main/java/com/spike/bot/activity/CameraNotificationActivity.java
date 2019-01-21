@@ -547,17 +547,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
                         JSONArray jsonArray = object.optJSONArray("cameraAlertList");
                         String unreadCount = object.optString("unreadCount");
-                        if(unreadCount.equalsIgnoreCase("0")){
-                            txtAlertCount.setVisibility(View.GONE);
-                        }else {
-                            txtAlertCount.setVisibility(View.VISIBLE);
-                            if(Integer.parseInt(unreadCount)>99){
-                                txtAlertCount.setText("99+");
-                            }else {
-                                txtAlertCount.setText(""+unreadCount);
-                            }
 
-                        }
 
                       //  JSONArray jsonArray1 = jsonArray.getJSONArray(0);
 
@@ -600,6 +590,18 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                             txt_empty_notification.setVisibility(View.VISIBLE);
                         }
 
+                        if(unreadCount.equalsIgnoreCase("0")){
+                            txtAlertCount.setVisibility(View.GONE);
+                        }else {
+                            if(unreadCount.length()>0){
+                                txtAlertCount.setVisibility(View.VISIBLE);
+                                if(Integer.parseInt(unreadCount)>99){
+                                    txtAlertCount.setText("99+");
+                                }else {
+                                    txtAlertCount.setText(""+unreadCount);
+                                }
+                            }
+                        }
 
                     }
 

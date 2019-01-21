@@ -30,6 +30,26 @@ public class PanelVO implements Serializable {
     private boolean isActivePanel;
     private String roomId;
 
+    public Integer getPanel_type() {
+        return panel_type;
+    }
+
+    public void setPanel_type(Integer panel_type) {
+        this.panel_type = panel_type;
+    }
+
+    private int panel_type;
+
+    public ArrayList<DeviceVO> getRemoteDeviceList() {
+        return remoteDeviceList;
+    }
+
+    public void setRemoteDeviceList(ArrayList<DeviceVO> remoteDeviceList) {
+        this.remoteDeviceList = remoteDeviceList;
+    }
+
+    private ArrayList<DeviceVO> remoteDeviceList = new ArrayList<DeviceVO>();
+
     public boolean isRemoteAvabile() {
         return isRemoteAvabile;
     }

@@ -1,5 +1,6 @@
 package com.spike.bot.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -7,7 +8,7 @@ import java.util.ArrayList;
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class Filter {
+public class Filter implements Serializable{
 
     private String name;
     private boolean isChecked;
@@ -57,7 +58,7 @@ public class Filter {
         this.subFilters = subFilters;
     }
 
-    public static class SubFilter{
+    public static class SubFilter implements Serializable{
 
         private String name;
         private boolean isChecked;

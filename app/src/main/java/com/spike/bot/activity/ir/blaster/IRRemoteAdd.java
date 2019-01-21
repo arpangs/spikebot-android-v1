@@ -38,7 +38,7 @@ import java.util.List;
  * Created by Sagar on 1/8/18.
  * Gmail : jethvasagar2@gmail.com
  */
-public class IRRemoteAdd extends AppCompatActivity implements IRBlasterAddListAdapter.IRDeviceClikListener{
+public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListener,IRBlasterAddListAdapter.IRDeviceClikListener{
 
     private LinearLayout linear_progress,ll_sensor_list;
     private RecyclerView mIRListView;
@@ -49,7 +49,8 @@ public class IRRemoteAdd extends AppCompatActivity implements IRBlasterAddListAd
     private String mIRBlasterModuleId,mRoomId,roomName="",roomId="";
 
     private Spinner mSpinnerBlaster, mSpinnerRoom;
-    private TextView mRoomText;
+    private TextView mRoomText,txtNoBlaster;
+    boolean flagisBlaster=false;
 
 
     @Override
@@ -91,6 +92,7 @@ public class IRRemoteAdd extends AppCompatActivity implements IRBlasterAddListAd
         mSpinnerRoom = (Spinner) findViewById(R.id.remote_add_room_spinner);
 
         mRoomText = (TextView) findViewById(R.id.remote_add_room_txt);
+        txtNoBlaster = (TextView) findViewById(R.id.txtNoBlaster);
         mRoomText.setText(""+roomName);
 
         mIRListView = (RecyclerView) findViewById(R.id.list_ir_sensor_add);
@@ -112,6 +114,7 @@ public class IRRemoteAdd extends AppCompatActivity implements IRBlasterAddListAd
         irLists = new ArrayList<>();
         irLists.clear();
 
+        ChatApplication.logDisplay("url is "+url);
 
         new GetJsonTask(this, url, "GET", "", new ICallBack() {
             @Override
@@ -132,8 +135,11 @@ public class IRRemoteAdd extends AppCompatActivity implements IRBlasterAddListAd
                         IRDeviceDetailsRes irDeviceDetailsRes = Common.jsonToPojo(result.toString(),IRDeviceDetailsRes.class);
                         mIRDeviceList = irDeviceDetailsRes.getData().getDevicelist();
 
-                        irBlasterAddAdapter = new IRBlasterAddListAdapter(mIRDeviceList,IRRemoteAdd.this);
-                        mIRListView.setAdapter(irBlasterAddAdapter);
+                        if(mIRDeviceList.size()>0){
+                            irBlasterAddAdapter = new IRBlasterAddListAdapter(mIRDeviceList,IRRemoteAdd.this);
+                            mIRListView.setAdapter(irBlasterAddAdapter);
+
+                        }
 
                         irLists = irDeviceDetailsRes.getData().getIrList();
                         List<IRDeviceDetailsRes.Data.RoomList> roomLists = irDeviceDetailsRes.getData().getRoomList();
@@ -156,7 +162,23 @@ public class IRRemoteAdd extends AppCompatActivity implements IRBlasterAddListAd
                         //ArrayAdapter customRoomAdapter = new ArrayAdapter(getApplicationContext(), R.layout.spinner, roomLists);
                        // mSpinnerRoom.setAdapter(customRoomAdapter);
                         if(irLists.size() > 0){
-                         //   mRoomText.setText(""+irLists.get(0).getRoomName());
+
+                           for(int i=0; i<irLists.size(); i++){
+                               if(roomId.equals(irLists.get(i).getRoomId())){
+                                   mSpinnerBlaster.setSelection(i);
+                                   roomId=irLists.get(i).getRoomId();
+                                   flagisBlaster=true;
+                                   break;
+                               }
+                           }
+
+                           if(flagisBlaster==false){
+                               roomId="";
+                               txtNoBlaster.setVisibility(View.VISIBLE);
+                               mSpinnerBlaster.setVisibility(View.GONE);
+                               txtNoBlaster.setOnClickListener(IRRemoteAdd.this);
+                               mRoomText.setText("");
+                           }
                         }
 
                         mSpinnerBlaster.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -166,7 +188,8 @@ public class IRRemoteAdd extends AppCompatActivity implements IRBlasterAddListAd
                                 if(irList.getRoomName().equalsIgnoreCase("No IR Blaster")){
                                    // mRoomText.setText("");
                                 }else{
-                                  //  mRoomText.setText(""+irList.getRoomName());
+                                    mRoomText.setText(""+irList.getRoomName());
+                                    roomId=irList.getRoomId();
                                 }
                             }
 
@@ -233,6 +256,10 @@ public class IRRemoteAdd extends AppCompatActivity implements IRBlasterAddListAd
     public void onIRDeviceClick(IRDeviceDetailsRes.Data.Devicelist devicelist) {
         //call listing all device on off screen
 
+        if(roomId.equalsIgnoreCase("")){
+           ChatApplication.showToast(IRRemoteAdd.this,"Please select Ir Blaster");
+            return;
+        }
         IRDeviceDetailsRes.Data.IrList irList = (IRDeviceDetailsRes.Data.IrList) mSpinnerBlaster.getSelectedItem();
         IRDeviceDetailsRes.Data.RoomList room = (IRDeviceDetailsRes.Data.RoomList) mSpinnerRoom.getSelectedItem();
 
@@ -259,4 +286,14 @@ public class IRRemoteAdd extends AppCompatActivity implements IRBlasterAddListAd
            finish();
         }
     }
+
+    @Override
+    public void onClick(View v) {
+        if(v==txtNoBlaster){
+            txtNoBlaster.setVisibility(View.GONE);
+            mSpinnerBlaster.setVisibility(View.VISIBLE);
+            mSpinnerBlaster.performClick();
+        }
+    }
 }
+//No Ir blaster added in this room

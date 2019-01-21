@@ -1,13 +1,14 @@
 package com.spike.bot.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.ViewTreeObserver;
 
-import com.spike.bot.R;
 import com.spike.bot.core.ListUtils;
 import com.spike.bot.customview.recycle.ItemClickListener;
 import com.spike.bot.customview.recycle.SectionStateChangeListener;
@@ -20,7 +21,11 @@ import com.spike.bot.model.RoomVO;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+
+import me.leolin.shortcutbadger.ShortcutBadger;
+
 
 /**
  * Created by Kaushal on 2/23/2016.
@@ -39,12 +44,14 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
     private SectionedExpandableGridAdapter mSectionedExpandableGridAdapter;
     private OnSmoothScrollList onSmoothScrollList;
 
+    public Context context;
     //recycler view
     RecyclerView mRecyclerView;
 
     public SectionedExpandableLayoutHelper(final Context context, RecyclerView recyclerView, ItemClickListener itemClickListener, OnSmoothScrollList onSmoothScrollList, TempClickListener tempClickListener,
                                            int gridSpanCount) {
 
+        this.context=context;
         this.onSmoothScrollList = onSmoothScrollList;
         //setting the recycler view
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(context, gridSpanCount);
@@ -71,8 +78,46 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         //TODO : handle this condition such that these functions won't be called if the recycler view is on scroll
         generateDataList();
         mSectionedExpandableGridAdapter.notifyDataSetChanged();
+
+        if(mDataArrayList.size()>0){
+//            int badge=0;
+//            for(int i=0; i<mDataArrayList.size(); i++){
+//                try {
+//                    RoomVO section= (RoomVO)mDataArrayList.get(i);
+//                    if(section.getIs_unread()!=null){
+//                        badge=badge +Integer.parseInt(section.getIs_unread());
+//                    }
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                }
+//            }
+//            if(badge>0){
+           //     ShortcutBadger.applyCount(context, 10); //for 1.1.4+
+//            }else {
+//
+//            }
+        }
     }
-    public void updateItem(String moduleId,String deviceId,String deviceStatus) {
+
+    public static String getLauncherClassName(Context context) {
+
+        PackageManager pm = context.getPackageManager();
+
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+        List<ResolveInfo> resolveInfos = pm.queryIntentActivities(intent, 0);
+        for (ResolveInfo resolveInfo : resolveInfos) {
+            String pkgName = resolveInfo.activityInfo.applicationInfo.packageName;
+            if (pkgName.equalsIgnoreCase(context.getPackageName())) {
+                String className = resolveInfo.activityInfo.name;
+                return className;
+            }
+        }
+        return null;
+    }
+
+    public void updateItem(String moduleId,String deviceId,String deviceStatus ,int is_locked) {
 
         Log.d("updateDITEM","init....");
 
@@ -96,6 +141,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                 //if (devicesList.contains(item)) {
                     for (int i = 0; i < devicesList.size(); i++) {
 
+                        devicesList.get(i).setIs_locked(is_locked);
                         if(devicesList.get(i).getDeviceType().equalsIgnoreCase("2")){
 
                                 if(devicesList.get(i).getRemote_device_id().equalsIgnoreCase(deviceId) &&

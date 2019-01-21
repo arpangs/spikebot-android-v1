@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.spike.bot.R;
@@ -316,12 +317,15 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                         holder.iv_icon.setOnLongClickListener(new View.OnLongClickListener() {
                             @Override
                             public boolean onLongClick(View view) {
-                                mItemClickListener.itemClicked(item,"longclick");
+                                if(item.getIs_locked()==1){
+                                    Toast.makeText(mContext,mContext.getResources().getString(R.string.fan_error),Toast.LENGTH_LONG).show();
+                                }else {
+                                    mItemClickListener.itemClicked(item, "longclick");
+                                }
                                 return true;
                             }
                         });
-                    }
-                    else{
+                    }else{
                         holder.iv_icon.setOnLongClickListener(null);
                     }
                 }

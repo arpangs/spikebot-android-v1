@@ -201,11 +201,40 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                 final DeviceVO item = (DeviceVO) mDataArrayList.get(position);
 
 
-                if(item.isSensor()){
-                    holder.itemTextView.setText(item.getSensor_name());
-                    if(item.getSensor_icon()!=null){
-                        holder.iv_icon.setImageResource(Common.getIcon(1,item.getSensor_icon()));//item.getDeviceStatus()
+                if(item.isSensor() || item.getDeviceType().equalsIgnoreCase("2")){
+//                    holder.itemTextView.setText(item.getSensor_name());
+//                    if(item.getSensor_icon()!=null){
+//                        holder.iv_icon.setImageResource(Common.getIcon(1,item.getSensor_icon()));//item.getDeviceStatus()
+//                    }
+
+                    if(TextUtils.isEmpty(item.getSensor_icon())){
+
+                        holder.itemTextView.setText(item.getDeviceName());
+
+                        if(item.getIsActive() == 0){
+                            if(item.getDevice_icon()!=null){
+                                holder.iv_icon.setImageResource(Common.getIconInActive(1,item.getDevice_icon()));//item.getDeviceStatus()
+                            }
+                        }else{
+                            if(item.getDevice_icon()!=null){
+                                holder.iv_icon.setImageResource(Common.getIcon(1,item.getDevice_icon()));//item.getDeviceStatus()
+                            }
+                        }
+                    }else{
+
+                        holder.itemTextView.setText(item.getSensor_name());
+
+                        if(item.getDeviceType().equalsIgnoreCase("2") && item.getIsActive() == 0){
+                            if(item.getSensor_icon()!=null){
+                                holder.iv_icon.setImageResource(Common.getIconInActive(1,item.getSensor_icon()));//item.getDeviceStatus()
+                            }
+                        }else{
+                            if(item.getSensor_icon()!=null){
+                                holder.iv_icon.setImageResource(Common.getIcon(0,item.getSensor_icon()));//item.getDeviceStatus()
+                            }
+                        }
                     }
+
                 }else{
                     holder.itemTextView.setText(item.getDeviceName());
                     if(item.getDevice_icon()!=null){
@@ -215,11 +244,17 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                 //holder.iv_icon.setVisibility(View.GONE);
               if(item.isSelected()){
                     if(item.isSensor()){
-                        if(item.getTo_use().equalsIgnoreCase("1")){
+                        if(item.getDeviceType().equalsIgnoreCase("2")){
                             holder.iv_icon_select.setVisibility(View.VISIBLE);
                         }else {
                             holder.iv_icon_select.setVisibility(View.GONE);
                         }
+
+                       /* if(item.getTo_use().equalsIgnoreCase("1")){
+                            holder.iv_icon_select.setVisibility(View.VISIBLE);
+                        }else {
+                            holder.iv_icon_select.setVisibility(View.GONE);
+                        }*/
                     }else {
                         holder.iv_icon_select.setVisibility(View.VISIBLE);
                     }
@@ -265,7 +300,19 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                             mItemClickListener.itemClicked(item, "disable_device", position);
 
                         }else {
-                            if (item.isSelected() && item.getSensor_icon() != null && item.getSensor_icon().equalsIgnoreCase("Remote_AC")
+
+                            if (item.getSensor_icon() != null && item.getSensor_icon().equalsIgnoreCase("Remote_AC")) {
+                                if (item.getIsActive() == 0) {
+                                } else {
+                                    item.setSelected(!item.isSelected());
+                                    notifyItemChanged(position, item);
+                                }
+
+                            }else {
+                                item.setSelected(!item.isSelected());
+                                notifyItemChanged(position, item);
+                            }
+                           /* if (item.isSelected() && item.getSensor_icon() != null && item.getSensor_icon().equalsIgnoreCase("Remote_AC")
                                     && item.getIsActive() == 0) {
                                 item.setSelected(!item.isSelected());
                                 notifyItemChanged(position, item);
@@ -279,7 +326,7 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                             } else {
                                     item.setSelected(!item.isSelected());
                                     notifyItemChanged(position, item);
-                            }
+                            }*/
                         }
                     }
                 });

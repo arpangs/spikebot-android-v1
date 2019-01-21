@@ -1,5 +1,6 @@
 package com.spike.bot.fcm;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -13,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
+import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.CameraImagePush;
 
@@ -21,16 +23,20 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import me.leolin.shortcutbadger.ShortcutBadger;
+
 public class SendNotificationAsync extends AsyncTask<String, Void, Bitmap> {
 
         private Context ctx;
         private String message;
         private String camera_url;
         private String camera_body;
+        String badge="";
 
-        SendNotificationAsync(Context context) {
+        SendNotificationAsync(Context context, String badge) {
             super();
             this.ctx = context;
+            this.badge = badge;
         }
 
         @Override
@@ -44,13 +50,16 @@ public class SendNotificationAsync extends AsyncTask<String, Void, Bitmap> {
                 message = params[0] + params[1];
                 camera_body = message;
 
-                URL url = new URL(params[2]);
-                camera_url = params[2];
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setDoInput(true);
-                connection.connect();
-                in = connection.getInputStream();
-                return BitmapFactory.decodeStream(in);
+                if(params[2]!=null){
+                    URL url = new URL(params[2]);
+                    camera_url = params[2];
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setDoInput(true);
+                    connection.connect();
+                    in = connection.getInputStream();
+                    return BitmapFactory.decodeStream(in);
+                }
+
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -63,7 +72,7 @@ public class SendNotificationAsync extends AsyncTask<String, Void, Bitmap> {
 
             super.onPostExecute(result);
             try {
-
+                ChatApplication.isPushFound=true;
                 Intent intent = new Intent(ctx, CameraImagePush.class); //{@link Main2Activity}
                 intent.putExtra("camera_url",camera_url);
                 intent.putExtra("camera_body",camera_body);
@@ -82,7 +91,12 @@ public class SendNotificationAsync extends AsyncTask<String, Void, Bitmap> {
                                 .setAutoCancel(true)
                                 .setSound(defaultSoundUri)
                                 .setContentIntent(pendingIntent)
+                                .setNumber(Integer.parseInt(badge))
                                 .setLargeIcon(result);
+//                int color = ctx.getColor(R.color.automation_red);
+//                notificationBuilder.setColor(color);
+
+                notificationBuilder.getNotification().flags |= Notification.FLAG_AUTO_CANCEL;
 
                 NotificationManager notificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -91,9 +105,11 @@ public class SendNotificationAsync extends AsyncTask<String, Void, Bitmap> {
                     NotificationChannel channel = new NotificationChannel(channelId,
                             "Spike Bot",
                             NotificationManager.IMPORTANCE_DEFAULT);
+                    channel.setShowBadge(true);
                     notificationManager.createNotificationChannel(channel);
                 }
                 id ++;
+                ShortcutBadger.applyCount(ctx, Integer.parseInt(badge));
                 notificationManager.notify(id /* ID of notification */, notificationBuilder.build());
 
             } catch (Exception e) {

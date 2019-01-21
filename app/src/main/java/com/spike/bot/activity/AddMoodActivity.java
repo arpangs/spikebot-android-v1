@@ -452,7 +452,6 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                     }
                 }
             }
-
         }
 
         //sort room list vie selected device list available

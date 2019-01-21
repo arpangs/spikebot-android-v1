@@ -67,7 +67,7 @@
                             android:textColor="@color/sky_blue"
                             android:background="?android:attr/selectableItemBackground"
                             android:gravity="center_vertical"
-                            android:text="Spike Bot" />
+                            android:text="      " />
 
                         <ImageView
                             android:id="@+id/toolbarImage"

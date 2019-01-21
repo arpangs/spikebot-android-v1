@@ -16,6 +16,17 @@ android {
         multiDexEnabled true
     }
 
+    /*
+    signingConfigs {
+        release {
+            storeFile file("/home/prakash/StudioProjects/IOTWorkspace/Play Store Key/")
+            storePassword "Spikebot$123"
+            keyAlias "spikebot"
+            keyPassword "Spikebot$123"
+        }
+    }
+    * */
+
     buildTypes {
         release {
             debuggable false
@@ -72,5 +83,8 @@ dependencies {
     compile 'com.intuit.sdp:sdp-android:1.0.6'
 
     compile 'com.github.bumptech.glide:glide:3.7.0'
+
+    compile "me.leolin:ShortcutBadger:1.1.22@aar"
+
 }
 apply plugin: 'com.google.gms.google-services'

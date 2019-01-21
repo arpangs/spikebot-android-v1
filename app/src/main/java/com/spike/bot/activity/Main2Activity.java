@@ -104,6 +104,7 @@ import java.util.Timer;
 
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class Main2Activity extends AppCompatActivity implements View.OnClickListener,
         ConnectivityReceiver.ConnectivityReceiverListener, CloudAdapter.CloudClickListener,
@@ -313,13 +314,14 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 TAG);
         wakeLock.acquire();
 
-
+        MainFragment.clearNotification(Main2Activity.this);
         //new view
         // ll_show_error = (LinearLayout) findViewById(R.id.ll_show_error);
         txt_error_value = (TextView) findViewById(R.id.txt_error_value);
 
         btn_login.setOnClickListener(this);
         btn_cancel.setOnClickListener(this);
+
 
         if (mSectionsPagerAdapter == null) {
 
@@ -885,6 +887,9 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onPause() {
         super.onPause();
+        if(ChatApplication.isPushFound){
+            MainFragment.getBadgeClear(Main2Activity.this);
+        }
         MainFragment.isRefredCheck=true;
         ChatApplication.isMainFragmentNeedResume = true;
 
@@ -1015,6 +1020,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     case R.id.action_device_log:
                         // getconfigureData();
                         Intent intent = new Intent(Main2Activity.this, DeviceLogActivity.class);
+                        intent.putExtra("isCheckActivity","AllType");
                         startActivity(intent);
                         break;
                     case R.id.action_sensor_log:
@@ -1578,7 +1584,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                         JSONObject data = result.getJSONObject("data");
                         String cloudIp = data.getString("ip");
 
-
                         Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "true");
                         Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, cloudIp);
 
@@ -1984,6 +1989,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
         //  Log.d("SocketIP","fragment...");
 
+
         if (mViewPager.getCurrentItem() == 0) {
             //  isResumeConnect = true;
             mainFragment1 = (MainFragment) mSectionsPagerAdapter.fragmentList.get(mViewPager.getCurrentItem());
@@ -2289,7 +2295,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
+                ActivityHelper.dismissProgressDialog();
                 et_username.setText("");
                 et_password.setText("");
 
@@ -2343,4 +2349,5 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         tabLayout.setVisibility(View.VISIBLE);
         mToolBarSettings.setVisibility(View.VISIBLE);
     }
+
 }

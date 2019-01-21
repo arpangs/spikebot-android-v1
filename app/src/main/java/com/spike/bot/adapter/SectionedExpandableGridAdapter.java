@@ -461,7 +461,6 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             }else {
                                 holder.img_setting_badge_count.setText(""+isunRead);
                             }
-
                         }
                     } else {
                         holder.reletiveNotification.setVisibility(View.GONE);
@@ -696,6 +695,10 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                         item.setOldStatus(item.getDeviceStatus());
                         item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1 : 0);
+//                        if(item.getIs_locked()==1){
+//                            item.setIs_locked(item.getIs_locked() == 0 ? 1 : 0);
+//                        }
+
                         notifyItemChanged(position, item);
 
                         if (!item.isSensor()) {
@@ -725,7 +728,10 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             return false;
 
                         item.setOldStatus(item.getDeviceStatus());
-                        item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1 : 0);
+                        if(item.getIs_locked()==1){
+                            item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1 : 0);
+                        }
+
                         notifyItemChanged(position, item);
 
                         if (!item.isSensor()) {
@@ -750,7 +756,12 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.iv_icon.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View view) {
-                            mItemClickListener.itemClicked(item, "longclick", position);
+                            if(item.getIs_locked()==1){
+                                Toast.makeText(mContext,mContext.getResources().getString(R.string.fan_error),Toast.LENGTH_LONG).show();
+                            }else {
+                                mItemClickListener.itemClicked(item, "longclick", position);
+                            }
+
                             return true;
                         }
                     });

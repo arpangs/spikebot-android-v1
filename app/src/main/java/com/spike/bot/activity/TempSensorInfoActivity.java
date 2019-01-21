@@ -140,6 +140,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
     @Override
     protected void onResume() {
         super.onResume();
+
         ChatApplication.getInstance().setConnectivityListener(this);
         if (ChatApplication.isLogResume) {
             ChatApplication.isLogResume = false;
@@ -153,7 +154,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver((BroadcastReceiver) connectivityReceiver, intentFilter);
-
+        view_rel_badge.setClickable(true);
         getSensorDetails();
 
     }
@@ -942,6 +943,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             newFragment.show(getFragmentManager(), "dialog");
 
         } else if (id == R.id.view_rel_badge) {
+            view_rel_badge.setClickable(false);
             unreadApiCall(true);
         } else if (id == R.id.linearAlertDown) {
             if (flagAlert) {
@@ -1470,13 +1472,13 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
 
                     int countTemp=sensorResModel.getDate().getTempLists()[0].getUnreadLogs().size();
                     if(countTemp>99){
-                        txtAlertCount.setText("Alert " +"99+"+ " Added");
+                        txtAlertCount.setText("99+");
                     }else {
-                        txtAlertCount.setText("Alert " + countTemp + " Added");
+                        txtAlertCount.setText("" + countTemp);
                     }
 
                 } else {
-                    txtAlertCount.setText("Alert 0 Added");
+                    txtAlertCount.setText("0");
                 }
 
                 if (sensorResModel.getDate().getTempLists()[0].getUnreadLogs().size() > 0) {
@@ -1485,9 +1487,9 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                     txt_empty_notification.setVisibility(View.GONE);
                     int countTemp=sensorResModel.getDate().getTempLists()[0].getUnreadLogs().size();
                     if(countTemp>99){
-                        txtAlertCount.setText("Alert " +"99+"+ " Added");
+                        txtAlertCount.setText("99+");
                     }else {
-                        txtAlertCount.setText("Alert " + countTemp + " Added");
+                        txtAlertCount.setText("" + countTemp);
                     }
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(TempSensorInfoActivity.this);
                     recyclerAlert.setLayoutManager(linearLayoutManager);
@@ -1518,7 +1520,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
 
     public void unreadApiCall(final boolean b) {
 
-        if(sensorResModel.getDate().getTempLists()[0].getUnreadLogs()!=null){
+        if(recyclerAlert.getVisibility()==View.VISIBLE){
 
         }else {
             checkIntent(b);
@@ -1590,7 +1592,8 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             intent.putExtra("Mood_Id", ""+sensorResModel.getDate().getTempLists()[0].getTempSensorMoudleId());
             intent.putExtra("activity_type", "temp");
             intent.putExtra("IS_SENSOR", true);
-            intent.putExtra("tabSelect", "hide");
+            intent.putExtra("tabSelect", "show");
+            intent.putExtra("isCheckActivity","tempSensor");
             startActivity(intent);
         } else {
             TempSensorInfoActivity.this.finish();

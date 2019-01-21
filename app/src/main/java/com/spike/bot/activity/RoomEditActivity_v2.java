@@ -277,6 +277,72 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
     }
 
     /**
+     * Configure Gateway Door Sensor
+     */
+    private Emitter.Listener configureGatewayDoorSensor = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            RoomEditActivity_v2.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    //  Toast.makeText(getContext(),"Found Door Sensor : "   + args[0],Toast.LENGTH_LONG).show();
+                    //{"door_sensor_module_id":"D2D3C612004B1200"}
+
+                    try {
+
+                        Log.d("configGatewayDoorSensor", "Found sensor id : " + args[0]);
+
+                        if (countDownTimer != null) {
+                            countDownTimer.cancel();
+                        }
+
+                        roomIdList.clear();
+                        roomNameList.clear();
+
+                        JSONObject object = new JSONObject(args[0].toString());
+                        String door_sensor_module_id = object.getString("door_sensor_module_id");
+
+                        String message = object.getString("message");
+
+                        if (TextUtils.isEmpty(message)) {
+
+                            JSONArray jsonArray = object.getJSONArray("room_list");
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+
+                                JSONObject objectRoom = jsonArray.getJSONObject(i);
+                                String room_id = objectRoom.getString("room_id");
+                                String room_name = objectRoom.getString("room_name");
+
+                                roomIdList.add(room_id);
+                                roomNameList.add(room_name);
+                            }
+                        }
+
+
+                        ActivityHelper.dismissProgressDialog();
+
+                        if (TextUtils.isEmpty(message)) {
+                            showAddSensorDialog(door_sensor_module_id, false);
+                        } else {
+                            showConfigAlert(message);
+                            //Toast.makeText(getActivity(),message,Toast.LENGTH_SHORT).show();
+                        }
+
+                        //  addRoom = false;
+                        // }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+        }
+    };
+
+
+    /**
      * Display Fab Menu with subFab Button
      *
      */
@@ -418,6 +484,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         if(configureGatewayDevice!=null){
             mSocket.on("configureGatewayDevice", configureGatewayDevice);
             mSocket.on("configureTempSensor", configureTempSensor);
+            mSocket.on("configureDoorSensor", configureGatewayDoorSensor);
             Log.d("","mSocket.connect()= "  + mSocket.id() );
         }
     }
@@ -427,6 +494,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         if(mSocket!=null) {
             mSocket.off("configureGatewayDevice", configureGatewayDevice);
             mSocket.off("configureTempSensor", configureTempSensor);
+            mSocket.off("configureDoorSensor", configureGatewayDoorSensor);
             Log.d("","mSocket onDestroy disconnect();");
         }
     }
@@ -1137,7 +1205,8 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             object.put("panel_name",panelVO.getPanelName());
             object.put("room_id",room.getRoomId());
             object.put("room_name",room.getRoomName());
-            object.put("is_sensor_panel",panelVO.isSensorPanel() ? 1 : 0);
+            object.put("panel_type",panelVO.getPanel_type());
+          //  object.put("is_sensor_panel",panelVO.isSensorPanel() ? 1 : 0);
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
 

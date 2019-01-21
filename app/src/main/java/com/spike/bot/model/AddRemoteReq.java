@@ -43,9 +43,20 @@ public class AddRemoteReq {
     @SerializedName("room_device_id")
     private String roomDeviceId;
 
+    public String getIr_blaster_name() {
+        return ir_blaster_name;
+    }
+
+    public void setIr_blaster_name(String ir_blaster_name) {
+        this.ir_blaster_name = ir_blaster_name;
+    }
+
+    @SerializedName("ir_blaster_name")
+    private String ir_blaster_name;
+
     public AddRemoteReq(){}
 
-    public AddRemoteReq(String remote_id, String remote_name, String room_id,String ir_blaster_id, String mode, String temperatature, String phone_id, String phone_type){
+    public AddRemoteReq(String remote_id, String remote_name, String room_id,String ir_blaster_id, String mode, String temperatature, String phone_id, String phone_type,String ir_blaster_name){
         this.remote_id  = remote_id;
         this.remote_name = remote_name;
         this.ir_blaster_id = ir_blaster_id;
@@ -54,6 +65,7 @@ public class AddRemoteReq {
         this.temperatature = temperatature;
         this.phone_id = phone_id;
         this.phone_type = phone_type;
+        this.ir_blaster_name = ir_blaster_name;
     }
 
     public AddRemoteReq(String device_id, String device_type, String brand_id, String brand_type, String codeset_id, String remote_name, String ir_blaster_id, String ir_blaster_moudle_id, String room_id, String mode, String temperatature, String phone_id, String phone_type) {

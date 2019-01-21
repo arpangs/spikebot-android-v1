@@ -205,12 +205,12 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
         mSpeedCurrentPos = getCurrentPos(mRemoteCurrentStatusList.getMode());
 
-        mRemoteName.setOnClickListener(new View.OnClickListener() {
+     /*   mRemoteName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
-        });
+        });*/
     }
 
     @Override
@@ -577,7 +577,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         AddRemoteReq addRemoteReq = new AddRemoteReq(mRemoteCurrentStatusList.getRemoteId(),remoteName,
                 ir.getRoomId(),ir.getIrBlasterId(),mSpinnerMode.getSelectedItem().toString(),
                 mRemoteDefaultTemp.getText().toString().trim(),
-                APIConst.PHONE_ID_KEY,APIConst.PHONE_TYPE_VALUE);
+                APIConst.PHONE_ID_KEY,APIConst.PHONE_TYPE_VALUE,mSpinnerBlaster.getSelectedItem().toString());
         addRemoteReq.setUpdate_type(1); //if remote update command fire in mood then pass the update_type = 1
         addRemoteReq.setRoomDeviceId(mRoomDeviceId);
 
@@ -656,7 +656,8 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                         ir0.setIrBlasterId("-1");
                         irList.add(0,ir0);
                     }else {
-                        remote_room_txt.setText(""+mRemoteCurrentStatusList.getRoomName());
+                       // remote_room_txt.setText(""+mRemoteCurrentStatusList.getRoomName());
+                        remote_room_txt.setText(""+irList.get(0).getRoomName());
                     }
 
                     final ArrayAdapter roomAdapter1 = new ArrayAdapter(getApplicationContext(), R.layout.spinner, irList);
@@ -670,19 +671,19 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                     }
 
                     if(!mSpinnerBlaster.getSelectedItem().toString().equalsIgnoreCase("Select Blaster")){
-                        remote_room_txt.setText(""+mSpinnerBlaster.getSelectedItem().toString());
+                      //  remote_room_txt.setText(""+mSpinnerBlaster.getSelectedItem().toString());
                     }
 
                     mSpinnerBlaster.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                            if(position!=0){
-                                IRBlasterAddRes.Data.IrList irList = (IRBlasterAddRes.Data.IrList) mSpinnerBlaster.getSelectedItem();
-                                remote_room_txt.setText(""+irList.getRoomName());
-                            }else{
+//                            if(position!=0){
+                            //    IRBlasterAddRes.Data.IrList irList = (IRBlasterAddRes.Data.IrList) mSpinnerBlaster.getSelectedItem();
+                                remote_room_txt.setText(""+irList.get(position).getRoomName());
+//                            }else{
                                // remote_room_txt.setText("");
-                            }
+//                            }
                         }
 
                         @Override

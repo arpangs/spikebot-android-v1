@@ -150,7 +150,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver((BroadcastReceiver) connectivityReceiver, intentFilter);
-
+        view_rel_badge.setClickable(true);
         getDoorSensorDetails();
     }
 
@@ -702,6 +702,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 //            intent.putExtra("is_sensor",true);
 //            startActivity(intent);
 
+            view_rel_badge.setClickable(false);
             unreadApiCall(true);
         } else if (id == R.id.linearAlertDown) {
             if (flagAlert) {
@@ -1186,7 +1187,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
     public void unreadApiCall(final boolean b) {
 
-        if(doorSensorResModel.getDate().getDoorLists()[0].getUnreadLogs()!=null){
+        if(recyclerAlert.getVisibility()==View.VISIBLE){
 
         }else {
             checkIntent(b);
@@ -1248,7 +1249,8 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                 intent.putExtra("Mood_Id", ""+tempLists[0].getmDoorSensorMoudleId());
                 intent.putExtra("activity_type", "door");
                 intent.putExtra("IS_SENSOR", true);
-                intent.putExtra("tabSelect", "hide");
+                intent.putExtra("tabSelect", "show");
+                intent.putExtra("isCheckActivity","doorSensor");
                 startActivity(intent);
             } else {
                 DoorSensorInfoActivity.this.finish();

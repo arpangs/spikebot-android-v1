@@ -331,11 +331,10 @@
             <ImageView
                 android:id="@+id/remote_toolbar_back"
                 android:layout_width="0dp"
-                android:layout_height="28dp"
-                android:layout_gravity="center"
-                android:layout_marginLeft="16dp"
-                android:layout_weight="0.1"
-                android:padding="4dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center|left"
+                android:layout_weight="0.2"
+                android:padding="5dp"
                 android:src="@drawable/ic_back" />
 
             <TextView
@@ -343,7 +342,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginLeft="16dp"
                 android:layout_weight="0.8"
                 android:ellipsize="end"
                 android:lines="1"
