@@ -108,7 +108,7 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
             return;
         }
         showProgress();
-
+        ActivityHelper.showProgressDialog(IRRemoteAdd.this, "Please Wait...", false);
         String url = ChatApplication.url + Constants.GET_IR_DEVICE_TYPE_LIST;
 
         irLists = new ArrayList<>();
@@ -121,7 +121,6 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
             public void onSuccess(JSONObject result) {
 
                 hideProgress();
-
                 // Log.d(TAG,"onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {

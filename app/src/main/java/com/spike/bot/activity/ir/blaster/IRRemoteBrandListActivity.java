@@ -139,13 +139,16 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
         }
 
         showProgress();
+        ActivityHelper.showProgressDialog(IRRemoteBrandListActivity.this, "Please Wait...", false);
 
-        String url = ChatApplication.url + Constants.GET_IR_DEVICE_DETAILS + "/"+ mIrDeviceId;
+      //  String url = ChatApplication.url + Constants.GET_IR_DEVICE_DETAILS + "/"+ mIrDeviceId;
+        String url = ChatApplication.url + Constants.getIRDeviceTypeBrands + "/"+ mIrDeviceId;
         new GetJsonTask(this, url, "GET", "", new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
 
                 hideProgress();
+                ActivityHelper.dismissProgressDialog();
 
                 // Log.d(TAG,"onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();

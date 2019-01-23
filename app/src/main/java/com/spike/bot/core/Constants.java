@@ -103,6 +103,7 @@ public class Constants {
     public static final String ADD_IR_BLASTER = "/AddIRBlaster";
     public static final String GET_IR_BLASTER_INFO = "/getIRBlasterInfo";
     public static final String GET_IR_DEVICE_DETAILS = "/getIRDeviceDetails";
+    public static final String getIRDeviceTypeBrands = "/getIRDeviceTypeBrands";
     public static final String SEND_REMOTE_COMMAND = "/sendRemoteCommand";
     public static final String GET_REMOTE_SCHEDULE_LIST = "/getRemoteScheduleList";
     public static final String ADD_REMOTE_SCHEDULE = "/addRemoteSchedule";
@@ -110,6 +111,7 @@ public class Constants {
     public static final String DELETE_REMOTE_SCHEDULE = "/deleteRemoteSchedule";
     public static final String CHANGE_REMOTE_SCHEDULE_STATUS = "/changeRemoteScheduleStatus";
     public static final String getRoomList = "/getRoomList";
+    public static final String getDeviceBrandRemoteList = "/getDeviceBrandRemoteList";
 
 
     //new api for IR Blaster

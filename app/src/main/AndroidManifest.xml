@@ -128,6 +128,12 @@
             android:windowSoftInputMode="stateHidden" />
 
         <activity
+            android:name="com.spike.bot.activity.ir.blaster.SearchActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden" />
+
+        <activity
             android:name="com.spike.bot.activity.CameraDeviceLogActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"

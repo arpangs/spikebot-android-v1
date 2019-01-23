@@ -50,7 +50,7 @@ public class IRRemoteListRes {
         @SerializedName("device_id")
         @Expose
         private String deviceId;
-        @SerializedName("brandList")
+        @SerializedName("device_brand_list")
         @Expose
         private List<BrandList> brandList = null;
 
@@ -72,10 +72,10 @@ public class IRRemoteListRes {
 
         public class BrandList {
 
-            @SerializedName("brand_id")
+            @SerializedName("device_brand_id")
             @Expose
             private Integer brandId;
-            @SerializedName("brand_type")
+            @SerializedName("brand_name")
             @Expose
             private String brandType;
 

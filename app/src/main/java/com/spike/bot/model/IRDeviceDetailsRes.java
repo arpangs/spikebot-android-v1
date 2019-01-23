@@ -53,7 +53,7 @@ public class IRDeviceDetailsRes {
         @SerializedName("room_list")
         @Expose
         private List<RoomList> roomList = null;
-        @SerializedName("devicelist")
+        @SerializedName("device_list")
         @Expose
         private List<Devicelist> devicelist = null;
 
