@@ -19,6 +19,7 @@ import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.CameraNotificationActivity;
 import com.spike.bot.adapter.SearchAdapter;
 import com.spike.bot.adapter.SearchClick;
 import com.spike.bot.core.Common;
@@ -43,7 +44,7 @@ public class SearchActivity extends AppCompatActivity implements SearchClick{
     public DataSearch arrayList;
 
     SearchAdapter searchAdapter;
-    public ArrayList<DeviceBrandRemoteList> arrayListTemp= new ArrayList();
+    ArrayList<DeviceBrandRemoteList> filterdNames = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,6 +52,8 @@ public class SearchActivity extends AppCompatActivity implements SearchClick{
         setContentView(R.layout.activity_search);
 
         mBrandId=getIntent().getStringExtra("mBrandId");
+        arrayList=(DataSearch)getIntent().getSerializableExtra("arrayList");
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
@@ -67,7 +70,7 @@ public class SearchActivity extends AppCompatActivity implements SearchClick{
         LinearLayoutManager linearLayoutManager=new LinearLayoutManager(this);
         recyclerSearch.setLayoutManager(linearLayoutManager);
 
-        getIRRemoteDetails();
+       // getIRRemoteDetails();
 
         edSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -86,11 +89,19 @@ public class SearchActivity extends AppCompatActivity implements SearchClick{
                 filter(editable.toString());
             }
         });
+
+        filterdNames.clear();
+        for (DeviceBrandRemoteList s : arrayList.getDeviceBrandRemoteList()) {
+                filterdNames.add(s);
+        }
+        setAdapter(filterdNames);
+
     }
 
     private void filter(String search) {
+        filterdNames.clear();
         if(search.length()>0){
-            ArrayList<DeviceBrandRemoteList> filterdNames = new ArrayList<>();
+
             for (DeviceBrandRemoteList s : arrayList.getDeviceBrandRemoteList()) {
                 if (s.getModelNumber().toLowerCase().contains(search.toLowerCase())) {
                     filterdNames.add(s);
@@ -98,7 +109,11 @@ public class SearchActivity extends AppCompatActivity implements SearchClick{
             }
            setAdapter(filterdNames);
         }else {
-            recyclerSearch.setVisibility(View.GONE);
+            for (DeviceBrandRemoteList s : arrayList.getDeviceBrandRemoteList()) {
+                filterdNames.add(s);
+            }
+            setAdapter(filterdNames);
+            //recyclerSearch.setVisibility(View.GONE);
         }
     }
 
@@ -156,6 +171,7 @@ public class SearchActivity extends AppCompatActivity implements SearchClick{
             recyclerSearch.setVisibility(View.VISIBLE);
             searchAdapter=new SearchAdapter(this,filterdNames,this);
             recyclerSearch.setAdapter(searchAdapter);
+            searchAdapter.notifyDataSetChanged();
         }else {
             recyclerSearch.setVisibility(View.GONE);
         }
@@ -164,8 +180,12 @@ public class SearchActivity extends AppCompatActivity implements SearchClick{
     @Override
     public void searchItemClick(DeviceBrandRemoteList deviceBrandRemoteList) {
         if(deviceBrandRemoteList.getIrCode()!=null){
+            ActivityHelper.hideKeyboard(SearchActivity.this);
             Intent intent = new Intent();
             intent.putExtra("onOffValue",deviceBrandRemoteList.getIrCode());
+            intent.putExtra("brand_name",deviceBrandRemoteList.getBrandName());
+            intent.putExtra("model_number",deviceBrandRemoteList.getModelNumber());
+            intent.putExtra("remote_codeset_id",""+deviceBrandRemoteList.getremote_codeset_id());
             setResult(RESULT_OK, intent);
             finish();
 

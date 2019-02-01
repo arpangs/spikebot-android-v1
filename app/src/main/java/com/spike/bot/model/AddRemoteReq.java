@@ -10,16 +10,28 @@ import com.google.gson.annotations.SerializedName;
  */
 public class AddRemoteReq {
 
-    @SerializedName("device_id")
-    private String device_id;
+    /*
+     * "brand_name":"Carrier",	"remote_codeset_id":"13",
+     * "device_type":"AC",	"model_number":"42KGR-024R",
+     * "remote_name":"IOT",    "ir_blaster_id":"1548399013334_7fG1X6xy-",
+     * "ir_blaster_module_id":"SpikeBot1348709",
+     * "room_id":"1548332287674_xR0nf1J0K",    "mode":"LOW",
+     * "temperature": 25,    "ir_code":""
+     * */
+
+    @SerializedName("brand_name")
+    private String brand_name;
+
+    @SerializedName("remote_codeset_id")
+    private String remote_codeset_id;
+
     @SerializedName("device_type")
     private String device_type;
-    @SerializedName("brand_id")
-    private String brand_id;
-    @SerializedName("brand_type")
-    private String brand_type;
-    @SerializedName("codeset_id")
-    private String codeset_id;
+
+    @SerializedName("device_id")
+    private String device_id;
+    @SerializedName("model_number")
+    private String model_number;
     @SerializedName("remote_name")
     private String remote_name;
     @SerializedName("ir_blaster_id")
@@ -32,6 +44,16 @@ public class AddRemoteReq {
     private String mode;
     @SerializedName("temperature")
     private String temperatature;
+    @SerializedName("ir_code")
+    private String ir_code;
+
+
+    @SerializedName("brand_id")
+    private String brand_id;
+    @SerializedName("brand_type")
+    private String brand_type;
+    @SerializedName("codeset_id")
+    private String codeset_id;
     @SerializedName("phone_id")
     private String phone_id;
     @SerializedName("phone_type")
@@ -68,20 +90,25 @@ public class AddRemoteReq {
         this.ir_blaster_name = ir_blaster_name;
     }
 
-    public AddRemoteReq(String device_id, String device_type, String brand_id, String brand_type, String codeset_id, String remote_name, String ir_blaster_id, String ir_blaster_moudle_id, String room_id, String mode, String temperatature, String phone_id, String phone_type) {
+    public AddRemoteReq(String device_id, String device_type, String brand_id, String brand_type, String codeset_id, String remote_name, String ir_blaster_id, String ir_blaster_moudle_id, String room_id, String mode, String temperatature, String phone_id, String phone_type,
+                        String brand_name,String remote_codeset_id,String model_number,String ir_code) {
         this.device_id = device_id;
         this.device_type = device_type;
-        this.brand_id = brand_id;
-        this.brand_type = brand_type;
-        this.codeset_id = codeset_id;
+//        this.brand_id = brand_id;
+//        this.brand_type = brand_type;
+//        this.codeset_id = codeset_id;
         this.remote_name = remote_name;
         this.ir_blaster_id = ir_blaster_id;
         this.ir_blaster_moudle_id = ir_blaster_moudle_id;
         this.room_id = room_id;
         this.mode = mode;
         this.temperatature = temperatature;
-        this.phone_id = phone_id;
-        this.phone_type = phone_type;
+        this.brand_name = brand_name;
+        this.remote_codeset_id = remote_codeset_id;
+        this.model_number = model_number;
+        this.ir_code = ir_code;
+//        this.phone_id = phone_id;
+//        this.phone_type = phone_type;
     }
 
     public String getRemote_id() {

@@ -126,12 +126,12 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
     int position = 0;
     ScheduleVO scheduleVO = new ScheduleVO();
     boolean isEdit = false, isEditOpen = false,isSelectMode=false;
-    boolean isScheduleClick = false;
+    boolean isScheduleClick = false,isMoodSelected=false;
     String webUrl = "";
     JSONObject deviceObj = new JSONObject();
     int selection = 0;
 
-    String moodId = "", roomId = "";
+    String moodId = "", roomId = "",startCheckDate="",endCheckDate="";
     private boolean isMap = false, isMoodAdapter;
 
     public String on_time_date = "";
@@ -172,6 +172,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             moodId = getIntent().getStringExtra("moodId");
             roomId = getIntent().getStringExtra("roomId");
             isActivityType = getIntent().getStringExtra("isActivityType");
+            isMoodSelected = getIntent().getBooleanExtra("isMoodSelected",false);
 
             //isMoodAdapter true : is moodeDevices/2 if false : Room devices/1 if
             isMoodAdapter = getIntent().getBooleanExtra("isMoodAdapter", false);
@@ -1374,6 +1375,10 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         et_on_time_bottom_header.setText(_finalJustDate);
         et_on_time_bottom_header_at_time.setText(_hourMinute);
         et_on_time_bottom_header_at_ampm.setText(_ampm);
+
+        startCheckDate=_finalJustDate+" "+_hourMinute+_ampm;
+
+        Log.d("System out","date is start "+startCheckDate);
     }
 
     private void setEtOffTimeHeader(String _finalJustDate, String _hourMinute, String _ampm) {
@@ -1381,6 +1386,9 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         et_off_time_bottom_header.setText(_finalJustDate);
         et_off_time_bottom_header_at_time.setText(_hourMinute);
         et_off_time_bottom_header_at_ampm.setText(_ampm);
+
+        endCheckDate=_finalJustDate+" "+_hourMinute+_ampm;
+        Log.d("System out","date is end "+endCheckDate);
     }
 
 
@@ -1569,6 +1577,16 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 if (et_off_time_min.getText().toString().length() == 0 && !TextUtils.isEmpty(et_off_time_hours.getText().toString())) {
                     et_off_time_min.setText("00");
                 }
+
+                int rId = rg_schedule_select.getCheckedRadioButtonId();
+
+                if (rId == R.id.rb_schedule_select_timer) {
+                    if(startCheckDate.length()>0 && endCheckDate.length()>0){
+
+
+                    }
+                }
+
 
                 int on_hour = 0;
 
@@ -1862,6 +1880,21 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                             deviceObj.put("timer_off_after", "");
                             deviceObj.put("timer_off_date", "");
                         } else {
+
+//                            if(isEdit){
+//                                Log.d("MakeObj", "check edit " + deviceObj.toString());
+//
+//                                String strCurrentTime="";
+//
+//                                if(et_on_time_hours.getText().toString().length()>0){
+//                                    strCurrentTime=strCurrentTime+et_on_time_hours.getText().toString();
+//                                }
+//
+//                                if(et_on_time_min.getText().toString().length()>0){
+//                                    strCurrentTime=strCurrentTime+":"+et_on_time_min.getText().toString();
+//                                }
+//                            }
+
 
                             if (!TextUtils.isEmpty(et_off_time_bottom_header_at_time.getText().toString())) {
                                 deviceObj.put("schedule_device_off_time", et_off_hour_ampm_12);

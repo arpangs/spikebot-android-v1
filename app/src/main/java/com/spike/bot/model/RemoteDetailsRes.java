@@ -112,6 +112,42 @@ public class RemoteDetailsRes {
 
         public class RemoteCurrentStatusDetails {
 
+            public String getIr_code() {
+                return ir_code;
+            }
+
+            public void setIr_code(String ir_code) {
+                this.ir_code = ir_code;
+            }
+
+            @SerializedName("ir_code")
+            @Expose
+            private String ir_code;
+
+            @SerializedName("brand_name")
+            @Expose
+            private String brand_name;
+
+            public String getBrand_name() {
+                return brand_name;
+            }
+
+            public void setBrand_name(String brand_name) {
+                this.brand_name = brand_name;
+            }
+
+            public String getModel_number() {
+                return model_number;
+            }
+
+            public void setModel_number(String model_number) {
+                this.model_number = model_number;
+            }
+
+            @SerializedName("model_number")
+            @Expose
+            private String model_number;
+
             @SerializedName("id")
             @Expose
             private Integer id;

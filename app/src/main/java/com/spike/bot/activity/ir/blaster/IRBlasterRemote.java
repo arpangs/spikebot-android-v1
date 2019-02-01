@@ -196,7 +196,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         mRemoteName.setText(mRemoteCurrentStatusList.getRemoteName());
 
 
-        mBrandBottom.setText(mRemoteCurrentStatusList.getBrandType());
+        mBrandBottom.setText(mRemoteCurrentStatusList.getBrand_name()+"{"+mRemoteCurrentStatusList.getModel_number()+"}");
 
         speedList = mRemoteCommandList.getMODE();
         tempMinus = mRemoteCommandList.getTEMPERATURE().get(0);

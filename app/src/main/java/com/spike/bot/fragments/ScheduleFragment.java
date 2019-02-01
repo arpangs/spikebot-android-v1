@@ -465,10 +465,15 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 //        }
 
         Intent intent = new Intent(getActivity(), ScheduleActivity.class);
-        if (selection != 0) {
-            intent.putExtra("selection", selection);
-        } else {
-            intent.putExtra("selection", !isMood ? 1 : 2);
+//        if (selection != 0) {
+//            intent.putExtra("selection", selection);
+//        } else {
+//            intent.putExtra("selection", !isMood ? 1 : 2);
+//        }
+        if(isMood){
+            intent.putExtra("selection", 2);
+        }else {
+            intent.putExtra("selection", !isFilterType ? 1 : 2);
         }
 
         String moodIdPass = moodId3;
@@ -483,7 +488,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         } else {
             intent.putExtra("isEditOpen", true);
         }
-        intent.putExtra("isMoodSelected", true);
+        intent.putExtra("isMoodSelected", isFilterType);
         intent.putExtra("isActivityType", "" + 2);
         startActivity(intent);
 
@@ -878,9 +883,13 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 //
 //                        Log.d("isObject", "JSONObject");
 
+                    ll_recycler.setVisibility(View.VISIBLE);
+                    rv_mood.setVisibility(View.VISIBLE);
+                    txt_empty_scheduler.setVisibility(View.VISIBLE);
+                    rv_mood.setVisibility(View.GONE);
                         if (result.getJSONObject("data") != null) {
                             JSONObject scheduleObject = result.getJSONObject("data");
-
+//moodSchedule
                             JSONArray moodArray = scheduleObject.getJSONArray("moodSchedule");
                             JSONArray roomArray = scheduleObject.getJSONArray("roomSchedule");
 
@@ -898,16 +907,24 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                             //  sortSchedule(scheduleMoodArrayList);
 
                             if (scheduleRoomArrayList.size() > 0) {
+                                ll_recycler.setVisibility(View.VISIBLE);
+                                rv_mood.setVisibility(View.VISIBLE);
+
                                 scheduleRoomAdapter = new ScheduleAdapter(getActivity(), scheduleRoomArrayList, ScheduleFragment.this, true, false);
                                 rv_mood.setAdapter(scheduleRoomAdapter);
                                 scheduleRoomAdapter.notifyDataSetChanged();
 
                                 txt_empty_scheduler.setVisibility(View.GONE);
                                 ll_recycler.setVisibility(View.VISIBLE);
+                                updateButton(btnRoomSchedule, btnMoodSchedule);
                                 showHeader();
                             }else {
                                 scheduleRoomArrayList.clear();
                                 scheduleRoomAdapter.notifyDataSetChanged();
+                                ll_recycler.setVisibility(View.VISIBLE);
+                                rv_mood.setVisibility(View.GONE);
+                                txt_empty_scheduler.setVisibility(View.VISIBLE);
+
                                // Toast.makeText(getActivity(),"No data found.",Toast.LENGTH_LONG).show();
                             }
 //                            if (scheduleMoodArrayList.size() > 0) {
@@ -1090,11 +1107,14 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                             scheduleRoomAdapter.notifyDataSetChanged();
                             txt_empty_scheduler.setVisibility(View.GONE);
                             ll_recycler.setVisibility(View.VISIBLE);
+
                             showHeader();
                         }else {
                             scheduleRoomArrayList.clear();
                             scheduleRoomAdapter.notifyDataSetChanged();
                         }
+
+                        linearTabSchedule.setVisibility(View.GONE);
                     }
 
                 } catch (JSONException e) {

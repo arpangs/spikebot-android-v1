@@ -9,8 +9,9 @@ import java.net.URL;
 
 public class Constants {
 
-    public static final String CLOUD_SERVER_URL = "http://52.24.23.7"; //IP used for login cloud and logout
-
+    public static final String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //IP used for login cloud and logout
+//http://52.24.23.7:8079
+//http://52.24.23.7:7
 //    public static final String IP_END = "114"; //101 //117 //222
     public static final String  IP_END = "119"; //101 //117 //222
 //    public static final String  IP_END = "222"; //101 //117 //222

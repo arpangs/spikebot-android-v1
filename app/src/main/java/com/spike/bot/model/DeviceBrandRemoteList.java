@@ -7,9 +7,9 @@ import java.io.Serializable;
 
 public class DeviceBrandRemoteList implements Serializable{
 
-        @SerializedName("id")
+        @SerializedName("remote_codeset_id")
         @Expose
-        private Integer id;
+        private Integer remote_codeset_id;
         @SerializedName("ir_code")
         @Expose
         private String irCode;
@@ -20,12 +20,12 @@ public class DeviceBrandRemoteList implements Serializable{
         @Expose
         private String brandName;
 
-        public Integer getId() {
-            return id;
+        public Integer getremote_codeset_id() {
+            return remote_codeset_id;
         }
 
-        public void setId(Integer id) {
-            this.id = id;
+        public void setremote_codeset_id(Integer id) {
+            this.remote_codeset_id = id;
         }
 
         public String getIrCode() {

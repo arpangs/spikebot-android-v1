@@ -125,6 +125,7 @@
             android:layout_marginRight="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center|bottom"
             android:orientation="horizontal">
 
             <android.support.design.widget.TextInputLayout
@@ -139,16 +140,16 @@
                     android:inputType="number"
                     android:singleLine="true"
                     android:maxLength="2"
-                    android:lines="1"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="match_parent" />
             </android.support.design.widget.TextInputLayout>
 
             <LinearLayout
-                android:layout_gravity="center"
+                android:layout_gravity="center|bottom"
                 android:layout_marginLeft="4dp"
                 android:layout_weight="0.6"
-                android:background="@drawable/view_border_bottom_spinner"
+                android:layout_marginBottom="7dp"
+                android:background="@drawable/spinner_background"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">

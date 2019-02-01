@@ -25,6 +25,7 @@ import com.spike.bot.adapter.irblaster.IRRemoteBrandListAdapter;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.core.Log;
+import com.spike.bot.model.DataSearch;
 import com.spike.bot.model.IRRemoteListRes;
 
 import org.json.JSONException;
@@ -37,20 +38,20 @@ import java.util.List;
  * Created by Sagar on 2/8/18.
  * Gmail : jethvasagar2@gmail.com
  */
-public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRemoteBrandListAdapter.IRRemoteListClickEvent{
+public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRemoteBrandListAdapter.IRRemoteListClickEvent {
 
-    private LinearLayout linear_progress,ll_sensor_list;
+    private LinearLayout linear_progress, ll_sensor_list;
     private RecyclerView mIRListView;
-    private String mIrDeviceId,mIrDeviceType,mRoomId;
-    private String mIRBlasterModuleId,mIrBlasterId;
-    private String mRoomName,mBlasterName;
+    private String mIrDeviceId, mIrDeviceType, mRoomId;
+    private String mIRBlasterModuleId, mIrBlasterId;
+    private String mRoomName, mBlasterName;
     private String mRemoteName;
 
     List<IRRemoteListRes.Data.BrandList> brandLists;
 
     private IRRemoteBrandListAdapter irRemoteBrandListAdapter;
     private EditText mSearchBrand;
-    
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,27 +73,27 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
         mIrDeviceId = getIntent().getStringExtra("IR_DEVICE_ID");
         mIRBlasterModuleId = getIntent().getStringExtra("IR_BLASTER_MODULE_ID");
 
-        getSupportActionBar().setTitle("Select "+mRemoteName);
+        getSupportActionBar().setTitle("Select " + mRemoteName);
 
         bindView();
 
         getIRDetailsList();
     }
 
-    private void bindView(){
+    private void bindView() {
 
         mSearchBrand = (EditText) findViewById(R.id.search_brand);
 
         linear_progress = (LinearLayout) findViewById(R.id.linear_progress);
-        ll_sensor_list  = (LinearLayout) findViewById(R.id.ll_sensor_list);
+        ll_sensor_list = (LinearLayout) findViewById(R.id.ll_sensor_list);
 
         mIRListView = (RecyclerView) findViewById(R.id.list_ir_remote);
-        mIRListView.setLayoutManager(new GridLayoutManager(this,1));
+        mIRListView.setLayoutManager(new GridLayoutManager(this, 1));
 
         searchBrand();
     }
 
-    private void searchBrand(){
+    private void searchBrand() {
 
 
         mSearchBrand.addTextChangedListener(new TextWatcher() {
@@ -116,13 +117,14 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
 
     /**
      * filter adapter
+     *
      * @param filterAdapter
      */
-    private void filterAdapter(String filterAdapter){
+    private void filterAdapter(String filterAdapter) {
 
         final List<IRRemoteListRes.Data.BrandList> tmpBrandLists = new ArrayList<>();
 
-        for(IRRemoteListRes.Data.BrandList brandList : brandLists){
+        for (IRRemoteListRes.Data.BrandList brandList : brandLists) {
             if (brandList.getBrandType().toLowerCase().contains(filterAdapter.toLowerCase())) {
                 tmpBrandLists.add(brandList);
             }
@@ -132,7 +134,7 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
 
     }
 
-    private void getIRDetailsList(){
+    private void getIRDetailsList() {
         if (!ActivityHelper.isConnectingToInternet(this)) {
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -141,8 +143,8 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
         showProgress();
         ActivityHelper.showProgressDialog(IRRemoteBrandListActivity.this, "Please Wait...", false);
 
-      //  String url = ChatApplication.url + Constants.GET_IR_DEVICE_DETAILS + "/"+ mIrDeviceId;
-        String url = ChatApplication.url + Constants.getIRDeviceTypeBrands + "/"+ mIrDeviceId;
+        //  String url = ChatApplication.url + Constants.GET_IR_DEVICE_DETAILS + "/"+ mIrDeviceId;
+        String url = ChatApplication.url + Constants.getIRDeviceTypeBrands + "/" + mIrDeviceId;
         new GetJsonTask(this, url, "GET", "", new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
@@ -157,15 +159,15 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
-                    if(code == 200){
+                    if (code == 200) {
 
-                        Log.d("IRDeviceDetails","remote res : " + result.toString());
-                        IRRemoteListRes irRemoteListRes = Common.jsonToPojo(result.toString(),IRRemoteListRes.class);
+                        Log.d("IRDeviceDetails", "remote res : " + result.toString());
+                        IRRemoteListRes irRemoteListRes = Common.jsonToPojo(result.toString(), IRRemoteListRes.class);
                         brandLists = irRemoteListRes.getData().getBrandList();
                         updateAdapter(brandLists);
 
-                    }else{
-                        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     }
 
                 } catch (JSONException e) {
@@ -183,11 +185,12 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
 
     /**
      * update adapter when user filter the option
+     *
      * @param brandLists
      */
-    private void updateAdapter(List<IRRemoteListRes.Data.BrandList> brandLists){
+    private void updateAdapter(List<IRRemoteListRes.Data.BrandList> brandLists) {
 
-        irRemoteBrandListAdapter = new IRRemoteBrandListAdapter(brandLists,IRRemoteBrandListActivity.this);
+        irRemoteBrandListAdapter = new IRRemoteBrandListAdapter(brandLists, IRRemoteBrandListActivity.this);
         mIRListView.setAdapter(irRemoteBrandListAdapter);
         irRemoteBrandListAdapter.notifyDataSetChanged();
     }
@@ -195,44 +198,92 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == android.R.id.home){
+        if (id == android.R.id.home) {
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void showProgress(){
+    private void showProgress() {
 
         linear_progress.setVisibility(View.VISIBLE);
         mIRListView.setVisibility(View.GONE);
     }
-    private void hideProgress(){
+
+    private void hideProgress() {
         linear_progress.setVisibility(View.GONE);
         mIRListView.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onClickRemoteList(IRRemoteListRes.Data.BrandList brandList) {
-        Intent intent = new Intent(this,IRRemoteConfigActivity.class);
-        intent.putExtra("BRAND_NAME", brandList.getBrandType());
-        intent.putExtra("BLASTER_NAME", mBlasterName);
-        intent.putExtra("ROOM_ID", mRoomId);
-        intent.putExtra("ROOM_NAME", mRoomName);
-        intent.putExtra("SENSOR_ID",mIrBlasterId);
-        intent.putExtra("IR_BRAND_TYPE", brandList.getBrandType());
-        intent.putExtra("IR_DEVICE_TYPE", mIrDeviceType);
-        intent.putExtra("IR_DEVICE_ID", mIrDeviceId);
-        intent.putExtra("BRAND_ID",""+brandList.getBrandId());
-        intent.putExtra("IR_BLASTER_MODULE_ID",""+mIRBlasterModuleId);
-        startActivityForResult(intent,Constants.REMOTE_REQUEST_CODE);
+        getIRRemoteDetails(brandList);
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == Constants.REMOTE_REQUEST_CODE && resultCode == Activity.RESULT_OK){
+        if (requestCode == Constants.REMOTE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             Intent returnIntent = new Intent();
-            setResult(Activity.RESULT_OK,returnIntent);
+            setResult(Activity.RESULT_OK, returnIntent);
             finish();
         }
+    }
+
+    private void getIRRemoteDetails(final IRRemoteListRes.Data.BrandList brandList) {
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ActivityHelper.showProgressDialog(IRRemoteBrandListActivity.this, "Please Wait...", false);
+
+        String url = ChatApplication.url + Constants.getDeviceBrandRemoteList + "/" + brandList.getBrandId();
+        new GetJsonTask(this, url, "GET", "", new ICallBack() {
+            @Override
+            public void onSuccess(JSONObject result) {
+                ActivityHelper.dismissProgressDialog();
+                try {
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        DataSearch arrayList = Common.jsonToPojo(result.getString("data").toString(), DataSearch.class);
+
+                        if (arrayList.getDeviceBrandRemoteList() != null &&
+                                arrayList.getDeviceBrandRemoteList().size() > 0) {
+
+                            Intent intent = new Intent(IRRemoteBrandListActivity.this, IRRemoteConfigActivity.class);
+                            intent.putExtra("BRAND_NAME", brandList.getBrandType());
+                            intent.putExtra("BLASTER_NAME", mBlasterName);
+                            intent.putExtra("ROOM_ID", mRoomId);
+                            intent.putExtra("ROOM_NAME", mRoomName);
+                            intent.putExtra("SENSOR_ID", mIrBlasterId);
+                            intent.putExtra("IR_BRAND_TYPE", brandList.getBrandType());
+                            intent.putExtra("IR_DEVICE_TYPE", mIrDeviceType);
+                            intent.putExtra("IR_DEVICE_ID", mIrDeviceId);
+                            intent.putExtra("BRAND_ID", "" + brandList.getBrandId());
+                            intent.putExtra("IR_BLASTER_MODULE_ID", "" + mIRBlasterModuleId);
+                            intent.putExtra("arrayList", arrayList);
+                            startActivityForResult(intent, Constants.REMOTE_REQUEST_CODE);
+                        }else {
+                            Toast.makeText(getApplicationContext(), "No remote available", Toast.LENGTH_SHORT).show();
+                        }
+
+                    } else {
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                    }
+
+                } catch (JSONException e) {
+                    ActivityHelper.dismissProgressDialog();
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                throwable.printStackTrace();
+                ActivityHelper.dismissProgressDialog();
+            }
+        }).execute();
     }
 }

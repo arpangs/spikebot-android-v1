@@ -539,7 +539,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
                 Log.d("deviceObj","Type : " +dPanel.getDeviceType());
 
-                if(dPanel.getDeviceId().length()>0) {
+//                if(dPanel.getDeviceId().length()>0) {
 
                     JSONObject ob1 = new JSONObject();
                     if (dPanel.getDeviceType() != null && dPanel.getDeviceType().equalsIgnoreCase("2")) { //old : AC
@@ -584,7 +584,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                     }
 
                     jsonArrayDevice.put(ob1);
-                }
+//                }
 
                 // ss_room_devices += dPanel.getModuleId()+""+dPanel.getDeviceId()+",";
                // ss_room_devices += dPanel.getRoomDeviceId()+",";

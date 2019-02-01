@@ -542,7 +542,7 @@ public class JsonHelper {
                     module_id = deviceObj.has("module_id") ? deviceObj.getString("module_id") : "";
                 }
 
-                String device_id = deviceObj.has("device_id") ? deviceObj.getString("device_id") : "";
+                String device_id = deviceObj.has("device_id") ? deviceObj.getString("device_id") : "2";
                 int device_status = deviceObj.has("device_status") ? deviceObj.getInt("device_status") : 0;
                 String device_type = deviceObj.has("device_type") ? deviceObj.getString("device_type"):"";
                 String device_specific_value = deviceObj.has("device_specific_value")?deviceObj.optString("device_specific_value"):"";

@@ -49,10 +49,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SensorView
 
         holder.txtNameSearch.setText(arrayListLog.get(position).getModelNumber());
 
+        holder.txtNameSearch.setId(position);
         holder.txtNameSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchClick.searchItemClick(arrayListLog.get(position));
+                searchClick.searchItemClick(arrayListLog.get(v.getId()));
             }
         });
     }

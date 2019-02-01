@@ -34,9 +34,10 @@
             android:id="@+id/edSearch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Search"
+            android:hint="Search model"
             android:singleLine="true"
             android:maxLength="20"
+            android:drawableLeft="@drawable/ic_search"
             android:textColor="@color/automation_black"
             android:textSize="@dimen/_14sdp"/>
 
