@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -239,7 +238,6 @@ public class CameraDeviceLogActivity  extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.d("System out","json is "+object.toString());
 
         ActivityHelper.showProgressDialog(CameraDeviceLogActivity.this, "Please wait...", false);
         String url = ChatApplication.url + Constants.getCameraLogs;
@@ -351,7 +349,6 @@ public class CameraDeviceLogActivity  extends AppCompatActivity {
                             start_date = on_date;
                         }
 
-                        Log.d("Date_format",""+on_date + " >>> " + DeviceLogActivity.changeDateFormat(on_date));
                         editText.setText(""+DeviceLogActivity.changeDateFormat(on_date));
 
                         if(!TextUtils.isEmpty(et_schedule_on_time.getText().toString()) && !TextUtils.isEmpty(et_schedule_off_time.getText().toString())){

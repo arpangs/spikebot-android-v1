@@ -27,6 +27,7 @@ public class DeviceListLayoutHelper implements SectionStateChangeListener {
     //section map
     //TODO : look for a way to avoid this
   //  private HashMap<String, MoodVO> mSectionMap = new HashMap<String, MoodVO>();
+  //  private HashMap<String, MoodVO> mSectionMap = new HashMap<String, MoodVO>();
 
     //adapter
     private DeviceListExpandableGridAdapter mSectionedExpandableGridAdapter;
@@ -50,7 +51,10 @@ public class DeviceListLayoutHelper implements SectionStateChangeListener {
         this.selectDevicesListener = selectDevicesListener;
     }
     public String getSelectedItemIds(){
-        String roomIds = mSectionedExpandableGridAdapter.getSelectedItemIds();
+        String roomIds = "";
+        if(mSectionedExpandableGridAdapter.getSelectedItemIds().length()>0){
+            roomIds=mSectionedExpandableGridAdapter.getSelectedItemIds();
+        }
         return roomIds;
     }
     public ArrayList<DeviceVO> getSelectedItemList(){

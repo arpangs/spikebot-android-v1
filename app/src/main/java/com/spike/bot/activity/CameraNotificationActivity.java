@@ -16,7 +16,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -308,7 +307,6 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                 DialogFragment fromTimeFragment = new TimePickerFragment(CameraNotificationActivity.this, et_schedule_off_time.getText().toString(), new ICallback() {
                     @Override
                     public void onSuccess(String str) {
-                        Log.d("date ", "fromTimeFragment time selected = " + str);
                         et_schedule_off_time.setText(str);
 
                     }
@@ -328,7 +326,6 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                 DialogFragment fromTimeFragment = new TimePickerFragment(CameraNotificationActivity.this, et_schedule_on_time.getText().toString(), new ICallback() {
                     @Override
                     public void onSuccess(String str) {
-                        Log.d("date ", "fromTimeFragment time selected = " + str);
                         et_schedule_on_time.setText(str);
 
                     }
@@ -355,7 +352,6 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                 } else if (countCamera == 0) {
                     Toast.makeText(CameraNotificationActivity.this, "Select atleast one or more camera", Toast.LENGTH_SHORT).show();
                 } else {
-                    Log.d("System out","interval is "+edIntervalTime.getText().toString());
                     callAddCamera(et_schedule_on_time.getText().toString(), et_schedule_off_time.getText().toString(),strFlag,cameraAlertList,Integer.parseInt(edIntervalTime.getText().toString()));
                 }
             }
@@ -414,7 +410,6 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                 deviceObj.put("cameraList", roomDeviceArray);
 
                 addSchedule(deviceObj,strflag);
-                Log.d("System out", "deviceObj is " + deviceObj.toString());
             } catch (Exception e) {
 
             }
@@ -459,7 +454,6 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
                 deviceObj.put("cameraList", roomDeviceArray);
                 addSchedule(deviceObj, strflag);
-                Log.d("System out", "deviceObj is " + deviceObj.toString());
             } catch (Exception e) {
 
             }
@@ -467,7 +461,6 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
     }
 
     public void addSchedule(JSONObject deviceObj, String strflag) {
-        Log.d("SelectObjectTime", "addSchedule addSchedule ::   " + deviceObj.toString());
         if (!ActivityHelper.isConnectingToInternet(this)) {
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -516,7 +509,6 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
     }
 
     public void getconfigureData() {
-        Log.d("configGatewayDoorSensor", "getconfigureData configureGatewayDevice");
         if (!ActivityHelper.isConnectingToInternet(CameraNotificationActivity.this)) {
             Toast.makeText(CameraNotificationActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -709,7 +701,6 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
         }
 
-        Log.d("SelectObjectTime", "addSchedule addSchedule ::   " + deviceObj.toString());
         if (!ActivityHelper.isConnectingToInternet(this)) {
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;

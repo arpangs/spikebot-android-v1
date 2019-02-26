@@ -23,7 +23,6 @@ import android.text.Html;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +30,7 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -56,6 +56,7 @@ import com.spike.bot.dialog.AddRoomDialog;
 import com.spike.bot.dialog.DeviceEditDialog;
 import com.spike.bot.dialog.ICallback;
 import com.spike.bot.model.DeviceVO;
+import com.spike.bot.model.IRBlasterAddRes;
 import com.spike.bot.model.PanelVO;
 import com.spike.bot.model.RoomVO;
 import com.kp.core.ActivityHelper;
@@ -163,7 +164,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         et_toolbar_title.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
 
-
         final View activityRootView = findViewById(R.id.coordinator_view);
         activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -221,7 +221,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             public void onClick(View v) {
                 closeFABMenu();
                 action = "action_add_schedule";
-                Log.d("AddSchedule","RoomID : " +room.getRoomId());
                 Intent intent = new Intent(getApplicationContext(), ScheduleListActivity.class);
                 intent.putExtra("moodId3",room.getRoomId());
                 intent.putExtra("roomId",room.getRoomId());
@@ -285,14 +284,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             RoomEditActivity_v2.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
-                    //  Toast.makeText(getContext(),"Found Door Sensor : "   + args[0],Toast.LENGTH_LONG).show();
-                    //{"door_sensor_module_id":"D2D3C612004B1200"}
-
                     try {
-
-                        Log.d("configGatewayDoorSensor", "Found sensor id : " + args[0]);
-
                         if (countDownTimer != null) {
                             countDownTimer.cancel();
                         }
@@ -327,11 +319,8 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                             showAddSensorDialog(door_sensor_module_id, false);
                         } else {
                             showConfigAlert(message);
-                            //Toast.makeText(getActivity(),message,Toast.LENGTH_SHORT).show();
                         }
 
-                        //  addRoom = false;
-                        // }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -419,10 +408,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             e.printStackTrace();
         }
 
-        Log.d("roomObj","ob : " + object.toString());
-
-        //  ActivityHelper.showProgressDialog(RoomEditActivity_v2.this, "Please wait...", false);
-
         String url = ChatApplication.url + Constants.DELETE_ROOM;
 
         new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
@@ -430,7 +415,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             public void onSuccess(JSONObject result) {
 
                 ActivityHelper.dismissProgressDialog();
-                Log.d(TAG, "getconfigureData onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -449,7 +433,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d(TAG, "getconfigureData onFailure " + error);
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
@@ -477,7 +460,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
     public void startSocketConnection(){
         ChatApplication app = (ChatApplication) getApplication();
         if(mSocket!=null && mSocket.connected()){
-            Log.d("","mSocket.connected  return.." + mSocket.id() );
             return;
         }
         mSocket = app.getSocket();
@@ -485,7 +467,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             mSocket.on("configureGatewayDevice", configureGatewayDevice);
             mSocket.on("configureTempSensor", configureTempSensor);
             mSocket.on("configureDoorSensor", configureGatewayDoorSensor);
-            Log.d("","mSocket.connect()= "  + mSocket.id() );
         }
     }
     @Override
@@ -495,7 +476,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             mSocket.off("configureGatewayDevice", configureGatewayDevice);
             mSocket.off("configureTempSensor", configureTempSensor);
             mSocket.off("configureDoorSensor", configureGatewayDoorSensor);
-            Log.d("","mSocket onDestroy disconnect();");
         }
     }
 
@@ -608,7 +588,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
     private void saveSensor(final Dialog dialog, EditText textInputEditText, String door_name,
                             String door_module_id, Spinner sp_room_list, final boolean isTempSensorRequest){
 
-        Log.d(TAG, "configureNewRoom configureGatewayDevice");
         if(!ActivityHelper.isConnectingToInternet(RoomEditActivity_v2.this)){
             Toast.makeText(RoomEditActivity_v2.this.getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
             return;
@@ -644,7 +623,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             e.printStackTrace();
         }
 
-        Log.d("roomOBJ","obj : " + obj.toString());
         String url = "";
         if (isTempSensorRequest){
             url = ChatApplication.url + Constants.ADD_TEMP_SENSOR;
@@ -655,7 +633,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         new GetJsonTask(RoomEditActivity_v2.this,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d(TAG, isTempSensorRequest + " configureNewSensor onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -683,7 +660,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             }
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d(TAG, isTempSensorRequest + " configureNewSensor onFailure " + error );
                 ActivityHelper.dismissProgressDialog();
             }
         }).execute();
@@ -702,9 +678,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                 public void run() {
 
                     try {
-
-                        Log.d("configureTempSensor","Found sensor id : " + args[0]);
-
                         if (countDownTimer != null) {
                             countDownTimer.cancel();
                         }
@@ -715,7 +688,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                         //{"message":"Temperature Sensor already configured. Add from Unconfigured Sensor devices","temp_module_id":"","room_list":""}
                         JSONObject object = new JSONObject(args[0].toString());
 
-                        Log.d("configureTempSensor","Object : " + object.toString());
                         String message = object.getString("message");
 
                         String temp_sensor_module_id = object.getString("temp_sensor_module_id");
@@ -772,8 +744,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                 @Override
                 public void run() {
                     if(args!=null) {
-                        Log.d("configureGatewayDevice " + args.length,  mSocket.id() + " configureGatewayDevice RoomEdit " + args[0]);
-                        //Log.d("configureGatewayDevice ", " configureGatewayDevice deviceid 2 " + args[1]);
                         String module_id = "" ;//args[0].toString();
                         String device_id = "";//args[1].toString();
                         String module_type = "";//args[2].toString();
@@ -801,7 +771,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                             addRoomDialog = new AddRoomDialog(RoomEditActivity_v2.this,room.getRoomId(),room.getRoomName(), module_id, device_id,module_type, new ICallback() {
                                 @Override
                                 public void onSuccess(String str) {
-                                    Log.d("","str " + str );
                                     if(str.equalsIgnoreCase("yes")){
                                         //
                                         ChatApplication.isOpenDialog = true;
@@ -816,8 +785,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                             }
 
                             addRoom = false;
-                            Log.d("configureGatewayDevice " ,  " configureGatewayDevice RoomEdit " + addRoom);
-                            //  }
                         }catch (Exception e){
                             e.printStackTrace();
                         }
@@ -829,10 +796,8 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
 
     CountDownTimer countDownTimer = new CountDownTimer(7000, 4000) {
         public void onTick(long millisUntilFinished) {
-            Log.d("","getconfigureData configureGatewayDevice countDownTimer RoomEdit onTick " );
         }
         public void onFinish() {
-            Log.d("","getconfigureData configureGatewayDevice countDownTimer RoomEdit onFinish " );
             addRoom = false;
             ActivityHelper.dismissProgressDialog();
             Toast.makeText(getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
@@ -843,11 +808,9 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         try {
             countDownTimer.start();
         } catch (Exception e) {
-            Log.d("", "TimerTask configureGatewayDevice Exception " + e.getMessage());
         }
     }
     public void getconfigureData(){
-        Log.d(TAG, "getconfigureData configureGatewayDevice");
         if(!ActivityHelper.isConnectingToInternet(this)){
             Toast.makeText(getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
             return;
@@ -860,11 +823,9 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         new GetJsonTask(this,url ,"POST","", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d(TAG, "getDeviceList onSuccess " + result.toString());
             }
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d(TAG, "getconfigureData onFailure " + error );
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
@@ -887,13 +848,10 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add) {
-            Log.d("","action_add");
             openAddPopup(findViewById(R.id.action_add));
             return true;
         }
         else if (id == R.id.action_save) {
-            Log.d("action_save","action_save");
-
             ActivityHelper.hideKeyboard(this);
 
             HashMap<String, String> selectedTextMap = roomEditGridAdapter.getTextValues();
@@ -908,7 +866,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                 if(mDataArrayList.get(i) != null) {
                     PanelVO panelvo = (PanelVO) mDataArrayList.get(i);
                     panelVOs.add(panelvo);
-                    Log.d("RoomEditValues : ","Panel1 : " + panelvo.getPanelName());
                 }
             }
 
@@ -963,8 +920,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
            // Toast.makeText(getApplicationContext(),"Enter Panel Name",Toast.LENGTH_SHORT).show();
             return;
         }
-        Log.d("RoomEditValues","obj " + obj.toString());
-
         String url = ChatApplication.url + Constants.SAVE_ROOM_AND_PANEL_NAME;
 
         ActivityHelper.showProgressDialog(RoomEditActivity_v2.this,"Please wait...",false);
@@ -972,7 +927,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         new GetJsonTask(this,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d("getDeviceList", "getDeviceList onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -1002,20 +956,16 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d("", "getDeviceList onFailure " + error );
             }
         }).execute();
     }
 
     public void getDeviceList(){
-        Log.d(TAG, "getDeviceList");
-
         String url =  ChatApplication.url + Constants.GET_EDIT_ROOM_INFO+"/"+room.getRoomId();
 
         new GetJsonTask(this,url ,"GET","", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d(TAG, "getDeviceList onSuccess " + result.toString());
                 try {
                     ArrayList<RoomVO> roomList = new ArrayList<>();
                     JSONObject dataObject = result.getJSONObject("data");
@@ -1054,7 +1004,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             }
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d(TAG, "getDeviceList onFailure " + error );
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
                 if(room.getPanelList().size()==0){
                     txt_empty_room.setVisibility(View.VISIBLE);
@@ -1096,8 +1045,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
 
         }else if(action.equalsIgnoreCase("edit")){
 
-            Log.d("DevicePanel","panelVO.getPanelId() : "+panelVO.getPanelId());
-
             Intent intentPanel = new Intent(getApplicationContext(), AddExistingPanel.class);
             intentPanel.putExtra("isDeviceAdd",true);
             intentPanel.putExtra("panelV0",panelVO);
@@ -1106,23 +1053,86 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             intentPanel.putExtra("panel_id",""+panelVO.getPanelId());
             intentPanel.putExtra("panel_name",""+panelVO.getPanelName());
             startActivity(intentPanel);
+        }else if(action.equals("sensorPanel")){
         }
     }
 
     @Override
     public void itemClicked(DeviceVO section, String action,View view) {
         closeFABMenu();
-        Log.d("itemClicked","itemClicked " + action + " Type : " + section.getDeviceId());
-        //openitemClickPopup(view,section);
-
         if(action.equalsIgnoreCase("1")){
             ActivityHelper.showProgressDialog(this,"Please wait.",false);
             showDeviceEditDialog(section);
         }else if(action.equalsIgnoreCase("isSensorClick")){
-          //  Intent intent = new Intent(getApplicationContext(),TempSensorInfoActivity.class);
-          //  startActivity(intent);
         }
     }
+
+    /**
+     * Display IR Blaster Edit Dialog
+     * Create Singleton class for prevent multiple instances of Dialog
+     */
+    private Dialog mDialog;
+    EditText mBlasterName;
+    private Dialog getDialogContext(){
+        if(mDialog == null){
+            mDialog = new Dialog(this);
+            mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            mDialog.setCancelable(true);
+            mDialog.setContentView(R.layout.dialog_ir_blaster_edit);
+        }
+        return mDialog;
+    }
+
+    /**
+     *
+     * @param ir
+     */
+    private void showBlasterEditDialog(final IRBlasterAddRes.Data.IrList ir){
+
+        mDialog = getDialogContext();
+        mBlasterName = (EditText) mDialog.findViewById(R.id.edt_blaster_name);
+        final Spinner mRoomSpinner = (Spinner)mDialog.findViewById(R.id.blaster_room_spinner);
+
+        InputFilter[] filterArray = new InputFilter[1];
+        filterArray[0] = new InputFilter.LengthFilter(25); //Remote Name max length to set only 25
+        mBlasterName.setFilters(filterArray);
+
+        Button btnCancel = (Button) mDialog.findViewById(R.id.btn_cancel);
+        Button btnSave = (Button) mDialog.findViewById(R.id.btn_save);
+        ImageView btnClose = (ImageView) mDialog.findViewById(R.id.iv_close);
+
+
+        mBlasterName.setText(ir.getIrBlasterName());
+
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+                mDialog = null;
+            }
+        });
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                IRBlasterAddRes.Data.RoomList roomList = (IRBlasterAddRes.Data.RoomList) mRoomSpinner.getSelectedItem();
+              //  updateBlaster(mDialog,mBlasterName,roomList,ir.getIrBlasterId());
+            }
+        });
+
+        if(!mDialog.isShowing()){
+            mDialog.show();
+        }
+
+    }
+
 
     /**
      *
@@ -1134,7 +1144,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
 
     private void showDeviceEditDialog(final DeviceVO deviceVO){
 
-        Log.d(TAG, "getSwitchDetails getSwitchDetails");
         if(!ActivityHelper.isConnectingToInternet(this)){
             Toast.makeText(getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
             return;
@@ -1158,7 +1167,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         new GetJsonTask(this,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d(TAG, "getSwitchDetails onSuccess " + result.toString());
 
                  ActivityHelper.dismissProgressDialog();
                 try {
@@ -1183,7 +1191,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d("", "getSwitchDetails onFailure " + error );
                 ActivityHelper.dismissProgressDialog();
             }
         }).execute();
@@ -1213,11 +1220,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        Log.d("roomObj","ob : " + object.toString());
-
-        //  ActivityHelper.showProgressDialog(RoomEditActivity_v2.this, "Please wait...", false);
-
         String url = ChatApplication.url + Constants.DELETE_ROOM_PANEL;
 
 
@@ -1226,7 +1228,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             public void onSuccess(JSONObject result) {
 
                 ActivityHelper.dismissProgressDialog();
-                Log.d(TAG, "getconfigureData onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -1279,7 +1280,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                         break;*/
                     case R.id.action_add_schedule:
                         action = "action_add_schedule";
-                        Log.d("AddSchedule","RoomID : " +room.getRoomId());
                         Intent intent = new Intent(getApplicationContext(), ScheduleListActivity.class);
                         intent.putExtra("moodId3",room.getRoomId());
                         intent.putExtra("roomId",room.getRoomId());
@@ -1406,7 +1406,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
 
 
     private void getIRBlasterConfigData() {
-        Log.d("IRBlaster", "configIRBlaster");
         if (!ActivityHelper.isConnectingToInternet(RoomEditActivity_v2.this)) {
             Toast.makeText(RoomEditActivity_v2.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -1420,7 +1419,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d("IRBlaster", "configIRBlaster onSuccess " + result.toString());
                 try {
                     // Toast.makeText(RoomEditActivity_v2.this.getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
@@ -1432,14 +1430,12 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d("IRBlaster", "configIRBlaster onFailure " + error);
                 Toast.makeText(RoomEditActivity_v2.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
     }
 
     private void getTempConfigData() {
-        Log.d("configTempSensor", "configTempSensor");
         if (!ActivityHelper.isConnectingToInternet(RoomEditActivity_v2.this)) {
             Toast.makeText(RoomEditActivity_v2.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -1453,19 +1449,11 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d("configTempSensor", "getconfigureData onSuccess " + result.toString());
-                try {
-                    // Toast.makeText(RoomEditActivity_v2.this.getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                }
             }
 
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d("configTempSensor", "getconfigureData onFailure " + error);
                 Toast.makeText(RoomEditActivity_v2.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
@@ -1479,8 +1467,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         new GetJsonTask(RoomEditActivity_v2.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                //   ActivityHelper.dismissProgressDialog();
-                Log.d("doorSensorUnAsigned","result : " + result.toString());
 
                 SensorUnassignedRes sensorUnassignedRes = Common.jsonToPojo(result.toString(),SensorUnassignedRes.class);
 
@@ -1488,7 +1474,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
 
                     if(sensorUnassignedRes.getData()!=null && sensorUnassignedRes.getData().getUnassigendSensorList().size() > 0){
                         Intent intent = new Intent(RoomEditActivity_v2.this, SensorUnassignedActivity.class);
-                        Log.i("SensorType","Type isDoorSensor : " + 2);
                         intent.putExtra("isDoorSensor",2);
                         intent.putExtra("roomName",et_toolbar_title.getText().toString());
                         startActivity(intent);
@@ -1613,9 +1598,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         new GetJsonTask(this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                //   ActivityHelper.dismissProgressDialog();
-                Log.d("doorSensorUnAsigned","result : " + result.toString());
-
                 SensorUnassignedRes sensorUnassignedRes = Common.jsonToPojo(result.toString(),SensorUnassignedRes.class);
 
                 if(sensorUnassignedRes.getCode() == 200){

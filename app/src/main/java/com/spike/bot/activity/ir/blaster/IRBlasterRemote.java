@@ -42,7 +42,6 @@ import com.spike.bot.adapter.MoodRemoteAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
-import com.spike.bot.core.Log;
 import com.spike.bot.listener.MoodEvent;
 import com.spike.bot.model.AddRemoteReq;
 import com.spike.bot.model.IRBlasterAddRes;
@@ -247,7 +246,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                         mRemoteCommandList = mRemoteList.getData().getRemoteCommandList().get(0);
                         mRemoteCurrentStatusList = mRemoteList.getData().getRemoteCurrentStatusDetails();
 
-                        Log.d("RemoteRes","Res : " + mRemoteCommandList.getPOWER().size());
+                        ChatApplication.logDisplay("Res : " + mRemoteCommandList.getPOWER().size());
 
                         initView();
 
@@ -370,7 +369,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 //
 //                break;
             case R.id.remote_temp_minus:
-                Log.d("isPowerOn","isOn : " + isPowerOn);
+                ChatApplication.logDisplay("isOn : " + isPowerOn);
                 if(isRemoteActive == 1 && !isPowerOn){
 
                 }else{
@@ -391,7 +390,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
                 break;
             case R.id.remote_temp_plus:
-                Log.d("isPowerOn","isOn : " + isPowerOn);
+                ChatApplication.logDisplay("isOn : " + isPowerOn);
                 if(isRemoteActive == 1 && !isPowerOn){
 
                 }else{
@@ -584,7 +583,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         Gson gson = new Gson();
         String mStrOnOffReq = gson.toJson(addRemoteReq);
 
-        Log.i("IRDeviceDetails","Request : " + mStrOnOffReq);
+        ChatApplication.logDisplay("Request : " + mStrOnOffReq);
 
         String url = ChatApplication.url + Constants.UPDATE_REMOTE_DETAILS;
         new GetJsonTask(this, url, "POST", mStrOnOffReq, new ICallBack() {
@@ -828,7 +827,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
      //   sendRemoteCommandReq.setIrblasterid(mIrBlasterId);
      //   sendRemoteCommandReq.setIrblasterModuleid(mIrBlasterModuleId);
 
-        Log.d("SendCommand","Found : " + mRoomDeviceId);
+        ChatApplication.logDisplay("Found : " + mRoomDeviceId);
 
         sendRemoteCommandReq.setPower(isPowerOn ? "ON" : "OFF");
         sendRemoteCommandReq.setSpeed(moodName);
@@ -840,13 +839,13 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         Gson gson = new Gson();
         String mRemoteCommandReq = gson.toJson(sendRemoteCommandReq);
 
-        Log.d("sendRemoteCommand","" + mRemoteCommandReq);
+        ChatApplication.logDisplay("" + mRemoteCommandReq);
 
         String url = ChatApplication.url + Constants.SEND_REMOTE_COMMAND;
         new GetJsonTask(this, url, "POST", mRemoteCommandReq, new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d("SendRemote","onSuccess result : " + result.toString());
+                ChatApplication.logDisplay("onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -895,7 +894,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         setSpeedText(""+tmpIrBlasterCurrentStatusList.getSpeed());
         mRemoteName.setText(""+tmpIrBlasterCurrentStatusList.getRemoteName());
 
-        Log.d("setTempText","Text : " + tmpIrBlasterCurrentStatusList.getTemperature());
+        ChatApplication.logDisplay("Text : " + tmpIrBlasterCurrentStatusList.getTemperature());
 
     }
 

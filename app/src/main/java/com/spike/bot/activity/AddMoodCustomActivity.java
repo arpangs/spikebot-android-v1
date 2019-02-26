@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -125,8 +124,6 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
                 et_switch_name.setText(moodVO.getRoomName());
             }
 
-            Log.d("isMoodAdapter","isMoodAdapter : " + isMoodAdapter);
-
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -171,7 +168,6 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
     private void setSpinnerValue(JSONArray device_iconsArray) {
         try{
 
-            Log.d("", "setSpinnerValue  setSpinnerValue " + device_iconsArray.length() );
             flags = new ArrayList<String>();
             for(int i=0;i<device_iconsArray.length();i++){
                 try {
@@ -190,7 +186,6 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
                     try {
                         if(moodVO.getRoom_icon()!=null){
 
-                            Log.d("RoomIcon","moodVO.getRoom_icon() : " + moodVO.getRoom_icon());
                             if(device_iconsArray.getJSONObject(i).getString("device_icon_name").equalsIgnoreCase(moodVO.getRoom_icon())){
                                 sp_device_type.setSelection(i);
                             }
@@ -216,11 +211,6 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_save) {
-            Log.d("","action_save" );
-            /*if(TextUtils.isEmpty(et_switch_name.getText().toString().trim())){
-                Toast.makeText(getApplicationContext(),"Enter Mood Name", Toast.LENGTH_SHORT).show();
-                return true;
-            }*/
 
             try{
                 room_device_id = deviceListLayoutHelper.getSelectedItemIds();
@@ -249,7 +239,6 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
     private List<RoomVO> moodIconList = new ArrayList<>();
     /// all webservice call below.
     public void getDeviceList(){
-        Log.d(TAG, "getDeviceList");
 
         if(!ActivityHelper.isConnectingToInternet(this)){
             Toast.makeText(getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
@@ -264,7 +253,6 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
       //  String url =  webUrl + Constants.GET_DEVICES_LIST + "/" +Constants.DEVICE_TOKEN +"/0/0"; //old url for get mood name list
         String url =  webUrl + Constants.GET_MOOD_DETAILS ; //get mood name list with the mood icon name / not display sensor panel
 
-        Log.d("isURL","url : "+ url);
 
         JSONObject jsonObject = new JSONObject();
         try {
@@ -279,7 +267,6 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
         new GetJsonTask(this,url ,"GET","", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d(TAG, "getDeviceList onSuccess " + result.toString());
                 try {
                     roomList = new ArrayList<>();
                     JSONObject dataObject = result.getJSONObject("data");
@@ -353,7 +340,6 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
             }
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d(TAG, "getDeviceList onFailure " + error );
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
                 ActivityHelper.dismissProgressDialog();
             }
@@ -377,12 +363,6 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
     public void setData(ArrayList<RoomVO> roomList){
 
         if(moodVO!=null){
-
-            //for selected mode expanded
-
-            Log.d("RoomDeviceList","mid : " + moodVO.getRoomDeviceIdList());
-
-
             List<DeviceVO> deviceVOList = moodVO.getPanelList().get(0).getDeviceList();
 
 
@@ -424,7 +404,6 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
     String room_device_id = "";
 
     public void saveMood(){
-        Log.d(TAG, "saveMood");
 
         if(!ActivityHelper.isConnectingToInternet(this)){
             Toast.makeText(getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
@@ -519,15 +498,12 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
             }
             moodObj.put("deviceList",jsonArrayDevice);
 
-            Log.d("deviceObj","updated moodObj " + moodObj.toString());
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
         new GetJsonTask(this,url ,"POST",moodObj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d(TAG, "saveMood onSuccess " + result.toString());
                 try {
 
                     ChatApplication.isMoodFragmentNeedResume = true;
@@ -559,7 +535,6 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
             }
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d(TAG, "saveMood onFailure " + error );
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
                 ActivityHelper.dismissProgressDialog();
             }
@@ -568,12 +543,10 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
 
     @Override
     public void itemClicked(RoomVO item, String action) {
-      //  Log.d(TAG, "itemClicked itemClicked MoodVO " + action );
     }
 
     @Override
     public void itemClicked(PanelVO panelVO, String action) {
-       // Log.d(TAG, "itemClicked itemClicked PanelVO " + action );
     }
 
     @Override
@@ -585,7 +558,6 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
 
     @Override
     public void itemClicked(DeviceVO deviceVO, String action, int position) {
-       // Log.d(TAG, "itemClicked itemClicked DeviceVO " + action );
         if(action.equalsIgnoreCase("disable_device")){
             getDeviceDetails(deviceVO.getOriginal_room_device_id());
         }
@@ -604,7 +576,6 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
 
         ChatApplication app = ChatApplication.getInstance();
         if(mSocket!=null && mSocket.connected()){
-            Log.d("","mSocket.connected  return.." + mSocket.id() );
         }
         else{
             mSocket = app.getSocket();
@@ -616,7 +587,6 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
         new GetJsonTask2(AddMoodCustomActivity.this,url ,"GET","", new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d("getDeviceDetails","onSuccess :  " + result.toString());
                 int code = 0;
                 try {
                     code = result.getInt("code");
@@ -637,7 +607,6 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
             }
             @Override
             public void onFailure(Throwable throwable, String error , int responseCode) {
-                Log.d("onFailure","onFailure " + error);
             }
         }).execute();
     }

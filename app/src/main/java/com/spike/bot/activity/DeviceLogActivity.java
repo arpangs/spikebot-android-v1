@@ -16,7 +16,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -324,15 +323,12 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             e.printStackTrace();
         }
 
-        Log.d("SensorLog", "json Request : " + jsonNotification.toString());
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d("Filter", "filterPos Success: ");
                 swipeRefreshLayout.setRefreshing(false);
-                Log.d(TAG, "getDeviceLog onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -490,19 +486,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
     @Override
     public void onLoadMore(int lastVisibleItem) {
-        Log.d("Filter", "lastVisibleItem : " + lastVisibleItem);
-        /*if(!isEndOfRecord){
-            getDeviceLog(lastVisibleItem);
-        }else{
-            showAToast("End of Record...");
-        }*/
-
-//        if (isSensorLog) {
-//            getSensorLog(lastVisibleItem);
-//        } else {
         isScrollview = true;
         getDeviceLog(lastVisibleItem);
-//        }
 
     }
 
@@ -655,7 +640,6 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             }
         }else {
             if (mSpinnerRoomMood != null) {
-                Log.d("System out", "mSpinnerRoomMood is " + mSpinnerRoomMood.getSelectedItem());
                 isSelectItem = "" + mSpinnerRoomMood.getSelectedItemPosition();
             } else {
                 isSelectItem = "";
@@ -664,7 +648,6 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             if(mSpinnerRoomList!=null){
                 isSelectItemSub = "" + mSpinnerRoomList.getSelectedItemPosition();
                 isSelectItemSubTemp = "" + mSpinnerRoomList.getSelectedItemPosition();
-                Log.d("System out", "mSpinnerRoomMood sub is " + mSpinnerRoomList.getSelectedItem());
             }else {
                 isSelectItemSub="";
                 isSelectItemSubTemp="";
@@ -1784,7 +1767,6 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                             start_date = on_date;
                         }
 
-                        Log.d("Date_format", "" + on_date + " >>> " + changeDateFormat(on_date));
                         editText.setText("" + changeDateFormat(on_date));
 
                         if (!TextUtils.isEmpty(edt_start_date.getText().toString()) && !TextUtils.isEmpty(edt_end_date.getText().toString())) {
@@ -1860,7 +1842,6 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
     private void generateFilterList() {
 
         //filter by date
-        Log.d("Filter", "start_date : " + start_date);
         if (!TextUtils.isEmpty(start_date) && !TextUtils.isEmpty(end_date)) {
             isDateFilterActive = true;
             startDate = getDate(start_date);
@@ -1956,9 +1937,6 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
     public void getDeviceLog(final int position) {
 
-        Log.d("Filter", "filterPos : " + position + " size : " + deviceLogList.size());
-
-        Log.d(TAG, "getDeviceLog getDeviceLog");
         if (!ActivityHelper.isConnectingToInternet(activity)) {
             Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -2031,8 +2009,6 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
                 String moodType = mSpinnerRoomMood.getSelectedItem().toString();
                 JSONArray array = new JSONArray();
-                Log.d("System out", "mSpinnerRoomMood is " + moodType);
-                Log.d("System out", "mSpinnerRoomMood is " + mSpinnerRoomList.getSelectedItem());
                 if (mSpinnerRoomMood.getSelectedItem().toString().equals("All")) {
                     object.put("room_id", "");
                     object.put("panel_id", "");
@@ -2221,14 +2197,10 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             e.printStackTrace();
         }
 
-        Log.d("Filter", "json : " + object.toString());
-
         new GetJsonTask(activity, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d("Filter", "filterPos Success: ");
                 swipeRefreshLayout.setRefreshing(false);
-                Log.d(TAG, "getDeviceLog onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -2381,20 +2353,10 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             @Override
             public void onFailure(Throwable throwable, String error) {
                 swipeRefreshLayout.setRefreshing(false);
-                Log.d(TAG, "getDeviceLog onFailure " + error);
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
-    }
-
-    public void addValueFilter(String action_name, String logName) {
-        ArrayList<Filter.SubFilter> subFilterArrayList = new ArrayList<Filter.SubFilter>();
-        for (String subLog : action_name.split(",")) {
-            subFilterArrayList.add(new Filter.SubFilter(subLog, false));
-        }
-        filterArrayList.add(new Filter(logName, false, false, subFilterArrayList));
-        filterArrayListTemp.add(new Filter(logName, false, false, subFilterArrayList));
     }
 
     private Toast mToast;

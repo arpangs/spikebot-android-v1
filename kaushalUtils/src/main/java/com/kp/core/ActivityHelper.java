@@ -34,7 +34,6 @@ import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -80,7 +79,6 @@ public class ActivityHelper {
 
 	public static void showProgressDialog(final Context p_context, final String p_loadingMessage,
 			final boolean p_isCancelable) {
-		Log.d(TAG, " showProgressDialog  showProgressDialog ");
 		// m_progressDialog = null;
 		if (m_progressDialog != null && m_progressDialog.isShowing()) {
 			// m_progressDialog.isShowing();
@@ -97,14 +95,12 @@ public class ActivityHelper {
 	}
 
 	public static void dismissProgressDialog() {
-		Log.d(TAG, "dismissProgressDialog dismissProgressDialog  ");
 		try {
 			if (m_progressDialog != null && m_progressDialog.isShowing()) {
 				m_progressDialog.dismiss();
 			}
 			m_progressDialog = null;
 		} catch (Throwable e) {
-			Log.d(TAG, "" + e.getMessage());
 		}
 	}
 
@@ -179,7 +175,6 @@ public class ActivityHelper {
 			}
 
 		} catch (Exception e) {
-			Log.d(TAG, "Exception e " + e.getMessage());
 			// Toast.makeText(context, " isConnectingToInternet = "
 			// +e.getMessage() , Toast.LENGTH_SHORT).show();
 		}
@@ -195,7 +190,6 @@ public class ActivityHelper {
 				menuKeyField.setBoolean(config, false);
 			}
 		} catch (Exception e) {
-			Log.d("ViewConfiguration  ", " ViewConfiguration === " + e.getMessage());
 		}
 	}
 
@@ -275,7 +269,6 @@ public class ActivityHelper {
 			number = tm.getDeviceId();
 		} catch (Exception e) {
 			e.printStackTrace();
-			Log.d("getIMEI", "getIMEI " + e.getMessage());
 		}
 		
 		return number;
@@ -312,7 +305,7 @@ public class ActivityHelper {
 		    String result="";
 		    String url1 =url ;
 		    
-		    Log.d("CallXMLService ", "CallXMLService  url  " + url1 );
+		    UtilsConstants.logDisplay("CallXMLService  url  " + url1 );
 		    URL obj = new URL(url1);
 		    HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -333,11 +326,11 @@ public class ActivityHelper {
 			    outputStreamWriter.flush();
 		    }
 		    int responseCode = con.getResponseCode();
-		    System.out.println("\nSending 'POST' request to URL : " + url);
-		    System.out.println("Post parameters : " + params);
-		    System.out.println("Response Code : " + responseCode);
-		    Log.d("CallJSONService ", "CallJSONService  json  " + json );
-		    Log.d("CallJSONService ", "CallJSONService  responseCode  " + responseCode );
+		    UtilsConstants.logDisplay("\nSending 'POST' request to URL : " + url);
+		    UtilsConstants.logDisplay("Post parameters : " + params);
+		    UtilsConstants.logDisplay("Response Code : " + responseCode);
+		    UtilsConstants.logDisplay("CallJSONService  json  " + json );
+		    UtilsConstants.logDisplay("CallJSONService  responseCode  " + responseCode );
 		    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 		    String inputLine;
 		    StringBuffer response = new StringBuffer();
@@ -346,10 +339,8 @@ public class ActivityHelper {
 		        response.append(inputLine + "\n");
 		    }
 		    in.close();
-		    Log.d("CallXMLService ", "CallXMLService  result  " + result );
 		        result = response.toString();
 
-		    	 Log.d("TEST jsonText jsonText ", result);
 		    	return  result;
 
 		 
@@ -388,7 +379,6 @@ public class ActivityHelper {
 	    return imgString;
 	}
 	public static void generateSpinnerList(final Context mContext,final Spinner spinner,final ArrayList<String> headerList){
-		Log.d("generateProxySpinnerLst", " generateProxySpinnerList spinner ==-=-=- " + headerList.size());
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, headerList);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);

@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Environment;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 
 import java.io.File;
@@ -54,16 +53,13 @@ public class ScreenshotUtils {
 
         //If File is not present create directory
         if (!mainDir.exists()) {
-            if (mainDir.mkdir())
-                Log.e("Create Directory", "Main Directory Created : " + mainDir);
+            if (mainDir.mkdir());
         }
         return mainDir;
     }
 
     /*  Store taken screenshot into above created path  */
     public static File store(Bitmap bm, String fileName, File saveFilePath) {
-        Log.d("Create Directory", "Main Directory store : " + saveFilePath.getPath()  );
-        Log.d("Create Directory", "Main Directory store : " + fileName  );
         File dir = new File(saveFilePath.getAbsolutePath());
         if (!dir.exists())
             dir.mkdirs();
@@ -73,7 +69,6 @@ public class ScreenshotUtils {
             bm.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
             fOut.flush();
             fOut.close();
-            Log.d("Create Directory", "Main Directory store close : "   );
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -7,7 +7,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,31 +65,22 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
         this.isMoodAdapter = isMoodAdapter;
         this.selectDevicesListener = selectDevicesListener;
 
-        Log.d("isMoodAdapter","isMoodAdapter :" + isMoodAdapter);
-
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                //return isSection(position)?gridLayoutManager.getSpanCount():1;
-            //    Log.d("","getSpanSize position     " + position);
-           //     Log.d("","getSpanSize getSpanCount " + gridLayoutManager.getSpanCount());
                 return isSection(position) || isPanel(position) ? gridLayoutManager.getSpanCount():1 ;
                 //return isSection(position)?gridLayoutManager.getSpanCount():1;
             }
         });
     }
     public void setSelection(String room_device_id){
-       // Log.d("setSelectionEditMode","getSpanSize setSelection room_device_id " + room_device_id );
         String[] strArray = room_device_id.split(",");
         List<String> listDeviceIds = Arrays.asList(strArray);
-       // Log.d("setSelectionEditMode", listDeviceIds.size() +  " setSelection item.getDeviceId()  "   );
 
         for(int i=0;i<mDataArrayList.size();i++){
 
             if(mDataArrayList.get(i) instanceof DeviceVO){
                 final DeviceVO item = (DeviceVO) mDataArrayList.get(i);
-             //   Log.d("setSelectionEditMode", " setSelection item.getDeviceId() " +
-                    //    " " + item.getRoomDeviceId() + " :" + item.getRoomId() + " :" + item.getDeviceId() + " listDeviceIds : " + listDeviceIds);
                 if(listDeviceIds.contains(item.getRoomDeviceId())){
                     item.setSelected(true);
                 }
@@ -278,16 +268,12 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
                             alertShow();
                         }else {
                             if (item.isSelected()) {
-                                //  Log.d("isMoodAdapter","isSelected...");
                                 holder.iv_icon_select.setVisibility(View.GONE);
                                 item.setSelected(!item.isSelected());
 
                             } else {
 
-                                //  Log.d("isMoodAdapter","is not isSelected...");
                                 if (!isMoodAdapter) {
-
-                                    Log.d("RoomDeviceID", "" + item.getRoomDeviceId());
 
                                     if (item.getSensor_icon() != null && item.getSensor_icon().equalsIgnoreCase("Remote_AC")) {
 

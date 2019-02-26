@@ -58,7 +58,20 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
         holder.iv_room_panel_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mItemClickListener.itemClicked(item1,"edit",view);
+                boolean isSFlag=false;
+                if(item1.getDeviceList().size()>0){
+                    if(item1.getDeviceList().get(0).getDeviceType().equals("2")){
+                        isSFlag=true;
+                    }else {
+                        isSFlag=false;
+                    }
+                }
+                if(isSFlag){
+                    mItemClickListener.itemClicked(item1,"sensorPanel",view);
+                }else {
+                    mItemClickListener.itemClicked(item1,"edit",view);
+                }
+
             }
         });
         holder.iv_room_panel_delete.setOnClickListener(new View.OnClickListener() {
@@ -76,7 +89,19 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
 
         //Hide sensor edit option if found panel is sensor
         if(item1.isSensorPanel()){
-            holder.iv_room_panel_add.setVisibility(View.INVISIBLE);
+           boolean isSFlag=false;
+            if(item1.getDeviceList().size()>0){
+                if(item1.getDeviceList().get(0).getDeviceType().equals("2")){
+                    isSFlag=true;
+                }else {
+                    isSFlag=false;
+                }
+            }
+            if(isSFlag){
+                holder.iv_room_panel_add.setVisibility(View.VISIBLE);
+            }else {
+                holder.iv_room_panel_add.setVisibility(View.GONE);
+            }
         }else {
             holder.iv_room_panel_add.setVisibility(View.VISIBLE);
         }

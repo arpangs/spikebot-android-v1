@@ -1,6 +1,5 @@
 package com.spike.bot.fragments;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -8,15 +7,12 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -27,7 +23,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -51,7 +46,6 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.spike.bot.ChatApplication;
-import com.spike.bot.MainActivity;
 import com.spike.bot.R;
 import com.spike.bot.ack.AckWithTimeOut;
 import com.spike.bot.activity.AddUnassignedPanel;
@@ -462,7 +456,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     public void onResume() {
         super.onResume();
 
-        Log.d("System out", "flag login is " + Main2Activity.flagLogin);
+        ChatApplication.logDisplay( "flag login is " + Main2Activity.flagLogin);
 //        if(Main2Activity.flagLogin){
 //            Main2Activity.flagLogin=false;
 //            mFab.setVisibility(View.VISIBLE);
@@ -481,12 +475,10 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 //            }
 //        }
         if (ChatApplication.isLocalFragmentResume) {
-            Log.d("RefreshList", "resumeLocal side");
             ChatApplication.isLocalFragmentResume = false;
             getDeviceList(2);
 
         } else if (ChatApplication.isMainFragmentNeedResume) {
-            Log.d("RefreshList", "resumeLocal side11111");
             ChatApplication.isMainFragmentNeedResume = false;
             onLoadFragment();
         }
@@ -494,7 +486,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
     @Override
     public void onClick(View view) {
-        // Log.d(TAG, "onClick ");
+        // ChatApplication.logDisplay( "onClick ");
         if (view.getId() == R.id.btn_login) {
             //loginCloud();
         }
@@ -537,16 +529,13 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
         ChatApplication app = ChatApplication.getInstance();
         webUrl = app.url;
-        Log.d("ChatSocket", "MainFragment startSocketConnection  webUrl " + webUrl);
 
         if (mSocket != null && mSocket.connected()) {
-            Log.d("ChatSocket", "MainFragment if mSocket.connected  mScoket id :" + mSocket.id());
         } else {
 
             mSocket = app.getSocket();
 
             try {
-                Log.d("ChatSocket", "MainFragment else startSocketConnection  webUrl " + webUrl);
 
                 mSocket.on("ReloadDeviceStatusApp", reloadDeviceStatusApp);
                 mSocket.on("roomStatus", roomStatus);
@@ -560,10 +549,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 mSocket.on("unReadCount", unReadCount);
                 mSocket.on("sensorStatus", sensorStatus);
                 //   mSocket.on("configureIRBlaster",configureIRBlaster);
-
-
-                //  mSocket.connect();
-                Log.d("ChatSocket", "MainFragment mSocket.connect()= " + mSocket.id());
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -600,7 +585,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             mSocket.off("sensorStatus", sensorStatus);
             //   mSocket.off("configureIRBlaster",configureIRBlaster);
 
-            Log.d("", "mSocket onDestroy disconnect();");
         }
     }
 
@@ -614,20 +598,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
     public void onLoadFragment() {
 
-        //  Log.d("SocketIP","on Resume MainFragment...");
-
-        /*ChatApplication app = ChatApplication.getInstance();
-        if (mSocket != null && mSocket.connected()) {
-            Log.d("ChatSocket", "MainFragment if onLoadFragment  mSocket ID : " + mSocket.id());
-        } else {
-            Log.d("ChatSocket", "MainFragment else mSocket open url : " + app.url);
-            mSocket = app.getSocket();
-        }
-        webUrl = app.url;*/
-
-        // mSocket = app.openSocket(webUrl);
         if (activity != null) {
-            Log.d("SocketIP", "activity!=null");
             Main2Activity activity = (Main2Activity) getActivity();
             if (activity != null) {
                 isSocketConnected = activity.isSocketConnected;
@@ -637,10 +608,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             socketListener.startSession();
         }
 
-        //webView.loadUrl("about:blank");//&& isSocketConnected
-        // Log.d("SocketIP","Common connected : " + Common.isConnected() + "  isResumeConnect : " + isResumeConnect + " isRefreshDashboard : " + ChatApplication.isRefreshDashBoard);
         if (Common.isConnected() && isResumeConnect) {
-            Log.d(TAG, "onResume isResumeConnect 1111  " + isResumeConnect);
             //hideAlertDialog();
             //runService();
             isResumeConnect = false;
@@ -648,17 +616,17 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             //  startSocketConnection();
             getDeviceList(3);
         } else if (Common.isConnected() && ChatApplication.isRefreshDashBoard) {
-            Log.d(TAG, "onResume isResumeConnect 22222  " + ChatApplication.isRefreshDashBoard);
+            ChatApplication.logDisplay( "onResume isResumeConnect 22222  " + ChatApplication.isRefreshDashBoard);
             getDeviceList(4);
             //  startSocketConnection();
             ChatApplication.isRefreshDashBoard = true; //false
 
         } else if (!Common.isConnected()) {
-            Log.d(TAG, "onResume isResumeConnect 33333  ");
+            ChatApplication.logDisplay( "onResume isResumeConnect 33333  ");
             //hideAlertDialog();
             // showAlertDialog();
         } else {
-            Log.d(TAG, "else Co..........");
+            ChatApplication.logDisplay( "else Co..........");
 
             getDeviceList(5);
 
@@ -686,7 +654,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 menu.findItem(R.id.action_add).setVisible(flag);
                 menu.findItem(R.id.action_setting).setVisible(flag);
             } catch (Exception e) {
-                Log.d("", "Exception " + e.getMessage());
             }
 
         }
@@ -783,7 +750,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("ResultList", "onSuccess result : " + result.toString());
+                ChatApplication.logDisplay( "onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -890,16 +857,12 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         new GetJsonTask(getActivity(), url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                //   ActivityHelper.dismissProgressDialog();
-                Log.d("doorSensorUnAsigned", "result : " + result.toString());
-
                 SensorUnassignedRes sensorUnassignedRes = Common.jsonToPojo(result.toString(), SensorUnassignedRes.class);
 
                 if (sensorUnassignedRes.getCode() == 200) {
 
                     if (sensorUnassignedRes.getData() != null && sensorUnassignedRes.getData().getUnassigendSensorList().size() > 0) {
                         Intent intent = new Intent(getActivity(), SensorUnassignedActivity.class);
-                        Log.i("SensorType", "Type isDoorSensor : " + isDoorSensor);
                         intent.putExtra("isDoorSensor", isDoorSensor);
                         startActivity(intent);
                     } else {
@@ -1031,15 +994,13 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             e.printStackTrace();
         }
 
-        Log.d("cameraObj", "obj : " + obj.toString());
-
         String url = ChatApplication.url + Constants.ADD_CAMERA;
 
         new GetJsonTask(getActivity(), url, "POST", obj.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d(TAG, "onSuccess " + result.toString());
+                ChatApplication.logDisplay( "onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -1059,7 +1020,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d(TAG, "onFailure " + error);
+                ChatApplication.logDisplay( "onFailure " + error);
                 Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
@@ -1151,7 +1112,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.d("", mSocket.id() + " ===== Listener onConnect== " + webUrl);
                     if (!isSocketConnected) {
                         //  hideAlertDialog();
                         //if(null!=mUsername)
@@ -1174,7 +1134,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.i(TAG, mSocket.id() + " === Listener diconnected === " + webUrl);
                     isSocketConnected = false;
                     //Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
                     // openErrorDialog();
@@ -1192,7 +1151,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e(TAG, mSocket.id() + " Listener onConnectError = " + webUrl);
                     //Toast.makeText(getActivity().getApplicationContext(), R.string.error_connect, Toast.LENGTH_SHORT).show();
                     //   openErrorDialog();
                 }
@@ -1212,7 +1170,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                     if (args != null) {
 
                         try {
-                            Log.d("sensorV3", "reloadDeviceStatusApp : " + args.length + " toString : " + args[0]);
 
                             JSONObject object = new JSONObject(args[0].toString());
                             String module_id = object.getString("module_id");
@@ -1249,7 +1206,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                     if (args != null) {
                         try {
 
-                            Log.d("sensorV3", "panelStatus : " + args.length + " toString : " + args.toString());
 
                             JSONObject object = new JSONObject(args[0].toString());
                             // String room_order = object.getString("room_order");
@@ -1283,7 +1239,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                     if (args != null) {
                         try {
 
-                            Log.d("sensorV3", "roomstatus : " + args.length + " toString : " + args[0]);
 
                             JSONObject object = new JSONObject(args[0].toString());
                             String room_id = object.getString("room_id");
@@ -1348,7 +1303,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                     try {
 
-                        Log.d("configGatewayDoorSensor", "Found sensor id : " + args[0]);
 
                         if (countDownTimer != null) {
                             countDownTimer.cancel();
@@ -1407,9 +1361,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 public void run() {
 
                     try {
-
-                        Log.d("configureTempSensor", "Found sensor id : " + args[0]);
-
                         if (countDownTimer != null) {
                             countDownTimer.cancel();
                         }
@@ -1420,7 +1371,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         //{"message":"Temperature Sensor already configured. Add from Unconfigured Sensor devices","temp_module_id":"","room_list":""}
                         JSONObject object = new JSONObject(args[0].toString());
 
-                        Log.d("configureTempSensor", "Object : " + object.toString());
                         String message = object.getString("message");
 
                         String temp_sensor_module_id = object.getString("temp_sensor_module_id");
@@ -1478,7 +1428,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 public void run() {
 
                     if (args != null) {
-                        Log.d("mSocketEmitter", "changeDoorSensorStatus >>>> " + args[0].toString());
 
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
@@ -1508,7 +1457,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 @Override
                 public void run() {
                     if (args != null) {
-                        Log.d("mSocketEmitter", "unReadCount >>>> " + args[0].toString());
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
                             String sensor_type = object.getString("sensor_type");
@@ -1541,7 +1489,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                     if (args != null) {
 
-                        Log.d("mSocketEmitter", "changeTempSensorValue >>>> " + args[0].toString());
 
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
@@ -1575,7 +1522,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 public void run() {
                     if (args != null) {
 
-                        Log.d("mSocketEmitter", "sensorStatus : " + args[0].toString());
 
                         try {
                             JSONObject jsonObject = new JSONObject(args[0].toString());
@@ -1613,7 +1559,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                     if (args != null) {
                         try {
 
-                            Log.d("IRBlaster", "Found sensor id : " + args[0]);
 
                             if (countDownTimer != null) {
                                 countDownTimer.cancel();
@@ -1873,7 +1818,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             e.printStackTrace();
         }
 
-        Log.d("roomOBJ", "obj : " + obj.toString());
         String url = "";
 
         url = ChatApplication.url + Constants.ADD_IR_BLASTER;
@@ -1923,7 +1867,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     private void saveSensor(final Dialog dialog, EditText textInputEditText, String door_name,
                             String door_module_id, Spinner sp_room_list, final boolean isTempSensorRequest) {
 
-        Log.d(TAG, "configureNewRoom configureGatewayDevice");
+        ChatApplication.logDisplay( "configureNewRoom configureGatewayDevice");
         if (!ActivityHelper.isConnectingToInternet(activity)) {
             Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -1959,7 +1903,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             e.printStackTrace();
         }
 
-        Log.d("roomOBJ", "obj : " + obj.toString());
         String url = "";
         if (isTempSensorRequest) {
             url = ChatApplication.url + Constants.ADD_TEMP_SENSOR;
@@ -1970,7 +1913,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         new GetJsonTask(activity, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d(TAG, isTempSensorRequest + " configureNewSensor onSuccess " + result.toString());
+                ChatApplication.logDisplay( isTempSensorRequest + " configureNewSensor onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -1997,7 +1940,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d(TAG, isTempSensorRequest + " configureNewSensor onFailure " + error);
+                ChatApplication.logDisplay( isTempSensorRequest + " configureNewSensor onFailure " + error);
                 ActivityHelper.dismissProgressDialog();
             }
         }).execute();
@@ -2013,8 +1956,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 @Override
                 public void run() {
                     if (args != null) {
-                        Log.d("configureGatewayDevice " + args.length, mSocket.id() + " configureGatewayDevice moduleid  1 " + args[0]);
-                        //Log.d("configureGatewayDevice ", " configureGatewayDevice deviceid 2 " + args[1]);
 
                         String module_id = "";//args[0].toString();
                         String device_id = "";//args[1].toString();
@@ -2044,7 +1985,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             addRoomDialog = new AddRoomDialog(getActivity(), "", "", module_id, device_id, "", new ICallback() {
                                 @Override
                                 public void onSuccess(String str) {
-                                    Log.d("", "str " + str);
                                     if (str.equalsIgnoreCase("yes")) {
                                         getDeviceList(7);
                                     }
@@ -2088,15 +2028,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
         if (mSocket != null && !mSocket.connected()) {
 
-            Log.d("DeviceOnOff", "Api...");
             callDeviceOnOffApi(deviceVO, obj);
 
         } else {
-
-            Log.d("DeviceOnOff", "Socket...");
-
-            //   Log.d("sotID", mSocket.id() + " socketChangeDevice deviceOnOff " + obj.toString());
-
             mSocket.emit("socketChangeDeviceAck", obj, new AckWithTimeOut(Constants.ACK_TIME_OUT) {
                 @Override
                 public void call(Object... args) {
@@ -2105,12 +2039,10 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                         if (args[0].toString().equalsIgnoreCase("No Ack")) {
 
-                            Log.d("ACK_SOCKET", "AckWithTimeOut : " + args[0].toString());
                             updateDeviceOfflineMode(deviceVO);
 
                         } else if (args[0].toString().equalsIgnoreCase("true")) {
                             cancelTimer();
-                            Log.d("ACK_SOCKET", "AckWithTimeOut : " + args[0].toString());
                         }
                     }
                 }
@@ -2177,13 +2109,13 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
         String url = ChatApplication.url + Constants.CHANGE_DEVICE_STATUS;
 
-        Log.d("DeviceStatus", "Device roomPanelOnOff obj " + obj.toString());
-        //  Log.d(TAG, "roomPanelOnOff url " + url );
+       ChatApplication.logDisplay("Device roomPanelOnOff obj " + obj.toString());
+        //  ChatApplication.logDisplay( "roomPanelOnOff url " + url );
 
         new GetJsonTask(getActivity(), url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d("DeviceStatus", "roomPanelOnOff onSuccess " + result.toString());
+               ChatApplication.logDisplay("roomPanelOnOff onSuccess " + result.toString());
                 try {
                     int code = result.getInt("code"); //message
                     String message = result.getString("message");
@@ -2195,13 +2127,13 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } finally {
-                    Log.d("DeviceStatus", "Device roomPanelOnOff finally ");
+                   ChatApplication.logDisplay("Device roomPanelOnOff finally ");
                 }
             }
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d("DeviceStatus", "roomPanelOnOff onFailure " + error);
+               ChatApplication.logDisplay("roomPanelOnOff onFailure " + error);
                 updateDeviceOfflineMode(deviceVO);
                 //Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_SHORT).show();
             }
@@ -2232,7 +2164,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
         } else {
 
-            Log.d(TAG, "roomPanelOnOff");
+            ChatApplication.logDisplay( "roomPanelOnOff");
 
             //  if(panelVO!=null){
 
@@ -2244,22 +2176,22 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                         if (args[0].toString().equalsIgnoreCase("No Ack")) {
 
-                            Log.d("ACK_SOCKET_2", "Panel AckWithTimeOut : " + args[0].toString());
+                           ChatApplication.logDisplay( "Panel AckWithTimeOut : " + args[0].toString());
 
                             //  callPanelOnOffApi(panelVO,obj);
 
                             if (panelVO != null) {
                                 updatePanelDeviceOfflineMode(panelVO);
-                                Log.d("ACK_SOCKET_2", "update Panel Device OffLine");
+                               ChatApplication.logDisplay( "update Panel Device OffLine");
                             } else if (roomVO != null) {
                                 updateRoomOfflineMode(roomVO);
-                                Log.d("ACK_SOCKET_2", "update Room Device OffLine");
+                               ChatApplication.logDisplay( "update Room Device OffLine");
                             }
 
 
                         } else if (args[0].toString().equalsIgnoreCase("true")) {
                             cancelTimer();
-                            Log.d("ACK_SOCKET_2", "Panel AckWithTimeOut : " + args[0].toString());
+                           ChatApplication.logDisplay( "Panel AckWithTimeOut : " + args[0].toString());
                         }
                     }
                 }
@@ -2282,7 +2214,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         new GetJsonTask(getActivity(), url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d(TAG, "roomPanelOnOff onSuccess " + result.toString());
+                ChatApplication.logDisplay( "roomPanelOnOff onSuccess " + result.toString());
                 try {
                     int code = result.getInt("code"); //message
                     String message = result.getString("message");
@@ -2294,13 +2226,13 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } finally {
-                    Log.d(TAG, "roomPanelOnOff finally ");
+                    ChatApplication.logDisplay( "roomPanelOnOff finally ");
                 }
             }
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d(TAG, "roomPanelOnOff onFailure " + error);
+                ChatApplication.logDisplay( "roomPanelOnOff onFailure " + error);
                 //Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_SHORT).show();
                 //updatePanelDeviceOfflineMode(panelVO);
             }
@@ -2395,6 +2327,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             intent.putExtra("selection", 1);
             intent.putExtra("isMoodAdapter", true);
             intent.putExtra("isActivityType", "1");
+            intent.putExtra("isRoomMainFm", "room");
             startActivity(intent);
         } else if (action.equalsIgnoreCase("icnSensorLog")) {
 //            Intent intent = new Intent(getActivity(),DeviceLogActivity.class);
@@ -2451,7 +2384,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             e.printStackTrace();
         }
 
-        Log.d("roomObj", "ob : " + object.toString());
+        ChatApplication.logDisplay("ob : " + object.toString());
 
         //  ActivityHelper.showProgressDialog(getActivity(), "Please wait...", false);
 
@@ -2463,7 +2396,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             public void onSuccess(JSONObject result) {
 
                 ActivityHelper.dismissProgressDialog();
-                Log.d(TAG, "getconfigureData onSuccess " + result.toString());
+                ChatApplication.logDisplay( "getconfigureData onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -2482,7 +2415,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d(TAG, "getconfigureData onFailure " + error);
+                ChatApplication.logDisplay( "getconfigureData onFailure " + error);
                 Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
@@ -2675,7 +2608,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         url = url + item.getCamera_videopath();
         String camera_name = item.getCamera_name();
 
-        Log.d("isCloudConnect", "isCloudConnect : " + Main2Activity.isCloudConnected + " url : " + url + " : item url >> " + item.getCamera_url());
+        ChatApplication.logDisplay("isCloudConnect : " + Main2Activity.isCloudConnected + " url : " + url + " : item url >> " + item.getCamera_url());
 
         //TODO code here for cloud connected or not...
         // rtmp://LOCAL_IP/live/livestream1528897402049_SJftJoAe7
@@ -2687,7 +2620,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             url = tmpurl.replace("http", "rtmp").replace(":80", ""); //replace port number to blank String
         }
 
-        Log.e("cameraURL", "live url : " + url);
         //start camera rtsp player
         Intent intent = new Intent(getActivity(), CameraPlayer.class);
         intent.putExtra("videoUrl", url);
@@ -2709,13 +2641,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     CountDownTimer countDownTimer = new CountDownTimer(7000, 4000) {
 
         public void onTick(long millisUntilFinished) {
-            // mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
-            //here you can have your logic to set text to edittext
-            Log.d("", "getconfigureData configureGatewayDevice countDownTimer onTick ");
         }
 
         public void onFinish() {
-            Log.d("", "getconfigureData configureGatewayDevice countDownTimer onFinish ");
             /*- SOCKET Response:
             - 'configureGatewayDevice'
                     - parameter: module_id, device_id
@@ -2733,7 +2661,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         try {
             countDownTimer.start();
         } catch (Exception e) {
-            Log.d("", "TimerTask configureGatewayDevice Exception " + e.getMessage());
         }
     }
 
@@ -2870,7 +2797,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d(TAG, "getconfigureData onSuccess " + result.toString());
+                ChatApplication.logDisplay( "getconfigureData onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -2928,7 +2855,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             e.printStackTrace();
         }
 
-        Log.d("roomName", "ob : " + object.toString());
+        ChatApplication.logDisplay( "ob : " + object.toString());
         ActivityHelper.showProgressDialog(getActivity(), "Searching Device attached ", false);
 
         String url = webUrl + Constants.ADD_CUSTOME_ROOM;
@@ -2937,7 +2864,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d(TAG, "getconfigureData onSuccess " + result.toString());
+                ChatApplication.logDisplay( "getconfigureData onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -2961,7 +2888,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d(TAG, "getconfigureData onFailure " + error);
+                ChatApplication.logDisplay( "getconfigureData onFailure " + error);
                 Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
@@ -2969,7 +2896,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
 
     public void getconfigureData() {
-        Log.d("configGatewayDoorSensor", "getconfigureData configureGatewayDevice");
         if (!ActivityHelper.isConnectingToInternet(getActivity())) {
             Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -2983,19 +2909,12 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d("configGatewayDoorSensor", "getconfigureData onSuccess " + result.toString());
-                try {
-                    // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                }
+
             }
 
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d("configGatewayDoorSensor", "getconfigureData onFailure " + error);
                 Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
@@ -3007,7 +2926,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     public boolean addTempSensor = false;
 
     private void getTempConfigData() {
-        Log.d("configTempSensor", "configTempSensor");
         if (!ActivityHelper.isConnectingToInternet(getActivity())) {
             Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -3021,19 +2939,11 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d("configTempSensor", "getconfigureData onSuccess " + result.toString());
-                try {
-                    // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                }
             }
 
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d("configTempSensor", "getconfigureData onFailure " + error);
                 Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
@@ -3043,7 +2953,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     public boolean addIRBlasterSensor = false;
 
     private void getIRBlasterConfigData() {
-        Log.d("IRBlaster", "configIRBlaster");
         if (!ActivityHelper.isConnectingToInternet(getActivity())) {
             Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -3057,19 +2966,11 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d("IRBlaster", "configIRBlaster onSuccess " + result.toString());
-                try {
-                    // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                }
             }
 
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d("IRBlaster", "configIRBlaster onFailure " + error);
                 Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
@@ -3114,7 +3015,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SIGN_IP_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            Log.d("SignUpCode", "MainFragment Code : " + data);
             getDeviceList(10);
         }
     }
@@ -3172,7 +3072,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     public  void getDeviceList(final int checkmessgae) {
         //showProgress();
 
-        Log.d("CallAPIMainFragment", "getDeviceList getDeviceList webUrl " + checkmessgae);
         if (getActivity() == null) {
             return;
         }
@@ -3209,8 +3108,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        //responseErrorCode.onProgress();
-        Log.d("CouldFoundIP", "call api");
         new GetJsonTask2(activity, url, "GET", "", new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -3221,10 +3118,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 }
 
                 mMessagesView.setClickable(true);
-//                mFab.setClickable(true);
-//                ((Main2Activity)getActivity()).toolbarTitle.setClickable(true);
-//                ((Main2Activity)getActivity()).toolbarImage.setClickable(true);
-
                 responseErrorCode.onSuccess();
 
                 //connect socket
@@ -3232,8 +3125,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                 swipeRefreshLayout.setRefreshing(false);
                 sectionedExpandableLayoutHelper.setClickable(true);
-                Log.d(TAG, "getDeviceList onSuccess " + result.toString());
-                Log.d("RefreshList", "call api success");
+                ChatApplication.logDisplay( "getDeviceList onSuccess " + result.toString());
 
                 try {
 
@@ -3285,7 +3177,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         }
 
                         String jsonTextTemp = Common.getPrefValue(getContext(), Common.USER_JSON);
-                        Log.d("UserPass", "Json String  : " + jsonTextTemp);
                         List<User> userList = new ArrayList<User>();
                         if (!TextUtils.isEmpty(jsonTextTemp) && !jsonTextTemp.equals("null")) {
                             Type type = new TypeToken<List<User>>() {
@@ -3308,21 +3199,20 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                                 if (checkLoginId(userId, checkmessgae)) {
                                     saveCurrentId(getActivity(),userId);
                                     mCallback.onArticleSelected("" + userFirstName + " " + userLastName);
-                                    Log.d("System out", "pie details is isSignUp ");
+                                    ChatApplication.logDisplay( "pie details is isSignUp ");
                                 }else if(flagisCould){
                                     flagisCould=false;
                                     getDeviceCould(12);
                                     return;
-                                } else {
-//                                    showDialog=1;
-//                                    loginPIEvent.showLogin();
-//                                    return;
+                                }else {
+                                    showDialog=1;
+                                    loginPIEvent.showLogin();
+                                    return;
                                 }
-
                             }
                         }else {
-//                            showDialog=1;
-//                            loginPIEvent.showLogin();
+                            showDialog=1;
+                            loginPIEvent.showLogin();
                         }
 
                         /**
@@ -3330,10 +3220,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                          * if changed then logout user
                          */
                         if (Main2Activity.isCloudConnected && !TextUtils.isEmpty(userPassword)) {
-                            Log.d("UserPass", "ID : " + userId);
-                            Log.d("UserPass", "Pass : " + userPassword);
                             String jsonTextTemp1 = Common.getPrefValue(getContext(), Common.USER_JSON);
-                            Log.d("UserPass", "Json String  : " + jsonTextTemp1);
                             List<User> userList1 = new ArrayList<User>();
                             if (!TextUtils.isEmpty(jsonTextTemp1)) {
                                 Type type = new TypeToken<List<User>>() {
@@ -3342,18 +3229,11 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             }
 
                             for (User user : userList1) {
-                              /*  if(user.getUser_id().equalsIgnoreCase(userId)
-                                        && !userPassword.equalsIgnoreCase(user.getPassword()) && user.isActive()){
-                                    Log.d("UserPass","User Found   : " +user.getFirstname()  + " User pass : " + user.getPassword());
-                                    showLogoutAlert();
-                                }*/
-
                                 if (user.isActive()) {
                                     String USER_ID = Common.getPrefValue(getContext(), Constants.USER_ID);
                                     String USER_PASSWORD = Common.getPrefValue(getContext(), Constants.USER_PASSWORD);
 
                                     if (!USER_PASSWORD.equalsIgnoreCase(userPassword)) {
-                                        Log.d("UserPass", "FOUND Pass  :" + USER_PASSWORD + " ID : " + USER_ID);
                                         showLogoutAlert();
                                     }
 
@@ -3378,7 +3258,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         Common.savePrefValue(ChatApplication.getInstance(), "last_name", userLastName);
                         Common.savePrefValue(getContext(), Constants.USER_PASSWORD, userPassword);
 
-                        Log.d("userPassword", "textFound : " + userFirstName);
 
                         // getActivity().setTitle("" + userFirstName + " " + userLastName);
                         /**
@@ -3398,7 +3277,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                         JSONArray cameraArray = dataObject.getJSONArray("cameradeviceList");
                         if (cameraArray.length() > 0) {
-                            Log.d("cameradeviceListSize", "size : " + cameraArray.length());
                             cameraList = JsonHelper.parseCameraArray(cameraArray);
 
                             RoomVO section = new RoomVO();
@@ -3440,13 +3318,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             mMessagesView.setVisibility(View.VISIBLE);
                             txt_empty_schedule.setVisibility(View.GONE);
                         }
-                        Log.d("RefreshList", "call api");
-
-
-                        /*JSONArray cameraArray = dataObject.getJSONArray("cameradeviceList");
-                        CameraAdapter cameraAdapter = new CameraAdapter(getActivity(), cameraArray, webUrl);
-                        camera_list.setAdapter(cameraAdapter);*/
-
                     }
 
 
@@ -3480,7 +3351,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 if (reCode == 503 || reCode == 404) {
                     responseErrorCode.onErrorCode(reCode);
                 }
-                Log.d(TAG, "reCode getDeviceList onFailure " + reCode);
+                ChatApplication.logDisplay( "reCode getDeviceList onFailure " + reCode);
                 //  Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
 
                 //for clear adapter and view after resume the screen
@@ -3504,7 +3375,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     public void getDeviceCould(final int checkmessgae) {
         //showProgress();
 
-        Log.d("CallAPIMainFragment", "getDeviceList getDeviceList webUrl " + checkmessgae);
         if (getActivity() == null) {
             return;
         }
@@ -3538,8 +3408,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        //responseErrorCode.onProgress();
-        Log.d("CouldFoundIP", "call api");
         new GetJsonTask2(activity, url, "GET", "", new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -3559,8 +3427,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                 swipeRefreshLayout.setRefreshing(false);
                 sectionedExpandableLayoutHelper.setClickable(true);
-                Log.d(TAG, "getDeviceList onSuccess " + result.toString());
-                Log.d("RefreshList", "call api success");
+                ChatApplication.logDisplay( "getDeviceList onSuccess " + result.toString());
 
                 try {
 
@@ -3654,7 +3521,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 //
 //                                    piDetailsModelArrayList.add(piDetailsModel);
 //
-//                                    Log.d("System out", "pie details is ");
+//                                    ChatApplication.logDisplay( "pie details is ");
 //                                    if (piUserList.size() == 0) {
 ////                                        String jsonCurProduct = gson.toJson(piDetailsModelArrayList);
 ////                                        Common.savePrefValue(getActivity(), Common.USER_PIDETAIL, jsonCurProduct);
@@ -3662,7 +3529,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 //
 //                                        if (flagIsLogin == false) {
 //                                            if (checkLoginId(userId, checkmessgae)) {
-//                                                Log.d("System out", "pie details is isSignUp ");
+//                                                ChatApplication.logDisplay( "pie details is isSignUp ");
 //                                            }else if(flagisCould){
 //                                                flagisCould=false;
 //                                                return;
@@ -3681,7 +3548,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 ////                                                String jsonCurProduct = gson.toJson(piDetailsModelArrayList);
 ////                                                Common.savePrefValue(getActivity(), Common.USER_PIDETAIL, jsonCurProduct);
 //                                                if (flagIsLogin == false) {
-//                                                    Log.d("System out", "pie details is isSignUp equal ");
+//                                                    ChatApplication.logDisplay( "pie details is isSignUp equal ");
 //                                                    if (checkLoginId(userId, checkmessgae)) {
 //
 //                                                    } else {
@@ -3754,14 +3621,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         Common.savePrefValue(ChatApplication.getInstance(), "last_name", userLastName);
                         Common.savePrefValue(getContext(), Constants.USER_PASSWORD, userPassword);
 
-                        Log.d("userPassword", "textFound : " + userFirstName);
-
-                        // getActivity().setTitle("" + userFirstName + " " + userLastName);
-                        /**
-                         * <h1>for set ToolBar title in MainActivity2</h1>
-                         * {@link Main2Activity#toolbarTitle}
-                         * @see Main2Activity#toolbar
-                         */
                         mCallback.onArticleSelected("" + userFirstName + " " + userLastName);
 
                         JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
@@ -3774,7 +3633,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                         JSONArray cameraArray = dataObject.getJSONArray("cameradeviceList");
                         if (cameraArray.length() > 0) {
-                            Log.d("cameradeviceListSize", "size : " + cameraArray.length());
                             cameraList = JsonHelper.parseCameraArray(cameraArray);
 
                             RoomVO section = new RoomVO();
@@ -3816,7 +3674,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             mMessagesView.setVisibility(View.VISIBLE);
                             txt_empty_schedule.setVisibility(View.GONE);
                         }
-                        Log.d("RefreshList", "call api");
 
 
                         /*JSONArray cameraArray = dataObject.getJSONArray("cameradeviceList");
@@ -3856,7 +3713,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 if (reCode == 503 || reCode == 404) {
                     responseErrorCode.onErrorCode(reCode);
                 }
-                Log.d(TAG, "reCode getDeviceList onFailure " + reCode);
+                ChatApplication.logDisplay( "reCode getDeviceList onFailure " + reCode);
                 //  Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
 
                 //for clear adapter and view after resume the screen
@@ -3885,7 +3742,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             }.getType();
             List<User> userList = gson.fromJson(jsonText, type);
 
-            Log.d("System out", "user list is " + jsonText);
+            ChatApplication.logDisplay( "user list is " + jsonText);
             if (userList != null) {
                 if (userList.size() > 0) {
                     if (isRefredCheck) {

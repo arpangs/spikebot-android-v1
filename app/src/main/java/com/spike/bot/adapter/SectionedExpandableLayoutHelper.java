@@ -7,7 +7,6 @@ import android.content.pm.ResolveInfo;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.spike.bot.core.ListUtils;
 import com.spike.bot.customview.recycle.ItemClickListener;
@@ -24,7 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import me.leolin.shortcutbadger.ShortcutBadger;
 
 
 /**
@@ -119,12 +117,6 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
 
     public void updateItem(String moduleId,String deviceId,String deviceStatus ,int is_locked) {
 
-        Log.d("updateDITEM","init....");
-
-        /*DeviceVO item = new DeviceVO();
-        item.setModuleId(moduleId);
-        item.setDeviceId(""+deviceId);*/
-
         for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
 
             RoomVO key = entry.getKey();
@@ -177,8 +169,6 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         PanelVO item = new PanelVO();
         item.setPanelId(id);
         item.setPanel_status(Integer.parseInt(deviceStatus));
-
-        Log.d("PanelSocket","ID : " + deviceStatus);
 
         for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
             RoomVO key = entry.getKey() ;
@@ -397,10 +387,8 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
     //reload the row item in recycle
     public  void reloadDeviceList(Object obj){
         int position = mDataArrayList.indexOf(obj);
-        Log.d("updateDITEM","notifyItemChanged  position =  " + position);
 
         if(position!=-1) {
-            Log.d("updateDITEM","notify....");
             mDataArrayList.set(position,obj);
             mSectionedExpandableGridAdapter.notifyItemChanged(position);
 
@@ -496,14 +484,10 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                 }
             }
         }
-
-        Log.d("RefreshList","notifydata changes api");
-
     }
 
     @Override
     public void onSectionStateChanged(RoomVO section, boolean isOpen) {
-       //  Log.d("isOpen","Map Entry isKey : " +isOpen);
         this.section = section;
         ListUtils.sectionRoom = section;
         ListUtils.sectionRoom.setExpanded(isOpen);

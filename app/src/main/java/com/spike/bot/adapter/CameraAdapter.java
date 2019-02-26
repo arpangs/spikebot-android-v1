@@ -3,7 +3,6 @@ package com.spike.bot.adapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +50,6 @@ public class CameraAdapter extends RecyclerView.Adapter<CameraAdapter.ViewHolder
         //float height = (float) width / Config.ASPECT_RATIO;//(Width/Height)
         RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) view.getLayoutParams();
         params.width = (int) (width / Constants.CAMERA_NUMBER);
-        Log.d("","width = " + width );
         view.setLayoutParams(params);
         //return new MyViewHolder(itemView);
         return new ViewHolder(view , viewType);
@@ -101,9 +99,6 @@ public class CameraAdapter extends RecyclerView.Adapter<CameraAdapter.ViewHolder
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Log.d(""," setOnClickListener url = " + url);
-//                CameraDialog dialog = new CameraDialog(mContext,url);
-//                dialog.show();
 
             }
         });

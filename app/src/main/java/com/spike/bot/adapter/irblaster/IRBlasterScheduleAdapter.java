@@ -18,8 +18,6 @@ import android.widget.TextView;
 import com.kp.core.DateHelper;
 import com.spike.bot.R;
 import com.spike.bot.core.Common;
-import com.spike.bot.core.Log;
-import com.spike.bot.model.IRBlasterInfoRes;
 import com.spike.bot.model.RemoteSchListRes;
 
 import java.text.ParseException;

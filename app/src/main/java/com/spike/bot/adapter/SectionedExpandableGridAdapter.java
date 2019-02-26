@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -357,9 +356,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         holder.img_setting_badge_count.setVisibility(View.VISIBLE);
                         //holder.img_setting_badge_count.setText(isunRead);
 
-                        Log.d("System out","out is fffff "+isunRead);
                         if (Integer.parseInt(isunRead) > 99) {
-                            Log.d("System out","out is fffff done "+isunRead);
                             holder.img_setting_badge_count.setText("99+");
                             holder.img_setting_badge_count.getLayoutParams().width = Common.dpToPx(mContext, 20);
                             holder.img_setting_badge_count.getLayoutParams().height = Common.dpToPx(mContext, 20);
@@ -702,7 +699,6 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         notifyItemChanged(position, item);
 
                         if (!item.isSensor()) {
-                            Log.d("ClickItem", "click :" + position);
                             mItemClickListener.itemClicked(item, "itemclick", position);
                         } else {
                             if (item.getSensor_type().equalsIgnoreCase("remote")) {
@@ -735,7 +731,6 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         notifyItemChanged(position, item);
 
                         if (!item.isSensor()) {
-                            Log.d("ClickItem", "click :" + position);
                         } else {
                             if (item.getSensor_type().equalsIgnoreCase("remote")) {
                                     /*if(item.getIsActive() == 1){
@@ -803,12 +798,10 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         // if(!isClickable)
                         //   return;
                         //   DeviceVO itemCopy = (DeviceVO) item.clone();
-                        Log.d("cameraClick", "link : " + position + " : section : ");
-                        if (mCameraClickListener != null /*&& cameraVO.getIsActive()==1*/) {
+                        if (mCameraClickListener != null && cameraVO.getIsActive()==1) {
                             mCameraClickListener.itemClicked(cameraVO, "cameraClick");
                         } else {
                             Common.showToast("Camera not active");
-                            Log.d("cameraClick", "mCameraClickListener...");
                         }
                     }
                 });

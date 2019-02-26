@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.widget.FrameLayout;
 
@@ -19,7 +18,7 @@ public class ScheduleListActivity extends AppCompatActivity {
 
     String moodId3 = "",roomId = "";
     int  selection = 0;
-    String roomName = "",isActivityType="";
+    String roomName = "",isActivityType="",isRoomMainFm="";
     boolean isMoodAdapter = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +42,11 @@ public class ScheduleListActivity extends AppCompatActivity {
         selection = getIntent().getExtras().getInt("selection");
         isMoodAdapter = getIntent().getExtras().getBoolean("isMoodAdapter");
         isActivityType = getIntent().getExtras().getString("isActivityType");
+        isRoomMainFm = getIntent().getExtras().getString("isRoomMainFm");
+        if(TextUtils.isEmpty(isRoomMainFm)){
+            isRoomMainFm="";
+        }
 
-        Log.d("AddSchedule","moodId " + moodId);
         // create a FragmentManager
         android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
 // create a FragmentTransaction to begin the transaction and replace the Fragment
@@ -56,8 +58,7 @@ public class ScheduleListActivity extends AppCompatActivity {
             toolbar.setTitle(roomName);
         }
 
-        Log.d("Roomselection","Fragment selection ; " + selection + " id : " + moodId3);
-        fragmentTransaction.replace(R.id.container,ScheduleFragment.newInstance(true,moodId,moodId2,moodId3,selection,roomId,isMoodAdapter,isActivityType));
+        fragmentTransaction.replace(R.id.container,ScheduleFragment.newInstance(true,moodId,moodId2,moodId3,selection,roomId,isMoodAdapter,isActivityType,isRoomMainFm));
         fragmentTransaction.commit(); // save the changes
     }
     @Override

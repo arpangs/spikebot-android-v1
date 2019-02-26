@@ -26,7 +26,6 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -108,7 +107,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
 
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
-        Log.d("onNetChange", "isConnected : " + isConnected);
         if (!isConnected) {
             showToast("Disconnected, Please check your internet connection");
         }
@@ -164,7 +162,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
         ChatApplication app = ChatApplication.getInstance();
 
         if (mSocket != null && mSocket.connected()) {
-            Log.d("ChatSocket", "MainFragment if mSocket.connected  mScoket id :" + mSocket.id());
         } else {
             mSocket = app.getSocket();
         }
@@ -182,7 +179,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                 public void run() {
 
                     if (args != null) {
-                        Log.e("mSocketStart", "changeTempSensorValue " + args[0].toString());
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
                             String room_id = object.getString("room_id");
@@ -208,7 +204,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                 public void run() {
 
                     if (args != null) {
-                        Log.d("mSocketEmitter", "unReadCount >>>> " + args[0].toString());
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
                             String sensor_type = object.getString("sensor_type");
@@ -409,8 +404,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
      */
     private void tempSensorNotificationStatus(String tempSensorNotificationId, final SwitchCompat notiSwitchOnOff, boolean isActive, boolean isNotification, final int position) {
 
-        Log.d("NotiStatus", "isActive : " + isActive + " parse : " + (isActive ? 1 : 0));
-
         if (!ActivityHelper.isConnectingToInternet(this)) {
             //Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             showToast("" + R.string.disconnect);
@@ -447,7 +440,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("onSuccess", "result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -539,14 +531,10 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             e.printStackTrace();
         }
 
-        Log.d("TempSensorLog", "json Request : " + jsonNotification.toString());
-
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
-
-                Log.d("onSuccess", "result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -612,9 +600,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             edit_min_value.setHint("Min Value " + Common.getF());
             edit_max_value.setHint("Max Value " + Common.getF());
         }
-
-        Log.d("isCFSelected", "isCFSelected : " + isCFSelected);
-
 
         edit_min_value.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
         edit_min_value.addTextChangedListener(new TextWatcher() {
@@ -703,29 +688,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             Calendar c = Calendar.getInstance();
             c.setTime(d);
             dayOfWeek = String.valueOf(c.get(Calendar.DAY_OF_WEEK));
-
-          /*  if (dayOfWeek.contains("1")) {
-                Common.setBackground(this, text_day_1, true);
-            }
-            if (dayOfWeek.contains("2")) {
-                Common.setBackground(this, text_day_2, true);
-            }
-            if (dayOfWeek.contains("3")) {
-                Common.setBackground(this, text_day_3, true);
-            }
-            if (dayOfWeek.contains("4")) {
-                Common.setBackground(this, text_day_4, true);
-            }
-            if (dayOfWeek.contains("5")) {
-                Common.setBackground(this, text_day_5, true);
-            }
-            if (dayOfWeek.contains("6")) {
-                Common.setBackground(this, text_day_6, true);
-            }
-            if (dayOfWeek.contains("7")) {
-                Common.setBackground(this, text_day_7, true);
-            }*/
-
             Common.setBackground(this, text_day_1, true);
             Common.setBackground(this, text_day_2, true);
             Common.setBackground(this, text_day_3, true);
@@ -860,7 +822,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             e.printStackTrace();
         }
 
-        Log.d("onSuccess", "json : " + jsonNotification.toString());
+        ChatApplication.logDisplay("json : " + jsonNotification.toString());
 
         //  ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
@@ -868,7 +830,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("onSuccess", "result : " + result.toString());
+                ChatApplication.logDisplay("result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -986,7 +948,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("onSuccess", "result : " + result.toString());
+                ChatApplication.logDisplay("result : " + result.toString());
                 //  ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -1164,7 +1126,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("onSuccess", "result : " + result.toString());
+                ChatApplication.logDisplay("result : " + result.toString());
                 // ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -1369,8 +1331,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                 txtTempAlertCount.setText("("+sensorResModel.getDate().getTempLists()[0].getNotificationLists().length + " Added)");
                 //    txt_empty_notification.setVisibility(View.GONE);
 
-                Log.d("isCFDone", "isCFDone : " + isCFDone);
-
                 notificationList = sensorResModel.getDate().getTempLists()[0].getNotificationLists();
                 if (isCFDone) {
                     tempSensorInfoAdapter = new TempSensorInfoAdapter(notificationList, false, TempSensorInfoActivity.this);
@@ -1401,7 +1361,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
 
                     tempSensorInfoAdapter.notifyItemChanged(i, notificationListModel);
                 }
-                Log.d("ISCF", "is : " + isCFDone + " ic : " + isCF);
 
                 sensor_list.setAdapter(tempSensorInfoAdapter);
                 tempSensorInfoAdapter.notifyDataSetChanged();
@@ -1425,8 +1384,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
 
                             totalItemCount = linearLayoutManager.getItemCount();
                             lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-
-                            Log.d("ScrollList", "position : " + lastVisibleItem + " length : " + notificationList.length);
 
                             isScrollToEndPosition = (notificationList.length - 1) == lastVisibleItem && mScrollState == SCROLL_STATE_IDLE;
                         }
@@ -1562,8 +1519,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
         {
             e.printStackTrace();
         }
-
-        Log.d("JSONREAD", "read : " + jsonObject.toString());
 
         new GetJsonTask(this, webUrl, "POST", jsonObject.toString(), new
 

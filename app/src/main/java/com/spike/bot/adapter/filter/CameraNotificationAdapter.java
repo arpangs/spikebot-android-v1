@@ -175,20 +175,6 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
             }
         });
 
-//        holder.switchAlert.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                if(isChecked){
-//                    arrayListLog.get(position).setIsActive(1);
-//                }else {
-//                    arrayListLog.get(position).setIsActive(0);
-//                }
-//
-//                updateCameraAlert.updatecameraALert("switch",arrayListLog.get(position),holder.switchAlert);
-//
-//            }
-//        });
-
         holder.switchAlert.setOnTouchListener(new OnSwipeTouchListener(mContext){
             @Override
             public void onClick() {

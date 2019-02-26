@@ -7,7 +7,6 @@ import java.util.Map;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.util.Log;
 
 public class FontsOverride {
 	public static void setDefaultFont(Context context,
@@ -71,7 +70,6 @@ public class FontsOverride {
                 field.set(null, oldFonts);
                 field.setAccessible(false);
             } catch (Exception e) {
-                Log.e("TypefaceUtil", "Cannot set custom fonts");
             }
         } else {
             try {

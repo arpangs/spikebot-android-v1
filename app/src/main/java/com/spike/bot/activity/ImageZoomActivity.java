@@ -15,7 +15,6 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.kp.core.DateHelper;
 import com.spike.bot.R;
-import com.spike.bot.core.Log;
 import com.spike.bot.customview.TouchImageView;
 import com.spike.bot.model.CameraVO;
 

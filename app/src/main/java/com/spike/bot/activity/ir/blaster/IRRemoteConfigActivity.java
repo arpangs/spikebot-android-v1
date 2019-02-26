@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,8 +33,6 @@ import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.DeviceLogActivity;
-import com.spike.bot.adapter.DeviceLogAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -134,7 +131,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         mBrandId = getIntent().getStringExtra("BRAND_ID");
         mIRBlasterModuleId = getIntent().getStringExtra("IR_BLASTER_MODULE_ID");
 
-        Log.i("BlasterName", "Found : " + mBlasterName);
+        ChatApplication.logDisplay("Found : " + mBlasterName);
         getSupportActionBar().setTitle("" + mBrandType);
 
         if(arrayList.getDeviceBrandRemoteList()!=null &&
@@ -221,58 +218,11 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
                 model_number = data.getStringExtra("model_number");
                 txtModelNumber.setText("Model : "+model_number);
                 ChatApplication.logDisplay("model_number is "+model_number);
-//
-//                try {
-//                    JSONObject object=new JSONObject(onOffValue.toString().trim());
-//                    onValue=object.optString("ON");
-//                    offValue=object.optString("OFF");
-//
-//                    ChatApplication.logDisplay("on value is "+onValue);
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
             }
         }
     }
 
     private void getIRRemoteDetails() {
-
-//        if (!ActivityHelper.isConnectingToInternet(this)) {
-//            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//        String url = ChatApplication.url + Constants.GET_IR_DEVICE_DETAILS + "/" + mIRDeviceId + "/" + mBrandId;
-//        new GetJsonTask(this, url, "GET", "", new ICallBack() {
-//            @Override
-//            public void onSuccess(JSONObject result) {
-//
-//                try {
-//
-//                    int code = result.getInt("code");
-//                    String message = result.getString("message");
-//
-//                    if (code == 200) {
-//
-//                        Log.d("IRDeviceDetails", "remote res : " + result.toString());
-//                        irRemoteOnOffRes = Common.jsonToPojo(result.toString(), IRRemoteOnOffRes.class);
-//                        initData(irRemoteOnOffRes.getData());
-//
-//                    } else {
-//                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable throwable, String error) {
-//                throwable.printStackTrace();
-//            }
-//        }).execute();
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -375,7 +325,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         Gson gson = new Gson();
         String mStrOnOffReq = gson.toJson(irRemoteOnOffReq);
 
-        Log.i("OnOffRequest", "Request : " + mStrOnOffReq);
+        ChatApplication.logDisplay("Request : " + mStrOnOffReq);
 
         String url = ChatApplication.url + Constants.SEND_ON_OFF_COMMAND;
         new GetJsonTask(this, url, "POST", mStrOnOffReq, new ICallBack() {
@@ -390,7 +340,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
 
                         if (code == 200) {
 
-                            Log.d("IRDeviceDetails", "remote res : " + result.toString());
+                            ChatApplication.logDisplay( "remote res : " + result.toString());
                             showRespondView();
 
                         } else {
@@ -548,7 +498,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d("getIRBlasterList", "result : " + result.toString());
+                ChatApplication.logDisplay( "result : " + result.toString());
 
                 IRBlasterAddRes irBlasterAddRes = Common.jsonToPojo(result.toString(), IRBlasterAddRes.class);
                 if (irBlasterAddRes.getCode() == 200) {
@@ -615,7 +565,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         Gson gson = new Gson();
         String mStrOnOffReq = gson.toJson(addRemoteReq);
 
-        Log.i("IRDeviceDetails", "Request : " + mStrOnOffReq);
+        ChatApplication.logDisplay("Request : " + mStrOnOffReq);
 
         String url = ChatApplication.url + Constants.ADD_REMOTE;
         new GetJsonTask(this, url, "POST", mStrOnOffReq, new ICallBack() {
@@ -630,7 +580,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
                     if (code == 200) {
                         ChatApplication.isEditActivityNeedResume = true;
                         hideSaveDialog();
-                        Log.d("IRDeviceDetails", "remote res : " + result.toString());
+                        ChatApplication.logDisplay( "remote res : " + result.toString());
                         hideRespondView();
                         Intent returnIntent = new Intent();
                         setResult(Activity.RESULT_OK, returnIntent);

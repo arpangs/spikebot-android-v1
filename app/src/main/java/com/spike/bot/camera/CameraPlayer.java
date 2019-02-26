@@ -10,7 +10,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -85,9 +84,6 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
 
         nodePlayer = new NodePlayer(this);
 
-        //rtmp://home.deepfoods.net:11111/live/livestream3
-
-        Log.d("isCloudConnect","CAMERA URL : " + mMediaUrl + " isCloud : " + isCloudConnect);
 
         //String url = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
         //String url = "rtmp://13.127.153.122:1936/live/livestream1";
@@ -99,7 +95,6 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
         nodePlayer.setNodePlayerDelegate(new NodePlayerDelegate() {
             @Override
             public void onEventCallback(NodePlayer player, int event, String msg) {
-                Log.d("onEventCallback","event " + event + "  msg ="+ msg);
             }
         });
         zoomlayout=(ZoomLayout)findViewById(R.id.zoomLayout);
@@ -131,7 +126,6 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
 
         //If bitmap is not null
         if (b != null) {
-            Log.d("screenshot", "Main Directory bitmap  :  not null"  );
         }
 
         //  showScreenShotImage(b);//show bitmap over imageview

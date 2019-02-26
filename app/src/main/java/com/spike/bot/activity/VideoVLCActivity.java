@@ -2,7 +2,6 @@ package com.spike.bot.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -34,7 +33,6 @@ public class VideoVLCActivity extends AppCompatActivity {//implements IVideoPlay
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "VideoVLC -- onCreate -- START ------------");
         setContentView(R.layout.activity_video_vlc);
 
         mSurfaceView = (SurfaceView) findViewById(R.id.player_surface);
@@ -43,81 +41,11 @@ public class VideoVLCActivity extends AppCompatActivity {//implements IVideoPlay
         mSurfaceFrame = (FrameLayout) findViewById(R.id.player_surface_frame);
         mMediaUrl = getIntent().getExtras().getString("videoUrl");
 
-       /* try {
-            mLibVLC = new LibVLC();
-            mLibVLC.setAout(mLibVLC.AOUT_AUDIOTRACK);
-            mLibVLC.setVout(mLibVLC.VOUT_ANDROID_SURFACE);
-            mLibVLC.setHardwareAcceleration(LibVLC.HW_ACCELERATION_FULL);
-
-            mLibVLC.init(getApplicationContext());
-        } catch (LibVlcException e){
-            Log.e(TAG, e.toString());
-        }
-
-        mSurface = mSurfaceHolder.getSurface();
-
-        mLibVLC.attachSurface(mSurface, VideoVLCActivity.this);
-        mLibVLC.playMRL(mMediaUrl);*/
 
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        // MediaCodec opaque direct rendering should not be used anymore since there is no surface to attach.
-       // mLibVLC.stop();
     }
-
-   /* @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_video_vlc, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
-
-    public void eventHardwareAccelerationError() {
-        Log.e(TAG, "eventHardwareAccelerationError()!");
-        return;
-    }
-
-    /*@Override
-    public void setSurfaceLayout(final int width, final int height, int visible_width, int visible_height, final int sar_num, int sar_den){
-        Log.d(TAG, "setSurfaceSize -- START");
-        if (width * height == 0)
-            return;
-
-        // store video size
-        mVideoHeight = height;
-        mVideoWidth = width;
-        mVideoVisibleHeight = visible_height;
-        mVideoVisibleWidth = visible_width;
-        mSarNum = sar_num;
-        mSarDen = sar_den;
-
-        Log.d(TAG, "setSurfaceSize -- mMediaUrl: " + mMediaUrl + " mVideoHeight: " + mVideoHeight + " mVideoWidth: " + mVideoWidth + " mVideoVisibleHeight: " + mVideoVisibleHeight + " mVideoVisibleWidth: " + mVideoVisibleWidth + " mSarNum: " + mSarNum + " mSarDen: " + mSarDen);
-    }
-
-    @Override
-    public int configureSurface(android.view.Surface surface, int i, int i1, int i2){
-        return -1;
-    }*/
 }
-/*    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_video_vlc);
-    }
-}*/

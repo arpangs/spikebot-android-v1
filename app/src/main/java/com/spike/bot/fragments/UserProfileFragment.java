@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,7 +63,6 @@ public class UserProfileFragment extends Fragment{
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if(isVisibleToUser){
-            Log.d("TestTab","UserPrfile0 setUserVisibleHint...");
         }
     }
 
@@ -136,7 +134,6 @@ public class UserProfileFragment extends Fragment{
     }
     public void getProfile(){
 
-        Log.d(TAG, "getProfile configureGatewayDevice");
         if(!ActivityHelper.isConnectingToInternet(getContext())){
             Toast.makeText(getContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
             return;
@@ -148,7 +145,6 @@ public class UserProfileFragment extends Fragment{
         new GetJsonTask(getContext(),url ,"GET","", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d(TAG, "getProfile onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success","data":{"userProfileData":[{"user_email":"test@gmail.com","first_name":"test","last_name":"patel","user_name":"test","user_phone":"123123"}]}}
                     int code = result.getInt("code");
@@ -162,7 +158,7 @@ public class UserProfileFragment extends Fragment{
                                 "last_name": "patel",
                                 "user_name": "test",
                                 "user_phone": "123123"*/
-                        Log.d(TAG, "getProfile obj " + obj.toString() );
+                        ChatApplication.logDisplay( "getProfile obj " + obj.toString() );
                         String user_email = obj.getString("user_email");
                         String first_name = obj.getString("first_name");
                         String last_name = obj.getString("last_name");
@@ -184,7 +180,7 @@ public class UserProfileFragment extends Fragment{
                     // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.d(TAG, "Exception getProfile e.getMessage() " + e.getMessage() );
+                    ChatApplication.logDisplay( "Exception getProfile e.getMessage() " + e.getMessage() );
                 }
                 finally {
                     ActivityHelper.dismissProgressDialog();
@@ -193,7 +189,7 @@ public class UserProfileFragment extends Fragment{
             }
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d(TAG, "getProfile onFailure " + error );
+                ChatApplication.logDisplay( "getProfile onFailure " + error );
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(getContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
@@ -229,7 +225,7 @@ public class UserProfileFragment extends Fragment{
             return;
         }
 
-        Log.d(TAG, "saveProfile saveProfile");
+        ChatApplication.logDisplay( "saveProfile saveProfile");
         if (TextUtils.isEmpty(et_profile_first_name.getText().toString())) {
             Toast.makeText(getContext(), "Enter First Name", Toast.LENGTH_SHORT).show();
             return;
@@ -305,7 +301,7 @@ public class UserProfileFragment extends Fragment{
         new GetJsonTask(getContext(),url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d(TAG, "getProfile onSuccess " + result.toString());
+                ChatApplication.logDisplay( "getProfile onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success","data":{"userProfileData":[{"user_email":"test@gmail.com","first_name":"test","last_name":"patel","user_name":"test","user_phone":"123123"}]}}
                     int code = result.getInt("code");
@@ -329,7 +325,7 @@ public class UserProfileFragment extends Fragment{
                     // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.d(TAG, "Exception saveProfile e.getMessage() " + e.getMessage() );
+                    ChatApplication.logDisplay( "Exception saveProfile e.getMessage() " + e.getMessage() );
                 }
                 finally {
                     ActivityHelper.dismissProgressDialog();
@@ -338,7 +334,7 @@ public class UserProfileFragment extends Fragment{
             }
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d(TAG, "saveProfile onFailure " + error );
+                ChatApplication.logDisplay( "saveProfile onFailure " + error );
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(getContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }

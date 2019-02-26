@@ -13,8 +13,9 @@ public class Constants {
 //http://52.24.23.7:8079
 //http://52.24.23.7:7
 //    public static final String IP_END = "114"; //101 //117 //222
-    public static final String  IP_END = "119"; //101 //117 //222
-//    public static final String  IP_END = "222"; //101 //117 //222
+//    public static final String  IP_END = "119"; //101 //117 //222
+//
+  public static final String  IP_END = "222"; //101 //117 //222
 //    public static final String  IP_END = "120"; //101 //117 //222
     public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";
     public static final String CAMERA_PATH = "/static/storage/volume/";

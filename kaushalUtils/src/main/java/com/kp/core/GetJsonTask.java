@@ -12,7 +12,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 
 /**
  * @author kaushal
@@ -45,20 +44,15 @@ public class GetJsonTask extends AsyncTask<String, Void, String> {
 		try {
 			return ActivityHelper.CallJSONService(url, json, method);
 		} catch (HttpHostConnectException e) {
-			Log.d("Exception", "HttpHostConnectException Exception " + e.getMessage());
 			error = "Can't connect to server, Problem with server or your internet connection.";
 		} catch (SocketException e) {
-			Log.d("Exception", "SocketException Exception" + e.getMessage());
 			error = "Connection problem, check your internet connection";
 		} catch (ClientProtocolException e) {
-			Log.d("ClientProtocolException  ", "ClientProtocolException  =  " + e.getMessage());
 			error = "Protocol Error occured.";
 		} catch (IOException e) {
-			Log.d("IOException  ", "IOException  =  " + e.getMessage());
 			error = "IO Error occured.";
 		} catch (Exception e) {
 			error = "Error occured.";
-			Log.d("Exception ", e.toString());
 		}
 		return null;
 	}
@@ -66,7 +60,6 @@ public class GetJsonTask extends AsyncTask<String, Void, String> {
 	// onPostExecute displays the results of the AsyncTask.
 	@Override
 	protected void onPostExecute(String result) {
-		Log.d("onPostExecute  ", " onPostExecute  result json =  " + result);
 		try {
 			// JSONObject soapDatainJsonObject =
 			// XML.toJSONObject(result.toString());
@@ -76,7 +69,6 @@ public class GetJsonTask extends AsyncTask<String, Void, String> {
 			JSONObject json = new JSONObject(result);
 			activity.onSuccess(json);
 		} catch (Throwable e) {
-			Log.d("onPostExecute", " Exception " + e.getMessage());
 			activity.onFailure(e, error);
 		}
 	}

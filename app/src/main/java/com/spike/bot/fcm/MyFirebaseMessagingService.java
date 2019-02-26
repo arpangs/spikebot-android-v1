@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
@@ -54,7 +53,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+            ChatApplication.logDisplay("Message data payload: " + remoteMessage.getData());
 
             if (/* Check if data needs to be processed by long running job */ true) {
                 // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
@@ -67,7 +66,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             String message = remoteMessage.getData().get("default");
             badge = remoteMessage.getData().get("badge");
 
-            Log.d(TAG, "Message data payload: badge " + badge);
+            ChatApplication.logDisplay("Message data payload: badge " + badge);
 
             if(!TextUtils.isEmpty(message)){
                 sendNotification(message);
@@ -89,7 +88,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification());
+            ChatApplication.logDisplay("Message Notification Body: " + remoteMessage.getNotification());
             sendNotification(remoteMessage.getNotification().getBody());
         }
 
@@ -120,7 +119,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * Handle time allotted to BroadcastReceivers.
      */
     private void handleNow() {
-        Log.d(TAG, "Short lived task is done.");
+        ChatApplication.logDisplay("Short lived task is done.");
     }
 
     /**
@@ -132,7 +131,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private void sendNotification(String messageBody) {
 
         ChatApplication.isPushFound=true;
-        Log.d("FCMID","id : " + id);
         Intent intent = new Intent(this, Main2Activity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 , intent,PendingIntent.FLAG_ONE_SHOT);

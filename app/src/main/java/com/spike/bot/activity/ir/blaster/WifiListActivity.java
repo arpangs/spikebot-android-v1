@@ -37,7 +37,6 @@ import com.spike.bot.adapter.WifiAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
-import com.spike.bot.core.Log;
 import com.spike.bot.customview.CustomEditText;
 import com.spike.bot.listener.SocketListener;
 import com.spike.bot.listener.WifiListner;
@@ -276,7 +275,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
             e.printStackTrace();
         }
 
-        android.util.Log.d("roomOBJ", "obj : " + obj.toString());
+        ChatApplication.logDisplay("obj : " + obj.toString());
         String url = "";
 
         url = ChatApplication.url + Constants.ADD_IR_BLASTER;
@@ -341,9 +340,6 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
         TextView txtSave = (TextView) dialog.findViewById(R.id.txtSave);
         TextView txtWifiName = (TextView) dialog.findViewById(R.id.txtWifiName);
 
-        // txtWifiName.setText("Please enter"+wiFiList.getNetworkName()+" wifi password");
-
-
         //edWifiPassword.setText("ccocco123456");
         edWifiPassword.setSelection(edWifiPassword.getText().length());
         txtSave.setOnClickListener(new View.OnClickListener() {
@@ -384,7 +380,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
             @Override
             public void onSuccess(final JSONObject result) {
 
-                Log.d("System out", "ir blaster is found result " + result.toString());
+                ChatApplication.logDisplay( "ir blaster is found result " + result.toString());
 
                 try {
                     if (result != null) {
@@ -395,41 +391,9 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
                                 isNetworkChange=true;
                                 showIRSensorDialog();
                             }
-//                            new CountDownTimer(11000, 1000) {
-//
-//                                public void onTick(long millisUntilFinished) {
-//                                }
-//
-//                                public void onFinish() {
-//                                    if(isNetworkChange==false){
-//                                        roomListGet();
-//                                    }
-//
-//                                }
-//
-//                            }.start();
                         }else if(result.optString("response").equalsIgnoreCase("fail")){
                             ActivityHelper.dismissProgressDialog();
                         }
-
-                        //http://192.168.4.1/wifisave?s=CCO&p=ccocco123456
-                        //http://192.168.4.1/wifisave?s=CCO&p=ccocco123456
-
-//                        JSONObject object = result;
-//                        JSONArray jsonArray = object.optJSONArray("WiFi_List");
-//
-//                        arrayList = (ArrayList<WifiModel.WiFiList>) Common.fromJson(jsonArray.toString(),
-//                                new TypeToken<ArrayList<WifiModel.WiFiList>>() {
-//                                }.getType());
-//                        Log.d("System out", "arraylist is " + arrayList.size());
-//
-//                        if(arrayList.size()>0){
-//                            Intent intent=new Intent(WifiListActivity.this,WifiListActivity.class);
-//                            intent.putExtra("arrayList",arrayList);
-//                            startActivity(intent);
-//                        }else {
-//                            Toast.makeText(WifiListActivity.this,"Please check your wifi connection",Toast.LENGTH_SHORT).show();
-//                        }
                     }
 
 
@@ -442,7 +406,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d("System out", "ir blaster is found result error " + error.toString());
+                ChatApplication.logDisplay( "ir blaster is found result error " + error.toString());
                 ActivityHelper.dismissProgressDialog();
                 //  intentBlaster();
                 Toast.makeText(WifiListActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -450,58 +414,6 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
         }).execute();
     }
 
-
-  /*  public void roomListGet() {
-
-        if (!ActivityHelper.isConnectingToInternet(WifiListActivity.this)) {
-            showToast(""+R.string.disconnect);
-            return;
-        }
-        if(isNetworkChange){
-            return;
-        }
-        //  ActivityHelper.showProgressDialog(WifiListActivity.this,"Loading...",false);
-
-        String url = ChatApplication.url + Constants.getRoomList;
-
-        new GetJsonTask(WifiListActivity.this, url, "GET", "", new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
-
-                android.util.Log.d("ResultList","onSuccess result : " + result.toString());
-                ActivityHelper.dismissProgressDialog();
-                try {
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    if (code == 200) {
-                        isNetworkChange=true;
-                        roomListarrayList.clear();
-                        JSONObject object1 = result.getJSONObject("data");
-                        JSONArray jsonArray = object1.getJSONArray("room_list");
-                        roomListarrayList = (ArrayList<RoomListModel>) Common.fromJson(jsonArray.toString(),
-                                new TypeToken<ArrayList<RoomListModel>>() {
-                                }.getType());
-
-                        if (roomListarrayList.size() > 0) {
-                            showIRSensorDialog();
-                        }
-                    } else {
-                        Common.showToast(message);
-                    }
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
-            }
-        }).execute();
-    }
-*/
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
         if(isConnected){

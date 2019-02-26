@@ -24,7 +24,6 @@ import com.spike.bot.R;
 import com.spike.bot.adapter.irblaster.IRRemoteBrandListAdapter;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
-import com.spike.bot.core.Log;
 import com.spike.bot.model.DataSearch;
 import com.spike.bot.model.IRRemoteListRes;
 
@@ -152,7 +151,6 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
                 hideProgress();
                 ActivityHelper.dismissProgressDialog();
 
-                // Log.d(TAG,"onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -161,7 +159,7 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
 
                     if (code == 200) {
 
-                        Log.d("IRDeviceDetails", "remote res : " + result.toString());
+                        ChatApplication.logDisplay( "remote res : " + result.toString());
                         IRRemoteListRes irRemoteListRes = Common.jsonToPojo(result.toString(), IRRemoteListRes.class);
                         brandLists = irRemoteListRes.getData().getBrandList();
                         updateAdapter(brandLists);

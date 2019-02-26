@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -19,7 +18,6 @@ import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.CameraNotificationActivity;
 import com.spike.bot.adapter.SearchAdapter;
 import com.spike.bot.adapter.SearchClick;
 import com.spike.bot.core.Common;
@@ -144,7 +142,7 @@ public class SearchActivity extends AppCompatActivity implements SearchClick{
 
                     if (code == 200) {
 
-                        Log.d("IRDeviceDetails", "remote res : " + result.toString());
+                        ChatApplication.logDisplay( "remote res : " + result.toString());
                         arrayList = Common.jsonToPojo(result.getString("data").toString(),DataSearch.class);
 
                     } else {

@@ -8,7 +8,6 @@ import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -44,7 +43,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         this.scheduleClickListener = scheduleClickListener;
         this.isMoodAdapter = isMood;
         this.isType = isType;
-        Log.d("", "AutoModeAdapter AutoModeAdapter ");
     }
 
     @Override
@@ -77,7 +75,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             ScheduleVO scheduleVO = scheduleArrayList.get(i);
 
              if (scheduleVO.getSchedule_id().equalsIgnoreCase(schedule_id)) {
-                Log.d("SCH_STATUS","name  : " + schedule_status);
                 scheduleVO.setSchedule_status(Integer.parseInt(schedule_status));
                 notifyItemChanged(i,scheduleVO);
             }
@@ -86,8 +83,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-      //  Log.d("RoomParse","getItemCount : " + scheduleArrayList.size());
-
         return scheduleArrayList.size();
     }
     String url;
@@ -97,12 +92,9 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         holder.setIsRecyclable(false);
         final ScheduleVO scheduleVO = scheduleArrayList.get(listPosition);
 
-      //  Log.d("RoomParse","name : " + scheduleVO.getSchedule_name());
-
         try {
 
             if(listPosition==0){
-               // holder.view_line_top.setVisibility(View.GONE);
             }
 
 
@@ -348,9 +340,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             public void onClick(View v) {
                 if(!isClickable)
                     return;
-                // mItemClickListener.itemClicked(item);
-              //  Log.d("", " setOnClickListener tv_auto_mode_on_off = ");
-             //   scheduleClickListener.itemClicked(scheduleVO,"delete");
                 scheduleClickListener.itemClicked(scheduleVO,"delete",isMoodAdapter);
             }
         });

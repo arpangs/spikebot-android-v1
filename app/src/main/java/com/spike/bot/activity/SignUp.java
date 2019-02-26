@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -234,16 +233,11 @@ public class SignUp extends AppCompatActivity {
 
         ChatApplication app = ChatApplication.getInstance();
         if (mSocket != null && mSocket.connected()) {
-            Log.d("", "mSocket.connected  return.." + mSocket.id());
         } else {
             mSocket = app.getSocket();
         }
         webUrl = app.url;
-      //  String url = Constants.SIGN_UP_API;
         String url = webUrl + Constants.SIGNUP_API;
-        
-        Log.d("signupURL","url : " + url);
-
         String token = FirebaseInstanceId.getInstance().getToken();
         Common.savePrefValue(getApplicationContext(),Constants.DEVICE_PUSH_TOKEN,token);
 
@@ -264,15 +258,12 @@ public class SignUp extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        Log.d("signUpJson","json  : " + object.toString());
-
         ActivityHelper.showProgressDialog(SignUp.this,"Please wait...",false);
 
         new GetJsonTask(this,url ,"POST",object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d("signup", "signup onSuccess " + result.toString());
                 try {
 
                     int code = result.getInt("code");
@@ -300,7 +291,6 @@ public class SignUp extends AppCompatActivity {
                         String user_id=data.optString("user_id");
                         String user_password=data.optString("user_password");
 
-                        Log.d("System out","ip is : " +ip);
                         Common.savePrefValue(SignUp.this,Constants.USER_PASSWORD,user_password);
                         Common.savePrefValue(SignUp.this,Constants.PREF_IP,ip);
 
@@ -308,29 +298,12 @@ public class SignUp extends AppCompatActivity {
 
                         Gson gson = new Gson();
                         String jsonText = Common.getPrefValue(getApplicationContext(),Common.USER_JSON);
-                        Log.d("GSONLIST","text : " +jsonText);
                         List<User> userList = new ArrayList<User>();
                         user.setIsActive(true);
                         userList.add(user);
 
                         String jsonCurProduct = gson.toJson(userList);
                         Common.savePrefValue(getApplicationContext(),Common.USER_JSON,jsonCurProduct);
-
-//                        String mac_address=data.optString("mac_address");
-//                        String wifi_user_password=data.optString("wifi_user_password");
-//                        String wifi_user_name=data.optString("wifi_user_name");
-//
-//                        PiDetailsModel piDetailsModel=new PiDetailsModel();
-//                        piDetailsModel.setHome_controller_device_id(mac_address);
-//                        piDetailsModel.setWifi_user_name(wifi_user_password);
-//                        piDetailsModel.setWifi_user_password(wifi_user_name);
-//
-//                        MainFragment.piDetailsModelArrayList.add(piDetailsModel);
-//
-//                     //   Gson gson=new Gson();
-//                        String jsonCurProduct1 = gson.toJson(MainFragment.piDetailsModelArrayList);
-//                        Common.savePrefValue(SignUp.this, Common.USER_PIDETAIL, jsonCurProduct1);
-//                        Log.d("signup", "signup mac_address " + mac_address);
 
                         ChatApplication.isRefreshHome=false;
                         ChatApplication.isSignUp=true;
@@ -360,38 +333,3 @@ public class SignUp extends AppCompatActivity {
     }
 
 }
-
-
-/*
-{
-  "code": 200,
-  "message": "Success",
-  "data": {
-    "userList": [
-      {
-        "user_id": "1545317988870_UrL_0HY9u",
-        "user_email": "vipulkathiriya09@gmail.com",
-        "first_name": "vipul",
-        "last_name": "patel",
-        "vpn_port": "11150",
-        "user_name": "vipul",
-        "user_password": "c1bc06",
-        "camera_key": 0
-      }
-    ],
-    "cameradeviceList": [
-
-    ],
-    "piDetails": [
-      {
-        "wifi_user_name": "admin",
-        "wifi_user_password": "c1bc06",
-        "mac_address": "b8:27:eb:f7:45:b3"
-      }
-    ],
-    "roomdeviceList": [
-
-    ]
-  }
-}
-* */

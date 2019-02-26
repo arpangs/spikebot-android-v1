@@ -13,7 +13,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -253,9 +252,6 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        Log.d("Filter", "json : " + object.toString());
-
-
         new GetJsonTask(DeviceLogRoomActivity.this, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -387,8 +383,6 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        Log.d("JSONREAD", "read : " + jsonObject.toString());
 
         new GetJsonTask(this, webUrl, "POST", jsonObject.toString(), new
 

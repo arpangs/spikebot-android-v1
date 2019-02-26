@@ -3,12 +3,10 @@ package com.spike.bot.activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
 import com.spike.bot.R;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -37,15 +35,11 @@ public class CameraImagePush extends AppCompatActivity{
 
         String camera_url = getIntent().getStringExtra("camera_url");
         String camera_body = getIntent().getStringExtra("camera_body");
-        Log.d("FCMNotification","camera url : " + camera_url);
-        Log.d("FCMNotification","camera body: " + camera_body);
 
         //Clear.clearCache(Picasso.get());
 
-        Picasso.get()
-                .load(camera_url)
+        Picasso.with(this).load(camera_url)
                 .placeholder(R.drawable.loader2)
-                .networkPolicy(NetworkPolicy.NO_CACHE)
                 .into(img_cam_view);
     }
 

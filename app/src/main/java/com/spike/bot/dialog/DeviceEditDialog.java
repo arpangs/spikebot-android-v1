@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -126,8 +125,6 @@ public class DeviceEditDialog extends Dialog implements  View.OnClickListener {
                     deviceObj.put("device_icon",flags.get(sp_device_type.getSelectedItemPosition()).toString());
                     deviceObj.put("device_type",rg_auto_mode_type.getCheckedRadioButtonId()==R.id.rb_auto_mode_type_normal?0:1);
 
-                    Log.d("deviceObj","updated deviceObj " + deviceObj.toString());
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -147,7 +144,6 @@ public class DeviceEditDialog extends Dialog implements  View.OnClickListener {
 
     public void saveSwithcDetails(){
 
-        Log.d(TAG, "saveSwithcDetails saveSwithcDetails");
         if(!ActivityHelper.isConnectingToInternet(activity)){
             Toast.makeText(activity.getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
             return;
@@ -166,12 +162,9 @@ public class DeviceEditDialog extends Dialog implements  View.OnClickListener {
         }
         String url = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
 
-        Log.d("saveEdit","edit : " + obj.toString());
-
         new GetJsonTask(activity,url ,"POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d(TAG, "saveSwithcDetails onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -198,7 +191,6 @@ public class DeviceEditDialog extends Dialog implements  View.OnClickListener {
             }
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d(TAG, "saveSwithcDetails onFailure " + error );
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
@@ -309,7 +301,6 @@ public class DeviceEditDialog extends Dialog implements  View.OnClickListener {
         flags.clear();
         for(int i=0;i<device_iconsArray.length();i++){
             try {
-                //Log.d("ICONANME","::::" + device_iconsArray.getJSONObject(i).getString("device_icon_name"));
                 flags.add(device_iconsArray.getJSONObject(i).getString("device_icon_name"));
             } catch (JSONException e) {
                 e.printStackTrace();

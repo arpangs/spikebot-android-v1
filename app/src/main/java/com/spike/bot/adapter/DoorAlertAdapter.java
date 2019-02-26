@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.kp.core.DateHelper;
 import com.spike.bot.R;
-import com.spike.bot.model.CameraPushLog;
 import com.spike.bot.model.DoorSensorResModel;
 
 import java.text.ParseException;

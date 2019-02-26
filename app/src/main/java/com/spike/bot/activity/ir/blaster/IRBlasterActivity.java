@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -249,7 +248,7 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("RequestSch","onSuccess result : " + result.toString());
+                ChatApplication.logDisplay("onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -322,7 +321,7 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("RequestSch","onSuccess result : " + result.toString());
+                ChatApplication.logDisplay("onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 

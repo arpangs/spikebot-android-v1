@@ -25,7 +25,6 @@ import com.spike.bot.R;
 import com.spike.bot.adapter.irblaster.IRBlasterAddListAdapter;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
-import com.spike.bot.core.Log;
 import com.spike.bot.model.IRDeviceDetailsRes;
 
 import org.json.JSONException;
@@ -121,7 +120,6 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
             public void onSuccess(JSONObject result) {
 
                 hideProgress();
-                // Log.d(TAG,"onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -130,7 +128,7 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
 
                     if(code == 200){
 
-                        Log.d("IRDeviceDetails","remote res : " + result.toString());
+                        ChatApplication.logDisplay("remote res : " + result.toString());
                         IRDeviceDetailsRes irDeviceDetailsRes = Common.jsonToPojo(result.toString(),IRDeviceDetailsRes.class);
                         mIRDeviceList = irDeviceDetailsRes.getData().getDevicelist();
 

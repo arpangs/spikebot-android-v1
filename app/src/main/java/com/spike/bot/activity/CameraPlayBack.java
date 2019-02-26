@@ -13,7 +13,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -117,10 +116,6 @@ public class CameraPlayBack extends AppCompatActivity implements CameraListAdapt
 
        // roomVO = (RoomVO) getIntent().getExtras().getSerializable("room");
         cameraVOArrayList = (ArrayList<CameraVO>) getIntent().getExtras().getSerializable("cameraList");
-
-       // ArrayList<CameraVO> cameraVOs = roomVO.getCameraList();
-
-        Log.d("cameraVOs","cameraVOs : " + cameraVOArrayList.size());
 
         cameraStr = new ArrayList<>();
 
@@ -324,11 +319,8 @@ public class CameraPlayBack extends AppCompatActivity implements CameraListAdapt
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.d("jsonCamera","object : "+ jsonObject.toString());
-
         ChatApplication app = ChatApplication.getInstance();
         if (mSocket != null && mSocket.connected()) {
-           // Log.d(TAG, "mSocket.connected  return.." + mSocket.id());
         } else {
             mSocket = app.getSocket();
         }
@@ -344,10 +336,6 @@ public class CameraPlayBack extends AppCompatActivity implements CameraListAdapt
         }*/
 
         url = url + Constants.GET_CAMERA_RECORDING_BY_DATE;
-        Log.d("cameraURL","url :" + url);
-
-       // url = Constants.CAMERA_IP + Constants.GET_CAMERA_RECORD_BY_DATE ;
-
 
         ActivityHelper.showProgressDialog(CameraPlayBack.this,"Please wait...",false);
 
@@ -360,7 +348,6 @@ public class CameraPlayBack extends AppCompatActivity implements CameraListAdapt
                 ChatApplication.ADAPTER_POSITION = -1;
 
                 ActivityHelper.dismissProgressDialog();
-                Log.d("jsonCamera","resullt respone : " + result.toString());
 
                 int code = 0;
                 try {
@@ -412,7 +399,6 @@ public class CameraPlayBack extends AppCompatActivity implements CameraListAdapt
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d("onFailure","error : " + error);
                 ActivityHelper.dismissProgressDialog();
                 if(cameraVOs.isEmpty()){
                     txt_no_date.setVisibility(View.VISIBLE);
@@ -439,8 +425,6 @@ public class CameraPlayBack extends AppCompatActivity implements CameraListAdapt
         }*/
 
         //http://192.168.75.202/static/storage/1516175108972_RtW51YhVf/2018-03-17_21.15.mp4
-
-        Log.d("cameraURL","for show camera : " + ip+""+cameraVO.getCamera_id()+"/"+cameraVO.getCamera_videopath());
 
         Intent intent = new Intent(CameraPlayBack.this, VideoViewPLayer.class);
         intent.putExtra("videoUrl",ip+""+cameraVO.getCamera_id()+"/"+cameraVO.getCamera_videopath()); //static/storage/camera_id/name
@@ -471,27 +455,16 @@ public class CameraPlayBack extends AppCompatActivity implements CameraListAdapt
 
         ChatApplication app = ChatApplication.getInstance();
         if (mSocket != null && mSocket.connected()) {
-            // Log.d(TAG, "mSocket.connected  return.." + mSocket.id());
         } else {
             mSocket = app.getSocket();
         }
         webUrl = app.url;
 
         String url = "";
-       /* if(Main2Activity.isCloudConnected){
-            url = Constants.GET_CAMERA_CLOUD ;
-        }else{
-            url = Constants.CAMERA_IP + Constants.SHOW_CAMERA_RECORDING ;
-        }*/
-
-        Log.d("cameraURL","url2 :" + url);
-
-      //  url = Constants.CAMERA_IP + Constants.SHOW_CAMERA_RECORDING ;
 
         new GetJsonTask(getApplicationContext(), url, "POST", jsonObject.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d("jsonCamera","onSuccess respone : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
 
                 int code = 0;
@@ -539,7 +512,6 @@ public class CameraPlayBack extends AppCompatActivity implements CameraListAdapt
 
         ChatApplication app = ChatApplication.getInstance();
         if (mSocket != null && mSocket.connected()) {
-            Log.d("", "mSocket.connected  return.." + mSocket.id());
         } else {
             mSocket = app.getSocket();
         }

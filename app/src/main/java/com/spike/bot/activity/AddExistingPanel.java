@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -153,7 +152,7 @@ public class AddExistingPanel extends AppCompatActivity {
             url = webUrl + Constants.GET_ORIGINAL_DEVICES + "/1"; //Add from existing
         }
 
-        Log.d("isSync","web url : " + url);
+        ChatApplication.logDisplay("web url : " + url);
        /* if (!token_id.equalsIgnoreCase("")) {
             url = url + "/" + token_id;
         }*/
@@ -162,7 +161,7 @@ public class AddExistingPanel extends AppCompatActivity {
         new GetJsonTask(getApplicationContext(), url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d("ExitPanel", "getDeviceList onSuccess " + result.toString());
+                ChatApplication.logDisplay( "getDeviceList onSuccess " + result.toString());
                 try {
                     roomList = new ArrayList<>();
 
@@ -258,7 +257,7 @@ public class AddExistingPanel extends AppCompatActivity {
 
         ChatApplication app = ChatApplication.getInstance();
         if (mSocket != null && mSocket.connected()) {
-            Log.d("", "mSocket.connected  return.." + mSocket.id());
+            ChatApplication.logDisplay("mSocket.connected  return.." + mSocket.id());
         } else {
             mSocket = app.getSocket();
         }
@@ -349,7 +348,7 @@ public class AddExistingPanel extends AppCompatActivity {
                 url =  webUrl + Constants.ADD_CUSTOME_DEVICE;
             }
 
-            Log.d("ExitPanel","URL CALL : " + url + " isDeviceAdd : " + isDeviceAdd);
+            ChatApplication.logDisplay("URL CALL : " + url + " isDeviceAdd : " + isDeviceAdd);
 
            // if(!url.contains("http://52.66.176.47")){
 
@@ -402,7 +401,7 @@ public class AddExistingPanel extends AppCompatActivity {
 
                     panelObj.put("deviceList",jsonArrayDevice);
 
-                    Log.d("ExitPanel","JSONObject : " + panelObj.toString());
+                   ChatApplication.logDisplay("JSONObject : " + panelObj.toString());
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -415,7 +414,7 @@ public class AddExistingPanel extends AppCompatActivity {
                     @Override
                     public void onSuccess(JSONObject result) {
                         ActivityHelper.dismissProgressDialog();
-                        Log.d("ExitPanel", "saveMood onSuccess " + result.toString());
+                       ChatApplication.logDisplay( "saveMood onSuccess " + result.toString());
                         try {
 
                             int code = result.getInt("code");

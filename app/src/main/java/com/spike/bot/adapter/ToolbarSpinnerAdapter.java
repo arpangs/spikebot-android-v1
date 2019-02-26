@@ -59,20 +59,6 @@ public class ToolbarSpinnerAdapter extends BaseAdapter{
 
         }
 
-       /* names.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("GSONLIST","text click : " + user.getCloudIP());
-            }
-        });*/
-
-        /*view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ChatApplication.url = user.getCloudIP();
-            }
-        });*/
-
         return view;
     }
 }

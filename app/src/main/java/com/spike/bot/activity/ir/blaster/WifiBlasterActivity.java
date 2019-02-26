@@ -33,8 +33,6 @@ import com.spike.bot.R;
 import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
-import com.spike.bot.core.Log;
-import com.spike.bot.model.CameraPushLog;
 import com.spike.bot.model.WifiModel;
 
 import org.json.JSONArray;

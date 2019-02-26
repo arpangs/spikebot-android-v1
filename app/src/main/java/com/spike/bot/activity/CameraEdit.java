@@ -6,7 +6,6 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -150,7 +149,6 @@ public class CameraEdit extends AppCompatActivity{
 
         ChatApplication app = ChatApplication.getInstance();
         if (mSocket != null && mSocket.connected()) {
-            Log.d("", "mSocket.connected  return.." + mSocket.id());
         } else {
             mSocket = app.getSocket();
         }
@@ -171,7 +169,6 @@ public class CameraEdit extends AppCompatActivity{
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d("onSuccess", "onSuccess onSuccess " + result.toString());
                 try {
 
                     int code = result.getInt("code");
@@ -290,7 +287,6 @@ public class CameraEdit extends AppCompatActivity{
 
         ChatApplication app = ChatApplication.getInstance();
         if (mSocket != null && mSocket.connected()) {
-            Log.d("", "mSocket.connected  return.." + mSocket.id());
         } else {
             mSocket = app.getSocket();
         }
@@ -316,7 +312,6 @@ public class CameraEdit extends AppCompatActivity{
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d("onSuccess", "onSuccess onSuccess " + result.toString());
                 try {
 
                     int code = result.getInt("code");
@@ -464,11 +459,8 @@ public class CameraEdit extends AppCompatActivity{
             e.printStackTrace();
         }
 
-        Log.d("cameraObj","obj : " + obj.toString());
-
         ChatApplication app = ChatApplication.getInstance();
         if (mSocket != null && mSocket.connected()) {
-            Log.d("", "mSocket.connected  return.." + mSocket.id());
         } else {
             mSocket = app.getSocket();
         }
@@ -482,7 +474,6 @@ public class CameraEdit extends AppCompatActivity{
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d("onSuccess", "onSuccess onSuccess " + result.toString());
                 try {
 
                     int code = result.getInt("code");

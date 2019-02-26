@@ -114,7 +114,7 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("onSuccess","onSuccess result : " + result.toString());
+                ChatApplication.logDisplay("onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -192,7 +192,7 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("RequestSch","onSuccess result : " + result.toString());
+                ChatApplication.logDisplay("onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -351,7 +351,7 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
         }
 
         getRepeatString();
-        Log.i("Repeat String","OK : " + repeatDayString);
+        ChatApplication.logDisplay("OK : " + repeatDayString);
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             showToast(""+ R.string.disconnect);
@@ -398,7 +398,7 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
         Gson gson = new Gson();
         String addSchReqJson = gson.toJson(remoteAddScheduleReq);
 
-        Log.i("RequestSch","JOSN : " + addSchReqJson);
+        ChatApplication.logDisplay("JOSN : " + addSchReqJson);
 
         ActivityHelper.showProgressDialog(this,"Please wait.",false);
 
@@ -406,7 +406,7 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("RequestSch","onSuccess result : " + result.toString());
+                ChatApplication.logDisplay("onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -658,7 +658,7 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
         if (repeatDayString.startsWith(",")) {
             repeatDayString = repeatDayString.replaceFirst(",", "");
         }
-        Log.d("", " repeatDayString " + repeatDayString);
+        ChatApplication.logDisplay( " repeatDayString " + repeatDayString);
 
     }
 
@@ -689,7 +689,7 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("RequestSch","onSuccess result : " + result.toString());
+                ChatApplication.logDisplay("onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -767,7 +767,7 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("RequestSch","onSuccess result : " + result.toString());
+                ChatApplication.logDisplay("onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 

@@ -13,7 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -356,7 +355,6 @@ public class SensorDoorLogActivity extends AppCompatActivity implements  OnLoadM
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                Log.d("onResume","doInBackground call...");
                 unreadApiCall();
                 return null;
             }
@@ -410,29 +408,9 @@ public class SensorDoorLogActivity extends AppCompatActivity implements  OnLoadM
                 e.printStackTrace();
             }
 
-            Log.d("JSONREAD","read : " + jsonObject.toString());
-
-        //    ActivityHelper.showProgressDialog(this, "Please wait.", false);
             new GetJsonTask(this, webUrl, "POST", jsonObject.toString(), new ICallBack() {
                 @Override
                 public void onSuccess(JSONObject result) {
-
-                    Log.d("SensorLog","onSuccess result : " + result.toString());
-                    /*ActivityHelper.dismissProgressDialog();
-                    try {
-
-                        int code = result.getInt("code");
-                        String message = result.getString("message");
-                        if(code == 200){
-                            onBackPressed();
-                        }else{
-                            Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
-                        }
-
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }*/
                 }
 
                 @Override
@@ -696,14 +674,14 @@ public class SensorDoorLogActivity extends AppCompatActivity implements  OnLoadM
             e.printStackTrace();
         }
 
-        Log.d("SensorLog","json Request : " + jsonNotification.toString());
+        ChatApplication.logDisplay("json Request : " + jsonNotification.toString());
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("SensorLog","onSuccess result : " + result.toString());
+                ChatApplication.logDisplay("onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -784,7 +762,7 @@ public class SensorDoorLogActivity extends AppCompatActivity implements  OnLoadM
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("SensorLog","result : " + result.toString());
+                ChatApplication.logDisplay("result : " + result.toString());
 
                 ActivityHelper.dismissProgressDialog();
                 mSensorLogRes = Common.jsonToPojo(result.toString(),SensorLogRes.class);
@@ -949,7 +927,6 @@ public class SensorDoorLogActivity extends AppCompatActivity implements  OnLoadM
                             start_date = on_date;
                         }
 
-                        Log.d("Date_format",""+on_date + " >>> " + changeDateFormat(on_date));
                         editText.setText(""+changeDateFormat(on_date));
 
                         if(!TextUtils.isEmpty(edt_start_date.getText().toString()) && !TextUtils.isEmpty(edt_end_date.getText().toString())){

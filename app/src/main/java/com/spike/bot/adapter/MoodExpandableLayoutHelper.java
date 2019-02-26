@@ -3,7 +3,6 @@ package com.spike.bot.adapter;
 import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import com.spike.bot.core.ListUtils;
 import com.spike.bot.customview.recycle.ItemClickMoodListener;
@@ -63,8 +62,6 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
 
     public void updateItem(String moduleId,String deviceId,String deviceStatus,int is_locked) {
 
-        Log.d("FoundKey","updateItem :moduleId : " + moduleId + " ::deviceId : " + deviceId);
-
         DeviceVO item = new DeviceVO();
         item.setModuleId(moduleId);
         item.setDeviceId(deviceId);
@@ -116,7 +113,6 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
 
             ArrayList<PanelVO> panelsList = entry.getValue();
             if(panelsList.contains(item)){
-                Log.d("onOffPanelEvent","panelsList contains " + key + "    status =  " + deviceStatus );
 
                 for(int i=0;i<panelsList.size();i++) {
                     if (panelsList.get(i).equals(item)) {
@@ -131,7 +127,6 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
 
     /*--updateMood--*/
     public void updateMood(String mood_id,String mood_status) {
-        Log.d("moodStatusOnOff", mood_id + " mood_id updateMood updateMood " + mood_status);
         MoodVO item = new MoodVO();
         item.setMood_id(mood_id);
       //  item.setRoom_status(Integer.parseInt(deviceStatus));
@@ -149,7 +144,6 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
     //reload the row item in recycle
     public void reloadDeviceList(Object obj){
         int position = mDataArrayList.indexOf(obj);
-       // Log.d("","reloadDeviceList  notifyItemChanged  position =  " + position);
 
         if(position!=-1) {
             mDataArrayList.set(position,obj);
@@ -171,9 +165,6 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
         }
     }
     public void addSection(RoomVO section) {
-        //mSectionMap.put(section.getRoomName(), section);
-//        ArrayList<MoodVO> moodList =  new ArrayList<MoodVO>();
-//        moodList.add(section);
         if (this.section!=null && this.section.equals(section)){
 
         }
@@ -184,10 +175,6 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
                 section.setExpanded(true);
             }
         }
-
-            //mode status check
-
-            //Log.d("Map.Entry","Mode status : " + section.getMood_status());
 
             ArrayList<PanelVO> panelVOList = section.getPanelList();
 

@@ -3,7 +3,6 @@ package com.spike.bot.adapter.filter;
 import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -129,7 +128,6 @@ public class FilterRootAdapter extends RecyclerView.Adapter<FilterRootAdapter.Fi
 
     @Override
     public void eventClick(int pos) {
-        Log.d("Filter","pos : " + pos);
         for (int i = 0; i < filters.size(); i++) {
             Filter filter = filters.get(i);
             if(i == pos){

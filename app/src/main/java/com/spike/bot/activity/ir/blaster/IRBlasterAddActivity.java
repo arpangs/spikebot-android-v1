@@ -1,5 +1,6 @@
 package com.spike.bot.activity.ir.blaster;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
@@ -16,7 +17,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -97,6 +97,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         getIRBlasterList();
     }
 
+    @SuppressLint("RestrictedApi")
     private void bindView(){
 
         mBlasterList = (RecyclerView) findViewById(R.id.list_blaster);
@@ -348,7 +349,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             e.printStackTrace();
         }
 
-        Log.d("roomOBJ","obj : " + obj.toString());
+        ChatApplication.logDisplay("obj : " + obj.toString());
         String url = "";
 
         url = ChatApplication.url + Constants.ADD_IR_BLASTER;
@@ -450,7 +451,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             @Override
             public void onSuccess(JSONObject result) {
                 //   ActivityHelper.dismissProgressDialog();
-                Log.d("doorSensorUnAsigned","result : " + result.toString());
+                ChatApplication.logDisplay("result : " + result.toString());
 
                 SensorUnassignedRes sensorUnassignedRes = Common.jsonToPojo(result.toString(),SensorUnassignedRes.class);
 
@@ -458,7 +459,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
 
                     if(sensorUnassignedRes.getData()!=null && sensorUnassignedRes.getData().getUnassigendSensorList().size() > 0){
                         Intent intent = new Intent(IRBlasterAddActivity.this, SensorUnassignedActivity.class);
-                        Log.i("SensorType","Type isDoorSensor : " + isDoorSensor);
+                        ChatApplication.logDisplay("Type isDoorSensor : " + isDoorSensor);
                         intent.putExtra("isDoorSensor",isDoorSensor);
                         startActivity(intent);
                     }else{
@@ -481,7 +482,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
     public boolean addIRBlasterSensor = false;
 
     private void getIRBlasterConfigData() {
-        Log.d("IRBlaster", "configIRBlaster");
+        ChatApplication.logDisplay("configIRBlaster");
         if (!ActivityHelper.isConnectingToInternet(getApplicationContext())) {
             Common.showToast(""+R.string.disconnect);
             return;
@@ -496,7 +497,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             @Override
             public void onSuccess(JSONObject result) {
                 //ActivityHelper.dismissProgressDialog();
-                Log.d("IRBlaster", "configIRBlaster onSuccess " + result.toString());
+                ChatApplication.logDisplay( "configIRBlaster onSuccess " + result.toString());
                 try {
                     // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
@@ -534,7 +535,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         try {
             countDownTimer.start();
         } catch (Exception e) {
-            Log.d("", "TimerTask configureGatewayDevice Exception " + e.getMessage());
+            ChatApplication.logDisplay( "TimerTask configureGatewayDevice Exception " + e.getMessage());
         }
     }
 
@@ -563,7 +564,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d("getIRBlasterList","result : " + result.toString());
+                ChatApplication.logDisplay("result : " + result.toString());
 
                 IRBlasterAddRes irBlasterAddRes = Common.jsonToPojo(result.toString(),IRBlasterAddRes.class);
                 if(irBlasterAddRes.getCode() == 200){
@@ -651,7 +652,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d("getIRBlasterList","result : " + result.toString());
+                ChatApplication.logDisplay("result : " + result.toString());
 
                 try {
                     String code = result.getString("code");
@@ -713,6 +714,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
 
 
         mBlasterName.setText(ir.getIrBlasterName());
+        mBlasterName.setSelection(mBlasterName.getText().length());
         final ArrayAdapter roomAdapter = new ArrayAdapter(this, R.layout.spinner, roomLists);
         mRoomSpinner.setAdapter(roomAdapter);
 
@@ -789,7 +791,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             e.printStackTrace();
         }
 
-        Log.i("UpdateIRBlaster","Object : " + object.toString());
+        ChatApplication.logDisplay("Object : " + object.toString());
 
         if(mBlasterName!=null){
             hideSoftKeyboard(mBlasterName);
@@ -801,7 +803,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d("getIRBlasterList","result : " + result.toString());
+                ChatApplication.logDisplay("result : " + result.toString());
 
                 try {
                     String code = result.getString("code");

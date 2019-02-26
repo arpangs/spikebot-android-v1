@@ -3,7 +3,6 @@ package com.spike.bot.adapter.mood;
 import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import com.spike.bot.core.ListUtils;
 import com.spike.bot.customview.recycle.ItemClickListener;
@@ -76,17 +75,10 @@ public class MoodSectionedExpandableLayoutHelper implements SectionStateChangeLi
                 ArrayList<DeviceVO> devicesList = panel.getDeviceList();
 
                 if(devicesList.contains(item)){
-                //    Log.d("","devicesList.contains " + key + "    size =  " + devicesList.size() );
                     for(int i=0;i<devicesList.size();i++) {
                         if (devicesList.get(i).equals(item)) {
                             devicesList.get(i).setDeviceStatus(Integer.parseInt(deviceStatus));
-                            /*int position = mDataArrayList.indexOf(devicesList.get(i));
-                            Log.d("","devicesList  notifyItemChanged  position =  " + position);
 
-                            if(position!=-1) {
-                                mDataArrayList.set(position,devicesList.get(i));
-                                mSectionedExpandableGridAdapter.notifyItemChanged(position);
-                            }*/
                             reloadDeviceList(devicesList.get(i));
                             // break;
                         }
@@ -110,12 +102,8 @@ public class MoodSectionedExpandableLayoutHelper implements SectionStateChangeLi
 
         for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
             RoomVO key = entry.getKey() ;
-           // Log.d("","panelsList contains " + key + "    size =  "  );
-            //mDataArrayList.add((key = entry.getKey()));
-            //if (key.isExpanded)
             ArrayList<PanelVO> panelsList = entry.getValue();
             if(panelsList.contains(item)){
-                Log.d("onOffPanelEvent","panelsList contains " + key + "    status =  " + deviceStatus );
 
                 for(int i=0;i<panelsList.size();i++) {
                     if (panelsList.get(i).equals(item)) {
@@ -127,60 +115,17 @@ public class MoodSectionedExpandableLayoutHelper implements SectionStateChangeLi
             }
         }
     }
-    public void updateRoom(String id,String deviceStatus) {
-      //  Log.d("roomStatus "  , id + " roomStatus updatePanel " + deviceStatus);
-        RoomVO item = new RoomVO();
-        item.setRoomId(id);
-      //  item.setRoom_status(Integer.parseInt(deviceStatus));
 
-        for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
-            RoomVO key = entry.getKey() ;
-            //mDataArrayList.add((key = entry.getKey()));
-            //if (key.isExpanded)
-            //if(key.equals(item)){
-            if(id.equals( key.getRoomId() )){
-             //   Log.d("roomStatus "  , id + " id updatePanel roomid " + key.getRoomId() );
-                key.setRoom_status(Integer.parseInt(deviceStatus));
-                reloadDeviceList(key);
-            }
-        }
-    }
     //reload the row item in recycle
     public void reloadDeviceList(Object obj){
         int position = mDataArrayList.indexOf(obj);
-       // Log.d("","reloadDeviceList  notifyItemChanged  position =  " + position);
 
         if(position!=-1) {
             mDataArrayList.set(position,obj);
             mSectionedExpandableGridAdapter.notifyItemChanged(position);
 
-            //added by sagar update panel list status issue
-            /*for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
-                RoomVO key = entry.getKey() ;
-                ArrayList<PanelVO> panelsList = entry.getValue();
-                for(PanelVO panelVO : panelsList){
-                    boolean isActivePanel = false;
-                    ArrayList<DeviceVO>  deviceVOArrayList = panelVO.getDeviceList();
-                    for(DeviceVO deviceVO : deviceVOArrayList){
-                        if(deviceVO.getDeviceStatus() == 1){
-                            isActivePanel = true;
-                        }
-                    }
-                    panelVO.setPanel_status(isActivePanel ? 1 : 0 );
-                    synchronized (mSectionDataMap) {
-                        mSectionDataMap.notify();
-                    }
-                }
-            }*/
         }
     }
-    /*
-    public void addSection(RoomVO section, ArrayList<DeviceVO> items) {
-        mSectionMap.put(section.getRoomName(), section);
-        mSectionDataMap.put(section, items);
-    }*/
-
-
     public void addSectionList(ArrayList<RoomVO> roomList){
        // mSectionDataMap = new LinkedHashMap<RoomVO, ArrayList<PanelVO>>();
        // mDataArrayList = new ArrayList<Object>();
@@ -229,21 +174,8 @@ public class MoodSectionedExpandableLayoutHelper implements SectionStateChangeLi
         //mSectionMap.put(section.getRoomName(), section);
         mSectionDataMap.put(section, section.getPanelList());
     }
-  /*  public void addItem(RoomVO section, DeviceVO item) {
-        mSectionDataMap.get(mSectionMap.get(section.getRoomName())).add(item);
-    }
-
-    public void removeItem(RoomVO section, DeviceVO item) {
-        mSectionDataMap.get(mSectionMap.get(section.getRoomName())).remove(item);
-    }
-
-    public void removeSection(RoomVO section) {
-        mSectionDataMap.remove(mSectionMap.get(section.getRoomName()));
-        mSectionMap.remove(section);
-    }*/
 
     private void generateDataList () {
-     //   Log.d("CallAPI"," generateDataList =  " + mSectionDataMap.size());
         mDataArrayList.clear();
 
         for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
@@ -260,10 +192,8 @@ public class MoodSectionedExpandableLayoutHelper implements SectionStateChangeLi
                     mDataArrayList.add(panelList.get(i));
                     //add all device switch
                     if(panelList.get(i).getType().equalsIgnoreCase("")){
-                        //Log.d("isExpanded","generateDataList if isKey : " + key.isExpanded());
                         mDataArrayList.addAll(panelList.get(i).getDeviceList());
                     }else{
-                        //Log.d("isExpanded","generateDataList else isKey : " + key.isExpanded());
                         mDataArrayList.addAll(panelList.get(i).getCameraList());
                     }
                 }
@@ -273,7 +203,6 @@ public class MoodSectionedExpandableLayoutHelper implements SectionStateChangeLi
 
     @Override
     public void onSectionStateChanged(RoomVO section, boolean isOpen) {
-       //  Log.d("isOpen","Map Entry isKey : " +isOpen);
         this.section = section;
         ListUtils.sectionRoom = section;
         ListUtils.sectionRoom.setExpanded(isOpen);

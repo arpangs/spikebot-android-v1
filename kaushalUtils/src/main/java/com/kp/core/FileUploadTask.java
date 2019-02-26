@@ -16,7 +16,6 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 /**
  * @author kaushal Prajapati (kaushal2406@gmail.com)
@@ -56,7 +55,6 @@ public class FileUploadTask extends AsyncTask<String, Void, String> {
 		try {
 			
 //			return new HttpFileUpload(url, key,userId,fileName,realPath).Send_Now();
-			 Log.d("Send_Now","Starting Http File Sending to URL  " + realPath);
 	    		fileInputStream= new FileInputStream(realPath);
 //	          String iFileName = "ovicam_temp_vid.mp4";
 	          String lineEnd = "\r\n";
@@ -65,8 +63,7 @@ public class FileUploadTask extends AsyncTask<String, Void, String> {
 	          
 //	          try
 //	          {
-	                Log.d(Tag,"Starting Http File Sending to URL" + fileName);
-	      
+
 	                // Open a HTTP connection to the URL
 	                HttpURLConnection conn = (HttpURLConnection)connectURL.openConnection();
 	      
@@ -102,8 +99,7 @@ public class FileUploadTask extends AsyncTask<String, Void, String> {
 	                dos.writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\"" + fileName +"\"" + lineEnd);
 	                dos.writeBytes(lineEnd);
 	      
-	                Log.d(Tag,"Headers are written");
-	      
+
 	                // create a buffer of maximum size
 	                int bytesAvailable = fileInputStream.available();
 	                    
@@ -123,7 +119,6 @@ public class FileUploadTask extends AsyncTask<String, Void, String> {
 	                        String response = "outofmemoryerror";
 	                        return response;
 	                    }
-	      //            Log.d(Tag, "bytesRead ===-==-=-=-=-=- " + bytesRead);
 	                    bytesAvailable = fileInputStream.available();
 	                    bufferSize = Math.min(bytesAvailable,maxBufferSize);
 	                    bytesRead = fileInputStream.read(buffer, 0,bufferSize);
@@ -131,12 +126,9 @@ public class FileUploadTask extends AsyncTask<String, Void, String> {
 	                dos.writeBytes(lineEnd);
 	                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
 	      
-	                Log.d(Tag,"File Sent, Response: "+String.valueOf(conn.getResponseCode()));
 	                int serverResponseCode = conn.getResponseCode();
 	                String serverResponseMessage = conn.getResponseMessage();
-	                
-	                Log.d("uploadFile", "HTTP Response is : "
-	                        + serverResponseMessage + ": " + serverResponseCode);
+
 	                
 	                InputStream is = conn.getInputStream();
 	                // retrieve the response from server
@@ -145,7 +137,6 @@ public class FileUploadTask extends AsyncTask<String, Void, String> {
 	                StringBuffer b =new StringBuffer();
 	                while( ( ch = is.read() ) != -1 ){ b.append( (char)ch ); }
 	                String s=b.toString();
-	                Log.i("Response",s);
 	             // close streams
 	                fileInputStream.close();
 	                dos.flush();
@@ -153,23 +144,18 @@ public class FileUploadTask extends AsyncTask<String, Void, String> {
 	                dos =null;
 			
 		}catch (HttpHostConnectException e) {
-			//	 Log.d("Exception","HttpHostConnectException Exception" + e.getMessage());
 			error = "Can't connect to server, Problem with server or your internet connection.";
 		}
     	catch (SocketException e) {
-    	   //  Log.d("Exception","SocketException Exception" + e.getMessage());
     	    error = "Connection problem, check your internet connection";
     	}
         catch (ClientProtocolException e) {
-        	// Log.d("ClientProtocolException  ","ClientProtocolException  =  " + e.getMessage() );
         	error = "Protocol Error occured.";
         } catch (IOException e) {
-        	// Log.d("IOException  ","IOException  =  " + e.getMessage() );
         	error = "IO Error occured.";
         }
 		catch (Exception e) {
 			error = "Error occured.";
-			 Log.d("Exception ", e.toString());
 		}
 		error = "Can't connect to server, Problem with server or your internet connection.";
 		return error;
@@ -177,7 +163,6 @@ public class FileUploadTask extends AsyncTask<String, Void, String> {
     // onPostExecute displays the results of the AsyncTask.
     @Override
     protected void onPostExecute(String result) {
-    	Log.d("onPostExecute  "," onPostExecute  result json =  " + result );
     	try
 		{	
     		if(result.contains("success")){
@@ -194,7 +179,6 @@ public class FileUploadTask extends AsyncTask<String, Void, String> {
 		}
 		catch (Throwable e) {
 			error = result;
-			Log.d("onPostExecute", " Exception " + e.getMessage());
 			callBack.onFailure(e,error);
 		}
    }

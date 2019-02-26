@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -75,14 +74,11 @@ public class FanDialog extends Dialog implements
 
         btn_save.setOnClickListener(this);
         iv_close.setOnClickListener(this);
-        Log.d("","fanSpeed " + fanSpeed);
 
         sb_fan.setProgress(fanSpeed-1);
         sb_fan.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                Log.d("","onProgressChanged fan " + i);
-               // tv_seek_value.setText("" +(i+1));
                 fanSpeed = i+1 ;
             }
 
@@ -118,7 +114,6 @@ public class FanDialog extends Dialog implements
 
     public void getFanDetails(){
 
-        Log.d(TAG, "getFanDetails getFanDetails");
         if(!ActivityHelper.isConnectingToInternet(activity)){
             Toast.makeText(activity.getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
             return;
@@ -139,7 +134,6 @@ public class FanDialog extends Dialog implements
         new GetJsonTask(activity,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d(TAG, "getFanDetails onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -165,7 +159,6 @@ public class FanDialog extends Dialog implements
             }
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d(TAG, "getFanDetails onFailure " + error );
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
@@ -174,7 +167,6 @@ public class FanDialog extends Dialog implements
 
     public void changeFanSpeed(){
 
-        Log.d(TAG, "changeFanSpeed changeFanSpeed");
         if(!ActivityHelper.isConnectingToInternet(activity)){
             Toast.makeText(activity.getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
             return;
@@ -201,7 +193,6 @@ public class FanDialog extends Dialog implements
         new GetJsonTask(activity,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d(TAG, "changeFanSpeed onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -227,7 +218,6 @@ public class FanDialog extends Dialog implements
             }
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d(TAG, "changeFanSpeed onFailure " + error );
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }

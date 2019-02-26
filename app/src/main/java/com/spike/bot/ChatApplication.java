@@ -81,18 +81,10 @@ public class ChatApplication extends Application {
 
     public Socket openSocket(String url) {
         this.url = url;
-        Log.e("Socket", "openSocket openSocket = " + url );
         try {
-          //  IO.Options options = new IO.Options();
-         //   options.forceNew = true;
-            //IO.Options opts = new IO.Options();
-            //opts.forceNew = true;
-//            opts.query = "auth_token=" + authToken;
-
             mSocket = IO.socket(url);
 
 
-            Log.d("","ChatApplication ");
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -111,12 +103,10 @@ public class ChatApplication extends Application {
     @Override
     public void onTerminate() {
         super.onTerminate();
-        Log.d("onTerminate","onTemrmiate...");
     }
 
     public void closeSocket(String url) {
        // this.url = url;
-        Log.e("Socket", "openSocket closeSocket = " + url );
         try {
             //IO.Options options = new IO.Options();
             // options.forceNew=true;
@@ -128,7 +118,6 @@ public class ChatApplication extends Application {
                 mSocket.close();
                 mSocket = null;
             }
-            Log.d("","ChatApplication closeSocket");
         } catch (Exception e) {
            e.printStackTrace();
         }
@@ -234,6 +223,9 @@ public class ChatApplication extends Application {
     }
 
     public static void logDisplay(String message){
-        Log.d("System out",""+message);
+        if (BuildConfig.DEBUG) {
+             Log.d("System out",""+message);
+        }
+
     }
 }

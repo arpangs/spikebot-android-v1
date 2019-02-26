@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -76,15 +75,9 @@ public class VideoVLC2Activity extends AppCompatActivity /*implements IVLCVout.O
         String name = getIntent().getExtras().getString("name");
         setTitle(name);
 
-       // getSupportActionBar().setTitle((Html.fromHtml("<font color=\"#FFFFFF\">" + name + "</font>")));
-
-
         SAMPLE_URL = mMediaUrl;
-        Log.d("", " name videoUrl CameraVO SAMPLE_URL " + SAMPLE_URL);
         final ArrayList<String> args = new ArrayList<>();
         args.add("-vvv");
-      //  mLibVLC = new LibVLC(this, args);
-      //  mMediaPlayer = new MediaPlayer(mLibVLC);
 
         mVideoSurfaceFrame = (FrameLayout) findViewById(R.id.video_surface_frame);
         if (USE_SURFACE_VIEW) {
@@ -241,7 +234,6 @@ public class VideoVLC2Activity extends AppCompatActivity /*implements IVLCVout.O
 
         // sanity check
         if (sw * sh == 0) {
-            Log.e(TAG, "Invalid surface size");
             return;
         }
 
@@ -362,7 +354,6 @@ public class VideoVLC2Activity extends AppCompatActivity /*implements IVLCVout.O
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if (id == android.R.id.home) {
-            Log.d("","home " );
             finish();
             return true;
         }
@@ -377,7 +368,6 @@ public class VideoVLC2Activity extends AppCompatActivity /*implements IVLCVout.O
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
-                        Log.i(TAG, "DOWN");
                         if (scale > MIN_ZOOM) {
                             mode = Mode.DRAG;
                             startX = motionEvent.getX() - prevDx;
@@ -397,7 +387,6 @@ public class VideoVLC2Activity extends AppCompatActivity /*implements IVLCVout.O
                         mode = Mode.NONE; // changed from DRAG, was messing up zoom
                         break;
                     case MotionEvent.ACTION_UP:
-                        Log.i(TAG, "UP");
                         mode = Mode.NONE;
                         prevDx = dx;
                         prevDy = dy;
@@ -411,9 +400,6 @@ public class VideoVLC2Activity extends AppCompatActivity /*implements IVLCVout.O
                     float maxDy = child().getHeight() * (scale - 1);  // adjusted for zero pivot
                     dx = Math.min(Math.max(dx, -maxDx), 0);  // adjusted for zero pivot
                     dy = Math.min(Math.max(dy, -maxDy), 0);  // adjusted for zero pivot
-                    Log.i(TAG, "Width: " + child().getWidth() + ", scale " + scale + ", dx " + dx
-                            + ", max " + maxDx);
-                    //applyScaleAndTranslation();
                 }
 
                 return true;
@@ -421,53 +407,6 @@ public class VideoVLC2Activity extends AppCompatActivity /*implements IVLCVout.O
         });
     }
 
-    // ScaleGestureDetector
-
-   /* @Override
-    public boolean onScaleBegin(ScaleGestureDetector scaleDetector) {
-        Log.i(TAG, "onScaleBegin");
-        return true;
-    }
-
-    @Override
-    public boolean onScale(ScaleGestureDetector scaleDetector) {
-        float scaleFactor = scaleDetector.getScaleFactor();
-        Log.i(TAG, "onScale(), scaleFactor = " + scaleFactor);
-        if (lastScaleFactor == 0 || (Math.signum(scaleFactor) == Math.signum(lastScaleFactor))) {
-            float prevScale = scale;
-            scale *= scaleFactor;
-            scale = Math.max(MIN_ZOOM, Math.min(scale, MAX_ZOOM));
-            lastScaleFactor = scaleFactor;
-            float adjustedScaleFactor = scale / prevScale;
-            // added logic to adjust dx and dy for pinch/zoom pivot point
-            Log.d(TAG, "onScale, adjustedScaleFactor = " + adjustedScaleFactor);
-            Log.d(TAG, "onScale, BEFORE dx/dy = " + dx + "/" + dy);
-            float focusX = scaleDetector.getFocusX();
-            float focusY = scaleDetector.getFocusY();
-            Log.d(TAG, "onScale, focusX/focusy = " + focusX + "/" + focusY);
-            dx += (dx - focusX) * (adjustedScaleFactor - 1);
-            dy += (dy - focusY) * (adjustedScaleFactor - 1);
-            Log.d(TAG, "onScale, dx/dy = " + dx + "/" + dy);
-        } else {
-            lastScaleFactor = 0;
-        }
-        return true;
-    }
-
-    @Override
-    public void onScaleEnd(ScaleGestureDetector scaleDetector) {
-        Log.i(TAG, "onScaleEnd");
-    }
-
-    private void applyScaleAndTranslation() {
-        child().setScaleX(scale);
-        child().setScaleY(scale);
-        child().setPivotX(0f);  // default is to pivot at view center
-        child().setPivotY(0f);  // default is to pivot at view center
-        child().setTranslationX(dx);
-        child().setTranslationY(dy);
-    }
-*/
     private View child() {
         return mVideoSurfaceFrame.getChildAt(0);
     }

@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -172,7 +171,6 @@ public class RoomEditGridAdapter extends RecyclerView.Adapter<RoomEditGridAdapte
 
                                 if(key.equalsIgnoreCase(item1.getPanelId())){
 
-                                    Log.d("textValuesPanel","key and values : " + key + " : " + value);
                                     item1.setPanelName(holder.et_panel.getText().toString());
                                 }
                             }
@@ -264,7 +262,6 @@ public class RoomEditGridAdapter extends RecyclerView.Adapter<RoomEditGridAdapte
         @Override
         public void afterTextChanged(Editable editable) {
             // no op
-            Log.d("roomEditGridAdapter",position +" afterTextChanged  afterTextChanged " +editable.toString());
             final PanelVO item1 = (PanelVO) mDataArrayList.get(position);
             item1.setPanelName(editable.toString());
            // getPanelEditValue();
@@ -367,7 +364,6 @@ public class RoomEditGridAdapter extends RecyclerView.Adapter<RoomEditGridAdapte
                     txtValueMap.put(""+panelId, text);
 
                     final PanelVO item1 = (PanelVO) mDataArrayList.get(pos);
-                    Log.d("txtValueMap","mDataArrayList : position : " + pos + " item : " + item1.getPanelName());
                     item1.setPanelName(text);
                 }
             }
@@ -414,15 +410,12 @@ public class RoomEditGridAdapter extends RecyclerView.Adapter<RoomEditGridAdapte
             if(mDataArrayList.get(i) instanceof PanelVO){
                 PanelVO panelvo = (PanelVO) mDataArrayList.get(i);
 
-               // Log.d("txtValueMap","panel text : "+  panelvo.getPanelName());
 
                 ViewHolder view = (ViewHolder)recyclerView.findViewHolderForAdapterPosition(i);
                 if(view==null){
-                    Log.d("et_panel","et_panel null " );
                     return;
                 }
                 String text = view.et_panel.getText().toString();
-                Log.d("et_panel","et_panel " + text );
                 panelvo.setPanelName(text);
                 //notifyItemChanged(0);
             }

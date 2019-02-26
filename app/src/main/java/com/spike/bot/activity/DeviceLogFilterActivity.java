@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.spike.bot.ChatApplication;
@@ -65,7 +64,6 @@ public class DeviceLogFilterActivity extends AppCompatActivity{
 
     public void getDeviceLog(){
 
-        Log.d(TAG, "getDeviceLog getDeviceLog");
         if(!ActivityHelper.isConnectingToInternet(activity)){
             Toast.makeText(activity.getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
             return;
@@ -92,7 +90,6 @@ public class DeviceLogFilterActivity extends AppCompatActivity{
         new GetJsonTask(activity,url ,"GET","", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d(TAG, "getDeviceLog onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -135,7 +132,6 @@ public class DeviceLogFilterActivity extends AppCompatActivity{
             }
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d(TAG, "getDeviceLog onFailure " + error );
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }

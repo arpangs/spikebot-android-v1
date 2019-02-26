@@ -14,7 +14,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.UnderlineSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -95,7 +94,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 //    ArrayList<ScheduleVO> scheduleMoodArrayList = new ArrayList<>();
 
     public boolean isFilterType = false, isMood, isMoodAdapter, isRefreshonScroll = false;
-    String isActivityType = "", webUrl = "", moodId = "", moodId2 = "", moodId3 = "", roomId = "", userName = "";
+    String isRoomMainFm="",isActivityType = "", webUrl = "", moodId = "", moodId2 = "", moodId3 = "", roomId = "", userName = "";
     int selection = 0;
     Menu mainMenu;
 
@@ -118,7 +117,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         return fragment;
     }
 
-    public static ScheduleFragment newInstance(boolean isMood, String moodId, String moodId2, String moodId3, int selection, String roomId, boolean isMoodAdapter, String isActivityType) {
+    public static ScheduleFragment newInstance(boolean isMood, String moodId, String moodId2, String moodId3, int selection, String roomId, boolean isMoodAdapter, String isActivityType,String isRoomMainFm) {
         ScheduleFragment fragment = new ScheduleFragment();
         Bundle args = new Bundle();
         args.putBoolean("isMood", isMood);
@@ -127,6 +126,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         args.putString("moodId3", moodId3);
         args.putString("roomId", roomId);
         args.putString("isActivityType", isActivityType);
+        args.putString("isRoomMainFm", isRoomMainFm);
         args.putInt("selection", selection);
         args.putBoolean("isMoodAdapter", isMoodAdapter);
         fragment.setArguments(args);
@@ -252,6 +252,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             try {
                 moodId2 = getArguments().getString("moodId2");
                 moodId3 = getArguments().getString("moodId3");
+                isRoomMainFm = getArguments().getString("isRoomMainFm");
                 selection = getArguments().getInt("selection");
                 isMoodAdapter = getArguments().getBoolean("isMoodAdapter");
 
@@ -471,7 +472,11 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 //            intent.putExtra("selection", !isMood ? 1 : 2);
 //        }
         if(isMood){
-            intent.putExtra("selection", 2);
+            if(isRoomMainFm.equals("room")){
+                intent.putExtra("selection", 1);
+            }else {
+                intent.putExtra("selection", 2);
+            }
         }else {
             intent.putExtra("selection", !isFilterType ? 1 : 2);
         }
@@ -512,7 +517,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         isCallVisibleHint = true;
-        Log.d("isVisibleToUser", "isVisibleToUser sch : " + isVisibleToUser);
         if (isVisibleToUser) {
             startSocketConnection();
             //onLoadFragment(); //uncomment
@@ -554,10 +558,8 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
         ChatApplication app = ChatApplication.getInstance();
         webUrl = app.url;
-        Log.d(TAG, "startSocketConnection   startSocketConnection.." + webUrl);
 
         if (mSocket != null && mSocket.connected()) {
-            Log.d("", "mSocket.connected  return.." + mSocket.id());
             try {
                 mSocket.on("changeScheduleStatus", reloadScheduleList);
                 onLoadFragment();
@@ -584,15 +586,10 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                         try {
                             if (args[0] != null) {
 
-                                Log.d("SocketEmit", "MakeObj Args : " + args[0]);
-
                                 JSONObject jsonObject = new JSONObject(args[0].toString());
                                 String schedule_id = jsonObject.getString("schedule_id");
                                 String schedule_status = jsonObject.getString("schedule_status");
                                 String schedule_type = jsonObject.getString("schedule_type");
-
-                                Log.d("SocketEmit", "isMood : " + isMood);
-                                Log.d("SCH_STATUS", "status socket: " + schedule_status);
 
                                 if (isMood) {
                                    // scheduleMoodAdapter.chandeScheduleStatus(schedule_id, schedule_status);
@@ -639,7 +636,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     // com.deep.automation.customview.ExpandableGridView exp_list;
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        Log.d(TAG, "onViewCreated onViewCreated ");
         super.onViewCreated(view, savedInstanceState);
 
         //String videoRtspUrl = "rtsp://192.168.175.101/video/play2.sdp";
@@ -647,7 +643,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
     @Override
     public void onClick(View view) {
-        Log.d("setDataList", "onClick " + moodId2);
         if (view.getId() == R.id.btn_login) {
             //  loginCloud();
             //Login
@@ -787,7 +782,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause()");
     }
 
     @Override
@@ -798,18 +792,12 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     private LinearLayout linear_progress;
 
     public void onLoadFragment() {
-        Log.d("System out", "onLoadFragment ScheduleFragment..." + isRefreshonScroll);
-//        if(isRefreshonScroll){
-//            isRefreshonScroll=false;
-//            return;
-//        }
         hideMenu(!isMood);
 
 
         //showProgress();
         ChatApplication app = ChatApplication.getInstance();
         if (mSocket != null && mSocket.connected()) {
-            Log.d("SchSocket", "mSocket.connected  return.." + mSocket.id());
         } else {
             mSocket = app.getSocket();
         }
@@ -825,20 +813,17 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         }
 
         if (scheduleRoomArrayList.size() == 0 ) {
-            Log.d("isIconDelete", "1...");
             if (txt_empty_scheduler != null) {
                 txt_empty_scheduler.setVisibility(View.VISIBLE);
                 ll_recycler.setVisibility(View.GONE);
             }
         } else if (scheduleRoomArrayList.size() > 0) {
-            Log.d("isIconDelete", "2...");
             if (txt_empty_scheduler != null) {
                 txt_empty_scheduler.setVisibility(View.GONE);
                 ll_recycler.setVisibility(View.VISIBLE);
             }
         } else {
             if (txt_empty_scheduler != null) {
-                Log.d("isIconDelete", "3...");
                 txt_empty_scheduler.setVisibility(View.GONE);
                 ll_recycler.setVisibility(View.VISIBLE);
             }
@@ -859,9 +844,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
     /// all webservice call below.
     public void getDeviceList(int count) {
-        Log.d("System out", "getScheduleList is: " + count + "  " + webUrl);
         if (getActivity() == null) {
-            Log.d("SchSocket", "getScheduleList getActivity return");
             return;
         }
 
@@ -874,7 +857,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 //                scheduleMoodAdapter.setClickable(true);
 //                scheduleRoomAdapter.setClickable(true);
                 swipeRefreshLayout.setRefreshing(false);
-                Log.d(TAG, " getScheduleList onSuccess " + result.toString());
                 try {
                     //scheduleRoomArrayList = new ArrayList<>();
 
@@ -946,7 +928,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
                 } catch (JSONException e) {
                     ChatApplication.isScheduleNeedResume = true;
-                    Log.d("isNull", "clear adapter");
 //                    scheduleMoodArrayList.clear();
 //                    scheduleMoodAdapter = new ScheduleAdapter(getActivity(), scheduleMoodArrayList, ScheduleFragment.this, false, true);
 //                    rv_mood.setAdapter(scheduleMoodAdapter);
@@ -979,7 +960,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                 if (responseCode == 503) {
                     responseErrorCode.onErrorCode(responseCode);
                 }
-                Log.d(TAG, "getScheduleList onFailure " + error);
+                ChatApplication.logDisplay( "getScheduleList onFailure " + error);
                 // Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
@@ -1034,7 +1015,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
     //
     public void getScheduleFromMood() {
-        Log.d(TAG, "getScheduleFromMood");
+        ChatApplication.logDisplay( "getScheduleFromMood");
         if (getActivity() == null) {
             return;
         }
@@ -1052,7 +1033,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             e.printStackTrace();
         }
 
-        Log.d("getSCHID", "" + obj.toString());
 
         String url = "";
         /*if(!TextUtils.isEmpty(moodId3)){
@@ -1074,7 +1054,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
                 swipeRefreshLayout.setRefreshing(false);
 
-                Log.d(TAG, " getScheduleFromMood onSuccess " + result.toString());
+                ChatApplication.logDisplay( " getScheduleFromMood onSuccess " + result.toString());
                 try {
                     //scheduleRoomArrayList = new ArrayList<>();
 
@@ -1139,7 +1119,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                     if (errorCode == 503) {
                         responseErrorCode.onErrorCode(errorCode);
                     }
-                    Log.d(TAG, "getScheduleFromMood onFailure " + error);
+                    ChatApplication.logDisplay( "getScheduleFromMood onFailure " + error);
                     //   Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -1155,7 +1135,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     }
 
     public void deleteSchedule(String schedule_id, int is_timer) {
-        Log.d(TAG, "deleteSchedule deleteSchedule");
+        ChatApplication.logDisplay( "deleteSchedule deleteSchedule");
         if (!ActivityHelper.isConnectingToInternet(getActivity())) {
             Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -1178,7 +1158,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             @Override
             public void onSuccess(JSONObject result) {
                 ChatApplication.isScheduleNeedResume = true;
-                Log.d(TAG, "deleteSchedule onSuccess " + result.toString());
+                ChatApplication.logDisplay( "deleteSchedule onSuccess " + result.toString());
                 try {
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -1214,7 +1194,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d(TAG, "deleteSchedule onFailure " + error);
+                ChatApplication.logDisplay( "deleteSchedule onFailure " + error);
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
@@ -1234,7 +1214,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     }
 
     public void changeScheduleStatus(ScheduleVO scheduleVO) {
-        Log.d(TAG, "changeScheduleStatus changeScheduleStatus");
+        ChatApplication.logDisplay( "changeScheduleStatus changeScheduleStatus");
         if (!ActivityHelper.isConnectingToInternet(getActivity())) {
             Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -1257,7 +1237,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
             if (scheduleVO.getSchedule_status() == 0) {
 
-                Log.d("MakeObj", "Going to on");
                 if (scheduleVO.getIs_timer() == 1) {
 
                     String sch_on_after = scheduleVO.getTimer_on_after();
@@ -1304,7 +1283,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                     if (!TextUtils.isEmpty(sch_off_after) && !TextUtils.isEmpty(sch_off_date)) {
 
                         try {
-                            Log.d("SchEdit", "sch_off_after : " + sch_off_after + " : sch_off_date : " + sch_off_date);
 
                             Calendar calendar = Calendar.getInstance();
                             calendar.setTime(new Date());
@@ -1337,7 +1315,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
                     } else {
 
-                        Log.d("SchEdit", "makeDate for off else null.....: ");
                     }
 
                     obj.put("schedule_device_on_time", schedule_device_on_time);
@@ -1347,7 +1324,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
                 } else {
 
-                    Log.d("SchEdit", "mak elseelse");
 
                     obj.put("schedule_device_on_time", scheduleVO.getSchedule_device_on_time());
                     obj.put("timer_on_date", scheduleVO.getTimer_on_date());
@@ -1357,7 +1333,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
             } else {
 
-                Log.d("SchEdit", "Going to off");
 
                 obj.put("schedule_device_on_time", "");
                 obj.put("timer_on_date", "");
@@ -1378,7 +1353,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             e.printStackTrace();
         }
 
-        Log.d("SchEdit", "obj :" + obj.toString());
 
         //   ActivityHelper.showProgressDialog(getActivity(),"Please Wait.",false);
         String url = webUrl + Constants.CHANGE_SCHEDULE_STATUS;
@@ -1386,7 +1360,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         new GetJsonTask(getActivity(), url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d(TAG, "SchEdit changeScheduleStatus onSuccess " + result.toString());
+                ChatApplication.logDisplay( "SchEdit changeScheduleStatus onSuccess " + result.toString());
                 try {
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -1415,7 +1389,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                         scheduleVO1.setTimer_off_date(timer_off_date);
                         // scheduleVO1.setIs_active();
 
-                        Log.d("SCH_STATUS", "api status : " + schedule_status);
 
                         //onLoadFragment(); //uncomment
                         if (isMood) {
@@ -1483,7 +1456,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d(TAG, "changeScheduleStatus onFailure " + error);
+                ChatApplication.logDisplay( "changeScheduleStatus onFailure " + error);
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
@@ -1518,7 +1491,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void itemClicked(final ScheduleVO scheduleVO, String action, boolean isMood) {
 
-        Log.d(TAG, " action " + action);
+        ChatApplication.logDisplay( " action " + action);
         if (action.equalsIgnoreCase("active")) {
             changeScheduleStatus(scheduleVO);
         } else if (action.equalsIgnoreCase("edit")) {
@@ -1530,7 +1503,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             intent.putExtra("isMap", true);
             intent.putExtra("isEdit", true);
 
-            Log.d("isMoodAdapter", "isMood : " + isMood + " isAdapter : " + isMoodAdapter);
 
             if (isMoodAdapter) {
                 intent.putExtra("isMoodAdapter", isMoodAdapter);
@@ -1565,7 +1537,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     public void getDeviceListUserData(final int checkmessgae) {
         //showProgress();
 
-        Log.d("CallAPIMainFragment", "getDeviceList getDeviceList scdule " + checkmessgae);
         if (getActivity() == null) {
             return;
         }
@@ -1583,7 +1554,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             e.printStackTrace();
         }
         //responseErrorCode.onProgress();
-        Log.d("CouldFoundIP", "call api");
         new GetJsonTask2(activity, url, "GET", "", new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -131,7 +130,6 @@ public class AddRoomDialog extends Dialog implements
     String TAG = "AddRoom";
     public void configureNewRoom(){
 
-        Log.d(TAG, "configureNewRoom configureGatewayDevice");
         if(!ActivityHelper.isConnectingToInternet(activity)){
             Toast.makeText(activity.getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
             return;
@@ -156,7 +154,6 @@ public class AddRoomDialog extends Dialog implements
             e.printStackTrace();
         }
 
-        Log.d("roomEDIT","obj : " + obj.toString());
 
         String url = ChatApplication.url + Constants.CONFIGURE_NEWROOM;
         if(isRoom){
@@ -168,7 +165,6 @@ public class AddRoomDialog extends Dialog implements
         new GetJsonTask(activity,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d(TAG, "configureNewRoom onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -197,7 +193,6 @@ public class AddRoomDialog extends Dialog implements
             }
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d(TAG, "configureNewRoom onFailure " + error );
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }

@@ -22,7 +22,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -100,7 +99,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
-        Log.d("onNetChnage", "isConnected : " + isConnected);
         if (!isConnected) {
             showToast("Disconnected, Please check your internet connection");
         }
@@ -160,7 +158,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         ChatApplication app = ChatApplication.getInstance();
 
         if (mSocket != null && mSocket.connected()) {
-            Log.d("ChatSocket", "MainFragment if mSocket.connected  mScoket id :" + mSocket.id());
         } else {
             mSocket = app.getSocket();
         }
@@ -177,7 +174,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                 public void run() {
 
                     if (args != null) {
-                        Log.e("mSocketStart", "doorsensorvoltage " + args[0].toString());
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
                             String room_order = object.getString("room_order");
@@ -204,7 +200,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                 public void run() {
 
                     if (args != null) {
-                        Log.d("mSocketEmitter", "unReadCount >>>> " + args[0].toString());
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
                             String sensor_type = object.getString("sensor_type");
@@ -253,7 +248,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             public void onSuccess(JSONObject result) {
                 startSocketConnection();
                 ActivityHelper.dismissProgressDialog();
-                Log.d("onSucess", "get Door details response : " + result.toString());
                 doorSensorResModel = Common.jsonToPojo(result.toString(), DoorSensorResModel.class);
                 if (doorSensorResModel.getCode() == 200) {
                     fillData(doorSensorResModel);
@@ -434,14 +428,12 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             e.printStackTrace();
         }
 
-        Log.d("TempSensorLog", "json Request : " + jsonNotification.toString());
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("onSuccess", "result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -611,9 +603,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
      * @param isNotification
      */
     private void doorSensorNotificationStatus(String doorSensorNotificationId, boolean isActive, boolean isNotification) {
-
-        Log.d("NotiStatus", "isActive : " + isActive + " parse : " + (isActive ? 1 : 0));
-
         if (!ActivityHelper.isConnectingToInternet(this)) {
             //  Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             showToast("" + R.string.disconnect);
@@ -650,7 +639,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("onSuccess", "result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -745,7 +733,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("onSuccess", "result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -878,7 +865,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             Date date = dateFormat2.parse(time);
 
             String out = dateFormat2.format(date);
-            Log.e("Time", out);
         } catch (ParseException e) {
         }
     }
@@ -1040,7 +1026,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.d("AddNotification", "Request : " + jsonNotification.toString());
 
         String webUrl = "";
         if (!isEdit) {
@@ -1055,8 +1040,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("onSuccess", "result : " + result.toString());
-                //   ActivityHelper.dismissProgressDialog();
                 try {
 
                     int code = result.getInt("code");
@@ -1125,7 +1108,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("onSuccess", "result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -1224,8 +1206,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        Log.d("JSONREAD", "read : " + jsonObject.toString());
 
         new GetJsonTask(this, webUrl, "POST", jsonObject.toString(), new ICallBack() {
             @Override

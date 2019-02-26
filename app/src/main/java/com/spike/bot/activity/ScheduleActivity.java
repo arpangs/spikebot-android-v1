@@ -13,7 +13,6 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -176,11 +175,8 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
             //isMoodAdapter true : is moodeDevices/2 if false : Room devices/1 if
             isMoodAdapter = getIntent().getBooleanExtra("isMoodAdapter", false);
-            Log.d("isMoodAdapter","getIntent() : " + isMoodAdapter);
-
         } catch (Exception e) {
             e.printStackTrace();
-            Log.d("", "Exception  " + e.getMessage());
         }
 
         if(isEdit){
@@ -461,8 +457,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
             if (scheduleVO != null) {
 
-                // Log.d("SchEdit","SchEdit : " +scheduleVO.getSchedule_device_on_time() + " :: " + scheduleVO.getTimer_on_date() + " :: " + scheduleVO.getTimer_on_after());
-
                 if (scheduleVO.getSchedule_type() == 0) {
                     //rg_schedule_type.check(R.id.rb_schedule_type_room);
                     rb_schedule_type_room.setChecked(true);
@@ -578,14 +572,11 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                         String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
                      //   et_on_hour_ampm_12 = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
                         et_on_hour_ampm_12 = on_after;
-                        Log.d("on_after_time","1 before : " + et_on_hour_ampm_12);
 
                         et_on_time_bottom_header_at_time.setText(hourMinute);
                     }
 
                     String off_after = scheduleVO.getTimer_off_after();
-
-                    Log.d("off_after", "off_after : " + scheduleVO.getTimer_off_after());
 
                     if (!TextUtils.isEmpty(off_after) && !off_after.equalsIgnoreCase("0:0")) {
 
@@ -668,8 +659,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                         //String hourMinute = calendar.get(Calendar.HOUR_OF_DAY)+ ":" + calendar.get(Calendar.MINUTE);
                         String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
 
-                        Log.d("on_after_time","2 before : " + et_on_hour_ampm_12);
-
                         on_time_date = finalJustDate;
                         on_at_time = hourMinute;
 
@@ -692,8 +681,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                                 Calendar cal = Calendar.getInstance();
                                 cal.setTime(dateObj);
                                 et_on_hour_ampm_12 = ActivityHelper.hourMinuteZero(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
-                                Log.d("on_after_time","2.1 before : " + et_on_hour_ampm_12);
-                                //et_on_hour_ampm_12 = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
 
                             } catch (final ParseException e) {
                                 e.printStackTrace();
@@ -825,8 +812,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                         String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
                         et_on_hour_ampm_12 = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
 
-                        Log.d("on_after_time","3 before : " + et_on_hour_ampm_12);
-
                         on_time_date = finalJustDate;
                         on_at_time = hourMinute;
 
@@ -875,8 +860,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                         // String hourMinute = calendar.get(Calendar.HOUR_OF_DAY)+ ":" + calendar.get(Calendar.MINUTE);
                         String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
                         et_on_hour_ampm_12 = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
-
-                        Log.d("on_after_time","4 before : " + et_on_hour_ampm_12);
 
                         on_time_date = finalJustDate;
                         on_at_time = hourMinute;
@@ -1002,12 +985,10 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 et_on_hour_ampm_12 = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
             }
 
-            Log.d("on_after_time","5 before : " + et_on_hour_ampm_12);
 
             String ampm = DateUtils.getAMPMString(calendar.get(Calendar.AM_PM));
 
             if (TextUtils.isEmpty(off_time_date)) {
-                Log.d("on_after_time","6 set header off_time_date : " + et_on_hour_ampm_12);
                 setEtOffTimeHeader(finalJustDate, hourMinute, ampm);
             }
             if (TextUtils.isEmpty(on_time_date)) {
@@ -1061,8 +1042,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             } else if (dayOfWeek.contains("7")) {
                 Common.setBackground(this, text_schedule_7, true);
             }
-
-            Log.d("isEditisEdit", "else   scheduleVO getRoom_device_id  ");
 
             if (scheduleVO == null) {
                 scheduleVO = new ScheduleVO();
@@ -1378,7 +1357,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
         startCheckDate=_finalJustDate+" "+_hourMinute+_ampm;
 
-        Log.d("System out","date is start "+startCheckDate);
     }
 
     private void setEtOffTimeHeader(String _finalJustDate, String _hourMinute, String _ampm) {
@@ -1388,7 +1366,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         et_off_time_bottom_header_at_ampm.setText(_ampm);
 
         endCheckDate=_finalJustDate+" "+_hourMinute+_ampm;
-        Log.d("System out","date is end "+endCheckDate);
     }
 
 
@@ -1430,7 +1407,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onClick(View view) {
-        Log.d("", "onClick ");
 
         int id = view.getId();
         if (id == R.id.et_schedule_on_time) {
@@ -1438,7 +1414,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             DialogFragment fromTimeFragment = new TimePickerFragment(ScheduleActivity.this, et_schedule_on_time.getText().toString(), new ICallback() {
                 @Override
                 public void onSuccess(String str) {
-                    Log.d("date ", "fromTimeFragment time selected = " + str);
                     et_schedule_on_time.setText(str);
 
                 }
@@ -1452,7 +1427,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             DialogFragment fromTimeFragment = new TimePickerFragment(ScheduleActivity.this, et_schedule_off_time.getText().toString(), new ICallback() {
                 @Override
                 public void onSuccess(String str) {
-                    Log.d("date ", "fromTimeFragment time selected = " + str);
                     et_schedule_off_time.setText(str);
 
                 }
@@ -1482,21 +1456,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         }
 
     }
-
-    /*  private void setDeviceValue() {
-          Log.d("", "setDeviceValue setDeviceValue ");
-          try {
-             // int index = flags.indexOf(deviceObj.getString("device_icon"));
-             // sp_device_type.setSelection(index);
-              int device_type = deviceObj.getInt("device_type");
-              int device_id = deviceObj.getInt("device_id");
-
-              Log.d("", "setDeviceValue setDeviceValue " + device_id + "  device_type " + device_type);
-
-          } catch (JSONException e) {
-              Log.d("", "JSONException  setDeviceValue " + e.getMessage() );
-          }
-      }*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_room_edit, menu);
@@ -1517,7 +1476,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_save) {
-            Log.d("", "action_save " + sp_schedule_list.getSelectedItemPosition());
 
             if (rg_schedule_type.getCheckedRadioButtonId() == -1) {
                 Toast.makeText(this, "Select Schedule For", Toast.LENGTH_SHORT).show();
@@ -1640,13 +1598,11 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             }*/
 
 
+
             if (TextUtils.isEmpty(deviceListLayoutHelper.getSelectedItemIds()) && deviceListLayoutHelper!=null) {
                 Toast.makeText(this, "Select atleast one or more devices", Toast.LENGTH_SHORT).show();
                 return false;
             }
-            Log.d("System out","getSelectedItemIds is "+deviceListLayoutHelper.getSelectedItemIds());
-            Log.d("System out","getSelectedItemIds is deviceListLayoutHelper "+deviceListLayoutHelper);
-
 
             try {
 
@@ -1655,8 +1611,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
                 if (isEdit) {
                     deviceObj.put("schedule_id", scheduleVO.getSchedule_id());
-                    //schedule_status
-                    Log.d("SCH_STATUS","status : " + scheduleVO.getSchedule_status());
                     deviceObj.put("schedule_status", scheduleVO.getSchedule_status()); //added
                 }
 
@@ -1694,7 +1648,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     JSONObject object = new JSONObject();
                     mRoomIdList.add(""+dPanel.getRoomId());
 
-                    Log.d("System out","room id is "+dPanel.getRoomDeviceId());
 //                    if(dPanel.getRoomDeviceId().length()>1){
 
                         if(dPanel.getSensor_type()!=null && dPanel.getSensor_type().equalsIgnoreCase("remote")){
@@ -1847,8 +1800,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                         } else {
                             if (!TextUtils.isEmpty(et_on_time_bottom_header_at_time.getText().toString())) {
 
-                                Log.d("on_after_time",et_on_hour_ampm_12);
-
                                 deviceObj.put("schedule_device_on_time",et_on_hour_ampm_12);
                             } else {
                                 deviceObj.put("schedule_device_on_time", on_at_time);
@@ -1881,21 +1832,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                             deviceObj.put("timer_off_date", "");
                         } else {
 
-//                            if(isEdit){
-//                                Log.d("MakeObj", "check edit " + deviceObj.toString());
-//
-//                                String strCurrentTime="";
-//
-//                                if(et_on_time_hours.getText().toString().length()>0){
-//                                    strCurrentTime=strCurrentTime+et_on_time_hours.getText().toString();
-//                                }
-//
-//                                if(et_on_time_min.getText().toString().length()>0){
-//                                    strCurrentTime=strCurrentTime+":"+et_on_time_min.getText().toString();
-//                                }
-//                            }
-
-
                             if (!TextUtils.isEmpty(et_off_time_bottom_header_at_time.getText().toString())) {
                                 deviceObj.put("schedule_device_off_time", et_off_hour_ampm_12);
                             } else {
@@ -1924,7 +1860,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     deviceObj.put("timer_off_date", "");
                 }
 
-                Log.d("MakeObj", "updated deviceObj " + deviceObj.toString());
 
                 addSchedule();
 
@@ -1944,7 +1879,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
     /// all webservice call below.
 
     public void getDeviceList() {
-        Log.d(TAG, "getDeviceList");
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -1961,7 +1895,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         new GetJsonTask(this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d(TAG, "getDeviceList onSuccess " + result.toString());
                 try {
                     roomListAdd = new ArrayList<>();
                     roomListAdd.clear();
@@ -2013,7 +1946,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d(TAG, "getDeviceList onFailure " + error);
+               ChatApplication.logDisplay( "getDeviceList onFailure " + error);
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
                 if(roomListAdd.size()==0){
                     empty_ll_view.setVisibility(View.VISIBLE);
@@ -2032,7 +1965,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
     //getMoodList
     public void getMoodListAdd() {
-        Log.d(TAG, "getMoodList");
+       ChatApplication.logDisplay( "getMoodList");
 
         //String url =  webUrl + Constants.GET_MOOD_LIST ;//+userId;
         String url = webUrl + Constants.GET_DEVICES_LIST + "/"+Constants.DEVICE_TOKEN + "/1/0";
@@ -2041,7 +1974,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         new GetJsonTask(ScheduleActivity.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d(TAG, " getMoodList onSuccess " + result.toString());
+               ChatApplication.logDisplay( " getMoodList onSuccess " + result.toString());
                 try {
                     moodListAdd = new ArrayList<>();
                     JSONObject dataObject = result.getJSONObject("data");
@@ -2187,7 +2120,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 }*/
         //  if(++check > 1 && isEdit) {
 
-        Log.d("isAddOutDevice","nF : " + check);
         ArrayList<RoomVO> tempList = new ArrayList<RoomVO>();
 
         if(moodListAdd.size()>0){
@@ -2281,7 +2213,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
             for (String sID : listDeviceIds) {
 
-                Log.d(STAG,"ID : " + sID);
 
                 for (int i = 0; i < roomArrayList.size(); i++) {
                     RoomVO roomVO = roomArrayList.get(i);
@@ -2328,9 +2259,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     RoomVO roomVO = roomArrayList.get(i);
 
                     if (!isEdit) {
-
-                       Log.d(STAG,"!isEdit if");
-
                         ArrayList<String> roomDeviceList = roomVO.getRoomDeviceId();
 
                         for (String deviceId : roomDeviceList) {
@@ -2339,9 +2267,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                             }
                         }
                     } else {
-
-                        Log.d(STAG,"!isEdit else");
-
                         List<PanelVO> listPanel = roomVO.getPanelList();
 
                         for (int j = 0; j < listPanel.size(); j++) {
@@ -2355,11 +2280,11 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
                                     for (DeviceVO deviceVO : tempDevice) {
 
-                                        Log.d(STAG,"selected type == 1");
+                                        ChatApplication.logDisplay("selected type == 1");
 
                                         if(deviceVO.getDevice_icon().equalsIgnoreCase("Remote_AC")){
 
-                                            Log.d(STAG,"selected type == 1 Remote_AC if");
+                                            ChatApplication.logDisplay("selected type == 1 Remote_AC if");
 
                                             if(deviceVO.getOriginal_room_device_id().equalsIgnoreCase(
                                                     deviceVOList.get(k).getOriginal_room_device_id()) || deviceVO.getRoomDeviceId().equalsIgnoreCase(
@@ -2371,7 +2296,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
                                         }else{
 
-                                            Log.d(STAG,"selected type == 1 Remote_AC else");
+                                            ChatApplication.logDisplay("selected type == 1 Remote_AC else");
 
                                             if (deviceVO.getDeviceId() == deviceVOList.get(k).getDeviceId() &&
                                                     deviceVO.getModuleId().equalsIgnoreCase(deviceVOList.get(k).getModuleId())) {
@@ -2393,15 +2318,10 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
                                     }
                                 } else {
-
-
-
-                                    //  Log.d("isEditOpen","isEdit == else2");
-
                                     if(deviceVOList.get(k).getSensor_type()!=null &&
                                             deviceVOList.get(k).getSensor_type().equalsIgnoreCase("remote")){
 
-                                        Log.d(STAG,"selected type == 2 remote if");
+                                        ChatApplication.logDisplay("selected type == 2 remote if");
 
                                         if (sID.equals(deviceVOList.get(k).getRoomDeviceId())) {
 
@@ -2411,7 +2331,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
                                     }else{
 
-                                        Log.d(STAG,"selected type == 2 remote else");
+                                        ChatApplication.logDisplay("selected type == 2 remote else");
 
 
                                         if (sID.equals(deviceVOList.get(k).getRoomDeviceId())) {
@@ -2443,8 +2363,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
         //if add cheduler default expanded devices list //for select all room deviceid
         if (isEditOpen && !TextUtils.isEmpty(roomId)) {
-
-           // Log.d("isEditOpen", "2==roomId : " + roomId + " moodId : " + moodId);
 
             ArrayList<RoomVO> roomListTemp = new ArrayList<>();
 
@@ -2535,7 +2453,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void addSchedule() {
-        Log.d("SelectObjectTime", "addSchedule addSchedule ::   " + deviceObj.toString());
         if (!ActivityHelper.isConnectingToInternet(this)) {
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -2552,7 +2469,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             public void onSuccess(JSONObject result) {
                 ActivityHelper.hideKeyboard(ScheduleActivity.this);
                 ChatApplication.isScheduleNeedResume = true;
-                Log.d(TAG, "addSchedule onSuccess " + result.toString());
+               ChatApplication.logDisplay( "addSchedule onSuccess " + result.toString());
                 try {
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -2586,7 +2503,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Log.d(TAG, "addSchedule onFailure " + error);
+               ChatApplication.logDisplay( "addSchedule onFailure " + error);
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
@@ -2622,7 +2539,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         if (repeatDayString.startsWith(",")) {
             repeatDayString = repeatDayString.replaceFirst(",", "");
         }
-        Log.d("", " repeatDayString " + repeatDayString);
 
     }
 
@@ -2667,7 +2583,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
         ChatApplication app = ChatApplication.getInstance();
         if(mSocket!=null && mSocket.connected()){
-            Log.d("","mSocket.connected  return.." + mSocket.id() );
         }
         else{
             mSocket = app.getSocket();
@@ -2681,7 +2596,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         new GetJsonTask2(ScheduleActivity.this,url ,"GET","", new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                Log.d("getDeviceDetails","onSuccess :  " + result.toString());
                 int code = 0;
                 try {
                     code = result.getInt("code");
@@ -2703,7 +2617,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             }
             @Override
             public void onFailure(Throwable throwable, String error , int responseCode) {
-                Log.d("onFailure","onFailure " + error);
             }
         }).execute();
     }

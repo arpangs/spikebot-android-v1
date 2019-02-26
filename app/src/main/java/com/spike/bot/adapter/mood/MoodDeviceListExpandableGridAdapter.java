@@ -20,7 +20,6 @@ import android.widget.ToggleButton;
 
 import com.spike.bot.R;
 import com.spike.bot.core.Common;
-import com.spike.bot.core.Log;
 import com.spike.bot.customview.recycle.ItemClickListener;
 import com.spike.bot.customview.recycle.SectionStateChangeListener;
 import com.spike.bot.model.DeviceVO;
@@ -97,8 +96,6 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
 
             if(mDataArrayList.get(i) instanceof DeviceVO){
                 final DeviceVO item = (DeviceVO) mDataArrayList.get(i);
-             //   Log.d("setSelectionEditMode", " setS  election item.getDeviceId() " +
-                    //    " " + item.getRoomDeviceId() + " :" + item.getRoomId() + " :" + item.getDeviceId() + " listDeviceIds : " + listDeviceIds);
                 if(listDeviceIds.contains(item.getRoomDeviceId())){
                     item.setSelected(true);
                 }

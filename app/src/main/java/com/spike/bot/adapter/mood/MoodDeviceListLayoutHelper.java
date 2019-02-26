@@ -3,7 +3,6 @@ package com.spike.bot.adapter.mood;
 import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import com.spike.bot.customview.recycle.ItemClickListener;
 import com.spike.bot.customview.recycle.SectionStateChangeListener;
@@ -120,14 +119,12 @@ public class MoodDeviceListLayoutHelper implements SectionStateChangeListener {
                 }
             }
         }
-        Log.d("MoodSelection","r_id : " + room_device_id);
         mSectionedExpandableGridAdapter.setSelection(room_device_id);
     }
     MoodVO section;
 
     @Override
     public void onSectionStateChanged(RoomVO section, boolean isOpen) {
-     //   Log.d("","reloadDeviceList  onSectionStateChanged  onSectionStateChanged =  " + isOpen + "  computing "+ !mRecyclerView.isComputingLayout());
         if (!mRecyclerView.isComputingLayout()) {
             section.isExpanded = isOpen;
             notifyDataSetChanged();

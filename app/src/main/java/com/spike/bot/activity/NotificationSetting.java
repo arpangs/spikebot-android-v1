@@ -7,7 +7,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -113,10 +112,6 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
-        Log.d("notiList","json request : " + dataObject.toString());
-
         String webUrl = ChatApplication.url + Constants.SAVE_NOTIFICATION_LIST;
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
@@ -124,7 +119,6 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("notiList","onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 

@@ -43,7 +43,6 @@ import android.text.Html;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -104,7 +103,6 @@ import java.util.Timer;
 
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
-import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class Main2Activity extends AppCompatActivity implements View.OnClickListener,
         ConnectivityReceiver.ConnectivityReceiverListener, CloudAdapter.CloudClickListener,
@@ -245,8 +243,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         token = FirebaseInstanceId.getInstance().getToken();
-
-        Log.d("Token", "token : " + token);
+        ChatApplication.logDisplay("token : " + token);
 
         Common.savePrefValue(getApplicationContext(), Constants.DEVICE_PUSH_TOKEN, token);
         // Create the adapter that will return a fragment for each of the three
@@ -565,7 +562,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onArticleSelected(String name) {
-        Log.d("onArticleSelected", "nm : " + name);
         if (toolbarTitle != null)
             toolbarTitle.setText(name);
         else {
@@ -639,8 +635,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             return;
         }
         if (!TextUtils.isEmpty(user.getCloudIP())) {
-
-            Log.d("ProgressCloud", "connecting...");
             showConnectingCloudDialog(CLOUD_MESSAGE);
 
             linear_progress.setVisibility(View.VISIBLE);
@@ -707,22 +701,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
      */
     @Override
     public void startSession() {
-        //startSocketSession();
     }
-
-    private Emitter.Listener reConnect = new Emitter.Listener() {
-        @Override
-        public void call(Object... objects) {
-            Log.d("ReconnectSocket", "reConnect : " + objects);
-        }
-    };
-    private Emitter.Listener reConnectFailed = new Emitter.Listener() {
-        @Override
-        public void call(Object... objects) {
-            Log.d("ReconnectSocket", "reConnectFailed : " + objects);
-
-        }
-    };
 
 
     /**
@@ -820,8 +799,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //input.getText().toString();
-                Log.d("InputIP", "input getText : " + input.getText().toString());
                 ChatApplication.testIP = input.getText().toString();
                 runService();
             }
@@ -854,33 +831,20 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         }
         toolbarTitle = (TextView) findViewById(R.id.toolbarTitle);
         toolbarTitle.setOnClickListener(this);
-        Log.d(TAG, "onResume");
         ChatApplication.getInstance().setConnectivityListener(this);
-        Log.d(TAG, "onResume isRefreshHome     " + ChatApplication.isRefreshHome);
-        Log.d(TAG, "onResume isSocketConnected " + isSocketConnected);
-        Log.d(TAG, "onResume isResumeConnect   " + isResumeConnect);
         tabClickItem();
-        //webView.loadUrl("about:blank");//&& isSocketConnected
         if (Common.isConnected() && isResumeConnect) {
-            Log.d(TAG, "onResume isResumeConnect 1111  " + isResumeConnect);
             hideAlertDialog();
             runService();
             isResumeConnect = false;
-            //openSocketandGetList();
         } else if (Common.isConnected() && ChatApplication.isRefreshHome) {
-            Log.d(TAG, "onResume isResumeConnect 2222  " + isResumeConnect);
             hideAlertDialog();
             loginDialog(false, false);
             linear_progress.setVisibility(View.GONE);
-
             ChatApplication.isRefreshHome = false;
-
         } else if (!Common.isConnected()) {
-            Log.d(TAG, "onResume isResumeConnect 3333  " + isResumeConnect);
             hideAlertDialog();
-            // new Handler().postDelayed(() -> {
             showAlertDialog(ERROR_STRING);
-            // },100);
         }
     }
 
@@ -899,23 +863,12 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     public void onDestroy() {
         super.onDestroy();
 
-        Log.d("onTerminate", "android ==onDestroy  onDestroy ");
         if (mSocket != null) {
             mSocket.emit(TAG, "android == disconnect " + mSocket.id());
             mSocket.disconnect();
             mSocket.off(Socket.EVENT_CONNECT, onConnect);
             mSocket.off(Socket.EVENT_DISCONNECT, onDisconnect);
             mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
-
-            // mSocket.off(Socket.EVENT_RECONNECT, onReconnect);
-            //   mSocket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
-            Log.d("ChatSocket", "mSocket onDestroy disconnect();");
-
-            //ChatApplication chatApplication = ChatApplication.getInstance();
-            //chatApplication.closeSocket(webUrl);
-
-         /*   mSocket.disconnect();
-            mSocket.close();*/
             mSocket = null;
         }
         if (connectivityReceiver != null) {
@@ -1092,8 +1045,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             if (isFoundUser) {
                 //logoutUser();
                 //TODO code for logout api call
-                Log.d("System out", "user name : " + logOutUser.getFirstname() + " " + logOutUser.getLastname() + " " + logOutUser.getUser_id());
-
                 String url = Constants.CLOUD_SERVER_URL + Constants.APP_LOGOUT;
 
                 JSONObject object = new JSONObject();
@@ -1115,8 +1066,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     @Override
                     public void onSuccess(JSONObject result) {
                         ActivityHelper.dismissProgressDialog();
-                        Log.d("onSuccess", "onSuccess onSuccess " + result.toString());
-
                         int code = 0;
                         try {
                             code = result.getInt("code");
@@ -1126,12 +1075,12 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                                 Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 
                                 String jsonCurProduct = gson.toJson(tempList);
-                                Log.d("System out", "user name logout: "+tempList.size());
+                                ChatApplication.logDisplay( "user name logout: "+tempList.size());
 
                                 if (tempList.size() == 0) {
                                     Common.savePrefValue(getApplicationContext(), Common.USER_JSON, "");
                                 } else {
-                                    Log.d("System out", "user name logout: "+tempList.get(0).getFirstname()+" "+tempList.get(0).getLastname());
+                                    ChatApplication.logDisplay( "user name logout: "+tempList.get(0).getFirstname()+" "+tempList.get(0).getLastname());
 
                                     tempList.get(0).setIsActive(true);
                                     jsonCurProduct = gson.toJson(tempList);
@@ -1205,8 +1154,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     public void onNetworkConnectionChanged(boolean isConnected) {
         if (ActivityHelper.isConnectingToInternet(Main2Activity.this)) {
             mToolBarSettings.setVisibility(View.VISIBLE);
-            Log.d("System out", "onNetworkConnectionChanged isConnected : " + isConnected);
-            Log.d("System out", "onNetworkConnectionChanged isConnected isResumeConnect : " + isResumeConnect);
+            ChatApplication.logDisplay( "onNetworkConnectionChanged isConnected : " + isConnected);
+            ChatApplication.logDisplay( "onNetworkConnectionChanged isConnected isResumeConnect : " + isResumeConnect);
 //            invalidateToolbarCloudImage();
             if (isConnected) {
                 // hideAlertDialog();
@@ -1356,34 +1305,21 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    private Emitter.Listener onReconnect = new Emitter.Listener() {
-        @Override
-        public void call(Object... objects) {
-            Log.d("onReconnect", "Reconnect....." + objects);
-        }
-    };
-
     private Emitter.Listener onConnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-
-            Log.d("ChatSocket", "Main2 onConnect....");
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
 
                     if (mSocket != null) {
-                        Log.d("SocketIP", "onConnect mSocket.connect()= " + mSocket.id());
-                        Log.d(TAG, mSocket.id() + " ===== Listener onConnect== " + webUrl);
-
                         if (!isSocketConnected) {
 
                             if (countDownTimer != null) {
                                 countDownTimer.cancel();
                                 isTimerStart = false;
                             }
-                            Log.d("ChatSocket", "Main2 startSocketConnection mSocket.connect()= " + mSocket.id());
 
                             hideAlertDialog();
                             isSocketConnected = true;
@@ -1407,12 +1343,10 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         @Override
         public void call(Object... args) {
 
-            Log.d("ChatSocket", "Main2 onDisconnect....");
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if (mSocket != null) {
-                        Log.i(TAG, mSocket.id() + " ===socketconnection Listener diconnected === " + webUrl);
                     }
                     //hideConnectingCloudDialog();
                     isSocketConnected = false;
@@ -1438,27 +1372,23 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         @Override
         public void onTick(long millisUntilFinished) {
             isTimerStart = true;
-            Log.d("TimerStart", "Mill : " + millisUntilFinished);
         }
 
         @Override
         public void onFinish() {
             hideConnectingCloudDialog();
             isTimerEnd = true;
-            Log.d("TimerStart", "onFinish...");
         }
     };
 
     private Emitter.Listener onConnectError = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            Log.d("ChatSocket", "Main2 onConnectError....");
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     // hideConnectingCloudDialog();
                     if (mSocket != null) {
-                        Log.e(TAG, mSocket.id() + " socketconnection Listener onConnectError = " + webUrl);
                     }
                     //Toast.makeText(getActivity().getApplicationContext(), R.string.error_connect, Toast.LENGTH_SHORT).show();
 
@@ -1488,7 +1418,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View view) {
-        Log.d("", "onClick ");
         if (view.getId() == R.id.btn_login) {
 
 //            if(flagPicheck){
@@ -1511,7 +1440,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     public String token = "";
 
     public void loginCloud() {
-        Log.d(TAG, "loginCloud");
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             Toast.makeText(Main2Activity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -1535,7 +1463,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             token = FirebaseInstanceId.getInstance().getToken();
             Common.savePrefValue(getApplicationContext(), Constants.DEVICE_PUSH_TOKEN, token);
         }
-        Log.d("FCMToken", "token : " + token);
 
         JSONObject obj = new JSONObject();
         try {
@@ -1546,7 +1473,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             obj.put("device_push_token", token);
 
         } catch (Exception e) {
-            Log.d(TAG, "Exception loginCloud " + e.getMessage());
         }
         //  String url = webUrl + Constants.APP_LOGIN;
 
@@ -1554,14 +1480,11 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
         ActivityHelper.showProgressDialog(Main2Activity.this, "Please wait...", false);
 
-        Log.d(TAG, "obj loginCloud obj " + obj.toString());
-        Log.d(TAG, "obj loginCloud url " + url);
         //http://34.212.76.50/applogin
         new GetJsonTask(Main2Activity.this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d(TAG, "loginCloud onSuccess " + result.toString());
                 try {
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -1609,8 +1532,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                         }
                         Common.savePrefValue(Main2Activity.this, Constants.USER_PASSWORD, user_password);
 
-                        Log.d("JsonList", "u_id : " + user_id);
-
                         if (toolbarTitle != null) {
                             toolbarTitle.setText(first_name + " " + last_name);
                         }
@@ -1619,7 +1540,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
                         Gson gson = new Gson();
                         String jsonText = Common.getPrefValue(getApplicationContext(), Common.USER_JSON);
-                        Log.d("System out", "jsonText text is " + jsonText);
+                        ChatApplication.logDisplay( "jsonText text is " + jsonText);
                         List<User> userList = new ArrayList<User>();
                         if (!TextUtils.isEmpty(jsonText) && !jsonText.equals("[]")&& !jsonText.equals("null")) {
                             Type type = new TypeToken<List<User>>() {
@@ -1701,7 +1622,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     ActivityHelper.dismissProgressDialog();
                     e.printStackTrace();
                 } finally {
-                    Log.d(TAG, "loginCloud finally ");
                     ActivityHelper.dismissProgressDialog();
                     //startSocketConnection();
                 }
@@ -1710,7 +1630,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d(TAG, "loginCloud onFailure " + error);
                 Toast.makeText(Main2Activity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
@@ -1738,7 +1657,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             token = FirebaseInstanceId.getInstance().getToken();
             Common.savePrefValue(getApplicationContext(), Constants.DEVICE_PUSH_TOKEN, token);
         }
-        Log.d("FCMToken", "token : " + token);
+        ChatApplication.logDisplay( "token : " + token);
 
         JSONObject obj = new JSONObject();
         try {
@@ -1747,20 +1666,17 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             obj.put("wifi_user_password", et_password.getText().toString());
 
         } catch (Exception e) {
-            Log.d(TAG, "Exception loginCloud " + e.getMessage());
+            ChatApplication.logDisplay( "Exception loginCloud " + e.getMessage());
         }
         //'192.168.175.119/wifilogin'
         String url = ChatApplication.url + Constants.wifilogin;
 
         ActivityHelper.showProgressDialog(Main2Activity.this, "Please wait...", false);
 
-        Log.d(TAG, "obj loginCloud obj " + obj.toString());
-        Log.d(TAG, "obj loginCloud url " + url);
         new GetJsonTask(Main2Activity.this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d(TAG, "wifi onSuccess " + result.toString());
                 try {
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -1780,7 +1696,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     ActivityHelper.dismissProgressDialog();
                     e.printStackTrace();
                 } finally {
-                    Log.d(TAG, "loginCloud finally ");
                     ActivityHelper.dismissProgressDialog();
                     //startSocketConnection();
                 }
@@ -1789,7 +1704,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Log.d(TAG, "loginCloud onFailure " + error);
                 Toast.makeText(Main2Activity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
@@ -1799,19 +1713,12 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     public void openSocket() {
 
-        Log.d("FoundIP", "1 openSocket openSocket====== " + webUrl);
-        // webUrl = Constants.CHAT_SERVER_URL;
-        // to do remove.
         if (webUrl.equalsIgnoreCase("")) {// webUrl.equalsIgnoreCase(Constants.CLOUD_SERVER_URL) ||
-            //Log.d("FoundIP","== openSocket  Service: if......... " + userId );
 
             String isLogin = Common.getPrefValue(this, Constants.PREF_CLOUDLOGIN);
             String cloudIp = Common.getPrefValue(this, Constants.PREF_IP);
-            //  Log.d("FoundIP","openSocketandGetList isLogin " + isLogin );
-            Log.d("FoundIP", "2 openSocketandGetList cloudIp " + cloudIp);
 
             if (userId.equalsIgnoreCase("0") && isLogin.equalsIgnoreCase("true")) {
-                Log.d("FoundIP", "3 openSocket and GetList cloudIp " + cloudIp);
 
                 webUrl = cloudIp;//Constants.CLOUD_SERVER_URL;
                 ChatApplication.isRefreshHome = true;
@@ -1820,8 +1727,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 isCloudConnected = true;
                 invalidateToolbarCloudImage();
             } else {
-                Log.d("FoundIP", "4 openSocketandGetList cloudIp " + cloudIp);
-
                 hideAlertDialog();
                 isCloudConnected = true;
                 invalidateToolbarCloudImage();
@@ -1829,12 +1734,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 loginDialog(true, false);
             }
         } else {
-            Log.d("FoundIP", "5 openSocketandGetList cloudIp ");
-
             hideAlertDialog();
-            // isCloudConnected = false;
-            Log.d("FoundIP", "== openSocket  Service: else........ ");
-
             linear_login.setVisibility(View.GONE);
             //showAlertDialog();
             ChatApplication.isRefreshHome = true;
@@ -1851,7 +1751,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SIGN_IP_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            Log.d("SignUpCode", "Main2Activity Code : " + data);
 
         } else if (requestCode == SIGN_IP_REQUEST_CODE && resultCode == Activity.RESULT_CANCELED) {
             getDelegate();//TODO for signup code
@@ -1913,11 +1812,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
 
     public void startSocketConnection() {
-        Log.d("ChatSocket", "Main2 startSocketConnection  webUrl " + webUrl);
-
-    /*    if(mSocket!=null && mSocket.connected()){
-            return;
-        }*/
 
         if (Constants.isWifiConnect) {
             return;
@@ -1925,7 +1819,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         ChatApplication app = ChatApplication.getInstance();
 
         if (mSocket != null && mSocket.connected() && app.url.equalsIgnoreCase(webUrl)) {
-            Log.d("ChatSocket", "Main2 if startSocketConnection mSocket id : " + mSocket.id());
         }
         //using @SerializedName we can customize the model name maping.when we are dealing with API and
         //we need to convert JSON response to direct Model class then make sure your api key filed name and model method name both are same.
@@ -1933,8 +1826,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
         //
         else {
-            Log.d("ChatSocket", "Main2 else startSocketConnection  webUrl " + webUrl);
-            // mSocket = app.openSocket(webUrl);
             mSocket = app.openSocket(webUrl);
 
             ChatApplication.url = webUrl;
@@ -2035,7 +1926,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onProgress() {
-        Log.i("onProgress", "onProgress...");
         showConnectingCloudDialog(LOCAL_MESSAGE);
     }
 
@@ -2062,24 +1952,13 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     public AsyncTask asyncTask;
 
     private void runService() {
-        Log.d("FoundIP", "runService runService runService ==-==-=-=-=" + Common.isConnectedToMobile(this));
         if (Common.isConnectedToMobile(this)) {
-//            deepsImage.setVisibility(View.VISIBLE);
-//            txt_connection.setVisibility(View.VISIBLE);
             linear_progress.setVisibility(View.VISIBLE);
             txt_connection.setText(R.string.connect_cloud);
-
-            Log.d("FoundIP", "Mobile Date connection :: " + webUrl);
-            //openWebView(CLOUD_URL);
-            //ChatApplication app = (ChatApplication) getActivity().getApplication();
-            //mSocket = app.openSocket(Constants.CLOUD_SERVER_URL);
-            //webUrl = Constants.CLOUD_SERVER_URL;
             webUrl = ""; //added by sagar
             openSocket();
 
         } else {
-//            deepsImage.setVisibility(View.VISIBLE);
-//            txt_connection.setVisibility(View.VISIBLE);
             linear_progress.setVisibility(View.VISIBLE);
             txt_connection.setText(R.string.search_home_controller);
 
@@ -2094,7 +1973,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
      * swap cloud to local connect
      * */
     private void runService2() {
-        Log.d("FoundIP", "runService runService runService ==-==-=-=-=" + Common.isConnectedToMobile(this));
         if (Common.isConnectedToMobile(this)) {
             linear_progress.setVisibility(View.VISIBLE);
             txt_connection.setText(R.string.connect_cloud);
@@ -2125,7 +2003,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         String ipAddressPI = "";
 
         public ServiceEventAsync() {
-            Log.i("ServiceEventLog", "constructor call...");
             showConnectingCloudDialog(LOCAL_MESSAGE);
             WifiManager wifi = (WifiManager) getApplicationContext().getSystemService(android.content.Context.WIFI_SERVICE);
             lock = wifi.createMulticastLock("lock");
@@ -2135,14 +2012,11 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
         @Override
         protected void onPreExecute() {
-            Log.i("ServiceEventLog", "onPreExecute...");
             super.onPreExecute();
         }
 
         @Override
         protected Object doInBackground(Object[] objects) {
-
-            Log.i("ServiceEventLog", "doInBackground...");
             try {
                 if (lock != null) {
                     if (lock.isHeld()) {
@@ -2164,15 +2038,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     ipAddressPI = array[0] + "." + array[1] + "." + array[2] + "." + Constants.IP_END;
                 }
 
-                Log.i("CouldFoundIP", "IP Found 1 : " + ipAddressPI);
-
-                //  boolean isReachable = InetAddress.getByName(ipAddressPI).isReachable(5000);
-                //  boolean isReachable = Common.IsReachable(Main2Activity.this,"http://"+ipAddressPI);
                 boolean isReachable = Common.isPortReachable(ipAddressPI, 80);
-                //  boolean isReachable = Common.isReachable(ipAddressPI,80);
-                //  boolean isReachable = Common.isReachable(5, 2000, "ipAddressPI");
-                // Log.i("isConnectCloud","IP Found 2 : " + isReachable);
-                Log.i("CouldFoundIP", "IP Found 3 : " + isReachable);
 
                 if (Constants.isWifiConnect) {
 
@@ -2185,12 +2051,10 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                         isClick = false;
 
                     } else {
-                        //webUrl = "";
                         ipAddressPI = "";
                         webUrl = ipAddressPI;
                     }
                 }
-                //  }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -2200,7 +2064,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
         @Override
         protected void onPostExecute(Object o) {
-            Log.i("ServiceEventLog", "onPostExecute...");
             hideConnectingCloudDialog();
             if (Constants.isWifiConnect) {
             } else {
@@ -2230,23 +2093,15 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     public static boolean isResumeConnect = false;
 
     private void listService(final String msg, final String ip, final int port, final boolean isFound) {
-        Log.d(TAG, "listService() isFound " + isFound);
 
         final String openIp = (isFound) ? "http://" + ip + ":" + port : Constants.CLOUD_SERVER_URL;
 
-        //  handler.postDelayed(() -> {
-        //    final String openIp = (isFound) ? "http://"+ip+":"+port : "http://192.168.75.120:3030";
-        Log.d(TAG, "== openIP : " + openIp);
         if (!ip.equalsIgnoreCase("") && !webUrl.equalsIgnoreCase(openIp)) {
-            Log.d(TAG, "== openIP Service : 111");
             webUrl = openIp;
             openSocket();
         } else if (ip.equalsIgnoreCase("")) {
-            Log.d(TAG, "== openIP  Service: 222");
-            // webUrl = openIp ;
             openSocket();
         } else if (webUrl.equalsIgnoreCase(openIp)) {
-            Log.d(TAG, "== openIP  Service: 333");
             hideAlertDialog();
             linear_progress.setVisibility(View.GONE);
         }
@@ -2257,13 +2112,11 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     }
 
     public void openErrorDialog(String errrString) {
-        Log.d(TAG, " openErrorDialog ");
         hideAlertDialog();
         showAlertDialog(errrString);
     }
 
     private void showAlertDialog(String erroString) {
-        //   Log.d("","showAlertDialog "  );
         hideConnectingCloudDialog();
         txt_error_value.setText(erroString);
         if (linear_retry.getVisibility() == View.GONE) {
@@ -2274,15 +2127,11 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     }
 
     private void hideAlertDialog() {
-
-        Log.d("", "hideAlertDialog ");
         linear_main.setVisibility(View.VISIBLE);
-        // mViewPager.setVisibility(View.VISIBLE);
         linear_retry.setVisibility(View.GONE);
     }
 
     public void loginDialog(final boolean value, final boolean isCancelButtonVisible) {
-        // Log.d("","loginDialog loginDialog " + value );
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

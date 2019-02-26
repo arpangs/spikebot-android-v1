@@ -2,7 +2,6 @@ package com.spike.bot.adapter.room;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +57,6 @@ public class RoomPanelDeviceAdapter extends RecyclerView.Adapter<RoomPanelDevice
             holder.iv_icon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("LongClick","1 = deviceID : " + deviceVO.getDeviceId() + " Type : " + deviceVO.getDeviceType());
                     itemClickListener.itemClicked(deviceVO,"itemclick",position);
                 }
             });
@@ -67,7 +65,6 @@ public class RoomPanelDeviceAdapter extends RecyclerView.Adapter<RoomPanelDevice
                 holder.iv_icon.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View view) {
-                        Log.d("LongClick","onLongClick");
                         itemClickListener.itemClicked(deviceVO,"longclick",position);
                         return true;
                     }

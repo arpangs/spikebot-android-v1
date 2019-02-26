@@ -7,7 +7,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -104,8 +103,6 @@ public class SensorUnassignedActivity extends AppCompatActivity{
             public void onSuccess(JSONObject result) {
                 //   ActivityHelper.dismissProgressDialog();
                 linear_progress.setVisibility(View.GONE);
-
-                Log.d("doorSensorUnAsigned","result : " + result.toString());
 
                 SensorUnassignedRes sensorUnassignedRes = Common.jsonToPojo(result.toString(),SensorUnassignedRes.class);
 
@@ -257,8 +254,6 @@ public class SensorUnassignedActivity extends AppCompatActivity{
             e.printStackTrace();
         }
 
-        Log.d("sensorUN","json request : " + jsonObject.toString());
-
         String webUrl = ChatApplication.url + Constants.SAVE_UNCONFIGURED_SENSOR;
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
@@ -266,7 +261,7 @@ public class SensorUnassignedActivity extends AppCompatActivity{
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("SensorLog","onSuccess result : " + result.toString());
+                ChatApplication.logDisplay("onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 

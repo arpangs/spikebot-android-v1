@@ -10,7 +10,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -99,8 +98,6 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
         new GetJsonTask(this, url, "GET", "", new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
-
-                Log.d("ResultList","onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -350,15 +347,12 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
 //            mRequestJson = object.toString();
 //        }
 
-        Log.d("RequestJOSN","josn : " + mRequestJson);
-
         String url = ChatApplication.url + Constants.ADD_UN_CONFIGURED_DEVICE;
 
         new GetJsonTask(this, url, "POST", mRequestJson, new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
 
-                Log.d("ResultList","onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 

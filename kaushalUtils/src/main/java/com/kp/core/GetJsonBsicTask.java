@@ -52,7 +52,6 @@ public class GetJsonBsicTask extends AsyncTask<String, Void, String> {
 			    String result="";
 			    String url1 =url ;
 			    
-			    Log.d("CallXMLService ", "CallXMLService  url  " + url1 );
 			    URL obj = new URL(url1);
 			    HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -74,9 +73,6 @@ public class GetJsonBsicTask extends AsyncTask<String, Void, String> {
 				    outputStreamWriter.flush();
 			    }
 			    int responseCode = con.getResponseCode();
-			    System.out.println("\nSending 'POST' request to URL : " + url);
-			    System.out.println("Post parameters : " + params);
-			    System.out.println("Response Code : " + responseCode);
 
 			    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			    String inputLine;
@@ -86,7 +82,6 @@ public class GetJsonBsicTask extends AsyncTask<String, Void, String> {
 			        response.append(inputLine + "\n");
 			    }
 			    in.close();
-			    Log.d("CallXMLService ", "CallXMLService  result  " + result );
 			        result = response.toString();
 //			    } catch (UnsupportedEncodingException e) {
 //			        e.printStackTrace();
@@ -99,19 +94,15 @@ public class GetJsonBsicTask extends AsyncTask<String, Void, String> {
 //			    }catch (Exception e) {
 //			        e.printStackTrace();
 //			    }finally {
-			    	 Log.d("TEST jsonText jsonText ", result);
 			    	return  result;
 //			    }
 		}catch (HttpHostConnectException e) {
-			Log.d("Exception","HttpHostConnectException Exception " + e.getMessage());
 			error = "Can't connect to server, Problem with server or your internet connection.";
 		}
     	catch (SocketException e) {
-    	    Log.d("Exception","SocketException Exception" + e.getMessage());
     	    error = "Connection problem, check your internet connection";
     	}
         catch (ClientProtocolException e) {
-        	Log.d("ClientProtocolException  ","ClientProtocolException  =  " + e.getMessage() );
         	error = "Protocol Error occured.";
         } catch (IOException e) {
         	Log.d("IOException  ","IOException  =  " + e.getMessage() );
@@ -126,22 +117,14 @@ public class GetJsonBsicTask extends AsyncTask<String, Void, String> {
     // onPostExecute displays the results of the AsyncTask.
     @Override
     protected void onPostExecute(String result) {
-    	Log.d("onPostExecute  "," onPostExecute  result json =  " + result );
     	try
 		{	
-//           	JSONObject soapDatainJsonObject = XML.toJSONObject(result.toString());
-//           	Log.d("soapDatainJsonObject", "1 soapDatainJsonObject==== " + soapDatainJsonObject.toString());
-
     		JSONObject json = new JSONObject(result);
     		activity.onSuccess(json);
 		}
 		catch (Throwable e) {
-			Log.d("onPostExecute", " Exception " + e.getMessage());
 			activity.onFailure(e,error);
 		}
    }
 
-	/*@Override
-	protected void onCancelled() {
-	}*/
 }
