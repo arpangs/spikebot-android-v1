@@ -1,12 +1,12 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:1:1-17:12
-INJECTED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:1:1-17:12
-INJECTED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:1:1-17:12
-INJECTED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:1:1-17:12
-INJECTED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:1:1-17:12
-INJECTED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:1:1-17:12
-INJECTED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:1:1-17:12
+ADDED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:1:1-18:12
+INJECTED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:1:1-18:12
+INJECTED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:1:1-18:12
+INJECTED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:1:1-18:12
+INJECTED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:1:1-18:12
+INJECTED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:1:1-18:12
+INJECTED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:1:1-18:12
 	package
 		ADDED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:2:5-39
 		INJECTED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml
@@ -35,13 +35,17 @@ INJECTED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalU
 		ADDED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:7:9-35
 		INJECTED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml
 		INJECTED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:10:5-79
+	android:name
+		ADDED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:10:22-76
 application
-ADDED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:10:5-15:19
+ADDED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:11:5-16:19
 	android:label
-		ADDED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:13:9-41
+		ADDED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:14:9-41
 	android:icon
-		ADDED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:12:9-45
+		ADDED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:13:9-45
 	android:allowBackup
-		ADDED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:11:9-35
+		ADDED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:12:9-35
 	android:theme
-		ADDED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:14:9-40
+		ADDED from /home/prakash/StudioProjects/IOTWorkspace/SPIKE BOT_v3_UI/kaushalUtils/src/main/AndroidManifest.xml:15:9-40

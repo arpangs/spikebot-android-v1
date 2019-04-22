@@ -270,6 +270,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -393,6 +394,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
                             }
                         }else if(result.optString("response").equalsIgnoreCase("fail")){
                             ActivityHelper.dismissProgressDialog();
+                            ChatApplication.showToast(WifiListActivity.this,"Password is incorrect. Please try again");
                         }
                     }
 
@@ -409,7 +411,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
                 ChatApplication.logDisplay( "ir blaster is found result error " + error.toString());
                 ActivityHelper.dismissProgressDialog();
                 //  intentBlaster();
-                Toast.makeText(WifiListActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(WifiListActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
     }

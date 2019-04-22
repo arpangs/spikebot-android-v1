@@ -13,20 +13,32 @@ public class DeviceLog {
     public String activity_time;
     public String activity_state;
 
+    public String getUser_name() {
+        return user_name;
+    }
+
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
+    }
+
+    public String user_name;
+
     public DeviceLog(){
         activity_action = "";
         activity_type = "";
         activity_description = "";
         activity_time = "";
         activity_state = "";
+        user_name = "";
     }
 
-    public DeviceLog(String activity_action, String activity_type, String activity_description, String activity_time, String activity_state) {
+    public DeviceLog(String activity_action, String activity_type, String activity_description, String activity_time, String activity_state,String user_name) {
         this.activity_action = activity_action;
         this.activity_type = activity_type;
         this.activity_description = activity_description;
         this.activity_time = activity_time;
         this.activity_state = activity_state;
+        this.user_name = user_name;
     }
 
     public String getActivity_action() {

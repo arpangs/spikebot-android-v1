@@ -29,6 +29,7 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.RoomEditGridAdapter;
 import com.spike.bot.core.APIConst;
+import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.core.JsonHelper;
 import com.spike.bot.customview.recycle.ItemClickRoomEditListener;
@@ -335,6 +336,7 @@ public class RoomEditActivity extends AppCompatActivity implements ItemClickRoom
             object.put("room_name",room.getRoomName());
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -532,7 +534,7 @@ public class RoomEditActivity extends AppCompatActivity implements ItemClickRoom
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
-
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             obj.put("room_id",room.getRoomId());
             obj.put("room_name",et_toolbar_title.getText().toString());
 

@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.spike.bot.R;
 import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.core.Common;
+import com.spike.bot.core.Constants;
 import com.spike.bot.model.ScheduleVO;
 import com.kp.core.DateHelper;
 
@@ -243,6 +244,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 }
             });
 
+            // YELLOW background means AM timeing
+            // Grey BAckground means PM timening
             if(scheduleVO.getSchedule_status()==1){
                 holder.tv_schedule_name.setTextColor(mContext.getResources().getColor(R.color.sensor_button));
                 holder.ll_schedule_on_off.setBackgroundResource(R.drawable.blue_border_fill_rectangle);
@@ -290,6 +293,17 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+
+        if(!Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equals("1")){
+            if(Common.getPrefValue(mContext, Constants.USER_ID).equals(scheduleVO.getUser_id())){
+                holder.iv_schedule_dots.setVisibility(View.VISIBLE);
+            }else {
+                holder.iv_schedule_dots.setVisibility(View.INVISIBLE);
+            }
+        }else {
+            holder.iv_schedule_dots.setVisibility(View.VISIBLE);
         }
         holder.ll_schedule_on_off.setOnClickListener(new View.OnClickListener() {
             @Override

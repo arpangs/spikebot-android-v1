@@ -1,17 +1,64 @@
 package com.spike.bot.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+
 /**
  * Created by Sagar on 17/3/18.
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class User {
+public class User implements Serializable {
     String user_id;
     String firstname;
     String lastname;
     String cloudIP;
     String password;
+
+    public boolean getIsopen() {
+        return isopen;
+    }
+
+    public void setIsopen(boolean isopen) {
+        this.isopen = isopen;
+    }
+
+    boolean isopen;
+
+
+    public ArrayList<String> getRoomList() {
+        return roomList;
+    }
+
+    public void setRoomList(ArrayList<String> roomList) {
+        this.roomList = roomList;
+    }
+
+    ArrayList<String> roomList=new ArrayList<>();
+
+
+    public ArrayList<String> getCameralist() {
+        return cameralist;
+    }
+
+    public void setCameralist(ArrayList<String> cameralist) {
+        this.cameralist = cameralist;
+    }
+
+    ArrayList<String> cameralist=new ArrayList<>();
     boolean isActive;
+
+
+
+    public String getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(String admin) {
+        this.admin = admin;
+    }
+
+    String admin;
 
     public User(){
         user_id = "";
@@ -20,15 +67,17 @@ public class User {
         cloudIP = "";
         isActive = false;
         password = "";
+        admin = "";
     }
 
-    public User(String user_id, String firstname, String lastname, String cloudIP, boolean isActive,String password) {
+    public User(String user_id, String firstname, String lastname, String cloudIP, boolean isActive,String password,String admin) {
         this.user_id = user_id;
         this.lastname = lastname;
         this.cloudIP = cloudIP;
         this.firstname = firstname;
         this.isActive = isActive;
         this.password = password;
+        this.admin = admin;
     }
 
     public String getPassword() {

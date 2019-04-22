@@ -59,6 +59,7 @@ public class JsonHelper {
 
 
                 RoomVO room = new RoomVO();
+                room.setSmart_remote_number(roomObj.optString("smart_remote_number"));
                 room.setRoomName(roomObj.getString("room_name"));
                 room.setRoom_order(roomObj.getInt("room_order"));
                 room.setRoomId(roomObj.getString("room_id"));
@@ -235,6 +236,8 @@ public class JsonHelper {
 
                 String panel_id = hasObject(objPanel,"panel_id") ? objPanel.getString("panel_id") : "";
                 String panel_name = hasObject(objPanel,"panel_name") ? objPanel.getString("panel_name") : "";
+                String panel_name_sub = hasObject(objPanel,"panel_name") ? objPanel.getString("panel_name") : "";
+                String room_panel_id = hasObject(objPanel,"room_panel_id") ? objPanel.getString("room_panel_id") : "";
                 int panel_type1 = hasObject(objPanel,"panel_type") ? objPanel.getInt("panel_type") : 0;
                 int panel_order = hasObject(objPanel,"panel_order") ? objPanel.getInt("panel_order") : 0;
 
@@ -252,6 +255,8 @@ public class JsonHelper {
                 panelVO.setPanelName(panel_name);
                 panelVO.setModule_id(module_id);
                 panelVO.setPanel_type(panel_type1);
+                panelVO.setRoom_panel_id(room_panel_id);
+                panelVO.setPanel_name_sub(panel_name_sub);
 
                 if(objPanel.has("deviceList")){
 
@@ -771,7 +776,7 @@ public class JsonHelper {
                 int schedule_type  = deviceObj.getInt("schedule_type");
                 String schedule_name = deviceObj.getString("schedule_name");
                 String room_id = deviceObj.getString("room_id");
-               // String mood_id = deviceObj.getString("mood_id");
+                String user_id = deviceObj.getString("user_id");
 
                 String schedule_device_on_time = deviceObj.getString("schedule_device_on_time");
                 String schedule_device_off_time = deviceObj.getString("schedule_device_off_time");
@@ -813,6 +818,7 @@ public class JsonHelper {
                 d1.setSchedule_device_day(schedule_device_day);
                 d1.setSchedule_status(schedule_status);
                 d1.setRoom_id(room_id);
+                d1.setUser_id(user_id);
                // d1.setMood_id(mood_id);
                 d1.setRoom_name(room_name);
                 d1.setRoom_device_id(room_device_id);
@@ -948,9 +954,9 @@ public class JsonHelper {
                     ArrayList<DeviceVO>  deviceListTemp = parseDeviceArray(deviceInfoArray);
                     deviceList.addAll(deviceListTemp);
                 }*/
-                ArrayList<DeviceVO>  deviceListTemp = parseDeviceArray(deviceInfoArray,"","","",false, "");
+               // ArrayList<DeviceVO>  deviceListTemp = parseDeviceArray(deviceInfoArray,"","","",false, "");
               //  sortDeviceV0(deviceListTemp);
-                deviceList.addAll(deviceListTemp);
+              //  deviceList.addAll(deviceListTemp);
 
                 ArrayList<PanelVO> panelList = new ArrayList<>();
                 PanelVO panel = new PanelVO();

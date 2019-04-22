@@ -41,15 +41,12 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
 
     private LinearLayout linear_progress, ll_sensor_list;
     private RecyclerView mIRListView;
-    private String mIrDeviceId, mIrDeviceType, mRoomId;
-    private String mIRBlasterModuleId, mIrBlasterId;
-    private String mRoomName, mBlasterName;
-    private String mRemoteName;
-
+    private String mIrDeviceId, mRemoteName,mIrDeviceType, mRoomId, mIRBlasterModuleId, mIrBlasterId,mRoomName, mBlasterName;
     List<IRRemoteListRes.Data.BrandList> brandLists;
 
     private IRRemoteBrandListAdapter irRemoteBrandListAdapter;
     private EditText mSearchBrand;
+    public static DataSearch arrayList=new DataSearch();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,8 +90,6 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
     }
 
     private void searchBrand() {
-
-
         mSearchBrand.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -244,8 +239,15 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
                 try {
                     int code = result.getInt("code");
                     String message = result.getString("message");
+                    ChatApplication.logDisplay("ir result is "+result.toString());
                     if (code == 200) {
-                        DataSearch arrayList = Common.jsonToPojo(result.getString("data").toString(), DataSearch.class);
+
+                        if(arrayList!=null){
+                            arrayList=null;
+                        }
+                        arrayList= Common.jsonToPojo(result.getString("data").toString(), DataSearch.class);
+
+                        ChatApplication.logDisplay("ir result is "+arrayList.getDeviceBrandRemoteList().size());
 
                         if (arrayList.getDeviceBrandRemoteList() != null &&
                                 arrayList.getDeviceBrandRemoteList().size() > 0) {
@@ -261,7 +263,7 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
                             intent.putExtra("IR_DEVICE_ID", mIrDeviceId);
                             intent.putExtra("BRAND_ID", "" + brandList.getBrandId());
                             intent.putExtra("IR_BLASTER_MODULE_ID", "" + mIRBlasterModuleId);
-                            intent.putExtra("arrayList", arrayList);
+//                            intent.putExtra("arrayList", arrayList.getDeviceBrandRemoteList());
                             startActivityForResult(intent, Constants.REMOTE_REQUEST_CODE);
                         }else {
                             Toast.makeText(getApplicationContext(), "No remote available", Toast.LENGTH_SHORT).show();

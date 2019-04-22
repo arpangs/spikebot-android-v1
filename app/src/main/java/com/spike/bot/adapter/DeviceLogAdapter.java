@@ -65,6 +65,8 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
                 holder.view_header.setVisibility(View.VISIBLE);
             }
 
+            holder.tvUserName.setVisibility(View.VISIBLE);
+            holder.tvUserName.setText(deviceLog.getUser_name());
 
             if(deviceLog.getActivity_action().equalsIgnoreCase("End of Record")){
                 holder.txt_empty_view.setVisibility(View.GONE);
@@ -97,7 +99,6 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
             }
 
             holder.tv_device_log_type.setText(deviceLog.getActivity_action() + " - " + deviceLog.getActivity_type());
-
 
             String[] actionList = deviceLog.getActivity_description().split("\\|");
 
@@ -174,7 +175,7 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
         int viewType;
         View view_header;
         TextView tv_device_log_type, tv_device_log_date,tv_device_description,tv_device_description2,tv_device_description3;
-        TextView txt_empty_view;
+        TextView txt_empty_view,tvUserName;
 
         public ViewHolder(View view, int viewType) {
             super(view);
@@ -187,7 +188,7 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
             tv_device_description2 = (TextView) view.findViewById(R.id.tv_device_description2);
             tv_device_description3 = (TextView) view.findViewById(R.id.tv_device_description3);
             txt_empty_view = (TextView) view.findViewById(R.id.txt_empty_view);
-          //  itemTextView.setLayoutParams(new LinearLayout.LayoutParams(mContext));
+            tvUserName = (TextView) view.findViewById(R.id.tvUserName);
         }
         public void clearAnimation() {
             view.clearAnimation();

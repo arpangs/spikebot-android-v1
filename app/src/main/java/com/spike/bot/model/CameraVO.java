@@ -19,6 +19,16 @@ public class CameraVO implements Serializable,Cloneable {
     private int isActive;
     private String camera_vpn_port;
 
+    public boolean isDisable() {
+        return isDisable;
+    }
+
+    public void setDisable(boolean disable) {
+        isDisable = disable;
+    }
+
+    private boolean isDisable;
+
     public String getIs_unread() {
         return is_unread;
     }

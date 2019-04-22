@@ -90,7 +90,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
     private String mSensorName;
     private boolean flagAlert = false;
 
-    public DoorSensorResModel.DATA.DoorList[] tempLists;
+    public DoorSensorResModel.DATA.DoorList[] tempLists=new DoorSensorResModel.DATA.DoorList[0];
     DoorSensorResModel doorSensorResModel;
     private String door_sensor_id, door_room_name, door_room_id, door_module_id;
     private Socket mSocket;
@@ -161,8 +161,11 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         } else {
             mSocket = app.getSocket();
         }
-        mSocket.on("doorsensorvoltage", doorsensorvoltage);
-        mSocket.on("unReadCount", unReadCount);
+        if(mSocket!=null){
+            mSocket.on("doorsensorvoltage", doorsensorvoltage);
+            mSocket.on("unReadCount", unReadCount);
+        }
+
     }
 
     private Emitter.Listener doorsensorvoltage = new Emitter.Listener() {
@@ -239,11 +242,20 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
      */
     private void getDoorSensorDetails() {
 
-        String url = ChatApplication.url + Constants.GET_DOOR_SENSOR_INFO + "/" + door_sensor_id;
+        String url = ChatApplication.url + Constants.GET_DOOR_SENSOR_INFO  ;
+
+        JSONObject object = new JSONObject();
+        try {
+            object.put("door_sensor_id",door_sensor_id);
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
-        new GetJsonTask(getApplicationContext(), url, "GET", "", new ICallBack() {
+        new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
                 startSocketConnection();
@@ -424,6 +436,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             jsonNotification.put("room_id", door_room_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -628,6 +641,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             jsonNotification.put("door_sensor_id", door_sensor_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -724,6 +738,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             jsonNotification.put("door_sensor_id", door_sensor_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -982,7 +997,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
-            showToast("" + R.string.disconnect);
             return;
         }
 
@@ -1022,6 +1036,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             jsonNotification.put("end_datetime", mEndTime);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1098,6 +1113,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             jsonNotification.put("door_sensor_id", door_sensor_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1173,6 +1189,14 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
         }else {
             checkIntent(b);
+            return;
+        }
+        ChatApplication.logDisplay("tempLists is "+tempLists.length);
+        if(tempLists.length==0){
+            return;
+        }
+
+        if(TextUtils.isEmpty(tempLists[0].getmDoorSensorMoudleId())){
             return;
         }
 

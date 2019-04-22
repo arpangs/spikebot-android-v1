@@ -109,16 +109,7 @@ public class SignUp extends AppCompatActivity {
             }
         });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE},
-                        PERMISSIONS_REQUEST_READ_PHONE_STATE);
-                return;
-            } else {
-                imei = ActivityHelper.getIMEI(this);
-            }
-        }
+        getUUID();
     }
 
     @Override
@@ -223,6 +214,10 @@ public class SignUp extends AppCompatActivity {
             return;
         }
 
+        if(TextUtils.isEmpty(imei)){
+            getUUID();
+        }
+
 
         if(!edt_password.getText().toString().trim().equalsIgnoreCase(edt_con_password.getText().toString().trim())){
             edt_con_password.requestFocus();
@@ -290,11 +285,23 @@ public class SignUp extends AppCompatActivity {
                         String last_name=data.optString("last_name");
                         String user_id=data.optString("user_id");
                         String user_password=data.optString("user_password");
+                        String admin=data.optString("admin");
 
                         Common.savePrefValue(SignUp.this,Constants.USER_PASSWORD,user_password);
                         Common.savePrefValue(SignUp.this,Constants.PREF_IP,ip);
+                        Common.savePrefValue(SignUp.this,Constants.USER_ID,user_id);
 
-                        User user = new User(user_id,first_name,last_name,ip,false,user_password);
+                        Common.savePrefValue(SignUp.this, Constants.USER_ADMIN_TYPE, admin);
+
+                        if (Common.getPrefValue(SignUp.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("1")) {
+                            Constants.room_type = 0;
+                            Common.savePrefValue(SignUp.this, Constants.USER_ROOM_TYPE, ""+0);
+                        } else {
+                            Constants.room_type = 2;
+                            Common.savePrefValue(SignUp.this, Constants.USER_ROOM_TYPE, ""+2);
+                        }
+
+                        User user = new User(user_id,first_name,last_name,ip,false,user_password,admin);
 
                         Gson gson = new Gson();
                         String jsonText = Common.getPrefValue(getApplicationContext(),Common.USER_JSON);
@@ -305,6 +312,7 @@ public class SignUp extends AppCompatActivity {
                         String jsonCurProduct = gson.toJson(userList);
                         Common.savePrefValue(getApplicationContext(),Common.USER_JSON,jsonCurProduct);
 
+                        ChatApplication.logDisplay("response is signup "+data.toString());
                         ChatApplication.isRefreshHome=false;
                         ChatApplication.isSignUp=true;
                         Main2Activity.isResumeConnect=false;
@@ -330,6 +338,21 @@ public class SignUp extends AppCompatActivity {
             }
         }).execute();
 
+    }
+
+    private void getUUID() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE},
+                        PERMISSIONS_REQUEST_READ_PHONE_STATE);
+                return;
+            } else {
+                imei = ActivityHelper.getIMEI(this);
+            }
+        }else {
+            imei = ActivityHelper.getIMEI(this);
+        }
     }
 
 }

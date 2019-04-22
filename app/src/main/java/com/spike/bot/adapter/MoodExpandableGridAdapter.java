@@ -1,13 +1,17 @@
 package com.spike.bot.adapter;
 
+import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
+import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -16,14 +20,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.kp.core.ActivityHelper;
+import com.kp.core.GetJsonTask;
+import com.kp.core.ICallBack;
+import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
+import com.spike.bot.core.Constants;
 import com.spike.bot.customview.recycle.ItemClickMoodListener;
 import com.spike.bot.customview.recycle.MoodStateChangeListener;
 import com.spike.bot.listener.NotifityData;
 import com.spike.bot.model.DeviceVO;
 import com.spike.bot.model.PanelVO;
 import com.spike.bot.model.RoomVO;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -206,6 +219,28 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     holder.ll_top_section.setBackground(mContext.getDrawable(R.drawable.background_shadow));
                 }
 
+                if(section.getSmart_remote_number().equals("null")){
+                    holder.txtRemote.setVisibility(GONE);
+                    holder.imgRemote.setVisibility(View.VISIBLE);
+                }else {
+                    holder.txtRemote.setVisibility(View.VISIBLE);
+                    holder.imgRemote.setVisibility(View.GONE);
+                    holder.txtRemote.setText(section.getSmart_remote_number());
+                }
+                holder.imgRemote.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialogRemoteshow(false,section);
+                    }
+                });
+
+                holder.txtRemote.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialogRemoteshow(true,section);
+                    }
+                });
+
                 break;
             case VIEW_TYPE_PANEL :
 
@@ -341,6 +376,132 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
         }
     }
 
+    private void dialogRemoteshow(final boolean isFlag, final RoomVO section) {
+        final Dialog dialog = new Dialog(mContext);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setContentView(R.layout.dialog_remote_key);
+        dialog.setCancelable(true);
+        dialog.setCanceledOnTouchOutside(true);
+
+        final AppCompatEditText editKeyValue =  dialog.findViewById(R.id.editKeyValue);
+        Button btnSubmit =  dialog.findViewById(R.id.btnSubmit);
+        Button btnCancel =  dialog.findViewById(R.id.btnCancel);
+        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
+        TextView txtTitalMood =  dialog.findViewById(R.id.txtTitalMood);
+
+        txtTitalMood.setText("Assign Number");
+        iv_close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                ChatApplication.keyBoardHideForce(mContext);
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        if(isFlag){
+            editKeyValue.setText(section.getSmart_remote_number());
+            editKeyValue.setSelection(editKeyValue.getText().length());
+        }
+
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                ChatApplication.keyBoardHideForce(mContext);
+                if(isFlag){
+                    callSmartRemote(true,editKeyValue.getText().toString(),section.getRoomId(),section);
+                }else {
+                    if(editKeyValue.getText().toString().length()==0){
+                        ChatApplication.showToast(mContext,"Please enter value");
+                    }else {
+                        callSmartRemote(false,editKeyValue.getText().toString(),section.getRoomId(),section);
+                    }
+                }
+
+            }
+        });
+
+
+        if (!dialog.isShowing()) {
+            dialog.show();
+        }
+
+    }
+
+    private void callSmartRemote(boolean b, final String value, String module_id, final RoomVO section) {
+        if(!ActivityHelper.isConnectingToInternet(mContext)){
+            Toast.makeText(mContext, R.string.disconnect , Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ActivityHelper.showProgressDialog(mContext,"Please wait...",false);
+
+        JSONObject obj = new JSONObject();
+        try {
+
+            obj.put("mood_id", module_id);
+            obj.put("user_id", Common.getPrefValue(mContext, Constants.USER_ID) );
+            obj.put("smart_remote_number",""+value);
+//            if(b){
+//                obj.put("is_update",1);
+//            }else {
+//                obj.put("is_update",0);
+//            }
+//
+//            if(TextUtils.isEmpty(value)){
+//                obj.put("is_update","");
+//            }
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String url =  ChatApplication.url + Constants.assignNumberToMood;
+        new GetJsonTask(mContext,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                try {
+                    //{"code":200,"message":"success"}
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+
+                    if(code==200){
+                        section.setSmart_remote_number(value);
+                        if(!TextUtils.isEmpty(message)){
+                            ChatApplication.showToast(mContext,message);
+                        }
+                        notifyDataSetChanged();
+
+                        ActivityHelper.dismissProgressDialog();
+                    }
+                    else{
+                        ChatApplication.showToast(mContext,message);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    ActivityHelper.dismissProgressDialog();
+
+                }
+
+            }
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                //    Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+        }).execute();
+    }
+
     @Override
     public int getItemCount() {
         return mDataArrayList.size();
@@ -363,11 +524,11 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
         View view;
         int viewType;
         ImageView iv_mood_panel_schedule_click;
-        ImageView view_line_top;
+        ImageView view_line_top,imgRemote;
         //for section
         TextView sectionTextView,txtLine,headingTemp;
         ToggleButton sectionToggleButton;
-        TextView text_section_on_off;
+        TextView text_section_on_off,txtRemote;
         TextView text_section_edit;
         ImageView iv_mood_edit;
         ImageView iv_mood_delete;
@@ -416,6 +577,8 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                 imgLog = (ImageView) view.findViewById(R.id.img_icn_log);
                 icnSchedule = (ImageView) view.findViewById(R.id.icn_schedule_v2);
                 txtTotalDevices = (TextView) view.findViewById(R.id.txt_total_devices);
+                txtRemote = view.findViewById(R.id.txtRemote);
+                imgRemote = view.findViewById(R.id.imgRemote);
             }
         }
     }

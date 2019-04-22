@@ -25,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
 import com.kp.core.DateHelper;
@@ -51,6 +52,7 @@ import com.spike.bot.model.CameraVO;
 import com.spike.bot.model.CameraViewModel;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
@@ -190,25 +192,27 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                 e.printStackTrace();
             }
 
+            if(cameraAlertList.getCameraIds()!=null && cameraAlertList.getCameraIds().length()>0){
+                List<String> myList = new ArrayList<String>(Arrays.asList(cameraAlertList.getCameraIds().split(",")));
 
-            List<String> myList = new ArrayList<String>(Arrays.asList(cameraAlertList.getCameraIds().split(",")));
-
-            if (myList.size() > 0) {
-                countCamera=0;
-                for (int i = 0; i < getCameraList.size(); i++) {
-                    getCameraList.get(i).setIsSelect(false);
-                }
-
-                ArrayList<CameraViewModel> arrayList = new ArrayList<>();
-                for (int j = 0; j < myList.size(); j++) {
+                if (myList.size() > 0) {
+                    countCamera=0;
                     for (int i = 0; i < getCameraList.size(); i++) {
-                        if (getCameraList.get(i).getCamera_id().equalsIgnoreCase(myList.get(j))) {
-                            getCameraList.get(i).setIsSelect(true);
-                            countCamera++;
+                        getCameraList.get(i).setIsSelect(false);
+                    }
+
+                    ArrayList<CameraViewModel> arrayList = new ArrayList<>();
+                    for (int j = 0; j < myList.size(); j++) {
+                        for (int i = 0; i < getCameraList.size(); i++) {
+                            if (getCameraList.get(i).getCamera_id().equalsIgnoreCase(myList.get(j))) {
+                                getCameraList.get(i).setIsSelect(true);
+                                countCamera++;
+                            }
                         }
                     }
+                    txtSDevice.setText("(" + countCamera + " Selected)");
                 }
-                txtSDevice.setText("(" + countCamera + " Selected)");
+
             }
 
         }else {
@@ -408,6 +412,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                 }
                 deviceObj.put("camera_ids", array);
                 deviceObj.put("cameraList", roomDeviceArray);
+                deviceObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
                 addSchedule(deviceObj,strflag);
             } catch (Exception e) {
@@ -453,6 +458,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                 }
 
                 deviceObj.put("cameraList", roomDeviceArray);
+                deviceObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
                 addSchedule(deviceObj, strflag);
             } catch (Exception e) {
 
@@ -513,10 +519,18 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             Toast.makeText(CameraNotificationActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-
         ActivityHelper.showProgressDialog(CameraNotificationActivity.this, "Please wait... ", false);
+        JSONObject jsonObject=new JSONObject();
+        try {
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE)));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         String url = ChatApplication.url + Constants.getCameraNotificationAlertList;
-        new GetJsonTask(CameraNotificationActivity.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL //POST
+        ChatApplication.logDisplay("json camera is " + url+"  "+jsonObject.toString());
+        new GetJsonTask(CameraNotificationActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
@@ -552,20 +566,17 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
                         if(jsonArray3!=null){
                             getCameraList = (ArrayList<CameraVO>) Common.fromJson(jsonArray3.toString(),
-                                    new TypeToken<ArrayList<CameraVO>>() {
-                                    }.getType());
+                                    new TypeToken<ArrayList<CameraVO>>() {}.getType());
                         }
 
                         if(jsonArray!=null){
                             arrayListLog = (ArrayList<CameraAlertList>) Common.fromJson(jsonArray.toString(),
-                                    new TypeToken<ArrayList<CameraAlertList>>() {
-                                    }.getType());
+                                    new TypeToken<ArrayList<CameraAlertList>>() {}.getType());
                         }
 
                         if(jsonArray2!=null){
                             arrayListAlert = (ArrayList<CameraPushLog>) Common.fromJson(jsonArray2.toString(),
-                                    new TypeToken<ArrayList<CameraPushLog>>() {
-                                    }.getType());
+                                    new TypeToken<ArrayList<CameraPushLog>>() {}.getType());
                         }
 
                         if (arrayListLog.size() > 0) {
@@ -670,7 +681,10 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 //            deleteCamera(cameraAlertList,strFlag);
             showAlertDialog(cameraAlertList,strFlag,switchAlert,position);
         }else {
-            addCameraNew(strFlag,cameraAlertList);
+            if(cameraAlertList.getCameraIds()!=null){
+                addCameraNew(strFlag,cameraAlertList);
+            }
+
         }
 
     }
@@ -688,7 +702,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             deviceObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             deviceObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             deviceObj.put("camera_notification_id", cameraAlertList.getCameraNotificationId());
-
+            deviceObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             if(strFlag.equalsIgnoreCase("switch")){
                 if(cameraAlertList.getIsActive()==1){
                     deviceObj.put("is_active","0");

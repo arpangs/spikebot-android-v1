@@ -12,10 +12,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
-import android.net.Network;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -24,23 +22,17 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.PowerManager;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.MenuCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
-import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -49,7 +41,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -61,12 +52,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.ack.SocketManager;
-import com.spike.bot.activity.ir.blaster.WifiBlasterActivity;
 import com.spike.bot.adapter.CloudAdapter;
-import com.spike.bot.adapter.ToolbarSpinnerAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -76,9 +66,9 @@ import com.spike.bot.fragments.MoodFragment;
 import com.spike.bot.fragments.ScheduleFragment;
 import com.spike.bot.listener.LoginPIEvent;
 import com.spike.bot.listener.ResponseErrorCode;
+import com.spike.bot.listener.RouterIssue;
 import com.spike.bot.listener.RunServiceInterface;
 import com.spike.bot.listener.SocketListener;
-import com.spike.bot.model.PiDetailsModel;
 import com.spike.bot.model.User;
 import com.spike.bot.receiver.ConnectivityReceiver;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -91,95 +81,51 @@ import com.kp.core.ICallBack;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Timer;
 
 
+import io.fabric.sdk.android.Fabric;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
 public class Main2Activity extends AppCompatActivity implements View.OnClickListener,
         ConnectivityReceiver.ConnectivityReceiverListener, CloudAdapter.CloudClickListener,
-        MainFragment.OnHeadlineSelectedListener, RunServiceInterface, ResponseErrorCode, SocketListener, LoginPIEvent {
-
-    private SectionsPagerAdapter mSectionsPagerAdapter;
-    private CustomViewPager mViewPager;
+        MainFragment.OnHeadlineSelectedListener, RunServiceInterface, ResponseErrorCode, SocketListener, LoginPIEvent , RouterIssue{
 
     private static final String TAG = "Main2Activity";
-
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private CustomViewPager mViewPager;
     private WifiManager.MulticastLock lock;
-    private Handler handler = new Handler();
 
-    ImageView deepsImage;
     public static ImageView mToolBarSettings;
-    TextView txt_connection;
+    public static TabLayout tabLayout;
+    public static int lastTabPos = 0;
+    public static TextView toolbarTitle;
+    public static TextView txt_error_value;
+    public static boolean flagPicheck = false, flagLogin = false;
+    public boolean isFlagWifi = false;
+    public ImageView deepsImage, toolbarImage, mImageCloud;
+    TextView txt_connection, txt_add_acoount;
     LinearLayout linear_main, linear_retry, linear_progress, linear_login;
     FrameLayout linearCloud;
-
     EditText et_username, et_password;
-    Button btn_login, button_retry;
-    private Button btn_cancel;
-
-    public static TabLayout tabLayout;
-    Toolbar toolbar;
-    public static int lastTabPos = 0;
-
-    public ImageView toolbarImage;
-    private Button btn_login_search;
-
+    Button btn_login, button_retry, btn_cancel, btn_login_search,btn_SKIP;
+    public Toolbar toolbar;
     List<User> userList;
-    public static TextView toolbarTitle;
-    private static ToolbarSpinnerAdapter customAdapter;
-    private TextView txt_add_acoount;
-    PopupWindow popupWindow;
-
+   // PopupWindow popupWindow;
     private CloudAdapter cloudAdapter;
     private RecyclerView recyclerView;
-
-    //new view
-    private LinearLayout ll_show_error;
-    public static TextView txt_error_value;
-    public int positionTab = 0;
-    public static boolean flagPicheck = false, flagLogin = false;
-
     PowerManager.WakeLock wakeLock;
-
     private ProgressDialog progressBar;
-    private FloatingActionButton mFab;
+    public MainFragment mainFragment1;
 
-    private CardView mFabMenuLayout;
-    private TextView mFabAddRoom;
-    private TextView mFabAddPanel;
-    private TextView mFabAddDoor;
-    private TextView mFabAddTempSensor;
-    private TextView mFabAddRemote;
-    private TextView mFabAddCamera;
-    private TextView mFabAddUnPanel;
-    MainFragment mainFragment1;
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        /**
-         *  connectivityManager.getAllNetworks() -> Apply filter (NetworkInfo type == "WIFI" or "MOBILE")
-         *  connectivityManager.getActiveNetworkInfo() -> Only get Active Network Info
-         *
-         */
-
-        Network[] allNetworks = connectivityManager.getAllNetworks();
-       /* ...
-          ...
-          ...*/
-        return true;
-    }
-
+    //current
     /**
      * If Network is connected on cloud then display cloud icon otherwise display wifi icon
      */
@@ -187,10 +133,12 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (isCloudConnected) {
-                    mImageCloud.setImageResource(R.drawable.cloud);
-                } else {
-                    mImageCloud.setImageResource(R.drawable.wifi);
+                if (!TextUtils.isEmpty(ChatApplication.url)) {
+                    if (ChatApplication.url.startsWith("http://home.deepfoods")) {
+                        mImageCloud.setImageResource(R.drawable.cloud);
+                    } else {
+                        mImageCloud.setImageResource(R.drawable.wifi);
+                    }
                 }
 //                if (WifiBlasterActivity.setMobileDataEnabled(Main2Activity.this)) {
 //                    mImageCloud.setImageResource(R.drawable.cloud);
@@ -220,18 +168,18 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             R.drawable.schedule_blue
     };
 
-    private ImageView mImageCloud;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main2);
-
         connectivityReceiver = new ConnectivityReceiver();
-        final IntentFilter intentFilter = new IntentFilter();
+        IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver((BroadcastReceiver) connectivityReceiver, intentFilter);
         ChatApplication.getInstance().setConnectivityListener(this);
+
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -243,46 +191,15 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         token = FirebaseInstanceId.getInstance().getToken();
-        ChatApplication.logDisplay("token : " + token);
 
         Common.savePrefValue(getApplicationContext(), Constants.DEVICE_PUSH_TOKEN, token);
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        //  mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-        // Set up the ViewPager with the sections adapter.
         mViewPager = (CustomViewPager) findViewById(R.id.container);
-        // mViewPager.setAdapter(mSectionsPagerAdapter);
-
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
         mImageCloud = (ImageView) findViewById(R.id.toolbar_cloud);
-
-       /* if(!Common.isInternetAccessible(getApplicationContext())){
-            Toast.makeText(getApplicationContext(),"Host is Not Reachable...",Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(getApplicationContext(),"Host is Reachable...",Toast.LENGTH_SHORT).show();
-        }*/
-
-
-     /*   mViewPager.setOnTouchListener(new View.OnTouchListener()
-        {
-            @Override
-            public boolean onTouch(View v, MotionEvent event)
-            {
-                return false;
-            }
-        });
-        mViewPager.beginFakeDrag();
-        mViewPager.requestDisallowInterceptTouchEvent(true);*/
-
-
         toolbarImage = (ImageView) findViewById(R.id.toolbarImage);
         toolbarImage.setOnClickListener(this);
-        // toolbarImage.setVisibility(View.GONE);
-
-        // tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         btn_login_search = (Button) findViewById(R.id.btn_login_search);
         btn_login_search.setVisibility(View.GONE);
         deepsImage = (ImageView) findViewById(R.id.deepsImage);
@@ -300,15 +217,11 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         btn_cancel = (Button) findViewById(R.id.btn_cancel);
         toolbarTitle = (TextView) findViewById(R.id.toolbarTitle);
         mToolBarSettings = (ImageView) findViewById(R.id.toolbar_setting);
-
+        btn_SKIP =  findViewById(R.id.btn_SKIP);
         linearCloud = (FrameLayout) findViewById(R.id.linear_progress_cloud);
 
-        PowerManager pm = (PowerManager) getApplicationContext().getSystemService(
-                Context.POWER_SERVICE);
-        this.wakeLock = pm.newWakeLock(
-                PowerManager.PARTIAL_WAKE_LOCK
-                        | PowerManager.ON_AFTER_RELEASE,
-                TAG);
+        PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
+        this.wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, TAG);
         wakeLock.acquire();
 
         MainFragment.clearNotification(Main2Activity.this);
@@ -318,67 +231,15 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
         btn_login.setOnClickListener(this);
         btn_cancel.setOnClickListener(this);
-
+        btn_SKIP.setOnClickListener(this);
 
         if (mSectionsPagerAdapter == null) {
-
             mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-            // Set up the ViewPager with the sections adapter.
-            //mViewPager = (ViewPager) findViewById(R.id.container);
             mViewPager.setAdapter(mSectionsPagerAdapter);
-
-            /*mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-                }
-
-                @Override
-                public void onPageSelected(int position) {
-
-                    positionTab = position;
-
-                    //tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).setIcon(navIconsActive[tabLayout.getSelectedTabPosition()]);
-
-
-//                    for (int i = 0; i < tabLayout.getTabCount(); i++) {
-//
-//                        View view = tabLayout.getTabAt(i).getCustomView();
-//
-//                        TextView tab_label = (TextView) view.findViewById(R.id.nav_label);
-//                        ImageView tab_icon = (ImageView) view.findViewById(R.id.nav_icon);
-//
-//
-//                        if(i != position) {
-//                            tab_label.setText("Not");
-//
-//                            tab_label.setTextColor(getResources().getColor(R.color.sky_blue));
-//                          //  tab_icon.setImageResource(navIcons[i]);
-//                        }else {
-//                            tab_label.setText("Yes");
-//
-//                            //   tab_icon.setImageResource(navIconsActive[i]);
-//                        }
-//                        tabLayout.getTabAt(position).setCustomView(view);
-//
-//                    }
-
-                    reloadFragment2();
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int state) {
-
-                }
-            });
-
-*/
 
             // loop through all navigation tabs
             for (int i = 0; i < tabLayout.getTabCount(); i++) {
                 final LinearLayout tabTemp = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.nav_tab, null);
-
                 TextView tab_label = (TextView) tabTemp.findViewById(R.id.nav_label);
                 ImageView tab_icon = (ImageView) tabTemp.findViewById(R.id.nav_icon);
 
@@ -392,13 +253,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     tab_label.setTextColor(getResources().getColor(R.color.txtPanal));
                     tab_icon.setImageResource(navIcons[i]);
                 }
-
-
                 tabLayout.getTabAt(i).setCustomView(tabTemp);
-
             }
-
-
         }
 
         tabClickItem();
@@ -436,41 +292,22 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         });
         isResumeConnect = true;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE},
-                        PERMISSIONS_REQUEST_READ_PHONE_STATE);
-                return;
-            } else {
-                imei = ActivityHelper.getIMEI(this);
-            }
-        }
-
+        getUUId();
 
         Gson gson = new Gson();
         String jsonText = Common.getPrefValue(getApplicationContext(), Common.USER_JSON);
-
-        if (TextUtils.isEmpty(userFname) && TextUtils.isEmpty(userLname)) {
-            //   toolbarImage.setVisibility(View.GONE);
-        }
-
         userList = new ArrayList<User>();
 
         if (!TextUtils.isEmpty(jsonText)) {
             Type type = new TypeToken<List<User>>() {
             }.getType();
             userList = gson.fromJson(jsonText, type);
-
             // toolbarImage.setVisibility(View.VISIBLE);
             // getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        } else {
-
         }
 
-
-        toolbarTitle.setText("" + userFname + " " + userLname);
+      //  toolbarTitle.setText("" + userFname + " " + userLname);
+        toolbarTitle.setText(Constants.getUserName(this));
         toolbarTitle.setOnClickListener(this);
 
 
@@ -485,13 +322,38 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             }
         });
 
-
         mToolBarSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openSettingPopup(toolbar);
+                if(!ActivityHelper.isConnectingToInternet(Main2Activity.this)){
+                    ChatApplication.showToast(Main2Activity.this,getResources().getString(R.string.disconnect));
+                }else {
+                    openSettingPopup(toolbar);
+                }
             }
         });
+
+        HashMap<String,String> hashMap=new HashMap<>();
+        hashMap.put(null,"");
+        hashMap.put(null,null);
+        ChatApplication.logDisplay("hash map is "+hashMap.size());
+
+
+    }
+
+    private void getUUId() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE},
+                        PERMISSIONS_REQUEST_READ_PHONE_STATE);
+                return;
+            } else {
+                imei = ActivityHelper.getIMEI(this);
+            }
+        }else {
+            imei = ActivityHelper.getIMEI(this);
+        }
 
     }
 
@@ -501,20 +363,16 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             public void onTabSelected(TabLayout.Tab tab) {
                 // 1. get the custom View you've added
                 View tabView = tab.getCustomView();
-
                 // get inflated children Views the icon and the label by their id
                 TextView tab_label = (TextView) tabView.findViewById(R.id.nav_label);
                 ImageView tab_icon = (ImageView) tabView.findViewById(R.id.nav_icon);
-
                 // change the label color, by getting the color resource value
                 tab_label.setTextColor(getResources().getColor(R.color.sky_blue));
                 // change the image Resource
                 // i defined all icons in an array ordered in order of tabs appearances
                 // call tab.getPosition() to get active tab index.
                 tab_icon.setImageResource(navIconsActive[tab.getPosition()]);
-
-                reloadFragment2();
-
+             //   reloadFragment2();
             }
 
             @Override
@@ -522,14 +380,12 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 View tabView = tab.getCustomView();
                 TextView tab_label = (TextView) tabView.findViewById(R.id.nav_label);
                 ImageView tab_icon = (ImageView) tabView.findViewById(R.id.nav_icon);
-
                 // back to the black color
                 tab_label.setTextColor(getResources().getColor(R.color.txtPanal));
                 // and the icon resouce to the old black image
                 // also via array that holds the icon resources in order
                 // and get the one of this tab's position
                 tab_icon.setImageResource(navIcons[tab.getPosition()]);
-
             }
 
             @Override
@@ -551,7 +407,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void executeService() {
-       // toolbarTitle.setText("      ");
+        // toolbarTitle.setText("      ");
         runService2();
 
     }
@@ -563,11 +419,12 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onArticleSelected(String name) {
         if (toolbarTitle != null)
-            toolbarTitle.setText(name);
+            toolbarTitle.setText(Constants.getUserName(this));
+//            toolbarTitle.setText(name);
         else {
             toolbarTitle = (TextView) findViewById(R.id.toolbarTitle);
-            toolbarTitle.setText(name);
-
+//            toolbarTitle.setText(name);
+            toolbarTitle.setText(Constants.getUserName(this));
             toolbarTitle.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -625,11 +482,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void click(User user) {
-
-        //    Log.d("isActive","event : " + user.isActive());
-
-        if (popupWindow != null) {
-            popupWindow.dismiss();
+        if (dialogUser != null) {
+            dialogUser.dismiss();
         }
         if (Constants.isWifiConnect) {
             return;
@@ -645,23 +499,41 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
             String jsonText = Common.getPrefValue(getApplicationContext(), Common.USER_JSON);
             if (!TextUtils.isEmpty(jsonText)) {
-                Type type = new TypeToken<List<User>>() {
-                }.getType();
+                Type type = new TypeToken<List<User>>() {}.getType();
                 userList = gson.fromJson(jsonText, type);
+
+                for (int i = 0; i < userList.size(); i++) {
+                    if (userList.get(i).getUser_id().equalsIgnoreCase(user.getUser_id())) {
+                        userList.get(i).setIsActive(true);
+
+                    } else {
+                        userList.get(i).setIsActive(false);
+                    }
+                }
+
+                String json = gson.toJson(userList);
+                Common.savePrefValue(getApplicationContext(), Common.USER_JSON, json);
             }
 
             toolbarTitle.setText(user.getFirstname() + " " + user.getLastname());
 
-            if(cloudAdapter!=null){
+            if (cloudAdapter != null) {
                 cloudAdapter.notifyDataSetChanged();
             }
-
 
             Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "true");
             Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, user.getCloudIP());
             Common.savePrefValue(Main2Activity.this, Constants.USER_ID, user.getUser_id());
             Common.savePrefValue(Main2Activity.this, Constants.USER_PASSWORD, user.getPassword());
 
+            Common.savePrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE, user.getAdmin());
+            if (Common.getPrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("1")) {
+                Constants.room_type = 0;
+                Common.savePrefValue(Main2Activity.this, Constants.USER_ROOM_TYPE, ""+0);
+            } else {
+                Constants.room_type = 2;
+                Common.savePrefValue(Main2Activity.this, Constants.USER_ROOM_TYPE, ""+2);
+            }
             webUrl = user.getCloudIP();
             ChatApplication.url = webUrl;
             isCloudConnected = true;
@@ -682,16 +554,21 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 app.closeSocket(webUrl);
                 mSocket.disconnect();
                 mSocket.close();
-                mSocket = null;
+                mSocket = null;*/
 
-                isResumeConnect = true;
-                ChatApplication.isMainFragmentNeedResume = true;
-                ChatApplication.isMoodFragmentNeedResume = true;*/
+//                isResumeConnect = true;
+//                ChatApplication.isMainFragmentNeedResume = true;
+//                ChatApplication.isMoodFragmentNeedResume = true;
                 // ChatApplication.isScheduleNeedResume = true;
             }
             //  reloadFragment();
 
             startSocketConnection();
+            isFlagWifi = false;
+            isResumeConnect = false;
+            mainFragment1.RefreshAnotherFragment();
+            mViewPager.setCurrentItem(0);
+            mainFragment1.showDialog=1;
         }
 
     }
@@ -710,58 +587,46 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
      * @param toolbarTitle
      */
 
+    public Dialog dialogUser;
     private void showAccountDialog(TextView toolbarTitle) {
 
         if (!ActivityHelper.isConnectingToInternet(Main2Activity.this)) {
 
             return;
         }
-        LayoutInflater layoutInflater
-                = (LayoutInflater) getBaseContext()
-                .getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = layoutInflater.inflate(R.layout.popup_toolbar, null);
-        popupWindow = new PopupWindow(
-                popupView,
-                RelativeLayout.LayoutParams.MATCH_PARENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT);
 
-        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setFocusable(true);
+        if (dialogUser == null) {
+            dialogUser = new Dialog(this);
+        }
+//        dialogUser.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogUser.setCanceledOnTouchOutside(false);
+        dialogUser.setContentView(R.layout.popup_toolbar);
+        dialogUser.getWindow().setGravity(Gravity.TOP);
+        dialogUser.setCanceledOnTouchOutside(true);
+        dialogUser.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dialogUser.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        txt_add_acoount = (TextView) popupView.findViewById(R.id.txt_add_account);
-
-        recyclerView = (RecyclerView) popupView.findViewById(R.id.userList);
+        txt_add_acoount = (TextView) dialogUser.findViewById(R.id.txt_add_account);
+        recyclerView = (RecyclerView) dialogUser.findViewById(R.id.userList);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
-
 
         Gson gson = new Gson();
         String jsonText = Common.getPrefValue(getApplicationContext(), Common.USER_JSON);
-
         if (userList == null) {
             userList = new ArrayList<>();
         }
-
         userList.clear();
 
         if (!TextUtils.isEmpty(jsonText)) {
-            //   spinner.setVisibility(View.VISIBLE);
-            Type type = new TypeToken<List<User>>() {}.getType();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
             userList = gson.fromJson(jsonText, type);
-
             recyclerView.setVisibility(View.VISIBLE);
-
-            // getSupportActionBar().setDisplayShowTitleEnabled(false);
-
         } else {
-            // getSupportActionBar().setDisplayShowTitleEnabled(true);
-
-            //   userList.add(user);
-
             recyclerView.setVisibility(View.GONE);
         }
 
-        if(userList!=null){
+        if (userList != null) {
             cloudAdapter = new CloudAdapter(Main2Activity.this, userList, this);
             recyclerView.setAdapter(cloudAdapter);
         }
@@ -770,19 +635,14 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         txt_add_acoount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //add new cloud account with login
-
-                popupWindow.dismiss();
-
+                dialogUser.dismiss();
                 hideAlertDialog();
-                //  isCloudConnected = true;
-                // webUrl = Constants.CLOUD_SERVER_URL;
                 loginDialog(true, true);
             }
         });
 
-        if (toolbarTitle != null) {
-            popupWindow.showAsDropDown(toolbarTitle, 0, 0);
+        if (!dialogUser.isShowing()) {
+            dialogUser.show();
         }
     }
 
@@ -825,7 +685,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         if (ChatApplication.isRefreshUserData) {
             if (!TextUtils.isEmpty(userFname) && !TextUtils.isEmpty(userLname)) {
                 if (toolbarTitle != null) {
-                    toolbarTitle.setText(userFname + " " + userLname);
+                    //toolbarTitle.setText(userFname + " " + userLname);
+                    toolbarTitle.setText(Constants.getUserName(this));
                 }
             }
         }
@@ -851,13 +712,50 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onPause() {
         super.onPause();
-        if(ChatApplication.isPushFound){
+        if (ChatApplication.isPushFound) {
             MainFragment.getBadgeClear(Main2Activity.this);
         }
-        MainFragment.isRefredCheck=true;
+        MainFragment.isRefredCheck = true;
         ChatApplication.isMainFragmentNeedResume = true;
 
     }
+
+    private Emitter.Listener deleteChildUser = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (Main2Activity.this == null) {
+                return;
+            }
+            Main2Activity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+                            String message=object.optString("message");
+                            String user_id=object.optString("user_id");
+                            if(Common.getPrefValue(Main2Activity.this, Constants.USER_ID).equalsIgnoreCase(user_id)){
+
+                                if (Common.isNetworkConnected(Main2Activity.this)) {
+                                    isWifiConnect = true;
+                                    wifiIpAddress = "";
+                                    asyncTask = new Main2Activity.ServiceEventAsync().execute();
+                                }
+
+                                childRemoveSQLite();
+                                ChatApplication.showToast(Main2Activity.this,message);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
 
     @Override
     public void onDestroy() {
@@ -869,6 +767,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             mSocket.off(Socket.EVENT_CONNECT, onConnect);
             mSocket.off(Socket.EVENT_DISCONNECT, onDisconnect);
             mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
+            mSocket.on("deleteChildUser", deleteChildUser);
             mSocket = null;
         }
         if (connectivityReceiver != null) {
@@ -951,6 +850,14 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         }
         popup.getMenuInflater().inflate(R.menu.menu_room_setting_popup, popup.getMenu());
 
+        if(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")){
+            MenuItem menuItemReset = popup.getMenu().findItem(R.id.action_profile);
+            menuItemReset.setVisible(false);
+        }else {
+            MenuItem menuItemReset = popup.getMenu().findItem(R.id.action_profile);
+            menuItemReset.setVisible(true);
+        }
+
 
         String isLogin = Common.getPrefValue(this, Constants.PREF_CLOUDLOGIN);
         String cloudIp = Common.getPrefValue(this, Constants.PREF_IP);
@@ -963,7 +870,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 //            MenuItem action_logout = popup.getMenu().findItem(R.id.action_logout);
 //            action_logout.setVisible(false);
         }
-      //  invalidateToolbarCloudImage();
+        //  invalidateToolbarCloudImage();
 
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -973,7 +880,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     case R.id.action_device_log:
                         // getconfigureData();
                         Intent intent = new Intent(Main2Activity.this, DeviceLogActivity.class);
-                        intent.putExtra("isCheckActivity","AllType");
+                        intent.putExtra("isCheckActivity", "AllType");
                         startActivity(intent);
                         break;
                     case R.id.action_sensor_log:
@@ -993,9 +900,9 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                         startActivity(intentProfile);
                         break;
                     case R.id.action_logout:
-
                         //paster here
                         logoutCloudUser();
+//                        childRemoveSQLite();
                         break;
 
                     default:
@@ -1007,8 +914,9 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         popup.show();
     }
 
-    private void logoutCloudUser() {
+    public void childRemoveSQLite() {
 
+        ActivityHelper.showProgressDialog(Main2Activity.this, "Please wait...", false);
 
         //clear pref and open login screen
         Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "false");
@@ -1025,8 +933,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
         if (!TextUtils.isEmpty(jsonText)) {
 
-            Type type = new TypeToken<List<User>>() {
-            }.getType();
+            Type type = new TypeToken<List<User>>() {}.getType();
             uList = gson.fromJson(jsonText, type);
 
             boolean isFoundUser = false;
@@ -1038,7 +945,137 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 } else {
                     isFoundUser = true;
                     logOutUser = user;
-                   // break;
+                    // break;
+                }
+            }
+
+            if (isFoundUser) {
+
+//
+//                new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
+//                    @Override
+//                    public void onSuccess(JSONObject result) {
+//                        ActivityHelper.dismissProgressDialog();
+                        int code = 0;
+
+
+                            String jsonCurProduct = gson.toJson(tempList);
+                            ChatApplication.logDisplay("user name logout: " + tempList.size());
+
+                            if (tempList.size() == 0) {
+                                Common.savePrefValue(getApplicationContext(), Common.USER_JSON, "");
+                            } else {
+
+                                tempList.get(0).setIsActive(true);
+                                jsonCurProduct = gson.toJson(tempList);
+                                Common.savePrefValue(getApplicationContext(), Common.USER_JSON, jsonCurProduct);
+                            }
+
+                            if (cloudAdapter != null) {
+                                cloudAdapter.notifyDataSetChanged();
+                            }
+
+                            if (tempList.size() > 0) {
+                                try {
+
+                                    Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "true");
+                                    Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, tempList.get(0).getCloudIP());
+                                    Common.savePrefValue(Main2Activity.this, Constants.USER_ID, tempList.get(0).getUser_id());
+                                    Common.savePrefValue(Main2Activity.this, Constants.USER_PASSWORD, tempList.get(0).getPassword());
+                                    Common.savePrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE, tempList.get(0).getAdmin());
+
+                                    if (Common.getPrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("1")) {
+                                        Constants.room_type = 0;
+                                        Common.savePrefValue(Main2Activity.this, Constants.USER_ROOM_TYPE, "" + 0);
+                                    } else {
+                                        Constants.room_type = 2;
+                                        Common.savePrefValue(Main2Activity.this, Constants.USER_ROOM_TYPE, "" + 2);
+                                    }
+
+                                    webUrl = tempList.get(0).getCloudIP();
+                                    isCloudConnected = true;
+                                    invalidateToolbarCloudImage();
+
+                                    toolbarTitle.setText(tempList.get(0).getFirstname() + " " + tempList.get(0).getLastname());
+
+                                    ChatApplication app = ChatApplication.getInstance();
+                                    app.closeSocket(webUrl);
+
+                                    if (mSocket != null) {
+                                        mSocket.disconnect();
+                                        mSocket = null;
+                                    }
+                                    ActivityHelper.dismissProgressDialog();
+
+                                    startSocketConnection();
+                                    mainFragment1.RefreshAnotherFragment();
+                                    mViewPager.setCurrentItem(0);
+
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            } else {
+                                ActivityHelper.dismissProgressDialog();
+                                Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "false");
+                                Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, "");
+                                Common.savePrefValue(Main2Activity.this, Constants.USER_ID, "");
+                                Common.savePrefValue(Main2Activity.this, Constants.USER_PASSWORD, "");
+                                Common.savePrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE, "");
+
+                                webUrl = "";
+                                ChatApplication app = ChatApplication.getInstance();
+                                app.closeSocket(webUrl);
+
+                                flagPicheck = true;
+                                loginDialog(true, true);
+//                                    mViewPager.setCurrentItem(0);
+//                                    runService();
+                            }
+
+
+            }
+
+
+        } else {
+            ChatApplication app = ChatApplication.getInstance();
+            //  mSocket = app.closeSocket(webUrl);
+            app.closeSocket(webUrl);
+            loginDialog(true, false);
+        }
+
+
+    }
+
+    public void logoutCloudUser() {
+
+        //clear pref and open login screen
+        Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "false");
+        Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, "");
+
+        ///start//
+
+        final Gson gson = new Gson();
+        String jsonText = Common.getPrefValue(getApplicationContext(), Common.USER_JSON);
+        String USER_ID = Common.getPrefValue(getApplicationContext(), Constants.USER_ID);
+
+        List<User> uList = new ArrayList<User>();
+        final List<User> tempList = new ArrayList<User>();
+
+        if (!TextUtils.isEmpty(jsonText)) {
+
+            Type type = new TypeToken<List<User>>() {}.getType();
+            uList = gson.fromJson(jsonText, type);
+
+            boolean isFoundUser = false;
+            User logOutUser = new User();
+
+            for (User user : uList) {
+                if (!user.isActive()) {
+                    tempList.add(user);
+                } else {
+                    isFoundUser = true;
+                    logOutUser = user;
+                    // break;
                 }
             }
 
@@ -1075,12 +1112,12 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                                 Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 
                                 String jsonCurProduct = gson.toJson(tempList);
-                                ChatApplication.logDisplay( "user name logout: "+tempList.size());
+                                ChatApplication.logDisplay("user name logout: " + tempList.size());
 
                                 if (tempList.size() == 0) {
                                     Common.savePrefValue(getApplicationContext(), Common.USER_JSON, "");
                                 } else {
-                                    ChatApplication.logDisplay( "user name logout: "+tempList.get(0).getFirstname()+" "+tempList.get(0).getLastname());
+                                    ChatApplication.logDisplay("user name logout: " + tempList.get(0).getFirstname() + " " + tempList.get(0).getLastname());
 
                                     tempList.get(0).setIsActive(true);
                                     jsonCurProduct = gson.toJson(tempList);
@@ -1098,12 +1135,21 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                                         Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, tempList.get(0).getCloudIP());
                                         Common.savePrefValue(Main2Activity.this, Constants.USER_ID, tempList.get(0).getUser_id());
                                         Common.savePrefValue(Main2Activity.this, Constants.USER_PASSWORD, tempList.get(0).getPassword());
+                                        Common.savePrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE, tempList.get(0).getAdmin());
+
+                                        if (Common.getPrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("1")) {
+                                            Constants.room_type = 0;
+                                            Common.savePrefValue(Main2Activity.this, Constants.USER_ROOM_TYPE, ""+0);
+                                        } else {
+                                            Constants.room_type = 2;
+                                            Common.savePrefValue(Main2Activity.this, Constants.USER_ROOM_TYPE, ""+2);
+                                        }
 
                                         webUrl = tempList.get(0).getCloudIP();
                                         isCloudConnected = true;
                                         invalidateToolbarCloudImage();
 
-                                        toolbarTitle.setText(tempList.get(0).getFirstname()+" "+tempList.get(0).getLastname());
+                                        toolbarTitle.setText(tempList.get(0).getFirstname() + " " + tempList.get(0).getLastname());
 
                                         ChatApplication app = ChatApplication.getInstance();
                                         app.closeSocket(webUrl);
@@ -1112,14 +1158,29 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                                             mSocket.disconnect();
                                             mSocket = null;
                                         }
-
+                                        MainFragment.showDialog=1;
                                         startSocketConnection();
+                                        mainFragment1.RefreshAnotherFragment();
+                                        mViewPager.setCurrentItem(0);
 
                                     } catch (Exception ex) {
                                         ex.printStackTrace();
                                     }
                                 } else {
-                                    runService();
+                                    Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "false");
+                                    Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, "");
+                                    Common.savePrefValue(Main2Activity.this, Constants.USER_ID,"");
+                                    Common.savePrefValue(Main2Activity.this, Constants.USER_PASSWORD, "");
+                                    Common.savePrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE, "");
+
+                                    webUrl="";
+                                    ChatApplication app = ChatApplication.getInstance();
+                                    app.closeSocket(webUrl);
+
+                                    flagPicheck = true;
+                                    loginDialog(true, true);
+//                                    mViewPager.setCurrentItem(0);
+//                                    runService();
                                 }
                             }
 
@@ -1154,8 +1215,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     public void onNetworkConnectionChanged(boolean isConnected) {
         if (ActivityHelper.isConnectingToInternet(Main2Activity.this)) {
             mToolBarSettings.setVisibility(View.VISIBLE);
-            ChatApplication.logDisplay( "onNetworkConnectionChanged isConnected : " + isConnected);
-            ChatApplication.logDisplay( "onNetworkConnectionChanged isConnected isResumeConnect : " + isResumeConnect);
+            ChatApplication.logDisplay("onNetworkConnectionChanged isConnected : " + isConnected);
+            ChatApplication.logDisplay("onNetworkConnectionChanged isConnected isResumeConnect : " + isResumeConnect);
 //            invalidateToolbarCloudImage();
             if (isConnected) {
                 // hideAlertDialog();
@@ -1213,9 +1274,34 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     @Override
     public void showLogin() {
 //        if (piDetailsModel != null) {
-            flagPicheck = true;
-            loginDialog(true, true);
+        flagPicheck = true;
+        loginDialog(true, true);
 //        }
+    }
+
+
+    @Override
+    public void wifiConnectionIssue(final boolean isflag) {
+//        ChatApplication.logDisplay("is issue found");
+//
+        new Thread() {
+            public void run() {
+                Main2Activity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        ProgressDialog progressDialog=new ProgressDialog(Main2Activity.this);
+                        progressDialog.setMessage("Please wait... \ncheck your gateway connection");
+                        progressDialog.setCancelable(false);
+                        if(isflag){
+                            progressDialog.dismiss();
+                        }else {
+                            progressDialog.show();
+                        }
+                      //  ChatApplication.logDisplay("is issue found11111111111");
+                  //      ActivityHelper.showProgressDialog(Main2Activity.this, "Please Wait...", false);
+                    }
+                });
+            }
+        }.start();
     }
 
     /**
@@ -1350,8 +1436,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     }
                     //hideConnectingCloudDialog();
                     isSocketConnected = false;
-                    //Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
-
                     //if swtich user account could't display error dialog
                     if (!isClick) {
                         //todo code here for open error dialog
@@ -1361,9 +1445,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             });
         }
     };
-
-    Timer timer = new Timer();
-    final int FPS = 40;
 
     private boolean isTimerEnd = false;
     private boolean isTimerStart = false;
@@ -1380,6 +1461,9 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             isTimerEnd = true;
         }
     };
+
+
+
 
     private Emitter.Listener onConnectError = new Emitter.Listener() {
         @Override
@@ -1398,7 +1482,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     //todo code here for open error dialog
                     if (isTimerEnd) {
 
-                        //  openErrorDialog(ERROR_STRING);
+                     //     openErrorDialog(ERROR_STRING);
                     }
                 }
             });
@@ -1420,42 +1504,62 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     public void onClick(View view) {
         if (view.getId() == R.id.btn_login) {
 
+            if (Common.isNetworkConnected(Main2Activity.this)) {
+                isWifiConnect = true;
+                wifiIpAddress = "";
+                asyncTask = new Main2Activity.ServiceEventAsync().execute();
+            }
+
+            // Muset login with cloud
 //            if(flagPicheck){
 //                loginWifiCloud();
 //            }else {
-            loginCloud();
+            loginCloud(et_username.getText().toString(),et_password.getText().toString());
 //            }
         } else if (view.getId() == R.id.btn_cancel) {
             loginDialog(false, false);
         } else if (view.getId() == R.id.toolbarImage) {
             showAccountDialog(toolbarTitle);
-        }else if (view.getId() == R.id.toolbarTitle) {
+        } else if (view.getId() == R.id.toolbarTitle) {
             showAccountDialog(toolbarTitle);
+        } else if (view.getId() == R.id.btn_SKIP) {
+            loginDialog(false,false);
         }
 
     }
 
-    public String webUrl = "";
+    public void getUserDialogClick(boolean isClick){
+        if(isClick){
+            toolbarImage.setClickable(true);
+            toolbarTitle.setClickable(true);
+        }else {
+            toolbarImage.setClickable(false);
+            toolbarTitle.setClickable(false);
+        }
+    }
+    public String webUrl = "",wifiIpAddress="";
     public static boolean isCloudConnected = false;
     public String token = "";
+    boolean isWifiConnect = false;
 
-    public void loginCloud() {
+    public void loginCloud(String username, String password) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             Toast.makeText(Main2Activity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (TextUtils.isEmpty(et_username.getText().toString())) {
+        if(TextUtils.isEmpty(imei)){
+            getUUId();
+        }
+        if (TextUtils.isEmpty(username)) {
             et_username.requestFocus();
             et_username.setError("Enter User Name");
-            // Toast.makeText(Main2Activity.this.getApplicationContext(), "Enter User Name", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (TextUtils.isEmpty(et_password.getText().toString())) {
+        if (TextUtils.isEmpty(password)) {
             et_password.requestFocus();
             et_password.setError("Enter Password");
-            //  Toast.makeText(Main2Activity.this.getApplicationContext(), "Enter Password", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -1471,10 +1575,11 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             obj.put("device_id", imei);
             obj.put("device_type", "android");
             obj.put("device_push_token", token);
+            obj.put("uuid", ChatApplication.getUuid());
 
         } catch (Exception e) {
+            e.printStackTrace();
         }
-        //  String url = webUrl + Constants.APP_LOGIN;
 
         String url = Constants.CLOUD_SERVER_URL + Constants.APP_LOGIN;
 
@@ -1488,16 +1593,20 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 try {
                     int code = result.getInt("code");
                     String message = result.getString("message");
+
                     if (code == 200) {
-                        ActivityHelper.hideKeyboard(Main2Activity.this);
-
-                        ChatApplication app = ChatApplication.getInstance();
-                        app.closeSocket(webUrl);
-
-                        if (mSocket != null) {
-                            mSocket.disconnect();
-                            mSocket = null;
+                        if(mainFragment1!=null && mainFragment1.sectionedExpandableLayoutHelper!=null){
+                            mainFragment1.sectionedExpandableLayoutHelper.clearData();
                         }
+
+                        ActivityHelper.hideKeyboard(Main2Activity.this);
+//                        ChatApplication app = ChatApplication.getInstance();
+//                        app.closeSocket(webUrl);
+//
+//                        if (mSocket != null) {
+//                            mSocket.disconnect();
+//                            mSocket = null;
+//                        }
 
                         /*{"code":200,"message":"success","data":{"ip":"http:\/\/home.deepfoods.net:11113",
                         "user_id":"1528702842286_HyGYPsieQ",
@@ -1506,26 +1615,32 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
                         JSONObject data = result.getJSONObject("data");
                         String cloudIp = data.getString("ip");
+                        String local_ip = data.getString("local_ip");
+                        ChatApplication.logDisplay("login response is "+data.toString());
 
                         Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "true");
                         Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, cloudIp);
-
-                        webUrl = cloudIp;
-                        ChatApplication.url = webUrl;
-                        isCloudConnected = true;
-                        flagPicheck = false;
-                        invalidateToolbarCloudImage();
-                        ////////////////////
 
                         String first_name = data.getString("first_name");
                         String last_name = data.getString("last_name");
                         String user_id = data.getString("user_id");
+                        String admin = data.getString("admin");
+                        Constants.adminType = Integer.parseInt(admin);
+
 
                         Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "true");
                         Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, cloudIp);
                         Common.savePrefValue(Main2Activity.this, Constants.USER_ID, user_id);
+                        Common.savePrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE, admin);
+                        Common.savePrefValue(Main2Activity.this, Constants.USER_TYPE, user_id);
 
-
+                        if (Common.getPrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("1")) {
+                            Constants.room_type = 0;
+                            Common.savePrefValue(Main2Activity.this, Constants.USER_ROOM_TYPE, ""+0);
+                        } else {
+                            Constants.room_type = 2;
+                            Common.savePrefValue(Main2Activity.this, Constants.USER_ROOM_TYPE, ""+2);
+                        }
                         String user_password = "";
                         if (data.has("user_password")) {
                             user_password = data.getString("user_password");
@@ -1536,15 +1651,14 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                             toolbarTitle.setText(first_name + " " + last_name);
                         }
 
-                        User user = new User(user_id, first_name, last_name, cloudIp, false, user_password);
-
+                        User user = new User(user_id, first_name, last_name, cloudIp, false, user_password, admin);
+                        invalidateToolbarCloudImage();
                         Gson gson = new Gson();
                         String jsonText = Common.getPrefValue(getApplicationContext(), Common.USER_JSON);
-                        ChatApplication.logDisplay( "jsonText text is " + jsonText);
+                        ChatApplication.logDisplay("jsonText text is " + jsonText);
                         List<User> userList = new ArrayList<User>();
-                        if (!TextUtils.isEmpty(jsonText) && !jsonText.equals("[]")&& !jsonText.equals("null")) {
-                            Type type = new TypeToken<List<User>>() {
-                            }.getType();
+                        if (!TextUtils.isEmpty(jsonText) && !jsonText.equals("[]") && !jsonText.equals("null")) {
+                            Type type = new TypeToken<List<User>>() {}.getType();
                             userList = gson.fromJson(jsonText, type);
 
                             if (userList != null && userList.size() != 0) {
@@ -1588,16 +1702,54 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                             }
                         }
 
-                        //   String jsonCurProduct = gson.toJson(userList);
-                        //  Common.savePrefValue(getApplicationContext(),Common.USER_JSON,jsonCurProduct);
+                        if (isWifiConnect) {
+                            isWifiConnect = false;
+                            if (!TextUtils.isEmpty(wifiIpAddress)) {
+                                if(wifiIpAddress.equalsIgnoreCase(local_ip)){
+                                    webUrl = wifiIpAddress;
+                                    ChatApplication.url = webUrl;
+                                    flagPicheck = false;
+                                    loginDialog(false, false);
+                                    listService("\nService resolved: ", wifiIpAddress, 80, true,true);
+                                    reloadFragment();
+                                }else {
+                                    webUrl = cloudIp;
+                                    ChatApplication.url = webUrl;
+                                    isCloudConnected = true;
+                                    flagPicheck = false;
+                                }
+                            }else {
+                                webUrl = cloudIp;
+                                ChatApplication.url = webUrl;
+                                isCloudConnected = true;
+                                flagPicheck = false;
+                            }
+                        } else {
+                            webUrl = cloudIp;
+                            ChatApplication.url = webUrl;
+                            isCloudConnected = true;
+                            flagPicheck = false;
 
-                        ///////////////////
+                            openSocket();
+                            isResumeConnect = false;
+                            flagLogin = true;
+                            ChatApplication.isRefreshHome = false;
+                        }
 
-                        // Toast.makeText(Main2Activity.this, TextUtils.isEmpty(message) ? "Login Successfully" : message , Toast.LENGTH_SHORT).show();
+
+                        ChatApplication app = ChatApplication.getInstance();
+                        app.closeSocket(webUrl);
+
+                        if (mSocket != null) {
+                            mSocket.disconnect();
+                            mSocket = null;
+                        }
+
                         Toast.makeText(Main2Activity.this, R.string.login_success, Toast.LENGTH_SHORT).show();
-                        openSocket();
+                       // openSocket();
 
                         hideAlertDialog();
+
                         linear_main.setVisibility(View.VISIBLE);
                         mViewPager.setVisibility(View.VISIBLE);
                         mToolBarSettings.setVisibility(View.VISIBLE);
@@ -1608,12 +1760,20 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                         flagLogin = true;
                         ChatApplication.isRefreshHome = false;
                         invalidateToolbarCloudImage();
+                        if (Common.isNetworkConnected(Main2Activity.this)) {
+                            mainFragment1.RefreshAnotherFragment();
+                        }
+
+                        mViewPager.setCurrentItem(0);
                         mToolBarSettings.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 openSettingPopup(toolbar);
                             }
                         });
+
+                        mainFragment1.showDialog = 1;
+                        ActivityHelper.dismissProgressDialog();
 
                     } else {
                         Toast.makeText(Main2Activity.this, message, Toast.LENGTH_SHORT).show();
@@ -1657,7 +1817,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             token = FirebaseInstanceId.getInstance().getToken();
             Common.savePrefValue(getApplicationContext(), Constants.DEVICE_PUSH_TOKEN, token);
         }
-        ChatApplication.logDisplay( "token : " + token);
+        ChatApplication.logDisplay("token : " + token);
 
         JSONObject obj = new JSONObject();
         try {
@@ -1666,7 +1826,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             obj.put("wifi_user_password", et_password.getText().toString());
 
         } catch (Exception e) {
-            ChatApplication.logDisplay( "Exception loginCloud " + e.getMessage());
+            ChatApplication.logDisplay("Exception loginCloud " + e.getMessage());
         }
         //'192.168.175.119/wifilogin'
         String url = ChatApplication.url + Constants.wifilogin;
@@ -1823,7 +1983,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         //using @SerializedName we can customize the model name maping.when we are dealing with API and
         //we need to convert JSON response to direct Model class then make sure your api key filed name and model method name both are same.
 
-
         //
         else {
             mSocket = app.openSocket(webUrl);
@@ -1833,6 +1992,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             mSocket.on(Socket.EVENT_CONNECT, onConnect);
             mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
             mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
+            mSocket.on("deleteChildUser", deleteChildUser);
+
 
             mSocket.connect();
 
@@ -1874,6 +2035,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         linear_progress.setVisibility(View.GONE);
 
     }
+
 
 
     public void reloadFragment() {
@@ -1934,19 +2096,26 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         hideConnectingCloudDialog();
     }
 
+    boolean doubleBackToExitPressedOnce = false;
+
     @Override
     public void onBackPressed() {
 
-        /*if(lastTabPos !=0 ){
-            if(lastTabPos == 2){
-                tabLayout.getTabAt(1).select();
-            }else if(lastTabPos == 1){
-                tabLayout.getTabAt(0).select();
-            }
-        }else{
+        if (doubleBackToExitPressedOnce) {
             super.onBackPressed();
-        }*/
-        super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit.", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 
     public AsyncTask asyncTask;
@@ -1997,7 +2166,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
 
     //call service event
-    class ServiceEventAsync extends AsyncTask {
+    public class ServiceEventAsync extends AsyncTask {
 
         boolean isRegisterListener = false;
         String ipAddressPI = "";
@@ -2038,15 +2207,17 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     ipAddressPI = array[0] + "." + array[1] + "." + array[2] + "." + Constants.IP_END;
                 }
 
-                boolean isReachable = Common.isPortReachable(ipAddressPI, 80);
+                boolean isReachable = Common.isPortReachable(ipAddressPI, 80,Main2Activity.this);
 
                 if (Constants.isWifiConnect) {
 
                 } else {
                     if (isReachable) {
+                        isFlagWifi = true;
                         isCloudConnected = false; //added by sagar
                         invalidateToolbarCloudImage();
                         webUrl = ipAddressPI;
+                        wifiIpAddress = ipAddressPI;
                         ChatApplication.url = webUrl;
                         isClick = false;
 
@@ -2066,8 +2237,12 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         protected void onPostExecute(Object o) {
             hideConnectingCloudDialog();
             if (Constants.isWifiConnect) {
-            } else {
-                listService("\nService resolved: ", ipAddressPI, 80, true);
+            }else if (isWifiConnect) {
+            }  else if (isFlagWifi) {
+                isFlagWifi = false;
+                listService("\nService resolved: ", ipAddressPI, 80, true,false);
+            }  else {
+                listService("\nService resolved: ", ipAddressPI, 80, true,false);
             }
 
             super.onPostExecute(o);
@@ -2092,7 +2267,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     public static boolean isResumeConnect = false;
 
-    private void listService(final String msg, final String ip, final int port, final boolean isFound) {
+    private void listService(final String msg, final String ip, final int port, final boolean isFound,boolean isShow) {
 
         final String openIp = (isFound) ? "http://" + ip + ":" + port : Constants.CLOUD_SERVER_URL;
 
@@ -2102,8 +2277,10 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         } else if (ip.equalsIgnoreCase("")) {
             openSocket();
         } else if (webUrl.equalsIgnoreCase(openIp)) {
-            hideAlertDialog();
-            linear_progress.setVisibility(View.GONE);
+            if(!isFound){
+                hideAlertDialog();
+                linear_progress.setVisibility(View.GONE);
+            }
         }
 
 
@@ -2139,53 +2316,77 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 et_username.setText("");
                 et_password.setText("");
 
-                if (flagPicheck && !value) {
+                if(TextUtils.isEmpty(Common.getPrefValue(Main2Activity.this, Constants.USER_ID))){
                     hideAlertDialog();
-                    mViewPager.setVisibility(View.VISIBLE);
+                    mViewPager.setVisibility(View.GONE);
                     linear_progress.setVisibility(View.GONE);
-                    mToolBarSettings.setVisibility(View.INVISIBLE);
-                    toolbarTitle.setVisibility(View.VISIBLE);
+                    mToolBarSettings.setVisibility(View.GONE);
+                    toolbarTitle.setVisibility(View.GONE);
                     tabLayout.setVisibility(View.GONE);
-                    linear_login.setVisibility(View.GONE);
-                    linear_retry.setVisibility(View.VISIBLE);
-                } else {
+                    linear_login.setVisibility(View.VISIBLE);
 
-                    if (value) {
-                        //hideAlertDialog();
-                        hideAlertDialog();
-                        //linear_retry.setVisibility(View.GONE);
-                        //    linear_main.setVisibility(View.GONE);
-                        mViewPager.setVisibility(View.GONE);
-                        linear_progress.setVisibility(View.GONE);
-                        mToolBarSettings.setVisibility(View.GONE);
-                        toolbarTitle.setVisibility(View.GONE);
-                        tabLayout.setVisibility(View.GONE);
-                        linear_login.setVisibility(View.VISIBLE);
+                    if (ChatApplication.getUserList(Main2Activity.this).size() > 0) {
+                        btn_SKIP.setVisibility(View.VISIBLE);
                     } else {
-                        hideAlertDialog();
-                        linear_main.setVisibility(View.VISIBLE);
-                        mViewPager.setVisibility(View.VISIBLE);
-                        mToolBarSettings.setVisibility(View.VISIBLE);
-                        toolbarTitle.setVisibility(View.VISIBLE);
-                        tabLayout.setVisibility(View.VISIBLE);
-                        linear_login.setVisibility(View.GONE);
+                        btn_SKIP.setVisibility(View.GONE);
                     }
+                }else {
 
-                    if (isCancelButtonVisible || flagPicheck) {
-                        // btn_cancel.setVisibility(View.VISIBLE);
-                        btn_cancel.setVisibility(View.GONE);
+                    if (flagPicheck && !value) {
+                        hideAlertDialog();
+                        mViewPager.setVisibility(View.VISIBLE);
+                        linear_progress.setVisibility(View.GONE);
+                        mToolBarSettings.setVisibility(View.INVISIBLE);
+                        toolbarTitle.setVisibility(View.VISIBLE);
+                        tabLayout.setVisibility(View.GONE);
+                        linear_login.setVisibility(View.GONE);
+                        linear_retry.setVisibility(View.VISIBLE);
                     } else {
-                        btn_cancel.setVisibility(View.GONE);
+
+                        if (value) {
+                            //hideAlertDialog();
+                            hideAlertDialog();
+                            //linear_retry.setVisibility(View.GONE);
+                            //    linear_main.setVisibility(View.GONE);
+                            mViewPager.setVisibility(View.GONE);
+                            linear_progress.setVisibility(View.GONE);
+                            mToolBarSettings.setVisibility(View.GONE);
+                            toolbarTitle.setVisibility(View.GONE);
+                            tabLayout.setVisibility(View.GONE);
+                            linear_login.setVisibility(View.VISIBLE);
+
+                            if (ChatApplication.getUserList(Main2Activity.this).size() > 0) {
+                                btn_SKIP.setVisibility(View.VISIBLE);
+                            } else {
+                                btn_SKIP.setVisibility(View.GONE);
+                            }
+                        } else {
+                            hideAlertDialog();
+                            linear_main.setVisibility(View.VISIBLE);
+                            mViewPager.setVisibility(View.VISIBLE);
+                            mToolBarSettings.setVisibility(View.VISIBLE);
+                            toolbarTitle.setVisibility(View.VISIBLE);
+                            tabLayout.setVisibility(View.VISIBLE);
+                            linear_login.setVisibility(View.GONE);
+                        }
+
+                        if (isCancelButtonVisible || flagPicheck) {
+                            // btn_cancel.setVisibility(View.VISIBLE);
+                            btn_cancel.setVisibility(View.GONE);
+                        } else {
+                            btn_cancel.setVisibility(View.GONE);
+                        }
                     }
                 }
             }
         });
     }
 
-    public void setCouldMethod(){
-        mainFragment1.RefreshAnotherFragment();
+    public void setCouldMethod() {
+       // mainFragment1.RefreshAnotherFragment();
     }
-    public static void changestatus(){
+
+    public static void changestatus() {
         tabLayout.setVisibility(View.VISIBLE);
         mToolBarSettings.setVisibility(View.VISIBLE);
     }

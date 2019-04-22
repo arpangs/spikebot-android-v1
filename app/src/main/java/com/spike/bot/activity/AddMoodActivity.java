@@ -50,7 +50,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import io.socket.client.Socket;
 
@@ -58,6 +60,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
     public static  String TAG = "AddMoodActivity";
     ArrayList<RoomVO> roomList = new ArrayList<>();
+    ArrayList<String> arrayListRoomId = new ArrayList<>();
     private RecyclerView mMessagesView;
     MoodDeviceListLayoutHelper deviceListLayoutHelper;
     AutoCompleteTextView et_switch_name ;
@@ -271,7 +274,8 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("room_type",0);
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonObject.put("admin",Integer.parseInt(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE)));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -279,7 +283,9 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         if(moodIconList != null)
             moodIconList.clear();
 
-        new GetJsonTask(this,url ,"GET","", new ICallBack() { //Constants.CHAT_SERVER_URL
+        ChatApplication.logDisplay("add mood is "+url +"     "+jsonObject.toString());
+
+        new GetJsonTask(this,url ,"POST",jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 try {
@@ -464,6 +470,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
             return;
         }
 
+        arrayListRoomId.clear();
         ChatApplication app = (ChatApplication) getApplication();
         String webUrl = app.url;
         String url =  "";
@@ -484,7 +491,8 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
             moodObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             moodObj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
-
+            moodObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            moodObj.put("admin", Common.getPrefValue(this, Constants.USER_ADMIN_TYPE));
             RoomVO room = (RoomVO) spinner_mood_icon.getSelectedItem();
 
             if(editMode){
@@ -524,7 +532,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
                     JSONObject ob1 = new JSONObject();
                     if (dPanel.getDeviceType() != null && dPanel.getDeviceType().equalsIgnoreCase("2")) { //old : AC
-
+                        arrayListRoomId.add(dPanel.getRoomId());
                         ob1.put("sensor_id", dPanel.getSensor_id());
                         ob1.put("device_id", dPanel.getDeviceId());
                         ob1.put("ir_blaster_id", dPanel.getIr_blaster_id());
@@ -546,7 +554,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                         ob1.put("room_panel_id", dPanel.getRoom_panel_id());
 
                     } else {
-
+                        arrayListRoomId.add(dPanel.getRoomId());
                         ob1.put("module_id", dPanel.getModuleId());
                         ob1.put("device_id", dPanel.getDeviceId());
                         ob1.put("room_device_id", dPanel.getRoomDeviceId());
@@ -582,6 +590,10 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                 moodObj.put("room_devices",array);
             }
             moodObj.put("deviceList",jsonArrayDevice);
+            JSONArray array1=new JSONArray(countRoomLIst(arrayListRoomId));
+            moodObj.put("room_List",array1);
+
+            ChatApplication.logDisplay("hash code is ");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -763,5 +775,12 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         }
 
         return listTemp;
+    }
+
+    public static ArrayList<String> countRoomLIst(final ArrayList<String> list) {
+        Set<String> setItems = new LinkedHashSet<String>(list);
+        list.clear();
+        list.addAll(setItems);
+        return list;
     }
 }

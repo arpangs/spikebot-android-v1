@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
 import com.spike.bot.R;
+import com.spike.bot.core.Common;
+import com.spike.bot.core.Constants;
 import com.spike.bot.customview.OnSwipeTouchListener;
 import com.spike.bot.model.DoorSensorResModel;
 import com.kp.core.DateHelper;
@@ -59,6 +61,14 @@ public class DoorSensorInfoAdapter extends RecyclerView.Adapter<DoorSensorInfoAd
 
         String startTime = notification.getmStartDateTime();
         String endTime   = notification.getmEndDateTime();
+
+        if (Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
+            if( Common.getPrefValue(mContext, Constants.USER_ID).equalsIgnoreCase(notification.getUser_id())){
+                holder.imgOptions.setVisibility(View.VISIBLE);
+            }else {
+                holder.imgOptions.setVisibility(View.INVISIBLE);
+            }
+        }
 
         try {
 

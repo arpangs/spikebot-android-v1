@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
@@ -72,6 +73,9 @@ public class SendNotificationAsync extends AsyncTask<String, Void, Bitmap> {
 
             super.onPostExecute(result);
             try {
+                if(TextUtils.isEmpty(badge)){
+                    badge="0";
+                }
                 ChatApplication.isPushFound=true;
                 Intent intent = new Intent(ctx, CameraImagePush.class); //{@link Main2Activity}
                 intent.putExtra("camera_url",camera_url);

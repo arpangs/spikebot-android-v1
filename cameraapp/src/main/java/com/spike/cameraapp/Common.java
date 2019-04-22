@@ -4,14 +4,17 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 /**
  * Created by kaushal on 16/1/18.
@@ -40,6 +43,5 @@ public class Common {
         }
         return array;
     }
-
 
 }

@@ -43,7 +43,17 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_weight="1"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 
+    <TextView
+        android:id="@+id/txtVersionCode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/txtPanal"
+        android:padding="@dimen/_10sdp"
+        android:gravity="center"
+        android:textColor="@color/automation_white"
+        android:textSize="@dimen/_16sdp" />
 </LinearLayout>

@@ -62,40 +62,27 @@ import java.util.List;
  */
 public class IRBlasterRemote extends AppCompatActivity implements View.OnClickListener,MoodEvent {
 
-    private LinearLayout mRemoteTempView,mPowerButton;
-    private TextView mTemp;
-    private ImageView mImageAuto;
-    private TextView mImageAutoText;
- //   private Button mSpeedButtond;
-    private Button mTempMinus,mTempPlus;
-    private Button mBrandBottom;
-    private ImageView mToolbarBack,imgRemoteStatus;
+    private LinearLayout mPowerButton;
+    private TextView mTemp,mImageAutoText;
+    private Button mBrandBottom, mTempMinus,mTempPlus;
+    private ImageView mImageAuto,mToolbarBack,imgRemoteStatus, mImageEdit,mImageDelete;
     private TextView mRemoteName,txtRemoteState,txtAcState;
-    private ImageView mRemoteActionOption;
-    private int isRemoteActive;
 
-    private ImageView mImageEdit,mImageDelete;
-
-    private String mRemoteId,moodName="";
-    private String mRoomDeviceId;
+    private String mRemoteId,moodName="",mRoomDeviceId;
     private boolean isPowerOn = false;
-    private int tempMinus;
-    private int tempPlus;
-    private int tempCurrent;
+    private int mSpeedCurrentPos,isRemoteActive,tempMinus,tempPlus,tempCurrent;
 
     private RemoteDetailsRes mRemoteList;
     private RemoteDetailsRes.Data.RemoteCommandList mRemoteCommandList;
     private RemoteDetailsRes.Data.RemoteCurrentStatusDetails mRemoteCurrentStatusList;
 
     private List<String> speedList;
-    private int mSpeedCurrentPos = 0;
     private String mIrBlasterId,mIrBlasterModuleId;
     public RecyclerView recyclerMode;
     public MoodRemoteAdapter moodRemoteAdapter;
     private ArrayList<RemoteMoodModel> arrayListMood=new ArrayList<>();
 
-    private static String TURN_ON = "TURN ON";
-    private static String TURN_OFF = "TURN OFF";
+    private static String TURN_ON = "TURN ON",TURN_OFF = "TURN OFF";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -110,7 +97,6 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
     }
 
     private void syncIntent(){
-
         mRemoteId = getIntent().getStringExtra("REMOTE_ID");
         isRemoteActive = getIntent().getIntExtra("REMOTE_IS_ACTIVE",0);
         mIrBlasterId = getIntent().getStringExtra("IR_BLASTER_ID");
@@ -128,43 +114,30 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
         mImageEdit = (ImageView) findViewById(R.id.action_edit);
         mImageDelete = (ImageView) findViewById(R.id.action_delete);
-
         mBrandBottom = (Button) findViewById(R.id.brand_name_bottom);
-
-      //  mRemoteActionOption = (ImageView) findViewById(R.id.remote_action);
         mToolbarBack  = (ImageView) findViewById(R.id.remote_toolbar_back);
         mRemoteName   = (TextView) findViewById(R.id.remote_name);
         txtAcState   = (TextView) findViewById(R.id.txtAcState);
-
-     //   mRemoteTempView = (LinearLayout) findViewById(R.id.remote_temp_view);
-
         mTemp = (TextView) findViewById(R.id.remote_temp);
         mImageAuto = (ImageView) findViewById(R.id.remote_speed_img);
         imgRemoteStatus = (ImageView) findViewById(R.id.imgRemoteStatus);
         mImageAutoText = (TextView) findViewById(R.id.remote_speed_text);
         txtRemoteState = (TextView) findViewById(R.id.txtRemoteState);
-
         mPowerButton = (LinearLayout) findViewById(R.id.remote_power_button);
-    //    mSpeedButtond = (Button) findViewById(R.id.remote_speed_button);
-
         mTempMinus = (Button)findViewById(R.id.remote_temp_minus);
         mTempPlus = (Button) findViewById(R.id.remote_temp_plus);
         recyclerMode = (RecyclerView) findViewById(R.id.recyclerMode);
 
         mToolbarBack.setOnClickListener(this);
         mPowerButton.setOnClickListener(this);
-//        mSpeedButtond.setOnClickListener(this);
         mTempMinus.setOnClickListener(this);
         mTempPlus.setOnClickListener(this);
 
         mImageEdit.setOnClickListener(this);
         mImageDelete.setOnClickListener(this);
-
-      //  mRemoteActionOption.setOnClickListener(this);
     }
 
     private void setMoodAdapter() {
-
         arrayListMood.clear();
         for(int i=0; i<mRemoteCommandList.getMODE().size(); i++){
             RemoteMoodModel remoteMoodModel=new RemoteMoodModel();
@@ -176,8 +149,6 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             }
             arrayListMood.add(remoteMoodModel);
         }
-
-
         recyclerMode.setLayoutManager(new GridLayoutManager(this,4));
         moodRemoteAdapter=new MoodRemoteAdapter(IRBlasterRemote.this,arrayListMood,this);
         recyclerMode.setAdapter(moodRemoteAdapter);
@@ -189,33 +160,15 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         txtAcState.setText("Ac state : " + mRemoteCurrentStatusList.getPower());
         mImageAutoText.setText(String.format("Speed %s", mRemoteCurrentStatusList.getMode()));
         moodName= mRemoteCurrentStatusList.getMode();
-
         setPowerOnOff(mRemoteCurrentStatusList.getPower());
-
         mRemoteName.setText(mRemoteCurrentStatusList.getRemoteName());
-
-
         mBrandBottom.setText(mRemoteCurrentStatusList.getBrand_name()+"{"+mRemoteCurrentStatusList.getModel_number()+"}");
 
         speedList = mRemoteCommandList.getMODE();
         tempMinus = mRemoteCommandList.getTEMPERATURE().get(0);
         tempPlus  = mRemoteCommandList.getTEMPERATURE().get(1);
         tempCurrent = mRemoteCurrentStatusList.getTemperature();
-
         mSpeedCurrentPos = getCurrentPos(mRemoteCurrentStatusList.getMode());
-
-     /*   mRemoteName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });*/
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //getRemoteInfo();
     }
 
     private void getRemoteInfo(){
@@ -230,9 +183,6 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         new GetJsonTask(this, url, "GET", "", new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
-
-
-                // Log.d(TAG,"onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -264,27 +214,9 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                 ActivityHelper.dismissProgressDialog();
             }
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-    }
-
-    private void setTempText(int temp){
-        mTemp.setText(""+temp);
-    }
-    private void disableMinusButton(){
-
-    }
-    private void disablePlusButton(){
-
-    }
-    private void enableMinusButton(){
-
-    }
-    private void enablePlusButton(){
-
     }
 
     private int getCurrentPos(String speed){
-
         int cPos = mSpeedCurrentPos;
         for (int i = 0; i < speedList.size(); i++) {
             String speedText = speedList.get(i);
@@ -323,16 +255,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         txtRemoteState.setTextColor(isPowerOn ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.username4) );
         mPowerButton.setBackground(isPowerOn ?getResources().getDrawable(R.drawable.drawable_turn_on_btn) :getResources().getDrawable(R.drawable.drawable_turn_off_btn));
         imgRemoteStatus.setImageDrawable(isPowerOn ?getResources().getDrawable(R.drawable.power_red) :getResources().getDrawable(R.drawable.power_green));
-        if(isPowerOn) powerOn(); else powerOff();
     }
-
-    private void powerOn(){
-      //  mRemoteTempView.setVisibility(View.VISIBLE);
-    }
-    private void powerOff(){
-     //   mRemoteTempView.setVisibility(View.INVISIBLE);
-    }
-
 
     @Override
     public void onClick(View v) {
@@ -348,26 +271,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                     Common.showToast("Remote is Not Active");
                 }
                 break;
-//            case R.id.remote_speed_button:
-//                Log.d("isPowerOn","isOn : " + isPowerOn);
-//                if(isRemoteActive == 1 && !isPowerOn){
-//
-//                }else{
-//                    if(isRemoteActive == 1){
-//                        if(mSpeedCurrentPos != speedList.size()){
-//                            mSpeedCurrentPos ++;
-//                        }
-//                        if(mSpeedCurrentPos == speedList.size()){
-//                            mSpeedCurrentPos =  0;
-//                        }
-//                        setSpeedText(speedList.get(mSpeedCurrentPos));
-//                        sendRemoteCommand();
-//                    }else{
-//                        Common.showToast("Remote is Not Active");
-//                    }
-//                }
-//
-//                break;
+
             case R.id.remote_temp_minus:
                 ChatApplication.logDisplay("isOn : " + isPowerOn);
                 if(isRemoteActive == 1 && !isPowerOn){
@@ -386,7 +290,6 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                         Common.showToast("Remote is Not Active");
                     }
                 }
-
 
                 break;
             case R.id.remote_temp_plus:
@@ -573,7 +476,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             }
         }
 
-        AddRemoteReq addRemoteReq = new AddRemoteReq(mRemoteCurrentStatusList.getRemoteId(),remoteName,
+        AddRemoteReq addRemoteReq = new AddRemoteReq(Common.getPrefValue(this, Constants.USER_ID),mRemoteCurrentStatusList.getRemoteId(),remoteName,
                 ir.getRoomId(),ir.getIrBlasterId(),mSpinnerMode.getSelectedItem().toString(),
                 mRemoteDefaultTemp.getText().toString().trim(),
                 APIConst.PHONE_ID_KEY,APIConst.PHONE_TYPE_VALUE,mSpinnerBlaster.getSelectedItem().toString());
@@ -770,6 +673,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             object.put("remote_id",mRemoteCurrentStatusList.getRemoteId());
             object.put(APIConst.PHONE_ID_KEY,APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -881,15 +785,8 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
      * @param tmpIrBlasterCurrentStatusList
      */
     private void updateRemoteUI(SendRemoteCommandRes.Data.RemoteCurrentStatusDetails tmpIrBlasterCurrentStatusList){
-
-       // isRemoteActive = tmpIrBlasterCurrentStatusList.getIsActive();
-
         mTemp.setText("" + tmpIrBlasterCurrentStatusList.getTemperature()+Common.getC());
         mImageAutoText.setText(""+String.format("Speed %s", tmpIrBlasterCurrentStatusList.getSpeed()));
-
-        //setPowerOnOff(remoteCurrentStatusDetails.getPower());
-
-      //  mSpeedCurrentPos = getCurrentPos(tmpIrBlasterCurrentStatusList.getSpeed());
 
         setSpeedText(""+tmpIrBlasterCurrentStatusList.getSpeed());
         mRemoteName.setText(""+tmpIrBlasterCurrentStatusList.getRemoteName());

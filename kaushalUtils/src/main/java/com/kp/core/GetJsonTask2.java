@@ -79,10 +79,22 @@ public class GetJsonTask2 extends AsyncTask<String, Void, String> {
 			UtilsConstants.logDisplay("Post parameters : " + params);
 			//System.out.println("Response Code : " + responseCode);
 
- 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			BufferedReader in ;//= new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String inputLine;
 			StringBuffer response = new StringBuffer();
 
+			//con.getErrorStream() for error
+
+			if (con.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
+				//_is = con.getInputStream();
+				in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			} else {
+				/* error from server */
+				//_is = con.getErrorStream();
+				in = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+			}
+
+			System.out.println("Response Code getErrorStream : " + con.getErrorStream());
 			while ((inputLine = in.readLine()) != null) {
 				response.append(inputLine + "\n");
 			}

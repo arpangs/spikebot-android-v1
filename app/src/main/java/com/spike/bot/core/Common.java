@@ -8,6 +8,7 @@ import android.net.NetworkInfo;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +18,7 @@ import com.spike.bot.R;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.internal.Primitives;
+import com.spike.bot.listener.RouterIssue;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -64,8 +66,15 @@ public class Common {
      * @return
      */
     public static boolean isNetworkConnected(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm.getActiveNetworkInfo() != null;
+//        ConnectivityManager cm = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+//        return cm.getActiveNetworkInfo() != null;
+        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        if (mWifi.isConnected()) {
+            return  true;
+        }
+        return false;
     }
 
     public static boolean isConnected() {
@@ -118,15 +127,17 @@ public class Common {
      * @param inPort
      * @return
      */
-    public static boolean isPortReachable(String inHost, int inPort) {
+    public static boolean isPortReachable(String inHost, int inPort,RouterIssue routerIssue) {
 
         Socket socket = null;
         boolean retVal = false;
+
         try {
             socket = new Socket(inHost, inPort);
             socket.setSoTimeout(1000);
             retVal = true;
         } catch (IOException e) {
+            routerIssue.wifiConnectionIssue(false);
             e.printStackTrace();
         } finally {
             if (socket != null) {
@@ -586,7 +597,6 @@ public class Common {
         editor.putString(key, keyValue);
         editor.commit();
         editor.apply();
-
     }
 
     /**
@@ -616,8 +626,10 @@ public class Common {
         InputMethodManager inputMethodManager =
                 (InputMethodManager) activity.getSystemService(
                         Activity.INPUT_METHOD_SERVICE);
+//        inputMethodManager.hideSoftInputFromWindow(
+//                activity.getCurrentFocus().getWindowToken(), 0);
         inputMethodManager.hideSoftInputFromWindow(
-                activity.getCurrentFocus().getWindowToken(), 0);
+                new View(activity).getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     /**

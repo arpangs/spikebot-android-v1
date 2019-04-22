@@ -153,6 +153,8 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
         super.onDestroy();
         if(mSocket!=null) {
             mSocket.off("ReloadDeviceStatusApp", reloadDeviceStatusApp);
+            mSocket.off("updateChildUser", updateChildUser);
+//            mSocket.off("deleteChildUser", deleteChildUser);
           //  mSocket.off("changeMoodSocket", changeMoodSocket);
             mSocket.off("roomStatus", roomStatus);
           //  mSocket.off("panelStatus", panelStatus);
@@ -356,6 +358,68 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
 
         return super.onOptionsItemSelected(item);
     }
+
+
+    private Emitter.Listener deleteChildUser = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (getActivity() == null) {
+                return;
+            }
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+                            String message=object.optString("message");
+                            String user_id=object.optString("user_id");
+                            if(Common.getPrefValue(getActivity(), Constants.USER_ID).equalsIgnoreCase(user_id)){
+                                ((Main2Activity)getActivity()).logoutCloudUser();
+                                ChatApplication.showToast(getActivity(),message);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener updateChildUser = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (getActivity() == null) {
+                return;
+            }
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+
+                            String message=object.optString("message");
+                            String user_id=object.optString("user_id");
+                            if(Common.getPrefValue(getActivity(), Constants.USER_ID).equalsIgnoreCase(user_id)){
+                                getDeviceList();
+                                ChatApplication.showToast(getActivity(),message);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
+
     private Emitter.Listener reloadDeviceStatusApp = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -577,8 +641,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
         try {
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
-
-
+            obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
             obj.put("room_device_id", deviceVO.getRoomDeviceId());
             obj.put("module_id", deviceVO.getModuleId());
             obj.put("device_id", deviceVO.getDeviceId());
@@ -884,6 +947,8 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
         if(mSocket!=null && mSocket.connected()){
            ChatApplication.logDisplay("startSocketConnection   startSocketConnection.." + webUrl );
             mSocket.on("ReloadDeviceStatusApp", reloadDeviceStatusApp);
+            mSocket.on("updateChildUser", updateChildUser);
+//            mSocket.on("deleteChildUser", deleteChildUser);
             //  mSocket.on("changeMoodSocket", changeMoodSocket);
             mSocket.on("roomStatus", roomStatus);
          //   mSocket.on("panelStatus", panelStatus);
@@ -904,17 +969,31 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
             return;
         }
 
-       // String url =  webUrl + Constants.GET_MOOD_LIST ;//+userId;
-        String url = webUrl + Constants.GET_DEVICES_LIST + "/"+Constants.DEVICE_TOKEN + "/1/0";
+        String url = webUrl + Constants.GET_DEVICES_LIST;
+//        String url = webUrl + Constants.GET_DEVICES_LIST + "/"+Constants.DEVICE_TOKEN + "/1/0";
         if(!token_id.equalsIgnoreCase("")){
             url = url +"/" + token_id;
+        }
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("room_type", 1);
+            jsonObject.put("is_sensor_panel", 0);
+            jsonObject.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
+            if(TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE))){
+                jsonObject.put("admin","");
+            }else {
+                jsonObject.put("admin",Integer.parseInt(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE)));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
         if(moodList == null){
             moodList = new ArrayList<>();
         }
 
-        new GetJsonTask2(getActivity(),url ,"GET","", new ICallBack2() { //Constants.CHAT_SERVER_URL
+        ChatApplication.logDisplay("jsonObject is mood " + jsonObject.toString());
+        new GetJsonTask2(getActivity(),url ,"POST",jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 responseErrorCode.onSuccess();
@@ -1008,7 +1087,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
-
+            obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
             obj.put("room_id",roomId);
             obj.put("panel_id",panel_id);
             obj.put("room_name",room_name);
@@ -1061,13 +1140,16 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
         }
 
 
-        //if (!mSocket.connected()) return;
+        if (mSocket==null){
+            ChatApplication.logDisplay("mSocket is null mood");
+           return;
+        }
 
         JSONObject obj = new JSONObject();
         try {
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
-
+            obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
             obj.put("room_id", moodVO.getRoomId());
             obj.put("panel_id",panel_id);
             obj.put("device_status", moodVO.getOld_room_status());
@@ -1077,7 +1159,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
             e.printStackTrace();
         }
 
-        if(!mSocket.connected()){
+        if(mSocket!=null && !mSocket.connected()){
 
 
                 // String url =  webUrl + Constants.CHANGE_MOOD_STATUS;
@@ -1186,16 +1268,21 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
             ActivityHelper.showProgressDialog(getActivity(), "Please Wait...", false);
         }
 
-        String url = webUrl + Constants.GET_DEVICES_LIST + "/" + Constants.DEVICE_TOKEN + "/0/1";
+       // String url = webUrl + Constants.GET_DEVICES_LIST + "/" + Constants.DEVICE_TOKEN + "/0/1";
+        String url = webUrl + Constants.GET_DEVICES_LIST;
 
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("room_type", 0);
+            jsonObject.put("is_sensor_panel", 1);
+            jsonObject.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
+            jsonObject.put("admin",1);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
         //responseErrorCode.onProgress();
-        new GetJsonTask2(activity, url, "GET", "", new ICallBack2() { //Constants.CHAT_SERVER_URL
+        new GetJsonTask2(activity, url, "POST", jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
 

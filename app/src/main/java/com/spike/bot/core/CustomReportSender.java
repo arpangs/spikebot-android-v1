@@ -81,7 +81,7 @@ public class CustomReportSender implements ReportSender {
         		obj.toString()+",("+username+","+fullName+","+userID+")",
                 "appcrash@gochetak.com",
                 "sagardj@tasktower.com");*/ //deepkiraninc@gmail.com //prakashaj@tasktower.com
-            GMailSender sender = new GMailSender("ttchatcrash@gmail.com", "ttchat@123"); //app@)!%CRASH
+            GMailSender sender = new GMailSender("ttchatcrash@gmail.com", "ttchat$123"); //app@)!%CRASH
             sender.sendMail("Deep Automation - CrashReport",
                     obj.toString()+",("+username+","+fullName+","+userID+")",
                     "ttchatcrash@gmail.com",

@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.core.APIConst;
+import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.R;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
@@ -155,7 +156,7 @@ public class DeviceEditDialog extends Dialog implements  View.OnClickListener {
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
-
+            obj.put("user_id", Common.getPrefValue(activity.getApplicationContext(), Constants.USER_ID));
             obj.put("device_details",deviceObj);
         } catch (JSONException e) {
             e.printStackTrace();

@@ -141,6 +141,17 @@ public class SensorResModel {
                 private String mDays;
                 @SerializedName("is_active")
                 private String mIsActive;
+
+                public String getUser_id() {
+                    return user_id;
+                }
+
+                public void setUser_id(String user_id) {
+                    this.user_id = user_id;
+                }
+
+                @SerializedName("user_id")
+                private String user_id;
                 private boolean isCFActive;
 
                 public boolean isCFActive() {

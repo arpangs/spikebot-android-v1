@@ -9,6 +9,18 @@ import java.util.List;
 
 public class CameraAlertList implements Serializable{
 
+    public String getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
+    }
+
+    @SerializedName("user_id")
+    @Expose
+    private String user_id;
+
 @SerializedName("camera_ids")
 @Expose
 private String cameraIds;

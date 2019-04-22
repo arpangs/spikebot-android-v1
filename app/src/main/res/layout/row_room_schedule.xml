@@ -42,7 +42,6 @@
                     android:layout_weight="1"
                     android:ellipsize="end"
                     android:singleLine="true"
-                    android:text="ggg"
                     android:textColor="@color/sky_blue"
                     android:textSize="20sp" />
 

@@ -290,6 +290,7 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
                 object.put("module_id",roomdeviceList.getModuleId());
                 object.put("sensor_type",roomdeviceList.getSensorType());
                 object.put("sensor_icon",roomdeviceList.getSensorIcon());
+                object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             } catch (JSONException e) {
                 e.printStackTrace();
             }

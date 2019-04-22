@@ -25,7 +25,6 @@ import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.IRBlasterInfoRes;
-import com.spike.bot.model.RemoteSchListRes;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,14 +37,10 @@ import java.util.List;
  */
 public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInfoAdapter.IRBlasterInfoClick,View.OnClickListener{
 
-    private LinearLayout linear_progress,ll_sensor_list;
+    private LinearLayout linear_progress;
     private RecyclerView mIRListView;
     private Button btn_delete_remote;
-
-    private String mIRBlasterId;
-    private String mIRBlasterModuleId;
-    private String mRoomId;
-    private String TAG = "IRBlaster";
+    private String mIRBlasterId,mIRBlasterModuleId,mRoomId,TAG = "IRBlaster";
 
     List<IRBlasterInfoRes.Data.IrBlasterList.RemoteList> irRemoteLists;
     List<IRBlasterInfoRes.Data.IrBlasterList.RemoteList.RemoteCommandList> irRemoteCommandLists;
@@ -78,7 +73,6 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
 
         btn_delete_remote = (Button) findViewById(R.id.btn_delete_remote);
         linear_progress = (LinearLayout) findViewById(R.id.linear_progress);
-        ll_sensor_list  = (LinearLayout) findViewById(R.id.ll_sensor_list);
         mIRListView = (RecyclerView) findViewById(R.id.list_ir_sensor);
         mIRListView.setLayoutManager(new GridLayoutManager(this,1));
 
@@ -109,7 +103,7 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
     private void getIRBlasterInfo(){
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            ChatApplication.showToast(getApplicationContext(),IRBlasterActivity.this.getResources().getString( R.string.disconnect));
             return;
         }
 
@@ -138,7 +132,7 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
                         mIRListView.setAdapter(irBlasterInfoAdapter);
 
                     }else{
-                        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+                        ChatApplication.showToast(getApplicationContext(),message);
                     }
 
                 } catch (JSONException e) {
@@ -229,7 +223,7 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
     private void deleteSchedule(IRBlasterInfoRes.Data.IrBlasterList.RemoteList remoteList){
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            ChatApplication.showToast(getApplicationContext(),IRBlasterActivity.this.getResources().getString( R.string.disconnect));
             return;
         }
 
@@ -238,6 +232,7 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
             object.put("remote_id",remoteList.getRemoteCurrentStatusDetails().getRemoteId());
             object.put(APIConst.PHONE_ID_KEY,APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -256,12 +251,11 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
                     String message = result.getString("message");
 
                     if(code == 200){
-
-                        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+                        ChatApplication.showToast(getApplicationContext(),message);
                         getIRBlasterInfo();
 
                     }else{
-                        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+                        ChatApplication.showToast(getApplicationContext(),message);
                     }
 
                 } catch (JSONException e) {
@@ -302,7 +296,7 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
     private void deleteRemote(){
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            ChatApplication.showToast(getApplicationContext(),IRBlasterActivity.this.getResources().getString( R.string.disconnect));
             return;
         }
 
@@ -311,6 +305,7 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
             object.put("ir_blaster_id",mIRBlasterId);
             object.put(APIConst.PHONE_ID_KEY,APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -330,11 +325,11 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
 
                     if(code == 200){
 
-                        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+                        ChatApplication.showToast(getApplicationContext(),message);
                         finish();
 
                     }else{
-                        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+                        ChatApplication.showToast(getApplicationContext(),message);
                     }
 
                 } catch (JSONException e) {

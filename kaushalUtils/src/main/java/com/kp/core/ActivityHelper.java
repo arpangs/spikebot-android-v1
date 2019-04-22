@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 
 import com.kaushalprajapti.util.R;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -258,6 +259,7 @@ public class ActivityHelper {
 		view.startAnimation(a);
 	}
 
+	@SuppressLint("MissingPermission")
 	public static String getIMEI(Context context) {
 		String number = ""; 
 //		PackageManager pm = context.getPackageManager();

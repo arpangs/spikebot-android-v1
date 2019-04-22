@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.core.APIConst;
@@ -24,11 +26,14 @@ import com.spike.bot.core.Constants;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
+import com.spike.bot.model.User;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -170,11 +175,11 @@ public class UserProfileFragment extends Fragment{
                         et_profile_contact_no.setText(user_phone);
                         et_profile_email.setText(user_email);
                         et_profile_user_name.setText(user_name);
+                        et_profile_first_name.setSelection(et_profile_first_name.getText().length());
 
                         ActivityHelper.dismissProgressDialog();
 
-                    }
-                    else{
+                    }else{
                         Toast.makeText(getContext(), message , Toast.LENGTH_SHORT).show();
                     }
                     // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
@@ -268,7 +273,7 @@ public class UserProfileFragment extends Fragment{
                 Toast.makeText(getContext(), "Invalid Password..." , Toast.LENGTH_SHORT).show();
                 return;
             }
-        }//c1bc06ee
+        }
 
 
         ActivityHelper.showProgressDialog(getContext(),"Please wait.",false);
@@ -285,6 +290,7 @@ public class UserProfileFragment extends Fragment{
             if(isValidate){
                 user_password = edt_new_password.getText().toString().trim();
             }
+
             obj.put("user_password",""+user_password);
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -293,8 +299,6 @@ public class UserProfileFragment extends Fragment{
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
 
         String url = ChatApplication.url + Constants.SAVE_USER_PROFILE_DETAILS;
 
@@ -307,7 +311,6 @@ public class UserProfileFragment extends Fragment{
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if(code==200){
-
                         Common.savePrefValue(ChatApplication.getInstance(), "first_name", et_profile_first_name.getText().toString());
                         Common.savePrefValue(ChatApplication.getInstance(), "last_name", et_profile_last_name.getText().toString());
 
@@ -317,8 +320,7 @@ public class UserProfileFragment extends Fragment{
                         ActivityHelper.dismissProgressDialog();
                         ChatApplication.isRefreshUserData = true;
 
-                    }
-                    else{
+                    }else{
                         ChatApplication.isRefreshUserData = false;
                         Toast.makeText(getContext(), message , Toast.LENGTH_SHORT).show();
                     }

@@ -1,10 +1,12 @@
 package com.spike.bot.camera;
 
+import android.app.ProgressDialog;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -13,10 +15,12 @@ import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 
 import java.io.ByteArrayInputStream;
@@ -55,6 +59,7 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
 
     RelativeLayout relativeLayout;
     String mMediaUrl;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +80,9 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
 
         //   ll_player = (LinearLayout)findViewById(R.id.ll_player);
 
-
+        progressDialog=new ProgressDialog(this);
+        progressDialog.setMessage("Please wait...");
+        progressDialog.show();
         player = (NodePlayerView)findViewById(R.id.player);
         player.setUIViewContentMode(NodePlayerView.UIViewContentMode.ScaleAspectFit);
         player.setRenderType(NodePlayerView.RenderType.TEXTUREVIEW);
@@ -91,12 +98,44 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
         nodePlayer.setInputUrl(mMediaUrl);
         nodePlayer.setAudioEnable(true);
         nodePlayer.setPlayerView(player);
+        nodePlayer.setMaxBufferTime(5);
+
+
+
+//        player.setRenderCallback(new NodePlayerView.RenderCallback() {
+//            @Override
+//            public void onSurfaceCreated(@NonNull Surface surface) {
+//                ChatApplication.logDisplay("camera log is dispaly onSurfaceCreated ");
+//            }
+//
+//            @Override
+//            public void onSurfaceChanged(int width, int height) {
+//                ChatApplication.logDisplay("camera log is dispaly onSurfaceChanged ");
+//            }
+//
+//            @Override
+//            public void onSurfaceDestroyed() {
+//                ChatApplication.logDisplay("camera log is dispaly onSurfaceDestroyed ");
+//            }
+//        });
+
 
         nodePlayer.setNodePlayerDelegate(new NodePlayerDelegate() {
             @Override
             public void onEventCallback(NodePlayer player, int event, String msg) {
+
+                if(player.isPlaying() && msg.equals("NetStream.Buffer.Full")){
+                    ChatApplication.logDisplay("camera log is dispaly "+event+" "+msg);
+                    ChatApplication.logDisplay("camera log is dispaly "+ player.getDuration());
+                    ChatApplication.logDisplay("camera log is dispaly "+ nodePlayer.isLive());
+
+                    progressDialog.dismiss();
+                }
             }
         });
+
+
+
         zoomlayout=(ZoomLayout)findViewById(R.id.zoomLayout);
         zoomlayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -105,6 +144,20 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
                 return false;
             }
         });
+
+//        Thread  thread=new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    Thread.sleep(5000);
+//                    if(progressDialog.isShowing()){
+//                        progressDialog.dismiss();
+//                    }
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });thread.start();
 
         //ll_player.setOnTouchListener(new TouchHandler());
     }

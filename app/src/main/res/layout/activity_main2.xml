@@ -248,25 +248,25 @@
 
             </LinearLayout>
 
-          <!--  <FrameLayout
-                android:layout_marginBottom="380dp"
-                android:layout_alignParentBottom="true"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+            <!--  <FrameLayout
+                  android:layout_marginBottom="380dp"
+                  android:layout_alignParentBottom="true"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent">
 
-                <android.support.design.widget.FloatingActionButton
-                    android:id="@+id/fab"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="60dp"
-                    android:layout_gravity="end"
-                    android:tint="@color/automation_white"
-                    android:background="@color/sky_blue"
-                    app:backgroundTint="@color/sky_blue"
-                    android:layout_margin="@dimen/fab_margin"
-                    android:src="@drawable/icn_add" />
+                  <android.support.design.widget.FloatingActionButton
+                      android:id="@+id/fab"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_marginBottom="60dp"
+                      android:layout_gravity="end"
+                      android:tint="@color/automation_white"
+                      android:background="@color/sky_blue"
+                      app:backgroundTint="@color/sky_blue"
+                      android:layout_margin="@dimen/fab_margin"
+                      android:src="@drawable/icn_add" />
 
-            </FrameLayout>-->
+              </FrameLayout>-->
 
 
 
@@ -279,18 +279,20 @@
     </LinearLayout>
 
 
-
     <LinearLayout
         android:id="@+id/linear_login"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
         android:background="@color/automation_white"
-        android:gravity="center"
+        android:gravity="center|top"
         android:orientation="vertical"
-        android:paddingBottom="180dp"
+        android:paddingTop="30dp"
+        android:paddingBottom="20dp"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         android:visibility="gone">
+
 
         <ImageView
             android:src="@drawable/ic_app_launcher"
@@ -313,6 +315,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:singleLine="true"
+            android:maxLength="30"
             android:hint="Enter User Name"
             android:inputType="text" />
 
@@ -321,6 +325,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:singleLine="true"
+            android:maxLength="20"
             android:layout_marginTop="16dp"
             android:hint="Enter Password"
             android:inputType="textPassword" />
@@ -333,6 +339,7 @@
             android:orientation="horizontal">
 
             <Button
+                android:visibility="gone"
                 android:id="@+id/btn_cancel"
                 android:layout_weight="1"
                 android:layout_width="0dp"
@@ -340,7 +347,17 @@
                 android:textColor="@color/automation_white"
                 android:background="@drawable/button_radius"
                 android:layout_height="wrap_content"
-                android:text="CANCEL" />
+                android:text="cancel" />
+
+            <Button
+                android:id="@+id/btn_SKIP"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_marginRight="10dp"
+                android:textColor="@color/automation_white"
+                android:background="@drawable/button_radius"
+                android:layout_height="wrap_content"
+                android:text="SKIP" />
 
             <Button
                 android:id="@+id/btn_login"
@@ -363,7 +380,5 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
-
-
 
 </android.support.design.widget.CoordinatorLayout>

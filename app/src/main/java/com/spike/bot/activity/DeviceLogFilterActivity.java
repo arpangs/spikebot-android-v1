@@ -108,9 +108,10 @@ public class DeviceLogFilterActivity extends AppCompatActivity{
                             String activity_description = jsonObject.getString("activity_description");
                             String activity_time = jsonObject.getString("activity_time");
                             String activity_state = jsonObject.getString("activity_state");
+                            String user_name = jsonObject.optString("user_name");
 
                             //String activity_action, String activity_type, String activity_description, String activity_time, String activity_state
-                            deviceLogList.add(new DeviceLog(activity_action,activity_type,activity_description,activity_time,activity_state));
+                            deviceLogList.add(new DeviceLog(activity_action,activity_type,activity_description,activity_time,activity_state,user_name));
                         }
 
                         DeviceLogAdapterFilter deviceLogFilterAdapter = new DeviceLogAdapterFilter(deviceLogList);

@@ -429,6 +429,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             jsonNotification.put("temp_sensor_id", temp_sensor_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -527,6 +528,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             jsonNotification.put("is_in_C", isCFSelected);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -817,6 +819,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             jsonNotification.put("days", repeatDayString);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -939,6 +942,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             jsonNotification.put("temp_sensor_id", temp_sensor_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1117,6 +1121,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             jsonNotification.put("temp_sensor_id", temp_sensor_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1221,15 +1226,23 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
     /**
      * getSensorDetails
      */
-    SensorResModel sensorResModel;
+    SensorResModel sensorResModel=new SensorResModel();
 
     private void getSensorDetails() {
 
-        String url = ChatApplication.url + Constants.GET_TEMP_SENSOR_INFO + "/" + temp_sensor_id;
+        String url = ChatApplication.url + Constants.GET_TEMP_SENSOR_INFO ;
 
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        JSONObject object = new JSONObject();
+        try {
+            object.put("temp_sensor_id",temp_sensor_id);
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-        new GetJsonTask(getApplicationContext(), url, "GET", "", new ICallBack() {
+        ActivityHelper.showProgressDialog(this, "Please wait...", false);
+
+        new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
 
@@ -1481,6 +1494,16 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
 
         }else {
             checkIntent(b);
+            return;
+        }
+
+        if(sensorResModel.getDate()==null){
+            return;
+        }
+        if(sensorResModel.getDate().getTempLists()==null){
+            return;
+        }
+        if(sensorResModel.getDate().getTempLists().length==0){
             return;
         }
 

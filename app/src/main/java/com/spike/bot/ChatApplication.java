@@ -1,22 +1,35 @@
 package com.spike.bot;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDex;
+import android.text.InputFilter;
+import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.kp.core.DateHelper;
+import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.core.CustomReportSender;
+import com.spike.bot.model.User;
+import com.spike.bot.receiver.ApplicationCrashHandler;
 import com.spike.bot.receiver.ConnectivityReceiver;
 
+import io.fabric.sdk.android.Fabric;
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URISyntaxException;
@@ -26,6 +39,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+import java.util.regex.Pattern;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -33,7 +48,7 @@ import okhttp3.OkHttpClient;
 
 @ReportsCrashes(formKey = "",//1LZjNZVtIyc5O2-llj8VfHMsvDC2YdGkgNp3RiIGBL2I", // will not be used 1tgWQ58TdbvD0CGhW91Se2MwCFz_nlV1sezQrimsw6qw
 //mailTo = "kaushalap@gochetak.com",
-        customReportContent = { ReportField.APP_VERSION_CODE, ReportField.APP_VERSION_NAME,
+        customReportContent = { ReportField.APP_VERSION_NAME, ReportField.APP_VERSION_CODE, ReportField.APP_VERSION_NAME,
                 ReportField.ANDROID_VERSION, ReportField.PHONE_MODEL,ReportField.AVAILABLE_MEM_SIZE,
                 ReportField.PRODUCT,ReportField.DISPLAY, ReportField.CUSTOM_DATA,
                 ReportField.USER_APP_START_DATE ,ReportField.SHARED_PREFERENCES,ReportField.STACK_TRACE},
@@ -136,12 +151,15 @@ public class ChatApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
         mInstance = this;
         context = this;
         ACRA.init(this);
         ACRA.getErrorReporter().removeAllReportSenders();
         ACRA.getErrorReporter().setReportSender(new CustomReportSender(this.getApplicationContext()));
-
+// Install the application crash handler
+        ApplicationCrashHandler.installHandler();
+      //  Common.savePrefValue(getApplicationContext(),"","");
     }
 
     private static ChatApplication instance;
@@ -226,6 +244,44 @@ public class ChatApplication extends Application {
         if (BuildConfig.DEBUG) {
              Log.d("System out",""+message);
         }
-
     }
+
+    public static String getUuid(){
+        String uniqueID = UUID.randomUUID().toString();
+        return uniqueID;
+    }
+
+
+    public static List<User> getUserList(Context context) {
+        List<User> userList = new ArrayList<>();
+        String jsonText = Common.getPrefValue(context, Common.USER_JSON);
+        if (!TextUtils.isEmpty(jsonText)) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
+            userList = gson.fromJson(jsonText, type);
+        }
+        return userList;
+    }
+    public static void keyBoardHideForce(Context activity){
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        if (imm.isActive()){
+            imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0); // hide
+        } else {
+           // imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY); // show
+        }
+    }
+
+   public static InputFilter filter = new InputFilter() {
+        @Override
+        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+            for (int i = start; i < end; ++i) {
+                if (!Pattern.compile("[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890]*").matcher(String.valueOf(source.charAt(i))).matches()) {
+                    return "";
+                }
+            }
+            return null;
+        }
+    };
+
 }

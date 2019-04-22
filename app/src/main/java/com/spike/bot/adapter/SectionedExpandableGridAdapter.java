@@ -21,8 +21,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.core.Common;
+import com.spike.bot.core.Constants;
 import com.spike.bot.customview.recycle.ItemClickListener;
 import com.spike.bot.customview.recycle.SectionStateChangeListener;
 import com.spike.bot.listener.OnSmoothScrollList;
@@ -33,6 +35,8 @@ import com.spike.bot.model.PanelVO;
 import com.spike.bot.model.RoomVO;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created by lenovo on 2/23/2016.
@@ -57,6 +61,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
     private static final int VIEW_TYPE_PANEL = R.layout.row_room_panel;
     private static final int VIEW_TYPE_ITEM = R.layout.row_room_switch_item; //TODO : change this
     private static final int VIEW_TYPE_CAMERA = R.layout.row_room_camera_item;
+
 
     public void setCameraClickListener(CameraClickListener mCameraClickListener) {
         this.mCameraClickListener = mCameraClickListener;
@@ -210,6 +215,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     // holder.text_section_on_off.setEnabled(section.isRoomOnOff());
 
 
+                    holder.text_section_on_off.setId(position);
                     holder.text_section_on_off.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -322,7 +328,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             }
                         });
 
-                        if (section.isExpanded) {
+                        if (section.isExpanded && !Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
                             holder.text_section_edit.setVisibility(View.VISIBLE);
                         } else {
                             holder.text_section_edit.setVisibility(View.GONE);
@@ -333,7 +339,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         holder.linearPanelList.setVisibility(View.VISIBLE);
                         holder.mImgSch.setImageResource(R.drawable.icn_schedule_v2);
 
-                        if (section.isExpanded) {
+
+                        if (section.isExpanded && !Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
                             holder.text_section_edit.setVisibility(View.VISIBLE);
                             holder.img_room_delete.setVisibility(View.VISIBLE);
                         } else {
@@ -501,7 +508,11 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 }
 
                 final PanelVO panel1 = (PanelVO) mDataArrayList.get(position);
+
                 holder.sectionTextView.setText(panel1.getPanelName());
+
+                ChatApplication.logDisplay("panel status name is "+panel1.getPanelName());
+                ChatApplication.logDisplay("panel status name getPanel_status "+position);
 
                 if (panel1.getPanel_status() == 1) { //|| position%2 ==1
                     holder.iv_room_panel_onoff.setImageResource(R.drawable.room_on);
@@ -828,6 +839,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
             return position;
         }
     }
+
 
     protected static class ViewHolder extends RecyclerView.ViewHolder {
 

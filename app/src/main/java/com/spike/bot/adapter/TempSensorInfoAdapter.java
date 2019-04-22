@@ -18,6 +18,7 @@ import android.widget.PopupMenu;
 
 import com.spike.bot.R;
 import com.spike.bot.core.Common;
+import com.spike.bot.core.Constants;
 import com.spike.bot.customview.OnSwipeTouchListener;
 import com.spike.bot.model.SensorResModel;
 
@@ -94,6 +95,13 @@ public class TempSensorInfoAdapter extends RecyclerView.Adapter<TempSensorInfoAd
             holder.txtDays.setText(Html.fromHtml(Common.htmlDaysFormat(notification.getDays())));
         }
 
+        if (Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
+            if(Common.getPrefValue(mContext, Constants.USER_ID).equalsIgnoreCase(notification.getUser_id())){
+                holder.imgOptions.setVisibility(View.VISIBLE);
+            }else {
+                holder.imgOptions.setVisibility(View.INVISIBLE);
+            }
+        }
         holder.imgOptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

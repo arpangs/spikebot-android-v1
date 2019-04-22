@@ -1772,6 +1772,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     // deviceObj.put("room_id", "");
                 }
                 deviceObj.put("is_duplicate", 0);
+                deviceObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
                 //add after select
 
@@ -1890,9 +1891,24 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         ChatApplication app = (ChatApplication) getApplication();
         String webUrl = app.url;
 
-        String url = webUrl + Constants.GET_DEVICES_LIST + "/"+Constants.DEVICE_TOKEN + "/0/0"; //0/1
+      //  String url = webUrl + Constants.GET_DEVICES_LIST + "/"+Constants.DEVICE_TOKEN + "/0/0"; //0/1
+        String url = webUrl + Constants.GET_DEVICES_LIST;
 
-        new GetJsonTask(this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("room_type", 0);
+            jsonObject.put("is_sensor_panel", 0);
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            if(TextUtils.isEmpty(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE))){
+                jsonObject.put("admin","");
+            }else {
+                jsonObject.put("admin",Integer.parseInt(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE)));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 try {
@@ -1967,11 +1983,22 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
     public void getMoodListAdd() {
        ChatApplication.logDisplay( "getMoodList");
 
-        //String url =  webUrl + Constants.GET_MOOD_LIST ;//+userId;
-        String url = webUrl + Constants.GET_DEVICES_LIST + "/"+Constants.DEVICE_TOKEN + "/1/0";
+      //  String url = webUrl + Constants.GET_DEVICES_LIST + "/"+Constants.DEVICE_TOKEN + "/1/0";
+        String url = webUrl + Constants.GET_DEVICES_LIST;
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
-        new GetJsonTask(ScheduleActivity.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("room_type", 1);
+            jsonObject.put("is_sensor_panel", 0);
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonObject.put("admin",1);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        new GetJsonTask(ScheduleActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                ChatApplication.logDisplay( " getMoodList onSuccess " + result.toString());
@@ -2437,6 +2464,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             public void onConfirmDialogYesClick() {
                 try {
                     deviceObj.put("is_duplicate", 1);
+                    deviceObj.put("user_id", Common.getPrefValue(ScheduleActivity.this, Constants.USER_ID));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

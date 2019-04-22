@@ -31,6 +31,7 @@ import com.spike.bot.adapter.RoomListArrayAdapter;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.adapter.mood.MoodDeviceListLayoutHelper;
 import com.spike.bot.core.APIConst;
+import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.core.JsonHelper;
 import com.spike.bot.customview.recycle.ItemClickListener;
@@ -427,6 +428,7 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
 
             moodObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             moodObj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            moodObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
            // RoomVO room = (RoomVO) spinner_mood_icon.getSelectedItem();
 

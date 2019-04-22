@@ -89,7 +89,6 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
     }
 
     private void bindView(){
-
         mIrRemoteName = (EditText) findViewById(R.id.ir_remote_name);
         mIrAdd = (TextView) findViewById(R.id.ir_add_sch);
         schList = (RecyclerView) findViewById(R.id.remote_sch_list);
@@ -163,7 +162,6 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
     private void updateRemote(){
 
         //mRemoteName
-
         if(TextUtils.isEmpty(getEditText(mIrRemoteName))){
             mIrRemoteName.requestFocus();
             mIrRemoteName.setError("Enter Remote Name");
@@ -184,6 +182,7 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
             object.put("room_id",mRoomId);
             object.put("phone_id",APIConst.PHONE_ID_VALUE);
             object.put("phone_type",APIConst.PHONE_TYPE_VALUE);
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -54,39 +54,20 @@ import java.util.List;
  */
 public class IRRemoteConfigActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private final String TEST_BUTTONS = "Test buttons";
-    private TextView mTestButtons;
+    private TextView remote_room_txt,mTestButtons,mRespondNo,mRespondYes,mPowerValue,mTxtBlasterName,txtModelNumber;
     private ImageView mImgLeft, mImgRight;
     private ImageView mImgPower;
     private LinearLayout mRespondView;
-    private TextView mRespondNo;
-    private TextView mRespondYes;
-    private TextView mPowerValue;
-    private TextView mTxtBlasterName,txtModelNumber;
 
-    private String mIRDeviceId, mIrDeviceType, mRoomId;
-    private String mBrandId;
-    private String mIRBlasterModuleId;
-    private String mIRBrandType;
-    private String mIRBLasterId;
-    private String mRoomName;
-    private String mBlasterName;
-    private String mBrandType,brand_name="",model_number="",onOffValue="",remote_codeset_id="";
+    private String mIRDeviceId, mIrDeviceType, mRoomId ,mBrandId,mIRBlasterModuleId,mIRBrandType,mIRBLasterId,mRoomName,
+            mBlasterName ,mBrandType,brand_name="",model_number="",onOffValue="",
+            remote_codeset_id="",mOn, mOff, mCodeSet;
 
     private Spinner mSpinnerBlaster, mSpinnerMode;
-    private TextView remote_room_txt;
     private EditText mRemoteDefaultTemp;
-
-
     IRRemoteOnOffRes irRemoteOnOffRes;
-
-    private String mOn, mOff, mCodeSet;
     private boolean isRequestTypeOn = false;
-
-    private int mTotalState = 1;
-    private int mCurrentState = 1;
-    private int RESPOND_CONST = 1; //1 on command : 2 off command
-
+    private int mTotalState = 1,mCurrentState = 1,RESPOND_CONST = 1; //1 on command : 2 off command
     public DataSearch arrayList;
 
     public static class Power {
@@ -101,7 +82,8 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ir_remote_config);
 
-        arrayList=( DataSearch)getIntent().getSerializableExtra("arrayList");
+        arrayList=IRRemoteBrandListActivity.arrayList;
+//        arrayList=( DataSearch)getIntent().getSerializableExtra("arrayList");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
@@ -207,8 +189,6 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
             if(resultCode == RESULT_OK) {
-
-
                 hideRespondView();
                 respondNoEvent();
                 setPowerValue(Power.ON);
@@ -557,7 +537,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
             return;
         }
 
-        AddRemoteReq addRemoteReq = new AddRemoteReq(mIRDeviceId, mIrDeviceType, mBrandId, mIRBrandType, mCodeSet,
+        AddRemoteReq addRemoteReq = new AddRemoteReq(Common.getPrefValue(this, Constants.USER_ID),mIRDeviceId, mIrDeviceType, mBrandId, mIRBrandType, mCodeSet,
                 remoteName, mIRBLasterId, mIRBlasterModuleId, mRoomId, mSpinnerMode.getSelectedItem().toString(), mRemoteDefaultTemp.getText().toString().trim(),
                 APIConst.PHONE_ID_KEY, APIConst.PHONE_TYPE_VALUE,brand_name,remote_codeset_id,model_number,onOffValue);
         addRemoteReq.setUpdate_type(0);

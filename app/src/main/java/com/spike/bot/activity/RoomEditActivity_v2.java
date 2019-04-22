@@ -44,6 +44,7 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.ir.blaster.IRBlasterAddActivity;
 import com.spike.bot.activity.ir.blaster.IRRemoteAdd;
+import com.spike.bot.activity.ir.blaster.IRRemoteBrandListActivity;
 import com.spike.bot.activity.ir.blaster.WifiBlasterActivity;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.adapter.room.RoomEditAdapterV2;
@@ -106,7 +107,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room_edit_v2);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         et_toolbar_title = (EditText) findViewById(R.id.et_toolbar_title);
 
@@ -150,7 +150,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                 .setMaxRecycledViews(0, 1);
 
 
-        ActivityHelper.hideKeyboard(this);
+      //  ActivityHelper.hideKeyboard(this);
         startSocketConnection();
         getDeviceList();
 
@@ -180,8 +180,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                 }
             }
         });
-
-
 
 
         mFabMenuLayout = (CardView) findViewById(R.id.fabLayout1);
@@ -404,6 +402,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             object.put("room_name",roomVO.getRoomName());
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -442,9 +441,12 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
     @Override
     protected void onResume() {
         super.onResume();
+        if(IRRemoteBrandListActivity.arrayList!=null){
+            IRRemoteBrandListActivity.arrayList=null;
+        }
         Constants.isWifiConnect=false;
         Constants.isWifiConnectSave=false;
-        ActivityHelper.hideKeyboard(this);
+//        ActivityHelper.hideKeyboard(this);
         if(ChatApplication.isEditActivityNeedResume){
             ChatApplication.isEditActivityNeedResume = false;
             getDeviceList();
@@ -463,7 +465,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             return;
         }
         mSocket = app.getSocket();
-        if(configureGatewayDevice!=null){
+        if(mSocket!=null){
             mSocket.on("configureGatewayDevice", configureGatewayDevice);
             mSocket.on("configureTempSensor", configureTempSensor);
             mSocket.on("configureDoorSensor", configureGatewayDoorSensor);
@@ -608,6 +610,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
 
             obj.put("room_id",roomIdList.get(room_pos));
             obj.put("room_name",roomNameList.get(room_pos));
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
             if (isTempSensorRequest) {
                 obj.put("temp_sensor_name", door_name);
@@ -891,7 +894,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
-
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             obj.put("room_id",room.getRoomId());
             obj.put("room_name",et_toolbar_title.getText().toString());
 
@@ -961,9 +964,16 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
     }
 
     public void getDeviceList(){
-        String url =  ChatApplication.url + Constants.GET_EDIT_ROOM_INFO+"/"+room.getRoomId();
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("room_id", room.getRoomId());
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String url =  ChatApplication.url + Constants.GET_EDIT_ROOM_INFO;
 
-        new GetJsonTask(this,url ,"GET","", new ICallBack() { //Constants.CHAT_SERVER_URL
+        new GetJsonTask(this,url ,"POST",jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 try {
@@ -1216,7 +1226,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
           //  object.put("is_sensor_panel",panelVO.isSensorPanel() ? 1 : 0);
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
-
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1495,6 +1505,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
 
     /*
   * get method fro call getOriginalDevices api
+  * delete device list panel list
   * */
     ArrayList<RoomVO> roomList = new ArrayList<>();
     private void getUnasignedDeviceList() {
@@ -1619,7 +1630,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                 Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
-
 
     }
 

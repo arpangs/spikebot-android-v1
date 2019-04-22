@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.core.Common;
 import com.spike.bot.customview.recycle.ItemClickListener;
@@ -281,6 +282,7 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                     holder.iv_icon.setImageResource(Common.getIcon(0,item.getSensor_icon()));
                 }
 
+                holder.view.setId(position);
                 holder.view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -302,12 +304,17 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                                 if (item.getIsActive() == 0) {
                                 } else {
                                     item.setSelected(!item.isSelected());
-                                    notifyItemChanged(position, item);
+                                    notifyItemChanged(v.getId(), item);
                                 }
 
                             }else {
+                                ChatApplication.logDisplay("item is "+item.isSelected());
                                 item.setSelected(!item.isSelected());
-                                notifyItemChanged(position, item);
+                                notifyItemChanged(v.getId(), item);
+                                ((DeviceVO) mDataArrayList.get(v.getId())).setSelected(item.isSelected());
+                                final DeviceVO item1 = (DeviceVO) mDataArrayList.get(v.getId());
+                                ChatApplication.logDisplay("item is111 "+item.isSelected());
+                                ChatApplication.logDisplay("item is11111 "+item1.isSelected());
                             }
                            /* if (item.isSelected() && item.getSensor_icon() != null && item.getSensor_icon().equalsIgnoreCase("Remote_AC")
                                     && item.getIsActive() == 0) {
@@ -458,26 +465,54 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
     * */
     public ArrayList<DeviceVO> getSelectedItemList(){
 
+//        ArrayList<DeviceVO> arrayList = new ArrayList<>();
+//
+//        for(Object obj :mDataArrayList){
+//            if(obj instanceof DeviceVO){
+////                //3,4,5
+////                DeviceVO device = (DeviceVO) obj ;
+////
+////                String sensor_type="";
+////                if(TextUtils.isEmpty(device.getSensor_type())){
+////                    sensor_type="";
+////                }else {
+////                    sensor_type=device.getSensor_type();
+////                }
+////                if(sensor_type.equalsIgnoreCase("temp")){
+////                }else if(sensor_type.equalsIgnoreCase("door")){
+////                }else if(device.isSelected()){
+////
+////                    arrayList.add(device);
+////                }
+//            }else if(obj instanceof RoomVO){
+//                RoomVO roomVO =(RoomVO)obj;
+//                for(int i=0; i<roomVO.getPanelList().size(); i++){
+//                    for(int j=0; j<roomVO.getPanelList().get(i).getDeviceList().size(); j++){
+//                        String sensor_type="";
+//                        if(TextUtils.isEmpty(roomVO.getPanelList().get(i).getDeviceList().get(j).getSensor_type())){
+//                            sensor_type="";
+//                        }else {
+//                            sensor_type=roomVO.getPanelList().get(i).getDeviceList().get(j).getSensor_type();
+//                        }
+//
+//                        if(sensor_type.equalsIgnoreCase("temp")){
+//                        }else if(sensor_type.equalsIgnoreCase("door")){
+//                        }else if(roomVO.getPanelList().get(i).getDeviceList().get(j).isSelected()){
+//                            arrayList.add(roomVO.getPanelList().get(i).getDeviceList().get(j));
+//                        }
+//                        ChatApplication.logDisplay("item is selected "+roomVO.getPanelList().get(i).getDeviceList().get(j).isSelected());
+//                    }
+//
+//                }
+//
+//            }
+//        }
+
+
         ArrayList<DeviceVO> arrayList = new ArrayList<>();
 
         for(Object obj :mDataArrayList){
-            if(obj instanceof DeviceVO){
-//                //3,4,5
-//                DeviceVO device = (DeviceVO) obj ;
-//
-//                String sensor_type="";
-//                if(TextUtils.isEmpty(device.getSensor_type())){
-//                    sensor_type="";
-//                }else {
-//                    sensor_type=device.getSensor_type();
-//                }
-//                if(sensor_type.equalsIgnoreCase("temp")){
-//                }else if(sensor_type.equalsIgnoreCase("door")){
-//                }else if(device.isSelected()){
-//
-//                    arrayList.add(device);
-//                }
-            }else if(obj instanceof RoomVO){
+             if(obj instanceof RoomVO){
                 RoomVO roomVO =(RoomVO)obj;
                 for(int i=0; i<roomVO.getPanelList().size(); i++){
                     for(int j=0; j<roomVO.getPanelList().get(i).getDeviceList().size(); j++){
@@ -493,6 +528,7 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                         }else if(roomVO.getPanelList().get(i).getDeviceList().get(j).isSelected()){
                             arrayList.add(roomVO.getPanelList().get(i).getDeviceList().get(j));
                         }
+                        ChatApplication.logDisplay("item is selected "+roomVO.getPanelList().get(i).getDeviceList().get(j).isSelected());
                     }
 
                 }

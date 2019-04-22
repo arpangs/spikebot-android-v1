@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.core.APIConst;
+import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.R;
 import com.kp.core.ActivityHelper;
@@ -178,7 +179,7 @@ public class FanDialog extends Dialog implements
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
-
+            obj.put("user_id", Common.getPrefValue(activity.getApplicationContext(), Constants.USER_ID));
             obj.put("room_device_id",room_device_id);
             obj.put("device_specific_value",fanSpeed);
             obj.put("localData","0");

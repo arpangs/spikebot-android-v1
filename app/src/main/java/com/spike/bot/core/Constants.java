@@ -1,22 +1,31 @@
 package com.spike.bot.core;
 
 import android.app.Activity;
+import android.content.Context;
+import android.text.TextUtils;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.spike.bot.model.User;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.List;
 
 public class Constants {
 
-    public static final String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //IP used for login cloud and logout
+//    public static final String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //IP used for login cloud and logout
+    public static final String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //117 testing
 //http://52.24.23.7:8079
 //http://52.24.23.7:7
 //    public static final String IP_END = "114"; //101 //117 //222
 //    public static final String  IP_END = "119"; //101 //117 //222
 //
-  public static final String  IP_END = "222"; //101 //117 //222
-//    public static final String  IP_END = "120"; //101 //117 //222
+//  public static final String  IP_END = "222"; //101 //117 //222
+    public static final String  IP_END = "117"; //101 //117 //222
     public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";
     public static final String CAMERA_PATH = "/static/storage/volume/";
 
@@ -31,6 +40,11 @@ public class Constants {
     public static final String PREF_IP = "ip";
     public static final String USER_ID = "user_id";
     public static final String USER_PASSWORD = "user_password";
+    public static final String USER_TYPE = "user_type";
+    public static final String USER_ADMIN_TYPE = "user_admin_type";
+    public static final String USER_ROOM_TYPE = "user_room_type";
+    public static int adminType = 1;
+    public static int room_type = 0;
 
     public static final String DEVICE_PUSH_TOKEN = "device_push_token";
 
@@ -52,11 +66,20 @@ public class Constants {
 
     //room
     public static final String GET_DEVICES_LIST = "/getDevicesList";  //r
+    public static final String getChildUsers = "/getChildUsers";  //r
+    public static final String DeleteChildUser = "/DeleteChildUser";  //r
+    public static final String getRoomCameraList = "/getRoomCameraList";  //r
+    public static final String AddChildUser = "/AddChildUser";  //r
+    public static final String updateChildUser = "/updateChildUser";  //r
     public static final String ADD_CUSTOME_ROOM = "/addCustomRoom";
     public static final String SAVE_ROOM_AND_PANEL_NAME = "/saveRoomAndPanelName";
-    public static final String CONFIGURE_NEWROOM = "/configureNewRoom";
+//    public static final String CONFIGURE_NEWROOM = "/configureNewRoom";
     public static final String GET_EDIT_ROOM_INFO = "/getEditRoomInfo";
     public static final String CONFIGURE_DEVICE_REQUEST = "/configureDeviceRequest";
+    public static final String configuresmartRemoteRequest = "/configuresmartRemoteRequest";
+    public static final String getSmartRemoteList = "/getSmartRemoteList";
+    public static final String assignNumberToMood = "/assignNumberToMood";
+    public static final String deleteSmartRemote = "/deleteSmartRemote";
     public static final String DELETE_ROOM = "/deleteRoom";
     public static final String DELETE_ROOM_PANEL = "/deletePanel";
     public static final String GET_MOOD_DETAILS = "/getMoodDetails";
@@ -70,6 +93,7 @@ public class Constants {
     //door sensor
     public static final String CONFIGURE_DOOR_SENSOR_REQUEST = "/configureDoorSensorRequest";
     public static final String ADD_DOOR_SENSOR = "/addDoorSensor";
+    public static final String addSmartRemote = "/addSmartRemote";
     public static final String GET_DOOR_SENSOR_INFO = "/getDoorSensorInfo";
     public static final String ADD_DOOR_SENSOR_NOTIFICATION = "/addDoorSensorNotification";
     public static final String UPDATE_DOOR_SENSOR_NOTIFICATION = "/updateDoorSensorNotification";
@@ -193,23 +217,32 @@ public class Constants {
     public static final String DEVICE_TOKEN = "sTZka4A72j";
     public static final String ANDROID = "android";
 
-    public static final String ROOM_TYPE = "0";
-    public static final String MOOD_TYPE = "1";
-
-
     /*-----------ununsed api-----------*/
-    //get mood
-    public static final String GET_MOOD_LIST = "/getMoodList";
-    public static final String ADD_NEW_MOOD = "/addNewMood";
-    public static final String EDITMOOD = "/editMood";
-    public static final String CHANGE_MOOD_STATUS = "/changeMoodStatus";
-    //schedule
-    public static final String GET_SCHEDULE_ON_MOOD = "/getScheduleOnMood";
-    //sign up api
-    public static final String SIGN_UP_API = "http://192.168.175.111/signupdetails";
-
     public static boolean isWifiConnect = false;
     public static boolean isWifiConnectSave = false;
     public static Activity activityWifi;
+
+
+
+    public static String getUserName(Context context){
+        String name="";
+        String jsonText = Common.getPrefValue(context, Common.USER_JSON);
+        if (!TextUtils.isEmpty(jsonText)) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<User>>() {}.getType();
+            List<User> userList = gson.fromJson(jsonText, type);
+            if(userList.size()>0){
+                for(int i=0; i<userList.size(); i++){
+                    if(userList.get(i).getIsActive()){
+                        name=userList.get(i).getFirstname()+" "+userList.get(i).getLastname();
+                        break;
+                    }
+                }
+            }
+        }
+
+        return name;
+    }
+
 
 }

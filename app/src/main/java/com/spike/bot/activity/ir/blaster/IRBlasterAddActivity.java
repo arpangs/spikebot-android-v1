@@ -63,11 +63,11 @@ import io.socket.emitter.Emitter;
  */
 public class IRBlasterAddActivity extends AppCompatActivity implements IRBlasterAddAdapter.BlasterAction{
 
+    private Socket mSocket;
     private RecyclerView mBlasterList;
     private LinearLayout mEmptyView;
     private IRBlasterAddAdapter irBlasterAddAdapter;
     private List<IRBlasterAddRes.Data.IrList> irList;
-    private Socket mSocket;
     public FloatingActionButton floatingActionButton;
 
     @Override
@@ -85,7 +85,6 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
 
         bindView();
 
-
     }
 
     @Override
@@ -99,7 +98,6 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
 
     @SuppressLint("RestrictedApi")
     private void bindView(){
-
         mBlasterList = (RecyclerView) findViewById(R.id.list_blaster);
         floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
         mBlasterList.setLayoutManager(new GridLayoutManager(this,1));
@@ -121,7 +119,10 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             return;
         }
         mSocket = app.getSocket();
-        mSocket.on("configureIRBlaster",configureIRBlaster);
+        if(mSocket!=null){
+            mSocket.on("configureIRBlaster",configureIRBlaster);
+        }
+
 
     }
 
@@ -319,7 +320,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
                                String door_module_id, Spinner sp_room_list){
 
         if(!ActivityHelper.isConnectingToInternet(getApplicationContext())){
-            Toast.makeText(getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
+            ChatApplication.showToast(getApplicationContext(),IRBlasterAddActivity.this.getResources().getString( R.string.disconnect));
             return;
         }
 
@@ -344,6 +345,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -390,11 +392,6 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         }).execute();
     }
 
-
-
-
-    public static int SENSOR_TYPE_DOOR = 1;
-    public static int SENSOR_TYPE_TEMP = 2;
     public static int SENSOR_TYPE_IR = 3;
 
     private void showOptionDialog(final int sensor_type){
@@ -463,7 +460,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
                         intent.putExtra("isDoorSensor",isDoorSensor);
                         startActivity(intent);
                     }else{
-                        Toast.makeText(getApplicationContext(),sensorUnassignedRes.getMessage(),Toast.LENGTH_SHORT).show();
+                        ChatApplication.showToast(getApplicationContext(),sensorUnassignedRes.getMessage());
                     }
                 }
             }
@@ -471,7 +468,6 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             @Override
             public void onFailure(Throwable throwable, String error) {
                 throwable.printStackTrace();
-                Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
 
@@ -522,9 +518,8 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         }
 
         public void onFinish() {
-
             ActivityHelper.dismissProgressDialog();
-            Toast.makeText(getApplicationContext(), "No New Device detected!", Toast.LENGTH_SHORT).show();
+            ChatApplication.showToast(getApplicationContext(),"No New Device detected!");
             //showAddSensorDialog("212121");
         }
 
@@ -548,7 +543,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
     private void getIRBlasterList(){
 
         if(!ActivityHelper.isConnectingToInternet(this)){
-            Toast.makeText(getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
+            ChatApplication.showToast(getApplicationContext(),IRBlasterAddActivity.this.getResources().getString( R.string.disconnect));
             return;
         }
 
@@ -644,6 +639,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             object.put("ir_blaster_id",""+irBlasterId);
             object.put("phone_id",""+ APIConst.PHONE_ID_VALUE);
             object.put("phone_type",""+APIConst.PHONE_TYPE_VALUE);
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -787,6 +783,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             object.put("room_name",""+roomList.getRoomName());
             object.put("phone_id",""+ APIConst.PHONE_ID_VALUE);
             object.put("phone_type",""+APIConst.PHONE_TYPE_VALUE);
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -823,7 +820,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             @Override
             public void onFailure(Throwable throwable, String error) {
                 throwable.printStackTrace();
-                Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                ChatApplication.showToast(getApplicationContext(),IRBlasterAddActivity.this.getResources().getString( R.string.disconnect));
             }
         }).execute();
 

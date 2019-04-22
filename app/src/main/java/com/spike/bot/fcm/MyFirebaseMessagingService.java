@@ -18,6 +18,9 @@ import com.spike.bot.activity.Main2Activity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -76,7 +79,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 String body = remoteMessage.getData().get("body");
                 String attachment = remoteMessage.getData().get("attachment");
 
-                scheduleJob(title,body,attachment);
+                if(!TextUtils.isEmpty(attachment)){
+                    scheduleJob(title,body,attachment);
+                }else {
+                    sendNotification(body);
+                }
             }
 
             String dataPayloadMessage = remoteMessage.getData().get("message");
@@ -129,6 +136,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      */
     public static int id = 0;
     private void sendNotification(String messageBody) {
+
+        if(TextUtils.isEmpty(badge)){
+            badge="0";
+        }
 
         ChatApplication.isPushFound=true;
         Intent intent = new Intent(this, Main2Activity.class);

@@ -52,6 +52,16 @@ public class RoomVO implements Serializable{
     private boolean isRoomOnOff;
     private String device_count;
 
+    public String getSmart_remote_number() {
+        return smart_remote_number;
+    }
+
+    public void setSmart_remote_number(String smart_remote_number) {
+        this.smart_remote_number = smart_remote_number;
+    }
+
+    private String smart_remote_number;
+
     public String getSelectDevice() {
         return selectDevice;
     }

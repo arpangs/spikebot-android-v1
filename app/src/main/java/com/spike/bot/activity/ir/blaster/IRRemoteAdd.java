@@ -293,4 +293,3 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
         }
     }
 }
-//No Ir blaster added in this room

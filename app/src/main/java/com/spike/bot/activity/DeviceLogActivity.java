@@ -433,24 +433,25 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                             String activity_type = jsonObject.getString("activity_type");
                             String activity_description = jsonObject.getString("activity_description");
                             String activity_time = jsonObject.getString("activity_time");
+                            String user_name = jsonObject.optString("user_name");
                             //  String activity_state = jsonObject.getString("activity_state");
 
                             //String activity_action, String activity_type, String activity_description, String activity_time, String activity_state
 
-                            deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, ""));
+                            deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "",user_name));
                         }
 
                         if (notificationArray.length() == 0 && isFilterActive && isLoading) {
 
                             if (!isEndOfRecord) {
-                                deviceLogList.add(new DeviceLog("End of Record", "End of Record", "", "", ""));
+                                deviceLogList.add(new DeviceLog("End of Record", "End of Record", "", "", "",""));
                                 deviceLogAdapter.setEOR(true);
                             }
                             isEndOfRecord = true;
 
                             //showAToast("End of Record...");
                         } else if (notificationArray.length() == 0 && isFilterActive) {
-                            deviceLogList.add(new DeviceLog("End of Record", "No Record Found", "", "", ""));
+                            deviceLogList.add(new DeviceLog("End of Record", "No Record Found", "", "", "",""));
                             deviceLogAdapter.setEOR(true);
                             showAToast("No Record Found...");
                         }
@@ -1300,17 +1301,27 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
         String url = "";
         actionType = room;
         if (room.equalsIgnoreCase("Room")) {
-            url = ChatApplication.url + Constants.GET_DEVICES_LIST + "/" + Constants.DEVICE_TOKEN + "/0/1";
+         //   url = ChatApplication.url + Constants.GET_DEVICES_LIST + "/" + Constants.DEVICE_TOKEN + "/0/1";
+            url = ChatApplication.url + Constants.GET_DEVICES_LIST;
         } else if (room.equalsIgnoreCase("Schedule") || room.equalsIgnoreCase("Timer")) {
             url = ChatApplication.url + Constants.GET_SCHEDULE_LIST;
         } else if (room.equalsIgnoreCase("sensor") || room.equalsIgnoreCase("Door Sensor")
                 || room.equalsIgnoreCase("Temperature Sensor")) {
             url = ChatApplication.url + Constants.SENSOR_ROOM_DETAILS;
         } else {
-            url = ChatApplication.url + Constants.GET_DEVICES_LIST + "/" + Constants.DEVICE_TOKEN + "/1/0";
+            url = ChatApplication.url + Constants.GET_DEVICES_LIST;
         }
 
-        new GetJsonTask2(activity, url, "GET", "", new ICallBack2() { //Constants.CHAT_SERVER_URL
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonObject.put("admin", Common.getPrefValue(this, Constants.USER_ADMIN_TYPE));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ChatApplication.logDisplay("json is "+jsonObject.toString()+ " "+url);
+        new GetJsonTask2(activity, url, "POST", jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
 
@@ -1480,6 +1491,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                             }
 
                         }
+
                         if (mListRoomTemp.size() > 0) {
                             initRoomAdapter(mListRoomTemp);
                         } else {
@@ -1506,21 +1518,29 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             isSelectItemSub="";
         }else {
             if (TextUtils.isEmpty(isSelectItemSub)) {
-                ArrayAdapter<RoomVO> adapterRoom = new ArrayAdapter<RoomVO>(getApplicationContext(),
-                        R.layout.item_spinner_selected, roomVOSList);
-                mSpinnerRoomList.setAdapter(adapterRoom);
+                if(roomVOSList.size()>0){
+                    ArrayAdapter<RoomVO> adapterRoom = new ArrayAdapter<RoomVO>(getApplicationContext(),
+                            R.layout.item_spinner_selected, roomVOSList);
+                    mSpinnerRoomList.setAdapter(adapterRoom);
 
-                if (ChatApplication.checkActivity(isCheckActivity) != -1) {
-                    for (int i = 0; i < roomVOSList.size(); i++) {
-                        if (roomVOSList.get(i).getRoomId().equals(mRoomId)) {
-                            mSpinnerRoomList.setSelection(i);
-                            break;
+                    if (ChatApplication.checkActivity(isCheckActivity) != -1) {
+                        for (int i = 0; i < roomVOSList.size(); i++) {
+                            if (roomVOSList.get(i).getRoomId().equals(mRoomId)) {
+                                mSpinnerRoomList.setSelection(i);
+                                break;
+                            }
                         }
                     }
+                }else {
+                    frame_living_room.setVisibility(View.GONE);
                 }
+
             }
         }
 
+        if(roomVOSList.size()==0){
+            frame_living_room.setVisibility(View.GONE);
+        }
 //        defaultPanelSpinner("Select Panel");
 //        defaultDeviceSpinner("Select Device");
 
@@ -2089,7 +2109,12 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
                         object.put("room_id", "");
                         object.put("panel_id", "");
-                        object.put("module_id", "" + (roomVO.getRoomId().equalsIgnoreCase("0") ? "" : roomVO.getRoomId()));
+                        if(roomVO!=null){
+                            object.put("module_id", "" + (roomVO.getRoomId().equalsIgnoreCase("0") ? "" : roomVO.getRoomId()));
+                        }else {
+                            object.put("module_id", "" );
+                        }
+
                     } else {
                         if (roomVO != null) {
                             object.put("room_id", "" + (roomVO.getRoomId().equalsIgnoreCase("0") ? "" : roomVO.getRoomId()));
@@ -2193,6 +2218,9 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                 }
 
             }
+
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            object.put("admin", Common.getPrefValue(this, Constants.USER_ADMIN_TYPE));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -2306,11 +2334,12 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                             String activity_type = jsonObject.getString("activity_type");
                             String activity_description = jsonObject.getString("activity_description");
                             String activity_time = jsonObject.getString("activity_time");
+                            String user_name = jsonObject.getString("user_name");
                             //  String activity_state = jsonObject.getString("activity_state");
 
                             //String activity_action, String activity_type, String activity_description, String activity_time, String activity_state
 
-                            deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, ""));
+                            deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "",user_name));
                         }
 
                         if(position==0){
@@ -2324,14 +2353,14 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                         if (notificationArray.length() == 0 && isFilterActive && isLoading) {
 
                             if (!isEndOfRecord) {
-                                deviceLogList.add(new DeviceLog("End of Record", "End of Record", "", "", ""));
+                                deviceLogList.add(new DeviceLog("End of Record", "End of Record", "", "", "",""));
                                 deviceLogAdapter.setEOR(true);
                             }
                             isEndOfRecord = true;
 
                             //showAToast("End of Record...");
                         } else if (notificationArray.length() == 0 && isFilterActive) {
-                            deviceLogList.add(new DeviceLog("End of Record", "No Record Found", "", "", ""));
+                            deviceLogList.add(new DeviceLog("End of Record", "No Record Found", "", "", "",""));
                             deviceLogAdapter.setEOR(true);
                             showAToast("No Record Found...");
                         }

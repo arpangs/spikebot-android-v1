@@ -21,6 +21,7 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.core.APIConst;
+import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.CameraVO;
 import com.spike.bot.model.RoomVO;
@@ -299,7 +300,7 @@ public class CameraEdit extends AppCompatActivity{
         try {
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
-
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             object.put("camera_id",camera_id);
 
         } catch (JSONException e) {
@@ -446,7 +447,7 @@ public class CameraEdit extends AppCompatActivity{
 
             int spinner_position = sp_camera_list.getSelectedItemPosition();
 
-
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             obj.put("camera_id",cameraId.get(spinner_position));
             obj.put("camera_name", edt_camera_name.getText().toString().trim());
             obj.put("camera_ip", edt_camera_ip.getText().toString().trim());

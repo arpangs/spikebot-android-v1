@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DataSearch implements Serializable{
@@ -13,7 +14,7 @@ public class DataSearch implements Serializable{
         private String deviceBrandId;
         @SerializedName("device_brand_remote_list")
         @Expose
-        private List<DeviceBrandRemoteList> deviceBrandRemoteList = null;
+        private ArrayList<DeviceBrandRemoteList> deviceBrandRemoteList = null;
 
         public String getDeviceBrandId() {
             return deviceBrandId;
@@ -23,11 +24,11 @@ public class DataSearch implements Serializable{
             this.deviceBrandId = deviceBrandId;
         }
 
-        public List<DeviceBrandRemoteList> getDeviceBrandRemoteList() {
+        public ArrayList<DeviceBrandRemoteList> getDeviceBrandRemoteList() {
             return deviceBrandRemoteList;
         }
 
-        public void setDeviceBrandRemoteList(List<DeviceBrandRemoteList> deviceBrandRemoteList) {
+        public void setDeviceBrandRemoteList(ArrayList<DeviceBrandRemoteList> deviceBrandRemoteList) {
             this.deviceBrandRemoteList = deviceBrandRemoteList;
         }
 

@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -43,6 +44,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.spike.bot.ChatApplication;
@@ -64,6 +66,7 @@ import com.spike.bot.activity.RoomEditActivity_v2;
 import com.spike.bot.activity.ScheduleActivity;
 import com.spike.bot.activity.SensorDoorLogActivity;
 import com.spike.bot.activity.SensorUnassignedActivity;
+import com.spike.bot.activity.SmartRemoteActivity;
 import com.spike.bot.activity.TempSensorInfoActivity;
 import com.spike.bot.activity.SignUp;
 import com.spike.bot.activity.ir.blaster.IRBlasterAddActivity;
@@ -113,6 +116,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.fabric.sdk.android.Fabric;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
@@ -128,35 +132,36 @@ import static com.spike.bot.core.Common.showToast;
 public class MainFragment extends Fragment implements View.OnClickListener, ItemClickListener, SectionedExpandableGridAdapter.CameraClickListener,
         SwipeRefreshLayout.OnRefreshListener, OnSmoothScrollList, TempClickListener {
 
-    private static final String TAG = "MainFragment";
-    public static int showDialog=1;
-    private static final int REQUEST_LOGIN = 0;
-    private static final int TYPING_TIMER_LENGTH = 600;
-
-    private Boolean isSocketConnected = true,flagisCould=false;
+    public static int showDialog = 1;
+    private Boolean isSocketConnected = true, flagisCould = false;
     public static Boolean isRefredCheck = true;
+    private String userId = "0", token_id = "";
     private RecyclerView mMessagesView;
     private Socket mSocket;
-    SectionedExpandableLayoutHelper sectionedExpandableLayoutHelper;
+    private ArrayList<RoomVO> roomList = new ArrayList<>();
+    public SectionedExpandableLayoutHelper sectionedExpandableLayoutHelper;
 
     // auto service find
-    private static final String SERVICE_TYPE = "_vatsal._tcp.local.";
-    private ImageView deepsImage;
-    private TextView txt_connection;
+    public View view;
     private LinearLayout linear_retry, linear_progress, linear_login;
     private Button button_retry, btn_login;
     EditText et_username, et_password;
-    TextView tv_header;
-    private ArrayList<RoomVO> roomList = new ArrayList<>();
-    //private ConnectivityReceiver connectivityReceiver;
-    private String userId = "0";
-    private String token_id = "";
     private LinearLayout txt_empty_schedule;
-
-    private Activity activity;
-    private TextView txt_empty_text;
-    private ImageView empty_add_image;
+    public static Activity activity;
+    private TextView txt_empty_text, tv_header, txt_connection;
+    private ImageView empty_add_image, deepsImage;
     public CloudAdapter.CloudClickListener cloudClickListener;
+
+    // This event fires 1st, before creation of fragment or any views
+    // The onAttach method is called when the Fragment instance is associated with an Activity.
+    // This does not mean the Activity is fully initialized.
+
+    public static OnHeadlineSelectedListener mCallback;
+    RunServiceInterface runServiceInterface;
+    ResponseErrorCode responseErrorCode;
+    LoginPIEvent loginPIEvent;
+    SocketListener socketListener;
+
 
     public MainFragment() {
         super();
@@ -170,19 +175,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         return fragment;
     }
 
-    // This event fires 1st, before creation of fragment or any views
-    // The onAttach method is called when the Fragment instance is associated with an Activity.
-    // This does not mean the Activity is fully initialized.
-
-
-    public static   OnHeadlineSelectedListener mCallback;
-    RunServiceInterface runServiceInterface;
-    ResponseErrorCode responseErrorCode;
-    LoginPIEvent loginPIEvent;
-    SocketListener socketListener;
-
-    public View view;
-    public boolean isNull = false;
 
     @Override
     public void onAttach(Context context) {
@@ -199,12 +191,10 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             socketListener = (SocketListener) activity;
             cloudClickListener = (CloudAdapter.CloudClickListener) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnHeadlineSelectedListener");
+            throw new ClassCastException(activity.toString() + " must implement OnHeadlineSelectedListener");
         }
 
     }
-
 
     /**
      * Display Alert dialog when found door or temp sensor config already configured
@@ -212,7 +202,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
      * @param alertMessage
      */
     private void showConfigAlert(String alertMessage) {
-
         android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity());
         builder.setMessage(alertMessage);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -228,12 +217,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        // startSocketConnection();
-      /*  connectivityReceiver = new ConnectivityReceiver();
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        getActivity().registerReceiver((BroadcastReceiver) connectivityReceiver, intentFilter);*/
-
     }
 
     // com.deep.automation.customview.ExpandableGridView exp_list;
@@ -258,7 +241,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
     }
 
-    public void RefreshAnotherFragment(){
+    public void RefreshAnotherFragment() {
         isRefredCheck = true;
         if (Main2Activity.isCloudConnected) {
             runServiceInterface.executeService();
@@ -272,13 +255,15 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     private NestedScrollView main_scroll;
     private FloatingActionButton mFab;
     private CardView mFabMenuLayout;
-    private TextView fab_menu1, fab_menu2, fab_menu3, fab_menu4, fab_menu5, fab_menu6, fab_menu7;
+    private TextView fab_menu1, fab_menu2, fab_menu3, fab_menu4, fab_menu5, fab_menu6, fab_menu7,fabZigbeeRemote;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Fabric.with(getActivity(), new Crashlytics());
         view = inflater.inflate(R.layout.fragment_main, container, false);
 
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        //     Common.savePrefValue(getActivity(), Constants.USER_ID,"1552398595478_S1ibYErwV");
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(this);
@@ -335,9 +320,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         fab_menu5 = (TextView) view.findViewById(R.id.fab_menu5);
         fab_menu6 = (TextView) view.findViewById(R.id.fab_menu6);
         fab_menu7 = (TextView) view.findViewById(R.id.fab_menu7);
+        fabZigbeeRemote = view.findViewById(R.id.fabZigbeeRemote);
 
         mFab = (FloatingActionButton) view.findViewById(R.id.fab);
-
 
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -411,6 +396,13 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             }
         });
 
+        fabZigbeeRemote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeFABMenu();
+                startActivity(new Intent(getActivity(),SmartRemoteActivity.class));
+            }
+        });
 
         return view;
     }
@@ -452,11 +444,11 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         }
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public void onResume() {
         super.onResume();
 
-        ChatApplication.logDisplay( "flag login is " + Main2Activity.flagLogin);
 //        if(Main2Activity.flagLogin){
 //            Main2Activity.flagLogin=false;
 //            mFab.setVisibility(View.VISIBLE);
@@ -469,7 +461,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 //                empty_add_image.setVisibility(View.GONE);
 //                txt_empty_text.setText("Login First.");
 //            } else {
-        mFab.setVisibility(View.VISIBLE);
+       // mFab.setVisibility(View.VISIBLE);
         empty_add_image.setVisibility(View.VISIBLE);
         txt_empty_text.setText("Add Room");
 //            }
@@ -542,12 +534,15 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 mSocket.on("panelStatus", panelStatus);
                 //    mSocket.on("configureGatewayDevice", configureGatewayDevice);
                 mSocket.on("saveEditSwitchSocket", saveEditSwitchSocket);
-             //   mSocket.on("configureDoorSensor", configureGatewayDoorSensor);
+                //   mSocket.on("configureDoorSensor", configureGatewayDoorSensor);
                 //   mSocket.on("configureTempSensor",configureTempSensor);
                 mSocket.on("changeDoorSensorStatus", changeDoorSensorStatus);
                 mSocket.on("changeTempSensorValue", changeTempSensorValue);
                 mSocket.on("unReadCount", unReadCount);
                 mSocket.on("sensorStatus", sensorStatus);
+                mSocket.on("updateChildUser", updateChildUser);
+                mSocket.on("updateChildUser", updateChildUser);
+//                mSocket.on("deleteChildUser", deleteChildUser);
                 //   mSocket.on("configureIRBlaster",configureIRBlaster);
 
             } catch (Exception ex) {
@@ -577,19 +572,21 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             mSocket.off("panelStatus", panelStatus);
             mSocket.off("saveEditSwitchSocket", saveEditSwitchSocket);
             //  mSocket.off("configureGatewayDevice", configureGatewayDevice);
-    //        mSocket.off("configureGatewayDoorSensor", configureGatewayDoorSensor);
+            //        mSocket.off("configureGatewayDoorSensor", configureGatewayDoorSensor);
             // mSocket.off("configureTempSensor",configureTempSensor);
             mSocket.off("changeDoorSensorStatus", changeDoorSensorStatus);
             mSocket.off("changeTempSensorValue", changeTempSensorValue);
             mSocket.off("unReadCount", unReadCount);
             mSocket.off("sensorStatus", sensorStatus);
+            mSocket.off("updateChildUser", updateChildUser);
+//            mSocket.off("deleteChildUser", deleteChildUser);
             //   mSocket.off("configureIRBlaster",configureIRBlaster);
 
         }
     }
 
     @Override
-    public void onPause(){
+    public void onPause() {
 //        if(ChatApplication.isPushFound){
 //            getBadgeClear(getActivity());
 //        }
@@ -605,7 +602,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             }
             isResumeConnect = activity.isResumeConnect;
             isCloudConnected = activity.isCloudConnected;
-            socketListener.startSession();
+            if(socketListener!=null){
+                socketListener.startSession();
+            }
         }
 
         if (Common.isConnected() && isResumeConnect) {
@@ -616,17 +615,17 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             //  startSocketConnection();
             getDeviceList(3);
         } else if (Common.isConnected() && ChatApplication.isRefreshDashBoard) {
-            ChatApplication.logDisplay( "onResume isResumeConnect 22222  " + ChatApplication.isRefreshDashBoard);
+            ChatApplication.logDisplay("onResume isResumeConnect 22222  " + ChatApplication.isRefreshDashBoard);
             getDeviceList(4);
             //  startSocketConnection();
             ChatApplication.isRefreshDashBoard = true; //false
 
         } else if (!Common.isConnected()) {
-            ChatApplication.logDisplay( "onResume isResumeConnect 33333  ");
+            ChatApplication.logDisplay("onResume isResumeConnect 33333  ");
             //hideAlertDialog();
             // showAlertDialog();
         } else {
-            ChatApplication.logDisplay( "else Co..........");
+            ChatApplication.logDisplay("else Co..........");
 
             getDeviceList(5);
 
@@ -750,7 +749,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onSuccess(JSONObject result) {
 
-                ChatApplication.logDisplay( "onSuccess result : " + result.toString());
+                ChatApplication.logDisplay("onSuccess result : " + result.toString());
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -983,7 +982,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
+            obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
             obj.put("camera_name", camera_name);
             obj.put("camera_ip", camera_ip);
             obj.put("video_path", video_path);
@@ -1000,7 +999,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay( "onSuccess " + result.toString());
+                ChatApplication.logDisplay("onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -1020,7 +1019,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay( "onFailure " + error);
+                ChatApplication.logDisplay("onFailure " + error);
                 Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
@@ -1064,7 +1063,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                     case R.id.action_device_log:
                         // getconfigureData();
                         Intent intent = new Intent(activity, DeviceLogActivity.class);
-                        intent.putExtra("isCheckActivity","AllType");
+                        intent.putExtra("isCheckActivity", "AllType");
                         startActivity(intent);
                         break;
                     case R.id.action_sensor_log:
@@ -1177,10 +1176,10 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             String device_status = object.getString("device_status");
                             int is_locked = object.optInt("is_locked");
 
-                            sectionedExpandableLayoutHelper.updateItem(module_id, device_id, device_status,is_locked);
+                            sectionedExpandableLayoutHelper.updateItem(module_id, device_id, device_status, is_locked);
                             //   sectionedExpandableLayoutHelper.notifyDataSetChanged();
 
-
+                            ChatApplication.logDisplay("panel status reloadDeviceStatusApp " + object.toString());
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -1205,16 +1204,19 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 public void run() {
                     if (args != null) {
                         try {
-
-
                             JSONObject object = new JSONObject(args[0].toString());
-                            // String room_order = object.getString("room_order");
-                            // String panel_order = object.getString("panel_order");
-                            String panel_id = object.getString("panel_id");
-                            String panelstatusValue = object.getString("panel_status");
 
-                            sectionedExpandableLayoutHelper.updatePanel(panel_id, panelstatusValue);
+                            ChatApplication.logDisplay("panel status panelStatus " + object.toString());
+                            String panel_id = object.optString("panel_id");
+                            String panelstatusValue = object.getString("panel_status");
+//                            String user_id = object.optString("user_id");
+
+                            ChatApplication.logDisplay("panel status panelStatus update " + object.toString());
+                            sectionedExpandableLayoutHelper.updatePanel(panel_id, panelstatusValue, "");
+
+
                             // sectionedExpandableLayoutHelper.notifyDataSetChanged();
+
 
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -1245,7 +1247,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             String roomupdateValue = object.getString("room_status");
 
                             sectionedExpandableLayoutHelper.updateRoom(room_id, roomupdateValue);
-                            // sectionedExpandableLayoutHelper.notifyDataSetChanged();
+                            ChatApplication.logDisplay("panel status roomStatus update " + object.toString());
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -1486,10 +1488,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
                     if (args != null) {
-
-
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
                             String room_id = object.getString("room_id");
@@ -1511,6 +1510,68 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         }
     };
 
+//    private Emitter.Listener deleteChildUser = new Emitter.Listener() {
+//        @Override
+//        public void call(final Object... args) {
+//            if (getActivity() == null) {
+//                return;
+//            }
+//            getActivity().runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    if (args != null) {
+//
+//                        try {
+//                            JSONObject object = new JSONObject(args[0].toString());
+//                            String message=object.optString("message");
+//                            String user_id=object.optString("user_id");
+//                            if(Common.getPrefValue(getActivity(), Constants.USER_ID).equalsIgnoreCase(user_id)){
+//                                ((Main2Activity)getActivity()).logoutCloudUser();
+//                                ChatApplication.showToast(getActivity(),message);
+//                            }
+//
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                    }
+//                }
+//            });
+//        }
+//    };
+
+    private Emitter.Listener updateChildUser = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (getActivity() == null) {
+                return;
+            }
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+
+                            String message=object.optString("message");
+                            String user_id=object.optString("user_id");
+                            ChatApplication.logDisplay("update socket is "+object.toString());
+                            if(Common.getPrefValue(getActivity(), Constants.USER_ID).equalsIgnoreCase(user_id)){
+                                showDialog=1;
+                                getDeviceList(showDialog);
+                                ChatApplication.showToast(getActivity(),message);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
+
     private Emitter.Listener sensorStatus = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -1521,8 +1582,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 @Override
                 public void run() {
                     if (args != null) {
-
-
                         try {
                             JSONObject jsonObject = new JSONObject(args[0].toString());
                             String is_active = jsonObject.getString("is_active");
@@ -1540,8 +1599,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
-
                     }
                 }
             });
@@ -1813,7 +1870,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
+            obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1867,7 +1924,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     private void saveSensor(final Dialog dialog, EditText textInputEditText, String door_name,
                             String door_module_id, Spinner sp_room_list, final boolean isTempSensorRequest) {
 
-        ChatApplication.logDisplay( "configureNewRoom configureGatewayDevice");
+        ChatApplication.logDisplay("configureNewRoom configureGatewayDevice");
         if (!ActivityHelper.isConnectingToInternet(activity)) {
             Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -1888,6 +1945,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
             obj.put("room_id", roomIdList.get(room_pos));
             obj.put("room_name", roomNameList.get(room_pos));
+            obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
 
             if (isTempSensorRequest) {
                 obj.put("temp_sensor_name", door_name);
@@ -1913,7 +1971,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         new GetJsonTask(activity, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                ChatApplication.logDisplay( isTempSensorRequest + " configureNewSensor onSuccess " + result.toString());
+                ChatApplication.logDisplay(isTempSensorRequest + " configureNewSensor onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -1934,13 +1992,12 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                     e.printStackTrace();
                 } finally {
                     ActivityHelper.dismissProgressDialog();
-
                 }
             }
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                ChatApplication.logDisplay( isTempSensorRequest + " configureNewSensor onFailure " + error);
+                ChatApplication.logDisplay(isTempSensorRequest + " configureNewSensor onFailure " + error);
                 ActivityHelper.dismissProgressDialog();
             }
         }).execute();
@@ -2014,7 +2071,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
+            obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
             obj.put("room_device_id", deviceVO.getRoomDeviceId());
             obj.put("module_id", deviceVO.getModuleId());
             obj.put("device_id", deviceVO.getDeviceId());
@@ -2075,7 +2132,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void run() {
                 sectionedExpandableLayoutHelper.updateItem(deviceVO.getModuleId(),
-                        String.valueOf(deviceVO.getDeviceId()), String.valueOf(deviceVO.getOldStatus()),deviceVO.getIs_locked());
+                        String.valueOf(deviceVO.getDeviceId()), String.valueOf(deviceVO.getOldStatus()), deviceVO.getIs_locked());
             }
         });
     }
@@ -2100,7 +2157,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                sectionedExpandableLayoutHelper.updatePanel(panelVO.getPanelId(), String.valueOf(panelVO.getOldStatus()));
+                sectionedExpandableLayoutHelper.updatePanel(panelVO.getPanelId(), String.valueOf(panelVO.getOldStatus()), panelVO.getRoom_panel_id());
             }
         });
     }
@@ -2109,13 +2166,13 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
         String url = ChatApplication.url + Constants.CHANGE_DEVICE_STATUS;
 
-       ChatApplication.logDisplay("Device roomPanelOnOff obj " + obj.toString());
+        ChatApplication.logDisplay("Device roomPanelOnOff obj " + obj.toString());
         //  ChatApplication.logDisplay( "roomPanelOnOff url " + url );
 
         new GetJsonTask(getActivity(), url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-               ChatApplication.logDisplay("roomPanelOnOff onSuccess " + result.toString());
+                ChatApplication.logDisplay("roomPanelOnOff onSuccess " + result.toString());
                 try {
                     int code = result.getInt("code"); //message
                     String message = result.getString("message");
@@ -2127,13 +2184,13 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } finally {
-                   ChatApplication.logDisplay("Device roomPanelOnOff finally ");
+                    ChatApplication.logDisplay("Device roomPanelOnOff finally ");
                 }
             }
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-               ChatApplication.logDisplay("roomPanelOnOff onFailure " + error);
+                ChatApplication.logDisplay("roomPanelOnOff onFailure " + error);
                 updateDeviceOfflineMode(deviceVO);
                 //Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_SHORT).show();
             }
@@ -2144,10 +2201,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
         final JSONObject obj = new JSONObject();
         try {
-
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
+            obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
             obj.put("room_id", roomId);
             obj.put("panel_id", panelId);
             obj.put("device_status", panel_status);
@@ -2164,7 +2220,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
         } else {
 
-            ChatApplication.logDisplay( "roomPanelOnOff");
+            ChatApplication.logDisplay("roomPanelOnOff");
 
             //  if(panelVO!=null){
 
@@ -2174,24 +2230,24 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                     if (args != null) {
 
+                        ChatApplication.logDisplay("Panel AckWithTimeOut log : " + args[0].toString());
                         if (args[0].toString().equalsIgnoreCase("No Ack")) {
 
-                           ChatApplication.logDisplay( "Panel AckWithTimeOut : " + args[0].toString());
+                            ChatApplication.logDisplay("Panel AckWithTimeOut1 : " + args[0].toString());
 
                             //  callPanelOnOffApi(panelVO,obj);
 
                             if (panelVO != null) {
                                 updatePanelDeviceOfflineMode(panelVO);
-                               ChatApplication.logDisplay( "update Panel Device OffLine");
+                                ChatApplication.logDisplay("update Panel Device OffLine");
                             } else if (roomVO != null) {
                                 updateRoomOfflineMode(roomVO);
-                               ChatApplication.logDisplay( "update Room Device OffLine");
+                                ChatApplication.logDisplay("update Room Device OffLine");
                             }
-
 
                         } else if (args[0].toString().equalsIgnoreCase("true")) {
                             cancelTimer();
-                           ChatApplication.logDisplay( "Panel AckWithTimeOut : " + args[0].toString());
+                            ChatApplication.logDisplay("Panel AckWithTimeOut2 : " + args[0].toString());
                         }
                     }
                 }
@@ -2214,7 +2270,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         new GetJsonTask(getActivity(), url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                ChatApplication.logDisplay( "roomPanelOnOff onSuccess " + result.toString());
+                ChatApplication.logDisplay("roomPanelOnOff onSuccess " + result.toString());
                 try {
                     int code = result.getInt("code"); //message
                     String message = result.getString("message");
@@ -2226,13 +2282,13 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } finally {
-                    ChatApplication.logDisplay( "roomPanelOnOff finally ");
+                    ChatApplication.logDisplay("roomPanelOnOff finally ");
                 }
             }
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                ChatApplication.logDisplay( "roomPanelOnOff onFailure " + error);
+                ChatApplication.logDisplay("roomPanelOnOff onFailure " + error);
                 //Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_SHORT).show();
                 //updatePanelDeviceOfflineMode(panelVO);
             }
@@ -2306,11 +2362,11 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             newFragment.show(getActivity().getFragmentManager(), "dialog");
 
         } else if (action.equalsIgnoreCase("icnLog")) {
-            Intent intent = new Intent(getActivity(),DeviceLogActivity.class);
-            intent.putExtra("ROOM_ID",roomVO.getRoomId());
-            intent.putExtra("activity_type",roomVO.getType());
-            intent.putExtra("isCheckActivity","room");
-            intent.putExtra("isRoomName",""+roomVO.getRoomName());
+            Intent intent = new Intent(getActivity(), DeviceLogActivity.class);
+            intent.putExtra("ROOM_ID", roomVO.getRoomId());
+            intent.putExtra("activity_type", roomVO.getType());
+            intent.putExtra("isCheckActivity", "room");
+            intent.putExtra("isRoomName", "" + roomVO.getRoomName());
             startActivity(intent);
 //            Intent intent = new Intent(getActivity(), DeviceLogRoomActivity.class);
 //            intent.putExtra("ROOM_ID", roomVO.getRoomId());
@@ -2380,6 +2436,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             object.put("room_name", roomVO.getRoomName());
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            object.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -2396,7 +2453,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             public void onSuccess(JSONObject result) {
 
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay( "getconfigureData onSuccess " + result.toString());
+                ChatApplication.logDisplay("getconfigureData onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -2415,7 +2472,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay( "getconfigureData onFailure " + error);
+                ChatApplication.logDisplay("getconfigureData onFailure " + error);
                 Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
@@ -2797,7 +2854,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay( "getconfigureData onSuccess " + result.toString());
+                ChatApplication.logDisplay("getconfigureData onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -2851,11 +2908,12 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             object.put("room_name", roomName.getText().toString());
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            object.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        ChatApplication.logDisplay( "ob : " + object.toString());
+        ChatApplication.logDisplay("ob : " + object.toString());
         ActivityHelper.showProgressDialog(getActivity(), "Searching Device attached ", false);
 
         String url = webUrl + Constants.ADD_CUSTOME_ROOM;
@@ -2864,7 +2922,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay( "getconfigureData onSuccess " + result.toString());
+                ChatApplication.logDisplay("getconfigureData onSuccess " + result.toString());
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -2888,7 +2946,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay( "getconfigureData onFailure " + error);
+                ChatApplication.logDisplay("getconfigureData onFailure " + error);
                 Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
@@ -3043,23 +3101,24 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
     public static int SING_UP_REQUEST = 500;
 
-    public static void saveCurrentId(Context context,String userId){
+    public static void saveCurrentId(Context context, String userId) {
         Gson gson = new Gson();
-        String jsonText = Common.getPrefValue(context,Common.USER_JSON);
-        Type type = new TypeToken<List<User>>() {}.getType();
+        String jsonText = Common.getPrefValue(context, Common.USER_JSON);
+        Type type = new TypeToken<List<User>>() {
+        }.getType();
         List<User> userList = gson.fromJson(jsonText, type);
 
-        for(int i=0; i<userList.size(); i++){
-            if(userList.get(i).getUser_id().equals(userId)){
+        for (int i = 0; i < userList.size(); i++) {
+            if (userList.get(i).getUser_id().equals(userId)) {
                 userList.get(i).setIsActive(true);
                 mCallback.onArticleSelected("" + userList.get(i).getFirstname() + " " + userList.get(i).getLastname());
-            }else {
+            } else {
                 userList.get(i).setIsActive(false);
             }
         }
-        if(userList.size()>0){
+        if (userList.size() > 0) {
             String jsonCurProduct = gson.toJson(userList);
-            Common.savePrefValue(context,Common.USER_JSON,jsonCurProduct);
+            Common.savePrefValue(context, Common.USER_JSON, jsonCurProduct);
         }
     }
 
@@ -3069,20 +3128,27 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     }
 
     /// all webservice call below.
-    public  void getDeviceList(final int checkmessgae) {
+    public void getDeviceList(final int checkmessgae) {
         //showProgress();
 
         if (getActivity() == null) {
             return;
         }
 
-        if (showDialog == 1 ||checkmessgae == 1 || checkmessgae == 6 || checkmessgae == 7 || checkmessgae == 8 || checkmessgae == 9 || checkmessgae == 10) {
+        if(TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ID))){
+            showDialog = 1;
+            loginPIEvent.showLogin();
+            return;
+        }
+
+        if (showDialog == 1 || checkmessgae == 1 || checkmessgae == 6 || checkmessgae == 7 || checkmessgae == 8 || checkmessgae == 9 || checkmessgae == 10) {
             ActivityHelper.showProgressDialog(getActivity(), "Please Wait...", false);
         }
+        ChatApplication.logDisplay("show progress is "+showDialog);
 
         roomList.clear();
         // mMessagesView.removeAllViews();
-        if(mMessagesView==null){
+        if (mMessagesView == null) {
             mMessagesView = (RecyclerView) view.findViewById(R.id.messages);
         }
         mMessagesView.setClickable(false);
@@ -3097,23 +3163,58 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             sectionedExpandableLayoutHelper.notifyDataSetChanged();
         }
 
-        String url = ChatApplication.url + Constants.GET_DEVICES_LIST + "/" + Constants.DEVICE_TOKEN + "/0/1";
+        if(TextUtils.isEmpty(ChatApplication.url)){
+            Gson gson=new Gson();
+            String jsonTextTemp = Common.getPrefValue(getContext(), Common.USER_JSON);
+            List<User> userList = new ArrayList<User>();
+            if (!TextUtils.isEmpty(jsonTextTemp) && !jsonTextTemp.equals("null")) {
+                Type type = new TypeToken<List<User>>() {}.getType();
+                userList = gson.fromJson(jsonTextTemp, type);
+            }
+            for(int i=0; i<userList.size(); i++){
+                if(userList.get(i).getIsActive()){
+                    webUrl=userList.get(i).getCloudIP();
+                    ChatApplication.url = webUrl;
+                    isCloudConnected = true;
+                    break;
+                }
+            }
+
+        }
+
+        // String url = ChatApplication.url + Constants.GET_DEVICES_LIST + "/" + Constants.DEVICE_TOKEN + "/0/1";
+        String url = ChatApplication.url + Constants.GET_DEVICES_LIST;
         if (!token_id.equalsIgnoreCase("")) {
             url = url + "/" + token_id;
         }
 
         JSONObject jsonObject = new JSONObject();
         try {
+            //admin =0
+            //child=2
+
+
             jsonObject.put("room_type", 0);
+            jsonObject.put("is_sensor_panel", 1);
+            jsonObject.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
+
+            if (TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE))) {
+                jsonObject.put("admin", 1);
+            } else {
+                jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE)));
+            }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        new GetJsonTask2(activity, url, "GET", "", new ICallBack2() { //Constants.CHAT_SERVER_URL
+        ChatApplication.logDisplay("jsonObject is dashboard "+url+ "   "+ jsonObject.toString());
+        new GetJsonTask2(activity, url, "POST", jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                showDialog=0;
-                ActivityHelper.dismissProgressDialog();
-                if(ChatApplication.isPushFound){
+                showDialog = 0;
+                ((Main2Activity)getActivity()).wifiConnectionIssue(true);
+  //              ActivityHelper.dismissProgressDialog();
+                if (ChatApplication.isPushFound) {
                     getBadgeClear(getActivity());
                 }
 
@@ -3125,7 +3226,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                 swipeRefreshLayout.setRefreshing(false);
                 sectionedExpandableLayoutHelper.setClickable(true);
-                ChatApplication.logDisplay( "getDeviceList onSuccess " + result.toString());
+                ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
 
                 try {
 
@@ -3158,6 +3259,14 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         String userFirstName = userObject.getString("first_name");
                         String userLastName = userObject.getString("last_name");
                         String camera_key = userObject.optString("camera_key");
+                        String is_active = userObject.optString("is_active");
+
+                        if(is_active.equalsIgnoreCase("0")){
+
+                            ((Main2Activity)getActivity()).logoutCloudUser();
+                            return;
+                        }
+
                         Common.savePrefValue(ChatApplication.getInstance(), Common.camera_key, camera_key);
                         ChatApplication.currentuserId = userId;
                         String userPassword = "";
@@ -3166,30 +3275,27 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         }
 
 
-
                         Gson gson = new Gson();
                         String jsonText = Common.getPrefValue(getContext(), Common.USER_PIDETAIL);
                         List<PiDetailsModel> piUserList = new ArrayList<PiDetailsModel>();
                         if (!TextUtils.isEmpty(jsonText)) {
-                            Type type = new TypeToken<List<PiDetailsModel>>() {
-                            }.getType();
+                            Type type = new TypeToken<List<PiDetailsModel>>() {}.getType();
                             piUserList = gson.fromJson(jsonText, type);
                         }
 
                         String jsonTextTemp = Common.getPrefValue(getContext(), Common.USER_JSON);
                         List<User> userList = new ArrayList<User>();
                         if (!TextUtils.isEmpty(jsonTextTemp) && !jsonTextTemp.equals("null")) {
-                            Type type = new TypeToken<List<User>>() {
-                            }.getType();
+                            Type type = new TypeToken<List<User>>() {}.getType();
                             userList = gson.fromJson(jsonTextTemp, type);
                         }
 
-                        if(userList!=null && userList.size()>0){
+                        if (userList != null && userList.size() > 0) {
                             boolean flagIsLogin = false;
                             for (User user : userList) {
-                                if (user.getUser_id().equalsIgnoreCase(userId)) {
+                                if (user.getUser_id().equalsIgnoreCase(userId) && user.getIsActive()) {
                                     flagIsLogin = true;
-                                    saveCurrentId(getActivity(),userId);
+                                    saveCurrentId(getActivity(), userId);
                                     mCallback.onArticleSelected("" + userFirstName + " " + userLastName);
                                     break;
                                 }
@@ -3197,22 +3303,26 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                             if (flagIsLogin == false) {
                                 if (checkLoginId(userId, checkmessgae)) {
-                                    saveCurrentId(getActivity(),userId);
+                                    saveCurrentId(getActivity(), userId);
                                     mCallback.onArticleSelected("" + userFirstName + " " + userLastName);
-                                    ChatApplication.logDisplay( "pie details is isSignUp ");
-                                }else if(flagisCould){
-                                    flagisCould=false;
+                                    ChatApplication.logDisplay("pie details is isSignUp ");
+                                } else if (flagisCould) {
+                                    flagisCould = false;
+                                    showDialog=1;
+                                    ((Main2Activity)getActivity()).getUserDialogClick(false);
+                                    ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
                                     getDeviceCould(12);
                                     return;
-                                }else {
-                                    showDialog=1;
+                                } else {
+                                    showDialog = 1;
                                     loginPIEvent.showLogin();
                                     return;
                                 }
                             }
-                        }else {
-                            showDialog=1;
+                        } else {
+                            showDialog = 1;
                             loginPIEvent.showLogin();
+                            return;
                         }
 
                         /**
@@ -3223,17 +3333,16 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             String jsonTextTemp1 = Common.getPrefValue(getContext(), Common.USER_JSON);
                             List<User> userList1 = new ArrayList<User>();
                             if (!TextUtils.isEmpty(jsonTextTemp1)) {
-                                Type type = new TypeToken<List<User>>() {
-                                }.getType();
+                                Type type = new TypeToken<List<User>>() {}.getType();
                                 userList1 = gson.fromJson(jsonTextTemp1, type);
                             }
 
                             for (User user : userList1) {
                                 if (user.isActive()) {
-                                    String USER_ID = Common.getPrefValue(getContext(), Constants.USER_ID);
-                                    String USER_PASSWORD = Common.getPrefValue(getContext(), Constants.USER_PASSWORD);
+//                                    String USER_ID = Common.getPrefValue(getContext(), Constants.USER_ID);
+//                                    String USER_PASSWORD = Common.getPrefValue(getContext(), Constants.USER_PASSWORD);
 
-                                    if (!USER_PASSWORD.equalsIgnoreCase(userPassword)) {
+                                    if (!user.getPassword().equalsIgnoreCase(userPassword)) {
                                         showLogoutAlert();
                                     }
 
@@ -3308,6 +3417,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             sectionedExpandableLayoutHelper.addSectionList(roomList);
                         }
                         sectionedExpandableLayoutHelper.notifyDataSetChanged();
+                        ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
 
                         //JSONArray userList = dataObject.getJSONArray("userList");
                         Main2Activity.changestatus();
@@ -3318,6 +3428,8 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             mMessagesView.setVisibility(View.VISIBLE);
                             txt_empty_schedule.setVisibility(View.GONE);
                         }
+
+                        setUserTypeValue();
                     }
 
 
@@ -3346,12 +3458,12 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onFailure(Throwable throwable, String error, int reCode) {
                 swipeRefreshLayout.setRefreshing(false);
-                ActivityHelper.dismissProgressDialog();
+        //        ActivityHelper.dismissProgressDialog();
                 //set custom homer controller not found error message on dashboard
                 if (reCode == 503 || reCode == 404) {
                     responseErrorCode.onErrorCode(reCode);
                 }
-                ChatApplication.logDisplay( "reCode getDeviceList onFailure " + reCode);
+                ChatApplication.logDisplay("reCode getDeviceList onFailure " + reCode);
                 //  Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
 
                 //for clear adapter and view after resume the screen
@@ -3371,15 +3483,40 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    private void setUserTypeValue() {
+        if (!TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE))) {
+            if (Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
+                mFab.setVisibility(View.GONE);
+                ((Main2Activity) getActivity()).toolbarImage.setVisibility(View.INVISIBLE);
+                ((Main2Activity) getActivity()).toolbarTitle.setClickable(false);
+                ((Main2Activity) getActivity()).toolbarImage.setClickable(false);
+
+                ((Main2Activity) getActivity()).toolbarTitle.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+            } else {
+                mFab.setVisibility(View.VISIBLE);
+                ((Main2Activity) getActivity()).toolbarTitle.setClickable(true);
+                ((Main2Activity) getActivity()).toolbarImage.setClickable(true);
+                ((Main2Activity) getActivity()).toolbarImage.setVisibility(View.VISIBLE);
+                ((Main2Activity) getActivity()).toolbarTitle.setTextColor(getResources().getColor(R.color.sky_blue));
+            }
+        }
+    }
+
     /// all webservice call below.
     public void getDeviceCould(final int checkmessgae) {
         //showProgress();
-
+        ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
         if (getActivity() == null) {
             return;
         }
 
-        if (showDialog==1||checkmessgae == 1 || checkmessgae == 6 || checkmessgae == 7 || checkmessgae == 8 || checkmessgae == 9 || checkmessgae == 10) {
+        if(((Main2Activity)getActivity()).dialogUser!=null){
+            if(((Main2Activity)getActivity()).dialogUser.isShowing()){
+                ((Main2Activity)getActivity()).dialogUser.dismiss();
+            }
+        }
+
+        if (showDialog == 1 || checkmessgae == 1 || checkmessgae == 6 || checkmessgae == 7 || checkmessgae == 8 || checkmessgae == 9 || checkmessgae == 10) {
             ActivityHelper.showProgressDialog(getActivity(), "Please Wait...", false);
         }
 
@@ -3397,28 +3534,32 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             sectionedExpandableLayoutHelper.notifyDataSetChanged();
         }
 
-        String url = ChatApplication.url + Constants.GET_DEVICES_LIST + "/" + Constants.DEVICE_TOKEN + "/0/1";
+        // String url = ChatApplication.url + Constants.GET_DEVICES_LIST + "/" + Constants.DEVICE_TOKEN + "/0/1";
+        String url = ChatApplication.url + Constants.GET_DEVICES_LIST;
         if (!token_id.equalsIgnoreCase("")) {
             url = url + "/" + token_id;
         }
 
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("room_type", 0);
+            jsonObject.put("room_type", Integer.parseInt(Common.getPrefValue(getActivity(), Constants.USER_ROOM_TYPE)));
+            jsonObject.put("is_sensor_panel", 1);
+            jsonObject.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
+            jsonObject.put("admin", Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        new GetJsonTask2(activity, url, "GET", "", new ICallBack2() { //Constants.CHAT_SERVER_URL
+        new GetJsonTask2(activity, url, "POST", jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                showDialog=0;
+                showDialog = 0;
                 isRefredCheck = false;
                 mMessagesView.setClickable(true);
                 mFab.setClickable(true);
                 mFab.setClickable(true);
                 ActivityHelper.dismissProgressDialog();
-                ((Main2Activity)getActivity()).toolbarTitle.setClickable(true);
-                ((Main2Activity)getActivity()).toolbarImage.setClickable(true);
+                ((Main2Activity) getActivity()).toolbarTitle.setClickable(true);
+                ((Main2Activity) getActivity()).toolbarImage.setClickable(true);
 
                 responseErrorCode.onSuccess();
 
@@ -3427,14 +3568,14 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                 swipeRefreshLayout.setRefreshing(false);
                 sectionedExpandableLayoutHelper.setClickable(true);
-                ChatApplication.logDisplay( "getDeviceList onSuccess " + result.toString());
+                ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
 
                 try {
 
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
-
+                        ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
                         roomList = new ArrayList<>();
 
                         JSONObject dataObject = result.getJSONObject("data");
@@ -3460,7 +3601,13 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         String userFirstName = userObject.getString("first_name");
                         String userLastName = userObject.getString("last_name");
                         String camera_key = userObject.optString("camera_key");
-                        String ip=userObject.optString("ip");
+                        String ip = userObject.optString("ip");
+                        String is_active = userObject.optString("is_active");
+                        if(is_active.equalsIgnoreCase("0")){
+                            ((Main2Activity)getActivity()).logoutCloudUser();
+                            return;
+                        }
+
                         Common.savePrefValue(ChatApplication.getInstance(), Common.camera_key, camera_key);
                         ChatApplication.currentuserId = userId;
                         String userPassword = "";
@@ -3468,25 +3615,38 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             userPassword = userObject.getString("user_password");
                         }
 
-                        Common.savePrefValue(getActivity(),Constants.USER_PASSWORD,userPassword);
-                        Common.savePrefValue(getActivity(),Constants.PREF_IP,ip);
 
-                       // User user = new User(userId,userFirstName,userLastName,ip,false,userPassword);
+                        Common.savePrefValue(getActivity(), Constants.USER_PASSWORD, userPassword);
+                        Common.savePrefValue(getActivity(), Constants.PREF_IP, ip);
+
+                        // User user = new User(userId,userFirstName,userLastName,ip,false,userPassword);
 
                         Gson gson = new Gson();
-                        String jsonText = Common.getPrefValue(getActivity(),Common.USER_JSON);
+                        String jsonText = Common.getPrefValue(getActivity(), Common.USER_JSON);
                         Type type = new TypeToken<List<User>>() {}.getType();
                         List<User> userList = gson.fromJson(jsonText, type);
-                        userList.get(0).setIsActive(true);
-                        ((Main2Activity)getActivity()).isCloudConnected=true;
-                        ((Main2Activity)getActivity()).invalidateToolbarCloudImage();
-                        webUrl = userList.get(0).getCloudIP();
-                        ChatApplication.url = webUrl;
+                        for(int i=0; i<userList.size(); i++){
+                            if(userList.get(i).getUser_id().equalsIgnoreCase(userId)){
+                                userList.get(i).setIsActive(true);
+                                ((Main2Activity) getActivity()).isCloudConnected = true;
+                               // ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
+                                webUrl = userList.get(i).getCloudIP();
+                                ChatApplication.url = webUrl;
+                            }else {
+                                userList.get(i).setIsActive(false);
+                            }
+                        }
+
+//                        userList.get(0).setIsActive(true);
+//                        ((Main2Activity) getActivity()).isCloudConnected = true;
+//                        ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
+//                        webUrl = userList.get(0).getCloudIP();
+//                        ChatApplication.url = webUrl;
                         String jsonCurProduct = gson.toJson(userList);
                         mCallback.onArticleSelected("" + userFirstName + " " + userLastName);
-                        Common.savePrefValue(getActivity(),Common.USER_JSON,jsonCurProduct);
+                        Common.savePrefValue(getActivity(), Common.USER_JSON, jsonCurProduct);
 
-                        saveCurrentId(getActivity(),userId);
+                        saveCurrentId(getActivity(), userId);
 //                        JSONArray piDetailsArray = dataObject.optJSONArray("piDetails");
 //                        if (piDetailsArray != null) {
 //                            String jsonTextTemp = Common.getPrefValue(getContext(), Common.USER_JSON);
@@ -3626,7 +3786,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
                         roomList = JsonHelper.parseRoomArray(roomArray, false);
                         sectionedExpandableLayoutHelper.addSectionList(roomList);
-
+                        setUserTypeValue();
 //                    MyExpandableListAdapter listAdapter = new MyExpandableListAdapter(getActivity(),roomList);
 //                    exp_list.setAdapter(listAdapter);
 
@@ -3663,6 +3823,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             // sectionedExpandableLayoutHelper.addCameraList(JsonHelper.parseCameraArray(cameraArray));
                             sectionedExpandableLayoutHelper.addSectionList(roomList);
                         }
+                        ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
                         sectionedExpandableLayoutHelper.notifyDataSetChanged();
 
                         //JSONArray userList = dataObject.getJSONArray("userList");
@@ -3680,6 +3841,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         CameraAdapter cameraAdapter = new CameraAdapter(getActivity(), cameraArray, webUrl);
                         camera_list.setAdapter(cameraAdapter);*/
 
+                        ActivityHelper.dismissProgressDialog();
                     }
 
 
@@ -3713,7 +3875,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 if (reCode == 503 || reCode == 404) {
                     responseErrorCode.onErrorCode(reCode);
                 }
-                ChatApplication.logDisplay( "reCode getDeviceList onFailure " + reCode);
+                ChatApplication.logDisplay("reCode getDeviceList onFailure " + reCode);
                 //  Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
 
                 //for clear adapter and view after resume the screen
@@ -3738,31 +3900,35 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         String jsonText = Common.getPrefValue(getActivity(), Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {
-            }.getType();
+            Type type = new TypeToken<List<User>>() {}.getType();
             List<User> userList = gson.fromJson(jsonText, type);
 
-            ChatApplication.logDisplay( "user list is " + jsonText);
+            ChatApplication.logDisplay("user list is " + jsonText);
             if (userList != null) {
                 if (userList.size() > 0) {
                     if (isRefredCheck) {
 
                         for (int i = 0; i < userList.size(); i++) {
-                            if (userList.get(i).getUser_id().equals(userIdCheck)) {
+                            if (userList.get(i).getUser_id().equals(userIdCheck) && userList.get(i).getIsActive()) {
                                 isFlag = true;
                                 break;
                             }
                         }
 
-                        if(!isFlag){
-                            flagisCould=true;
-                            webUrl = userList.get(0).getCloudIP();
+                        if (!isFlag) {
+                            flagisCould = true;
+                            for (int i = 0; i < userList.size(); i++) {
+                                if (userList.get(i).getIsActive()) {
+                                    webUrl = userList.get(i).getCloudIP();
+                                    break;
+                                }
+                            }
                             ChatApplication.url = webUrl;
                             isCloudConnected = true;
-                          //  invalidateToolbarCloudImage();
+                            //  invalidateToolbarCloudImage();
                             Main2Activity.isClick = true;
-                       //     getDeviceCould(12);
-                           // cloudClickListener.click(userList.get(0));
+                            //     getDeviceCould(12);
+                            // cloudClickListener.click(userList.get(0));
                             return false;
                         }
                     } else {
@@ -3781,11 +3947,22 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     public static void getBadgeClear(final Context context) {
         String url = ChatApplication.url + Constants.updateBadgeCount;
 
-        ChatApplication.logDisplay("url is "+url);
-        new GetJsonTask(context, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
+        JSONObject jsonObject = new JSONObject();
+        try {
+            if (activity == null) {
+                jsonObject.put("user_id", "");
+            } else {
+                jsonObject.put("user_id", "" + Common.getPrefValue(activity, Constants.USER_ID));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ChatApplication.logDisplay("url is " + url);
+        new GetJsonTask(context, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                ChatApplication.isPushFound=false;
+                ChatApplication.isPushFound = false;
 
                 clearNotification(context);
             }
@@ -3801,7 +3978,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
     public static void clearNotification(Context context) {
         // Clear all notification
-        NotificationManager nMgr = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager nMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         nMgr.cancelAll();
     }
 }

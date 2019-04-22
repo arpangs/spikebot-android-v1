@@ -32,7 +32,6 @@ import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.CameraLogAdapter;
-import com.spike.bot.adapter.DeviceLogAdapter;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.customview.CustomEditText;

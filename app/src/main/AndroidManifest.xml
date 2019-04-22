@@ -53,6 +53,9 @@
     <uses-permission android:name="me.everything.badger.permission.BADGE_COUNT_WRITE"/>
 
     <application
+        android:largeHeap="true"
+        android:allowClearUserData="true"
+        android:networkSecurityConfig="@xml/network_http"
         android:name="com.spike.bot.ChatApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -80,7 +83,7 @@
             android:label="@string/title_activity_room_edit"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             />
 
         <!--android:windowSoftInputMode="adjustPan|adjustResize|stateHidden|stateVisible"-->
@@ -110,6 +113,12 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" />
+
+        <activity
+            android:name="com.spike.bot.activity.SmartRemoteActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden|stateAlwaysHidden" />
 
         <activity
             android:name="com.spike.bot.activity.ir.blaster.SearchActivity"
@@ -161,6 +170,12 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
+            android:name="com.spike.bot.activity.UserRoomListActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name="com.spike.bot.activity.ScheduleListActivity"
             android:screenOrientation="portrait"
@@ -185,10 +200,12 @@
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name="com.spike.bot.activity.SignUp"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
 
         <activity android:name="com.spike.bot.activity.NotificationSetting"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
 
         <activity android:name="com.spike.bot.activity.TempSensorInfoActivity"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden"
@@ -201,47 +218,57 @@
 
         <activity android:name="com.spike.bot.activity.SensorDoorLogActivity"
             android:windowSoftInputMode="stateHidden|adjustPan"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name="com.spike.bot.activity.SensorUnassignedActivity"
             android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
             />
 
         <activity android:name="com.spike.bot.activity.CameraImagePush"
             android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:taskAffinity=""
             android:excludeFromRecents="true"
             />
         <activity android:name=".activity.ir.blaster.IRBlasterActivity"
             android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name=".activity.ir.blaster.WifiBlasterActivity"
             android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name=".activity.ir.blaster.WifiListActivity"
             android:windowSoftInputMode="stateHidden|stateAlwaysHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
         
         <activity android:name=".activity.ir.blaster.IRBlasterRemote"
             android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name=".activity.ir.blaster.IRRemoteAdd"
             android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name=".activity.ir.blaster.IRRemoteBrandListActivity"
             android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name=".activity.ir.blaster.IRRemoteConfigActivity"
             android:windowSoftInputMode="stateHidden"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
 
         <activity android:name=".activity.ir.blaster.IRBlasterEditActivity"
             android:windowSoftInputMode="stateHidden"
@@ -249,10 +276,17 @@
 
         <activity android:name=".activity.ir.blaster.IRBlasterAddActivity"
             android:windowSoftInputMode="stateHidden|stateAlwaysHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name=".activity.AddUnassignedPanel"
             android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity android:name=".activity.UserChildActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <service
@@ -269,11 +303,24 @@
             </intent-filter>
         </service>
 
+        <!--
+     Google console Account with FCM ACCOUNT > anuj@spikebot.io / Hello$123
+>SPike bot crashing LOgin  with  ttchatcrash@gmail.com / ttchat$123
+
+     -->
+
+
+        <!-- <meta-data
+             android:name="com.google.firebase.messaging.default_notification_channel_id"
+             android:value="@string/default_notification_channel_id"/>-->
 
        <!-- <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/default_notification_channel_id"/>-->
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="c0d1eedb6db67baf3bc4ceedbe67ac87f6fc95a2" />
     </application>
 
 </manifest>

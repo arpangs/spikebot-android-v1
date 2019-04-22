@@ -39,7 +39,6 @@
             android:maxLines="1"
             android:textColor="@color/txtPanal"
             android:padding="7dp"
-            android:text="panel"
             android:textSize="19sp" />
 
         <ImageView

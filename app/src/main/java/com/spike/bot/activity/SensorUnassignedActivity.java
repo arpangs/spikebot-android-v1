@@ -249,6 +249,7 @@ public class SensorUnassignedActivity extends AppCompatActivity{
 
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonObject.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
         } catch (JSONException e) {
             e.printStackTrace();

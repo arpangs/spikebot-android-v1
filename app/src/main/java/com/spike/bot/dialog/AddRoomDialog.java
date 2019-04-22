@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.core.APIConst;
+import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.R;
 import com.kp.core.ActivityHelper;
@@ -155,11 +156,16 @@ public class AddRoomDialog extends Dialog implements
         }
 
 
-        String url = ChatApplication.url + Constants.CONFIGURE_NEWROOM;
+        String url = "";
         if(isRoom){
-            url = ChatApplication.url + Constants.CONFIGURE_NEWROOM;
+//            url = ChatApplication.url + Constants.CONFIGURE_NEWROOM;
         }
         else{
+            try {
+                obj.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             url = ChatApplication.url + Constants.CONFIGURE_NEW_PANEL;
         }
         new GetJsonTask(activity,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL

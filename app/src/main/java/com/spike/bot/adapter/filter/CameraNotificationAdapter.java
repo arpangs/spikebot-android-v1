@@ -20,6 +20,7 @@ import com.kp.core.DateHelper;
 import com.spike.bot.R;
 import com.spike.bot.adapter.CameraNotiListAdapter;
 import com.spike.bot.adapter.TempSensorInfoAdapter;
+import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.customview.OnSwipeTouchListener;
 import com.spike.bot.listener.UpdateCameraAlert;
@@ -85,47 +86,50 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
         }
 
 
-        List<String> myList = new ArrayList<String>(Arrays.asList(arrayListLog.get(position).getCameraIds().split(",")));
+        if(arrayListLog.get(position).getCameraIds()!=null){
+            List<String> myList = new ArrayList<String>(Arrays.asList(arrayListLog.get(position).getCameraIds().split(",")));
 
-        if (myList.size() > 0) {
-            ArrayList<CameraViewModel> arrayList=new ArrayList<>();
-            for (int j = 0; j < myList.size(); j++) {
-                for (int i = 0; i < getCameraList.size(); i++) {
-                    if (getCameraList.get(i).getCamera_id().equalsIgnoreCase(myList.get(j))) {
-                        CameraViewModel cameraViewModel = new CameraViewModel();
-                        cameraViewModel.setId(getCameraList.get(i).getCamera_id());
-                        cameraViewModel.setName(getCameraList.get(i).getCamera_name());
-                        cameraViewModel.setIsActivite("" + getCameraList.get(i).getIsActive());
-                        arrayList.add(cameraViewModel);
-                        arrayListLog.get(position).setCameraViewModels(arrayList);
+            if (myList.size() > 0) {
+                ArrayList<CameraViewModel> arrayList=new ArrayList<>();
+                for (int j = 0; j < myList.size(); j++) {
+                    for (int i = 0; i < getCameraList.size(); i++) {
+                        if (getCameraList.get(i).getCamera_id().equalsIgnoreCase(myList.get(j))) {
+                            CameraViewModel cameraViewModel = new CameraViewModel();
+                            cameraViewModel.setId(getCameraList.get(i).getCamera_id());
+                            cameraViewModel.setName(getCameraList.get(i).getCamera_name());
+                            cameraViewModel.setIsActivite("" + getCameraList.get(i).getIsActive());
+                            arrayList.add(cameraViewModel);
+                            arrayListLog.get(position).setCameraViewModels(arrayList);
+                        }
                     }
                 }
-            }
 
-            if(arrayListLog.get(position).getCameraViewModels()!=null){
-                if(arrayListLog.get(position).getCameraViewModels().size()>0){
-                    GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, Constants.SWITCH_NUMBER);
-                    holder.recyclerCamera.setLayoutManager(gridLayoutManager);
-                    CameraNotiListAdapter cameraNotiListAdapter = new CameraNotiListAdapter(mContext, arrayListLog.get(position).getCameraViewModels());
-                    holder.recyclerCamera.setAdapter(cameraNotiListAdapter);
+                if(arrayListLog.get(position).getCameraViewModels()!=null){
+                    if(arrayListLog.get(position).getCameraViewModels().size()>0){
+                        GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, Constants.SWITCH_NUMBER);
+                        holder.recyclerCamera.setLayoutManager(gridLayoutManager);
+                        CameraNotiListAdapter cameraNotiListAdapter = new CameraNotiListAdapter(mContext, arrayListLog.get(position).getCameraViewModels());
+                        holder.recyclerCamera.setAdapter(cameraNotiListAdapter);
+                    }
                 }
-            }
 
-            if (arrayListLog.get(position).getIsOpen()) {
-                holder.imgArrow.setImageDrawable(mContext.getResources().getDrawable(R.drawable.arrow_down_gray));
-                holder.recyclerCamera.setVisibility(View.VISIBLE);
-            } else {
-                holder.imgArrow.setImageDrawable(mContext.getResources().getDrawable(R.drawable.arrow_up_gray));
-                holder.recyclerCamera.setVisibility(View.GONE);
-            }
+                if (arrayListLog.get(position).getIsOpen()) {
+                    holder.imgArrow.setImageDrawable(mContext.getResources().getDrawable(R.drawable.arrow_down_gray));
+                    holder.recyclerCamera.setVisibility(View.VISIBLE);
+                } else {
+                    holder.imgArrow.setImageDrawable(mContext.getResources().getDrawable(R.drawable.arrow_up_gray));
+                    holder.recyclerCamera.setVisibility(View.GONE);
+                }
 
-            if(arrayListLog.get(position).getIsActive()==1){
-                holder.switchAlert.setChecked(true);
-            }else {
-                holder.switchAlert.setChecked(false);
-            }
+                if(arrayListLog.get(position).getIsActive()==1){
+                    holder.switchAlert.setChecked(true);
+                }else {
+                    holder.switchAlert.setChecked(false);
+                }
 
+            }
         }
+
 
         holder.linearCamera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,6 +144,14 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
                 notifyDataSetChanged();
             }
         });
+
+        if (Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
+            if(Common.getPrefValue(mContext, Constants.USER_ID).equalsIgnoreCase(arrayListLog.get(position).getUser_id())){
+                holder.imgMore.setVisibility(View.VISIBLE);
+            }else {
+                holder.imgMore.setVisibility(View.GONE);
+            }
+        }
 
         holder.imgMore.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -308,7 +308,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
 
                                 //String activity_action, String activity_type, String activity_description, String activity_time, String activity_state
 
-                                deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, ""));
+                                deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "",""));
                             }
                             if(!TextUtils.isEmpty(notificationArray.toString())){
                                 setAdapter();

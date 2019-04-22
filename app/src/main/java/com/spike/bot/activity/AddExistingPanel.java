@@ -361,6 +361,7 @@ public class AddExistingPanel extends AppCompatActivity {
 
                     panelObj.put("room_id",roomId);
                     panelObj.put("room_name",roomName);
+                    panelObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
                     if(isDeviceAdd){
                         panelObj.put("panel_id",panelId);

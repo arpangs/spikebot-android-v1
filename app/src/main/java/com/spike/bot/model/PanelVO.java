@@ -30,6 +30,36 @@ public class PanelVO implements Serializable {
     private boolean isActivePanel;
     private String roomId;
 
+    public String getPanel_name_sub() {
+        return panel_name_sub;
+    }
+
+    public void setPanel_name_sub(String panel_name_sub) {
+        this.panel_name_sub = panel_name_sub;
+    }
+
+    private String panel_name_sub;
+
+    public String getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
+    }
+
+    private String user_id;
+
+    public String getRoom_panel_id() {
+        return room_panel_id;
+    }
+
+    public void setRoom_panel_id(String room_panel_id) {
+        this.room_panel_id = room_panel_id;
+    }
+
+    private String room_panel_id;
+
     public Integer getPanel_type() {
         return panel_type;
     }

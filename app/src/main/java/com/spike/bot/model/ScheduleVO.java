@@ -28,6 +28,16 @@ public class ScheduleVO implements Serializable{
     private String timer_off_after;
     private String timer_off_date;
 
+    public String getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
+    }
+
+    private String user_id;
+
     /* "schedule_id": "1517387409895_Sk5qRgkIf",
              "schedule_name": "Test",
              "schedule_type": 1,
