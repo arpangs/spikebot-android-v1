@@ -1365,72 +1365,48 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                             }
 
                         } else {
-                            JSONObject dataObject = result.getJSONObject("data");
-                            if (room.equalsIgnoreCase("Schedule") || room.equalsIgnoreCase("Timer")) {
-                                JSONArray moodArray = dataObject.getJSONArray("moodSchedule");
-                                JSONArray roomArray = dataObject.getJSONArray("roomSchedule");
+                            JSONObject dataObject = result.optJSONObject("data");
+                            if(dataObject!=null) {
 
-                                scheduleRoomArrayList.addAll(JsonHelper.parseRoomScheduleArray(moodArray));
-                                scheduleRoomArrayList.addAll(JsonHelper.parseRoomScheduleArray(roomArray));
+                                if (room.equalsIgnoreCase("Schedule") || room.equalsIgnoreCase("Timer")) {
+                                    JSONArray moodArray = dataObject.optJSONArray("moodSchedule");
+                                    JSONArray roomArray = dataObject.optJSONArray("roomSchedule");
 
-                            } else {
-                                JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
-                                mListRoom = JsonHelper.parseRoomArray(roomArray, false);
+                                    scheduleRoomArrayList.addAll(JsonHelper.parseRoomScheduleArray(moodArray));
+                                    scheduleRoomArrayList.addAll(JsonHelper.parseRoomScheduleArray(roomArray));
 
-                            }
-//                        if (room.equalsIgnoreCase("Room")) {
-//                            oneRoom.setRoomName("All Room");
-//                        } elsae
-                            if (room.equalsIgnoreCase("Mood")) {
-//                                if (isCheckActivity.equals("mode")) {
-//                                    for (int i = 0; i < mListRoom.size(); i++) {
-//                                        if (!TextUtils.isEmpty(mListRoom.get(i).getRoomId())) {
-//                                            if (mListRoom.get(i).getRoomId().equals(mRoomId)) {
-//                                                mListRoomTemp.add(mListRoom.get(i));
-//                                                break;
-//                                            }
-//                                        }
-//                                    }
-//                                } else {
-                                frame_living_room.setVisibility(View.VISIBLE);
-                                RoomVO oneRoom = new RoomVO();
-                                oneRoom.setRoomId("0");
-                                oneRoom.setRoomName("All Mood");
-                                mListRoom.add(0, oneRoom);
-//                                }
-                            } else if (room.equalsIgnoreCase("Room")) {
-//                                if (isCheckActivity.equals("room")) {
-//                                    panel_view.setVisibility(View.VISIBLE);
-//                                    frame_living_room.setVisibility(View.VISIBLE);
-//                                    for (int i = 0; i < mListRoom.size(); i++) {
-//                                        if (!TextUtils.isEmpty(mListRoom.get(i).getRoomId())) {
-//                                            if (mListRoom.get(i).getRoomId().equals(mRoomId)) {
-//                                                mListRoomTemp.add(mListRoom.get(i));
-//                                                break;
-//                                            }
-//                                        }
-//                                    }
-//
-//                                } else {
-                                if(mSpinnerRoomList.getSelectedItemPosition()>0){
-                                    panel_view.setVisibility(View.VISIBLE);
-                                }else {
-                                    panel_view.setVisibility(View.GONE);
+                                } else {
+                                    JSONArray roomArray = dataObject.optJSONArray("roomdeviceList");
+                                    mListRoom = JsonHelper.parseRoomArray(roomArray, false);
                                 }
 
-                                if(mSpinnerPanelList.getSelectedItemPosition()>0){
-                                    frame_all_devices.setVisibility(View.VISIBLE);
-                                }else {
-                                    frame_all_devices.setVisibility(View.INVISIBLE);
-                                }
-
-                                frame_living_room.setVisibility(View.VISIBLE);
-                                RoomVO oneRoom = new RoomVO();
-                                oneRoom.setRoomId("0");
-                                oneRoom.setRoomName("All Room");
-                                mListRoom.add(0, oneRoom);
+                                if (room.equalsIgnoreCase("Mood")) {
+                                    frame_living_room.setVisibility(View.VISIBLE);
+                                    RoomVO oneRoom = new RoomVO();
+                                    oneRoom.setRoomId("0");
+                                    oneRoom.setRoomName("All Mood");
+                                    mListRoom.add(0, oneRoom);
 //                                }
-                            } else if (room.equalsIgnoreCase("schedule") || room.equalsIgnoreCase("Timer")) {
+                                } else if (room.equalsIgnoreCase("Room")) {
+                                    if (mSpinnerRoomList.getSelectedItemPosition() > 0) {
+                                        panel_view.setVisibility(View.VISIBLE);
+                                    } else {
+                                        panel_view.setVisibility(View.GONE);
+                                    }
+
+                                    if (mSpinnerPanelList.getSelectedItemPosition() > 0) {
+                                        frame_all_devices.setVisibility(View.VISIBLE);
+                                    } else {
+                                        frame_all_devices.setVisibility(View.INVISIBLE);
+                                    }
+
+                                    frame_living_room.setVisibility(View.VISIBLE);
+                                    RoomVO oneRoom = new RoomVO();
+                                    oneRoom.setRoomId("0");
+                                    oneRoom.setRoomName("All Room");
+                                    mListRoom.add(0, oneRoom);
+//                                }
+                                } else if (room.equalsIgnoreCase("schedule") || room.equalsIgnoreCase("Timer")) {
 //                                if (isCheckActivity.equals("schedule")) {
 //                                    for (int i = 0; i < scheduleRoomArrayList.size(); i++) {
 //                                        if (!TextUtils.isEmpty(scheduleRoomArrayList.get(i).getSchedule_id())) {
@@ -1446,50 +1422,52 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 //
 //                                    frame_living_room.setVisibility(View.VISIBLE);
 //                                } else {
-                                frame_living_room.setVisibility(View.VISIBLE);
-                                RoomVO oneRoom = new RoomVO();
-                                oneRoom.setRoomId("0");
-                                if (room.equalsIgnoreCase("Timer")) {
-                                    oneRoom.setRoomName("All Timer");
-                                } else {
-                                    oneRoom.setRoomName("All Schedule");
-                                }
-
-                                mListRoom.add(0, oneRoom);
-
-                                if (room.equalsIgnoreCase("Timer")) {
-                                    for (int i = 0; i < scheduleRoomArrayList.size(); i++) {
-                                        if (scheduleRoomArrayList.get(i).getIs_timer() == 1) {
-                                            RoomVO roomVO = new RoomVO();
-                                            roomVO.setRoomName(scheduleRoomArrayList.get(i).getSchedule_name());
-                                            roomVO.setRoomId(scheduleRoomArrayList.get(i).getSchedule_id());
-                                            mListRoom.add(roomVO);
-                                        }
-                                    }
-                                } else {
-                                    for (int i = 0; i < scheduleRoomArrayList.size(); i++) {
-                                        if (scheduleRoomArrayList.get(i).getIs_timer() == 0) {
-                                            RoomVO roomVO = new RoomVO();
-                                            roomVO.setRoomName(scheduleRoomArrayList.get(i).getSchedule_name());
-                                            roomVO.setRoomId(scheduleRoomArrayList.get(i).getSchedule_id());
-                                            mListRoom.add(roomVO);
-                                        }
-
+                                    frame_living_room.setVisibility(View.VISIBLE);
+                                    RoomVO oneRoom = new RoomVO();
+                                    oneRoom.setRoomId("0");
+                                    if (room.equalsIgnoreCase("Timer")) {
+                                        oneRoom.setRoomName("All Timer");
+                                    } else {
+                                        oneRoom.setRoomName("All Schedule");
                                     }
 
-                                }
+                                    mListRoom.add(0, oneRoom);
+
+                                    if (room.equalsIgnoreCase("Timer")) {
+                                        for (int i = 0; i < scheduleRoomArrayList.size(); i++) {
+                                            if (scheduleRoomArrayList.get(i).getIs_timer() == 1) {
+                                                RoomVO roomVO = new RoomVO();
+                                                roomVO.setRoomName(scheduleRoomArrayList.get(i).getSchedule_name());
+                                                roomVO.setRoomId(scheduleRoomArrayList.get(i).getSchedule_id());
+                                                mListRoom.add(roomVO);
+                                            }
+                                        }
+                                    } else {
+                                        for (int i = 0; i < scheduleRoomArrayList.size(); i++) {
+                                            if (scheduleRoomArrayList.get(i).getIs_timer() == 0) {
+                                                RoomVO roomVO = new RoomVO();
+                                                roomVO.setRoomName(scheduleRoomArrayList.get(i).getSchedule_name());
+                                                roomVO.setRoomId(scheduleRoomArrayList.get(i).getSchedule_id());
+                                                mListRoom.add(roomVO);
+                                            }
+
+                                        }
+
+                                    }
 
 
 //                                }
 
-                            } else {
+                                } else {
+                                    frame_living_room.setVisibility(View.GONE);
+                                    RoomVO oneRoom = new RoomVO();
+                                    oneRoom.setRoomId("0");
+                                    oneRoom.setRoomName("All Schedule");
+                                    mListRoom.add(0, oneRoom);
+                                }
+                            }else {
                                 frame_living_room.setVisibility(View.GONE);
-                                RoomVO oneRoom = new RoomVO();
-                                oneRoom.setRoomId("0");
-                                oneRoom.setRoomName("All Schedule");
-                                mListRoom.add(0, oneRoom);
                             }
-
                         }
 
                         if (mListRoomTemp.size() > 0) {

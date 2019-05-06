@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/_5sdp"
+    android:background="@drawable/background_shadow"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/linearChildUser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_7sdp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="@dimen/_5sdp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+
+                    <ImageView
+                        android:id="@+id/imgArrow"
+                        android:layout_gravity="center|left"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/arrow_down_gray"/>
+
+                    <TextView
+                        android:id="@+id/txtUserName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/_14sdp"
+                        android:paddingLeft="@dimen/_10sdp"
+                        android:textColor="@color/txtPanal"
+                        android:singleLine="true"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/imgMore"
+                android:layout_width="@dimen/_27sdp"
+                android:layout_height="@dimen/_27sdp"
+                android:layout_gravity="center"
+                android:src="@drawable/more"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:visibility="visible"
+            android:id="@+id/linearList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Room List"
+                android:textSize="@dimen/_16sdp"
+                android:textColor="@color/txtPanal"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerRoomList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp" />
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/txtRoomList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No roomlist found."
+                android:textSize="@dimen/_14sdp"
+                android:textColor="@color/txtPanal"
+                android:gravity="center"
+                android:padding="@dimen/_7sdp"/>
+
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Camera List"
+                android:layout_marginTop="@dimen/_7sdp"
+                android:textSize="@dimen/_16sdp"
+                android:textColor="@color/txtPanal"/>
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerCameraList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:background="@color/automation_white"
+                android:layout_marginTop="@dimen/_10sdp"></android.support.v7.widget.RecyclerView>
+
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/txtNocamera"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="No camera found."
+                    android:textSize="@dimen/_14sdp"
+                    android:textColor="@color/txtPanal"
+                    android:gravity="center"
+                    android:padding="@dimen/_7sdp"/>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/automation_black"/>
+
+</LinearLayout>

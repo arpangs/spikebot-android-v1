@@ -255,7 +255,7 @@ public class ChatApplication extends Application {
     public static List<User> getUserList(Context context) {
         List<User> userList = new ArrayList<>();
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
-        if (!TextUtils.isEmpty(jsonText)) {
+        if (!TextUtils.isEmpty(jsonText) && jsonText.length()>2) {
             Gson gson = new Gson();
             Type type = new TypeToken<List<User>>() {
             }.getType();

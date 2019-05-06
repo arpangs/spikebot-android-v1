@@ -46,6 +46,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.65"
+                        android:singleLine="true"
+                        android:maxLength="30"
                         android:hint="" />
 
                 </LinearLayout>
@@ -70,6 +72,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.65"
+                        android:singleLine="true"
+                        android:maxLength="30"
                         android:hint="" />
 
                 </LinearLayout>
@@ -95,6 +99,8 @@
                         android:layout_height="wrap_content"
                         android:inputType="number"
                         android:layout_weight="0.65"
+                        android:singleLine="true"
+                        android:maxLength="12"
                         android:hint="" />
 
                 </LinearLayout>
@@ -123,6 +129,9 @@
                         android:layout_weight="0.65"
                         android:enabled="false"
                         android:hint=""
+                        android:singleLine="true"
+                        android:maxLength="35"
+                        android:inputType="textEmailAddress"
                         android:textSize="16sp" />
 
                 </LinearLayout>
@@ -148,6 +157,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.65"
                         android:hint=""
+                        android:singleLine="true"
+                        android:maxLength="30"
                         android:enabled="false"
                         android:visibility="visible" />
                 </LinearLayout>
@@ -203,6 +214,8 @@
                             android:layout_height="wrap_content"
                             android:hint="New Password"
                             android:inputType="textPassword"
+                            android:singleLine="true"
+                            android:maxLength="20"
                             android:textSize="16sp" />
                         <EditText
                             android:layout_marginTop="4dp"
@@ -212,6 +225,8 @@
                             android:layout_height="wrap_content"
                             android:inputType="textPassword"
                             android:hint="Confirm Password"
+                            android:singleLine="true"
+                            android:maxLength="20"
                             android:textSize="16sp" />
                     </LinearLayout>
 

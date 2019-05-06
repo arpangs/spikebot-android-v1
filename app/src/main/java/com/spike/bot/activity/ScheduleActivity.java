@@ -1629,6 +1629,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 //  deviceObj.put("room_device_id", deviceListLayoutHelper.getSelectedItemIds());
 
                 List<String> mRoomIdList = new ArrayList<>();
+                List<String> roomName= new ArrayList<>();
 
                 List<DeviceVO> deviceVOArrayList =new ArrayList<>();
 
@@ -1647,6 +1648,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
                     JSONObject object = new JSONObject();
                     mRoomIdList.add(""+dPanel.getRoomId());
+                    roomName.add(""+dPanel.getRoomName());
 
 //                    if(dPanel.getRoomDeviceId().length()>1){
 
@@ -1714,38 +1716,81 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     } else {
                         //Remove Duplicate room id from mRoomIdList List
                         ArrayList<String> resultRoomId = new ArrayList<>();
+                        ArrayList<String> resultRoomName = new ArrayList<>();
 
                         HashSet<String> set = new HashSet<>();
+                        HashSet<String> setName = new HashSet<>();
+
                         for(String roomId : mRoomIdList){
                             if(!set.contains(roomId)){
                                 resultRoomId.add(roomId);
                                 set.add(roomId);
                             }
                         }
+
+                        for(String roomId : roomName){
+                            if(!setName.contains(roomId)){
+                                resultRoomName.add(roomId);
+                                setName.add(roomId);
+                            }
+                        }
+
+                        JSONArray  jsonArray=new JSONArray();
+
+                        for(int i=0; i<resultRoomId.size(); i++){
+                            JSONObject jsonObject=new JSONObject();
+                            jsonObject.put("room_id",resultRoomId.get(i));
+                            jsonObject.put("room_name",resultRoomName.get(i));
+
+                            jsonArray.put(jsonObject);
+                        }
+
                         //deviceObj.put("room_id", "");
                         String collectionRoomId = "";
                         for(String mRoomId : resultRoomId){
                             collectionRoomId += mRoomId +",";
                         }
-                        deviceObj.put("room_id", ""+collectionRoomId.substring(0, collectionRoomId.lastIndexOf(",")));
+                        //deviceObj.put("room_id_is", ""+collectionRoomId.substring(0, collectionRoomId.lastIndexOf(",")));
+                        deviceObj.put("room_id", jsonArray);
                     }
                     if (!TextUtils.isEmpty(roomId)) {
                         ArrayList<String> resultRoomId = new ArrayList<>();
+                        ArrayList<String> resultRoomName = new ArrayList<>();
 
                         HashSet<String> set = new HashSet<>();
+                        HashSet<String> setName = new HashSet<>();
+
                         for(String roomId : mRoomIdList){
                             if(!set.contains(roomId)){
                                 resultRoomId.add(roomId);
                                 set.add(roomId);
                             }
                         }
-                        //deviceObj.put("room_id", "");
+
+                        for(String roomId : roomName){
+                            if(!setName.contains(roomId)){
+                                resultRoomName.add(roomId);
+                                setName.add(roomId);
+                            }
+                        }
+
+                        JSONArray  jsonArray=new JSONArray();
+
+                        for(int i=0; i<resultRoomId.size(); i++){
+                            JSONObject jsonObject=new JSONObject();
+                            jsonObject.put("room_id",resultRoomId.get(i));
+                            jsonObject.put("room_name",resultRoomName.get(i));
+
+                            jsonArray.put(jsonObject);
+                        }
+
+
                         String collectionRoomId = "";
                         for(String mRoomId : resultRoomId){
                             collectionRoomId += mRoomId +",";
                         }
-                        deviceObj.put("room_id", ""+collectionRoomId.substring(0, collectionRoomId.lastIndexOf(",")));
-                     //   deviceObj.put("room_id", resultRoomId);
+                       // deviceObj.put("room_id", ""+collectionRoomId.substring(0, collectionRoomId.lastIndexOf(",")));
+                        deviceObj.put("room_id", jsonArray);
                     }
                     // deviceObj.put("mood_id", "");
 
@@ -1767,7 +1812,14 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     int mood_selected_id = sp_mood_selection.getSelectedItemPosition();
                     String mood_string_id = moodListSpinner.get(mood_selected_id).getRoomId();
 
-                    deviceObj.put("room_id", mood_string_id);
+                    JSONArray jsonArray=new JSONArray();
+                    JSONObject jsonObject=new JSONObject();
+                    jsonObject.put("room_id",mood_string_id);
+                    jsonObject.put("room_name",moodListSpinner.get(mood_selected_id).getRoomName());
+                    jsonArray.put(jsonObject);
+
+
+                    deviceObj.put("room_id", jsonArray);
 
                     // deviceObj.put("room_id", "");
                 }
@@ -1991,8 +2043,14 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         try {
             jsonObject.put("room_type", 1);
             jsonObject.put("is_sensor_panel", 0);
+//            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+//            jsonObject.put("admin",1);
             jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put("admin",1);
+            if(TextUtils.isEmpty(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE))){
+                jsonObject.put("admin","");
+            }else {
+                jsonObject.put("admin",Integer.parseInt(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE)));
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -2491,6 +2549,8 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         if (isEdit) {
             url = webUrl + Constants.UPDATE_SCHEDULE;
         }
+
+        ChatApplication.logDisplay("schu is "+deviceObj.toString());
 
         new GetJsonTask(ScheduleActivity.this, url, "POST", deviceObj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override

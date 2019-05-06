@@ -9,7 +9,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -110,6 +113,7 @@ public class SignUp extends AppCompatActivity {
         });
 
         getUUID();
+
     }
 
     @Override
@@ -241,7 +245,7 @@ public class SignUp extends AppCompatActivity {
         try {
             object.put("first_name",edt_first_name.getText().toString());
             object.put("last_name",edt_last_name.getText().toString());
-            object.put("user_name",edt_user_name.getText().toString());
+            object.put("user_name",edt_user_name.getText().toString().trim());
             object.put("user_email",edt_email_id.getText().toString());
             object.put("user_password",edt_password.getText().toString());
             object.put("user_phone",edt_phone_no.getText().toString());
@@ -286,6 +290,7 @@ public class SignUp extends AppCompatActivity {
                         String user_id=data.optString("user_id");
                         String user_password=data.optString("user_password");
                         String admin=data.optString("admin");
+                        String local_ip=data.optString("local_ip_address");
 
                         Common.savePrefValue(SignUp.this,Constants.USER_PASSWORD,user_password);
                         Common.savePrefValue(SignUp.this,Constants.PREF_IP,ip);
@@ -301,7 +306,7 @@ public class SignUp extends AppCompatActivity {
                             Common.savePrefValue(SignUp.this, Constants.USER_ROOM_TYPE, ""+2);
                         }
 
-                        User user = new User(user_id,first_name,last_name,ip,false,user_password,admin);
+                        User user = new User(user_id,first_name,last_name,ip,false,user_password,admin,local_ip);
 
                         Gson gson = new Gson();
                         String jsonText = Common.getPrefValue(getApplicationContext(),Common.USER_JSON);

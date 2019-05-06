@@ -485,7 +485,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     }
 
     /**
-     * {@link SectionedExpandableGridAdapter#onSmoothScrollList}
+     * {@link SectionedExpandableGridAdapter#}
      *
      * @param position
      */
@@ -541,7 +541,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 mSocket.on("unReadCount", unReadCount);
                 mSocket.on("sensorStatus", sensorStatus);
                 mSocket.on("updateChildUser", updateChildUser);
-                mSocket.on("updateChildUser", updateChildUser);
+//                mSocket.on("updateChildUser", updateChildUser);
 //                mSocket.on("deleteChildUser", deleteChildUser);
                 //   mSocket.on("configureIRBlaster",configureIRBlaster);
 
@@ -1560,7 +1560,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             if(Common.getPrefValue(getActivity(), Constants.USER_ID).equalsIgnoreCase(user_id)){
                                 showDialog=1;
                                 getDeviceList(showDialog);
-                                ChatApplication.showToast(getActivity(),message);
+//                                ChatApplication.showToast(getActivity(),message);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -2941,6 +2941,11 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                finally {
+                    {
+                        ActivityHelper.dismissProgressDialog();
+                    }
+                }
             }
 
             @Override
@@ -3093,7 +3098,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (responseErrorCode != null) {
-                            responseErrorCode.onLogout();
+//                            responseErrorCode.onLogout();
+                            ((Main2Activity)getActivity()).logoutCloudUser();
+
                         }
                     }
                 }).show();
@@ -3111,7 +3118,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         for (int i = 0; i < userList.size(); i++) {
             if (userList.get(i).getUser_id().equals(userId)) {
                 userList.get(i).setIsActive(true);
-                mCallback.onArticleSelected("" + userList.get(i).getFirstname() + " " + userList.get(i).getLastname());
+                mCallback.onArticleSelected("" + userList.get(i).getFirstname());
             } else {
                 userList.get(i).setIsActive(false);
             }
@@ -3131,17 +3138,19 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     public void getDeviceList(final int checkmessgae) {
         //showProgress();
 
+//        Common.savePrefValue(ChatApplication.getInstance(),  Constants.USER_ID, "1556718432640_mbViYfi_A");
+//        Common.savePrefValue(ChatApplication.getInstance(),  Constants.USER_ADMIN_TYPE, "1");
         if (getActivity() == null) {
             return;
         }
 
-        if(TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ID))){
-            showDialog = 1;
-            loginPIEvent.showLogin();
-            return;
-        }
+//        if(TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ID))){
+//            showDialog = 1;
+//            loginPIEvent.showLogin();
+//            return;
+//        }
 
-        if (showDialog == 1 || checkmessgae == 1 || checkmessgae == 6 || checkmessgae == 7 || checkmessgae == 8 || checkmessgae == 9 || checkmessgae == 10) {
+        if (showDialog == 1 || checkmessgae == 1 || checkmessgae == 6 || checkmessgae == 7 || checkmessgae == 8 || checkmessgae == 10) {
             ActivityHelper.showProgressDialog(getActivity(), "Please Wait...", false);
         }
         ChatApplication.logDisplay("show progress is "+showDialog);
@@ -3248,8 +3257,12 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                             // mCallback.onArticleSelected("Spike Bot");
 
-                            Intent intent = new Intent(getActivity(), SignUp.class);
-                            startActivityForResult(intent, SIGN_IP_REQUEST_CODE);
+                            if(!TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ID))){
+                                ((Main2Activity)getActivity()).logoutCloudUser();
+                            }else {
+                                Intent intent = new Intent(getActivity(), SignUp.class);
+                                startActivityForResult(intent, SIGN_IP_REQUEST_CODE);
+                            }
                             return;
                         }
 
@@ -3296,7 +3309,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                                 if (user.getUser_id().equalsIgnoreCase(userId) && user.getIsActive()) {
                                     flagIsLogin = true;
                                     saveCurrentId(getActivity(), userId);
-                                    mCallback.onArticleSelected("" + userFirstName + " " + userLastName);
+                                    mCallback.onArticleSelected("" + userFirstName);
                                     break;
                                 }
                             }
@@ -3304,7 +3317,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             if (flagIsLogin == false) {
                                 if (checkLoginId(userId, checkmessgae)) {
                                     saveCurrentId(getActivity(), userId);
-                                    mCallback.onArticleSelected("" + userFirstName + " " + userLastName);
+                                    mCallback.onArticleSelected("" + userFirstName );
                                     ChatApplication.logDisplay("pie details is isSignUp ");
                                 } else if (flagisCould) {
                                     flagisCould = false;
@@ -3318,6 +3331,8 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                                     loginPIEvent.showLogin();
                                     return;
                                 }
+                            }else {
+                                ((Main2Activity)getActivity()).loginDialog(false, false);
                             }
                         } else {
                             showDialog = 1;
@@ -3329,7 +3344,8 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                          * If Network connected on cloud then check user password is changed or not
                          * if changed then logout user
                          */
-                        if (Main2Activity.isCloudConnected && !TextUtils.isEmpty(userPassword)) {
+//                        if (Main2Activity.isCloudConnected && !TextUtils.isEmpty(userPassword)) {
+                        if (!TextUtils.isEmpty(userPassword)) {
                             String jsonTextTemp1 = Common.getPrefValue(getContext(), Common.USER_JSON);
                             List<User> userList1 = new ArrayList<User>();
                             if (!TextUtils.isEmpty(jsonTextTemp1)) {
@@ -3339,11 +3355,10 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                             for (User user : userList1) {
                                 if (user.isActive()) {
-//                                    String USER_ID = Common.getPrefValue(getContext(), Constants.USER_ID);
-//                                    String USER_PASSWORD = Common.getPrefValue(getContext(), Constants.USER_PASSWORD);
-
-                                    if (!user.getPassword().equalsIgnoreCase(userPassword)) {
-                                        showLogoutAlert();
+                                    if (user.getUser_id().equalsIgnoreCase(userId) && !user.getPassword().equalsIgnoreCase(userPassword)) {
+//                                        showLogoutAlert();
+                                        ChatApplication.showToast(getActivity(),"Password has been changed!");
+                                        ((Main2Activity)getActivity()).logoutCloudUser();
                                     }
 
                                 }
@@ -3374,7 +3389,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                          * {@link Main2Activity#toolbarTitle}
                          * @see Main2Activity#toolbar
                          */
-                        mCallback.onArticleSelected("" + userFirstName + " " + userLastName);
+                        mCallback.onArticleSelected("" + userFirstName );
 
                         JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
                         roomList = JsonHelper.parseRoomArray(roomArray, false);
@@ -3549,6 +3564,8 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        ChatApplication.logDisplay("jsonObject is dashboard could "+url+ "   "+ jsonObject.toString());
+
         new GetJsonTask2(activity, url, "POST", jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -3643,7 +3660,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 //                        webUrl = userList.get(0).getCloudIP();
 //                        ChatApplication.url = webUrl;
                         String jsonCurProduct = gson.toJson(userList);
-                        mCallback.onArticleSelected("" + userFirstName + " " + userLastName);
+                        mCallback.onArticleSelected("" + userFirstName);
                         Common.savePrefValue(getActivity(), Common.USER_JSON, jsonCurProduct);
 
                         saveCurrentId(getActivity(), userId);
@@ -3781,7 +3798,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         Common.savePrefValue(ChatApplication.getInstance(), "last_name", userLastName);
                         Common.savePrefValue(getContext(), Constants.USER_PASSWORD, userPassword);
 
-                        mCallback.onArticleSelected("" + userFirstName + " " + userLastName);
+                        mCallback.onArticleSelected("" + userFirstName );
 
                         JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
                         roomList = JsonHelper.parseRoomArray(roomArray, false);

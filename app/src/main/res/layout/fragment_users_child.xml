@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:background="@color/sky_blue"
+        app:popupTheme="@style/AppTheme.PopupOverlay">
+
+    </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="10dp"
+                    android:orientation="vertical"
+                    android:paddingBottom="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.35"
+                            android:textSize="@dimen/_12sdp"
+                            android:gravity="center_vertical|bottom"
+                            android:text="Display Name" />
+
+                        <EditText
+                            android:id="@+id/edDisplayName"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.65"
+                            android:hint=""
+                            android:singleLine="true"
+                            android:maxLength="20"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.35"
+                            android:textSize="@dimen/_12sdp"
+                            android:gravity="center_vertical|bottom"
+                            android:text="Username" />
+
+                        <EditText
+                            android:id="@+id/edtUsername"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.65"
+                            android:hint=""
+                            android:singleLine="true"
+                            android:maxLength="25"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:visibility="gone"
+                        android:id="@+id/linearPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.35"
+                            android:textSize="@dimen/_12sdp"
+                            android:gravity="center_vertical|bottom"
+                            android:text="Password" />
+
+                        <EditText
+                            android:id="@+id/edtPassword"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.65"
+                            android:hint=""
+                            android:imeOptions="actionDone"
+                            android:singleLine="true"
+                            android:maxLength="15"
+                            android:inputType="textPassword"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/linearChangePassword"
+                        android:background="@drawable/button_border_ll"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/_5sdp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/ll_password_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="15dp"
+                            android:background="@drawable/button_border_ll"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:text="Change Password for Child Login"
+                                android:textSize="16dp"
+                                android:textColor="#808080"
+                                android:layout_gravity="center"
+                                android:layout_width="0dp"
+                                android:layout_weight="0.90"
+                                android:layout_height="wrap_content" />
+
+                            <ImageView
+                                android:id="@+id/img_pass_arrow"
+                                android:src="@drawable/icn_arrow_right"
+                                android:layout_width="0dp"
+                                android:layout_gravity="center"
+                                android:layout_weight="0.10"
+                                android:layout_height="24dp" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_pass_edittext_view"
+                            android:visibility="visible"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:layout_marginBottom="16dp"
+                            android:orientation="vertical">
+
+                            <EditText
+                                android:id="@+id/et_new_password"
+                                android:padding="15dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="New Password"
+                                android:inputType="textPassword"
+                                android:singleLine="true"
+                                android:maxLength="20"
+                                android:textSize="16sp" />
+                            <EditText
+                                android:layout_marginTop="4dp"
+                                android:id="@+id/et_new_password_confirm"
+                                android:padding="15dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="textPassword"
+                                android:imeOptions="actionDone"
+                                android:hint="Confirm Password"
+                                android:singleLine="true"
+                                android:maxLength="20"
+                                android:textSize="16sp" />
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.35"
+                            android:textSize="@dimen/_12sdp"
+                            android:gravity="center_vertical"
+                            android:text="Child type" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="@dimen/_8sdp"
+                            android:paddingBottom="@dimen/_8sdp"
+                            android:layout_weight="0.65">
+
+                            <RadioGroup
+                                android:id="@+id/radioGroup"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <RadioButton
+                                    android:id="@+id/radioBtnAdmin"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Parent" />
+
+                                <RadioButton
+                                    android:id="@+id/radioBtnChild"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Child"
+                                    android:checked="true"
+                                    android:layout_marginLeft="@dimen/_10sdp"/>
+
+                            </RadioGroup>
+                        </LinearLayout>
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <!--  android:background="@drawable/background_drak_box"-->
+
+                        <TextView
+                            android:id="@+id/spinnerRoomList"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="@dimen/_5sdp"
+                            android:paddingLeft="@dimen/_8sdp"
+                            android:text="Select Room"
+                            android:textSize="@dimen/_12sdp"
+                            android:singleLine="true" />
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/recyclerRoom"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/_5sdp"/>
+
+                        <TextView
+                            android:visibility="gone"
+                            android:id="@+id/txtEmptyRoom"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/_10sdp"
+                            android:text="No Room found."
+                            android:gravity="center"
+                            android:textSize="@dimen/_16sdp"
+                            android:singleLine="true" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:orientation="vertical">
+
+
+                        <TextView
+                            android:id="@+id/spinnerCameraList"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="@dimen/_5sdp"
+                            android:paddingLeft="@dimen/_8sdp"
+                            android:text="Select Camera"
+                            android:textSize="@dimen/_12sdp"
+                            android:singleLine="true" />
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/recyclerCamera"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/_5sdp"/>
+
+                        <TextView
+                            android:visibility="gone"
+                            android:id="@+id/txtEmptyCamera"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/_10sdp"
+                            android:text="No Camera found."
+                            android:gravity="center"
+                            android:textSize="@dimen/_16sdp"
+                            android:singleLine="true" />
+
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/_15sdp"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:weightSum="1">
+
+                        <Button
+                            android:id="@+id/btnSave"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:background="@drawable/button_radius"
+                            android:text="Save"
+                            android:visibility="gone"
+                            android:textColor="@color/automation_white"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+</LinearLayout>

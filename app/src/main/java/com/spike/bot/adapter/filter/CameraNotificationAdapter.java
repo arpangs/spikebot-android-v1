@@ -149,7 +149,7 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
             if(Common.getPrefValue(mContext, Constants.USER_ID).equalsIgnoreCase(arrayListLog.get(position).getUser_id())){
                 holder.imgMore.setVisibility(View.VISIBLE);
             }else {
-                holder.imgMore.setVisibility(View.GONE);
+                holder.imgMore.setVisibility(View.INVISIBLE);
             }
         }
 

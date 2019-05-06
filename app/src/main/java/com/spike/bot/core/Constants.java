@@ -2,6 +2,8 @@ package com.spike.bot.core;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
@@ -21,11 +23,11 @@ public class Constants {
     public static final String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //117 testing
 //http://52.24.23.7:8079
 //http://52.24.23.7:7
-//    public static final String IP_END = "114"; //101 //117 //222
+//    public static final String IP_END = "111"; //101 //117 //222
 //    public static final String  IP_END = "119"; //101 //117 //222
 //
 //  public static final String  IP_END = "222"; //101 //117 //222
-    public static final String  IP_END = "117"; //101 //117 //222
+    public static final String  IP_END = "117"; //101 //117 //222 vip/123
     public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";
     public static final String CAMERA_PATH = "/static/storage/volume/";
 
@@ -43,6 +45,7 @@ public class Constants {
     public static final String USER_TYPE = "user_type";
     public static final String USER_ADMIN_TYPE = "user_admin_type";
     public static final String USER_ROOM_TYPE = "user_room_type";
+    public static final String wifiIpAddress = "";
     public static int adminType = 1;
     public static int room_type = 0;
 
@@ -234,7 +237,7 @@ public class Constants {
             if(userList.size()>0){
                 for(int i=0; i<userList.size(); i++){
                     if(userList.get(i).getIsActive()){
-                        name=userList.get(i).getFirstname()+" "+userList.get(i).getLastname();
+                        name=userList.get(i).getFirstname();
                         break;
                     }
                 }
@@ -244,5 +247,63 @@ public class Constants {
         return name;
     }
 
+    public static String getuserIp(Context context){
+        String getuserIp="";
+        String jsonText = Common.getPrefValue(context, Common.USER_JSON);
+        if (!TextUtils.isEmpty(jsonText)) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<User>>() {}.getType();
+            List<User> userList = gson.fromJson(jsonText, type);
+            if(userList.size()>0){
+                for(int i=0; i<userList.size(); i++){
+                    if(userList.get(i).getIsActive()){
+                        getuserIp=userList.get(i).getLocal_ip();
+                        break;
+                    }
+                }
+            }
+        }
+
+        return getuserIp;
+    }
+
+
+    public static String getuserCloudIP(Context context){
+        String getuserIp="";
+        String jsonText = Common.getPrefValue(context, Common.USER_JSON);
+        if (!TextUtils.isEmpty(jsonText)) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<User>>() {}.getType();
+            List<User> userList = gson.fromJson(jsonText, type);
+            if(userList.size()>0){
+                for(int i=0; i<userList.size(); i++){
+                    if(userList.get(i).getIsActive()){
+                        getuserIp=userList.get(i).getCloudIP();
+                        break;
+                    }
+                }
+            }
+        }
+
+        return getuserIp;
+    }
+
+
+    // ignore enter First space on edittext
+    public static InputFilter ignoreFirstWhiteSpace() {
+        return new InputFilter() {
+            public CharSequence filter(CharSequence source, int start, int end,
+                                       Spanned dest, int dstart, int dend) {
+
+                for (int i = start; i < end; i++) {
+                    if (Character.isWhitespace(source.charAt(i))) {
+                        if (dstart == 0)
+                            return "";
+                    }
+                }
+                return null;
+            }
+        };
+    }
 
 }

@@ -94,7 +94,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 //    ArrayList<ScheduleVO> scheduleMoodArrayList = new ArrayList<>();
 
     public boolean isFilterType = false, isMood, isMoodAdapter, isRefreshonScroll = false;
-    String isRoomMainFm="",isActivityType = "", webUrl = "", moodId = "", moodId2 = "", moodId3 = "", roomId = "", userName = "";
+    String isRoomMainFm = "", isActivityType = "", webUrl = "", moodId = "", moodId2 = "", moodId3 = "", roomId = "", userName = "";
     int selection = 0;
     Menu mainMenu;
 
@@ -103,7 +103,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     private FloatingActionButton mFab;
     private CardView mFabMenuLayout;
     private TextView fab_menu1, fab_menu2, fab_menu3, fab_menu4, fab_menu5, fab_menu6, fab_menu7;
-
+    View view;
 
     public ScheduleFragment() {
         super();
@@ -117,7 +117,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         return fragment;
     }
 
-    public static ScheduleFragment newInstance(boolean isMood, String moodId, String moodId2, String moodId3, int selection, String roomId, boolean isMoodAdapter, String isActivityType,String isRoomMainFm) {
+    public static ScheduleFragment newInstance(boolean isMood, String moodId, String moodId2, String moodId3, int selection, String roomId, boolean isMoodAdapter, String isActivityType, String isRoomMainFm) {
         ScheduleFragment fragment = new ScheduleFragment();
         Bundle args = new Bundle();
         args.putBoolean("isMood", isMood);
@@ -190,7 +190,8 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             String jsonText = Common.getPrefValue(getActivity(), Common.USER_JSON);
             if (!TextUtils.isEmpty(jsonText)) {
                 Gson gson = new Gson();
-                Type type = new TypeToken<List<User>>() {}.getType();
+                Type type = new TypeToken<List<User>>() {
+                }.getType();
                 List<User> userList = gson.fromJson(jsonText, type);
                 if (userList.size() == 1) {
                 } else {
@@ -211,11 +212,11 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
         }
         if (isMood) {
-          //  ll_room.setVisibility(View.GONE);
+            //  ll_room.setVisibility(View.GONE);
             linearTabSchedule.setVisibility(View.GONE);
             getScheduleFromMood();
         } else {
-            getDeviceList(0);
+            getDeviceList();
         }
     }
 
@@ -233,7 +234,8 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         String jsonText = Common.getPrefValue(getActivity(), Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {}.getType();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
             userList = gson.fromJson(jsonText, type);
         }
         return userList;
@@ -241,7 +243,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_schedule, container, false);
+        view = inflater.inflate(R.layout.fragment_schedule, container, false);
         try {
             isMood = getArguments().getBoolean("isMood");
             moodId = getArguments().getString("moodId");
@@ -262,24 +264,23 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             e.printStackTrace();
         }
 
-        ll_mood_view = (LinearLayout) view.findViewById(R.id.ll_mood_view);
-        ll_recycler = (LinearLayout) view.findViewById(R.id.ll_recycler);
-        linearTabSchedule = (LinearLayout) view.findViewById(R.id.linearTabSchedule);
-        btnRoomSchedule = (Button) view.findViewById(R.id.btnRoomSchedule);
-        btnMoodSchedule = (Button) view.findViewById(R.id.btnMoodSchedule);
-
-        txtRoomScdule = (TextView) view.findViewById(R.id.txtRoomScdule);
-        txt_mood_title = (TextView) view.findViewById(R.id.txt_mood_title);
-        empty_add_image = (ImageView) view.findViewById(R.id.empty_add_image);
-
-        ll_room = (LinearLayout) view.findViewById(R.id.ll_room);
-        txt_empty_scheduler = (LinearLayout) view.findViewById(R.id.txt_empty_schedule);
-        linear_progress = (LinearLayout) view.findViewById(R.id.linear_progress);
-        linearMood = (LinearLayout) view.findViewById(R.id.linearMood);
-
-        rv_mood = (RecyclerView) view.findViewById(R.id.rv_mood);
-        //rv_room = (RecyclerView) view.findViewById(R.id.rv_room);
-
+//        ll_mood_view = (LinearLayout) view.findViewById(R.id.ll_mood_view);
+//        ll_recycler = (LinearLayout) view.findViewById(R.id.ll_recycler);
+//        linearTabSchedule = (LinearLayout) view.findViewById(R.id.linearTabSchedule);
+//        btnRoomSchedule = (Button) view.findViewById(R.id.btnRoomSchedule);
+//        btnMoodSchedule = (Button) view.findViewById(R.id.btnMoodSchedule);
+//
+//        txtRoomScdule = (TextView) view.findViewById(R.id.txtRoomScdule);
+//        txt_mood_title = (TextView) view.findViewById(R.id.txt_mood_title);
+//        empty_add_image = (ImageView) view.findViewById(R.id.empty_add_image);
+//
+//        ll_room = (LinearLayout) view.findViewById(R.id.ll_room);
+//        txt_empty_scheduler = (LinearLayout) view.findViewById(R.id.txt_empty_schedule);
+//        linear_progress = (LinearLayout) view.findViewById(R.id.linear_progress);
+//        linearMood = (LinearLayout) view.findViewById(R.id.linearMood);
+//
+//        rv_mood = (RecyclerView) view.findViewById(R.id.rv_mood);
+        setId();
         rv_mood.setHasFixedSize(true);
         rv_mood.setItemViewCacheSize(20);
         rv_mood.setDrawingCacheEnabled(true);
@@ -335,7 +336,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
         if (!isCallVisibleHint) {
             startSocketConnection();
-            onLoadFragment(); //uncomment
+            onLoadFragment(0); //uncomment
         }
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
@@ -438,6 +439,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         return view;
     }
 
+
     /**
      * Display Fab Menu with subFab Button
      */
@@ -460,14 +462,14 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 //            }
 //        } else {
 
-            if (scheduleRoomArrayList.size() > 0) {
-                for (ScheduleVO scheduleVOL : scheduleRoomArrayList) {
+        if (scheduleRoomArrayList.size() > 0) {
+            for (ScheduleVO scheduleVOL : scheduleRoomArrayList) {
 
-                    if (scheduleVOL.getMood_id().equalsIgnoreCase(moodId)) {
-                        scheduleVO = scheduleVOL;
-                    }
+                if (scheduleVOL.getMood_id().equalsIgnoreCase(moodId)) {
+                    scheduleVO = scheduleVOL;
                 }
             }
+        }
 //        }
 
         Intent intent = new Intent(getActivity(), ScheduleActivity.class);
@@ -476,13 +478,13 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 //        } else {
 //            intent.putExtra("selection", !isMood ? 1 : 2);
 //        }
-        if(isMood){
-            if(isRoomMainFm.equals("room")){
+        if (isMood) {
+            if (isRoomMainFm.equals("room")) {
                 intent.putExtra("selection", 1);
-            }else {
+            } else {
                 intent.putExtra("selection", 2);
             }
-        }else {
+        } else {
             intent.putExtra("selection", !isFilterType ? 1 : 2);
         }
 
@@ -528,16 +530,35 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         }
     }
 
+    public void setId(){
+        ll_mood_view = (LinearLayout) view.findViewById(R.id.ll_mood_view);
+        ll_recycler = (LinearLayout) view.findViewById(R.id.ll_recycler);
+        linearTabSchedule = (LinearLayout) view.findViewById(R.id.linearTabSchedule);
+        btnRoomSchedule = (Button) view.findViewById(R.id.btnRoomSchedule);
+        btnMoodSchedule = (Button) view.findViewById(R.id.btnMoodSchedule);
+
+        txtRoomScdule = (TextView) view.findViewById(R.id.txtRoomScdule);
+        txt_mood_title = (TextView) view.findViewById(R.id.txt_mood_title);
+        empty_add_image = (ImageView) view.findViewById(R.id.empty_add_image);
+
+        ll_room = (LinearLayout) view.findViewById(R.id.ll_room);
+        txt_empty_scheduler = (LinearLayout) view.findViewById(R.id.txt_empty_schedule);
+        linear_progress = (LinearLayout) view.findViewById(R.id.linear_progress);
+        linearMood = (LinearLayout) view.findViewById(R.id.linearMood);
+
+        rv_mood = (RecyclerView) view.findViewById(R.id.rv_mood);
+    }
     @Override
     public void onResume() {
         super.onResume();
-       // 11
+        // 11
         if (activity instanceof Main2Activity) {
             userName = ((Main2Activity) getActivity()).toolbarTitle.getText().toString();
         }
+        setId();
         if (isMood) {
             linearTabSchedule.setVisibility(View.GONE);
-        }else {
+        } else {
             linearTabSchedule.setVisibility(View.VISIBLE);
         }
         if (scheduleRoomArrayList.size() == 0) {
@@ -556,12 +577,12 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
         if (ChatApplication.isScheduleNeedResume) {
             scheduleRoomArrayList.clear();
-          //  scheduleMoodArrayList.clear();
+            //  scheduleMoodArrayList.clear();
 //            scheduleMoodAdapter.notifyDataSetChanged();
 //            scheduleRoomAdapter.notifyDataSetChanged();
 
             ChatApplication.isScheduleNeedResume = false;
-            onLoadFragment();
+            onLoadFragment(1);
         }
 
         //ChatApplication.isRefreshHome
@@ -577,7 +598,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                 mSocket.on("changeScheduleStatus", reloadScheduleList);
                 mSocket.on("updateChildUser", updateChildUser);
 //                mSocket.on("deleteChildUser", deleteChildUser);
-                onLoadFragment();
+                onLoadFragment(2);
                 //  mSocket.connect();
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -601,11 +622,11 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
-                            String message=object.optString("message");
-                            String user_id=object.optString("user_id");
-                            if(Common.getPrefValue(getActivity(), Constants.USER_ID).equalsIgnoreCase(user_id)){
-                                ((Main2Activity)getActivity()).logoutCloudUser();
-                                ChatApplication.showToast(getActivity(),message);
+                            String message = object.optString("message");
+                            String user_id = object.optString("user_id");
+                            if (Common.getPrefValue(getActivity(), Constants.USER_ID).equalsIgnoreCase(user_id)) {
+                                ((Main2Activity) getActivity()).logoutCloudUser();
+                                ChatApplication.showToast(getActivity(), message);
                             }
 
                         } catch (JSONException e) {
@@ -632,16 +653,16 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
 
-                            String message=object.optString("message");
-                            String user_id=object.optString("user_id");
-                            if(Common.getPrefValue(getActivity(), Constants.USER_ID).equalsIgnoreCase(user_id)){
+                            String message = object.optString("message");
+                            String user_id = object.optString("user_id");
+                            if (Common.getPrefValue(getActivity(), Constants.USER_ID).equalsIgnoreCase(user_id)) {
                                 if (isMood) {
                                     linearTabSchedule.setVisibility(View.GONE);
                                     getScheduleFromMood();
                                 } else {
-                                    getDeviceList(0);
+                                    getDeviceList();
                                 }
-                                ChatApplication.showToast(getActivity(),message);
+                                ChatApplication.showToast(getActivity(), message);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -673,7 +694,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                                 String schedule_type = jsonObject.getString("schedule_type");
 
                                 if (isMood) {
-                                   // scheduleMoodAdapter.chandeScheduleStatus(schedule_id, schedule_status);
+                                    // scheduleMoodAdapter.chandeScheduleStatus(schedule_id, schedule_status);
                                     scheduleRoomAdapter.chandeScheduleStatus(schedule_id, schedule_status);
                                 } else {
 
@@ -740,14 +761,14 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 //                }
 //            } else {
 
-                if (scheduleRoomArrayList.size() > 0) {
-                    for (ScheduleVO scheduleVOL : scheduleRoomArrayList) {
+            if (scheduleRoomArrayList.size() > 0) {
+                for (ScheduleVO scheduleVOL : scheduleRoomArrayList) {
 
-                        if (scheduleVOL.getMood_id().equalsIgnoreCase(moodId)) {
-                            scheduleVO = scheduleVOL;
-                        }
+                    if (scheduleVOL.getMood_id().equalsIgnoreCase(moodId)) {
+                        scheduleVO = scheduleVOL;
                     }
                 }
+            }
 //            }
             Intent intent = new Intent(getActivity(), ScheduleActivity.class);
             //scheduleVO //moodId
@@ -768,11 +789,11 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         } else if (view.getId() == R.id.btnRoomSchedule) {
             isFilterType = false;
             updateButton(btnRoomSchedule, btnMoodSchedule);
-            getDeviceList(0);
+            getDeviceList();
         } else if (view.getId() == R.id.btnMoodSchedule) {
             isFilterType = true;
             updateButton(btnRoomSchedule, btnMoodSchedule);
-            getDeviceList(0);
+            getDeviceList();
         }
     }
 
@@ -873,7 +894,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
     private LinearLayout linear_progress;
 
-    public void onLoadFragment() {
+    public void onLoadFragment(int countShow) {
         hideMenu(!isMood);
 
 
@@ -892,10 +913,10 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             getScheduleFromMood();
         } else {
             linearTabSchedule.setVisibility(View.VISIBLE);
-            getDeviceList(2);
+            getDeviceList();
         }
 
-        if (scheduleRoomArrayList.size() == 0 ) {
+        if (scheduleRoomArrayList.size() == 0) {
             if (txt_empty_scheduler != null) {
                 txt_empty_scheduler.setVisibility(View.VISIBLE);
                 rv_mood.setVisibility(View.GONE);
@@ -928,7 +949,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     }
 
     /// all webservice call below.
-    public void getDeviceList(int count) {
+    public void getDeviceList() {
         if (getActivity() == null) {
             return;
         }
@@ -938,14 +959,20 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
-            if(TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE))){
-                jsonObject.put("admin","");
-            }else {
-                jsonObject.put("admin",Integer.parseInt(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE)));
+            if (TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE))) {
+                jsonObject.put("admin", "");
+            } else {
+                jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE)));
             }
+            //mood =1  room=0
+            jsonObject.put("schedule_type", (isFilterType) ? 1 : 0);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
+//        if (count == 1) {
+            //      ActivityHelper.showProgressDialog(getActivity(), "Please wait...", false);
+//        }
 
         ChatApplication.logDisplay("jsonObject is schedule " + jsonObject.toString());
         new GetJsonTask2(getActivity(), url, "POST", jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
@@ -955,6 +982,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 //                scheduleMoodAdapter.setClickable(true);
 //                scheduleRoomAdapter.setClickable(true);
                 swipeRefreshLayout.setRefreshing(false);
+                ActivityHelper.dismissProgressDialog();
                 try {
                     //scheduleRoomArrayList = new ArrayList<>();
 
@@ -967,26 +995,27 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                     rv_mood.setVisibility(View.VISIBLE);
                     txt_empty_scheduler.setVisibility(View.VISIBLE);
                     rv_mood.setVisibility(View.GONE);
-                        if (result.optJSONObject("data") != null) {
-                            JSONObject scheduleObject = result.getJSONObject("data");
+                    ChatApplication.logDisplay("schedule is " + result.toString());
+                    if (result.optJSONObject("data") != null) {
+                        JSONObject scheduleObject = result.getJSONObject("data");
 //moodSchedule
-                            JSONArray moodArray = scheduleObject.getJSONArray("moodSchedule");
-                            JSONArray roomArray = scheduleObject.getJSONArray("roomSchedule");
+                        JSONArray moodArray = scheduleObject.getJSONArray("scheduleList");
+//                            JSONArray roomArray = scheduleObject.getJSONArray("roomSchedule");
 
-                            scheduleRoomArrayList.clear();
-                            if (isFilterType) {
-                                scheduleRoomArrayList.addAll(JsonHelper.parseRoomScheduleArray(moodArray));
-                            } else {
-                                scheduleRoomArrayList.addAll(JsonHelper.parseRoomScheduleArray(roomArray));
-                            }
-
-                            setAdapter();
-
-                            if (isRefreshonScroll) {
-                                isRefreshonScroll = false;
-                                getDeviceListUserData(13);
-                            }
+                        scheduleRoomArrayList.clear();
+                        if (isFilterType) {
+                            scheduleRoomArrayList.addAll(JsonHelper.parseRoomScheduleArray(moodArray));
+                        } else {
+                            scheduleRoomArrayList.addAll(JsonHelper.parseRoomScheduleArray(moodArray));
                         }
+
+                        setAdapter();
+
+                        if (isRefreshonScroll) {
+                            isRefreshonScroll = false;
+                            getDeviceListUserData(13);
+                        }
+                    }
 
 
                 } catch (JSONException e) {
@@ -1004,6 +1033,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
                     e.printStackTrace();
                 } finally {
+                    ActivityHelper.dismissProgressDialog();
 //                    if (scheduleRoomArrayList.size() == 0 && scheduleMoodArrayList.size() == 0) {
 //                        txt_empty_scheduler.setVisibility(View.VISIBLE);
 //                        ll_recycler.setVisibility(View.GONE);
@@ -1023,7 +1053,8 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                 if (responseCode == 503) {
                     responseErrorCode.onErrorCode(responseCode);
                 }
-                ChatApplication.logDisplay( "getScheduleList onFailure " + error);
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.logDisplay("getScheduleList onFailure " + error);
                 // Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
@@ -1050,7 +1081,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             ll_recycler.setVisibility(View.VISIBLE);
             updateButton(btnRoomSchedule, btnMoodSchedule);
             showHeader();
-        }else {
+        } else {
             scheduleRoomArrayList.clear();
             scheduleRoomAdapter.notifyDataSetChanged();
             ll_recycler.setVisibility(View.VISIBLE);
@@ -1058,7 +1089,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             txt_empty_scheduler.setVisibility(View.VISIBLE);
         }
 
-        if(isMood){
+        if (isMood) {
             linearTabSchedule.setVisibility(View.GONE);
         }
 
@@ -1080,7 +1111,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         rv_mood.setVisibility(View.VISIBLE);
         if (isMood) {
             linearTabSchedule.setVisibility(View.GONE);
-        }else {
+        } else {
             linearTabSchedule.setVisibility(View.VISIBLE);
         }
 
@@ -1112,7 +1143,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
     //
     public void getScheduleFromMood() {
-        ChatApplication.logDisplay( "getScheduleFromMood");
+        ChatApplication.logDisplay("getScheduleFromMood");
         if (getActivity() == null) {
             return;
         }
@@ -1151,7 +1182,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
                 swipeRefreshLayout.setRefreshing(false);
 
-                ChatApplication.logDisplay( " getScheduleFromMood onSuccess " + result.toString());
+                ChatApplication.logDisplay(" getScheduleFromMood onSuccess " + result.toString());
                 try {
                     //scheduleRoomArrayList = new ArrayList<>();
 
@@ -1164,11 +1195,11 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                         JSONArray moodArray = null;
 
                         if (!TextUtils.isEmpty(moodId3)) {
-                            moodArray = scheduleObject.getJSONArray("roomSchedule");
+                            moodArray = scheduleObject.getJSONArray("scheduleList");
                         } else {
 
                             if (!TextUtils.isEmpty(moodId2)) {
-                                moodArray = scheduleObject.getJSONArray("roomSchedule");
+                                moodArray = scheduleObject.getJSONArray("scheduleList");
                             } else {
                                 moodArray = scheduleObject.getJSONArray("moodSchedule");
                             }
@@ -1216,7 +1247,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                     if (errorCode == 503) {
                         responseErrorCode.onErrorCode(errorCode);
                     }
-                    ChatApplication.logDisplay( "getScheduleFromMood onFailure " + error);
+                    ChatApplication.logDisplay("getScheduleFromMood onFailure " + error);
                     //   Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -1232,7 +1263,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     }
 
     public void deleteSchedule(String schedule_id, int is_timer) {
-        ChatApplication.logDisplay( "deleteSchedule deleteSchedule");
+        ChatApplication.logDisplay("deleteSchedule deleteSchedule");
         if (!ActivityHelper.isConnectingToInternet(getActivity())) {
             Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -1246,7 +1277,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             obj.put("schedule_id", schedule_id);
             obj.put("is_timer", is_timer);
 
-        } catch (Exception e) {
+        }catch (Exception e) {
             e.printStackTrace();
         }
         ActivityHelper.showProgressDialog(getActivity(), "Please Wait.", false);
@@ -1255,7 +1286,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             @Override
             public void onSuccess(JSONObject result) {
                 ChatApplication.isScheduleNeedResume = true;
-                ChatApplication.logDisplay( "deleteSchedule onSuccess " + result.toString());
+                ChatApplication.logDisplay("deleteSchedule onSuccess " + result.toString());
                 try {
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -1277,7 +1308,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                         scheduleRoomAdapter.notifyDataSetChanged();
                         ChatApplication.isScheduleNeedResume = false;
 
-                        onLoadFragment();
+                        onLoadFragment(3);
                     } else {
                         Toast.makeText(getActivity().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     }
@@ -1291,7 +1322,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                ChatApplication.logDisplay( "deleteSchedule onFailure " + error);
+                ChatApplication.logDisplay("deleteSchedule onFailure " + error);
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
@@ -1311,7 +1342,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     }
 
     public void changeScheduleStatus(ScheduleVO scheduleVO) {
-        ChatApplication.logDisplay( "changeScheduleStatus changeScheduleStatus");
+        ChatApplication.logDisplay("changeScheduleStatus changeScheduleStatus");
         if (!ActivityHelper.isConnectingToInternet(getActivity())) {
             Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -1322,8 +1353,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         try {
             obj.put("schedule_id", scheduleVO.getSchedule_id());
             obj.put("schedule_status", scheduleVO.getSchedule_status());
-
-
             obj.put("is_timer", scheduleVO.getIs_timer());
 
             String schedule_device_on_time = "";
@@ -1446,6 +1475,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         try {
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1457,7 +1487,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         new GetJsonTask(getActivity(), url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                ChatApplication.logDisplay( "SchEdit changeScheduleStatus onSuccess " + result.toString());
+                ChatApplication.logDisplay("SchEdit changeScheduleStatus onSuccess " + result.toString());
                 try {
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -1553,7 +1583,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                ChatApplication.logDisplay( "changeScheduleStatus onFailure " + error);
+                ChatApplication.logDisplay("changeScheduleStatus onFailure " + error);
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
@@ -1588,7 +1618,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void itemClicked(final ScheduleVO scheduleVO, String action, boolean isMood) {
 
-        ChatApplication.logDisplay( " action " + action);
+        ChatApplication.logDisplay(" action " + action);
         if (action.equalsIgnoreCase("active")) {
             changeScheduleStatus(scheduleVO);
         } else if (action.equalsIgnoreCase("edit")) {
@@ -1642,7 +1672,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             ActivityHelper.showProgressDialog(getActivity(), "Please Wait...", false);
         }
 
- //       String url = webUrl + Constants.GET_DEVICES_LIST + "/" + Constants.DEVICE_TOKEN + "/0/1";
+        //       String url = webUrl + Constants.GET_DEVICES_LIST + "/" + Constants.DEVICE_TOKEN + "/0/1";
         String url = webUrl + Constants.GET_DEVICES_LIST;
 
         JSONObject jsonObject = new JSONObject();
@@ -1650,7 +1680,11 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             jsonObject.put("room_type", 0);
             jsonObject.put("is_sensor_panel", 1);
             jsonObject.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
-            jsonObject.put("admin",1);
+            if (TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE))) {
+                jsonObject.put("admin", "");
+            } else {
+                jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE)));
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1677,7 +1711,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                         Common.savePrefValue(ChatApplication.getInstance(), Common.camera_key, camera_key);
                         ChatApplication.currentuserId = userId;
                         String userPassword = "";
-                        mCallback.onArticleSelected("" + userFirstName + " " + userLastName);
+                        mCallback.onArticleSelected("" + userFirstName);
 
                         MainFragment.saveCurrentId(getActivity(), userId);
                         if (userObject.has("user_password")) {
@@ -1694,5 +1728,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             }
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
+
 
 }

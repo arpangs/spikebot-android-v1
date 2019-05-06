@@ -147,9 +147,9 @@ public class AddExistingPanel extends AppCompatActivity {
 
         String url = "";
         if(isSync){
-            url = webUrl + Constants.GET_ORIGINAL_DEVICES + "/0"; //add new unassigned
+            url = webUrl + Constants.GET_ORIGINAL_DEVICES + "/"+0; //add new unassigned
         }else{
-            url = webUrl + Constants.GET_ORIGINAL_DEVICES + "/1"; //Add from existing
+            url = webUrl + Constants.GET_ORIGINAL_DEVICES + "/"+1; //Add from existing
         }
 
         ChatApplication.logDisplay("web url : " + url);
@@ -167,7 +167,7 @@ public class AddExistingPanel extends AppCompatActivity {
 
                     JSONObject dataObject = result.getJSONObject("data");
 
-                    JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
+                    JSONArray roomArray = dataObject.optJSONArray("roomdeviceList");
                     roomList = JsonHelper.parseExistPanelArray(roomArray);
 
                     //selected device list by panelID
@@ -377,13 +377,13 @@ public class AddExistingPanel extends AppCompatActivity {
                         JSONObject ob1 = new JSONObject();
                         ob1.put("module_id",dPanel.getModuleId());
                         ob1.put("module_id",dPanel.getModuleId());
-                        ob1.put("device_id",dPanel.getDeviceId());
+                        ob1.put("device_id",""+dPanel.getDeviceId());
                         ob1.put("room_device_id",dPanel.getRoomDeviceId());
 
                         ob1.put("device_icon",dPanel.getDevice_icon());
                         ob1.put("device_name",dPanel.getDeviceName());
                         ob1.put("device_status",dPanel.getDeviceStatus());
-                        ob1.put("device_type",dPanel.getDeviceType());
+                        ob1.put("device_type",Integer.parseInt(dPanel.getDeviceType()));
                         ob1.put("device_specific_value",dPanel.getDeviceSpecificValue());
                         ob1.put("room_panel_id",dPanel.getRoom_panel_id());
 

@@ -1304,7 +1304,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
                         Common.savePrefValue(ChatApplication.getInstance(), Common.camera_key, camera_key);
                         ChatApplication.currentuserId = userId;
                         String userPassword = "";
-                        mCallback.onArticleSelected("" + userFirstName + " " + userLastName);
+                        mCallback.onArticleSelected("" + userFirstName);
 
                         MainFragment.saveCurrentId(getActivity(),userId);
                         if (userObject.has("user_password")) {

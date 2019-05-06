@@ -15,6 +15,16 @@ public class User implements Serializable {
     String cloudIP;
     String password;
 
+    public String getLocal_ip() {
+        return local_ip;
+    }
+
+    public void setLocal_ip(String local_ip) {
+        this.local_ip = local_ip;
+    }
+
+    String local_ip;
+
     public boolean getIsopen() {
         return isopen;
     }
@@ -70,7 +80,7 @@ public class User implements Serializable {
         admin = "";
     }
 
-    public User(String user_id, String firstname, String lastname, String cloudIP, boolean isActive,String password,String admin) {
+    public User(String user_id, String firstname, String lastname, String cloudIP, boolean isActive,String password,String admin,String local_ip) {
         this.user_id = user_id;
         this.lastname = lastname;
         this.cloudIP = cloudIP;
@@ -78,6 +88,7 @@ public class User implements Serializable {
         this.isActive = isActive;
         this.password = password;
         this.admin = admin;
+        this.local_ip = local_ip;
     }
 
     public String getPassword() {

@@ -169,6 +169,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     };
 
 
+    @SuppressLint("InvalidWakeLockTag")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -481,7 +482,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
 
     @Override
-    public void click(User user) {
+    public void userSelectclick(User user) {
         if (dialogUser != null) {
             dialogUser.dismiss();
         }
@@ -515,7 +516,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 Common.savePrefValue(getApplicationContext(), Common.USER_JSON, json);
             }
 
-            toolbarTitle.setText(user.getFirstname() + " " + user.getLastname());
+            toolbarTitle.setText(user.getFirstname());
 
             if (cloudAdapter != null) {
                 cloudAdapter.notifyDataSetChanged();
@@ -595,6 +596,15 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             return;
         }
 
+
+        if (TextUtils.isEmpty(Common.getPrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE))) {
+            return;
+        } else {
+            if(Common.getPrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")){
+                return;
+            }
+        }
+
         if (dialogUser == null) {
             dialogUser = new Dialog(this);
         }
@@ -608,6 +618,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
         txt_add_acoount = (TextView) dialogUser.findViewById(R.id.txt_add_account);
         recyclerView = (RecyclerView) dialogUser.findViewById(R.id.userList);
+       TextView txtOutside =  dialogUser.findViewById(R.id.txtOutside);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
 
         Gson gson = new Gson();
@@ -631,6 +642,12 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             recyclerView.setAdapter(cloudAdapter);
         }
 
+        txtOutside.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogUser.dismiss();
+            }
+        });
 
         txt_add_acoount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -740,7 +757,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                                 if (Common.isNetworkConnected(Main2Activity.this)) {
                                     isWifiConnect = true;
                                     wifiIpAddress = "";
-                                    asyncTask = new Main2Activity.ServiceEventAsync().execute();
+                                    asyncTask = new Main2Activity.ServiceEventAsync(Constants.getuserIp(Main2Activity.this)).execute();
                                 }
 
                                 childRemoveSQLite();
@@ -996,7 +1013,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                                     isCloudConnected = true;
                                     invalidateToolbarCloudImage();
 
-                                    toolbarTitle.setText(tempList.get(0).getFirstname() + " " + tempList.get(0).getLastname());
+                                    toolbarTitle.setText(tempList.get(0).getFirstname());
 
                                     ChatApplication app = ChatApplication.getInstance();
                                     app.closeSocket(webUrl);
@@ -1097,6 +1114,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                ChatApplication.logDisplay("logout is "+object.toString());
                 ActivityHelper.showProgressDialog(Main2Activity.this, "Please wait...", false);
 
                 new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
@@ -1149,7 +1167,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                                         isCloudConnected = true;
                                         invalidateToolbarCloudImage();
 
-                                        toolbarTitle.setText(tempList.get(0).getFirstname() + " " + tempList.get(0).getLastname());
+                                        toolbarTitle.setText(tempList.get(0).getFirstname());
 
                                         ChatApplication app = ChatApplication.getInstance();
                                         app.closeSocket(webUrl);
@@ -1284,24 +1302,22 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     public void wifiConnectionIssue(final boolean isflag) {
 //        ChatApplication.logDisplay("is issue found");
 //
-        new Thread() {
-            public void run() {
-                Main2Activity.this.runOnUiThread(new Runnable() {
-                    public void run() {
-                        ProgressDialog progressDialog=new ProgressDialog(Main2Activity.this);
-                        progressDialog.setMessage("Please wait... \ncheck your gateway connection");
-                        progressDialog.setCancelable(false);
-                        if(isflag){
-                            progressDialog.dismiss();
-                        }else {
-                            progressDialog.show();
-                        }
-                      //  ChatApplication.logDisplay("is issue found11111111111");
-                  //      ActivityHelper.showProgressDialog(Main2Activity.this, "Please Wait...", false);
-                    }
-                });
-            }
-        }.start();
+//        new Thread() {
+//            public void run() {
+//                Main2Activity.this.runOnUiThread(new Runnable() {
+//                    public void run() {
+//                        ProgressDialog progressDialog=new ProgressDialog(Main2Activity.this);
+//                        progressDialog.setMessage("Please wait... \ncheck your gateway connection");
+//                        progressDialog.setCancelable(false);
+//                        if(isflag){
+//                            progressDialog.dismiss();
+//                        }else {
+//                            progressDialog.show();
+//                        }
+//                    }
+//                });
+//            }
+//        }.start();
     }
 
     /**
@@ -1507,7 +1523,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             if (Common.isNetworkConnected(Main2Activity.this)) {
                 isWifiConnect = true;
                 wifiIpAddress = "";
-                asyncTask = new Main2Activity.ServiceEventAsync().execute();
+                asyncTask = new Main2Activity.ServiceEventAsync(Constants.getuserIp(Main2Activity.this)).execute();
             }
 
             // Muset login with cloud
@@ -1648,10 +1664,10 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                         Common.savePrefValue(Main2Activity.this, Constants.USER_PASSWORD, user_password);
 
                         if (toolbarTitle != null) {
-                            toolbarTitle.setText(first_name + " " + last_name);
+                            toolbarTitle.setText(first_name);
                         }
 
-                        User user = new User(user_id, first_name, last_name, cloudIp, false, user_password, admin);
+                        User user = new User(user_id, first_name, last_name, cloudIp, false, user_password, admin,local_ip);
                         invalidateToolbarCloudImage();
                         Gson gson = new Gson();
                         String jsonText = Common.getPrefValue(getApplicationContext(), Common.USER_JSON);
@@ -1702,6 +1718,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                             }
                         }
 
+                        boolean isNetwork=false;
                         if (isWifiConnect) {
                             isWifiConnect = false;
                             if (!TextUtils.isEmpty(wifiIpAddress)) {
@@ -1713,18 +1730,33 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                                     listService("\nService resolved: ", wifiIpAddress, 80, true,true);
                                     reloadFragment();
                                 }else {
+                                    isNetwork=true;
                                     webUrl = cloudIp;
                                     ChatApplication.url = webUrl;
                                     isCloudConnected = true;
                                     flagPicheck = false;
+
+                                    openSocket();
+                                    isResumeConnect = false;
+                                    flagLogin = true;
+                                    ChatApplication.isRefreshHome = false;
+//                                    reloadFragment();
                                 }
                             }else {
+                                isNetwork=true;
                                 webUrl = cloudIp;
                                 ChatApplication.url = webUrl;
                                 isCloudConnected = true;
                                 flagPicheck = false;
+
+                                openSocket();
+                                isResumeConnect = false;
+                                flagLogin = true;
+                                ChatApplication.isRefreshHome = false;
+//                                reloadFragment();
                             }
                         } else {
+                            isNetwork=true;
                             webUrl = cloudIp;
                             ChatApplication.url = webUrl;
                             isCloudConnected = true;
@@ -1760,7 +1792,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                         flagLogin = true;
                         ChatApplication.isRefreshHome = false;
                         invalidateToolbarCloudImage();
-                        if (Common.isNetworkConnected(Main2Activity.this)) {
+                        if (Common.isNetworkConnected(Main2Activity.this) &&  isNetwork==true) {
                             mainFragment1.RefreshAnotherFragment();
                         }
 
@@ -2052,7 +2084,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             mainFragment2.onLoadFragment();
         } else if (mViewPager.getCurrentItem() == 2) {
             ScheduleFragment scheduleFragment = (ScheduleFragment) mSectionsPagerAdapter.fragmentList.get(mViewPager.getCurrentItem());
-            scheduleFragment.onLoadFragment();
+            scheduleFragment.onLoadFragment(8);
         }
 
 
@@ -2081,7 +2113,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             lastTabPos = 2;
             if (mSectionsPagerAdapter != null && mSectionsPagerAdapter.fragmentList != null) {
                 ScheduleFragment scheduleFragment = (ScheduleFragment) mSectionsPagerAdapter.fragmentList.get(mViewPager.getCurrentItem());
-                scheduleFragment.onLoadFragment();
+                scheduleFragment.onLoadFragment(9);
             }
         }
     }
@@ -2132,7 +2164,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             txt_connection.setText(R.string.search_home_controller);
 
             if (Common.isNetworkConnected(this)) {
-                asyncTask = new Main2Activity.ServiceEventAsync().execute();
+                asyncTask = new Main2Activity.ServiceEventAsync(Constants.getuserIp(Main2Activity.this)).execute();
 
             }
         }
@@ -2159,7 +2191,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     ChatApplication app = ChatApplication.getInstance();
                     app.closeSocket(webUrl);
                 }
-                asyncTask = new ServiceEventAsync().execute();
+                asyncTask = new ServiceEventAsync(Constants.getuserIp(Main2Activity.this)).execute();
             }
         }
     }
@@ -2170,13 +2202,15 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
         boolean isRegisterListener = false;
         String ipAddressPI = "";
+        String ipLocal="";
 
-        public ServiceEventAsync() {
+        public ServiceEventAsync(String localIp) {
             showConnectingCloudDialog(LOCAL_MESSAGE);
             WifiManager wifi = (WifiManager) getApplicationContext().getSystemService(android.content.Context.WIFI_SERVICE);
             lock = wifi.createMulticastLock("lock");
             lock.setReferenceCounted(true);
             lock.acquire();
+            this.ipLocal=localIp;
         }
 
         @Override
@@ -2212,19 +2246,36 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 if (Constants.isWifiConnect) {
 
                 } else {
-                    if (isReachable) {
-                        isFlagWifi = true;
-                        isCloudConnected = false; //added by sagar
-                        invalidateToolbarCloudImage();
-                        webUrl = ipAddressPI;
-                        wifiIpAddress = ipAddressPI;
-                        ChatApplication.url = webUrl;
-                        isClick = false;
+                    if(!TextUtils.isEmpty(ipLocal)) {
+                        if (isReachable && ipLocal.equalsIgnoreCase(ipAddressPI)) {
+                            isFlagWifi = true;
+                            isCloudConnected = false; //added by sagar
+                            invalidateToolbarCloudImage();
+                            webUrl = ipAddressPI;
+                            wifiIpAddress = ipAddressPI;
+                            ChatApplication.url = webUrl;
+                            isClick = false;
 
-                    } else {
-                        ipAddressPI = "";
-                        webUrl = ipAddressPI;
+                        } else {
+                            ipAddressPI = "";
+                            webUrl = ipAddressPI;
+                        }
+                    }else {
+                        if (isReachable ) {
+                            isFlagWifi = true;
+                            isCloudConnected = false; //added by sagar
+                            invalidateToolbarCloudImage();
+                            webUrl = ipAddressPI;
+                            wifiIpAddress = ipAddressPI;
+                            ChatApplication.url = webUrl;
+                            isClick = false;
+
+                        } else {
+                            ipAddressPI = "";
+                            webUrl = ipAddressPI;
+                        }
                     }
+
                 }
 
             } catch (Exception e) {
@@ -2238,6 +2289,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             hideConnectingCloudDialog();
             if (Constants.isWifiConnect) {
             }else if (isWifiConnect) {
+
             }  else if (isFlagWifi) {
                 isFlagWifi = false;
                 listService("\nService resolved: ", ipAddressPI, 80, true,false);
@@ -2267,7 +2319,11 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     public static boolean isResumeConnect = false;
 
-    private void listService(final String msg, final String ip, final int port, final boolean isFound,boolean isShow) {
+    private void listService(final String msg, String ip, final int port, final boolean isFound,boolean isShow) {
+
+//        if(!ip.equalsIgnoreCase(Constants.getuserIp(this))){
+//            ip=Constants.getuserCloudIP(this);
+//        }
 
         final String openIp = (isFound) ? "http://" + ip + ":" + port : Constants.CLOUD_SERVER_URL;
 

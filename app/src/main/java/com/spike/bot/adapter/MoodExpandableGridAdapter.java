@@ -219,27 +219,35 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     holder.ll_top_section.setBackground(mContext.getDrawable(R.drawable.background_shadow));
                 }
 
-                if(section.getSmart_remote_number().equals("null")){
-                    holder.txtRemote.setVisibility(GONE);
-                    holder.imgRemote.setVisibility(View.VISIBLE);
-                }else {
-                    holder.txtRemote.setVisibility(View.VISIBLE);
-                    holder.imgRemote.setVisibility(View.GONE);
-                    holder.txtRemote.setText(section.getSmart_remote_number());
-                }
-                holder.imgRemote.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialogRemoteshow(false,section);
-                    }
-                });
+                if (!Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
+                    if(section.getSmart_remote_number().length()==0){
+                        holder.txtRemote.setVisibility(GONE);
+                        holder.imgRemote.setVisibility(View.VISIBLE);
+                        holder.imgRemote.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialogRemoteshow(false,section);
+                            }
+                        });
 
-                holder.txtRemote.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialogRemoteshow(true,section);
+                    }else {
+
+                        holder.txtRemote.setVisibility(View.VISIBLE);
+                        holder.imgRemote.setVisibility(View.GONE);
+                        holder.txtRemote.setText(section.getSmart_remote_number());
+
+                        holder.txtRemote.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialogRemoteshow(true,section);
+                            }
+                        });
                     }
-                });
+                }
+
+
+
+
 
                 break;
             case VIEW_TYPE_PANEL :

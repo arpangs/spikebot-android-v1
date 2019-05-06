@@ -102,6 +102,7 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
                 homeObject.put("id",data.getId());
                 homeObject.put("title",data.getTitle());
                 homeObject.put("value",data.getValue());
+                homeObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
                 dataArray.put(homeObject);
             }

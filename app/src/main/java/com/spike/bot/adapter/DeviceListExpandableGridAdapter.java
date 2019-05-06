@@ -327,6 +327,7 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
                 if(item.getIs_original() == 0 && !item.getDeviceType().equalsIgnoreCase("2")){
                     //  holder.view.setEnabled(true);
                     holder.view.setAlpha(0.50f);
+                   // holder.view.setAlpha(0.50f);
                 }else{
                     //   holder.view.setEnabled(true);
                     holder.view.setAlpha(1);

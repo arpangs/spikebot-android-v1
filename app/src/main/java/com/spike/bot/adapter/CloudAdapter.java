@@ -70,7 +70,7 @@ public class CloudAdapter extends RecyclerView.Adapter<CloudAdapter.CloudViewHol
                         }
                     }
                     notifyDataSetChanged();
-                    cloudClickListener.click(user);
+                    cloudClickListener.userSelectclick(user);
                 }
 
             }
@@ -86,7 +86,7 @@ public class CloudAdapter extends RecyclerView.Adapter<CloudAdapter.CloudViewHol
                     }
                 }
                 notifyDataSetChanged();
-                cloudClickListener.click(user);
+                cloudClickListener.userSelectclick(user);
             }
         });
     }
@@ -115,6 +115,6 @@ public class CloudAdapter extends RecyclerView.Adapter<CloudAdapter.CloudViewHol
      * {@link com.spike.bot.activity.Main2Activity#click(User)}
      */
     public interface CloudClickListener{
-        void click(User user);
+        void userSelectclick(User user);
     }
 }
