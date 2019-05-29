@@ -98,7 +98,7 @@
                             android:id="@+id/btnMoodSchedule"
                             android:layout_marginLeft="@dimen/_8sdp"
                             android:background="@drawable/drawable_gray_schedule"
-                            android:textColor="@color/txtPanal"
+                            android:textColor="@color/automation_white"
                             android:text="Mood"
                             android:layout_weight="1"
                             android:textAllCaps="false"

@@ -317,7 +317,7 @@
             android:ems="10"
             android:singleLine="true"
             android:maxLength="30"
-            android:hint="Enter User Name"
+            android:hint="Username"
             android:inputType="text" />
 
         <EditText
@@ -328,7 +328,7 @@
             android:singleLine="true"
             android:maxLength="20"
             android:layout_marginTop="16dp"
-            android:hint="Enter Password"
+            android:hint="Password"
             android:inputType="textPassword" />
 
 
@@ -343,6 +343,7 @@
                 android:id="@+id/btn_cancel"
                 android:layout_weight="1"
                 android:layout_width="0dp"
+                android:textAllCaps="false"
                 android:layout_marginRight="10dp"
                 android:textColor="@color/automation_white"
                 android:background="@drawable/button_radius"
@@ -354,20 +355,22 @@
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_marginRight="10dp"
+                android:textAllCaps="false"
                 android:textColor="@color/automation_white"
                 android:background="@drawable/button_radius"
                 android:layout_height="wrap_content"
-                android:text="SKIP" />
+                android:text="Skip" />
 
             <Button
                 android:id="@+id/btn_login"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_marginLeft="10dp"
+                android:textAllCaps="false"
                 android:textColor="@color/automation_white"
                 android:background="@drawable/button_radius"
                 android:layout_height="wrap_content"
-                android:text="LOGIN" />
+                android:text="Login" />
 
         </LinearLayout>
 

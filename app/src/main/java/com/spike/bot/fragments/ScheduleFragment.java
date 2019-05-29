@@ -266,7 +266,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
 //        ll_mood_view = (LinearLayout) view.findViewById(R.id.ll_mood_view);
 //        ll_recycler = (LinearLayout) view.findViewById(R.id.ll_recycler);
-//        linearTabSchedule = (LinearLayout) view.findViewById(R.id.linearTabSchedule);
+        linearTabSchedule = (LinearLayout) view.findViewById(R.id.linearTabSchedule);
 //        btnRoomSchedule = (Button) view.findViewById(R.id.btnRoomSchedule);
 //        btnMoodSchedule = (Button) view.findViewById(R.id.btnMoodSchedule);
 //
@@ -533,7 +533,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     public void setId(){
         ll_mood_view = (LinearLayout) view.findViewById(R.id.ll_mood_view);
         ll_recycler = (LinearLayout) view.findViewById(R.id.ll_recycler);
-        linearTabSchedule = (LinearLayout) view.findViewById(R.id.linearTabSchedule);
+        linearTabSchedule = view.findViewById(R.id.linearTabSchedule);
         btnRoomSchedule = (Button) view.findViewById(R.id.btnRoomSchedule);
         btnMoodSchedule = (Button) view.findViewById(R.id.btnMoodSchedule);
 
@@ -906,7 +906,12 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         }
         webUrl = app.url;
 
-
+        if(view==null){
+            return;
+        }
+        if(linearTabSchedule==null){
+            linearTabSchedule=view.findViewById(R.id.linearTabSchedule);
+        }
         if (isMood) {
 //            ll_room.setVisibility(View.GONE);
             linearTabSchedule.setVisibility(View.GONE);
@@ -970,14 +975,15 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-//        if (count == 1) {
-            //      ActivityHelper.showProgressDialog(getActivity(), "Please wait...", false);
-//        }
+        if(ChatApplication.isShowProgress) {
+            ActivityHelper.showProgressDialog(getActivity(), "Please wait...", false);
+        }
 
         ChatApplication.logDisplay("jsonObject is schedule " + jsonObject.toString());
         new GetJsonTask2(getActivity(), url, "POST", jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
+                ChatApplication.isShowProgress=false;
                 responseErrorCode.onSuccess();
 //                scheduleMoodAdapter.setClickable(true);
 //                scheduleRoomAdapter.setClickable(true);
@@ -1161,7 +1167,9 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             e.printStackTrace();
         }
 
-
+        if(ChatApplication.isShowProgress) {
+            ActivityHelper.showProgressDialog(getActivity(), "Please wait...", false);
+        }
         String url = "";
         /*if(!TextUtils.isEmpty(moodId3)){
             url =  webUrl + Constants.GET_SCHEDULE_ON_ROOM;//+userId;
@@ -1171,6 +1179,8 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
         }*/
         url = webUrl + Constants.GET_SCHEDULE_ON_ROOM;
+
+        ChatApplication.logDisplay("jsonObject is schedule mood " + url+" "+obj.toString());
 
         new GetJsonTask2(getActivity(), url, "POST", obj.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
@@ -1187,7 +1197,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                     //scheduleRoomArrayList = new ArrayList<>();
 
                     // {"code":200,"message":"success"}
-
+                    ActivityHelper.dismissProgressDialog();
                     if (result.has("data")) {
 
                         JSONObject scheduleObject = result.getJSONObject("data");
@@ -1228,6 +1238,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } finally {
+                    ActivityHelper.dismissProgressDialog();
 //                    if (TextUtils.isEmpty(moodId3)) {
 //                        if (scheduleMoodArrayList.size() == 0) {
 //                            if (!TextUtils.isEmpty(moodId3) || !TextUtils.isEmpty(moodId2)) {
@@ -1243,6 +1254,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             public void onFailure(Throwable throwable, String error, int errorCode) {
                 scheduleRoomAdapter.setClickable(true);
                 swipeRefreshLayout.setRefreshing(false);
+                ActivityHelper.dismissProgressDialog();
                 try {
                     if (errorCode == 503) {
                         responseErrorCode.onErrorCode(errorCode);
@@ -1341,7 +1353,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         }
     }
 
-    public void changeScheduleStatus(ScheduleVO scheduleVO) {
+    public void changeScheduleStatus(final ScheduleVO scheduleVO) {
         ChatApplication.logDisplay("changeScheduleStatus changeScheduleStatus");
         if (!ActivityHelper.isConnectingToInternet(getActivity())) {
             Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -1514,6 +1526,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                         scheduleVO1.setTimer_on_date(timer_on_date);
                         scheduleVO1.setSchedule_device_off_time(schedule_device_off_time);
                         scheduleVO1.setTimer_off_date(timer_off_date);
+                        scheduleVO1.setUser_id(scheduleVO.getUser_id());
                         // scheduleVO1.setIs_active();
 
 
@@ -1688,6 +1701,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        ChatApplication.logDisplay("jsonObject is schedule getuser " +url+" "+ jsonObject.toString());
         //responseErrorCode.onProgress();
         new GetJsonTask2(activity, url, "POST", jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override

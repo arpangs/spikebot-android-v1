@@ -78,7 +78,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         strList.add("User Details");
-        strList.add("User Child List");
+        strList.add("Child users");
         getRoomCameraList();
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());

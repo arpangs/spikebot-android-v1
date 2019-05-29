@@ -1,1 +1,1 @@
-include ':app', ':kaushalUtils', ':jmdns', ':cameraapp', ':nodemediaclient'
+include ':app', ':kaushalUtils', ':jmdns', ':cameraapp', ':nodemediaclient', ':colorpickerview'

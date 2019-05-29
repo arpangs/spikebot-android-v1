@@ -10,6 +10,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -27,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -40,6 +43,7 @@ import com.google.gson.Gson;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask2;
 import com.kp.core.ICallBack2;
+import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.AddCameraAdapter;
@@ -75,12 +79,12 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
     public EditText edtUsername,edDisplayName,et_new_password_confirm,et_new_password;
     public RadioGroup radioGroup;
     public RadioButton radioBtnAdmin, radioBtnChild;
-    public TextView spinnerRoomList, spinnerCameraList,txtEmptyRoom,txtEmptyCamera;
-    public Button btnSave;
+    public TextView txtPasswordChange, spinnerRoomList, spinnerCameraList,txtEmptyRoom,txtEmptyCamera;
+    public Button btnSave,btnChangePassword;
     public RecyclerView recyclerRoom,recyclerCamera;
     public LinearLayout linearChangePassword,ll_password_view_expand,ll_pass_edittext_view;
     public ImageView img_pass_arrow;
-    public String selectRoomList="",strRoomList="",modeType="";
+    public String selectRoomList="",strRoomList="",modeType="",strPassword="";
     public int isChildType=0;
     public boolean isClickFlag=false;
 
@@ -136,17 +140,21 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
         linearChangePassword = findViewById(R.id.linearChangePassword);
         img_pass_arrow = findViewById(R.id.img_pass_arrow);
         btnSave = findViewById(R.id.btnSave);
-      //  linearPassword = findViewById(R.id.linearPassword);
+        txtPasswordChange = findViewById(R.id.txtPasswordChange);
+        btnChangePassword = findViewById(R.id.btnChangePassword);
+      //  linearPassword = findViewById(R.id.txtPasswordChange);
         et_new_password = findViewById(R.id.et_new_password);
         et_new_password_confirm = findViewById(R.id.et_new_password_confirm);
         btnSave.setVisibility(View.GONE);
         btnSave.setOnClickListener(this);
         spinnerRoomList.setOnClickListener(this);
         ll_password_view_expand.setOnClickListener(this);
+        btnChangePassword.setOnClickListener(this);
 
         if(modeType.equalsIgnoreCase("update")){
-//            linearChangePassword.setVisibility(View.VISIBLE);
-            toolbar.setTitle("Update Child User");
+            btnChangePassword.setText("Change password");
+            toolbar.setTitle("Edit Child User");
+            txtPasswordChange.setText("Change Password");
             edDisplayName.setText(user.getFirstname());
             edtUsername.setText(user.getFirstname());
       //      edtPassword.setText(user.getPassword());
@@ -185,6 +193,9 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
 
 //            spinnerRoomList.setText("Room : "+UserRoomListActivity.strDeviceId.size()+" & device : "+roomVO.getDeviceList().size());
             setSelectValue();
+        }else {
+            btnChangePassword.setText("Enter password");
+            txtPasswordChange.setText("Enter Password");
         }
         setRoomAdapter();
 
@@ -244,18 +255,18 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
             setSelectValue();
             if(modeType.equalsIgnoreCase("update")){
                     if (isClickFlag) {
-                        if (et_new_password.getText().toString().length()>0) {
-                            if(et_new_password_confirm.getText().toString().length()==0){
-                                ChatApplication.showToast(this, "Please enter confrim password");
-                            }else if(!et_new_password.getText().toString().equalsIgnoreCase(et_new_password_confirm.getText().toString())){
-                                ChatApplication.showToast(this, "Password not match...");
-                            }else {
-                                addUserChild();
-                            }
+//                        if (strPassword.length()==0) {
+//                            if(et_new_password_confirm.getText().toString().length()==0){
+//                                ChatApplication.showToast(this, "Please enter password");
+//                            }else if(!et_new_password.getText().toString().equalsIgnoreCase(et_new_password_confirm.getText().toString())){
+//                                ChatApplication.showToast(this, "Password not match...");
+//                            }else {
+//                                addUserChild();
+//                            }
 
-                        }else {
+//                        }else {
                             addUserChild();
-                        }
+//                        }
                     }else {
                         this.finish();
                     }
@@ -264,12 +275,8 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
                     ChatApplication.showToast(this, "Please enter display name");
                 } else if (edtUsername.getText().toString().length() == 0) {
                     ChatApplication.showToast(this, "Please enter username");
-                } else if (et_new_password.getText().toString().length() == 0) {
+                } else if (strPassword.length() == 0) {
                     ChatApplication.showToast(this, "Please enter password");
-                } else if (et_new_password_confirm.getText().toString().length() == 0) {
-                    ChatApplication.showToast(this, "Please enter confirm password");
-                }else if(!et_new_password.getText().toString().equalsIgnoreCase(et_new_password_confirm.getText().toString())){
-                    ChatApplication.showToast(this, "Please do not match...");
                 }else if (edtUsername.getText().toString().trim().matches(".*([ \t]).*")){
                     edtUsername.requestFocus();
                     edtUsername.setError("Invalid Username");
@@ -323,9 +330,83 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
 
             }
 
+        }else if(v==btnChangePassword){
+            addCustomRoom();
         }
     }
 
+    private void deleteRoomAction(){
+        ConfirmDialog newFragment = new ConfirmDialog("Yes","No" ,"Confirm", "Are you sure you want to Delete child user ?" ,new ConfirmDialog.IDialogCallback() {
+            @Override
+            public void onConfirmDialogYesClick() {
+                deleteUserChild();
+            }
+            @Override
+            public void onConfirmDialogNoClick() {
+
+            }
+        });
+        newFragment.show(getFragmentManager(), "dialog");
+    }
+
+    public void addCustomRoom() {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setContentView(R.layout.dialog_add_custome_room);
+        dialog.setCanceledOnTouchOutside(true);
+
+        final TextInputLayout inputRoom = dialog.findViewById(R.id.inputRoom);
+        final TextInputLayout inputPassword = dialog.findViewById(R.id.inputPassword);
+
+        final TextInputEditText edtPasswordChild=dialog.findViewById(R.id.edtPasswordChild);
+        inputRoom.setVisibility(View.GONE);
+        inputPassword.setVisibility(View.VISIBLE);
+
+        TextView tv_title =  dialog.findViewById(R.id.tv_title);
+        Button btnSave = (Button) dialog.findViewById(R.id.btn_save);
+        Button btn_cancel = (Button) dialog.findViewById(R.id.btn_cancel);
+        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
+        iv_close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        if(modeType.equalsIgnoreCase("update")){
+            tv_title.setText("Enter Password");
+        }else {
+            tv_title.setText("Enter Password");
+        }
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(edtPasswordChild.getText().length()>0){
+                    ChatApplication.keyBoardHideForce(UserChildActivity.this);
+                    dialog.cancel();
+                    strPassword=edtPasswordChild.getText().toString();
+                }else {
+                    ChatApplication.showToast(UserChildActivity.this, "Please enter password");
+                }
+            }
+        });
+
+        if (!dialog.isShowing()) {
+            dialog.show();
+        }
+
+        //ActivityHelper.showProgressDialog(getActivity(), "Searching Device attached ", false);
+
+    }
     private void dialogRoomeList() {
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -409,7 +490,7 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
             recyclerCamera.setVisibility(View.VISIBLE);
         }
         if(roomListAdapter==null){
-            GridLayoutManager gridLayoutManager=new GridLayoutManager(this,4);
+            LinearLayoutManager gridLayoutManager=new LinearLayoutManager(this);
             recyclerRoom.setLayoutManager(gridLayoutManager);
             roomListAdapter=new RoomListAdapter(this,roomList);
             recyclerRoom.setAdapter(roomListAdapter);
@@ -503,11 +584,11 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
                 jsonObject.put("child_user_id", user.getUser_id());
                 jsonObject.put("roomList", jsonArray2);
                 jsonObject.put("cameraList", jsonArray1);
-                jsonObject.put("user_password", ""+et_new_password.getText().toString());
+                jsonObject.put("user_password", ""+strPassword);
             }else {
                 jsonObject.put("admin_user_id", Common.getPrefValue(this, Constants.USER_ID));
                 jsonObject.put("user_name", edtUsername.getText().toString());
-                jsonObject.put("user_password", et_new_password.getText().toString());
+                jsonObject.put("user_password", ""+strPassword);
                 jsonObject.put("display_name", edDisplayName.getText().toString());
                 jsonObject.put("roomList", jsonArray);
                 jsonObject.put("cameraList", jsonArray1);
@@ -587,6 +668,50 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
         edDisplayName.requestFocus();
     }
 
+    private void deleteUserChild() {
+        ActivityHelper.showProgressDialog(this, "Please Wait...", false);
+        String url = ChatApplication.url + Constants.DeleteChildUser;
+
+        JSONObject object=new JSONObject();
+        try {
+            object.put("child_user_id",user.getUser_id());
+            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ChatApplication.logDisplay("url is "+url);
+        new GetJsonTask2(UserChildActivity.this, url, "POST", object.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
+
+                try {
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if(code==200){
+                        ChatApplication.showToast(UserChildActivity.this,message);
+                        UserChildActivity.this.finish();
+
+                    }else {
+                        ChatApplication.showToast(UserChildActivity.this,message);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error, int reCode) {
+                ActivityHelper.dismissProgressDialog();
+
+            }
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
 
     public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.SensorViewHolder>{
 
@@ -601,7 +726,7 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
 
         @Override
         public SensorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_user_roomlist,parent,false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_user_roomlist_new,parent,false);
             return new SensorViewHolder(view);
         }
 
@@ -617,6 +742,21 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
             holder.text_item.setText(arrayListLog.get(position).getRoomName());
             holder.iv_icon.setId(position);
             holder.iv_icon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    isClickFlag=true;
+                    if(arrayListLog.get(v.getId()).isDisable()){
+                        arrayListLog.get(v.getId()).setDisable(false);
+                    }else {
+                        arrayListLog.get(v.getId()).setDisable(true);
+                    }
+                    notifyDataSetChanged();
+                }
+            });
+
+
+            holder.text_item.setId(position);
+            holder.text_item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     isClickFlag=true;
@@ -647,7 +787,7 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
         public class SensorViewHolder extends RecyclerView.ViewHolder{
 
             public TextView text_item;
-            public ImageView iv_icon,iv_icon_select;
+            public ImageView iv_icon_select, iv_icon;
 
             public SensorViewHolder(View view) {
                 super(view);

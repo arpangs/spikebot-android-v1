@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -118,7 +119,9 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
 
                 final RoomVO section = (RoomVO) mDataArrayList.get(position);
 
-                holder.sectionTextView.setText(section.getRoomName());
+//                holder.sectionTextView.setText(section.getRoomName());
+                String styledText = "<u><font color='#0098C0'>"+section.getRoomName()+"</font></u>";
+                holder.sectionTextView.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
 
                 if(section.isExpanded()){
                     holder.sectionTextView.setSingleLine(false);
@@ -243,6 +246,9 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                             }
                         });
                     }
+                }else {
+                    holder.txtRemote.setVisibility(GONE);
+                    holder.imgRemote.setVisibility(GONE);
                 }
 
 

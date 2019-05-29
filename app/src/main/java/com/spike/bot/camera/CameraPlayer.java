@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -17,6 +18,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
+import android.view.WindowInsets;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -100,41 +102,21 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
         nodePlayer.setPlayerView(player);
         nodePlayer.setMaxBufferTime(5);
 
-
-
-//        player.setRenderCallback(new NodePlayerView.RenderCallback() {
-//            @Override
-//            public void onSurfaceCreated(@NonNull Surface surface) {
-//                ChatApplication.logDisplay("camera log is dispaly onSurfaceCreated ");
-//            }
-//
-//            @Override
-//            public void onSurfaceChanged(int width, int height) {
-//                ChatApplication.logDisplay("camera log is dispaly onSurfaceChanged ");
-//            }
-//
-//            @Override
-//            public void onSurfaceDestroyed() {
-//                ChatApplication.logDisplay("camera log is dispaly onSurfaceDestroyed ");
-//            }
-//        });
-
-
         nodePlayer.setNodePlayerDelegate(new NodePlayerDelegate() {
             @Override
             public void onEventCallback(NodePlayer player, int event, String msg) {
-
                 if(player.isPlaying() && msg.equals("NetStream.Buffer.Full")){
                     ChatApplication.logDisplay("camera log is dispaly "+event+" "+msg);
                     ChatApplication.logDisplay("camera log is dispaly "+ player.getDuration());
                     ChatApplication.logDisplay("camera log is dispaly "+ nodePlayer.isLive());
+                    ChatApplication.logDisplay("camera log is dispaly buffer "+ nodePlayer.getBufferPercentage());
+                    ChatApplication.logDisplay("camera log is dispaly buffer "+ nodePlayer.getBufferPercentage());
+                    ChatApplication.logDisplay("camera log is dispaly buffer isPlaying "+ nodePlayer.isPlaying());
 
                     progressDialog.dismiss();
                 }
             }
         });
-
-
 
         zoomlayout=(ZoomLayout)findViewById(R.id.zoomLayout);
         zoomlayout.setOnTouchListener(new View.OnTouchListener() {
@@ -144,20 +126,6 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
                 return false;
             }
         });
-
-//        Thread  thread=new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    Thread.sleep(5000);
-//                    if(progressDialog.isShowing()){
-//                        progressDialog.dismiss();
-//                    }
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });thread.start();
 
         //ll_player.setOnTouchListener(new TouchHandler());
     }

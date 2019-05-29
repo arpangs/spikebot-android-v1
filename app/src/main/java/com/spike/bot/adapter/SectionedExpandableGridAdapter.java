@@ -199,7 +199,11 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         holder.sectionTextView.setMaxLines(1);
                     }
 
-                    holder.sectionTextView.setText(roomName);
+
+
+                    String styledText = "<u><font color='#0098C0'>"+roomName+"</font></u>";
+                    holder.sectionTextView.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
+//                    holder.sectionTextView.setText(roomName);
                     if (section.getRoom_status() == 1) { //|| position%2 ==1
                         // holder.text_section_on_off.setText("ON");
                         holder.text_section_on_off.setBackground(mContext.getResources().getDrawable(R.drawable.room_on));

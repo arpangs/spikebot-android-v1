@@ -221,6 +221,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             }
 
             holder.tv_schedule_name.setText(scheduleVO.getSchedule_name());
+//            String styledText = "<u><font color='#0098C0'>"+scheduleVO.getSchedule_name()+"</font></u>";
+//            holder.tv_schedule_name.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
             holder.tv_name.setText(scheduleVO.getRoom_name());
 
             holder.tv_schedule_name.setOnClickListener(new View.OnClickListener() {
@@ -281,7 +283,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
               //  holder.tv_schedule_off.setTextColor(mContext.getResources().getColor(R.color.automation_white));
 
                 holder.iv_schedule_dots.setImageDrawable(mContext.getResources().getDrawable(R.drawable.more_grey));
-                holder.tv_schedule_name.setTextColor(mContext.getResources().getColor(R.color.device_button));
+                holder.tv_schedule_name.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
                 holder.tv_schedule_days.setText(Html.fromHtml(Common.getDaysStringGray(scheduleVO.getSchedule_device_day())));
 
                 holder.tv_schedule_on.setTextColor(mContext.getResources().getColor(R.color.txtPanal));

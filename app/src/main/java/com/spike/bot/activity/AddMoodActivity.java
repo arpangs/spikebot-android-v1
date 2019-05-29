@@ -297,6 +297,18 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
                         JSONArray moodNamesArray = dataObject.getJSONArray("moodNames");
 
+                        RoomVO roomVO1 = new RoomVO();
+                        roomVO1.setRoomId("");
+                        roomVO1.setRoomName("Select Mood");
+                        moodIconList.add(0,roomVO1);
+
+                        if(editMode){
+                            RoomVO roomVO2 = new RoomVO();
+                            roomVO2.setRoomId(moodVO.getModule_id());
+                            roomVO2.setRoomName(moodVO.getRoomName());
+                            moodIconList.add(1,roomVO2);
+                        }
+
                         for(int i=0 ; i < moodNamesArray.length(); i++){
                             JSONObject moodObject = moodNamesArray.getJSONObject(i);
                             String moodId = moodObject.getString("id");
@@ -310,10 +322,6 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
                         }
 
-                        RoomVO roomVO1 = new RoomVO();
-                        roomVO1.setRoomId("");
-                        roomVO1.setRoomName("Select Mood");
-                        moodIconList.add(0,roomVO1);
 
                         /**
                          *  mood icon dropdown spinner...
@@ -475,6 +483,8 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         String webUrl = app.url;
         String url =  "";
 
+        ActivityHelper.showProgressDialog(AddMoodActivity.this, "Please Wait...", false);
+
         if(editMode){
             url =  webUrl + Constants.SAVEEDITMOOD ;
         }
@@ -612,6 +622,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                     }
 
                     if(code == 200){
+                        ActivityHelper.dismissProgressDialog();
                         ChatApplication.isRefreshDashBoard = true;
                         //ChatApplication.isRefreshHome = true;
                         ChatApplication.isRefreshMood = true;

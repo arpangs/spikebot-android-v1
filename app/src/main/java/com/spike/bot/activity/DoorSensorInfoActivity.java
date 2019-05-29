@@ -42,6 +42,7 @@ import com.spike.bot.adapter.DoorSensorInfoAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
+import com.spike.bot.core.Log;
 import com.spike.bot.customview.OnSwipeTouchListener;
 import com.spike.bot.dialog.ICallback;
 import com.spike.bot.dialog.TimePickerFragment12;
@@ -210,6 +211,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                             String module_id = object.getString("module_id");
                             String room_id = object.getString("room_id");
                             String room_unread = object.getString("room_unread");
+                            String user_id = object.getString("user_id");
 
                             if (sensor_type.equalsIgnoreCase("door") && door_module_id.equalsIgnoreCase(module_id) && door_room_id.equalsIgnoreCase(room_id)) {
                                 mSocketCountVal = sensor_unread;
@@ -1202,7 +1204,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
 
         String webUrl = ChatApplication.url + Constants.UPDATE_UNREAD_LOGS;
-
         JSONObject jsonObject = new JSONObject();
         try {
 
@@ -1217,6 +1218,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 //                if (roomVO.getRoomName().equalsIgnoreCase("All")) {
                     object.put("module_id", ""+tempLists[0].getmDoorSensorMoudleId());
                     object.put("room_id", ""+tempLists[0].getRoom_id());
+                    object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 //                } else {
 //                    object.put("module_id", roomVO.getModule_id());
 //                    object.put("room_id", roomVO.getRoomId());
@@ -1231,6 +1233,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             e.printStackTrace();
         }
 
+        ChatApplication.logDisplay("door is "+ jsonObject.toString());
         new GetJsonTask(this, webUrl, "POST", jsonObject.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
@@ -1255,6 +1258,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                 intent.putExtra("IS_SENSOR", true);
                 intent.putExtra("tabSelect", "show");
                 intent.putExtra("isCheckActivity","doorSensor");
+                intent.putExtra("isRoomName",""+sensorName.getText().toString());
                 startActivity(intent);
             } else {
                 DoorSensorInfoActivity.this.finish();

@@ -38,7 +38,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:text="Select Camera"
+                android:text="Camera List"
                 android:layout_gravity="center"
                 android:layout_weight="0.35"
                 android:layout_width="0dp"

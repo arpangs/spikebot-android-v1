@@ -3,6 +3,7 @@ package com.spike.bot;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.os.Bundle;
 import android.support.multidex.MultiDex;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -58,7 +59,7 @@ import okhttp3.OkHttpClient;
 //reportType = HttpSender.Type.FORM,
         mode = ReportingInteractionMode.TOAST,
         resToastText = R.string.crash_toast_text)
-public class ChatApplication extends Application {
+public class ChatApplication extends Application  {
 
     private Socket mSocket;
     public static String url="";
@@ -70,6 +71,7 @@ public class ChatApplication extends Application {
 
     public static boolean isMainFragmentNeedResume = false;
     public static boolean isScheduleNeedResume = true;
+    public static boolean isShowProgress = false;
     public static boolean isMoodFragmentNeedResume = false;
     public static boolean isEditActivityNeedResume = false;
     public static boolean isLogResume = false;
@@ -115,8 +117,13 @@ public class ChatApplication extends Application {
             mSocket.connect();
     }
 
+
     @Override
     public void onTerminate() {
+        ChatApplication.logDisplay("onterminal is call");
+        if(mSocket!=null){
+            mSocket.disconnect();
+        }
         super.onTerminate();
     }
 
@@ -159,6 +166,8 @@ public class ChatApplication extends Application {
         ACRA.getErrorReporter().setReportSender(new CustomReportSender(this.getApplicationContext()));
 // Install the application crash handler
         ApplicationCrashHandler.installHandler();
+
+
       //  Common.savePrefValue(getApplicationContext(),"","");
     }
 

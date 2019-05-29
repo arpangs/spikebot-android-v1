@@ -1526,6 +1526,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                    // object.put("module_id", ""+sensorResModel.getDate().getTempLists()[0].getTempSensorMoudleId());
                     object.put("module_id", ""+sensorResModel.getDate().getTempLists()[0].getTempSensorMoudleId());
                     object.put("room_id", ""+sensorResModel.getDate().getTempLists()[0].getRoomId());
+                     object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 //                } else {
 //                    object.put("module_id", roomVO.getModule_id());
 //                    object.put("room_id", roomVO.getRoomId());
@@ -1572,6 +1573,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             intent.putExtra("IS_SENSOR", true);
             intent.putExtra("tabSelect", "show");
             intent.putExtra("isCheckActivity","tempSensor");
+            intent.putExtra("isRoomName",""+sensorName.getText().toString());
             startActivity(intent);
         } else {
             TempSensorInfoActivity.this.finish();

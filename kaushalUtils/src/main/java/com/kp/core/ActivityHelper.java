@@ -89,7 +89,6 @@ public class ActivityHelper {
 		m_progressDialog.setMessage(p_loadingMessage);
 		m_progressDialog.setCancelable(p_isCancelable);
 		// m_progressDialog.findViewById(android.R.id)
-		m_progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		if (!((Activity) p_context).isFinishing()) {
 			m_progressDialog.show();
 		}

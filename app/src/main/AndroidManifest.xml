@@ -115,6 +115,28 @@
             android:windowSoftInputMode="stateHidden" />
 
         <activity
+            android:name="com.spike.bot.activity.SmartColorPickerActivity"
+            android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="com.spike.bot.activity.SmartDecviceListActivity"
+            android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="com.spike.bot.activity.SearchSmartDeviceActivity"
+            android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+
+        <activity
             android:name="com.spike.bot.activity.SmartRemoteActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
@@ -152,6 +174,11 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden"/>
 
+     <!--   <activity android:name=".activity.Main2Activity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan|adjustResize"/>
+-->
         <activity
             android:name="com.spike.bot.activity.Main2Activity"
             android:screenOrientation="portrait"

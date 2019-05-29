@@ -26,7 +26,7 @@ import me.leolin.shortcutbadger.ShortcutBadger;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "FCMNotification";
-    String badge="0";
+    public static String badge="0";
 
     @Override
     public void onCreate() {
@@ -67,7 +67,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             }
 
             String message = remoteMessage.getData().get("default");
-            badge = remoteMessage.getData().get("badge");
+//            badge = remoteMessage.getData().get("badge");
+            if(TextUtils.isEmpty(badge)){
+                badge="0";
+            }
+            int count  = Integer.parseInt(badge)+1;
+            badge= ""+count;
 
             ChatApplication.logDisplay("Message data payload: badge " + badge);
 

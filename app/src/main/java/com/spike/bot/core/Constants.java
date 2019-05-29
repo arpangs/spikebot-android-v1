@@ -20,14 +20,17 @@ import java.util.List;
 public class Constants {
 
 //    public static final String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //IP used for login cloud and logout
-    public static final String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //117 testing
+//    public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //117 testing
+    public static  String CLOUD_SERVER_URL = "http://18.237.74.22:8079"; //117 testing
+//    public static  String CLOUD_SERVER_URL = ""; //117 testing
 //http://52.24.23.7:8079
 //http://52.24.23.7:7
-//    public static final String IP_END = "111"; //101 //117 //222
+//    public static  String IP_END = "111"; //101 //117 //222 node11 / 123
 //    public static final String  IP_END = "119"; //101 //117 //222
 //
-//  public static final String  IP_END = "222"; //101 //117 //222
-    public static final String  IP_END = "117"; //101 //117 //222 vip/123
+    public static  String  IP_END = "222"; //101 //117 //222
+//    public static  String  IP_END = ""; //101 //117 //222
+//    public static final String  IP_END = "117"; //101 //117 //222 vip/123
     public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";
     public static final String CAMERA_PATH = "/static/storage/volume/";
 
@@ -45,7 +48,8 @@ public class Constants {
     public static final String USER_TYPE = "user_type";
     public static final String USER_ADMIN_TYPE = "user_admin_type";
     public static final String USER_ROOM_TYPE = "user_room_type";
-    public static final String wifiIpAddress = "";
+    public static final String couldIp = "";
+    public static final String startIp = "";
     public static int adminType = 1;
     public static int room_type = 0;
 
@@ -87,6 +91,11 @@ public class Constants {
     public static final String DELETE_ROOM_PANEL = "/deletePanel";
     public static final String GET_MOOD_DETAILS = "/getMoodDetails";
     public static final String validatecamerakey = "/validatecamerakey";
+    public static final String addHueLight = "/addHueLight";
+    public static final String getHueRouterDetails = "/getHueRouterDetails";
+    public static final String HueLightsList = "/HueLightsList";
+    public static final String HueLightState = "/HueLightState";
+    public static final String createHueUSer = "/createHueUSer";
 
     //added : 3-10-2018
     public static final String GET_ALL_UNASSIGNED_DEVICES = "/getAllUnassignedDevices";
@@ -107,6 +116,7 @@ public class Constants {
     public static final String UPDATE_DOOR_SENSOR = "/updateDoorSensor";
     public static final String getCameraNotificationAlertList = "/getCameraNotificationAlertList";
     public static final String updateUnReadCameraLogs = "/updateUnReadCameraLogs";
+    public static final String getSmartDeviceBrands = "/getSmartDeviceBrands";
 
     public static final String SENSOR_ROOM_DETAILS = "/sensorRoomDetails";
     public static final String SENSOR_NOTIFICATION = "/sensorNotification";
@@ -181,6 +191,7 @@ public class Constants {
     public static final String CHANGE_SCHEDULE_STATUS = "/changeScheduleStatus";
     public static final String DELETE_SCHEDULE = "/deleteSchedule";
     public static final String GET_SCHEDULE_LIST = "/getScheduleList";
+    public static final String GET_SCHEDULE_LIST_LOG = "/getScheduleListForLogs";
     public static final String GET_SCHEDULE_ON_ROOM = "/getScheduleOnRoom";
     public static final String GET_ORIGINAL_DEVICES = "/getOriginalDevices";
     public static final String addCameraNotification = "/addCameraNotification";

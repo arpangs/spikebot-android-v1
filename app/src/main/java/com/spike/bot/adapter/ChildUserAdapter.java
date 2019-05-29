@@ -63,75 +63,75 @@ public class ChildUserAdapter extends RecyclerView.Adapter<ChildUserAdapter.Sens
     public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
         holder.txtUserName.setText(userArrayList.get(position).getFirstname());
-
-        GridLayoutManager linearLayoutManager = new GridLayoutManager(mContext, 4);
-        GridLayoutManager linearLayoutManager2 = new GridLayoutManager(mContext, 4);
-        holder.recyclerRoomList.setLayoutManager(linearLayoutManager);
-        holder.recyclerCameraList.setLayoutManager(linearLayoutManager2);
-
-        if(userArrayList.get(position).getRoomList()!=null){
-            holder.txtRoomList.setVisibility(View.GONE);
-            holder.recyclerRoomList.setVisibility(View.VISIBLE);
-            SubRoomListAdapter subRoomListAdapter = new SubRoomListAdapter(mContext, userArrayList.get(position).getRoomList());
-            holder.recyclerRoomList.setAdapter(subRoomListAdapter);
-        }else {
-            holder.txtRoomList.setVisibility(View.VISIBLE);
-            holder.recyclerRoomList.setVisibility(View.GONE);
-        }
-
-        if(userArrayList.get(position).getCameralist()!=null){
-            holder.txtNocamera.setVisibility(View.GONE);
-            holder.recyclerCameraList.setVisibility(View.VISIBLE);
-            SubCameraListAdapter subCameraListAdapter = new SubCameraListAdapter(mContext, userArrayList.get(position).getCameralist());
-            holder.recyclerCameraList.setAdapter(subCameraListAdapter);
-        }else {
-            holder.recyclerCameraList.setVisibility(View.GONE);
-            holder.txtNocamera.setVisibility(View.VISIBLE);
-        }
-
-       // holder.recyclerCameraList.setVisibility(View.GONE);
-        //holder.txtNocamera.setVisibility(View.VISIBLE);
-        if (userArrayList.get(position).getIsopen()) {
-            holder.imgArrow.setImageDrawable(mContext.getResources().getDrawable(R.drawable.arrow_down_gray));
-            holder.linearList.setVisibility(View.VISIBLE);
-        } else {
-            holder.imgArrow.setImageDrawable(mContext.getResources().getDrawable(R.drawable.arrow_up_gray));
-            holder.linearList.setVisibility(View.GONE);
-        }
-
-        holder.imgArrow.setId(position);
-        holder.imgArrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (userArrayList.get(position).getIsopen()) {
-                    holder.linearList.setVisibility(View.GONE);
-                    userArrayList.get(position).setIsopen(false);
-                } else {
-                    holder.linearList.setVisibility(View.VISIBLE);
-                    userArrayList.get(position).setIsopen(true);
-                }
-                notifyDataSetChanged();
-            }
-        });
-
-        holder.txtUserName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.imgArrow.performClick();
-            }
-        });
+//
+//        GridLayoutManager linearLayoutManager = new GridLayoutManager(mContext, 4);
+//        GridLayoutManager linearLayoutManager2 = new GridLayoutManager(mContext, 4);
+//        holder.recyclerRoomList.setLayoutManager(linearLayoutManager);
+//        holder.recyclerCameraList.setLayoutManager(linearLayoutManager2);
+//
+//        if(userArrayList.get(position).getRoomList()!=null){
+//            holder.txtRoomList.setVisibility(View.GONE);
+//            holder.recyclerRoomList.setVisibility(View.VISIBLE);
+//            SubRoomListAdapter subRoomListAdapter = new SubRoomListAdapter(mContext, userArrayList.get(position).getRoomList());
+//            holder.recyclerRoomList.setAdapter(subRoomListAdapter);
+//        }else {
+//            holder.txtRoomList.setVisibility(View.VISIBLE);
+//            holder.recyclerRoomList.setVisibility(View.GONE);
+//        }
+//
+//        if(userArrayList.get(position).getCameralist()!=null){
+//            holder.txtNocamera.setVisibility(View.GONE);
+//            holder.recyclerCameraList.setVisibility(View.VISIBLE);
+//            SubCameraListAdapter subCameraListAdapter = new SubCameraListAdapter(mContext, userArrayList.get(position).getCameralist());
+//            holder.recyclerCameraList.setAdapter(subCameraListAdapter);
+//        }else {
+//            holder.recyclerCameraList.setVisibility(View.GONE);
+//            holder.txtNocamera.setVisibility(View.VISIBLE);
+//        }
+//
+//        if (userArrayList.get(position).getIsopen()) {
+//            holder.imgArrow.setImageDrawable(mContext.getResources().getDrawable(R.drawable.arrow_down_gray));
+//            holder.linearList.setVisibility(View.VISIBLE);
+//        } else {
+//            holder.imgArrow.setImageDrawable(mContext.getResources().getDrawable(R.drawable.arrow_up_gray));
+//            holder.linearList.setVisibility(View.GONE);
+//        }
+//
+//        holder.imgArrow.setId(position);
+//        holder.imgArrow.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (userArrayList.get(position).getIsopen()) {
+//                    holder.linearList.setVisibility(View.GONE);
+//                    userArrayList.get(position).setIsopen(false);
+//                } else {
+//                    holder.linearList.setVisibility(View.VISIBLE);
+//                    userArrayList.get(position).setIsopen(true);
+//                }
+//                notifyDataSetChanged();
+//            }
+//        });
+//
+//        holder.txtUserName.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                holder.imgArrow.performClick();
+//            }
+//        });
         holder.linearChildUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                holder.imgArrow.performClick();
+               // holder.imgArrow.performClick();
+                userChildAction.actionCHild("update", position, userArrayList.get(position));
             }
         });
-
-
+//
+//
         holder.imgMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 PopupMenu popup = new PopupMenu(mContext, v);
+
                 @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(mContext, R.style.PopupMenu);
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
                     popup = new PopupMenu(wrapper, v, Gravity.RIGHT);

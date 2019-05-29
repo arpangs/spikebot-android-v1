@@ -102,12 +102,13 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
                 homeObject.put("id",data.getId());
                 homeObject.put("title",data.getTitle());
                 homeObject.put("value",data.getValue());
-                homeObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+
 
                 dataArray.put(homeObject);
             }
 
             dataObject.put("data",dataArray);
+            dataObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
 
         } catch (JSONException e) {
@@ -154,8 +155,16 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
 
         String webUrl = ChatApplication.url + Constants.GET_NOTIFICATION_LIST;
 
+        JSONObject dataObject = new JSONObject();
+
+        try {
+            dataObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        new GetJsonTask(this, webUrl, "GET", "", new ICallBack() {
+        new GetJsonTask(this, webUrl, "POST", dataObject.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
 

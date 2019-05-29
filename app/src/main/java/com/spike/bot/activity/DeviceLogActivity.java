@@ -128,11 +128,11 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
         } else if (isCheckActivity.equals("doorSensor")) {
             isFilterType = true;
             isSensorLog = true;
-            setTitle("Door Logs");
+            setTitle(isRoomName+" Logs");
         } else if (isCheckActivity.equals("tempSensor")) {
             isFilterType = true;
             isSensorLog = true;
-            setTitle("Temp Logs");
+            setTitle(isRoomName+" Logs");
         } else {
             setTitle("LOGS");
         }
@@ -318,6 +318,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                 jsonNotification.put("sensor_type", "" + sensor_type);
             }
 
+            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonNotification.put("admin", Integer.parseInt(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE)));
             jsonNotification.put("filter_data", "");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1298,30 +1300,51 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
     private JSONArray deviceArray;
 
     private void getDeviceList(final String room) {
-        String url = "";
+        String url = "",urlType="POST",parameter="";
         actionType = room;
+
+        JSONObject jsonObject = new JSONObject();
+
         if (room.equalsIgnoreCase("Room")) {
          //   url = ChatApplication.url + Constants.GET_DEVICES_LIST + "/" + Constants.DEVICE_TOKEN + "/0/1";
             url = ChatApplication.url + Constants.GET_DEVICES_LIST;
         } else if (room.equalsIgnoreCase("Schedule") || room.equalsIgnoreCase("Timer")) {
-            url = ChatApplication.url + Constants.GET_SCHEDULE_LIST;
+            url = ChatApplication.url + Constants.GET_SCHEDULE_LIST_LOG;
         } else if (room.equalsIgnoreCase("sensor") || room.equalsIgnoreCase("Door Sensor")
                 || room.equalsIgnoreCase("Temperature Sensor")) {
+            urlType="GET";
             url = ChatApplication.url + Constants.SENSOR_ROOM_DETAILS;
         } else {
             url = ChatApplication.url + Constants.GET_DEVICES_LIST;
         }
 
-        JSONObject jsonObject = new JSONObject();
+
         try {
+            if(room.equalsIgnoreCase("Room")){
+                jsonObject.put("room_type", 0);
+                jsonObject.put("is_sensor_panel", 1);
+                jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+
+            }else if(room.equalsIgnoreCase("Mood")) {
+                jsonObject.put("room_type", 1);
+                jsonObject.put("is_sensor_panel", 0);
+                jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            } else if(room.equalsIgnoreCase("Schedule") || room.equalsIgnoreCase("Timer")) {
+
+            }
             jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             jsonObject.put("admin", Common.getPrefValue(this, Constants.USER_ADMIN_TYPE));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        String json="";
+        if(urlType.equalsIgnoreCase("GET")){
+            json="";
+        }else {
+            json=jsonObject.toString();
+        }
         ChatApplication.logDisplay("json is "+jsonObject.toString()+ " "+url);
-        new GetJsonTask2(activity, url, "POST", jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
+        new GetJsonTask2(activity, url, urlType , json, new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
 
@@ -1346,12 +1369,15 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                             if (room.equalsIgnoreCase("Temperature Sensor")) {
                                 oneRoom.setRoomName("All Temp");
                                 mListRoom.add(0, oneRoom);
-                                for (int i = 0; i < mSensorLogRes.getData().getTempSensor().size(); i++) {
-                                    RoomVO roomVO = new RoomVO();
-                                    roomVO.setRoomName(mSensorLogRes.getData().getTempSensor().get(i).getTempSensorName());
-                                    roomVO.setRoomId(mSensorLogRes.getData().getTempSensor().get(i).getRoomId());
-                                    mListRoom.add(roomVO);
+                                if(mSensorLogRes.getData().getTempSensor()!=null){
+                                    for (int i = 0; i < mSensorLogRes.getData().getTempSensor().size(); i++) {
+                                        RoomVO roomVO = new RoomVO();
+                                        roomVO.setRoomName(mSensorLogRes.getData().getTempSensor().get(i).getTempSensorName());
+                                        roomVO.setRoomId(mSensorLogRes.getData().getTempSensor().get(i).getRoomId());
+                                        mListRoom.add(roomVO);
+                                    }
                                 }
+
 
                             } else {
                                 oneRoom.setRoomName("All Door");
@@ -1945,6 +1971,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 //        if (Schedule_id.length() >= 1) {
 //            if (isFilterActive) {
         if (isFilterType) {
+            ActivityHelper.showProgressDialog(this, "Please Wait...", false);
             url = ChatApplication.url + Constants.SENSOR_NOTIFICATION;
         } else {
             url = ChatApplication.url + Constants.GET_FILTER_NOTIFICATION_INFO;
@@ -2189,7 +2216,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
                 object.put("panel_id", "");
                 object.put("module_id", "");
-                if (isCheckActivity.equals("AllType") ||isCheckActivity.equals("mode") || isCheckActivity.equals("room")) {
+//                if (isCheckActivity.equals("AllType") ||isCheckActivity.equals("mode") || isCheckActivity.equals("room")) {
+                if (isCheckActivity.equals("mode") || isCheckActivity.equals("room")) {
                     object.put("is_room", 1);
                 } else {
                     object.put("is_room", 0);
@@ -2203,6 +2231,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             e.printStackTrace();
         }
 
+        ChatApplication.logDisplay("object is "+object.toString());
         new GetJsonTask(activity, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -2381,18 +2410,20 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
         if (!isFilterActive) {
             isScrollDown = false;
             deviceLogList.clear();
+            isFilterType = false;
             deviceLogAdapter.notifyDataSetChanged();
-            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor")) {
-                getSensorLog(0);
-            } else {
+//            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor")) {
+//                getSensorLog(0);
+//            } else {
                 getDeviceLog(0);
-            }
+//            }
             swipeRefreshLayout.setRefreshing(true);
         } else {
             // swipeRefreshLayout.setRefreshing(false);
 
             dialog=null;
             isFilterActive = false;
+            isFilterType = false;
             isEndOfRecord = false;
             isSelectItemSubTemp="";
             isSelectItem="";
@@ -2403,16 +2434,16 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             deviceLogAdapter = new DeviceLogAdapter(DeviceLogActivity.this, deviceLogList);
             rv_device_log.setAdapter(deviceLogAdapter);
             deviceLogAdapter.notifyDataSetChanged();
-            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor")) {
-                getSensorLog(0);
-            } else {
+//            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor")) {
+//                getSensorLog(0);
+//            } else {
                 //   udpateButton();
                 if (isCheckActivity.equals("AllType")) {
                     isFilterType = false;
                     isFilterActive = false;
                 }
                 getDeviceLog(0);
-            }
+//            }
         }
 
     }

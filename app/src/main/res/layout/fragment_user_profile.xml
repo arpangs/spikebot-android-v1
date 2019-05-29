@@ -163,7 +163,19 @@
                         android:visibility="visible" />
                 </LinearLayout>
 
+                <Button
+                    android:id="@+id/btnChangePassword"
+                    android:text="Change Password"
+                    android:textColor="@color/automation_white"
+                    android:layout_margin="@dimen/_7sdp"
+                    android:background="@drawable/drawable_blue_schedule"
+                    android:layout_width="match_parent"
+                    android:textAllCaps="false"
+                    android:layout_height="wrap_content" />
+
+
                 <LinearLayout
+                    android:visibility="gone"
                     android:background="@drawable/button_border_ll"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -238,16 +250,15 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="@dimen/_10sdp"
                     android:weightSum="1">
 
                     <Button
                         android:id="@+id/btn_save"
-                        android:layout_width="0dp"
-                        android:layout_height="35dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_marginTop="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_weight="0.30"
+                        android:layout_margin="@dimen/_5sdp"
                         android:background="@drawable/button_radius"
                         android:clickable="true"
                         android:text="Save"

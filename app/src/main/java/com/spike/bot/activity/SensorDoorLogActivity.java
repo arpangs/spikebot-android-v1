@@ -398,6 +398,7 @@ public class SensorDoorLogActivity extends AppCompatActivity implements  OnLoadM
                         object.put("module_id",roomVO.getModule_id());
                         object.put("room_id",roomVO.getRoomId());
                     }
+                    object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
                     jsonArray.put(object);
                 }
@@ -670,6 +671,8 @@ public class SensorDoorLogActivity extends AppCompatActivity implements  OnLoadM
             jsonNotification.put("start_date",start_date);
             jsonNotification.put("end_date",end_date);
             jsonNotification.put("sensor_type",sensor_type);
+            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonNotification.put("admin", Common.getPrefValue(this, Constants.USER_ADMIN_TYPE));
         } catch (JSONException e) {
             e.printStackTrace();
         }

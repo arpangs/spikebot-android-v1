@@ -31,6 +31,7 @@ import com.spike.bot.activity.ir.blaster.IRBlasterAddActivity;
 import com.spike.bot.activity.ir.blaster.IRRemoteAdd;
 import com.spike.bot.adapter.DeviceLogAdapter;
 import com.spike.bot.adapter.LogRoomAdapter;
+import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.DeviceLog;
 import com.spike.bot.model.DeviceVO;
@@ -377,6 +378,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
             object.put("sensor_type","");
             object.put("module_id", "");
             object.put("room_id", ""+ROOM_ID);
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             jsonArray.put(object);
             jsonObject.put("update_logs", jsonArray);
 

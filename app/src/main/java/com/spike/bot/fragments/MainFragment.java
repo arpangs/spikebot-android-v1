@@ -40,6 +40,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -64,8 +65,10 @@ import com.spike.bot.activity.NotificationSetting;
 import com.spike.bot.activity.ProfileActivity;
 import com.spike.bot.activity.RoomEditActivity_v2;
 import com.spike.bot.activity.ScheduleActivity;
+import com.spike.bot.activity.SearchSmartDeviceActivity;
 import com.spike.bot.activity.SensorDoorLogActivity;
 import com.spike.bot.activity.SensorUnassignedActivity;
+import com.spike.bot.activity.SmartDecviceListActivity;
 import com.spike.bot.activity.SmartRemoteActivity;
 import com.spike.bot.activity.TempSensorInfoActivity;
 import com.spike.bot.activity.SignUp;
@@ -143,6 +146,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
     // auto service find
     public View view;
+    public RelativeLayout relativeMainfragment;
     private LinearLayout linear_retry, linear_progress, linear_login;
     private Button button_retry, btn_login;
     EditText et_username, et_password;
@@ -255,7 +259,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     private NestedScrollView main_scroll;
     private FloatingActionButton mFab;
     private CardView mFabMenuLayout;
-    private TextView fab_menu1, fab_menu2, fab_menu3, fab_menu4, fab_menu5, fab_menu6, fab_menu7,fabZigbeeRemote;
+    private TextView fab_menu1, fab_menu2, fab_menu3, fab_menu4, fab_menu5, fab_menu6, fab_menu7,fabZigbeeRemote,fabSmartDevice;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -286,6 +290,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         et_password = (EditText) view.findViewById(R.id.et_password);
         tv_header = (TextView) view.findViewById(R.id.tv_header);
 
+        relativeMainfragment = view.findViewById(R.id.relativeMainfragment);
         txt_empty_text = (TextView) view.findViewById(R.id.txt_empty_text);
 
         txt_empty_schedule = (LinearLayout) view.findViewById(R.id.txt_empty_schedule);
@@ -320,9 +325,22 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         fab_menu5 = (TextView) view.findViewById(R.id.fab_menu5);
         fab_menu6 = (TextView) view.findViewById(R.id.fab_menu6);
         fab_menu7 = (TextView) view.findViewById(R.id.fab_menu7);
+        fabSmartDevice = (TextView) view.findViewById(R.id.fabSmartDevice);
         fabZigbeeRemote = view.findViewById(R.id.fabZigbeeRemote);
 
         mFab = (FloatingActionButton) view.findViewById(R.id.fab);
+
+
+
+        fabSmartDevice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { closeFABMenu();
+               // Intent intent=new Intent(getActivity(), SearchSmartDeviceActivity.class);
+                Intent intent=new Intent(getActivity(), SmartDecviceListActivity.class);
+                startActivity(intent);
+
+            }
+        });
 
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -404,6 +422,13 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             }
         });
 
+
+        relativeMainfragment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeFABMenu();
+            }
+        });
         return view;
     }
 
@@ -1466,8 +1491,11 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             String module_id = object.getString("module_id");
                             String room_id = object.getString("room_id");
                             String room_unread = object.getString("room_unread");
+                            String user_id = object.getString("user_id");
 
-                            sectionedExpandableLayoutHelper.updateBadgeCount(sensor_type, sensor_unread, module_id, room_id, room_unread);
+                            if(user_id.equalsIgnoreCase(Common.getPrefValue(getActivity(), Constants.USER_ID))){
+                                sectionedExpandableLayoutHelper.updateBadgeCount(sensor_type, sensor_unread, module_id, room_id, room_unread);
+                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -3150,8 +3178,13 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 //            return;
 //        }
 
+        if(swipeRefreshLayout!=null){
+            if(swipeRefreshLayout.isRefreshing()){
+                showDialog=1;
+            }
+        }
         if (showDialog == 1 || checkmessgae == 1 || checkmessgae == 6 || checkmessgae == 7 || checkmessgae == 8 || checkmessgae == 10) {
-            ActivityHelper.showProgressDialog(getActivity(), "Please Wait...", false);
+            ActivityHelper.showProgressDialog(getActivity(), " Please Wait...", false);
         }
         ChatApplication.logDisplay("show progress is "+showDialog);
 
@@ -3220,9 +3253,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         new GetJsonTask2(activity, url, "POST", jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                showDialog = 0;
+
                 ((Main2Activity)getActivity()).wifiConnectionIssue(true);
-  //              ActivityHelper.dismissProgressDialog();
+//                ActivityHelper.dismissProgressDialog();
                 if (ChatApplication.isPushFound) {
                     getBadgeClear(getActivity());
                 }
@@ -3233,7 +3266,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 //connect socket
                 startSocketConnection();
 
-                swipeRefreshLayout.setRefreshing(false);
+//                swipeRefreshLayout.setRefreshing(false);
                 sectionedExpandableLayoutHelper.setClickable(true);
                 ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
 
@@ -3451,6 +3484,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } finally {
+                    showDialog = 0;
                     if (roomList != null) {
                         CameraDeviceLogActivity.getCameraList = roomList.get(roomList.size() - 1).getPanelList().get(0).getCameraList();
                     }
@@ -3498,13 +3532,13 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    private void setUserTypeValue() {
+    public void setUserTypeValue() {
         if (!TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE))) {
             if (Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
                 mFab.setVisibility(View.GONE);
-                ((Main2Activity) getActivity()).toolbarImage.setVisibility(View.INVISIBLE);
-                ((Main2Activity) getActivity()).toolbarTitle.setClickable(false);
-                ((Main2Activity) getActivity()).toolbarImage.setClickable(false);
+                ((Main2Activity) getActivity()).toolbarImage.setVisibility(View.VISIBLE);
+                ((Main2Activity) getActivity()).toolbarTitle.setClickable(true);
+                ((Main2Activity) getActivity()).toolbarImage.setClickable(true);
 
                 ((Main2Activity) getActivity()).toolbarTitle.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
             } else {
@@ -3528,6 +3562,12 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         if(((Main2Activity)getActivity()).dialogUser!=null){
             if(((Main2Activity)getActivity()).dialogUser.isShowing()){
                 ((Main2Activity)getActivity()).dialogUser.dismiss();
+            }
+        }
+
+        if(swipeRefreshLayout!=null){
+            if(swipeRefreshLayout.isRefreshing()){
+                showDialog=1;
             }
         }
 
@@ -3574,7 +3614,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 mMessagesView.setClickable(true);
                 mFab.setClickable(true);
                 mFab.setClickable(true);
-                ActivityHelper.dismissProgressDialog();
+//                ActivityHelper.dismissProgressDialog();
                 ((Main2Activity) getActivity()).toolbarTitle.setClickable(true);
                 ((Main2Activity) getActivity()).toolbarImage.setClickable(true);
 
@@ -3583,7 +3623,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 //connect socket
                 startSocketConnection();
 
-                swipeRefreshLayout.setRefreshing(false);
+//                swipeRefreshLayout.setRefreshing(false);
                 sectionedExpandableLayoutHelper.setClickable(true);
                 ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
 
@@ -3858,7 +3898,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         CameraAdapter cameraAdapter = new CameraAdapter(getActivity(), cameraArray, webUrl);
                         camera_list.setAdapter(cameraAdapter);*/
 
-                        ActivityHelper.dismissProgressDialog();
+//                        ActivityHelper.dismissProgressDialog();
                     }
 
 

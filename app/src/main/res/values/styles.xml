@@ -16,7 +16,7 @@
     </style>
 
     <style name="Color1SwitchStyle" >
-        <item name="colorControlActivated">@color/username5</item>
+        <item name="colorControlActivated">@color/sensor_button</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

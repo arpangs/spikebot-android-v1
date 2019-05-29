@@ -1,25 +1,32 @@
 package com.spike.bot.fragments;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.UserChildActivity;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -41,14 +48,14 @@ import java.util.regex.Pattern;
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class UserProfileFragment extends Fragment{
+public class UserProfileFragment extends Fragment implements View.OnClickListener{
 
-    String  TAG = "ProfileActivity";
+    String  TAG = "ProfileActivity",strPassword="";
 
     EditText et_profile_first_name, et_profile_last_name, et_profile_contact_no, et_profile_email, et_profile_user_name;
     LinearLayout ll_password_view_expand,ll_pass_edittext_view;
     ImageView img_pass_arrow;
-    Button btn_save;
+    Button btn_save,btnChangePassword;
     EditText edt_new_password,edt_confrim_password;
     Animation slideUpAnimation, slideDownAnimation;
 
@@ -91,7 +98,8 @@ public class UserProfileFragment extends Fragment{
         ll_password_view_expand = (LinearLayout) view.findViewById(R.id.ll_password_view);
         ll_pass_edittext_view = (LinearLayout) view.findViewById(R.id.ll_pass_edittext_view);
         img_pass_arrow = (ImageView)view.findViewById(R.id.img_pass_arrow);
-
+        btnChangePassword = view.findViewById(R.id.btnChangePassword);
+        btnChangePassword.setOnClickListener(this);
         edt_new_password = (EditText)view.findViewById(R.id.et_new_password);
         edt_confrim_password = (EditText)view.findViewById(R.id.et_new_password_confirm);
 
@@ -258,22 +266,22 @@ public class UserProfileFragment extends Fragment{
             return;
         }
 
-        if(!TextUtils.isEmpty(edt_new_password.getText().toString())){
-
-            if(edt_new_password.getText().length()>1){
-                if(edt_new_password.getText().toString().equalsIgnoreCase(edt_confrim_password.getText().toString())){
-                    isValidate = true;
-                }else{
-                    isValidate = false;
-                    Toast.makeText(getContext(), "Password not match..." , Toast.LENGTH_SHORT).show();
-                    return;
-                }
-            }else{
-                isValidate = false;
-                Toast.makeText(getContext(), "Invalid Password..." , Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
+//        if(!TextUtils.isEmpty(edt_new_password.getText().toString())){
+//
+//            if(edt_new_password.getText().length()>1){
+//                if(edt_new_password.getText().toString().equalsIgnoreCase(edt_confrim_password.getText().toString())){
+//                    isValidate = true;
+//                }else{
+//                    isValidate = false;
+//                    Toast.makeText(getContext(), "Password not match..." , Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
+//            }else{
+//                isValidate = false;
+//                Toast.makeText(getContext(), "Invalid Password..." , Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//        }
 
 
         ActivityHelper.showProgressDialog(getContext(),"Please wait.",false);
@@ -286,12 +294,11 @@ public class UserProfileFragment extends Fragment{
             obj.put("user_phone",et_profile_contact_no.getText().toString());
             obj.put("user_email",et_profile_email.getText().toString());
 
-            String user_password = null;
-            if(isValidate){
-                user_password = edt_new_password.getText().toString().trim();
+            if(strPassword.length()>0){
+                obj.put("user_password",""+strPassword);
+            }else {
+                obj.put("user_password","");
             }
-
-            obj.put("user_password",""+user_password);
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
@@ -343,4 +350,70 @@ public class UserProfileFragment extends Fragment{
         }).execute();
     }
 
+    public void addCustomRoom() {
+        final Dialog dialog = new Dialog(getActivity());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setContentView(R.layout.dialog_add_custome_room);
+        dialog.setCanceledOnTouchOutside(true);
+
+        final TextInputLayout inputRoom = dialog.findViewById(R.id.inputRoom);
+        final TextInputLayout inputPassword = dialog.findViewById(R.id.inputPassword);
+
+        final TextInputEditText edtPasswordChild=dialog.findViewById(R.id.edtPasswordChild);
+        inputRoom.setVisibility(View.GONE);
+        inputPassword.setVisibility(View.VISIBLE);
+
+//        InputFilter[] filterArray = new InputFilter[1];
+//        filterArray[0] = new InputFilter.LengthFilter(25);
+//        room_name.setFilters(filterArray);
+
+        TextView tv_title =  dialog.findViewById(R.id.tv_title);
+        Button btnSave = (Button) dialog.findViewById(R.id.btn_save);
+        Button btn_cancel = (Button) dialog.findViewById(R.id.btn_cancel);
+        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
+        iv_close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        tv_title.setText("Change Password");
+
+//        room_name.setHint("Enter Password");
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(edtPasswordChild.getText().length()>0){
+                    ChatApplication.keyBoardHideForce(getActivity());
+                    dialog.cancel();
+                    strPassword=edtPasswordChild.getText().toString();
+                }else {
+                    ChatApplication.showToast(getActivity(), "Please enter password");
+                }
+            }
+        });
+
+        if (!dialog.isShowing()) {
+            dialog.show();
+        }
+
+        //ActivityHelper.showProgressDialog(getActivity(), "Searching Device attached ", false);
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v==btnChangePassword){
+            addCustomRoom();
+        }
+    }
 }

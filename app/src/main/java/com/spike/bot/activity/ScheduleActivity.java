@@ -2562,6 +2562,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
+                        ChatApplication.isShowProgress=true;
                         if (result.has("data")) {
                             JSONObject obj = result.getJSONObject("data");
                             int is_duplicate = obj.getInt("is_duplicate");
@@ -2572,7 +2573,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                             if(!TextUtils.isEmpty(message)){
                                 Toast.makeText(getApplicationContext().getApplicationContext(),  message , Toast.LENGTH_SHORT).show();
                             }
-                            finish();
+                            ScheduleActivity.this.finish();
                         }
                         //getDeviceList();
                     }else if(code == 3001){ //3001 old status code
