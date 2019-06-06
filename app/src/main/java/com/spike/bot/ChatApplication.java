@@ -36,8 +36,10 @@ import java.net.ProtocolException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -242,6 +244,67 @@ public class ChatApplication extends Application  {
         String currentDateandTime = sdf.format(new Date());
 //yyyy-MM-dd HH:mm:ss
         return currentDateandTime+" 00:01:00";
+
+    }
+
+    public static String getCurrentDateOnly(boolean isflag,String onTime ,String offTime){
+
+        String currentDateandTime="";
+        Calendar calendar = Calendar.getInstance();
+
+        if(isflag){
+//            calendar.add(Calendar.DAY_OF_YEAR, 1);
+            SimpleDateFormat sdfCurrent = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+            Date currentDate = calendar.getTime();
+
+            String currentStr= sdfCurrent.format(currentDate);
+
+            if(offTime.length()>1){
+                currentStr=currentStr+" "+offTime;
+            }else {
+                currentStr=currentStr+" "+onTime;
+            }
+
+            try {
+                SimpleDateFormat sdfFormat = new SimpleDateFormat("EEE dd, MMM ");
+
+                Date date1 = sdf.parse(currentStr);
+
+                String str1 = sdf.format(new Date());
+                Date date2=sdf.parse(str1);
+
+//                Date date2 = sdf.parse(calendar.getTime().toString());
+
+//                if (new Date().after(date2)) {
+                if (date1.after(date2)) {
+                    currentDateandTime = sdfFormat.format(date1);
+                } else{
+                    Calendar calendar1 = Calendar.getInstance();
+                    calendar1.add(Calendar.DAY_OF_YEAR, 1);
+                    Date tomorrow = calendar1.getTime();
+
+                    currentDateandTime = sdfFormat.format(tomorrow);
+                }
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+
+
+//            Date tomorrow = calendar.getTime();
+//            SimpleDateFormat sdf = new SimpleDateFormat("dd EEEE, MMM ");
+//            currentDateandTime= sdf.format(tomorrow);
+        }else {
+            Date tomorrow = calendar.getTime();
+            SimpleDateFormat sdf = new SimpleDateFormat("EEE dd, MMM ");
+            currentDateandTime = sdf.format(tomorrow);
+        }
+
+//yyyy-MM-dd HH:mm:ss
+        return currentDateandTime;
 
     }
 

@@ -5,7 +5,7 @@
     <item
         android:id="@+id/action_screenshot"
         android:orderInCategory="100"
-        android:icon="@drawable/icn_screenshot"
+        android:icon="@drawable/camera_capature"
         android:title="Screenshot"
         app:showAsAction="always" />
 

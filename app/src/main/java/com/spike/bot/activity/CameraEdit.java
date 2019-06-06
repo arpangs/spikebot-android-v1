@@ -46,8 +46,9 @@ import io.socket.client.Socket;
 
 public class CameraEdit extends AppCompatActivity{
 
-    RoomVO room;
+    public boolean isEditable=false;
     private ArrayList<CameraVO> cameraVOArrayList;
+    private CameraVO cameraSelcet;
     ArrayList<String> cameraStr;
     ArrayList<String> cameraId;
 
@@ -73,10 +74,12 @@ public class CameraEdit extends AppCompatActivity{
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        room = (RoomVO )getIntent().getSerializableExtra("room");
+       // room = (RoomVO )getIntent().getSerializableExtra("room");
+        isEditable = getIntent().getBooleanExtra("isEditable",false);
         cameraVOArrayList = (ArrayList<CameraVO>) getIntent().getExtras().getSerializable("cameraList");
+        cameraSelcet = (CameraVO) getIntent().getExtras().getSerializable("cameraSelcet");
 
-        setTitle(room.getRoomName());
+        setTitle("Camera");
 
         sp_camera_list = (Spinner) findViewById(R.id.sp_camera_list);
         sp_drop_down = (ImageView) findViewById(R.id.sp_drop_down);
@@ -95,6 +98,13 @@ public class CameraEdit extends AppCompatActivity{
         cameraId = new ArrayList<>();
         cameraId.clear();
 
+//        if(isEditable){
+            sp_camera_list.setEnabled(false);
+        sp_drop_down.setEnabled(false);
+            sp_camera_list.setClickable(false);
+            sp_drop_down.setClickable(false);
+//        }
+
         if(!cameraVOArrayList.isEmpty()){
             for(CameraVO cameraVO :cameraVOArrayList){
                 cameraStr.add(cameraVO.getCamera_name());
@@ -107,7 +117,15 @@ public class CameraEdit extends AppCompatActivity{
 
         int spinner_position = sp_camera_list.getSelectedItemPosition();
 
-        initUI(cameraStr.get(spinner_position));
+//        initUI(cameraStr.get(spinner_position));
+        initUI(cameraSelcet.getCamera_name());
+
+        for(int i=0; i<cameraId.size(); i++){
+            if(cameraId.get(i).equalsIgnoreCase(cameraSelcet.getCamera_id())){
+                sp_camera_list.setSelection(i);
+                break;
+            }
+        }
 
         sp_camera_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

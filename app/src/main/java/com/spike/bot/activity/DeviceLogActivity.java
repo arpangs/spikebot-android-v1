@@ -133,6 +133,10 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             isFilterType = true;
             isSensorLog = true;
             setTitle(isRoomName+" Logs");
+        } else if (isCheckActivity.equals("multisensor")) {
+            isFilterType = true;
+            isSensorLog = true;
+            setTitle(isRoomName+" Logs");
         } else {
             setTitle("LOGS");
         }
@@ -229,7 +233,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 //        if (isSensorLog) {
 //            getSensorLog(0);
 //        } else {
-        if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor")) {
+        if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor")|| isCheckActivity.equals("multisensor")) {
             getSensorLog(0);
         } else {
             getDeviceLog(0);
@@ -305,11 +309,14 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             jsonNotification.put("room_id", "");
             jsonNotification.put("end_datetime", "");
             jsonNotification.put("start_datetime", "");
-            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor")) {
+
+            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor") || isCheckActivity.equals("multisensor")) {
                 if (isCheckActivity.equals("doorSensor")) {
                     jsonNotification.put("sensor_type", "door");
                 } else if (isCheckActivity.equals("tempSensor")) {
                     jsonNotification.put("sensor_type", "temp");
+                }else if (isCheckActivity.equals("multisensor")) {
+                    jsonNotification.put("sensor_type", "multisensor");
                 }
 
                 jsonNotification.put("module_id", "" + Mood_Id);
@@ -555,7 +562,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             deviceLogAdapter = new DeviceLogAdapter(DeviceLogActivity.this, deviceLogList);
             rv_device_log.setAdapter(deviceLogAdapter);
             deviceLogAdapter.notifyDataSetChanged();
-            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor")) {
+            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor") || isCheckActivity.equals("multisensor")) {
                 getSensorLog(0);
             } else {
                 //   udpateButton();

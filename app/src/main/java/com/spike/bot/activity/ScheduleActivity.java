@@ -1586,10 +1586,10 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
                 getRepeatString();
 
-                if (TextUtils.isEmpty(repeatDayString)) {
-                    Toast.makeText(this, "Select Repeat Days", Toast.LENGTH_SHORT).show();
-                    return false;
-                }
+//                if (TextUtils.isEmpty(repeatDayString)) {
+//                    Toast.makeText(this, "Select Repeat Days", Toast.LENGTH_SHORT).show();
+//                    return false;
+//                }
             }
 
             /*if(TextUtils.isEmpty(et_schedule_off_time.getText().toString())){

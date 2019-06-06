@@ -74,6 +74,7 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
 
             }
         });
+
         holder.iv_room_panel_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -92,7 +93,8 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
            boolean isSFlag=false;
             if(item1.getDeviceList().size()>0){
                 if(item1.getDeviceList().get(0).getDeviceType().equals("2")){
-                    isSFlag=true;
+//                    isSFlag=true;
+                    isSFlag=false;
                 }else {
                     isSFlag=false;
                 }

@@ -501,6 +501,7 @@ public class JsonHelper {
                 String created_date = hasObject(deviceObj,"created_date") ? deviceObj.getString("created_date") : "";
                 String temp_in_C = hasObject(deviceObj,"temp_in_C") ? deviceObj.getString("temp_in_C") : "";
                 String temp_in_F = hasObject(deviceObj,"temp_in_F") ? deviceObj.getString("temp_in_F") : "";
+                String humidity = deviceObj.optString("humidity");
                 String is_in_C = hasObject(deviceObj,"is_in_C") ? deviceObj.getString("is_in_C") : "";
                 String to_use = hasObject(deviceObj,"to_use") ? deviceObj.getString("to_use") : "";
                 int is_active = hasObject(deviceObj,"is_active") ? deviceObj.getInt("is_active") : 0;
@@ -590,6 +591,7 @@ public class JsonHelper {
                 d1.setTemp_in_c(temp_in_C);
                 d1.setTemp_in_f(temp_in_F);
                 d1.setIs_in_c(is_in_C);
+                d1.setHumidity(humidity);
                 d1.setTo_use(to_use);
                 if(!TextUtils.isEmpty(is_original)){
                     d1.setIs_original(Integer.parseInt(is_original));

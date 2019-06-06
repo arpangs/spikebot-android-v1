@@ -1,5 +1,7 @@
 package com.spike.bot.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 /**
@@ -8,6 +10,7 @@ import java.io.Serializable;
  */
 public class UserRoomModel implements Serializable {
 
+    @SerializedName("room_name")
     String room_name;
 
     public String getRoom_name() {
@@ -26,5 +29,6 @@ public class UserRoomModel implements Serializable {
         this.room_id = room_id;
     }
 
+    @SerializedName("room_id")
     String room_id;
 }

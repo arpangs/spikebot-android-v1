@@ -42,7 +42,8 @@ public class CloudAdapter extends RecyclerView.Adapter<CloudAdapter.CloudViewHol
     public void onBindViewHolder(CloudViewHolder holder, final int position) {
 
         final User user = userList.get(position);
-        holder.txt_title.setText(user.getFirstname()+" "+user.getLastname());
+//        holder.txt_title.setText(user.getFirstname()+" "+user.getLastname());
+        holder.txt_title.setText(user.getFirstname());
 
 //        if(user.isActive()){
 //            holder.image_cloud.setImageResource(R.drawable.icn_check);

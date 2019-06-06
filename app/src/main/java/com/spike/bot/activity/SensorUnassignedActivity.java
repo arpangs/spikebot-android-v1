@@ -85,6 +85,9 @@ public class SensorUnassignedActivity extends AppCompatActivity{
         }else if(isDoorSensor == MainFragment.SENSOR_TYPE_IR){
             isDoorSensor = 2;
             getSupportActionBar().setTitle("Unassigned IR List");
+        }else {
+            isDoorSensor = 5;
+            getSupportActionBar().setTitle("Multi Sensor");
         }
 
         getSensorUnAssignedDetails(isDoorSensor);
@@ -225,7 +228,16 @@ public class SensorUnassignedActivity extends AppCompatActivity{
             return;
         }
 
-      //  RoomVO room = (RoomVO) spinner_room.getSelectedItem();
+      // "sensor_id": "1559654114379_MnqPvjkOE",
+        //                "module_id": "328E131A004B1200",
+        //                "sensor_type": "multisensor",
+        //                "sensor_name": "mmlti_test",
+        //                "room_id": "1559035133696__gkuc3yQy",
+        //                "room_name": "test1",
+        //                "user_id":"1559035111028_VojOpeeBF",
+        //				"phone_id":"1234567",
+        //				"phone_type":"Android"
+
         int position=spinner_room.getSelectedItemPosition() - 1;
 
         JSONObject jsonObject = new JSONObject();
@@ -242,6 +254,8 @@ public class SensorUnassignedActivity extends AppCompatActivity{
                 sensor_t = "temp";
             }else if(unassigendSensorList.getSensorIcon().equalsIgnoreCase("irblaster")){
                 sensor_t = "irblaster";
+            }else if(unassigendSensorList.getSensorIcon().equalsIgnoreCase("multisensor")){
+                sensor_t = "multisensor";
             }
 
             jsonObject.put("sensor_type",sensor_t);

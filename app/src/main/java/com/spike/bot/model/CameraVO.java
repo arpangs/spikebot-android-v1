@@ -19,6 +19,25 @@ public class CameraVO implements Serializable,Cloneable {
     private int isActive;
     private String camera_vpn_port;
 
+    public int getCameraPostion() {
+        return cameraPostion;
+    }
+
+    public void setCameraPostion(int cameraPostion) {
+        this.cameraPostion = cameraPostion;
+    }
+
+    private int cameraPostion;
+    public String getLoadingUrl() {
+        return loadingUrl;
+    }
+
+    public void setLoadingUrl(String loadingUrl) {
+        this.loadingUrl = loadingUrl;
+    }
+
+    public String loadingUrl="";
+
     public boolean isDisable() {
         return isDisable;
     }

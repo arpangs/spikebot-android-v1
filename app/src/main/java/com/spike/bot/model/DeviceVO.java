@@ -65,6 +65,16 @@ public class DeviceVO implements Serializable,Cloneable {
     private String created_date;
     private String temp_in_c;
     private String temp_in_f;
+
+    public String getHumidity() {
+        return humidity;
+    }
+
+    public void setHumidity(String humidity) {
+        this.humidity = humidity;
+    }
+
+    private String humidity;
     private String is_in_c;
     private String ir_blaster_id;
     private String remote_status;

@@ -96,6 +96,10 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
 
         try {
 
+            //changes in
+            //URL: getNotificationList, URL: saveNotificationList
+            //Added multisensor and gas enable/disable option.
+
             JSONArray dataArray = new JSONArray();
             for(NotificationListRes.Data data : notificationDataList){
                 JSONObject homeObject = new JSONObject();

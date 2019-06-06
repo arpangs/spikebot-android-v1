@@ -60,6 +60,7 @@ import com.spike.bot.adapter.CloudAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
+import com.spike.bot.core.Log;
 import com.spike.bot.customview.CustomViewPager;
 import com.spike.bot.fcm.MyFirebaseMessagingService;
 import com.spike.bot.fragments.MainFragment;
@@ -312,6 +313,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         //  toolbarTitle.setText("" + userFname + " " + userLname);
         toolbarTitle.setText(Constants.getUserName(this));
         toolbarTitle.setOnClickListener(this);
+        mImageCloud.setOnClickListener(this);
 
 
         btn_login_search.setOnClickListener(new View.OnClickListener() {
@@ -1245,7 +1247,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             @Override
             public void run() {
                 try {
-                    Thread.sleep(1200);
+                    Thread.sleep(1500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -1606,7 +1608,9 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             }
         } else if (view.getId() == R.id.btn_cancel) {
             loginDialog(false, false);
-        } else if (view.getId() == R.id.toolbarImage) {
+        } else if (view.getId() == R.id.toolbar_cloud) {
+            showAccountDialog(toolbarTitle);
+        }else if (view.getId() == R.id.toolbarImage) {
             showAccountDialog(toolbarTitle);
         } else if (view.getId() == R.id.toolbarTitle) {
             showAccountDialog(toolbarTitle);

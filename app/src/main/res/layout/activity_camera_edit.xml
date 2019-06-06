@@ -70,6 +70,7 @@
                     android:layout_weight="0.2"
                     android:layout_width="0dp"
                     android:layout_height="24dp"
+                    android:visibility="gone"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="2dp"
                     android:layout_gravity="center"

@@ -4,12 +4,14 @@ import android.app.ProgressDialog;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -24,6 +26,7 @@ import android.widget.Toast;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.core.Constants;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -50,7 +53,7 @@ import cn.nodemedia.NodePlayerView;
 
 public class CameraPlayer extends AppCompatActivity implements View.OnClickListener{
 
-    String[] permissions = new String[]{"android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"};
+   public static String[] permissions = new String[]{"android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"};
 
     NodePlayerView player;
     NodePlayer nodePlayer;
@@ -207,6 +210,13 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_playback, menu);
         MenuItem muteIcon = menu.findItem(R.id.action_mute);
+
+        Drawable drawable1 = menu.findItem(R.id.action_screenshot).getIcon();
+
+        Drawable drawable = DrawableCompat.wrap(drawable1);
+        DrawableCompat.setTint(drawable, ContextCompat.getColor(this,R.color.automation_white));
+        menu.findItem(R.id.action_screenshot).setIcon(drawable);
+
         if(isMute)
             muteIcon.setIcon(R.drawable.icn_mute);
         else
@@ -247,7 +257,8 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
             cardView.setDrawingCacheEnabled(true);
            // Bitmap bitmap =  loadBitmapFromView(cardView);
            // Bitmap bitmap =  SavePixels(100,100,200,200);
-            Bitmap bitmap =  saveOpenGL(200,200);
+//            Bitmap bitmap =  saveOpenGL(200,200);
+            Bitmap bitmap = Constants.takescreenshotOfRootView(this.getWindow().getDecorView().getRootView(),null);
             // Bitmap bitmap =  player.getDrawingCache();
             cardView.setDrawingCacheEnabled(false);
 

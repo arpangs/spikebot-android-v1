@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.core.Common;
@@ -140,7 +141,17 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 holder.tv_auto_on.setVisibility(View.GONE);
                 holder.tv_auto_off.setVisibility(View.GONE);
                 holder.tv_schedule_days.setVisibility(View.VISIBLE);
-                holder.tv_schedule_days.setText(Html.fromHtml(Common.getDaysString(scheduleVO.getSchedule_device_day())));
+
+                if(TextUtils.isEmpty(scheduleVO.getSchedule_device_day())){
+                    if(scheduleVO.getSchedule_status()==1){
+                        holder.tv_schedule_days.setText(ChatApplication.getCurrentDateOnly(true,scheduleVO.getSchedule_device_on_time(),scheduleVO.getSchedule_device_off_time()));
+
+                    }else {
+                        holder.tv_schedule_days.setText(ChatApplication.getCurrentDateOnly(false,"",""));
+                    }
+                }else {
+                    holder.tv_schedule_days.setText(Html.fromHtml(Common.getDaysString(scheduleVO.getSchedule_device_day())));
+                }
 
             }
 
@@ -266,8 +277,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 holder.tv_schedule_off_time.setTextColor(mContext.getResources().getColor(R.color.automation_white));
 
                 holder.iv_schedule_dots.setImageDrawable(mContext.getResources().getDrawable(R.drawable.more));
-            }
-            else{
+            }else{
 
                 //Remove background resources
                 holder.ll_on.setBackgroundResource(0);
@@ -284,7 +294,18 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
                 holder.iv_schedule_dots.setImageDrawable(mContext.getResources().getDrawable(R.drawable.more_grey));
                 holder.tv_schedule_name.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
-                holder.tv_schedule_days.setText(Html.fromHtml(Common.getDaysStringGray(scheduleVO.getSchedule_device_day())));
+
+                if(TextUtils.isEmpty(scheduleVO.getSchedule_device_day())){
+                    if(scheduleVO.getSchedule_status()==1){
+                        holder.tv_schedule_days.setText(ChatApplication.getCurrentDateOnly(true,scheduleVO.getSchedule_device_on_time(),scheduleVO.getSchedule_device_off_time()));
+                    }else {
+
+                        holder.tv_schedule_days.setText(ChatApplication.getCurrentDateOnly(false,"",""));
+                    }
+                }else {
+                    holder.tv_schedule_days.setText(Html.fromHtml(Common.getDaysString(scheduleVO.getSchedule_device_day())));
+                }
+//                holder.tv_schedule_days.setText(Html.fromHtml(Common.getDaysStringGray(scheduleVO.getSchedule_device_day())));
 
                 holder.tv_schedule_on.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
                 holder.tv_auto_on.setTextColor(mContext.getResources().getColor(R.color.txtPanal));

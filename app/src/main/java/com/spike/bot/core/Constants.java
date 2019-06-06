@@ -2,9 +2,18 @@ package com.spike.bot.core;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.support.v7.widget.RecyclerView;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
+import android.util.LruCache;
+import android.view.View;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -19,16 +28,16 @@ import java.util.List;
 
 public class Constants {
 
-//    public static final String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //IP used for login cloud and logout
+    public static final String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //IP used for login cloud and logout
 //    public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //117 testing
-    public static  String CLOUD_SERVER_URL = "http://18.237.74.22:8079"; //117 testing
+//    public static  String CLOUD_SERVER_URL = "http://18.237.74.22:8079"; //117 testing
 //    public static  String CLOUD_SERVER_URL = ""; //117 testing
 //http://52.24.23.7:8079
 //http://52.24.23.7:7
 //    public static  String IP_END = "111"; //101 //117 //222 node11 / 123
-//    public static final String  IP_END = "119"; //101 //117 //222
+//    public static  String  IP_END = "119"; //101 //117 //222
 //
-    public static  String  IP_END = "222"; //101 //117 //222
+    public final static  String  IP_END = "222"; //101 //117 //222
 //    public static  String  IP_END = ""; //101 //117 //222
 //    public static final String  IP_END = "117"; //101 //117 //222 vip/123
     public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";
@@ -105,6 +114,7 @@ public class Constants {
     //door sensor
     public static final String CONFIGURE_DOOR_SENSOR_REQUEST = "/configureDoorSensorRequest";
     public static final String ADD_DOOR_SENSOR = "/addDoorSensor";
+    public static final String addMultiSensor = "/addMultiSensor";
     public static final String addSmartRemote = "/addSmartRemote";
     public static final String GET_DOOR_SENSOR_INFO = "/getDoorSensorInfo";
     public static final String ADD_DOOR_SENSOR_NOTIFICATION = "/addDoorSensorNotification";
@@ -126,15 +136,24 @@ public class Constants {
 
     //temp sensor
     public static final String GET_TEMP_SENSOR_INFO = "/getTempSensorInfo";
+    public static final String getMultiSensorInfo = "/getMultiSensorInfo";
     public static final String CONFIGURE_TEMP_SENSOR_REQUEST = "/configureTempSensorRequest";
+    public static final String configureMultiSensorRequest = "/configureMultiSensorRequest";
     public static final String ADD_TEMP_SENSOR = "/addTempSensor";
     public static final String ADD_TEMP_SENSOR_NOTIFICATION = "/addTempSensorNotification";
+    public static final String addMultiSensorNotification = "/addMultiSensorNotification";
     public static final String UPDATE_TEMP_SENSOR_NOTIFICATION = "/updateTempSensorNotification";
+    public static final String updateMultiSensorNotification = "/updateMultiSensorNotification";
     public static final String DELETE_TEMP_SENSOR_NOTIFICATION = "/deleteTempSensorNotification";
+    public static final String deleteMultiSensorNotification = "/deleteMultiSensorNotification";
     public static final String CHANGE_TEMP_SENSOR_STATUS = "/changeTempSensorStatus";
+    public static final String changeMultiSensorStatus = "/changeMultiSensorStatus";
     public static final String CHANGE_TEMP_SENSOR_NOTIFICATION_STATUS = "/changeTempSensorNotificationStatus";
+    public static final String changeMultiSensorNotificationStatus = "/changeMultiSensorNotificationStatus";
     public static final String UPDATE_TEMP_SENSOR = "/updateTempSensor";
+    public static final String updateMultiSensor = "/updateMultiSensor";
     public static final String DELETE_TEMP_SENSOR = "/deleteTempSensor";
+    public static final String deleteMultiSensor = "/deleteMultiSensor";
     public static final String getCameraLogs = "/getCameraLogs";
 
     //IR Blaster
@@ -225,6 +244,8 @@ public class Constants {
     public static final String roomSensorUnreadLogs = "/roomSensorUnreadLogs";
     public static final String roomLogs = "/roomLogs";
     public static final String updateBadgeCount = "/updateBadgeCount";
+    public static final String getCameraToken = "/getCameraToken/";
+    public static final String getAllCameraToken = "/getAllCameraToken";
 
     /*----------------------------------------------------------------------*/
 
@@ -317,4 +338,26 @@ public class Constants {
         };
     }
 
+    public static Bitmap takescreenshot(View v) {
+        v.setDrawingCacheEnabled(true);
+        v.buildDrawingCache(true);
+        Bitmap b = Bitmap.createBitmap(v.getDrawingCache());
+        v.setDrawingCacheEnabled(false);
+        return b;
+    }
+
+    public static Bitmap takescreenshotOfRootView(View view, RecyclerView recyclerView) {
+
+        view.measure(View.MeasureSpec.makeMeasureSpec(view.getWidth(), View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(view.getHeight(), View.MeasureSpec.EXACTLY));
+        view.layout((int) view.getX(), (int) view.getY(), (int) view.getX() + view.getMeasuredWidth(), (int) view.getY() + view.getMeasuredHeight());
+
+        view.setDrawingCacheEnabled(true);
+        view.buildDrawingCache(true);
+        Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
+        view.setDrawingCacheEnabled(false);
+
+
+        return bitmap;
+
+    }
 }

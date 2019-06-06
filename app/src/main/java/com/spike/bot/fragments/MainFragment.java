@@ -54,11 +54,13 @@ import com.spike.bot.ack.AckWithTimeOut;
 import com.spike.bot.activity.AddUnassignedPanel;
 import com.spike.bot.activity.CameraDeviceLogActivity;
 import com.spike.bot.activity.CameraEdit;
+import com.spike.bot.activity.CameraGridActivity;
 import com.spike.bot.activity.CameraNotificationActivity;
 import com.spike.bot.activity.CameraPlayBack;
 import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.activity.DeviceLogRoomActivity;
 import com.spike.bot.activity.DoorSensorInfoActivity;
+import com.spike.bot.activity.MultiSensorActivity;
 import com.spike.bot.activity.ScheduleListActivity;
 import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.activity.NotificationSetting;
@@ -259,7 +261,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     private NestedScrollView main_scroll;
     private FloatingActionButton mFab;
     private CardView mFabMenuLayout;
-    private TextView fab_menu1, fab_menu2, fab_menu3, fab_menu4, fab_menu5, fab_menu6, fab_menu7,fabZigbeeRemote,fabSmartDevice;
+    private TextView fab_menu1, fab_menu2, fab_menu3, fab_menu4, fab_menu5, fab_menu6, fab_menu7, fabZigbeeRemote, fabSmartDevice;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -331,12 +333,12 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         mFab = (FloatingActionButton) view.findViewById(R.id.fab);
 
 
-
         fabSmartDevice.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { closeFABMenu();
-               // Intent intent=new Intent(getActivity(), SearchSmartDeviceActivity.class);
-                Intent intent=new Intent(getActivity(), SmartDecviceListActivity.class);
+            public void onClick(View v) {
+                closeFABMenu();
+                // Intent intent=new Intent(getActivity(), SearchSmartDeviceActivity.class);
+                Intent intent = new Intent(getActivity(), SmartDecviceListActivity.class);
                 startActivity(intent);
 
             }
@@ -418,7 +420,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onClick(View v) {
                 closeFABMenu();
-                startActivity(new Intent(getActivity(),SmartRemoteActivity.class));
+                startActivity(new Intent(getActivity(), SmartRemoteActivity.class));
             }
         });
 
@@ -486,7 +488,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 //                empty_add_image.setVisibility(View.GONE);
 //                txt_empty_text.setText("Login First.");
 //            } else {
-       // mFab.setVisibility(View.VISIBLE);
+        // mFab.setVisibility(View.VISIBLE);
         empty_add_image.setVisibility(View.VISIBLE);
         txt_empty_text.setText("Add Room");
 //            }
@@ -627,7 +629,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             }
             isResumeConnect = activity.isResumeConnect;
             isCloudConnected = activity.isCloudConnected;
-            if(socketListener!=null){
+            if (socketListener != null) {
                 socketListener.startSession();
             }
         }
@@ -1493,7 +1495,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             String room_unread = object.getString("room_unread");
                             String user_id = object.getString("user_id");
 
-                            if(user_id.equalsIgnoreCase(Common.getPrefValue(getActivity(), Constants.USER_ID))){
+                            if (user_id.equalsIgnoreCase(Common.getPrefValue(getActivity(), Constants.USER_ID))) {
                                 sectionedExpandableLayoutHelper.updateBadgeCount(sensor_type, sensor_unread, module_id, room_id, room_unread);
                             }
 
@@ -1582,11 +1584,11 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
 
-                            String message=object.optString("message");
-                            String user_id=object.optString("user_id");
-                            ChatApplication.logDisplay("update socket is "+object.toString());
-                            if(Common.getPrefValue(getActivity(), Constants.USER_ID).equalsIgnoreCase(user_id)){
-                                showDialog=1;
+                            String message = object.optString("message");
+                            String user_id = object.optString("user_id");
+                            ChatApplication.logDisplay("update socket is " + object.toString());
+                            if (Common.getPrefValue(getActivity(), Constants.USER_ID).equalsIgnoreCase(user_id)) {
+                                showDialog = 1;
                                 getDeviceList(showDialog);
 //                                ChatApplication.showToast(getActivity(),message);
                             }
@@ -2331,6 +2333,14 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         closeFABMenu();
         if (action.equalsIgnoreCase("expandclick")) {
 
+        } else if (action.equalsIgnoreCase("showGridCamera")) {
+            Intent intent = new Intent(getActivity(), CameraGridActivity.class);
+            intent.putExtra("cameraList", cameraList);
+            startActivity(intent);
+
+        } else if (action.equalsIgnoreCase("refreshCamera")) {
+            getDeviceList(1);
+
         } else if (action.equalsIgnoreCase("onoffclick")) {
             //on off room
             if (action.equalsIgnoreCase("onOffclick")) {
@@ -2367,10 +2377,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         } else if (action.equalsIgnoreCase("editclick_true")) {
 
             //   Log.d("cameraopen","cameraopen editclick_true : " + cameraList.size());
-
             Intent intent = new Intent(getActivity(), CameraEdit.class);
-            intent.putExtra("room", roomVO);
             intent.putExtra("cameraList", cameraList);
+            intent.putExtra("isEditable", false);
             startActivity(intent);
 
         } else if (action.equalsIgnoreCase("deleteRoom")) {
@@ -2586,6 +2595,15 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 intent.putExtra("temp_module_id", item.getModuleId());
                 startActivity(intent);
 
+            } else if (item.getSensor_type().equalsIgnoreCase("multisensor")) {
+
+                Intent intent = new Intent(getActivity(), MultiSensorActivity.class);
+                intent.putExtra("temp_sensor_id", item.getSensor_id());
+                intent.putExtra("temp_room_name", item.getRoomName());
+                intent.putExtra("temp_room_id", item.getRoomId());
+                intent.putExtra("temp_unread_count", item.getIs_unread());
+                intent.putExtra("temp_module_id", item.getModuleId());
+                startActivity(intent);
             } else if (item.getSensor_type().equalsIgnoreCase("door")) {
 
                 Intent intent = new Intent(getActivity(), DoorSensorInfoActivity.class);
@@ -2689,28 +2707,108 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
     @Override
     public void itemClicked(CameraVO item, String action) {
-        String url = item.getCamera_ip();
-        url = url + item.getCamera_videopath();
-        String camera_name = item.getCamera_name();
+//        String url = item.getCamera_ip();
+//        url = url + item.getCamera_videopath();
+//        String camera_name = item.getCamera_name();
 
-        ChatApplication.logDisplay("isCloudConnect : " + Main2Activity.isCloudConnected + " url : " + url + " : item url >> " + item.getCamera_url());
+        if(action.equalsIgnoreCase("editcamera")){
+            Intent intent = new Intent(getActivity(), CameraEdit.class);
+            intent.putExtra("cameraList", cameraList);
+            intent.putExtra("cameraSelcet", item);
+            intent.putExtra("isEditable", false);
+            startActivity(intent);
+        }else {
+            callCameraToken(item, action);
+        }
+
+//        ChatApplication.logDisplay("isCloudConnect : " + Main2Activity.isCloudConnected + " url : " + url + " : item url >> " + item.getCamera_url());
 
         //TODO code here for cloud connected or not...
         // rtmp://LOCAL_IP/live/livestream1528897402049_SJftJoAe7
-        if (Main2Activity.isCloudConnected) {
-            url = Constants.CAMERA_DEEP + ":" + item.getCamera_vpn_port() + "" + item.getCamera_url();
-        } else {
-            //String tmpurl = ChatApplication.url + "/"+item.getCamera_url();
-            String tmpurl = ChatApplication.url + "" + item.getCamera_url();
-            url = tmpurl.replace("http", "rtmp").replace(":80", ""); //replace port number to blank String
-        }
+//        if (Main2Activity.isCloudConnected) {
+//            url = Constants.CAMERA_DEEP + ":" + item.getCamera_vpn_port() + "" + item.getCamera_url();
+//        } else {
+//            //String tmpurl = ChatApplication.url + "/"+item.getCamera_url();
+//            String tmpurl = ChatApplication.url + "" + item.getCamera_url();
+//            url = tmpurl.replace("http", "rtmp").replace(":80", ""); //replace port number to blank String
+//        }
 
-        //start camera rtsp player
-        Intent intent = new Intent(getActivity(), CameraPlayer.class);
-        intent.putExtra("videoUrl", url);
-        intent.putExtra("name", camera_name);
-        intent.putExtra("isCloudConnect", Main2Activity.isCloudConnected);
-        startActivity(intent);
+
+//        //start camera rtsp player
+//        Intent intent = new Intent(getActivity(), CameraPlayer.class);
+//        intent.putExtra("videoUrl", url);
+//        intent.putExtra("name", camera_name);
+//        intent.putExtra("isCloudConnect", Main2Activity.isCloudConnected);
+//        startActivity(intent);
+    }
+
+    private void callCameraToken(final CameraVO item, final String action) {
+        ActivityHelper.showProgressDialog(getActivity(), " Please Wait...", false);
+        String url = ChatApplication.url + Constants.getCameraToken + item.getCamera_id();
+
+        ChatApplication.logDisplay("url is " + url);
+        new GetJsonTask(getActivity(), url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                int code = 0;
+                try {
+                    code = result.getInt("code");
+
+                    if(code==200){
+
+                        JSONObject dataObject = result.optJSONObject("data");
+
+                        String camera_vpn_port=dataObject.optString("camera_vpn_port");
+                        String camera_url=dataObject.optString("camera_url");
+
+                        String url = item.getCamera_ip();
+                        url = url + item.getCamera_videopath();
+                        String camera_name = item.getCamera_name();
+
+                        ChatApplication.logDisplay("isCloudConnect : "+camera_vpn_port+"  "+camera_url);
+
+                        //TODO code here for cloud connected or not...
+                        // rtmp://LOCAL_IP/live/livestream1528897402049_SJftJoAe7
+//                        if (Main2Activity.isCloudConnected) {
+//                            url = Constants.CAMERA_DEEP + ":" + item.getCamera_vpn_port() + "" + item.getCamera_url();
+//                        } else {
+//                            //String tmpurl = ChatApplication.url + "/"+item.getCamera_url();
+//                            String tmpurl = ChatApplication.url + "" + item.getCamera_url();
+//                            url = tmpurl.replace("http", "rtmp").replace(":80", ""); //replace port number to blank String
+//                        }
+
+                        if (Main2Activity.isCloudConnected) {
+                            url = Constants.CAMERA_DEEP + ":" + camera_vpn_port + "" + camera_url;
+                        } else {
+                            String tmpurl = ChatApplication.url + "" + camera_url;
+                            url = tmpurl.replace("http", "rtmp").replace(":80", ""); //replace port number to blank String
+                        }
+
+
+                        //start camera rtsp player
+                        Intent intent = new Intent(getActivity(), CameraPlayer.class);
+                        intent.putExtra("videoUrl", url);
+                        intent.putExtra("name", camera_name);
+                        intent.putExtra("isCloudConnect", Main2Activity.isCloudConnected);
+                        startActivity(intent);
+                        ActivityHelper.dismissProgressDialog();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                finally {
+                    ActivityHelper.dismissProgressDialog();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        }).execute();
+
     }
     ////////////////////////////////////////////////////////////////////////////
 
@@ -2968,8 +3066,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                     // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
-                finally {
+                } finally {
                     {
                         ActivityHelper.dismissProgressDialog();
                     }
@@ -3127,7 +3224,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                     public void onClick(DialogInterface dialog, int which) {
                         if (responseErrorCode != null) {
 //                            responseErrorCode.onLogout();
-                            ((Main2Activity)getActivity()).logoutCloudUser();
+                            ((Main2Activity) getActivity()).logoutCloudUser();
 
                         }
                     }
@@ -3178,15 +3275,15 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 //            return;
 //        }
 
-        if(swipeRefreshLayout!=null){
-            if(swipeRefreshLayout.isRefreshing()){
-                showDialog=1;
+        if (swipeRefreshLayout != null) {
+            if (swipeRefreshLayout.isRefreshing()) {
+                showDialog = 1;
             }
         }
         if (showDialog == 1 || checkmessgae == 1 || checkmessgae == 6 || checkmessgae == 7 || checkmessgae == 8 || checkmessgae == 10) {
             ActivityHelper.showProgressDialog(getActivity(), " Please Wait...", false);
         }
-        ChatApplication.logDisplay("show progress is "+showDialog);
+        ChatApplication.logDisplay("show progress is " + showDialog);
 
         roomList.clear();
         // mMessagesView.removeAllViews();
@@ -3205,17 +3302,18 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             sectionedExpandableLayoutHelper.notifyDataSetChanged();
         }
 
-        if(TextUtils.isEmpty(ChatApplication.url)){
-            Gson gson=new Gson();
+        if (TextUtils.isEmpty(ChatApplication.url)) {
+            Gson gson = new Gson();
             String jsonTextTemp = Common.getPrefValue(getContext(), Common.USER_JSON);
             List<User> userList = new ArrayList<User>();
             if (!TextUtils.isEmpty(jsonTextTemp) && !jsonTextTemp.equals("null")) {
-                Type type = new TypeToken<List<User>>() {}.getType();
+                Type type = new TypeToken<List<User>>() {
+                }.getType();
                 userList = gson.fromJson(jsonTextTemp, type);
             }
-            for(int i=0; i<userList.size(); i++){
-                if(userList.get(i).getIsActive()){
-                    webUrl=userList.get(i).getCloudIP();
+            for (int i = 0; i < userList.size(); i++) {
+                if (userList.get(i).getIsActive()) {
+                    webUrl = userList.get(i).getCloudIP();
                     ChatApplication.url = webUrl;
                     isCloudConnected = true;
                     break;
@@ -3249,12 +3347,12 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        ChatApplication.logDisplay("jsonObject is dashboard "+url+ "   "+ jsonObject.toString());
+        ChatApplication.logDisplay("jsonObject is dashboard " + url + "   " + jsonObject.toString());
         new GetJsonTask2(activity, url, "POST", jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
 
-                ((Main2Activity)getActivity()).wifiConnectionIssue(true);
+                ((Main2Activity) getActivity()).wifiConnectionIssue(true);
 //                ActivityHelper.dismissProgressDialog();
                 if (ChatApplication.isPushFound) {
                     getBadgeClear(getActivity());
@@ -3290,9 +3388,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                             // mCallback.onArticleSelected("Spike Bot");
 
-                            if(!TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ID))){
-                                ((Main2Activity)getActivity()).logoutCloudUser();
-                            }else {
+                            if (!TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ID))) {
+                                ((Main2Activity) getActivity()).logoutCloudUser();
+                            } else {
                                 Intent intent = new Intent(getActivity(), SignUp.class);
                                 startActivityForResult(intent, SIGN_IP_REQUEST_CODE);
                             }
@@ -3307,9 +3405,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         String camera_key = userObject.optString("camera_key");
                         String is_active = userObject.optString("is_active");
 
-                        if(is_active.equalsIgnoreCase("0")){
+                        if (is_active.equalsIgnoreCase("0")) {
 
-                            ((Main2Activity)getActivity()).logoutCloudUser();
+                            ((Main2Activity) getActivity()).logoutCloudUser();
                             return;
                         }
 
@@ -3325,14 +3423,16 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         String jsonText = Common.getPrefValue(getContext(), Common.USER_PIDETAIL);
                         List<PiDetailsModel> piUserList = new ArrayList<PiDetailsModel>();
                         if (!TextUtils.isEmpty(jsonText)) {
-                            Type type = new TypeToken<List<PiDetailsModel>>() {}.getType();
+                            Type type = new TypeToken<List<PiDetailsModel>>() {
+                            }.getType();
                             piUserList = gson.fromJson(jsonText, type);
                         }
 
                         String jsonTextTemp = Common.getPrefValue(getContext(), Common.USER_JSON);
                         List<User> userList = new ArrayList<User>();
                         if (!TextUtils.isEmpty(jsonTextTemp) && !jsonTextTemp.equals("null")) {
-                            Type type = new TypeToken<List<User>>() {}.getType();
+                            Type type = new TypeToken<List<User>>() {
+                            }.getType();
                             userList = gson.fromJson(jsonTextTemp, type);
                         }
 
@@ -3350,12 +3450,12 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             if (flagIsLogin == false) {
                                 if (checkLoginId(userId, checkmessgae)) {
                                     saveCurrentId(getActivity(), userId);
-                                    mCallback.onArticleSelected("" + userFirstName );
+                                    mCallback.onArticleSelected("" + userFirstName);
                                     ChatApplication.logDisplay("pie details is isSignUp ");
                                 } else if (flagisCould) {
                                     flagisCould = false;
-                                    showDialog=1;
-                                    ((Main2Activity)getActivity()).getUserDialogClick(false);
+                                    showDialog = 1;
+                                    ((Main2Activity) getActivity()).getUserDialogClick(false);
                                     ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
                                     getDeviceCould(12);
                                     return;
@@ -3364,8 +3464,8 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                                     loginPIEvent.showLogin();
                                     return;
                                 }
-                            }else {
-                                ((Main2Activity)getActivity()).loginDialog(false, false);
+                            } else {
+                                ((Main2Activity) getActivity()).loginDialog(false, false);
                             }
                         } else {
                             showDialog = 1;
@@ -3382,7 +3482,8 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             String jsonTextTemp1 = Common.getPrefValue(getContext(), Common.USER_JSON);
                             List<User> userList1 = new ArrayList<User>();
                             if (!TextUtils.isEmpty(jsonTextTemp1)) {
-                                Type type = new TypeToken<List<User>>() {}.getType();
+                                Type type = new TypeToken<List<User>>() {
+                                }.getType();
                                 userList1 = gson.fromJson(jsonTextTemp1, type);
                             }
 
@@ -3390,8 +3491,8 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                                 if (user.isActive()) {
                                     if (user.getUser_id().equalsIgnoreCase(userId) && !user.getPassword().equalsIgnoreCase(userPassword)) {
 //                                        showLogoutAlert();
-                                        ChatApplication.showToast(getActivity(),"Password has been changed!");
-                                        ((Main2Activity)getActivity()).logoutCloudUser();
+                                        ChatApplication.showToast(getActivity(), "Password has been changed!");
+                                        ((Main2Activity) getActivity()).logoutCloudUser();
                                     }
 
                                 }
@@ -3422,7 +3523,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                          * {@link Main2Activity#toolbarTitle}
                          * @see Main2Activity#toolbar
                          */
-                        mCallback.onArticleSelected("" + userFirstName );
+                        mCallback.onArticleSelected("" + userFirstName);
 
                         JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
                         roomList = JsonHelper.parseRoomArray(roomArray, false);
@@ -3507,7 +3608,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onFailure(Throwable throwable, String error, int reCode) {
                 swipeRefreshLayout.setRefreshing(false);
-        //        ActivityHelper.dismissProgressDialog();
+                //        ActivityHelper.dismissProgressDialog();
                 //set custom homer controller not found error message on dashboard
                 if (reCode == 503 || reCode == 404) {
                     responseErrorCode.onErrorCode(reCode);
@@ -3559,15 +3660,15 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             return;
         }
 
-        if(((Main2Activity)getActivity()).dialogUser!=null){
-            if(((Main2Activity)getActivity()).dialogUser.isShowing()){
-                ((Main2Activity)getActivity()).dialogUser.dismiss();
+        if (((Main2Activity) getActivity()).dialogUser != null) {
+            if (((Main2Activity) getActivity()).dialogUser.isShowing()) {
+                ((Main2Activity) getActivity()).dialogUser.dismiss();
             }
         }
 
-        if(swipeRefreshLayout!=null){
-            if(swipeRefreshLayout.isRefreshing()){
-                showDialog=1;
+        if (swipeRefreshLayout != null) {
+            if (swipeRefreshLayout.isRefreshing()) {
+                showDialog = 1;
             }
         }
 
@@ -3604,7 +3705,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        ChatApplication.logDisplay("jsonObject is dashboard could "+url+ "   "+ jsonObject.toString());
+        ChatApplication.logDisplay("jsonObject is dashboard could " + url + "   " + jsonObject.toString());
 
         new GetJsonTask2(activity, url, "POST", jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
@@ -3637,7 +3738,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                         JSONObject dataObject = result.getJSONObject("data");
 
-                        JSONArray userListArray = dataObject.getJSONArray("userList");
+                        JSONArray userListArray = dataObject.optJSONArray("userList");
 
                         //oppen signup page if userList found zero length
                         if (userListArray.length() == 0) {
@@ -3660,8 +3761,8 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         String camera_key = userObject.optString("camera_key");
                         String ip = userObject.optString("ip");
                         String is_active = userObject.optString("is_active");
-                        if(is_active.equalsIgnoreCase("0")){
-                            ((Main2Activity)getActivity()).logoutCloudUser();
+                        if (is_active.equalsIgnoreCase("0")) {
+                            ((Main2Activity) getActivity()).logoutCloudUser();
                             return;
                         }
 
@@ -3680,16 +3781,17 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                         Gson gson = new Gson();
                         String jsonText = Common.getPrefValue(getActivity(), Common.USER_JSON);
-                        Type type = new TypeToken<List<User>>() {}.getType();
+                        Type type = new TypeToken<List<User>>() {
+                        }.getType();
                         List<User> userList = gson.fromJson(jsonText, type);
-                        for(int i=0; i<userList.size(); i++){
-                            if(userList.get(i).getUser_id().equalsIgnoreCase(userId)){
+                        for (int i = 0; i < userList.size(); i++) {
+                            if (userList.get(i).getUser_id().equalsIgnoreCase(userId)) {
                                 userList.get(i).setIsActive(true);
                                 ((Main2Activity) getActivity()).isCloudConnected = true;
-                               // ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
+                                // ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
                                 webUrl = userList.get(i).getCloudIP();
                                 ChatApplication.url = webUrl;
-                            }else {
+                            } else {
                                 userList.get(i).setIsActive(false);
                             }
                         }
@@ -3838,7 +3940,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         Common.savePrefValue(ChatApplication.getInstance(), "last_name", userLastName);
                         Common.savePrefValue(getContext(), Constants.USER_PASSWORD, userPassword);
 
-                        mCallback.onArticleSelected("" + userFirstName );
+                        mCallback.onArticleSelected("" + userFirstName);
 
                         JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
                         roomList = JsonHelper.parseRoomArray(roomArray, false);
@@ -3957,7 +4059,8 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         String jsonText = Common.getPrefValue(getActivity(), Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {}.getType();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
             List<User> userList = gson.fromJson(jsonText, type);
 
             ChatApplication.logDisplay("user list is " + jsonText);
@@ -4029,8 +4132,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
             }
         }).execute();
-
-
     }
 
     public static void clearNotification(Context context) {

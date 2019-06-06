@@ -3,6 +3,7 @@ package com.spike.bot.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,8 +25,471 @@ public class SensorResModel {
         @SerializedName("tempList")
         private TempList[] tempLists;
 
+        public MultiSensorList[] getMultiSensorList() {
+            return multiSensorList;
+        }
 
-        public static class TempList{
+        public void setMultiSensorList(MultiSensorList[] multiSensorList) {
+            this.multiSensorList = multiSensorList;
+        }
+
+        @SerializedName("multiSensorList")
+        private MultiSensorList[] multiSensorList;
+
+
+        public static class MultiSensorList {
+
+            @SerializedName("multi_sensor_id")
+            @Expose
+            private String multiSensorId;
+            @SerializedName("multi_sensor_module_id")
+            @Expose
+            private String multiSensorModuleId;
+            @SerializedName("multi_sensor_name")
+            @Expose
+            private String multiSensorName;
+            @SerializedName("is_in_C")
+            @Expose
+            private Integer isInC;
+            @SerializedName("is_push_enable")
+            @Expose
+            private Integer isPushEnable;
+            @SerializedName("room_id")
+            @Expose
+            private String roomId;
+            @SerializedName("temp_in_C")
+            @Expose
+            private String tempInC;
+            @SerializedName("temp_in_F")
+            @Expose
+            private String tempInF;
+
+            public String getHumidity() {
+                return humidity;
+            }
+
+            public void setHumidity(String humidity) {
+                this.humidity = humidity;
+            }
+
+            @SerializedName("humidity")
+            @Expose
+            private String humidity;
+            @SerializedName("room_name")
+            @Expose
+            private String roomName;
+            @SerializedName("created_date")
+            @Expose
+            private String createdDate;
+            @SerializedName("tempNotificationList")
+            @Expose
+            private ArrayList<TempNotificationList> tempNotificationList = null;
+            @SerializedName("tempAlertcount")
+            @Expose
+            private Integer tempAlertcount;
+            @SerializedName("humidityNotificationList")
+            @Expose
+            private ArrayList<HumidityNotificationList> humidityNotificationList = null;
+            @SerializedName("humidityAlertcount")
+            @Expose
+            private Integer humidityAlertcount;
+            @SerializedName("unreadcount")
+            @Expose
+            private Integer unreadcount;
+            @SerializedName("unreadLogs")
+            @Expose
+            private List<UnreadLog> unreadLogs = null;
+
+            public String getMultiSensorId() {
+                return multiSensorId;
+            }
+
+            public void setMultiSensorId(String multiSensorId) {
+                this.multiSensorId = multiSensorId;
+            }
+
+            public String getMultiSensorModuleId() {
+                return multiSensorModuleId;
+            }
+
+            public void setMultiSensorModuleId(String multiSensorModuleId) {
+                this.multiSensorModuleId = multiSensorModuleId;
+            }
+
+            public String getMultiSensorName() {
+                return multiSensorName;
+            }
+
+            public void setMultiSensorName(String multiSensorName) {
+                this.multiSensorName = multiSensorName;
+            }
+
+            public Integer getIsInC() {
+                return isInC;
+            }
+
+            public void setIsInC(Integer isInC) {
+                this.isInC = isInC;
+            }
+
+            public Integer getIsPushEnable() {
+                return isPushEnable;
+            }
+
+            public void setIsPushEnable(Integer isPushEnable) {
+                this.isPushEnable = isPushEnable;
+            }
+
+            public String getRoomId() {
+                return roomId;
+            }
+
+            public void setRoomId(String roomId) {
+                this.roomId = roomId;
+            }
+
+            public String getTempInC() {
+                return tempInC;
+            }
+
+            public void setTempInC(String tempInC) {
+                this.tempInC = tempInC;
+            }
+
+            public String getTempInF() {
+                return tempInF;
+            }
+
+            public void setTempInF(String tempInF) {
+                this.tempInF = tempInF;
+            }
+
+
+            public String getRoomName() {
+                return roomName;
+            }
+
+            public void setRoomName(String roomName) {
+                this.roomName = roomName;
+            }
+
+            public String getCreatedDate() {
+                return createdDate;
+            }
+
+            public void setCreatedDate(String createdDate) {
+                this.createdDate = createdDate;
+            }
+
+            public ArrayList<TempNotificationList> getTempNotificationList() {
+                return tempNotificationList;
+            }
+
+            public void setTempNotificationList(ArrayList<TempNotificationList> tempNotificationList) {
+                this.tempNotificationList = tempNotificationList;
+            }
+
+            public Integer getTempAlertcount() {
+                return tempAlertcount;
+            }
+
+            public void setTempAlertcount(Integer tempAlertcount) {
+                this.tempAlertcount = tempAlertcount;
+            }
+
+            public ArrayList<HumidityNotificationList> getHumidityNotificationList() {
+                return humidityNotificationList;
+            }
+
+            public void setHumidityNotificationList(ArrayList<HumidityNotificationList> humidityNotificationList) {
+                this.humidityNotificationList = humidityNotificationList;
+            }
+
+            public Integer getHumidityAlertcount() {
+                return humidityAlertcount;
+            }
+
+            public void setHumidityAlertcount(Integer humidityAlertcount) {
+                this.humidityAlertcount = humidityAlertcount;
+            }
+
+            public Integer getUnreadcount() {
+                return unreadcount;
+            }
+
+            public void setUnreadcount(Integer unreadcount) {
+                this.unreadcount = unreadcount;
+            }
+
+            public List<UnreadLog> getUnreadLogs() {
+                return unreadLogs;
+            }
+
+            public void setUnreadLogs(List<UnreadLog> unreadLogs) {
+                this.unreadLogs = unreadLogs;
+            }
+
+
+
+            public static class UnreadLog {
+
+                @SerializedName("id")
+                @Expose
+                private Integer id;
+                @SerializedName("activity_action")
+                @Expose
+                private String activityAction;
+                @SerializedName("activity_type")
+                @Expose
+                private String activityType;
+                @SerializedName("activity_description")
+                @Expose
+                private String activityDescription;
+                @SerializedName("activity_time")
+                @Expose
+                private String activityTime;
+                @SerializedName("is_unread")
+                @Expose
+                private Integer isUnread;
+
+                public Integer getId() {
+                    return id;
+                }
+
+                public void setId(Integer id) {
+                    this.id = id;
+                }
+
+                public String getActivityAction() {
+                    return activityAction;
+                }
+
+                public void setActivityAction(String activityAction) {
+                    this.activityAction = activityAction;
+                }
+
+                public String getActivityType() {
+                    return activityType;
+                }
+
+                public void setActivityType(String activityType) {
+                    this.activityType = activityType;
+                }
+
+                public String getActivityDescription() {
+                    return activityDescription;
+                }
+
+                public void setActivityDescription(String activityDescription) {
+                    this.activityDescription = activityDescription;
+                }
+
+                public String getActivityTime() {
+                    return activityTime;
+                }
+
+                public void setActivityTime(String activityTime) {
+                    this.activityTime = activityTime;
+                }
+
+                public Integer getIsUnread() {
+                    return isUnread;
+                }
+
+                public void setIsUnread(Integer isUnread) {
+                    this.isUnread = isUnread;
+                }
+
+            }
+
+            public static class HumidityNotificationList {
+
+                @SerializedName("multi_sensor_notification_id")
+                @Expose
+                private String multiSensorNotificationId;
+                @SerializedName("min_humidity")
+                @Expose
+                private Integer minHumidity;
+                @SerializedName("max_humidity")
+                @Expose
+                private Integer maxHumidity;
+                @SerializedName("days")
+                @Expose
+                private String days;
+                @SerializedName("is_active")
+                @Expose
+                private Integer isActive;
+                @SerializedName("user_id")
+                @Expose
+                private String userId;
+
+                public boolean isCFActive() {
+                    return isCFActive;
+                }
+
+                public void setCFActive(boolean CFActive) {
+                    isCFActive = CFActive;
+                }
+
+                private boolean isCFActive;
+
+                public String getMultiSensorNotificationId() {
+                    return multiSensorNotificationId;
+                }
+
+                public void setMultiSensorNotificationId(String multiSensorNotificationId) {
+                    this.multiSensorNotificationId = multiSensorNotificationId;
+                }
+
+                public Integer getMinHumidity() {
+                    return minHumidity;
+                }
+
+                public void setMinHumidity(Integer minHumidity) {
+                    this.minHumidity = minHumidity;
+                }
+
+                public Integer getMaxHumidity() {
+                    return maxHumidity;
+                }
+
+                public void setMaxHumidity(Integer maxHumidity) {
+                    this.maxHumidity = maxHumidity;
+                }
+
+                public String getDays() {
+                    return days;
+                }
+
+                public void setDays(String days) {
+                    this.days = days;
+                }
+
+                public Integer getIsActive() {
+                    return isActive;
+                }
+
+                public void setIsActive(Integer isActive) {
+                    this.isActive = isActive;
+                }
+
+                public String getUserId() {
+                    return userId;
+                }
+
+                public void setUserId(String userId) {
+                    this.userId = userId;
+                }
+
+            }
+
+            public static class TempNotificationList {
+
+                @SerializedName("multi_sensor_notification_id")
+                @Expose
+                private String multiSensorNotificationId;
+                @SerializedName("min_value_C")
+                @Expose
+                private String minValueC;
+                @SerializedName("max_value_C")
+                @Expose
+                private String maxValueC;
+                @SerializedName("min_value_F")
+                @Expose
+                private String minValueF;
+                @SerializedName("max_value_F")
+                @Expose
+                private String maxValueF;
+                @SerializedName("days")
+                @Expose
+                private String days;
+                @SerializedName("is_active")
+                @Expose
+                private String isActive;
+                @SerializedName("user_id")
+                @Expose
+                private String userId;
+
+                public boolean isCFActive() {
+                    return isCFActive;
+                }
+
+                public void setCFActive(boolean CFActive) {
+                    isCFActive = CFActive;
+                }
+
+                private boolean isCFActive;
+
+                public String getMultiSensorNotificationId() {
+                    return multiSensorNotificationId;
+                }
+
+                public void setMultiSensorNotificationId(String multiSensorNotificationId) {
+                    this.multiSensorNotificationId = multiSensorNotificationId;
+                }
+
+                public String getMinValueC() {
+                    return minValueC;
+                }
+
+                public void setMinValueC(String minValueC) {
+                    this.minValueC = minValueC;
+                }
+
+                public String getMaxValueC() {
+                    return maxValueC;
+                }
+
+                public void setMaxValueC(String maxValueC) {
+                    this.maxValueC = maxValueC;
+                }
+
+                public String getMinValueF() {
+                    return minValueF;
+                }
+
+                public void setMinValueF(String minValueF) {
+                    this.minValueF = minValueF;
+                }
+
+                public String getMaxValueF() {
+                    return maxValueF;
+                }
+
+                public void setMaxValueF(String maxValueF) {
+                    this.maxValueF = maxValueF;
+                }
+
+                public String getDays() {
+                    return days;
+                }
+
+                public void setDays(String days) {
+                    this.days = days;
+                }
+
+                public String getIsActive() {
+                    return isActive;
+                }
+
+                public void setIsActive(String isActive) {
+                    this.isActive = isActive;
+                }
+
+                public String getUserId() {
+                    return userId;
+                }
+
+                public void setUserId(String userId) {
+                    this.userId = userId;
+                }
+
+            }
+        }
+
+
+
+            public static class TempList{
             @SerializedName("temp_sensor_id")
             private String mTempSensorId;
             @SerializedName("temp_sensor_module_id")

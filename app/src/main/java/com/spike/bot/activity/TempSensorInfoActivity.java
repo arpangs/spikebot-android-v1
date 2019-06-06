@@ -1019,7 +1019,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
 
             }
 
-            if (notificationList != null) {
+            if (notificationList != null && tempSensorInfoAdapter!=null) {
 
                 for (int i = 0; i < notificationList.length; i++) {
                     SensorResModel.DATA.TempList.NotificationList notificationListModel = notificationList[i];

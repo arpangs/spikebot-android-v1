@@ -1,5 +1,7 @@
 package com.spike.bot.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 /**
@@ -32,5 +34,10 @@ public class CameraViewModel implements Serializable{
         this.isActivite = isActivite;
     }
 
-    String id,name,isActivite;
+    @SerializedName("id")
+    String id;
+    @SerializedName("name")
+    String name;
+    @SerializedName("isActivite")
+    String isActivite;
 }
