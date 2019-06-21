@@ -283,7 +283,7 @@
                         android:textStyle="bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         android:textColor="@color/automation_white"
                         android:text="Multi Sensor"/>
 

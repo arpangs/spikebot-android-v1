@@ -100,6 +100,20 @@ public class SensorResModel {
             @Expose
             private List<UnreadLog> unreadLogs = null;
 
+
+            @SerializedName("NotificationSettingList")
+            @Expose
+            private List<NotificationSettingList> notificationSettingList = null;
+
+
+            public List<NotificationSettingList> getNotificationSettingList() {
+                return notificationSettingList;
+            }
+
+            public void setNotificationSettingList(List<NotificationSettingList> notificationSettingList) {
+                this.notificationSettingList = notificationSettingList;
+            }
+
             public String getMultiSensorId() {
                 return multiSensorId;
             }

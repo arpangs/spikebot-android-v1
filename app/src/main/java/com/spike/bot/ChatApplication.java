@@ -9,6 +9,7 @@ import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
@@ -342,6 +343,16 @@ public class ChatApplication extends Application  {
         } else {
            // imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY); // show
         }
+    }
+
+    public static void keyBoardShow(Context activity, View view){
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+    }
+
+    public static void closeKeyboard(Context context){
+        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
     }
 
    public static InputFilter filter = new InputFilter() {

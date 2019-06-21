@@ -730,7 +730,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         } else if (item.getIsActive() == 1) {
                             //If not active remote AC then display cross image above on AC icon
                             if(item.getSensor_type().equalsIgnoreCase("multisensor")){
-                                itemIcon = R.drawable.multi_sensor;
+                                itemIcon = R.drawable.icon_multi_sensor;
                             }else {
                                 itemIcon = Common.getIcon(status, item.getSensor_icon());
                             }

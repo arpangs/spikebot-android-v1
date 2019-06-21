@@ -28,16 +28,16 @@ import java.util.List;
 
 public class Constants {
 
-    public static final String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //IP used for login cloud and logout
-//    public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //117 testing
+//    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //IP used for login cloud and logout
+    public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //117 testing
 //    public static  String CLOUD_SERVER_URL = "http://18.237.74.22:8079"; //117 testing
 //    public static  String CLOUD_SERVER_URL = ""; //117 testing
 //http://52.24.23.7:8079
 //http://52.24.23.7:7
 //    public static  String IP_END = "111"; //101 //117 //222 node11 / 123
-//    public static  String  IP_END = "119"; //101 //117 //222
+    public static  String  IP_END = "119"; //101 //117 //222
 //
-    public final static  String  IP_END = "222"; //101 //117 //222
+//    public  static  String  IP_END = "222"; //101 //117 //222
 //    public static  String  IP_END = ""; //101 //117 //222
 //    public static final String  IP_END = "117"; //101 //117 //222 vip/123
     public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";

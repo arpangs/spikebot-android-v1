@@ -175,11 +175,11 @@
             android:windowSoftInputMode="stateHidden"/>
 
 
-     <!--   <activity android:name=".activity.Main2Activity"
+        <activity android:name=".activity.TempActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan|adjustResize"/>
--->
+
         <activity
             android:name="com.spike.bot.activity.Main2Activity"
             android:screenOrientation="portrait"

@@ -42,7 +42,7 @@
         <View
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:background="#808080"
+            android:background="@color/device_button"
             android:layout_width="match_parent"
             android:layout_height="0.5dp"/>
     </LinearLayout>
