@@ -192,8 +192,8 @@
                     <TextView
                         android:id="@+id/img_setting_badge_count"
                         android:visibility="visible"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
                         android:gravity="center"
                         android:textStyle="bold"
                         android:layout_marginLeft="@dimen/_27sdp"
@@ -201,11 +201,12 @@
                         android:background="@drawable/badge_background"
                         android:text="13"
                         android:textColor="#FFF"
-                        android:textSize="9sp" />
+                        android:textSize="13dp" />
 
                 </RelativeLayout>
 
                 <LinearLayout
+                    android:id="@+id/linearRefreshView"
                     android:layout_weight="3"
                     android:layout_width="0dp"
                     android:gravity="center|left"

@@ -115,6 +115,7 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
             dataObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
 
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

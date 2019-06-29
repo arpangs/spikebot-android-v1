@@ -50,7 +50,8 @@ public class SearchActivity extends AppCompatActivity implements SearchClick{
         setContentView(R.layout.activity_search);
 
         mBrandId=getIntent().getStringExtra("mBrandId");
-        arrayList=(DataSearch)getIntent().getSerializableExtra("arrayList");
+//        arrayList=(DataSearch)getIntent().getSerializableExtra("arrayList");
+        arrayList= IRRemoteBrandListActivity.arrayList;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 

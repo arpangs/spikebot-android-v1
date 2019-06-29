@@ -13,6 +13,16 @@ public class DeviceLog {
     public String activity_time;
     public String activity_state;
 
+    public String getIs_unread() {
+        return is_unread;
+    }
+
+    public void setIs_unread(String is_unread) {
+        this.is_unread = is_unread;
+    }
+
+    public String is_unread="";
+
     public String getUser_name() {
         return user_name;
     }
@@ -32,13 +42,14 @@ public class DeviceLog {
         user_name = "";
     }
 
-    public DeviceLog(String activity_action, String activity_type, String activity_description, String activity_time, String activity_state,String user_name) {
+    public DeviceLog(String activity_action, String activity_type, String activity_description, String activity_time, String activity_state,String user_name,String is_unread) {
         this.activity_action = activity_action;
         this.activity_type = activity_type;
         this.activity_description = activity_description;
         this.activity_time = activity_time;
         this.activity_state = activity_state;
         this.user_name = user_name;
+        this.is_unread = is_unread;
     }
 
     public String getActivity_action() {

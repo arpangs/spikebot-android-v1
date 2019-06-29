@@ -42,7 +42,7 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
     private LinearLayout linear_progress, ll_sensor_list;
     private RecyclerView mIRListView;
     private String mIrDeviceId, mRemoteName,mIrDeviceType, mRoomId, mIRBlasterModuleId, mIrBlasterId,mRoomName, mBlasterName;
-    List<IRRemoteListRes.Data.BrandList> brandLists;
+    List<IRRemoteListRes.Data.BrandList> brandLists=new ArrayList<>();
 
     private IRRemoteBrandListAdapter irRemoteBrandListAdapter;
     private EditText mSearchBrand;

@@ -971,6 +971,8 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             }
             //mood =1  room=0
             jsonObject.put("schedule_type", (isFilterType) ? 1 : 0);
+            jsonObject.put(APIConst.PHONE_ID_KEY,APIConst.PHONE_ID_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1162,6 +1164,8 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                 obj.put("room_id", moodId2); //moodId1
                 obj.put("room_type", 1);
             }
+            obj.put(APIConst.PHONE_ID_KEY,APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1698,6 +1702,8 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             } else {
                 jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE)));
             }
+            jsonObject.put(APIConst.PHONE_ID_KEY,APIConst.PHONE_ID_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
         } catch (JSONException e) {
             e.printStackTrace();
         }

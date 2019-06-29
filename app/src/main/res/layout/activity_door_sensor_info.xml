@@ -451,8 +451,8 @@
                                 <TextView
                                     android:id="@+id/txtAlertCount"
                                     android:visibility="gone"
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
+                                    android:layout_width="28dp"
+                                    android:layout_height="28dp"
                                     android:gravity="center"
                                     android:textStyle="bold"
                                     android:layout_toRightOf="@+id/txtAlert"
@@ -460,7 +460,7 @@
                                     android:background="@drawable/badge_background"
                                     android:text="9"
                                     android:textColor="#FFF"
-                                    android:textSize="9sp" />
+                                    android:textSize="11dp" />
 
                             </RelativeLayout>
 

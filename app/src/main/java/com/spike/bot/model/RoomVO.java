@@ -52,6 +52,16 @@ public class RoomVO implements Serializable{
     private boolean isRoomOnOff;
     private String device_count;
 
+    public boolean isIsheavyload() {
+        return isheavyload;
+    }
+
+    public void setIsheavyload(boolean isheavyload) {
+        this.isheavyload = isheavyload;
+    }
+
+    private boolean isheavyload=false;
+
     public String getSmart_remote_number() {
         return smart_remote_number;
     }

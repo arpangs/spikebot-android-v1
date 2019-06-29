@@ -6,5 +6,6 @@
 
     <solid android:color="@color/sensor_button" />
 
-    <corners android:radius="0dp" />
+    <corners android:radius="0dp"
+        />
 </shape>

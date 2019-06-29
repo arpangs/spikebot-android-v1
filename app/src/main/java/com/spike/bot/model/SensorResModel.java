@@ -64,6 +64,30 @@ public class SensorResModel {
             @Expose
             private String tempInF;
 
+            public int getGas_value() {
+                return gas_value;
+            }
+
+            public void setGas_value(int gas_value) {
+                this.gas_value = gas_value;
+            }
+
+            @SerializedName("gas_value")
+            @Expose
+            private int gas_value;
+
+            public int getGas_threshold_value() {
+                return gas_threshold_value;
+            }
+
+            public void setGas_threshold_value(int gas_threshold_value) {
+                this.gas_threshold_value = gas_threshold_value;
+            }
+
+            @SerializedName("gas_threshold_value")
+            @Expose
+            private int gas_threshold_value;
+
             public String getHumidity() {
                 return humidity;
             }

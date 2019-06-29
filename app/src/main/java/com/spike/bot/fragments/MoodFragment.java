@@ -984,6 +984,8 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
             }else {
                 jsonObject.put("admin",Integer.parseInt(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE)));
             }
+            jsonObject.put(APIConst.PHONE_ID_KEY,APIConst.PHONE_ID_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1277,6 +1279,8 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
             jsonObject.put("is_sensor_panel", 1);
             jsonObject.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
             jsonObject.put("admin",1);
+            jsonObject.put(APIConst.PHONE_ID_KEY,APIConst.PHONE_ID_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
 
         } catch (JSONException e) {
             e.printStackTrace();

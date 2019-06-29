@@ -960,8 +960,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
         if (!TextUtils.isEmpty(jsonText)) {
 
-            Type type = new TypeToken<List<User>>() {
-            }.getType();
+            Type type = new TypeToken<List<User>>() {}.getType();
             uList = gson.fromJson(jsonText, type);
 
             boolean isFoundUser = false;
@@ -1660,6 +1659,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             obj.put("device_type", "android");
             obj.put("device_push_token", token);
             obj.put("uuid", ChatApplication.getUuid());
+            obj.put(APIConst.PHONE_ID_KEY,APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
 
         } catch (Exception e) {
             e.printStackTrace();

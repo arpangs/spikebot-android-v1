@@ -256,6 +256,8 @@ public class CameraDeviceLogActivity  extends AppCompatActivity {
                         JSONObject object1=result.getJSONObject("data");
                         JSONArray jsonArray=object1.optJSONArray("notificationList");
 
+                        ChatApplication.logDisplay("json is "+jsonArray);
+
                         arrayListTemp = (ArrayList<NotificationList>) Common.fromJson(jsonArray.toString(),
                                 new TypeToken<ArrayList<NotificationList>>() {
                                 }.getType());

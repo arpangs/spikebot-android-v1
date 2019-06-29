@@ -388,6 +388,8 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                 deviceObj.put("end_time", offTime);
                 deviceObj.put("alert_interval", edIntervalTime);
                 deviceObj.put("camera_notification_id", cameraAlertList.getCameraNotificationId());
+                deviceObj.put(APIConst.PHONE_ID_KEY,APIConst.PHONE_ID_VALUE);
+                deviceObj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
 
                 JSONArray roomDeviceArray = new JSONArray();
                 JSONArray array = new JSONArray();
@@ -437,6 +439,8 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                 deviceObj.put("start_time", onTime);
                 deviceObj.put("end_time", offTime);
                 deviceObj.put("alert_interval", edIntervalTime);
+                deviceObj.put(APIConst.PHONE_ID_KEY,APIConst.PHONE_ID_VALUE);
+                deviceObj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
 
                 JSONArray roomDeviceArray = new JSONArray();
                 for (CameraVO dPanel : getCameraList) {
@@ -821,7 +825,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             return;
         }
 
-        ActivityHelper.showProgressDialog(CameraNotificationActivity.this, "Please wait... ", false);
+//        ActivityHelper.showProgressDialog(CameraNotificationActivity.this, "Please wait... ", false);
         String url = ChatApplication.url + Constants.updateUnReadCameraLogs;
         new GetJsonTask(CameraNotificationActivity.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL //POST
             @Override

@@ -113,6 +113,16 @@ public class JsonHelper {
 
                 ArrayList<PanelVO> panelList = JsonHelper.parsePanelArray(panelArray,room,room.getRoomName(),room.getRoomId(),isParseOriginal); //new ArrayList<PanelVO>();
 
+                for(int j=0; j<panelList.size(); j++){
+                    for(int k=0; k<panelList.get(j).getDeviceList().size(); k++){
+                        if(panelList.get(j).getDeviceList().get(k).getDeviceType().equalsIgnoreCase("-1")){
+                            room.setIsheavyload(true);
+                            break;
+                        }
+
+                    }
+
+                }
                 roomList.add(room);
 
                 room.setPanelList(panelList);

@@ -60,7 +60,7 @@ public class DeviceVO implements Serializable,Cloneable {
     private String sensor_voltage;
     private String sensor_icon;
     private String door_sensor_status;
-    private String sensor_type;
+    private String sensor_type="";
     private String is_unread;
     private String created_date;
     private String temp_in_c;

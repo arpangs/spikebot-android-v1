@@ -330,6 +330,9 @@ public class Common {
                     case "Remote_AC":
                         resource = R.drawable.remote_ac;
                         break;
+                        case "heavyload":
+                        resource = R.drawable.on;
+                        break;
                     default:
                         resource = R.drawable.bulb_on;
                         break;
@@ -385,6 +388,11 @@ public class Common {
                     case "Remote_AC":
                         resource = R.drawable.remote_ac_off;
                         break;
+                        case "multisensor":
+                        resource = R.drawable.icon_multi_sensor;
+                        break;
+                    case "heavyload":
+                        resource = R.drawable.off;
                     default:
                         resource = R.drawable.bulb_off;
                         break;

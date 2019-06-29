@@ -68,7 +68,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
     IRRemoteOnOffRes irRemoteOnOffRes;
     private boolean isRequestTypeOn = false;
     private int mTotalState = 1,mCurrentState = 1,RESPOND_CONST = 1; //1 on command : 2 off command
-    public DataSearch arrayList;
+    public static DataSearch arrayList;
 
     public static class Power {
 
@@ -176,7 +176,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         if (id == R.id.action_filter) {
             Intent intent = new Intent(this, SearchActivity.class);
             intent.putExtra("mBrandId",""+mBrandId);
-            intent.putExtra("arrayList",arrayList);
+//            intent.putExtra("arrayList",arrayList);
             startActivityForResult(intent, 1);
             return true;
         }else if (id == android.R.id.home) {

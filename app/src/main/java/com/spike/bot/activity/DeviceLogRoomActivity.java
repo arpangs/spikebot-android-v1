@@ -305,11 +305,12 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
                                 String activity_type = jsonObject.getString("activity_type");
                                 String activity_description = jsonObject.getString("activity_description");
                                 String activity_time = jsonObject.getString("activity_time");
+                                String is_unread = jsonObject.optString("is_unread");
                                 //  String activity_state = jsonObject.getString("activity_state");
 
                                 //String activity_action, String activity_type, String activity_description, String activity_time, String activity_state
 
-                                deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "",""));
+                                deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "","",is_unread));
                             }
                             if(!TextUtils.isEmpty(notificationArray.toString())){
                                 setAdapter();

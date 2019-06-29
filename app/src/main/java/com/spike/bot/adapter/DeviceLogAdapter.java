@@ -98,6 +98,23 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
                 holder.tv_device_log_date.setText(dateTime);
             }
 
+
+            if(deviceLog.getIs_unread().equalsIgnoreCase("1")){
+
+                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_log_type.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tvUserName.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_description2.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_description3.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+            }else {
+                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+                holder.tv_device_log_type.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+                holder.tvUserName.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+                holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+                holder.tv_device_description2.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+                holder.tv_device_description3.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+            }
             holder.tv_device_log_type.setText(deviceLog.getActivity_action() + " - " + deviceLog.getActivity_type());
 
             String[] actionList = deviceLog.getActivity_description().split("\\|");

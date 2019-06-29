@@ -26,6 +26,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.activity.UserChildActivity;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
@@ -40,6 +41,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -293,7 +295,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             obj.put("user_name",et_profile_user_name.getText().toString());
             obj.put("user_phone",et_profile_contact_no.getText().toString());
             obj.put("user_email",et_profile_email.getText().toString());
-
+            obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
             if(strPassword.length()>0){
                 obj.put("user_password",""+strPassword);
             }else {
@@ -320,6 +322,35 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                     if(code==200){
                         Common.savePrefValue(ChatApplication.getInstance(), "first_name", et_profile_first_name.getText().toString());
                         Common.savePrefValue(ChatApplication.getInstance(), "last_name", et_profile_last_name.getText().toString());
+
+                        JSONObject jsonObject=new JSONObject(result.toString());
+                        JSONObject jdata=jsonObject.optJSONObject("data");
+                        String password=jdata.optString("user_password");
+                        String user_id=jdata.optString("user_id");
+                        String ip=jdata.optString("ip");
+                        String first_name=jdata.optString("first_name");
+                        String last_name=jdata.optString("last_name");
+
+
+                        String jsonTextTemp1 = Common.getPrefValue(getContext(), Common.USER_JSON);
+                        List<User> userList1 = new ArrayList<User>();
+                        Gson gson = new Gson();
+                        if (!TextUtils.isEmpty(jsonTextTemp1)) {
+                            Type type = new TypeToken<List<User>>() {}.getType();
+                            userList1 = gson.fromJson(jsonTextTemp1, type);
+                        }
+
+                        for (int i=0; i<userList1.size(); i++) {
+                            if (userList1.get(i).isActive()) {
+                                userList1.get(i).setPassword(password);
+                                userList1.get(i).setFirstname(first_name);
+                                userList1.get(i).setLastname(last_name);
+                                break;
+                            }
+                        }
+
+                        String jsonCurProduct = gson.toJson(userList1);
+                        Common.savePrefValue(getActivity(), Common.USER_JSON, jsonCurProduct);
 
                         Toast.makeText(getContext(), message , Toast.LENGTH_SHORT).show();
                         ActivityHelper.hideKeyboard(getActivity());
