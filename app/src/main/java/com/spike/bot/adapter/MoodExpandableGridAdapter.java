@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -226,26 +227,64 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     if(section.getSmart_remote_number().length()==0){
                         holder.txtRemote.setVisibility(GONE);
                         holder.imgRemote.setVisibility(View.VISIBLE);
-                        holder.imgRemote.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                dialogRemoteshow(false,section);
-                            }
-                        });
+//                        holder.imgRemote.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                dialogRemoteshow(false,section);
+//                            }
+//                        });
+//
+//                        holder.frameRemote.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                dialogRemoteshow(false,section);
+//                            }
+//                        });
 
                     }else {
 
                         holder.txtRemote.setVisibility(View.VISIBLE);
-                        holder.imgRemote.setVisibility(View.GONE);
+                        holder.imgRemote.setVisibility(View.VISIBLE);
                         holder.txtRemote.setText(section.getSmart_remote_number());
 
-                        holder.txtRemote.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                dialogRemoteshow(true,section);
-                            }
-                        });
+//                        holder.txtRemote.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                dialogRemoteshow(true,section);
+//                            }
+//                        });
+//
+//                        holder.frameRemote.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                dialogRemoteshow(true,section);
+//                            }
+//                        });
+
                     }
+
+                    holder.imgRemote.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(section.getSmart_remote_number()!=null && section.getSmart_remote_number().length()>0){
+                                dialogRemoteshow(true,section);
+                            }else {
+                                dialogRemoteshow(false,section);
+                            }
+                        }
+                    });
+
+                    holder.frameRemote.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(section.getSmart_remote_number()!=null && section.getSmart_remote_number().length()>0){
+                                dialogRemoteshow(true,section);
+                            }else {
+                                dialogRemoteshow(false,section);
+                            }
+                        }
+                    });
+
                 }else {
                     holder.txtRemote.setVisibility(GONE);
                     holder.imgRemote.setVisibility(GONE);
@@ -296,7 +335,16 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                         holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(),item.getDevice_icon()));
                     }
                 }else{
-                    holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(),item.getDevice_icon()));
+                    if(item.getDeviceType().equalsIgnoreCase("-1")){
+                        if(item.getDeviceStatus()==0){
+                            holder.iv_icon.setImageResource(R.drawable.off);
+                        }else {
+                            holder.iv_icon.setImageResource(R.drawable.on);
+                        }
+                    }else {
+                        holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(),item.getDevice_icon()));
+                    }
+
                 }
 
                     holder.iv_icon_text.setVisibility(View.VISIBLE);
@@ -356,6 +404,8 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     public boolean onLongClick(View v) {
                         if(item.getDevice_icon().equalsIgnoreCase("Remote_AC")){ //click on remote device id
                             mItemClickListener.itemClicked(item,"isIRSensorClick");
+                        }else if(item.getDevice_icon().equalsIgnoreCase("heavyload") && item.getDeviceType().equalsIgnoreCase("-1")){
+                            mItemClickListener.itemClicked(item, "heavyloadlongClick");
                         }
                         return false;
                     }
@@ -420,9 +470,16 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
             }
         });
 
-        if(isFlag){
+//        if(isFlag){
+//            editKeyValue.setText(section.getSmart_remote_number());
+//            editKeyValue.setSelection(editKeyValue.getText().length());
+//        }
+
+        if(section.getSmart_remote_number()!=null){
             editKeyValue.setText(section.getSmart_remote_number());
             editKeyValue.setSelection(editKeyValue.getText().length());
+        }else {
+            editKeyValue.setText("");
         }
 
         btnSubmit.setOnClickListener(new View.OnClickListener() {
@@ -556,6 +613,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
         LinearLayout ll_room_item;
         ImageView iv_icon_text;
         RelativeLayout view_rel;
+        FrameLayout frameRemote;
 
         View vi_test;
 
@@ -593,6 +651,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                 txtTotalDevices = (TextView) view.findViewById(R.id.txt_total_devices);
                 txtRemote = view.findViewById(R.id.txtRemote);
                 imgRemote = view.findViewById(R.id.imgRemote);
+                frameRemote = view.findViewById(R.id.frameRemote);
             }
         }
     }

@@ -257,6 +257,7 @@ public class SignUp extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        ChatApplication.logDisplay("url is "+url+" "+object);
         ActivityHelper.showProgressDialog(SignUp.this,"Please wait...",false);
 
         new GetJsonTask(this,url ,"POST",object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL

@@ -327,6 +327,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
+        <activity android:name=".activity.HeavyLoadDetailActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
         <service
             android:name="com.spike.bot.fcm.MyFirebaseMessagingService">
             <intent-filter>

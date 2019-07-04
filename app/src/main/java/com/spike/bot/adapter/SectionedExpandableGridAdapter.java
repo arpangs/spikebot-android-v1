@@ -431,12 +431,12 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                         if (Integer.parseInt(isunRead) > 99) {
                             holder.img_setting_badge_count.setText("99+");
-                            holder.img_setting_badge_count.getLayoutParams().width = Common.dpToPx(mContext, 29);
-                            holder.img_setting_badge_count.getLayoutParams().height = Common.dpToPx(mContext, 29);
+                            holder.img_setting_badge_count.getLayoutParams().width = Common.dpToPx(mContext, 27);
+                            holder.img_setting_badge_count.getLayoutParams().height = Common.dpToPx(mContext, 27);
                         } else {
                             holder.img_setting_badge_count.setText(""+isunRead);
-                            holder.img_setting_badge_count.getLayoutParams().width = Common.dpToPx(mContext, 29);
-                            holder.img_setting_badge_count.getLayoutParams().height = Common.dpToPx(mContext, 29);
+                            holder.img_setting_badge_count.getLayoutParams().width = Common.dpToPx(mContext, 27);
+                            holder.img_setting_badge_count.getLayoutParams().height = Common.dpToPx(mContext, 27);
                         }
 
                     } else {
@@ -510,6 +510,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             if (!TextUtils.isEmpty(section.getPanelList().get(i).getDeviceList().get(j).getSensor_type())) {
                                 if (section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("temp") ||
                                         section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("remote") ||
+                                        section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("multisensor") ||
                                         section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("door")) {
 
                                     flag = true;
@@ -729,15 +730,16 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                         if (!TextUtils.isEmpty(item.getIs_unread())) {
                             if (Integer.parseInt(item.getIs_unread()) > 0) {
+                                holder.iv_icon_badge.setVisibility(View.VISIBLE);
                                 holder.iv_icon_badge.setText(item.getIs_unread());
 
                                 if (Integer.parseInt(item.getIs_unread()) > 99) {
                                     holder.iv_icon_badge.setText("99+");
-                                    holder.iv_icon_badge.getLayoutParams().width = Common.dpToPx(mContext, 35);
-                                    holder.iv_icon_badge.getLayoutParams().height = Common.dpToPx(mContext, 35);
+                                    holder.iv_icon_badge.getLayoutParams().width = Common.dpToPx(mContext, 27);
+                                    holder.iv_icon_badge.getLayoutParams().height = Common.dpToPx(mContext, 27);
                                 } else {
-                                    holder.iv_icon_badge.getLayoutParams().width = Common.dpToPx(mContext, 35);
-                                    holder.iv_icon_badge.getLayoutParams().height = Common.dpToPx(mContext, 35);
+                                    holder.iv_icon_badge.getLayoutParams().width = Common.dpToPx(mContext, 27);
+                                    holder.iv_icon_badge.getLayoutParams().height = Common.dpToPx(mContext, 27);
                                 }
 
                             } else {
@@ -839,6 +841,9 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         notifyItemChanged(position, item);
 
                         if (!item.isSensor()) {
+                            if(item.getDevice_icon().equalsIgnoreCase("heavyload") && item.getDeviceType().equalsIgnoreCase("-1")){
+                                tempClickListener.itemClicked(item, "heavyloadlongClick", true, position);
+                            }
                         } else {
                             if (item.getSensor_type().equalsIgnoreCase("remote")) {
                                     /*if(item.getIsActive() == 1){
@@ -854,6 +859,15 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     }
                 });
 
+                if (item.getDevice_icon().equalsIgnoreCase("heavyload") && item.getDeviceType().equalsIgnoreCase("-1")) {
+                    holder.imgLongClick.setVisibility(View.VISIBLE);
+                }else if(!TextUtils.isEmpty(item.getDeviceId()) && Integer.parseInt(item.getDeviceId()) == 1 && Integer.parseInt(item.getDeviceType()) == 1){
+                    holder.imgLongClick.setVisibility(View.VISIBLE);
+                } else if (item.getSensor_type().equalsIgnoreCase("remote")) {
+                    holder.imgLongClick.setVisibility(View.VISIBLE);
+                }else {
+                    holder.imgLongClick.setVisibility(View.GONE);
+                }
 
                 if (!TextUtils.isEmpty(item.getDeviceId()) && Integer.parseInt(item.getDeviceId()) == 1 && Integer.parseInt(item.getDeviceType()) == 1) {
                     holder.iv_icon.setOnLongClickListener(new View.OnLongClickListener() {
@@ -987,7 +1001,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
         TextView img_setting_badge_count;
         //for item
         TextView itemTextView;
-        ImageView iv_icon;
+        ImageView iv_icon,imgLongClick;
         LinearLayout ll_room_item, linearRowRoom, linearPanelList,linearSwitchView;
         ImageView iv_icon_text;
         LinearLayout ll_root_view_section,linearRefreshView;
@@ -1010,7 +1024,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 iv_icon_badge = (TextView) view.findViewById(R.id.iv_icon_badge);
                 txt_temp_in_cf = (TextView) view.findViewById(R.id.txt_temp_in_cf);
                 linearSwitchView =  view.findViewById(R.id.linearSwitchView);
-
+                imgLongClick =  view.findViewById(R.id.imgLongClick);
 
                 mImgCameraActive = (ImageView) view.findViewById(R.id.iv_icon_active_camera);
 

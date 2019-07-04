@@ -7,6 +7,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -24,6 +26,9 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class Constants {
@@ -38,7 +43,7 @@ public class Constants {
     public static  String  IP_END = "119"; //101 //117 //222
 //
 //    public  static  String  IP_END = "222"; //101 //117 //222
-//    public static  String  IP_END = ""; //101 //117 //222
+//    public static  String  IP_END = "101"; //101 //117 //222
 //    public static final String  IP_END = "117"; //101 //117 //222 vip/123
     public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";
     public static final String CAMERA_PATH = "/static/storage/volume/";
@@ -127,6 +132,8 @@ public class Constants {
     public static final String getCameraNotificationAlertList = "/getCameraNotificationAlertList";
     public static final String updateUnReadCameraLogs = "/updateUnReadCameraLogs";
     public static final String getSmartDeviceBrands = "/getSmartDeviceBrands";
+    public static final String getHeavyLoadDetails = "/getHeavyLoadDetails";
+    public static final String filterHeavyLoadData = "/filterHeavyLoadData";
 
     public static final String SENSOR_ROOM_DETAILS = "/sensorRoomDetails";
     public static final String SENSOR_NOTIFICATION = "/sensorNotification";
@@ -359,5 +366,79 @@ public class Constants {
 
         return bitmap;
 
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static int getCurrentMonth(){
+        Calendar c = Calendar.getInstance();
+        int month = c.get(Calendar.MONTH)+1;
+        int year = c.get(Calendar.YEAR);
+        month =getMonthOfDay(month,year);
+        return month;
+    }
+
+    public static ArrayList<String> getMonthList(){
+        ArrayList<String> xAxis = new ArrayList<>();
+//        xAxis.add("JAN");
+//        xAxis.add("FEB");
+//        xAxis.add("MAR");
+//        xAxis.add("APR");
+//        xAxis.add("MAY");
+//        xAxis.add("JUN");
+
+        xAxis.add("All");
+        xAxis.add("Jan");
+        xAxis.add("Feb");
+        xAxis.add("Mar");
+        xAxis.add("Apr");
+        xAxis.add("May");
+        xAxis.add("Jun");
+        xAxis.add("Jul");
+        xAxis.add("Aug");
+        xAxis.add("Sep");
+        xAxis.add("Oct");
+        xAxis.add("Nov");
+        xAxis.add("Dec");
+        return xAxis;
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static int getMonthOfDay(int month,int year){
+        //January - 31 days 1
+        //February - 28 days 2
+        //March - 31 days 3
+        //April - 30 days 4
+        //May - 31 days 5
+        //June - 30 days 6
+        //July - 31 days 7
+        //August - 31 days 8
+        //September - 30 days 9
+        //October - 31 days 10
+        //November - 30 days 11
+        //December - 31 days 12
+
+//        Calendar c = Calendar.getInstance();
+//        int month = c.get(Calendar.MONTH);
+
+//        int valueOfDay=0;
+
+//        YearMonth yearMonthObject = YearMonth.of(2019, 07);
+//        int daysInMonth = yearMonthObject.lengthOfMonth(); //28
+
+            Calendar calendar = Calendar.getInstance();
+            int date = 1;
+            calendar.set(year, month, date);
+           int  days = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+//        if(month==1 || month==3 || month==5 || month==7 || month==8 || month==10 || month==12){
+//            valueOfDay =31;
+//        }else if(month==4 || month==6  || month==9 || month==11 ){
+//            valueOfDay =30;
+//        }else {
+//            valueOfDay =28;
+//        }
+
+        return days;
     }
 }

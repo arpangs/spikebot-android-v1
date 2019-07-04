@@ -61,6 +61,7 @@ import com.spike.bot.activity.CameraPlayBack;
 import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.activity.DeviceLogRoomActivity;
 import com.spike.bot.activity.DoorSensorInfoActivity;
+import com.spike.bot.activity.HeavyLoadDetailActivity;
 import com.spike.bot.activity.MultiSensorActivity;
 import com.spike.bot.activity.ScheduleListActivity;
 import com.spike.bot.activity.Main2Activity;
@@ -573,7 +574,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 mSocket.on("unReadCount", unReadCount);
                 mSocket.on("sensorStatus", sensorStatus);
                 mSocket.on("updateChildUser", updateChildUser);
-                mSocket.on("heavyLoadValue", heavyLoadValue);
+//                mSocket.on("heavyLoadValue", heavyLoadValue);
 //                mSocket.on("updateChildUser", updateChildUser);
 //                mSocket.on("deleteChildUser", deleteChildUser);
                 //   mSocket.on("configureIRBlaster",configureIRBlaster);
@@ -589,6 +590,8 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         //  mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
 
     }
+
+
 
     @Override
     public void onDestroy() {
@@ -612,7 +615,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             mSocket.off("unReadCount", unReadCount);
             mSocket.off("sensorStatus", sensorStatus);
             mSocket.off("updateChildUser", updateChildUser);
-            mSocket.on("heavyLoadValue", heavyLoadValue);
+
 //            mSocket.off("deleteChildUser", deleteChildUser);
             //   mSocket.off("configureIRBlaster",configureIRBlaster);
 
@@ -621,14 +624,12 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
     @Override
     public void onPause() {
-//        if(ChatApplication.isPushFound){
-//            getBadgeClear(getActivity());
-//        }
         flagHeavyload=false;
         if(countDownTimerSocket!=null){
             countDownTimerSocket.cancel();
+            countDownTimerSocket.onFinish();
+            countDownTimerSocket=null;
         }
-//        handlerHeavyLoad.removeCallbacks(runnableHeavyLoad);
 //        handlerHeavyLoad.removeCallbacksAndMessages(null);
         super.onPause();
     }
@@ -1615,30 +1616,31 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         }
     };
 
-    private Emitter.Listener heavyLoadValue = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            if (getActivity() == null) {
-                return;
-            }
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-
-                        try {
-                            JSONObject object = new JSONObject(args[0].toString());
-
-                            ChatApplication.logDisplay("object socket is found heavyLoadValue " + object);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }
-            });
-        }
-    };
+//    private Emitter.Listener heavyLoadValue = new Emitter.Listener() {
+//        @Override
+//        public void call(final Object... args) {
+//            if (getActivity() == null) {
+//                return;
+//            }
+//            getActivity().runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    if (args != null) {
+//
+//                        try {
+//                            JSONObject object = new JSONObject(args[0].toString());
+//
+//                       //
+//                            ChatApplication.logDisplay("object socket is found heavyLoadValue " + object);
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                    }
+//                }
+//            });
+//        }
+//    };
 
     private Emitter.Listener sensorStatus = new Emitter.Listener() {
         @Override
@@ -2370,11 +2372,11 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         closeFABMenu();
         if (action.equalsIgnoreCase("heavyloadSocketon")) {
 
-            heavyloadSocket(roomVO, action);
+//            heavyloadSocket(roomVO, action);
 
         } else if (action.equalsIgnoreCase("heavyloadSocketoff")) {
 
-            heavyloadSocket(roomVO, action);
+//            heavyloadSocket(roomVO, action);
 
         } else if (action.equalsIgnoreCase("showGridCamera")) {
             Intent intent = new Intent(getActivity(), CameraGridActivity.class);
@@ -2497,11 +2499,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
     private void heavyloadSocket(final RoomVO roomVO, String action) {
 
-        ChatApplication.logDisplay("object socket is action " + action);
         if (action.equalsIgnoreCase("heavyloadSocketon")) {
-//            for(int i=0; i<roomVO.getPanelList().size(); i++){
-//                for(int j=0; j<roomVO.getPanelList().get(i).getDeviceList().size(); j++ ){
-//                    if(roomVO.getPanelList().get(i).getDeviceList().get(j).getDeviceType().equalsIgnoreCase("-1")){
             if (roomVO.isIsheavyload() && roomVO.isExpanded) {
 
                 for (int i = 0; i < roomVO.getPanelList().size(); i++) {
@@ -2510,22 +2508,13 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         if (roomVO.getPanelList().get(i).getDeviceList().get(j).getDeviceType().equalsIgnoreCase("-1")) {
                             final JSONObject object = new JSONObject();
                             try {
-//                            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-//                            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-//                            object.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
-//                            object.put("room_device_id", roomVO.getPanelList().get(i).getDeviceList().get(j).getRoomDeviceId());
                                 object.put("module_id", roomVO.getPanelList().get(i).getDeviceList().get(j).getModuleId());
-//                            object.put("device_id", roomVO.getPanelList().get(i).getDeviceList().get(j).getDeviceId());
-//                            object.put("device_status", -1);
-//                            object.put("localData", userId.equalsIgnoreCase("0") ? "0" : "1");
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-//                        mSocket.emit("socketChangeDevice", object);
-
 
                             if (!flagHeavyload) {
-                                countDownTimerSocket = new CountDownTimer(3000, 1000) {
+                                countDownTimerSocket = new CountDownTimer(10000, 1000) {
                                     public void onTick(long millisUntilFinished) {
                                         flagHeavyload = true;
                                     }public void onFinish() {
@@ -2533,7 +2522,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                                         if (roomVO.isExpanded) {
                                             mSocket.emit("socketHeavyLoadValues", object);
                                             flagHeavyload = true;
-                                            countDownTimerSocket.start();
+                                            if(countDownTimerSocket!=null) {
+                                                countDownTimerSocket.start();
+                                            }
                                         } else {
                                             flagHeavyload = false;
                                             if(countDownTimerSocket!=null){
@@ -2542,126 +2533,24 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                                         }
                                     }
                                 };
-                                countDownTimerSocket.start();
+                                if(countDownTimerSocket!=null) {
+                                    countDownTimerSocket.start();
+                                }
                             }
-
-
-//                            runnableHeavyLoad = new Runnable() {
-//                                public void run() {
-//                                    if(flagHeavyload){
-//                                     return;
-//                                    }
-//                                    flagHeavyload=true;
-//                                    ChatApplication.logDisplay("object socket is calling " + object);
-//
-////                                    mSocket.emit("socketChangeDevice", object);
-////                                    mSocket.emit("socketHeavyLoadValues", object);
-////                                    handlerHeavyLoad.postDelayed(this, 3000);
-//
-//                                    threadHeavyLoad=new Thread(new Runnable() {
-//                                        @Override
-//                                        public void run() {
-//                                            flagHeavyload=false;
-//                                            try {
-//                                                Thread.sleep(3000);
-////                                                threadHeavyLoad.interrupt();
-//                                            } catch (InterruptedException e) {
-//                                                e.printStackTrace();
-//                                            }
-//                                        }
-//                                    });threadHeavyLoad.start();
-//                                }
-//                            };
-//
-//                            handlerHeavyLoad.postDelayed(runnableHeavyLoad, 3000);
-
 
                             break;
                         }
                     }
                 }
 
-            } else {
-//                handlerHeavyLoad.removeCallbacks(runnableHeavyLoad);
-//                handlerHeavyLoad.removeCallbacksAndMessages(null);
             }
         } else {
             flagHeavyload=false;
             if(countDownTimerSocket!=null){
                 countDownTimerSocket .cancel();
             }
-
-//            threadHeavyLoad.stop();
-//            ChatApplication.logDisplay("object socket is calling closeing");
-//            flagHeavyload=false;
-//            handlerHeavyLoad.removeCallbacks(runnableHeavyLoad);
-//            handlerHeavyLoad.removeCallbacksAndMessages(null);
-//            runnableHeavyLoad=null;
         }
     }
-
-    private void heavyloadSocketTemp(RoomVO roomVO, String action) {
-
-        ChatApplication.logDisplay("object socket is action " + action);
-        if (action.equalsIgnoreCase("heavyloadSocketon")) {
-
-            if (roomVO.isIsheavyload() && roomVO.isExpanded) {
-
-                for (int i = 0; i < roomVO.getPanelList().size(); i++) {
-                    for (int j = 0; j < roomVO.getPanelList().get(i).getDeviceList().size(); j++) {
-
-                        final JSONObject object = new JSONObject();
-                        try {
-//                            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-//                            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-//                            object.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
-//                            object.put("room_device_id", roomVO.getPanelList().get(i).getDeviceList().get(j).getRoomDeviceId());
-                            object.put("module_id", roomVO.getPanelList().get(i).getDeviceList().get(j).getModuleId());
-//                            object.put("device_id", roomVO.getPanelList().get(i).getDeviceList().get(j).getDeviceId());
-//                            object.put("device_status", -1);
-//                            object.put("localData", userId.equalsIgnoreCase("0") ? "0" : "1");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-//                        mSocket.emit("socketChangeDevice", object);
-
-
-                        if (!flagHeavyload) {
-
-                            runnableHeavyLoad = new Runnable() {
-                                public void run() {
-
-                                    flagHeavyload = true;
-                                    ChatApplication.logDisplay("object socket is calling " + object);
-
-//                                    mSocket.emit("socketChangeDevice", object);
-//                                    mSocket.emit("socketHeavyLoadValues", object);
-                                    handlerHeavyLoad.postDelayed(this, 3000);
-
-                                }
-                            };
-
-                            handlerHeavyLoad.postDelayed(runnableHeavyLoad, 3000);
-                        }
-
-                        break;
-                    }
-                }
-
-            } else {
-//                handlerHeavyLoad.removeCallbacks(runnableHeavyLoad);
-//                handlerHeavyLoad.removeCallbacksAndMessages(null);
-            }
-        } else {
-            threadHeavyLoad.stop();
-            ChatApplication.logDisplay("object socket is calling closeing");
-            flagHeavyload = false;
-            handlerHeavyLoad.removeCallbacks(runnableHeavyLoad);
-            handlerHeavyLoad.removeCallbacksAndMessages(null);
-            runnableHeavyLoad = null;
-        }
-    }
-
 
     /**
      * Delete Room
@@ -2755,7 +2644,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             intent.putExtra("schedule", true);
             startActivity(intent);
 
-
         }
 
         if (action.equalsIgnoreCase("longclick")) {
@@ -2825,6 +2713,18 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 intent.putExtra("door_module_id", item.getModuleId());
                 startActivity(intent);
             }
+        }else if(action.equalsIgnoreCase("heavyloadlongClick")){
+            if(countDownTimerSocket!=null){
+                countDownTimerSocket.cancel();
+                countDownTimerSocket.onFinish();
+                countDownTimerSocket=null;
+            }
+            Intent intent=new Intent(getActivity(), HeavyLoadDetailActivity.class);
+            intent.putExtra("getRoomDeviceId",item.getRoomDeviceId());
+            intent.putExtra("getRoomName",item.getRoomName());
+            intent.putExtra("getModuleId",item.getModuleId());
+            startActivity(intent);
+
         } else if (action.equalsIgnoreCase("isIRSensorClick")) {
 
             //on-off remote
@@ -3471,7 +3371,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     public void getDeviceList(final int checkmessgae) {
         //showProgress();
 
-//        Common.savePrefValue(ChatApplication.getInstance(),  Constants.USER_ID, "1556718432640_mbViYfi_A");
+//        Common.savePrefValue(ChatApplication.getInstance(),  Constants.USER_ID, "1561786612083_ZdO_DUSnu");
 //        Common.savePrefValue(ChatApplication.getInstance(),  Constants.USER_ADMIN_TYPE, "1");
         if (getActivity() == null) {
             return;

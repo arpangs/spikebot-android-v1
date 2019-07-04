@@ -32,6 +32,7 @@ import com.spike.bot.R;
 import com.spike.bot.ack.AckWithTimeOut;
 import com.spike.bot.activity.AddMoodActivity;
 import com.spike.bot.activity.DeviceLogActivity;
+import com.spike.bot.activity.HeavyLoadDetailActivity;
 import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.activity.ScheduleListActivity;
 import com.spike.bot.activity.ir.blaster.IRBlasterRemote;
@@ -727,6 +728,12 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
           //  item.setDeviceStatus(item.getDeviceStatus()==0?1:0);
         }else if(action.equalsIgnoreCase("itemOnOffclick")){
             deviceOnOff(item);
+        }else if(action.equalsIgnoreCase("heavyloadlongClick")){
+            Intent intent=new Intent(getActivity(), HeavyLoadDetailActivity.class);
+            intent.putExtra("getRoomDeviceId",item.getOriginal_room_device_id());
+            intent.putExtra("getRoomName",item.getRoomName());
+            intent.putExtra("getModuleId",item.getModuleId());
+            startActivity(intent);
 
         }else if(action.equalsIgnoreCase("isIRSensorOnClick")){
             sendRemoteCommand(item);
