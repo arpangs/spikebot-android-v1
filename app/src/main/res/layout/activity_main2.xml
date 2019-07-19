@@ -278,7 +278,6 @@
 
     </LinearLayout>
 
-
     <LinearLayout
         android:id="@+id/linear_login"
         android:layout_width="match_parent"
@@ -288,100 +287,120 @@
         android:gravity="center|top"
         android:orientation="vertical"
         android:paddingTop="30dp"
-        android:paddingBottom="20dp"
+        android:paddingBottom="10dp"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         android:visibility="gone">
 
-
-        <ImageView
-            android:src="@drawable/ic_app_launcher"
-            android:scaleType="fitXY"
-            android:layout_gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <ImageView
-            android:layout_marginTop="20dp"
-            android:src="@drawable/ic_app_title"
-            android:scaleType="fitXY"
-            android:layout_gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/et_username"
-            android:layout_marginTop="24dp"
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:singleLine="true"
-            android:maxLength="30"
-            android:hint="Username"
-            android:inputType="text" />
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true">
 
-        <EditText
-            android:id="@+id/et_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:singleLine="true"
-            android:maxLength="20"
-            android:layout_marginTop="16dp"
-            android:hint="Password"
-            android:inputType="textPassword" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
 
-        <LinearLayout
-            android:layout_marginTop="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:visibility="gone"
-                android:id="@+id/btn_cancel"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:textAllCaps="false"
-                android:layout_marginRight="10dp"
-                android:textColor="@color/automation_white"
-                android:background="@drawable/button_radius"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="cancel" />
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btn_SKIP"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_marginRight="10dp"
-                android:textAllCaps="false"
-                android:textColor="@color/automation_white"
-                android:background="@drawable/button_radius"
-                android:layout_height="wrap_content"
-                android:text="Skip" />
+                <ImageView
+                    android:src="@drawable/ic_app_launcher"
+                    android:scaleType="fitXY"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
-            <Button
-                android:id="@+id/btn_login"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_marginLeft="10dp"
-                android:textAllCaps="false"
-                android:textColor="@color/automation_white"
-                android:background="@drawable/button_radius"
-                android:layout_height="wrap_content"
-                android:text="Login" />
+                <ImageView
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/ic_app_title"
+                    android:scaleType="fitXY"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
-        </LinearLayout>
+                <EditText
+                    android:id="@+id/et_username"
+                    android:layout_marginTop="24dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:singleLine="true"
+                    android:maxLength="30"
+                    android:hint="Username"
+                    android:inputType="text" />
 
-        <Button
-            android:id="@+id/btn_login_search"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/button_radius"
-            android:textColor="@color/automation_white"
-            android:text="SEARCH HOME CONTROLLER"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/et_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:singleLine="true"
+                    android:maxLength="20"
+                    android:layout_marginTop="16dp"
+                    android:hint="Password"
+                    android:inputType="textPassword" />
+
+
+                <LinearLayout
+                    android:layout_marginTop="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:visibility="gone"
+                        android:id="@+id/btn_cancel"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:textAllCaps="false"
+                        android:layout_marginRight="10dp"
+                        android:textColor="@color/automation_white"
+                        android:background="@drawable/button_radius"
+                        android:layout_height="wrap_content"
+                        android:text="cancel" />
+
+                    <Button
+                        android:id="@+id/btn_SKIP"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_marginRight="10dp"
+                        android:textAllCaps="false"
+                        android:textColor="@color/automation_white"
+                        android:background="@drawable/button_radius"
+                        android:layout_height="wrap_content"
+                        android:text="Skip" />
+
+                    <Button
+                        android:id="@+id/btn_login"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_marginLeft="10dp"
+                        android:textAllCaps="false"
+                        android:textColor="@color/automation_white"
+                        android:background="@drawable/button_radius"
+                        android:layout_height="wrap_content"
+                        android:text="Login" />
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btn_login_search"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/button_radius"
+                    android:textColor="@color/automation_white"
+                    android:text="SEARCH HOME CONTROLLER"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
+
     </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

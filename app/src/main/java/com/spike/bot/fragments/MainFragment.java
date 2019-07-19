@@ -7,7 +7,6 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -69,7 +68,6 @@ import com.spike.bot.activity.NotificationSetting;
 import com.spike.bot.activity.ProfileActivity;
 import com.spike.bot.activity.RoomEditActivity_v2;
 import com.spike.bot.activity.ScheduleActivity;
-import com.spike.bot.activity.SearchSmartDeviceActivity;
 import com.spike.bot.activity.SensorDoorLogActivity;
 import com.spike.bot.activity.SensorUnassignedActivity;
 import com.spike.bot.activity.SmartDecviceListActivity;
@@ -127,6 +125,7 @@ import io.fabric.sdk.android.Fabric;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
+import static com.spike.bot.core.Common.camera_key;
 import static com.spike.bot.core.Common.showToast;
 
 /**
@@ -1654,6 +1653,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                     if (args != null) {
                         try {
                             JSONObject jsonObject = new JSONObject(args[0].toString());
+                            ChatApplication.logDisplay("sensorStatus is "+jsonObject.toString());
                             String is_active = jsonObject.getString("is_active");
                             String sensor_id = "";
                             if (jsonObject.has("sensor_id")) {
@@ -2153,10 +2153,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         }
 
         if (mSocket != null && !mSocket.connected()) {
-
-            callDeviceOnOffApi(deviceVO, obj);
-
-        } else {
             mSocket.emit("socketChangeDeviceAck", obj, new AckWithTimeOut(Constants.ACK_TIME_OUT) {
                 @Override
                 public void call(Object... args) {
@@ -2173,6 +2169,10 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                     }
                 }
             });
+
+        } else {
+
+            callDeviceOnOffApi(deviceVO, obj);
 
             /*mSocket.emit("socketChangeDevice", obj, new Ack() {
                 @Override
@@ -2828,7 +2828,11 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             intent.putExtra("cameraSelcet", item);
             intent.putExtra("isEditable", false);
             startActivity(intent);
-        } else {
+        }else if(action.equalsIgnoreCase("cameraLog")){
+            Intent intent=new Intent(getActivity(),CameraDeviceLogActivity.class);
+            intent.putExtra("cameraId",""+item.getCamera_id());
+            startActivity(intent);
+        }else {
             callCameraToken(item, action);
         }
 
@@ -3341,16 +3345,16 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
     public static int SING_UP_REQUEST = 500;
 
-    public static void saveCurrentId(Context context, String userId) {
+    public static void saveCurrentId(Context context, String userId, String gatewayIp) {
         Gson gson = new Gson();
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
-        Type type = new TypeToken<List<User>>() {
-        }.getType();
+        Type type = new TypeToken<List<User>>() {}.getType();
         List<User> userList = gson.fromJson(jsonText, type);
 
         for (int i = 0; i < userList.size(); i++) {
             if (userList.get(i).getUser_id().equals(userId)) {
                 userList.get(i).setIsActive(true);
+                userList.get(i).setGateway_ip(gatewayIp);
                 mCallback.onArticleSelected("" + userList.get(i).getFirstname());
             } else {
                 userList.get(i).setIsActive(false);
@@ -3514,6 +3518,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         String userLastName = userObject.getString("last_name");
                         String camera_key = userObject.optString("camera_key");
                         String is_active = userObject.optString("is_active");
+                        String gateway_ip = userObject.optString("gateway_ip");
 
                         if (is_active.equalsIgnoreCase("0")) {
 
@@ -3533,16 +3538,14 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         String jsonText = Common.getPrefValue(getContext(), Common.USER_PIDETAIL);
                         List<PiDetailsModel> piUserList = new ArrayList<PiDetailsModel>();
                         if (!TextUtils.isEmpty(jsonText)) {
-                            Type type = new TypeToken<List<PiDetailsModel>>() {
-                            }.getType();
+                            Type type = new TypeToken<List<PiDetailsModel>>() {}.getType();
                             piUserList = gson.fromJson(jsonText, type);
                         }
 
                         String jsonTextTemp = Common.getPrefValue(getContext(), Common.USER_JSON);
                         List<User> userList = new ArrayList<User>();
                         if (!TextUtils.isEmpty(jsonTextTemp) && !jsonTextTemp.equals("null")) {
-                            Type type = new TypeToken<List<User>>() {
-                            }.getType();
+                            Type type = new TypeToken<List<User>>() {}.getType();
                             userList = gson.fromJson(jsonTextTemp, type);
                         }
 
@@ -3551,7 +3554,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             for (User user : userList) {
                                 if (user.getUser_id().equalsIgnoreCase(userId) && user.getIsActive()) {
                                     flagIsLogin = true;
-                                    saveCurrentId(getActivity(), userId);
+                                    saveCurrentId(getActivity(), userId,gateway_ip);
                                     mCallback.onArticleSelected("" + userFirstName);
                                     break;
                                 }
@@ -3559,7 +3562,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                             if (flagIsLogin == false) {
                                 if (checkLoginId(userId, checkmessgae)) {
-                                    saveCurrentId(getActivity(), userId);
+                                    saveCurrentId(getActivity(), userId,gateway_ip);
                                     mCallback.onArticleSelected("" + userFirstName);
                                     ChatApplication.logDisplay("pie details is isSignUp ");
                                 } else if (flagisCould) {
@@ -3660,7 +3663,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             panelList.add(panel);
 
                             section.setPanelList(panelList);
-                            section.setIs_unread(cameraList.get(0).getIs_unread());
+                            section.setIs_unread(cameraList.get(0).getTotal_unread());
 
                             roomList.add(section);
 
@@ -3874,6 +3877,8 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         String camera_key = userObject.optString("camera_key");
                         String ip = userObject.optString("ip");
                         String is_active = userObject.optString("is_active");
+                        String gateway_ip = userObject.optString("gateway_ip");
+
                         if (is_active.equalsIgnoreCase("0")) {
                             ((Main2Activity) getActivity()).logoutCloudUser();
                             return;
@@ -3918,7 +3923,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         mCallback.onArticleSelected("" + userFirstName);
                         Common.savePrefValue(getActivity(), Common.USER_JSON, jsonCurProduct);
 
-                        saveCurrentId(getActivity(), userId);
+                        saveCurrentId(getActivity(), userId, gateway_ip);
 //                        JSONArray piDetailsArray = dataObject.optJSONArray("piDetails");
 //                        if (piDetailsArray != null) {
 //                            String jsonTextTemp = Common.getPrefValue(getContext(), Common.USER_JSON);
@@ -4080,7 +4085,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             panelList.add(panel);
 
                             section.setPanelList(panelList);
-                            section.setIs_unread(cameraList.get(0).getIs_unread());
+                            section.setIs_unread(cameraList.get(0).getTotal_unread());
 
                             roomList.add(section);
 

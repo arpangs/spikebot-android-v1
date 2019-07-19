@@ -229,6 +229,7 @@
                     <TextView
                         android:id="@+id/fab_menu4"
                         android:layout_margin="@dimen/_2sdp"
+                        android:visibility="gone"
                         android:padding="@dimen/_6sdp"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -285,7 +286,7 @@
                         android:layout_height="wrap_content"
                         android:visibility="visible"
                         android:textColor="@color/automation_white"
-                        android:text="Multi Sensor"/>
+                        android:text="Add Multi Sensor"/>
 
                     <TextView
                         android:visibility="gone"

@@ -394,6 +394,12 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                             devicesList.get(i).setIsActive(Integer.parseInt(is_active));
 
                         }
+                    }else if(!TextUtils.isEmpty(devicesList.get(i).getSensor_type()) && devicesList.get(i).getSensor_type().equalsIgnoreCase("multisensor")){
+
+                        if(devicesList.get(i).getSensor_id().equalsIgnoreCase(sensor_id)){
+                            devicesList.get(i).setIsActive(Integer.parseInt(is_active));
+
+                        }
                     }
                 }
             }

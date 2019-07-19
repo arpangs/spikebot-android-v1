@@ -126,7 +126,6 @@ public class AddExistingPanel extends AppCompatActivity {
     }
 
     private void showProgress(){
-
         list_panel.setVisibility(View.GONE);
         linear_progress.setVisibility(View.VISIBLE);
     }

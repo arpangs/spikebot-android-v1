@@ -3,6 +3,7 @@ package com.spike.bot.activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +33,7 @@ import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.CameraLogAdapter;
+import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.customview.CustomEditText;
@@ -59,7 +61,7 @@ public class CameraDeviceLogActivity  extends AppCompatActivity {
 
     public boolean isLoading=false,isCompareDateValid = true;
     public int notification_number=0;
-    public String camera_id="",end_date="",start_date="",date_time="";
+    public String camera_id="",end_date="",start_date="",date_time="",cameraIdTemp="";
     public  int mYear,mMonth,mDay;
     public  int mHour,mMinute,mSecond;
 
@@ -87,14 +89,21 @@ public class CameraDeviceLogActivity  extends AppCompatActivity {
     }
 
     private void setUi() {
+
+        camera_id=getIntent().getStringExtra("cameraId");
         toolbar.setTitle("Camera Logs");
         rvDeviceLog=(RecyclerView)findViewById(R.id.rv_device_log);
         ll_empty=(LinearLayout)findViewById(R.id.ll_empty);
 
         linearLayoutManager=new LinearLayoutManager(CameraDeviceLogActivity.this);
         rvDeviceLog.setLayoutManager(linearLayoutManager);
-        
-        callCameraLog("","","",notification_number);
+
+        if(TextUtils.isEmpty(camera_id)){
+            camera_id="";
+        }else {
+            cameraIdTemp=camera_id;
+        }
+        callCameraLog(camera_id,"","",notification_number);
     }
 
     public void resetData(){
@@ -258,9 +267,7 @@ public class CameraDeviceLogActivity  extends AppCompatActivity {
 
                         ChatApplication.logDisplay("json is "+jsonArray);
 
-                        arrayListTemp = (ArrayList<NotificationList>) Common.fromJson(jsonArray.toString(),
-                                new TypeToken<ArrayList<NotificationList>>() {
-                                }.getType());
+                        arrayListTemp = (ArrayList<NotificationList>) Common.fromJson(jsonArray.toString(), new TypeToken<ArrayList<NotificationList>>() {}.getType());
 
                         arrayList.addAll(arrayListTemp);
 
@@ -401,7 +408,48 @@ public class CameraDeviceLogActivity  extends AppCompatActivity {
 
             }
         });
-
     }
 
+    private void callupdateUnReadCameraLogs(final boolean b) {
+
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            Toast.makeText(this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        JSONObject jsonObject=new JSONObject();
+        try {
+            jsonObject.put("camera_id",""+cameraIdTemp);
+            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+//        ActivityHelper.showProgressDialog(this, "Please wait... ", false);
+        String url = ChatApplication.url + Constants.updateUnReadCameraLogs;
+        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
+            @Override
+            public void onSuccess(JSONObject result) {
+                ActivityHelper.dismissProgressDialog();
+                try {
+                    finish();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(CameraDeviceLogActivity.this, R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+        }).execute();
+    }
+
+    @Override
+    public void onBackPressed() {
+        callupdateUnReadCameraLogs(false);
+        super.onBackPressed();
+    }
 }

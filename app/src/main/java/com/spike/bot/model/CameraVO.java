@@ -19,6 +19,16 @@ public class CameraVO implements Serializable,Cloneable {
     private int isActive;
     private String camera_vpn_port;
 
+    public String getTotal_unread() {
+        return total_unread;
+    }
+
+    public void setTotal_unread(String total_unread) {
+        this.total_unread = total_unread;
+    }
+
+    private String total_unread;
+
     public int getCameraPostion() {
         return cameraPostion;
     }
@@ -198,30 +208,6 @@ public class CameraVO implements Serializable,Cloneable {
         this.isActive = isActive;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof CameraVO)) {
-            return false;
-        }
-        final CameraVO other = (CameraVO) obj;
-      /*  if ((this.moduleId == null) ? (other.moduleId != null) : !this.moduleId.equals(other.moduleId)) {
-            return false;
-        }*/
-        if (this.camera_id == other.camera_id )  {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 53 * hash + (this.camera_id != null ? this.camera_id.hashCode() : 0);
-        return hash;
-    }
     @Override public CameraVO clone() {
         try {
             final CameraVO result = (CameraVO) super.clone();

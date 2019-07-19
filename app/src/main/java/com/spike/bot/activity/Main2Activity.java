@@ -2338,7 +2338,9 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     ipAddressPI = array[0] + "." + array[1] + "." + array[2] + "." + Constants.IP_END;
                 }
 
-                boolean isReachable = Common.isPortReachable(ipAddressPI, 80, Main2Activity.this);
+                ipAddressPI="192.168.75.111";
+//                boolean isReachable = Common.isPortReachable(ipAddressPI, 80, Main2Activity.this);
+                boolean isReachable = true;
 
                 if (Constants.isWifiConnect) {
 

@@ -39,9 +39,9 @@ public class Constants {
 //    public static  String CLOUD_SERVER_URL = ""; //117 testing
 //http://52.24.23.7:8079
 //http://52.24.23.7:7
-//    public static  String IP_END = "111"; //101 //117 //222 node11 / 123
-    public static  String  IP_END = "119"; //101 //117 //222
-//
+    public static  String IP_END = "111"; //101 //117 //222 node11 / 123
+//    public static  String  IP_END = "119"; //101 //117 //222
+
 //    public  static  String  IP_END = "222"; //101 //117 //222
 //    public static  String  IP_END = "101"; //101 //117 //222
 //    public static final String  IP_END = "117"; //101 //117 //222 vip/123
@@ -318,6 +318,26 @@ public class Constants {
                 for(int i=0; i<userList.size(); i++){
                     if(userList.get(i).getIsActive()){
                         getuserIp=userList.get(i).getCloudIP();
+                        break;
+                    }
+                }
+            }
+        }
+
+        return getuserIp;
+    }
+
+    public static String getGateway(Context context){
+        String getuserIp="";
+        String jsonText = Common.getPrefValue(context, Common.USER_JSON);
+        if (!TextUtils.isEmpty(jsonText)) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<User>>() {}.getType();
+            List<User> userList = gson.fromJson(jsonText, type);
+            if(userList.size()>0){
+                for(int i=0; i<userList.size(); i++){
+                    if(userList.get(i).getIsActive()){
+                        getuserIp=userList.get(i).getGateway_ip();
                         break;
                     }
                 }

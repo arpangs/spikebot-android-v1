@@ -42,7 +42,12 @@ public class ExistPanelGridAdapter extends RecyclerView.Adapter<ExistPanelGridAd
     public void onBindViewHolder(DeviceHolder holder, final int position) {
         final DevicePanelVO deviceVO = deviceVOs.get(position);
         holder.device_header.setText(deviceVO.getDeviceName());
-        holder.device_icon.setImageResource(Common.getIcon(0,deviceVO.getDevice_icon()));
+
+        if(deviceVO.getDeviceType().equalsIgnoreCase("-1")){
+            holder.device_icon.setImageResource(R.drawable.off);
+        }else {
+            holder.device_icon.setImageResource(Common.getIcon(0, deviceVO.getDevice_icon()));
+        }
 
         if(deviceVO.isSelected()){
             holder.iv_icon_select.setVisibility(View.VISIBLE);

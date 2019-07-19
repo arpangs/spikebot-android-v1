@@ -338,10 +338,14 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
 
         ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
         final CustomEditText edWifiPassword = (CustomEditText) dialog.findViewById(R.id.edWifiPassword);
+        final CustomEditText edWifiIP = (CustomEditText) dialog.findViewById(R.id.edWifiIP);
         TextView txtSave = (TextView) dialog.findViewById(R.id.txtSave);
         TextView txtWifiName = (TextView) dialog.findViewById(R.id.txtWifiName);
 
         //edWifiPassword.setText("ccocco123456");
+
+        edWifiIP.setText(Constants.getGateway(this));
+        edWifiIP.setSelection(edWifiPassword.getText().length());
         edWifiPassword.setSelection(edWifiPassword.getText().length());
         txtSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -350,11 +354,13 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
                     Toast.makeText(getApplicationContext(), "Please enter password", Toast.LENGTH_SHORT).show();
                 } else if (edWifiPassword.getText().toString().length() <= 7) {
                     Toast.makeText(getApplicationContext(), "Password lenth atleast 8 char.", Toast.LENGTH_SHORT).show();
-                } else {
+                } else if(edWifiIP.getText().toString().length()==0){
+                    ChatApplication.showToast(WifiListActivity.this,"Please enter Gateway ip address.");
+                }else {
                     dialog.cancel();
                     InputMethodManager imm = (InputMethodManager) WifiListActivity.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(edWifiPassword.getWindowToken(), 0);
-                    callWifiPasswordCheck(edWifiPassword.getText().toString(), wiFiList);
+                    callWifiPasswordCheck(edWifiPassword.getText().toString(), wiFiList,edWifiIP.getText().toString());
                 }
             }
         });
@@ -369,14 +375,16 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
 
     }
 
-    private void callWifiPasswordCheck(String s, WifiModel.WiFiList wiFiList) {
+    private void callWifiPasswordCheck(String s, WifiModel.WiFiList wiFiList, String edWifiIP) {
         if (!ActivityHelper.isConnectingToInternet(WifiListActivity.this)) {
             Toast.makeText(WifiListActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
 
         ActivityHelper.showProgressDialog(WifiListActivity.this, "Please wait... ", false);
-        String url = "http://" + wifiIP + "/wifisave?s=" + wiFiList.getNetworkName() + "&p=" + s;
+        String url = "http://" + wifiIP + "/wifisave?s=" + wiFiList.getNetworkName() + "&p=" + s+"&$="+edWifiIP;
+
+        ChatApplication.logDisplay("url is "+url);
         new GetJsonTask(WifiListActivity.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL //POST
             @Override
             public void onSuccess(final JSONObject result) {

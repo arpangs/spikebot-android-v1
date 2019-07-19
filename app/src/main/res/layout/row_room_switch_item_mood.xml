@@ -28,15 +28,32 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/iv_icon"
-                android:layout_width="58dp"
-                android:layout_height="58dp"
-                android:layout_marginTop="8dp"
-                android:layout_gravity="center_horizontal"
-                android:adjustViewBounds="true"
-                android:gravity="center_horizontal"
-                android:src="@drawable/bulb_off" />
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/iv_icon"
+                    android:layout_width="58dp"
+                    android:layout_height="58dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_gravity="center_horizontal"
+                    android:adjustViewBounds="true"
+                    android:gravity="center_horizontal"
+                    android:src="@drawable/bulb_off" />
+
+                <ImageView
+                    android:id="@+id/imgLongClick"
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_gravity="bottom|right"
+                    android:adjustViewBounds="true"
+                    android:gravity="bottom|right"
+                    android:src="@drawable/long_click"
+                    android:visibility="visible" />
+
+
+            </FrameLayout>
 
             <View
                 android:id="@+id/vi_test"

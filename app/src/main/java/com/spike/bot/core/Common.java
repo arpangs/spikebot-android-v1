@@ -42,7 +42,6 @@ import java.util.Scanner;
 public class Common {
 
     /**
-     *
      * @param context
      * @return
      */
@@ -62,6 +61,7 @@ public class Common {
 
     /**
      * check if network is connected or not
+     *
      * @param context
      * @return
      */
@@ -72,7 +72,7 @@ public class Common {
         NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
         if (mWifi.isConnected()) {
-            return  true;
+            return true;
         }
         return false;
     }
@@ -89,11 +89,11 @@ public class Common {
     /**
      * check network is reachable or not using process execute command
      */
-    public static void isReachableProcess(){
+    public static void isReachableProcess() {
         Process p1 = null;
         try {
             p1 = Runtime.getRuntime().exec("ping www.google.com");
-            Log.i("CmdName","using cmd :"+p1.waitFor());
+            Log.i("CmdName", "using cmd :" + p1.waitFor());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -103,7 +103,6 @@ public class Common {
     }
 
     /**
-     *
      * @param addr
      * @param openPort
      * @param timeOutMillis
@@ -121,13 +120,15 @@ public class Common {
             return false;
         }
     }
+
     /**
      * check ip or port is reachable or not using socket
+     *
      * @param inHost
      * @param inPort
      * @return
      */
-    public static boolean isPortReachable(String inHost, int inPort,RouterIssue routerIssue) {
+    public static boolean isPortReachable(String inHost, int inPort, RouterIssue routerIssue) {
 
         Socket socket = null;
         boolean retVal = false;
@@ -143,7 +144,7 @@ public class Common {
             if (socket != null) {
                 try {
                     socket.close();
-                } catch(Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -152,20 +153,22 @@ public class Common {
     }
 
     public static String TAG = "isReachableURL";
+
     /**
      * Check is given IP is reachable or not
+     *
      * @param context
      * @param urlAddress
      * @return
      */
-    public static boolean IsReachable(Context context,String urlAddress) {
+    public static boolean IsReachable(Context context, String urlAddress) {
         // First, check we have any sort of connectivity
         final ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         final NetworkInfo netInfo = connMgr.getActiveNetworkInfo();
         boolean isReachable = false;
 
         //String osName = System.getProperty("os.name");
-       // String cmd = executeCmd("ls -l", false);
+        // String cmd = executeCmd("ls -l", false);
 
         if (netInfo != null && netInfo.isConnected()) {
             // Some sort of connection is open, check if server is reachable
@@ -176,7 +179,7 @@ public class Common {
                 urlc.setRequestProperty("User-Agent", "Android Application");
                 urlc.setRequestProperty("Connection", "close");
                 //urlc.setConnectTimeout( 2500);
-                urlc.setConnectTimeout( 1000);
+                urlc.setConnectTimeout(1000);
                 urlc.setReadTimeout(1000);
                 urlc.connect();
                 isReachable = (urlc.getResponseCode() == 200);
@@ -189,14 +192,14 @@ public class Common {
     }
 
 
-    public static String executeCmd(String cmd, boolean sudo){
+    public static String executeCmd(String cmd, boolean sudo) {
         try {
 
             Process p;
-            if(!sudo)
-                p= Runtime.getRuntime().exec(cmd);
-            else{
-                p= Runtime.getRuntime().exec(new String[]{"su", "-c", cmd});
+            if (!sudo)
+                p = Runtime.getRuntime().exec(cmd);
+            else {
+                p = Runtime.getRuntime().exec(new String[]{"su", "-c", cmd});
             }
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
@@ -215,7 +218,6 @@ public class Common {
     }
 
     /**
-     *
      * @param nping
      * @param wping
      * @param ipping
@@ -266,16 +268,15 @@ public class Common {
     }
 
     /**
-     *
      * @param status
      * @param type
      * @return
      */
-    public  static  int getIcon(int status,String type){
+    public static int getIcon(int status, String type) {
         int resource = R.drawable.bulb_on;
-        switch (status){
+        switch (status) {
             case 1:
-                switch (type){
+                switch (type) {
                     case "bulb":
                         resource = R.drawable.bulb_on;
                         break;
@@ -330,7 +331,8 @@ public class Common {
                     case "Remote_AC":
                         resource = R.drawable.remote_ac;
                         break;
-                        case "heavyload":
+
+                    case "heavyload":
                         resource = R.drawable.on;
                         break;
                     default:
@@ -339,7 +341,7 @@ public class Common {
                 }
                 break;
             case 0:
-                switch (type){
+                switch (type) {
                     case "bulb":
                         resource = R.drawable.bulb_off;
                         break;
@@ -388,11 +390,12 @@ public class Common {
                     case "Remote_AC":
                         resource = R.drawable.remote_ac_off;
                         break;
-                        case "multisensor":
+                    case "multisensor":
                         resource = R.drawable.icon_multi_sensor;
                         break;
                     case "heavyload":
                         resource = R.drawable.off;
+                        break;
                     default:
                         resource = R.drawable.bulb_off;
                         break;
@@ -405,11 +408,12 @@ public class Common {
 
     /**
      * get In Active Temp/Door/Remote Icon
-     * @param status device status
+     *
+     * @param status     device status
      * @param sensorType device/sensor type
      * @return drawable icon
      */
-    public  static  int getIconInActive(int status,String sensorType) {
+    public static int getIconInActive(int status, String sensorType) {
         int resource = R.drawable.bulb_on;
         switch (sensorType) {
             case "remote":
@@ -430,41 +434,45 @@ public class Common {
             case "tempsensor":
                 resource = R.drawable.off_temperature;
                 break;
+            case "heavyload":
+                resource = R.drawable.off_temperature;
+                break;
+
+            case "multisensor":
+                resource = R.drawable.heavuload_inactive;
+                break;
         }
         return resource;
     }
 
     /**
-     *
      * @param mContext
      * @param textview
      */
-    public static void setOnOffBackground(Context mContext,TextView textview) {
-       // textview.setTag("test");
+    public static void setOnOffBackground(Context mContext, TextView textview) {
+        // textview.setTag("test");
         Boolean flag = false;
-        Log.d("","setOnOffBackground tag = " + textview.getTag());
-        if(textview.getTag()==null){
+        Log.d("", "setOnOffBackground tag = " + textview.getTag());
+        if (textview.getTag() == null) {
             flag = false;
-        }
-        else {
+        } else {
             flag = Boolean.parseBoolean(textview.getTag().toString());
         }
         flag = !flag;
 
-        Log.d("","setOnOffBackground = " + flag);
+        Log.d("", "setOnOffBackground = " + flag);
         //flag = Boolean.parseBoolean(textview.getTag(0).toString());
-        setBackground(mContext,textview,flag);
+        setBackground(mContext, textview, flag);
         textview.setTag(flag);
     }
 
     /**
-     *
      * @param mContext
      * @param textview
      * @param flag
      */
-    public static void setBackground(Context mContext,TextView textview,Boolean flag) {
-        Log.d("","setOnOffBackground = " + flag);
+    public static void setBackground(Context mContext, TextView textview, Boolean flag) {
+        Log.d("", "setOnOffBackground = " + flag);
         //flag = Boolean.parseBoolean(textview.getTag(0).toString());
         if (flag) {
             textview.setBackground(mContext.getResources().getDrawable(R.drawable.rounded_blue_circle_fill));
@@ -478,127 +486,111 @@ public class Common {
     }
 
     /**
-     *
      * @param schedule_device_day
      * @return
      */
     public static String getDaysString(String schedule_device_day) {
-        String deviceString ="";
-        String start="<font color=\"#FFBC38\"><b>";//FFBC38 008BE0
-        String end="</b></font>";
-        if(schedule_device_day.contains("0")){
-            deviceString = deviceString +start + "S " + end;
-        }
-        else{
-            deviceString = deviceString  + "S ";
-        }
-
-        if(schedule_device_day.contains("1")){
-            deviceString = deviceString +start + "&nbsp;M " + end;
-        }
-        else{
-            deviceString = deviceString  + "&nbsp;M ";
+        String deviceString = "";
+        String start = "<font color=\"#FFBC38\"><b>";//FFBC38 008BE0
+        String end = "</b></font>";
+        if (schedule_device_day.contains("0")) {
+            deviceString = deviceString + start + "S " + end;
+        } else {
+            deviceString = deviceString + "S ";
         }
 
-        if(schedule_device_day.contains("2")){
-            deviceString = deviceString +start + "&nbsp;T " + end;
-        }
-        else{
-            deviceString = deviceString  + "&nbsp;T ";
-        }
-
-        if(schedule_device_day.contains("3")){
-            deviceString = deviceString +start + "&nbsp;W " + end;
-        }
-        else{
-            deviceString = deviceString  + "&nbsp;W ";
+        if (schedule_device_day.contains("1")) {
+            deviceString = deviceString + start + "&nbsp;M " + end;
+        } else {
+            deviceString = deviceString + "&nbsp;M ";
         }
 
-        if(schedule_device_day.contains("4")){
-            deviceString = deviceString +start + "&nbsp;T " + end;
-        }
-        else{
-            deviceString = deviceString  + "&nbsp;T ";
-        }
-
-        if(schedule_device_day.contains("5")){
-            deviceString = deviceString +start + "&nbsp;F " + end;
-        }
-        else{
-            deviceString = deviceString  + "&nbsp;F ";
+        if (schedule_device_day.contains("2")) {
+            deviceString = deviceString + start + "&nbsp;T " + end;
+        } else {
+            deviceString = deviceString + "&nbsp;T ";
         }
 
-        if(schedule_device_day.contains("6")){
-            deviceString = deviceString +start + "&nbsp;S " + end;
+        if (schedule_device_day.contains("3")) {
+            deviceString = deviceString + start + "&nbsp;W " + end;
+        } else {
+            deviceString = deviceString + "&nbsp;W ";
         }
-        else{
-            deviceString = deviceString  + "&nbsp;S ";
+
+        if (schedule_device_day.contains("4")) {
+            deviceString = deviceString + start + "&nbsp;T " + end;
+        } else {
+            deviceString = deviceString + "&nbsp;T ";
+        }
+
+        if (schedule_device_day.contains("5")) {
+            deviceString = deviceString + start + "&nbsp;F " + end;
+        } else {
+            deviceString = deviceString + "&nbsp;F ";
+        }
+
+        if (schedule_device_day.contains("6")) {
+            deviceString = deviceString + start + "&nbsp;S " + end;
+        } else {
+            deviceString = deviceString + "&nbsp;S ";
         }
         return deviceString;
     }
 
     public static String getDaysStringGray(String schedule_device_day) {
-        String deviceString ="";
-        String start="<font color=\"#808080\"><b>";//FFBC38 008BE0
-        String end="</b></font>";
-        if(schedule_device_day.contains("0")){
-            deviceString = deviceString +start + "S " + end;
-        }
-        else{
-            deviceString = deviceString  + "S ";
-        }
-
-        if(schedule_device_day.contains("1")){
-            deviceString = deviceString +start + "&nbsp;M " + end;
-        }
-        else{
-            deviceString = deviceString  + "&nbsp;M ";
+        String deviceString = "";
+        String start = "<font color=\"#808080\"><b>";//FFBC38 008BE0
+        String end = "</b></font>";
+        if (schedule_device_day.contains("0")) {
+            deviceString = deviceString + start + "S " + end;
+        } else {
+            deviceString = deviceString + "S ";
         }
 
-        if(schedule_device_day.contains("2")){
-            deviceString = deviceString +start + "&nbsp;T " + end;
-        }
-        else{
-            deviceString = deviceString  + "&nbsp;T ";
-        }
-
-        if(schedule_device_day.contains("3")){
-            deviceString = deviceString +start + "&nbsp;W " + end;
-        }
-        else{
-            deviceString = deviceString  + "&nbsp;W ";
+        if (schedule_device_day.contains("1")) {
+            deviceString = deviceString + start + "&nbsp;M " + end;
+        } else {
+            deviceString = deviceString + "&nbsp;M ";
         }
 
-        if(schedule_device_day.contains("4")){
-            deviceString = deviceString +start + "&nbsp;T " + end;
-        }
-        else{
-            deviceString = deviceString  + "&nbsp;T ";
-        }
-
-        if(schedule_device_day.contains("5")){
-            deviceString = deviceString +start + "&nbsp;F " + end;
-        }
-        else{
-            deviceString = deviceString  + "&nbsp;F ";
+        if (schedule_device_day.contains("2")) {
+            deviceString = deviceString + start + "&nbsp;T " + end;
+        } else {
+            deviceString = deviceString + "&nbsp;T ";
         }
 
-        if(schedule_device_day.contains("6")){
-            deviceString = deviceString +start + "&nbsp;S " + end;
+        if (schedule_device_day.contains("3")) {
+            deviceString = deviceString + start + "&nbsp;W " + end;
+        } else {
+            deviceString = deviceString + "&nbsp;W ";
         }
-        else{
-            deviceString = deviceString  + "&nbsp;S ";
+
+        if (schedule_device_day.contains("4")) {
+            deviceString = deviceString + start + "&nbsp;T " + end;
+        } else {
+            deviceString = deviceString + "&nbsp;T ";
+        }
+
+        if (schedule_device_day.contains("5")) {
+            deviceString = deviceString + start + "&nbsp;F " + end;
+        } else {
+            deviceString = deviceString + "&nbsp;F ";
+        }
+
+        if (schedule_device_day.contains("6")) {
+            deviceString = deviceString + start + "&nbsp;S " + end;
+        } else {
+            deviceString = deviceString + "&nbsp;S ";
         }
         return deviceString;
     }
 
     /**
-     *
      * @param context
      * @param key
      * @param keyValue
      */
-    public static void savePrefValue(Context context, String key, String keyValue){
+    public static void savePrefValue(Context context, String key, String keyValue) {
         //To save
         SharedPreferences settings = context.getSharedPreferences("App", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
@@ -609,11 +601,12 @@ public class Common {
 
     /**
      * getPref Value
+     *
      * @param context
      * @param key
      * @return
      */
-    public static String getPrefValue(Context context, String key){
+    public static String getPrefValue(Context context, String key) {
 
         //To retrieve
         SharedPreferences settings = context.getSharedPreferences("App", Context.MODE_PRIVATE);
@@ -628,6 +621,7 @@ public class Common {
 
     /**
      * hideSoftKeyBoard
+     *
      * @param activity
      */
     public static void hideSoftKeyboard(Activity activity) {
@@ -650,7 +644,7 @@ public class Common {
      * @return
      */
 
-    public static Calendar getCalendarHourMinute(Date currentDate, String hours, String minutes){
+    public static Calendar getCalendarHourMinute(Date currentDate, String hours, String minutes) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(currentDate);
         calendar.add(Calendar.HOUR, Integer.parseInt(hours));
@@ -660,19 +654,20 @@ public class Common {
 
     /**
      * <p1>Convert date in string after add hour and minute in specific calender time</p>
+     *
      * @param calendar
      * @return
      */
 
-    public static String getConvertDateString(Calendar calendar){
+    public static String getConvertDateString(Calendar calendar) {
         String outputPattern2 = Constants.SIMPLE_DATE_FORMAT_1;
         SimpleDateFormat outputFormat2 = new SimpleDateFormat(outputPattern2);
         return outputFormat2.format(calendar.getTime());
     }
 
     /**
-     *
      * convert Json String to POJO class using GSON Lib
+     *
      * @param json
      * @param classOfT
      * @param <T>
@@ -687,26 +682,27 @@ public class Common {
 
     /**
      * get Battery icon using battery percentage %
+     *
      * @param percentage battery percentage
      * @return battery drawable icon
      */
-    public static int getBatteryIcon(String percentage){
+    public static int getBatteryIcon(String percentage) {
 
         int icon = R.drawable.battery_1;
         int btrPer = 0;
 
-        if(TextUtils.isEmpty(percentage) && percentage.equalsIgnoreCase("null"))
+        if (TextUtils.isEmpty(percentage) && percentage.equalsIgnoreCase("null"))
             return icon;
 
-        btrPer = (int)Double.parseDouble(percentage);
+        btrPer = (int) Double.parseDouble(percentage);
 
-        if(btrPer >= 0 && btrPer <= 25)
+        if (btrPer >= 0 && btrPer <= 25)
             icon = R.drawable.battery_1;
-        else if(btrPer >= 26 && btrPer <= 50)
+        else if (btrPer >= 26 && btrPer <= 50)
             icon = R.drawable.battery_2;
-        else if(btrPer >= 51 && btrPer <= 75)
+        else if (btrPer >= 51 && btrPer <= 75)
             icon = R.drawable.battery_3;
-        else if(btrPer >= 76 && btrPer <= 100)
+        else if (btrPer >= 76 && btrPer <= 100)
             icon = R.drawable.battery_4;
 
         return icon;
@@ -714,41 +710,45 @@ public class Common {
 
     /**
      * Convert String to ℃ Celsius
+     *
      * @param celsius
      * @return
      */
-    public static String parseCelsius(String celsius){
+    public static String parseCelsius(String celsius) {
         return String.format("%s ℃", (int) Double.parseDouble(celsius));
     }
 
-    public static String getC(){
+    public static String getC() {
         return "℃";
     }
-    public static String getF(){
+
+    public static String getF() {
         return "℉";
     }
 
 
     /**
      * Convert String to ℉ value
+     *
      * @param fahrenheit
      * @return
      */
    /* public static String parseFahrenheit(String fahrenheit){
         return String.format("%s℉", String.format("%.2f", Double.parseDouble(fahrenheit)));
     }*/
-    public static String parseFahrenheit(String fahrenheit){
+    public static String parseFahrenheit(String fahrenheit) {
         return String.format("%s ℉", (int) Double.parseDouble(fahrenheit));
     }
 
     /**
      * set days format
+     *
      * @param dayList
      */
-    public static String htmlDaysFormat(String dayList){
+    public static String htmlDaysFormat(String dayList) {
 
         String days[] = dayList.split(",");
-        String htmlDays[] = {"S","M","T","W","T","F","S"};
+        String htmlDays[] = {"S", "M", "T", "W", "T", "F", "S"};
 
         String daysInHtml = "";
         for (int i = 0; i < htmlDays.length; i++) {
@@ -757,13 +757,13 @@ public class Common {
             for (String string : days) {
                 int dayIndex = Integer.parseInt(string);
 
-                if(dayIndex == i){
+                if (dayIndex == i) {
                     isFoundDay = true;
-                    daysInHtml += "<b> "+htmlDays[i]+" </b>";
+                    daysInHtml += "<b> " + htmlDays[i] + " </b>";
                 }
             }
-            if(!isFoundDay){
-                daysInHtml += "<font color=\"#B9B9B9\"> "+htmlDays[i]+" </font>";
+            if (!isFoundDay) {
+                daysInHtml += "<font color=\"#B9B9B9\"> " + htmlDays[i] + " </font>";
             }
         }
 
@@ -772,12 +772,13 @@ public class Common {
 
     /**
      * Convert dp to pixels (px)
+     *
      * @param context Activity Context
-     * @param dp Screen dp
+     * @param dp      Screen dp
      * @return
      */
 
-    public static int dpToPx(Context context,int dp) {
+    public static int dpToPx(Context context, int dp) {
         float density = context.getResources()
                 .getDisplayMetrics()
                 .density;
@@ -788,34 +789,35 @@ public class Common {
 
     /**
      * showToast
+     *
      * @param message : Toast display message
      */
-    public static void showToast (String message){
+    public static void showToast(String message) {
         if (mToast != null) {
             mToast.cancel();
         }
         int Y = ChatApplication.getInstance().getResources().getDimensionPixelSize(R.dimen.abc_action_bar_height);
         mToast = Toast.makeText(ChatApplication.getContext(), message, Toast.LENGTH_SHORT);
-        mToast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL,0,Y);
+        mToast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, Y);
         mToast.show();
     }
 
     /**
      * show Toast on center of screen
+     *
      * @param message Toast display message
      */
-    public static void showToastCenter(String message){
+    public static void showToastCenter(String message) {
         if (mToast != null) {
             mToast.cancel();
         }
         mToast = Toast.makeText(ChatApplication.getContext(), message, Toast.LENGTH_SHORT);
-        mToast.setGravity(Gravity.CENTER,0,0);
+        mToast.setGravity(Gravity.CENTER, 0, 0);
         mToast.show();
     }
 
 
     /**
-     *
      * @param context
      * @return
      */
@@ -827,7 +829,6 @@ public class Common {
     }
 
     /**
-     *
      * @param context
      * @return
      */

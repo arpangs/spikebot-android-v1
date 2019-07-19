@@ -877,6 +877,7 @@ public class JsonHelper {
                 int is_active  = hasObject(deviceObj,"is_active") ? deviceObj.getInt("is_active") : 1; //default 0
                 String camera_vpn_port = hasObject(deviceObj,"camera_vpn_port") ? deviceObj.getString("camera_vpn_port") : "";
                 String is_unread = hasObject(deviceObj,"is_unread") ? deviceObj.getString("is_unread") : "";
+                String total_unread = hasObject(deviceObj,"total_unread") ? deviceObj.getString("total_unread") : "";
 
                 CameraVO cameraVO = new CameraVO();
                 cameraVO.setCamera_id(camera_id);
@@ -891,6 +892,7 @@ public class JsonHelper {
                 cameraVO.setCamera_icon(camera_icon);
                 cameraVO.setCamera_vpn_port(camera_vpn_port);
                 cameraVO.setCamera_url(camera_url);
+                cameraVO.setTotal_unread(total_unread);
                 cameraVO.setIs_unread(is_unread);
 
                 cameraList.add(cameraVO);

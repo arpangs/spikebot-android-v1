@@ -59,7 +59,6 @@
                 android:id="@+id/imgLongClick"
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
-                android:rotation="270"
                 android:layout_alignRight="@+id/iv_icon"
                 android:layout_alignBottom="@+id/iv_icon"
                 android:layout_gravity="bottom|right"
@@ -67,7 +66,7 @@
                 android:adjustViewBounds="true"
                 android:gravity="bottom|right"
                 android:src="@drawable/long_click"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
             <!--</FrameLayout>-->
 

@@ -124,7 +124,13 @@ public class DeviceEditDialog extends Dialog implements  View.OnClickListener {
                 try {
                     deviceObj.put("device_name",et_switch_name.getText().toString());
                     deviceObj.put("device_icon",flags.get(sp_device_type.getSelectedItemPosition()).toString());
-                    deviceObj.put("device_type",rg_auto_mode_type.getCheckedRadioButtonId()==R.id.rb_auto_mode_type_normal?0:1);
+
+                    if(deviceVO.getDeviceType().equalsIgnoreCase("-1")){
+                        deviceObj.put("device_type","-1");
+                    }else {
+                        deviceObj.put("device_type",rg_auto_mode_type.getCheckedRadioButtonId()==R.id.rb_auto_mode_type_normal?0:1);
+                    }
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -162,6 +168,8 @@ public class DeviceEditDialog extends Dialog implements  View.OnClickListener {
             e.printStackTrace();
         }
         String url = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
+
+        ChatApplication.logDisplay("save switch "+obj.toString());
 
         new GetJsonTask(activity,url ,"POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
@@ -280,11 +288,13 @@ public class DeviceEditDialog extends Dialog implements  View.OnClickListener {
 
             rg_auto_mode_type.check(device_type == 0 ? R.id.rb_auto_mode_type_normal : R.id.rb_auto_mode_type_dimmer);
 
-            if(device_id == 1){  //device_id //device_type
+            if(deviceVO.getDeviceType().equalsIgnoreCase("-1")){
+                ll_auto_mode_type.setVisibility(View.GONE);
+                rg_auto_mode_type.setVisibility(View.GONE);
+            }else if(device_id == 1){  //device_id //device_type
                 ll_auto_mode_type.setVisibility(View.VISIBLE);
                 rg_auto_mode_type.setVisibility(View.VISIBLE);
-            }
-            else{
+            }else{
                 ll_auto_mode_type.setVisibility(View.GONE);
                 rg_auto_mode_type.setVisibility(View.GONE);
             }

@@ -2,6 +2,7 @@ package com.spike.bot.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v7.widget.GridLayoutManager;
@@ -23,6 +24,7 @@ import android.widget.ToggleButton;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.CameraDeviceLogActivity;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.customview.recycle.ItemClickListener;
@@ -186,7 +188,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     }
 
                     if (section.isExpanded()) {
-
+                        holder.mImgIcnLog.setVisibility(View.VISIBLE);
                         holder.sectionTextView.setMaxLines(2);
                         if (section.getRoomName().length() >= 16) {
 
@@ -211,7 +213,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             }
                         }
                     } else {
-
+                        holder.mImgIcnLog.setVisibility(View.VISIBLE);
                         if (section.getRoomName().length() >= 16) {
                             roomName = section.getRoomName().substring(0, 16);
                             roomName += "...";
@@ -364,7 +366,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.sectionToggleButton.setChecked(section.isExpanded);
 
                     if (section.getRoomId().equalsIgnoreCase("camera")) {
-                        holder.linearRefreshView.setVisibility(View.VISIBLE);
+//                        holder.linearRefreshView.setVisibility(View.VISIBLE);
                         holder.textShowCamera.setVisibility(View.VISIBLE);
                         holder.textRefreshCamera.setVisibility(View.VISIBLE);
                         holder.text_section_edit.setVisibility(View.GONE);
@@ -412,7 +414,10 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         }else {
                             mItemClickListener.itemClicked(section, "heavyloadSocketoff");
                         }
-                        holder.linearRefreshView.setVisibility(View.GONE);
+//                        holder.linearRefreshView.setVisibility(View.GONE);
+
+                        holder.textShowCamera.setVisibility(View.GONE);
+                        holder.textRefreshCamera.setVisibility(View.GONE);
                     }
 
                     holder.img_room_delete.setOnClickListener(new View.OnClickListener() {
@@ -469,6 +474,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         //  holder.text_section_on_off.setEnabled(false);
                     }
 
+                    holder.mImgIcnLog.setVisibility(View.VISIBLE);
                     //Image Icon Log Click
                     holder.mImgIcnLog.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -522,7 +528,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
 
                     if (flag || section.getRoomId().equalsIgnoreCase("Camera")) {
-                        holder.reletiveNotification.setVisibility(View.VISIBLE);
+//                        holder.reletiveNotification.setVisibility(View.VISIBLE);
+                        holder.img_setting_badge.setVisibility(View.VISIBLE);
                         if (section.getIs_unread().equalsIgnoreCase("0")) {
                             holder.img_setting_badge_count.setVisibility(View.GONE);
                         } else {
@@ -534,7 +541,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             }
                         }
                     } else {
-                        holder.reletiveNotification.setVisibility(View.GONE);
+                        holder.img_setting_badge_count.setVisibility(View.GONE);
+                        holder.img_setting_badge.setVisibility(View.GONE);
                     }
 
 
@@ -649,15 +657,15 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.txt_temp_in_cf.setVisibility(View.GONE);
                     holder.iv_icon_badge.setVisibility(View.GONE);
                     itemDeviceName = item.getDeviceName();
-                    if(item.getDeviceType().equalsIgnoreCase("-1")){
-                      if(item.getDeviceStatus()==0){
-                          itemIcon=R.drawable.off;
-                      }else {
-                          itemIcon=R.drawable.on;
-                      }
-                    }else {
+//                    if(item.getDeviceType().equalsIgnoreCase("-1")){
+//                      if(item.getDeviceStatus()==0){
+//                          itemIcon=R.drawable.off;
+//                      }else {
+//                          itemIcon=R.drawable.on;
+//                      }
+//                    }else {
                         itemIcon = Common.getIcon(item.getDeviceStatus(), item.getDevice_icon());
-                    }
+//                    }
                 } else {
 //                    holder.linearSwitchView.setBackgroundResource(R.drawable.drawable_black_boader);
                     /*--Sensor type start--*/
@@ -760,6 +768,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         if (item.getIsActive() == -1) {
                             if (item.getSensor_type() != null && item.getSensor_type().equalsIgnoreCase("temp")) {
                                 itemIcon = Common.getIconInActive(status, item.getSensor_type());
+                            } else if (item.getSensor_type() != null && item.getSensor_type().equalsIgnoreCase("multisensor")) {
+                                itemIcon = Common.getIconInActive(status, item.getSensor_type());
                             } else {
                                 itemIcon = Common.getIconInActive(status, item.getDeviceType()); //unavailable means temp or dead sensor is on dead mode
                             }
@@ -841,7 +851,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         notifyItemChanged(position, item);
 
                         if (!item.isSensor()) {
-                            if(item.getDevice_icon().equalsIgnoreCase("heavyload") && item.getDeviceType().equalsIgnoreCase("-1")){
+                            if(item.getDeviceType().equalsIgnoreCase("-1")){
                                 tempClickListener.itemClicked(item, "heavyloadlongClick", true, position);
                             }
                         } else {
@@ -859,7 +869,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     }
                 });
 
-                if (item.getDevice_icon().equalsIgnoreCase("heavyload") && item.getDeviceType().equalsIgnoreCase("-1")) {
+                if (item.getDeviceType().equalsIgnoreCase("-1")) {
                     holder.imgLongClick.setVisibility(View.VISIBLE);
                 }else if(!TextUtils.isEmpty(item.getDeviceId()) && Integer.parseInt(item.getDeviceId()) == 1 && Integer.parseInt(item.getDeviceType()) == 1){
                     holder.imgLongClick.setVisibility(View.VISIBLE);
@@ -914,6 +924,12 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 }*/
 //                holder.mImgCameraActive.setVisibility(View.GONE);
 
+                if(!TextUtils.isEmpty(cameraVO.getIs_unread())&&!cameraVO.getIs_unread().equalsIgnoreCase("0")){
+                    holder.txtCameraCount.setVisibility(View.VISIBLE);
+                    holder.txtCameraCount.setText(""+cameraVO.getIs_unread());
+                }else {
+                    holder.txtCameraCount.setVisibility(View.GONE);
+                }
                 holder.iv_icon_text.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -956,6 +972,15 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         }
                     }
                 });
+
+
+                holder.imgLogCamera.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mItemClickListener.itemClicked(cameraVO, "cameraLog");
+                    }
+                });
+
                 break;
         }
     }
@@ -988,7 +1013,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
         int viewType;
         ImageView iv_room_panel_onoff;
         ImageView view_line_top;
-        ImageView mImgIcnLog, mImgSch, img_setting_badge;
+        ImageView mImgSch, img_setting_badge,mImgIcnLog;
         //for section
         TextView sectionTextView;
         ToggleButton sectionToggleButton;
@@ -996,7 +1021,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
         TextView text_section_edit;
         ImageView img_room_delete;
         LinearLayout ll_background;
-        RelativeLayout rel_main_view, reletiveNotification;
+        RelativeLayout rel_main_view;
         TextView iv_icon_badge_room;
         TextView img_setting_badge_count;
         //for item
@@ -1004,12 +1029,12 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
         ImageView iv_icon,imgLongClick;
         LinearLayout ll_room_item, linearRowRoom, linearPanelList,linearSwitchView;
         ImageView iv_icon_text;
-        LinearLayout ll_root_view_section,linearRefreshView;
-        TextView iv_icon_badge, txt_temp_in_cf, txtTotalDevices;
+        LinearLayout ll_root_view_section;
+        TextView iv_icon_badge, txt_temp_in_cf, txtTotalDevices,txtCameraCount;
 
         TextView txt_recording,textRefreshCamera,textShowCamera;
         //for camera
-        ImageView mImgCameraActive;
+        ImageView mImgCameraActive,imgLogCamera;
 
         public ViewHolder(View view, int viewType) {
             super(view);
@@ -1042,11 +1067,13 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 iv_icon = (ImageView) view.findViewById(R.id.iv_icon);
                 iv_icon_text = (ImageView) view.findViewById(R.id.iv_icon_text);
                 ll_room_item = (LinearLayout) view.findViewById(R.id.ll_room_item);
+                imgLogCamera =  view.findViewById(R.id.imgLogCamera);
+                txtCameraCount =  view.findViewById(R.id.txtCameraCount);
 
             } else {
                 textShowCamera =  view.findViewById(R.id.textShowCamera);
                 textRefreshCamera =  view.findViewById(R.id.textRefreshCamera);
-                linearRefreshView =  view.findViewById(R.id.linearRefreshView);
+//                linearRefreshView =  view.findViewById(R.id.linearRefreshView);
                 rel_main_view = (RelativeLayout) view.findViewById(R.id.rel_main_view);
                 linearRowRoom = (LinearLayout) view.findViewById(R.id.linearRowRoom);
                 linearPanelList = (LinearLayout) view.findViewById(R.id.linearPanelList);
@@ -1063,12 +1090,12 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 ll_root_view_section = (LinearLayout) view.findViewById(R.id.ll_root_view_section);
                 iv_icon_badge_room = (TextView) view.findViewById(R.id.iv_icon_badge_room);
 
-                mImgIcnLog = (ImageView) view.findViewById(R.id.img_icn_log);
+                mImgIcnLog =  view.findViewById(R.id.img_icn_log);
                 mImgSch = (ImageView) view.findViewById(R.id.icn_schedule_v2);
                 img_setting_badge = (ImageView) view.findViewById(R.id.img_setting_badge);
                 img_setting_badge_count = (TextView) view.findViewById(R.id.img_setting_badge_count);
                 txtTotalDevices = (TextView) view.findViewById(R.id.txtTotalDevices);
-                reletiveNotification = (RelativeLayout) view.findViewById(R.id.reletiveNotification);
+//                reletiveNotification = (RelativeLayout) view.findViewById(R.id.reletiveNotification);
 
             }
             // this.setIsRecyclable(false);

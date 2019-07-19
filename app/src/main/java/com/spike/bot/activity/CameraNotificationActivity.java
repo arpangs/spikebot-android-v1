@@ -824,10 +824,18 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             Toast.makeText(CameraNotificationActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
+        JSONObject jsonObject=new JSONObject();
+        try {
+            jsonObject.put("camera_id","");
+            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
 //        ActivityHelper.showProgressDialog(CameraNotificationActivity.this, "Please wait... ", false);
         String url = ChatApplication.url + Constants.updateUnReadCameraLogs;
-        new GetJsonTask(CameraNotificationActivity.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL //POST
+        new GetJsonTask(CameraNotificationActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();

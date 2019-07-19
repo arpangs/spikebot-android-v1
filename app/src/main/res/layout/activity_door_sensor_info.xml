@@ -466,7 +466,7 @@
 
                             <ImageView
                                 android:id="@+id/view_rel_badge"
-                                android:src="@drawable/icn_log_v2"
+                                android:src="@drawable/ic_log"
                                 android:layout_weight="0.15"
                                 android:layout_gravity="top"
                                 android:layout_width="0dp"

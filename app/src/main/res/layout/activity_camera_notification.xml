@@ -229,7 +229,7 @@
                                         android:layout_gravity="top"
                                         android:layout_weight="0.10"
                                         android:layout_marginRight="@dimen/_7sdp"
-                                        android:src="@drawable/icn_log_v2" />
+                                        android:src="@drawable/ic_log" />
 
                                 </LinearLayout>
 

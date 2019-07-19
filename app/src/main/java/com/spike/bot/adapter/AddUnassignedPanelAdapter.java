@@ -47,7 +47,13 @@ public class AddUnassignedPanelAdapter extends RecyclerView.Adapter<AddUnassigne
         }else{
             mModuleName = roomDevice.getSensorName();
             holder.mImageIcon.setImageResource(Common.getIcon(0,roomDevice.getSensorIcon()));
+
+//            if(roomDevice.getSensorIcon().equalsIgnoreCase("heavyload")){
+//                holder.mImageIcon.setImageResource(R.drawable.off);
+//            }
         }
+
+
 
         holder.mDeviceName.setText(mModuleName);
         holder.mModuleId.setText("["+roomDevice.getModuleId()+"]");

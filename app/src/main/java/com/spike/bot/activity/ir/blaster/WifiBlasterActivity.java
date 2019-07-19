@@ -115,12 +115,12 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
     public void onClick(View v) {
         if (v == btnNext) {
 
-            boolean flag=setMobileDataEnabled(WifiBlasterActivity.this);
-            if(flag){
-                Toast.makeText(getApplicationContext(),"Please disable your mobile data",Toast.LENGTH_LONG).show();
-            }else {
+//            boolean flag=setMobileDataEnabled(WifiBlasterActivity.this);
+//            if(flag){
+//                Toast.makeText(getApplicationContext(),"Please disable your mobile data",Toast.LENGTH_LONG).show();
+//            }else {
                 new ServiceEventAsync().execute();
-            }
+//            }
 
         }
     }
@@ -211,9 +211,7 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
                         JSONObject object = result;
                         JSONArray jsonArray = object.optJSONArray("WiFi_List");
 
-                        arrayList = (ArrayList<WifiModel.WiFiList>) Common.fromJson(jsonArray.toString(),
-                                new TypeToken<ArrayList<WifiModel.WiFiList>>() {
-                                }.getType());
+                        arrayList = (ArrayList<WifiModel.WiFiList>) Common.fromJson(jsonArray.toString(), new TypeToken<ArrayList<WifiModel.WiFiList>>() {}.getType());
 
                         if(arrayList.size()>0){
                             Constants.activityWifi=WifiBlasterActivity.this;

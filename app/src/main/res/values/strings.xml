@@ -46,5 +46,6 @@
 
     <string name="Mood"> <u>Mood</u></string>
     <string name="fan_error">Currently physical Fan on</string>
+    <string name="heavyload">heavyload</string>
 
 </resources>

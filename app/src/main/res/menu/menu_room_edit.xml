@@ -14,7 +14,7 @@
 
     <item
         android:id="@+id/action_log"
-        android:icon="@drawable/icn_log_v2"
+        android:icon="@drawable/ic_log"
         android:orderInCategory="100"
         android:title="Add"
         android:visible="false"

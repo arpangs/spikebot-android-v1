@@ -522,7 +522,7 @@
                                 android:layout_height="35dp"
                                 android:layout_gravity="center|right"
                                 android:layout_weight="0.11"
-                                android:src="@drawable/icn_log_v2" />
+                                android:src="@drawable/ic_log" />
 
                         </LinearLayout>
 

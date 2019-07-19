@@ -335,15 +335,16 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                         holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(),item.getDevice_icon()));
                     }
                 }else{
-                    if(item.getDeviceType().equalsIgnoreCase("-1")){
-                        if(item.getDeviceStatus()==0){
-                            holder.iv_icon.setImageResource(R.drawable.off);
-                        }else {
-                            holder.iv_icon.setImageResource(R.drawable.on);
-                        }
-                    }else {
+//                    if(item.getDeviceType().equalsIgnoreCase("-1")){
+//                        if(item.getDeviceStatus()==0){
+//                            holder.iv_icon.setImageResource(R.drawable.off);
+//                        }else {
+//                            holder.iv_icon.setImageResource(R.drawable.on);
+//                        }
+//                    }else {
+//
                         holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(),item.getDevice_icon()));
-                    }
+//                    }
 
                 }
 
@@ -404,7 +405,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     public boolean onLongClick(View v) {
                         if(item.getDevice_icon().equalsIgnoreCase("Remote_AC")){ //click on remote device id
                             mItemClickListener.itemClicked(item,"isIRSensorClick");
-                        }else if(item.getDevice_icon().equalsIgnoreCase("heavyload") && item.getDeviceType().equalsIgnoreCase("-1")){
+                        }else if(item.getDeviceType().equalsIgnoreCase("-1")){
                             mItemClickListener.itemClicked(item, "heavyloadlongClick");
                         }
                         return false;
@@ -428,6 +429,34 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                         holder.iv_icon.setOnLongClickListener(null);
                     }
                 }
+
+                if(item.getDevice_icon().equalsIgnoreCase("Remote_AC")){
+                    holder.imgLongClick.setVisibility(View.VISIBLE);
+                }else if(item.getDeviceType().equalsIgnoreCase("-1")){
+                    holder.imgLongClick.setVisibility(View.VISIBLE);
+                }else {
+                    if(item.getDeviceType().equalsIgnoreCase("1")){
+                        if(Integer.parseInt(item.getDeviceId()) == 1 && Integer.parseInt(item.getDeviceType()) == 1){
+                            holder.imgLongClick.setVisibility(View.VISIBLE);
+                        }else{
+                            holder.imgLongClick.setVisibility(GONE);
+                        }
+                    }else {
+                        holder.imgLongClick.setVisibility(View.GONE);
+                    }
+
+                }
+
+
+//                if (item.getDevice_icon().equalsIgnoreCase("heavyload") && item.getDeviceType().equalsIgnoreCase("-1")) {
+//                    holder.imgLongClick.setVisibility(View.VISIBLE);
+//                }else if(!TextUtils.isEmpty(item.getDeviceId()) && Integer.parseInt(item.getDeviceId()) == 1 && Integer.parseInt(item.getDeviceType()) == 1){
+//                    holder.imgLongClick.setVisibility(View.VISIBLE);
+//                } else if (item.getSensor_type().equalsIgnoreCase("remote")) {
+//                    holder.imgLongClick.setVisibility(View.VISIBLE);
+//                }else {
+//                    holder.imgLongClick.setVisibility(View.GONE);
+//                }
 
                 if(item.getDevice_icon().equalsIgnoreCase("Remote_AC")){
                     holder.iv_icon_text.setVisibility(View.GONE);
@@ -611,7 +640,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
         TextView itemTextView;
         ImageView iv_icon;
         LinearLayout ll_room_item;
-        ImageView iv_icon_text;
+        ImageView iv_icon_text,imgLongClick;
         RelativeLayout view_rel;
         FrameLayout frameRemote;
 
@@ -628,6 +657,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                 ll_room_item = (LinearLayout) view.findViewById(R.id.ll_room_item );
                 view_rel = (RelativeLayout) view.findViewById(R.id.view_rel);
                 vi_test = view.findViewById(R.id.vi_test);
+                imgLongClick = view.findViewById(R.id.imgLongClick);
 
             } else if (viewType == VIEW_TYPE_PANEL) {
                 itemTextView = (TextView) view.findViewById(R.id.heading);

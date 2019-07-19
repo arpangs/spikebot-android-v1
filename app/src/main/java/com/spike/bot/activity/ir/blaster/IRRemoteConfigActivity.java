@@ -313,7 +313,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
             public void onSuccess(JSONObject result) {
 
                 try {
-
+                    ChatApplication.logDisplay("response : " + result.toString());
                     if (result != null && !TextUtils.isEmpty(result.toString())) {
                         int code = result.getInt("code");
                         String message = result.getString("message");

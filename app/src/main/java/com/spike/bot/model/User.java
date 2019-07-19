@@ -15,6 +15,16 @@ public class User implements Serializable {
     String cloudIP;
     String password;
 
+    public String getGateway_ip() {
+        return gateway_ip;
+    }
+
+    public void setGateway_ip(String gateway_ip) {
+        this.gateway_ip = gateway_ip;
+    }
+
+    String gateway_ip;
+
     public String getLocal_ip() {
         return local_ip;
     }

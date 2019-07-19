@@ -56,9 +56,15 @@ public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapte
             clickAction = "isSensorClick";
         }
 
+        if(item.getDevice_icon().equalsIgnoreCase("heavyload")){
+            itemIcon=R.drawable.off;
+        }
+
         holder.itemTextView.setText(itemDeviceName);
 
         holder.iv_icon.setImageResource(itemIcon); //all icon grey
+
+
             //holder.iv_icon.setVisibility(View.GONE);
         final String finalClickAction = clickAction;
         holder.view.setOnClickListener(new View.OnClickListener() {

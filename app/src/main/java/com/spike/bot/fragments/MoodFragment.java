@@ -29,7 +29,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.ack.AckWithTimeOut;
 import com.spike.bot.activity.AddMoodActivity;
 import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.activity.HeavyLoadDetailActivity;
@@ -56,7 +55,6 @@ import com.kp.core.ICallBack;
 import com.kp.core.ICallBack2;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.model.SendRemoteCommandReq;
-import com.spike.bot.model.SendRemoteCommandRes;
 import com.spike.bot.model.User;
 
 import org.json.JSONArray;
@@ -654,7 +652,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
             e.printStackTrace();
         }
 
-        if(!mSocket.connected()){
+        if (mSocket != null && !mSocket.connected()) {
 
 
             String url = ChatApplication.url + Constants.CHANGE_DEVICE_STATUS;
@@ -1317,7 +1315,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
                         String userPassword = "";
                         mCallback.onArticleSelected("" + userFirstName);
 
-                        MainFragment.saveCurrentId(getActivity(),userId);
+                        MainFragment.saveCurrentId(getActivity(), userId, userId);
                         if (userObject.has("user_password")) {
                             userPassword = userObject.getString("user_password");
                         }

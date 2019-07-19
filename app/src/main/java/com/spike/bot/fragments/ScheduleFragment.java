@@ -57,7 +57,6 @@ import com.spike.bot.model.User;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.lang.reflect.Type;
 import java.text.ParseException;
@@ -1728,12 +1727,13 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                         String userFirstName = userObject.getString("first_name");
                         String userLastName = userObject.getString("last_name");
                         String camera_key = userObject.optString("camera_key");
+                        String gateway_ip = userObject.optString("gateway_ip");
                         Common.savePrefValue(ChatApplication.getInstance(), Common.camera_key, camera_key);
                         ChatApplication.currentuserId = userId;
                         String userPassword = "";
                         mCallback.onArticleSelected("" + userFirstName);
 
-                        MainFragment.saveCurrentId(getActivity(), userId);
+                        MainFragment.saveCurrentId(getActivity(), userId, gateway_ip);
                         if (userObject.has("user_password")) {
                             userPassword = userObject.getString("user_password");
                         }
