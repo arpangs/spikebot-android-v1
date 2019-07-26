@@ -963,6 +963,33 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         } catch (Exception e) {
         }
     }
+
+
+    public void getconfigureDoor() {
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            Toast.makeText(this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ActivityHelper.showProgressDialog(this, "Searching Device attached ", false);
+        startTimer();
+        addRoom = true;
+        String url = ChatApplication.url + Constants.CONFIGURE_DOOR_SENSOR_REQUEST;
+        new GetJsonTask(this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL //POST
+            @Override
+            public void onSuccess(JSONObject result) {
+                ActivityHelper.dismissProgressDialog();
+
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+        }).execute();
+    }
+
     public void getconfigureData(){
         if(!ActivityHelper.isConnectingToInternet(this)){
             Toast.makeText(getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
@@ -1536,7 +1563,8 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             public void onClick(View v) {
                 dialog.dismiss();
                 if(sensor_type == SENSOR_TYPE_DOOR){
-                    getconfigureData();
+//                    getconfigureData();
+                    getconfigureDoor();
                 }else if(sensor_type == SENSOR_TYPE_TEMP){
                     getTempConfigData(false);
                 }else if(sensor_type == SENSOR_TYPE_IR){

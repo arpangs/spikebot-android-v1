@@ -74,9 +74,9 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
 //        }else {
 //            holder.view_header.setVisibility(View.VISIBLE);
 //        }
-        holder.tv_device_log_type.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
-        holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
-        holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+//        holder.tv_device_log_type.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+//        holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+//        holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
 
         if(!TextUtils.isEmpty(arrayListLog.get(position).getActivityTime())){
             Date today = null;//2018-01-12 19:40:07
@@ -104,6 +104,16 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
         holder.tv_device_description.setText(arrayListLog.get(position).getActivityDescription());
         holder.tv_device_log_type.setText(arrayListLog.get(position).getActivityAction());
 
+
+        if(arrayListLog.get(position).getIs_unread().equalsIgnoreCase("1")){
+            holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+            holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+            holder.tv_device_log_type.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+        }else {
+            holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+            holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+            holder.tv_device_log_type.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+        }
         Glide.with(mContext)
                 .load(arrayListLog.get(position).getImage_url())
                 .fitCenter()

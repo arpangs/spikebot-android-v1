@@ -48,6 +48,7 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.kp.core.GetJsonTaskRemote;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.ack.AckWithTimeOut;
@@ -561,7 +562,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             mSocket = app.getSocket();
 
             try {
-                mSocket.on("ReloadDeviceStatusApp", reloadDeviceStatusApp);
+                mSocket.on("ReloadDeviceStatusApp", reloadDeviceStatusApp);  // ac on off
                 mSocket.on("roomStatus", roomStatus);
                 mSocket.on("panelStatus", panelStatus);
                 //    mSocket.on("configureGatewayDevice", configureGatewayDevice);
@@ -1196,7 +1197,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             });
         }
     };
-    ////////
+    ////////isSensorClick
     private Emitter.Listener reloadDeviceStatusApp = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -1210,6 +1211,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                         try {
 
+                            //{"module_id":"SpikeBot10355128","device_id":"1563952394430_ANUROHD9-h","device_status":1,"is_locked":0}
                             JSONObject object = new JSONObject(args[0].toString());
                             String module_id = object.getString("module_id");
                             String device_id = object.getString("device_id");
@@ -1447,7 +1449,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             showConfigAlert(message);
                             //Toast.makeText(getContext(),message,Toast.LENGTH_SHORT).show();
                         }
-
 
                         //  addRoom = false;
                         // }
@@ -2285,13 +2286,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
         if (mSocket != null && !mSocket.connected()) {
 
-            callPanelOnOffApi(obj);
-
-        } else {
-
             ChatApplication.logDisplay("roomPanelOnOff");
-
-            //  if(panelVO!=null){
 
             mSocket.emit("changeRoomPanelMoodStatusAck", obj, new AckWithTimeOut(Constants.ACK_TIME_OUT) {
                 @Override
@@ -2322,14 +2317,10 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 }
             });
 
-
-            // mSocket.emit("changeRoomPanelMoodStatus", obj);
+        } else {
+            callPanelOnOffApi(obj);
 
         }
-
-
-        //  sectionedExpandableLayoutHelper.notifyDataSetChanged();
-
     }
 
     private void callPanelOnOffApi(JSONObject obj) {
@@ -2695,6 +2686,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 startActivity(intent);
 
             } else if (item.getSensor_type().equalsIgnoreCase("multisensor")) {
+                if(item.getIsActive()== -1){
+                    return;
+                }
 
                 Intent intent = new Intent(getActivity(), MultiSensorActivity.class);
                 intent.putExtra("temp_sensor_id", item.getSensor_id());
@@ -2726,17 +2720,14 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             startActivity(intent);
 
         } else if (action.equalsIgnoreCase("isIRSensorClick")) {
-
             //on-off remote
             sendRemoteCommand(item);
-
-
         } else if (action.equalsIgnoreCase("isIRSensorLongClick")) {
 
 
             Intent intent = new Intent(getActivity(), IRBlasterRemote.class);
             Bundle bundle = new Bundle();
-            bundle.putSerializable("REMOTE_IS_ACTIVE", item.getIsActive());
+            bundle.putSerializable("REMOTE_IS_ACTIVE", item.getDeviceStatus());
             bundle.putSerializable("REMOTE_ID", item.getSensor_id());
             bundle.putSerializable("IR_BLASTER_ID", item.getSensor_id());
             // intent.putExtra("IR_BLASTER_ID",item.getIr_blaster_id());
@@ -2776,7 +2767,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         com.spike.bot.core.Log.d("sendRemoteCommand", "" + mRemoteCommandReq);
 
         String url = ChatApplication.url + Constants.SEND_REMOTE_COMMAND;
-        new GetJsonTask(getContext(), url, "POST", mRemoteCommandReq, new ICallBack() {
+        new GetJsonTaskRemote(getContext(), url, "POST", mRemoteCommandReq, new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
                 com.spike.bot.core.Log.d("SendRemote", "onSuccess result : " + result.toString());
@@ -2785,7 +2776,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                     int code = result.getInt("code");
                     String message = result.getString("message");
-
+                    ChatApplication.logDisplay("result is ir "+result);
                     if (code == 200) {
                         //update remote UI
                         ChatApplication.isMoodFragmentNeedResume = true;
@@ -2800,12 +2791,15 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                }finally {
                 }
             }
 
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
+                ChatApplication.logDisplay("result is ir error "+error.toString());
+                ChatApplication.showToast(getActivity(),"Please try again.");
             }
         }).execute();
     }

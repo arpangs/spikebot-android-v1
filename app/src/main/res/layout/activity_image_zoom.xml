@@ -44,6 +44,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fabShare"
+                app:layout_behavior="com.spike.bot.core.MoveUpwardBehavior"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/_20sdp"
+                android:layout_marginRight="@dimen/_18sdp"
+                android:layout_gravity="bottom|end"
+                android:gravity="center_vertical"
+                app:srcCompat="@drawable/ic_share_black_24dp"
+                app:fabSize="normal"/>
+
+            <Button
+                android:id="@+id/btnReport"
+                android:layout_width="@dimen/_155sdp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|bottom"
+                android:layout_marginBottom="@dimen/_20sdp"
+                android:background="@drawable/button_radius"
+                android:clickable="true"
+                android:text="Report False Image"
+                android:textAllCaps="false"
+                android:textColor="@color/automation_white"
+                android:textStyle="bold" />
+
         </FrameLayout>
 
 

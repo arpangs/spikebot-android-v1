@@ -331,7 +331,7 @@
             <ImageView
                 android:id="@+id/remote_toolbar_back"
                 android:layout_width="0dp"
-                android:layout_height="30dp"
+                android:layout_height="@dimen/_32sdp"
                 android:layout_gravity="center|left"
                 android:layout_weight="0.2"
                 android:padding="5dp"

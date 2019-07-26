@@ -194,6 +194,11 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                 holder.sectionTextView.setText(panel1.getPanelName());
                 holder.iv_room_panel_onoff.setVisibility(View.GONE);
 
+                if(TextUtils.isEmpty(panel1.getPanelName())){
+                    holder.sectionTextView.setVisibility(View.GONE);
+                }else {
+                    holder.sectionTextView.setVisibility(View.VISIBLE);
+                }
                 break;
             case VIEW_TYPE_ITEM :
                 final DeviceVO item = (DeviceVO) mDataArrayList.get(position);
@@ -215,7 +220,8 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                             }
                         }else{
                             if(item.getDevice_icon()!=null){
-                                holder.iv_icon.setImageResource(Common.getIcon(1,item.getDevice_icon()));//item.getDeviceStatus()
+//                                holder.iv_icon.setImageResource(Common.getIcon(1,item.getDevice_icon()));//item.getDeviceStatus()
+                                holder.iv_icon.setImageResource(Common.getIcon(0,item.getDevice_icon()));//item.getDeviceStatus()
                             }
                         }
                     }else{
@@ -237,15 +243,11 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                     holder.itemTextView.setText(item.getDeviceName());
                     if(item.getDevice_icon()!=null){
 
-                        if(item.getDeviceType().equalsIgnoreCase("-1")){
-//                            if(item.getDeviceStatus()==0){
-//                                holder.iv_icon.setImageResource(R.drawable.on);//item.getDeviceStatus()
-//                            }else {
-                                holder.iv_icon.setImageResource(R.drawable.off);//item.getDeviceStatus()
-//                            }
-                        }else {
+//                        if(item.getDeviceType().equalsIgnoreCase("-1")){
+//                            holder.iv_icon.setImageResource(R.drawable.off);//item.getDeviceStatus()
+//                        }else {
                             holder.iv_icon.setImageResource(Common.getIcon(0,item.getDevice_icon()));//item.getDeviceStatus()
-                        }
+//                        }
 
 
                     }

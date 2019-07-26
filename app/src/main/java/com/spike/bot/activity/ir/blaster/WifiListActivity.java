@@ -13,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -105,10 +106,10 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
         wifiAdapter.notifyDataSetChanged();
 
         boolean flag=WifiBlasterActivity.setMobileDataEnabled(WifiListActivity.this);
-        if(flag){
-            Toast.makeText(getApplicationContext(),"Please disble your mobile data",Toast.LENGTH_LONG);
-            WifiListActivity.this.finish();
-        }
+//        if(flag){
+//            Toast.makeText(getApplicationContext(),"Please disble your mobile data",Toast.LENGTH_LONG);
+//            WifiListActivity.this.finish();
+//        }
     }
 
     @Override
@@ -169,9 +170,11 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
 
         TextView dialogTitle = (TextView) irDialog.findViewById(R.id.tv_title);
         TextView txt_sensor_name = (TextView) irDialog.findViewById(R.id.txt_sensor_name);
+        TextView txtSelectRoom =  irDialog.findViewById(R.id.txtSelectRoom);
 
         dialogTitle.setText("Add IR Blaster");
         txt_sensor_name.setText("IR Name");
+        txtSelectRoom.setText("Room name");
 
         edt_door_module_id.setText(moduleId);
         edt_door_module_id.setFocusable(false);
@@ -323,12 +326,12 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
     @Override
     public void wifiClick(final WifiModel.WiFiList wiFiList) {
 
-        boolean flag=WifiBlasterActivity.setMobileDataEnabled(WifiListActivity.this);
-        if(flag){
-            Toast.makeText(getApplicationContext(),"Please disable your mobile data",Toast.LENGTH_LONG);
-            WifiListActivity.this.finish();
-            return;
-        }
+//        boolean flag=WifiBlasterActivity.setMobileDataEnabled(WifiListActivity.this);
+//        if(flag){
+//            Toast.makeText(getApplicationContext(),"Please disable your mobile data",Toast.LENGTH_LONG);
+//            WifiListActivity.this.finish();
+//            return;
+//        }
 
         final Dialog dialog = new Dialog(WifiListActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -356,11 +359,12 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
                     Toast.makeText(getApplicationContext(), "Password lenth atleast 8 char.", Toast.LENGTH_SHORT).show();
                 } else if(edWifiIP.getText().toString().length()==0){
                     ChatApplication.showToast(WifiListActivity.this,"Please enter Gateway ip address.");
+                }else if(!Patterns.IP_ADDRESS.matcher(edWifiIP.getText()).matches()){
+                    ChatApplication.showToast(WifiListActivity.this,"Please enter valid ip address");
                 }else {
-                    dialog.cancel();
                     InputMethodManager imm = (InputMethodManager) WifiListActivity.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(edWifiPassword.getWindowToken(), 0);
-                    callWifiPasswordCheck(edWifiPassword.getText().toString(), wiFiList,edWifiIP.getText().toString());
+                    callWifiPasswordCheck(edWifiPassword.getText().toString(), wiFiList,edWifiIP.getText().toString(),dialog);
                 }
             }
         });
@@ -375,7 +379,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
 
     }
 
-    private void callWifiPasswordCheck(String s, WifiModel.WiFiList wiFiList, String edWifiIP) {
+    private void callWifiPasswordCheck(String s, WifiModel.WiFiList wiFiList, String edWifiIP, final Dialog dialog) {
         if (!ActivityHelper.isConnectingToInternet(WifiListActivity.this)) {
             Toast.makeText(WifiListActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -394,29 +398,33 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
                 try {
                     if (result != null) {
                         if (result.optString("response").equalsIgnoreCase("success")) {
+                            dialog.dismiss();
                             Constants.isWifiConnectSave=true;
                             moduleId=result.optString("moduleId");
                             if(moduleId.length()>1){
                                 isNetworkChange=true;
                                 showIRSensorDialog();
                             }
-                        }else if(result.optString("response").equalsIgnoreCase("fail")){
-                            ActivityHelper.dismissProgressDialog();
-                            ChatApplication.showToast(WifiListActivity.this,"Password is incorrect. Please try again");
+                        }else {
+                            ChatApplication.showToast(WifiListActivity.this,""+result.toString());
                         }
+                    }else {
+                        ChatApplication.showToast(WifiListActivity.this,""+result.toString());
                     }
 
 
                 } catch (Exception e) {
-                    ActivityHelper.dismissProgressDialog();
                     e.printStackTrace();
                 } finally {
+                    ActivityHelper.dismissProgressDialog();
                 }
             }
 
             @Override
             public void onFailure(Throwable throwable, String error) {
+                ChatApplication.showToast(WifiListActivity.this,""+error.toString());
                 ChatApplication.logDisplay( "ir blaster is found result error " + error.toString());
+                //found
                 ActivityHelper.dismissProgressDialog();
                 //  intentBlaster();
               //  Toast.makeText(WifiListActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();

@@ -1,23 +1,28 @@
 package com.kp.core;
 
-import java.io.IOException;
-import java.net.SocketException;
-import java.util.Map;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.os.AsyncTask;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.conn.HttpHostConnectException;
 import org.json.JSONObject;
 
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.os.AsyncTask;
-import android.support.v4.app.FragmentActivity;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.ProtocolException;
+import java.net.SocketException;
+import java.net.URL;
+import java.util.Map;
 
 /**
  * @author kaushal
  *
  */
-public class GetJsonTask extends AsyncTask<String, Void, String> {
+public class GetJsonTaskRemote extends AsyncTask<String, Void, String> {
 	private ProgressDialog mProgressDialog;
 	private ICallBack activity;
 	private Context context;
@@ -27,7 +32,7 @@ public class GetJsonTask extends AsyncTask<String, Void, String> {
 	private String error = null;
 	private String method = "POST";
 
-	public GetJsonTask(Context context, String url, String method, String json, ICallBack activity) {
+	public GetJsonTaskRemote(Context context, String url, String method, String json, ICallBack activity) {
 		this.activity = activity;
 		this.context = context;
 		this.url = url;
@@ -41,7 +46,7 @@ public class GetJsonTask extends AsyncTask<String, Void, String> {
 
 		try {
 
-			return ActivityHelper.CallJSONService(url, json, method);
+			return ActivityHelper.CallJSONService1(url, json, method);
 		} catch (HttpHostConnectException e) {
 			error = "Can't connect to server, Problem with server or your internet connection.";
 		} catch (SocketException e) {

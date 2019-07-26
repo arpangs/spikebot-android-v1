@@ -23,6 +23,18 @@ private String activityDescription;
 @Expose
 private String activityTime;
 
+    public String getIs_unread() {
+        return is_unread;
+    }
+
+    public void setIs_unread(String is_unread) {
+        this.is_unread = is_unread;
+    }
+
+    @SerializedName("is_unread")
+@Expose
+private String is_unread;
+
     public String getImage_url() {
         return image_url;
     }

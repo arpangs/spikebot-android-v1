@@ -222,7 +222,6 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     }
 
 
-
                     String styledText = "<u><font color='#0098C0'>"+roomName+"</font></u>";
                     holder.sectionTextView.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
 //                    holder.sectionTextView.setText(roomName);
@@ -429,24 +428,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         }
                     });
 
-                    String isunRead = section.getIs_unread();
-                    if (!TextUtils.isEmpty(isunRead) && Integer.parseInt(isunRead) > 0) {
-                        holder.img_setting_badge_count.setVisibility(View.VISIBLE);
-                        //holder.img_setting_badge_count.setText(isunRead);
 
-                        if (Integer.parseInt(isunRead) > 99) {
-                            holder.img_setting_badge_count.setText("99+");
-                            holder.img_setting_badge_count.getLayoutParams().width = Common.dpToPx(mContext, 27);
-                            holder.img_setting_badge_count.getLayoutParams().height = Common.dpToPx(mContext, 27);
-                        } else {
-                            holder.img_setting_badge_count.setText(""+isunRead);
-                            holder.img_setting_badge_count.getLayoutParams().width = Common.dpToPx(mContext, 27);
-                            holder.img_setting_badge_count.getLayoutParams().height = Common.dpToPx(mContext, 27);
-                        }
-
-                    } else {
-                         holder.img_setting_badge_count.setVisibility(View.GONE);
-                    }
 
 //                    if(!TextUtils.isEmpty(section.getSensor_panel())){
 //                        if(section.getSensor_panel().equals("0")){
@@ -515,7 +497,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         for (int j = 0; j < section.getPanelList().get(i).getDeviceList().size(); j++) {
                             if (!TextUtils.isEmpty(section.getPanelList().get(i).getDeviceList().get(j).getSensor_type())) {
                                 if (section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("temp") ||
-                                        section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("remote") ||
+                                        section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("irblaster") ||
                                         section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("multisensor") ||
                                         section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("door")) {
 
@@ -526,15 +508,39 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                     }
 
+                    String isunRead = section.getIs_unread();
+                    ChatApplication.logDisplay("isunRead is "+isunRead);
+                    if (!TextUtils.isEmpty(isunRead) && Integer.parseInt(isunRead)>0) {
+                        holder.img_setting_badge_count.setVisibility(View.VISIBLE);
+                        if (Integer.parseInt(isunRead) > 99) {
+                            holder.img_setting_badge_count.setText("99+");
+                            holder.img_setting_badge_count.getLayoutParams().width = Common.dpToPx(mContext, 27);
+                            holder.img_setting_badge_count.getLayoutParams().height = Common.dpToPx(mContext, 27);
+                        } else if(Integer.parseInt(isunRead)>0) {
+                            holder.img_setting_badge_count.setText(""+isunRead);
+                            holder.img_setting_badge_count.getLayoutParams().width = Common.dpToPx(mContext, 27);
+                            holder.img_setting_badge_count.getLayoutParams().height = Common.dpToPx(mContext, 27);
+
+                        }else {
+                            holder.img_setting_badge_count.setVisibility(View.GONE);
+                        }
+
+                    } else {
+                        holder.img_setting_badge_count.setVisibility(View.GONE);
+                    }
+
 
                     if (flag || section.getRoomId().equalsIgnoreCase("Camera")) {
 //                        holder.reletiveNotification.setVisibility(View.VISIBLE);
                         holder.img_setting_badge.setVisibility(View.VISIBLE);
-                        if (section.getIs_unread().equalsIgnoreCase("0")) {
+
+                        if(TextUtils.isEmpty(section.getIs_unread())){
+                            holder.img_setting_badge_count.setVisibility(View.GONE);
+                        } else if (section.getIs_unread().equalsIgnoreCase("0")) {
                             holder.img_setting_badge_count.setVisibility(View.GONE);
                         } else {
                             holder.img_setting_badge_count.setVisibility(View.VISIBLE);
-                            if (Integer.parseInt(isunRead) > 99) {
+                            if (!TextUtils.isEmpty(isunRead)&&Integer.parseInt(isunRead) > 99) {
                                 holder.img_setting_badge_count.setText("99+");
                             }else {
                                 holder.img_setting_badge_count.setText(""+isunRead);
@@ -619,6 +625,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.txt_recording.setText(Html.fromHtml("<font color=\"red\">◉</font> <font color=\"#FFFFFF\">RECORDINGS</font>"));
                     holder.iv_room_panel_onoff.setVisibility(View.GONE);//INVISIBLE
 
+                    holder.sectionTextView.setVisibility(View.GONE);
                     holder.txt_recording.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -629,6 +636,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     });
 
                 } else {
+                    holder.sectionTextView.setVisibility(View.VISIBLE);
                     holder.txt_recording.setVisibility(View.GONE);
                     holder.iv_room_panel_onoff.setVisibility(View.VISIBLE);
 
@@ -670,16 +678,16 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 //                    holder.linearSwitchView.setBackgroundResource(R.drawable.drawable_black_boader);
                     /*--Sensor type start--*/
 
-                    if (item.getSensor_type().equalsIgnoreCase("remote")) {
+                    if (item.getSensor_type().equalsIgnoreCase("irblaster")) {
 
-                        holder.txt_temp_in_cf.setVisibility(View.GONE);
+                        holder.txt_temp_in_cf.setVisibility(View.INVISIBLE);
                         holder.iv_icon.setVisibility(View.VISIBLE);
                         //   itemIcon = Common.getIcon(item.getIsActive(),item.getSensor_icon());
-                        if (item.getIsActive() == 0) {
-                            itemIcon = Common.getIconInActive(0, "remote");
-                        } else {
+//                        if (item.getIsActive() == 0) {
+//                            itemIcon = Common.getIconInActive(0, "Remote_AC");
+//                        } else {
                             itemIcon = Common.getIcon(item.getRemote_status().equalsIgnoreCase("ON") ? 1 : 0, item.getSensor_icon()); //AC off icon
-                        }
+//                        }
 
                         holder.itemTextView.setVisibility(View.VISIBLE);
                         holder.itemTextView.setText(item.getSensor_name());
@@ -821,7 +829,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         if (!item.isSensor()) {
                             mItemClickListener.itemClicked(item, "itemclick", position);
                         } else {
-                            if (item.getSensor_type().equalsIgnoreCase("remote")) {
+                            if (item.getSensor_type().equalsIgnoreCase("irblaster")) {
                                     /*if(item.getIsActive() == 1){
                                         tempClickListener.itemClicked(item,"isIRSensorClick",true,position);
                                     }else{
@@ -855,7 +863,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                                 tempClickListener.itemClicked(item, "heavyloadlongClick", true, position);
                             }
                         } else {
-                            if (item.getSensor_type().equalsIgnoreCase("remote")) {
+                            if (item.getSensor_type().equalsIgnoreCase("irblaster")) {
                                     /*if(item.getIsActive() == 1){
                                         tempClickListener.itemClicked(item,"isIRSensorClick",true,position);
                                     }else{
@@ -873,7 +881,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.imgLongClick.setVisibility(View.VISIBLE);
                 }else if(!TextUtils.isEmpty(item.getDeviceId()) && Integer.parseInt(item.getDeviceId()) == 1 && Integer.parseInt(item.getDeviceType()) == 1){
                     holder.imgLongClick.setVisibility(View.VISIBLE);
-                } else if (item.getSensor_type().equalsIgnoreCase("remote")) {
+                } else if (item.getSensor_type().equalsIgnoreCase("irblaster")) {
                     holder.imgLongClick.setVisibility(View.VISIBLE);
                 }else {
                     holder.imgLongClick.setVisibility(View.GONE);
@@ -928,7 +936,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.txtCameraCount.setVisibility(View.VISIBLE);
                     holder.txtCameraCount.setText(""+cameraVO.getIs_unread());
                 }else {
-                    holder.txtCameraCount.setVisibility(View.GONE);
+                    holder.txtCameraCount.setVisibility(View.INVISIBLE);
                 }
                 holder.iv_icon_text.setOnClickListener(new View.OnClickListener() {
                     @Override

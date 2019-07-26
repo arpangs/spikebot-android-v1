@@ -52,6 +52,7 @@
                     android:layout_marginTop="@dimen/_15sdp"
                     android:layout_gravity="center_horizontal"
                     android:adjustViewBounds="true"
+                    android:scaleType="fitXY"
                     android:gravity="center_horizontal"
                     android:src="@drawable/bulb_off" />
 

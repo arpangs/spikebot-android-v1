@@ -442,6 +442,11 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         /*sensor unselect condition */
         for(int i=0; i<roomList.size(); i++){
             for(int j=0; j<roomList.get(i).getPanelList().size(); j++){
+
+                if(roomList.get(i).getPanelList().get(j).getDeviceList().size()==0){
+                    roomList.get(i).getPanelList().get(j).setPanelName("");
+                }
+
                 for(int k=0; k<roomList.get(i).getPanelList().get(j).getDeviceList().size(); k++){
                     if(roomList.get(i).getPanelList().get(j).getDeviceList().get(k).isSensor()){
                         if(roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_type().equalsIgnoreCase("temp")){
@@ -455,6 +460,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                 }
             }
         }
+
 
         //sort room list vie selected device list available
         sortList(roomList);

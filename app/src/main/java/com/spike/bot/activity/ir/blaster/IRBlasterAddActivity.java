@@ -319,16 +319,17 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
     private void saveIRBlaster(final Dialog dialog, EditText textInputEditText, String door_name,
                                String door_module_id, Spinner sp_room_list){
 
-        if(!ActivityHelper.isConnectingToInternet(getApplicationContext())){
-            ChatApplication.showToast(getApplicationContext(),IRBlasterAddActivity.this.getResources().getString( R.string.disconnect));
-            return;
-        }
-
         if(TextUtils.isEmpty(textInputEditText.getText().toString())){
             textInputEditText.requestFocus();
             textInputEditText.setError("Enter IR Name");
             return;
         }
+
+        if(!ActivityHelper.isConnectingToInternet(getApplicationContext())){
+            ChatApplication.showToast(getApplicationContext(),IRBlasterAddActivity.this.getResources().getString( R.string.disconnect));
+            return;
+        }
+
 
         ActivityHelper.showProgressDialog(this,"Please wait.",false);
 
@@ -775,6 +776,8 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             return;
         }
 
+        ActivityHelper.showProgressDialog(this,"Please wait.",false);
+
         JSONObject object = new JSONObject();
         try {
             object.put("ir_blaster_name",mBlasterName.getText().toString().trim());
@@ -799,7 +802,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         new GetJsonTask(this, URL, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
+
                 ChatApplication.logDisplay("result : " + result.toString());
 
                 try {
@@ -815,11 +818,14 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                finally {
+                    ActivityHelper.dismissProgressDialog();
                 }
-
+                }
             @Override
             public void onFailure(Throwable throwable, String error) {
                 throwable.printStackTrace();
+                ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(getApplicationContext(),IRBlasterAddActivity.this.getResources().getString( R.string.disconnect));
             }
         }).execute();

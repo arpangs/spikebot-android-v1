@@ -294,14 +294,14 @@ public class JsonHelper {
                     ArrayList<DeviceVO> deviceList = new ArrayList<DeviceVO>();
                     deviceList = JsonHelper.parseIrRemoteArray(roomVO,panelVO,sensorArray,roomName,panel_name,roomId, isParseOriginal,panel_id);
                     panelVO.setDeviceList(deviceList);
-                    boolean isRemote=true;
+//                    boolean isRemote=true;
 //                    for (int i=0; i<deviceList.size(); i++){
 //                        if(deviceList.get(i).getDeviceType().equals("2")){
 //                            isRemote=true;
 //                            break;
 //                        }
 //                    }
-                    panelVO.setRemoteAvabile(isRemote);
+                    panelVO.setRemoteAvabile(true);
                     if(isDevicePanel){
                         isDevicePanel = true;
                     }
@@ -402,7 +402,8 @@ public class JsonHelper {
                 sensor_name = deviceObj.getString("sensor_name");
                 Log.d("deviceObj","deviceObj : " + sensor_name);
 
-                if(sensor_type.equalsIgnoreCase("remote")){
+//                if(sensor_type.equalsIgnoreCase("remote")){
+                if(sensor_type.equalsIgnoreCase("irblaster")){
                     ir_blaster_id = deviceObj.getString("ir_blaster_id");
                     sensor_id = deviceObj.getString("sensor_id");
                     d1.setIr_blaster_id(ir_blaster_id);
@@ -465,7 +466,8 @@ public class JsonHelper {
                 d1.setRoomName(roomName);
                 d1.setRoomId(roomId);
 
-                if(sensor_type.equalsIgnoreCase("remote")){
+//                if(sensor_type.equalsIgnoreCase("remote")){
+                if(sensor_type.equalsIgnoreCase("irblaster")){
                     flagRemote=true;
 
                 }
@@ -547,7 +549,8 @@ public class JsonHelper {
                 sensor_name = deviceObj.getString("sensor_name");
                 Log.d("deviceObj","deviceObj : " + sensor_name);
 
-                if(sensor_type.equalsIgnoreCase("remote")){
+//                if(sensor_type.equalsIgnoreCase("remote")){
+                if(sensor_type.equalsIgnoreCase("irblaster")){
                     ir_blaster_id = deviceObj.getString("ir_blaster_id");
                     sensor_id = deviceObj.getString("sensor_id");
                     d1.setIr_blaster_id(ir_blaster_id);
@@ -611,7 +614,8 @@ public class JsonHelper {
                 d1.setRoomName(roomName);
                 d1.setRoomId(roomId);
 
-                if(sensor_type.equalsIgnoreCase("remote")){
+//                if(sensor_type.equalsIgnoreCase("remote")){
+                if(sensor_type.equalsIgnoreCase("irblaster")){
                     flagRemote=true;
 
                 }

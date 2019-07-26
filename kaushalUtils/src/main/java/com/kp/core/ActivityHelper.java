@@ -315,8 +315,9 @@ public class ActivityHelper {
 		    con.setRequestProperty("Accept-Language", "UTF-8");
 		    con.setRequestProperty("Content-Type", "application/json");
 		    con.setRequestProperty("Accept", "application/json");
-		    con.setConnectTimeout(60000); 
-		    con.setReadTimeout(60000); 
+
+		    con.setConnectTimeout(60000);
+		    con.setReadTimeout(60000);
 		    con.setUseCaches( false );
 		    if(method.equalsIgnoreCase("POST")){
 //		    	JSONObject json = new JSONObject();
@@ -345,6 +346,55 @@ public class ActivityHelper {
 		    	return  result;
 
 		 
+	}
+
+
+	public static String CallJSONService1(String url,String json,String method) throws Exception{
+
+		StringBuilder params=new StringBuilder("");
+		String result="";
+		String url1 =url ;
+
+		UtilsConstants.logDisplay("CallXMLService  url  " + url1 );
+		URL obj = new URL(url1);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+		con.setRequestMethod(method);
+		con.setRequestProperty("User-Agent", "Mozilla/5.0");
+		con.setRequestProperty("Accept-Language", "UTF-8");
+		con.setRequestProperty("Content-Type", "application/json");
+		con.setRequestProperty("Accept", "application/json");
+
+		con.setConnectTimeout(5000);
+		con.setReadTimeout(5000);
+		con.setUseCaches( false );
+		if(method.equalsIgnoreCase("POST")){
+//		    	JSONObject json = new JSONObject();
+//		        json.putAll( parameter );
+			con.setDoOutput(true);
+			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(con.getOutputStream());
+			outputStreamWriter.write(json);
+			outputStreamWriter.flush();
+		}
+		int responseCode = con.getResponseCode();
+		UtilsConstants.logDisplay("\nSending 'POST' request to URL : " + url);
+		UtilsConstants.logDisplay("Post parameters : " + params);
+		UtilsConstants.logDisplay("Response Code : " + responseCode);
+		UtilsConstants.logDisplay("CallJSONService  json  " + json );
+		UtilsConstants.logDisplay("CallJSONService  responseCode  " + responseCode );
+		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		String inputLine;
+		StringBuffer response = new StringBuffer();
+
+		while ((inputLine = in.readLine()) != null) {
+			response.append(inputLine + "\n");
+		}
+		in.close();
+		result = response.toString();
+
+		return  result;
+
+
 	}
 	 
 		public static void setLocale(Context context) {

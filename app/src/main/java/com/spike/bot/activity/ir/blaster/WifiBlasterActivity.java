@@ -203,7 +203,7 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
         new GetJsonTask(WifiBlasterActivity.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL //POST
             @Override
             public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
+
                 try {
 
                     if (result != null) {
@@ -214,13 +214,7 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
                         arrayList = (ArrayList<WifiModel.WiFiList>) Common.fromJson(jsonArray.toString(), new TypeToken<ArrayList<WifiModel.WiFiList>>() {}.getType());
 
                         if(arrayList.size()>0){
-                            Constants.activityWifi=WifiBlasterActivity.this;
-                            Intent intent=new Intent(WifiBlasterActivity.this,WifiListActivity.class);
-                            intent.putExtra("arrayList",arrayList);
-                            intent.putExtra("wifiIP",wifiIP);
-                            intent.putExtra("roomId",roomId);
-                            intent.putExtra("roomName",roomName);
-                            startActivity(intent);
+                          setNextIntent();
                         }else {
                             Toast.makeText(WifiBlasterActivity.this,"Please check your wifi connection",Toast.LENGTH_SHORT).show();
                         }
@@ -230,15 +224,27 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
+                    ActivityHelper.dismissProgressDialog();
                 }
             }
 
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Toast.makeText(WifiBlasterActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                Toast.makeText(WifiBlasterActivity.this.getApplicationContext(),""+error.toString(), Toast.LENGTH_SHORT).show();
             }
         }).execute();
+    }
+
+    private void setNextIntent() {
+        Constants.activityWifi=WifiBlasterActivity.this;
+
+        Intent intent=new Intent(WifiBlasterActivity.this,WifiListActivity.class);
+        intent.putExtra("arrayList",arrayList);
+        intent.putExtra("wifiIP",wifiIP);
+        intent.putExtra("roomId",roomId);
+        intent.putExtra("roomName",roomName);
+        startActivity(intent);
     }
 
     private void showConfigAlert(String alertMessage) {

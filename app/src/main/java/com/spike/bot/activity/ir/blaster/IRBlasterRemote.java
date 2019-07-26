@@ -34,7 +34,9 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
+import com.kp.core.GetJsonTaskRemote;
 import com.kp.core.ICallBack;
+import com.kp.core.ICallBack2;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
@@ -261,15 +263,15 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.remote_power_button:
-                if(isRemoteActive == 1){
+//                if(isRemoteActive == 1){
                     if(isPowerOn) //TODO code here : if power button caption text is empty or nulll then user can't able to perform any action
                         setPowerOnOff(TURN_OFF);
                     else
                         setPowerOnOff(TURN_ON);
                     sendRemoteCommand();
-                }else{
-                    Common.showToast("Remote is Not Active");
-                }
+//                }else{
+//                    Common.showToast("Remote is Not Active");
+//                }
                 break;
 
             case R.id.remote_temp_minus:
@@ -499,8 +501,8 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                     String message = result.getString("message");
 
                     if(code == 200){
-                        ChatApplication.isMoodFragmentNeedResume = true;
-                        isRemoteActive = 1; //Update active flag if remote updated
+//                        ChatApplication.isMoodFragmentNeedResume = true;
+//                        isRemoteActive = 1;
                         getRemoteInfo();
                     }else{
                         Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
@@ -730,7 +732,6 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
        // sendRemoteCommandReq.setCodesetid(String.valueOf(irBlasterCurrentStatusList.getCodesetId()));
      //   sendRemoteCommandReq.setIrblasterid(mIrBlasterId);
      //   sendRemoteCommandReq.setIrblasterModuleid(mIrBlasterModuleId);
-
         ChatApplication.logDisplay("Found : " + mRoomDeviceId);
 
         sendRemoteCommandReq.setPower(isPowerOn ? "ON" : "OFF");
@@ -746,7 +747,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         ChatApplication.logDisplay("" + mRemoteCommandReq);
 
         String url = ChatApplication.url + Constants.SEND_REMOTE_COMMAND;
-        new GetJsonTask(this, url, "POST", mRemoteCommandReq, new ICallBack() {
+        new GetJsonTaskRemote(this, url, "POST", mRemoteCommandReq, new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
                 ChatApplication.logDisplay("onSuccess result : " + result.toString());
@@ -757,12 +758,17 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                     String message = result.getString("message");
 
                     if(code == 200){
-                        //update remote UI
+
                         ChatApplication.isMoodFragmentNeedResume = true;
                         SendRemoteCommandRes tmpIrBlasterCurrentStatusList = Common.jsonToPojo(result.toString(),
                                 SendRemoteCommandRes.class);
 
                         updateRemoteUI(tmpIrBlasterCurrentStatusList.getData().getRemoteCurrentStatusDetails());
+                        if(isPowerOn){
+                            isRemoteActive=1;
+                        }else {
+                            isRemoteActive=0;
+                        }
 
                     }else{
                         Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
@@ -776,6 +782,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(IRBlasterRemote.this,"Please try again.");
             }
         }).execute();
     }

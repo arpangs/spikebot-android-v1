@@ -113,7 +113,8 @@ public class CameraDeviceLogActivity  extends AppCompatActivity {
         start_date="";
         end_date="";
         notification_number=0;
-        camera_id="";
+        camera_id=""+cameraIdTemp;
+
 
         callCameraLog(camera_id,start_date,end_date,notification_number);
     }

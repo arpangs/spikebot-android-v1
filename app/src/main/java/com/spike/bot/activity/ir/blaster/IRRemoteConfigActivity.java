@@ -537,6 +537,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
             return;
         }
 
+        ActivityHelper.showProgressDialog(IRRemoteConfigActivity.this, "Please Wait...", false);
         AddRemoteReq addRemoteReq = new AddRemoteReq(Common.getPrefValue(this, Constants.USER_ID),mIRDeviceId, mIrDeviceType, mBrandId, mIRBrandType, mCodeSet,
                 remoteName, mIRBLasterId, mIRBlasterModuleId, mRoomId, mSpinnerMode.getSelectedItem().toString(), mRemoteDefaultTemp.getText().toString().trim(),
                 APIConst.PHONE_ID_KEY, APIConst.PHONE_TYPE_VALUE,brand_name,remote_codeset_id,model_number,onOffValue);
@@ -572,10 +573,14 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                finally {
+                        ActivityHelper.dismissProgressDialog();
+                }
             }
 
             @Override
             public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
                 throwable.printStackTrace();
             }
         }).execute();

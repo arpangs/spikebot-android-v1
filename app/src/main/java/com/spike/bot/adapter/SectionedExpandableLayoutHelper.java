@@ -134,7 +134,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                             if (devicesList.get(i).getModuleId().equalsIgnoreCase(moduleId) && devicesList.get(i)
                                     .getDeviceId().equalsIgnoreCase(deviceId)) {
                                 if(devicesList.get(i).getSensor_type()!=null &&
-                                        (devicesList.get(i).getSensor_type().equalsIgnoreCase("remote"))){
+                                        (devicesList.get(i).getSensor_type().equalsIgnoreCase("irblaster"))){
                                     devicesList.get(i).setRemote_status(Integer.parseInt(deviceStatus) == 1 ? "ON" : "OFF");
                                 }else{
                                     devicesList.get(i).setDeviceStatus(Integer.parseInt(deviceStatus));

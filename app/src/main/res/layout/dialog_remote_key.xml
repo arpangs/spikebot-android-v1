@@ -52,10 +52,10 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:maxLength="3"
-            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_25sdp"
             android:layout_marginRight="@dimen/_10sdp"
             android:layout_marginLeft="@dimen/_10sdp"
-            android:layout_marginBottom="@dimen/_15sdp"
+            android:layout_marginBottom="@dimen/_25sdp"
             android:inputType="number"
             android:hint="Please enter value"/>
 

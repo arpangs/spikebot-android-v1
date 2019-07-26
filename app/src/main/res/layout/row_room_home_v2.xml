@@ -199,14 +199,14 @@
 
                     <TextView
                         android:id="@+id/img_setting_badge_count"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         android:layout_width="27dp"
                         android:layout_height="27dp"
                         android:gravity="center"
                         android:textStyle="bold"
                         android:layout_alignParentTop="true"
                         android:background="@drawable/badge_background"
-                        android:text="13"
+                        android:text="0"
                         android:textColor="#FFF"
                         android:textSize="13dp" />
 
@@ -246,6 +246,7 @@
                         android:id="@+id/textShowCamera"
                         android:layout_width="@dimen/_25sdp"
                         android:layout_height="@dimen/_25sdp"
+                        android:layout_marginTop="4dp"
                         android:layout_marginLeft="@dimen/_10sdp"
                         android:visibility="visible"
                         android:layout_gravity="center_vertical"
@@ -261,7 +262,7 @@
                         android:layout_height="30dp"
                         android:visibility="visible"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginTop="2dp"
+                        android:layout_marginTop="4dp"
                         android:layout_marginLeft="13dp"
                         android:layout_marginBottom="2dp"
                         android:background="@drawable/refresh_icon"

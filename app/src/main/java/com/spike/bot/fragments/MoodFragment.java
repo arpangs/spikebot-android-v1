@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.kp.core.GetJsonTaskRemote;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.AddMoodActivity;
@@ -765,7 +766,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
         }else if(action.equalsIgnoreCase("isIRSensorClick")){
             Intent intent = new Intent(getActivity(),IRBlasterRemote.class);
             Bundle bundle = new Bundle();
-            bundle.putSerializable("REMOTE_IS_ACTIVE",item.getIsActive());
+            bundle.putSerializable("REMOTE_IS_ACTIVE",item.getDeviceStatus());
             bundle.putSerializable("REMOTE_ID",item.getOriginal_room_device_id());
             bundle.putSerializable("ROOM_DEVICE_ID",item.getRoomDeviceId()); //MOOD_DEVICE_ID
             bundle.putSerializable("IR_BLASTER_ID",item.getSensor_id());
@@ -1235,10 +1236,10 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
         com.spike.bot.core.Log.d("sendRemoteCommand","" + mRemoteCommandReq);
 
         String url = ChatApplication.url + Constants.SEND_REMOTE_COMMAND;
-        new GetJsonTask(getContext(), url, "POST", mRemoteCommandReq, new ICallBack() {
+        new GetJsonTaskRemote(getContext(), url, "POST", mRemoteCommandReq, new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
-                com.spike.bot.core.Log.d("SendRemote","onSuccess result : " + result.toString());
+                ChatApplication.logDisplay("result is ir "+result);
                 ActivityHelper.dismissProgressDialog();
                 try {
 
@@ -1253,13 +1254,17 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                }finally {
                 }
             }
 
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
+                ChatApplication.logDisplay("result is ir error "+error.toString());
+                ChatApplication.showToast(getActivity(),"Please try again.");
             }
+
         }).execute();
     }
 

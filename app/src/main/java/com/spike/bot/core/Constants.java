@@ -33,16 +33,16 @@ import java.util.List;
 
 public class Constants {
 
-//    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
-    public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //119 testing
+    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
+//    public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //119 testing
 //    public static  String CLOUD_SERVER_URL = "http://18.237.74.22:8079"; // unuser
 //    public static  String CLOUD_SERVER_URL = ""; //117 testing
 //http://52.24.23.7:8079
 //http://52.24.23.7:7
-    public static  String IP_END = "111"; //101 //117 //222 node11 / 123
+//    public static  String IP_END = "111"; //101 //117 //222 node11 / 123
 //    public static  String  IP_END = "119"; //101 //117 //222
-
-//    public  static  String  IP_END = "222"; //101 //117 //222
+//
+    public  static  String  IP_END = "222"; //101 //117 //222
 //    public static  String  IP_END = "101"; //101 //117 //222
 //    public static final String  IP_END = "117"; //101 //117 //222 vip/123
     public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";
@@ -162,6 +162,7 @@ public class Constants {
     public static final String DELETE_TEMP_SENSOR = "/deleteTempSensor";
     public static final String deleteMultiSensor = "/deleteMultiSensor";
     public static final String getCameraLogs = "/getCameraLogs";
+    public static final String reportFalseImage = "/reportFalseImage";
 
     //IR Blaster
     public static final String CONFIGURE_IR_BLASTER_REQUEST = "/configureIRBlasterRequest";
@@ -262,6 +263,7 @@ public class Constants {
     /*-----------ununsed api-----------*/
     public static boolean isWifiConnect = false;
     public static boolean isWifiConnectSave = false;
+
     public static Activity activityWifi;
 
 

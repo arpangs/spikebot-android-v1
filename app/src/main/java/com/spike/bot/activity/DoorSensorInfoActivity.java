@@ -428,7 +428,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             sensorName.setError("Enter Door Sensor Name");
             return;
         }
-
+        ActivityHelper.showProgressDialog(this, "Please wait.", false);
         String webUrl = ChatApplication.url + Constants.UPDATE_DOOR_SENSOR;
 
         JSONObject jsonNotification = new JSONObject();
@@ -444,7 +444,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         }
 
 
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
+
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
@@ -624,6 +624,8 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             return;
         }
 
+        ActivityHelper.showProgressDialog(this, "Please wait.", false);
+
         String webUrl = "";
         if (!isNotification) {
             webUrl = ChatApplication.url + Constants.CHANGE_DOOR_SENSOR_STATUS;
@@ -649,7 +651,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             e.printStackTrace();
         }
 
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
+
 
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
@@ -733,6 +735,8 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             return;
         }
 
+        ActivityHelper.showProgressDialog(this, "Please wait.", false);
+
         String webUrl = ChatApplication.url + Constants.DELETE_DOOR_SENSOR;
 
         JSONObject jsonNotification = new JSONObject();
@@ -745,7 +749,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             e.printStackTrace();
         }
 
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
+
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
@@ -1025,6 +1029,8 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             return;
         }
 
+        ActivityHelper.showProgressDialog(this, "Please wait.", false);
+
         JSONObject jsonNotification = new JSONObject();
 
         try {
@@ -1082,11 +1088,14 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                finally {
+                    ActivityHelper.dismissProgressDialog();
+                }
             }
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                //    ActivityHelper.dismissProgressDialog();
+                    ActivityHelper.dismissProgressDialog();
             }
         }).execute();
 
@@ -1106,7 +1115,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             return;
         }
 
-
+        ActivityHelper.showProgressDialog(this, "Please wait.", false);
         String webUrl = ChatApplication.url + Constants.DELETE_DOOR_SENSOR_NOTIFICATION;
 
         JSONObject jsonNotification = new JSONObject();
@@ -1119,8 +1128,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
