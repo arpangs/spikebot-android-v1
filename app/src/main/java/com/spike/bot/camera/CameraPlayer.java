@@ -262,7 +262,7 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
             // Bitmap bitmap =  player.getDrawingCache();
             cardView.setDrawingCacheEnabled(false);
 
-            String mPath = Environment.getExternalStorageDirectory().toString() + "/camera.jpg";
+            String mPath = Environment.getExternalStorageDirectory().toString() + "/"+ System.currentTimeMillis()+"camera.jpg";
 
             File imageFile = new File(mPath);
             FileOutputStream outputStream = new

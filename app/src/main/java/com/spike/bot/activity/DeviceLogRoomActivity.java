@@ -31,6 +31,7 @@ import com.spike.bot.activity.ir.blaster.IRBlasterAddActivity;
 import com.spike.bot.activity.ir.blaster.IRRemoteAdd;
 import com.spike.bot.adapter.DeviceLogAdapter;
 import com.spike.bot.adapter.LogRoomAdapter;
+import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.DeviceLog;
@@ -181,7 +182,6 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
         linearLayoutManager = new LinearLayoutManager(DeviceLogRoomActivity.this);
         rv_device_log.setLayoutManager(linearLayoutManager);
 
-
         if (isNotification.equalsIgnoreCase("roomSensorUnreadLogs")) {
             //toolbar.setTitle("Unread Logs");
             setTitel("Unread Logs");
@@ -249,6 +249,9 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
                 object.put("log_type", Integer.parseInt(typeSelection));
             }
 
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            object.put(APIConst.PHONE_ID_KEY,APIConst.PHONE_ID_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -334,7 +337,9 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                ll_empty.setVisibility(View.VISIBLE);
+                rv_device_log.setVisibility(View.GONE);
+                Toast.makeText(getApplicationContext(), "No data found.", Toast.LENGTH_SHORT).show();
             }
         }).execute();
     }

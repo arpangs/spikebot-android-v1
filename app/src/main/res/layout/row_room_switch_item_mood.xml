@@ -99,7 +99,7 @@
             android:layout_alignParentBottom="true"
             android:layout_below="@+id/rel_main_view"
             android:layout_gravity="center"
-            android:layout_marginLeft="3dp"
+            android:layout_marginLeft="2dp"
             android:layout_marginTop="7dp"
             android:clickable="true"
             android:gravity="center_horizontal"
@@ -120,7 +120,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:singleLine="true"
-                    android:text="Device"
+                    android:text="heavyload"
                     android:textSize="12sp" />
 
                 <TextView

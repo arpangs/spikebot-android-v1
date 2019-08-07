@@ -7,6 +7,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +23,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.spike.bot.model.User;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
@@ -33,20 +38,25 @@ import java.util.List;
 
 public class Constants {
 
-    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
-//    public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //119 testing
-//    public static  String CLOUD_SERVER_URL = "http://18.237.74.22:8079"; // unuser
+    //device type =3 - philip
+    // device type = 2 = Ac
+
+//    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
+    public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //119 testing
+//    public static  String CLOUD_SERVER_URL = "http://52.201.70.116:8079"; // unuser
+//    public static  String CLOUD_SERVER_URL = "http://54.201.70.116:8079"; // unuser
 //    public static  String CLOUD_SERVER_URL = ""; //117 testing
 //http://52.24.23.7:8079
 //http://52.24.23.7:7
-//    public static  String IP_END = "111"; //101 //117 //222 node11 / 123
-//    public static  String  IP_END = "119"; //101 //117 //222
-//
-    public  static  String  IP_END = "222"; //101 //117 //222
+//    public static  String IP_END = "111";  // cam /1234
+//    public static  String  IP_END = "119"; //101 //117 //222  vpk / 123456
+    public static  String  IP_END = "118"; // smart / 123
+
+//    public  static  String  IP_END = "222"; //101 //117 //222
 //    public static  String  IP_END = "101"; //101 //117 //222
 //    public static final String  IP_END = "117"; //101 //117 //222 vip/123
     public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";
-    public static final String CAMERA_PATH = "/static/storage/volume/";
+    public static final String CAMERA_PATH = "/static/storage/volume/pi/";
 
 
     public static final int ACK_TIME_OUT = 5000;
@@ -107,9 +117,12 @@ public class Constants {
     public static final String validatecamerakey = "/validatecamerakey";
     public static final String addHueLight = "/addHueLight";
     public static final String getHueRouterDetails = "/getHueRouterDetails";
-    public static final String HueLightsList = "/HueLightsList";
+//    public static final String HueLightsList = "/HueLightsList";
+    public static final String HueLightsList = "/PhilipsHueLightsList";
     public static final String HueLightState = "/HueLightState";
     public static final String createHueUSer = "/createHueUSer";
+    public static final String addHueBridge = "/addHueBridge";
+    public static final String searchBridges = "/searchBridges";
 
     //added : 3-10-2018
     public static final String GET_ALL_UNASSIGNED_DEVICES = "/getAllUnassignedDevices";
@@ -132,8 +145,11 @@ public class Constants {
     public static final String getCameraNotificationAlertList = "/getCameraNotificationAlertList";
     public static final String updateUnReadCameraLogs = "/updateUnReadCameraLogs";
     public static final String getSmartDeviceBrands = "/getSmartDeviceBrands";
+    public static final String getSmartDeviceType = "/getSmartDeviceType";
     public static final String getHeavyLoadDetails = "/getHeavyLoadDetails";
     public static final String filterHeavyLoadData = "/filterHeavyLoadData";
+    public static final String getHueBridgeList = "/getHueBridgeList";
+    public static final String getSpikebotHueLightList = "/getSpikebotHueLightList";
 
     public static final String SENSOR_ROOM_DETAILS = "/sensorRoomDetails";
     public static final String SENSOR_NOTIFICATION = "/sensorNotification";
@@ -266,7 +282,9 @@ public class Constants {
 
     public static Activity activityWifi;
 
-
+    public static Activity activityPhilipsHueBridgeDeviceListActivity;
+    public static Activity activityAddDeviceConfirmActivity;
+    public static Activity activitySearchHueBridgeActivity;
 
     public static String getUserName(Context context){
         String name="";
@@ -340,6 +358,27 @@ public class Constants {
                 for(int i=0; i<userList.size(); i++){
                     if(userList.get(i).getIsActive()){
                         getuserIp=userList.get(i).getGateway_ip();
+                        break;
+                    }
+                }
+            }
+        }
+
+        return getuserIp;
+    }
+
+
+    public static String getMacAddress(Context context){
+        String getuserIp="";
+        String jsonText = Common.getPrefValue(context, Common.USER_JSON);
+        if (!TextUtils.isEmpty(jsonText)) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<User>>() {}.getType();
+            List<User> userList = gson.fromJson(jsonText, type);
+            if(userList.size()>0){
+                for(int i=0; i<userList.size(); i++){
+                    if(userList.get(i).getIsActive()){
+                        getuserIp=userList.get(i).getMac_address();
                         break;
                     }
                 }

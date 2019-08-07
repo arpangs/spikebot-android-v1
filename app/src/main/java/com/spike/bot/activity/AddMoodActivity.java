@@ -547,12 +547,40 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
             for(DeviceVO dPanel : deviceVOArrayList){
 
                     JSONObject ob1 = new JSONObject();
+
+                    //  "room_id": "1562588968606_HfJ0o0Akn",
+                //                  "room_device_id": "1563890900351_1kjJTcI1k",
+                //                  "module_id": "SpikeBot10355128",
+                //                  "panel_id": "1563877989328_SY8_lcy1d",
+                //                  "room_panel_id": "1563877989328_SY8_lcy1d",
+                //                  "device_id": "1563890900368_RYEYDrXcyI",
+                //                  "device_name": "final",
+                //                  "device_icon": "Remote_AC",
+                //                  "device_status": 1,
+                //                  "device_specific_value": 1,
+                //                  "is_locked": 0,
+                //                  "device_type": 2,
+                //                  "original_room_device_id": "1563890900351_1kjJTcI1k",
+                //                  "is_active": 1,
+                //                  "is_alive": 1,
+                //                  "is_original": 1,
+                //                  "mode": "LOW",
+                //                  "temperature": 20,
+                //                  "power": "ON"
                     if (dPanel.getDeviceType() != null && dPanel.getDeviceType().equalsIgnoreCase("2")) { //old : AC
                         arrayListRoomId.add(dPanel.getRoomId());
+                        ob1.put("room_id", dPanel.getRoomId());
+                        ob1.put("room_device_id", dPanel.getRoomDeviceId());
+                        ob1.put("module_id", dPanel.getModuleId());
+                        ob1.put("panel_id", dPanel.getPanel_id());
                         ob1.put("sensor_id", dPanel.getSensor_id());
                         ob1.put("device_id", dPanel.getDeviceId());
                         ob1.put("ir_blaster_id", dPanel.getIr_blaster_id());
-                        ob1.put("sensor_name", dPanel.getSensor_name());
+//                        ob1.put("sensor_name", dPanel.getSensor_name());
+                        ob1.put("device_name", dPanel.getDeviceName());
+                        ob1.put("is_locked", dPanel.getIs_locked());
+                        ob1.put("is_active", dPanel.getIsActive());
+                        ob1.put("is_alive", dPanel.getIsAlive());
 
                         ob1.put("device_type", dPanel.getDeviceType());
                         ob1.put("is_active", dPanel.getIsActive());
@@ -562,7 +590,9 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
                         ob1.put("original_room_device_id", dPanel.getOriginal_room_device_id());
                         ob1.put("room_device_id", dPanel.getRoomDeviceId());
-                        ob1.put("sensor_type", dPanel.getSensor_type());
+//                        ob1.put("sensor_type", dPanel.getSensor_type());
+//                        ob1.put("sensor_type", dPanel.getDeviceName());
+                        ob1.put("device_icon", dPanel.getDevice_icon());
 
                         ob1.put("device_status", dPanel.getDeviceStatus());
                         ob1.put("device_specific_value", dPanel.getDeviceSpecificValue());

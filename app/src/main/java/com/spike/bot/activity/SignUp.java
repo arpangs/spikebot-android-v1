@@ -292,6 +292,7 @@ public class SignUp extends AppCompatActivity {
                         String user_password=data.optString("user_password");
                         String admin=data.optString("admin");
                         String local_ip=data.optString("local_ip_address");
+                        String mac_address = data.getString("mac_address");
 
                         Common.savePrefValue(SignUp.this,Constants.USER_PASSWORD,user_password);
                         Common.savePrefValue(SignUp.this,Constants.PREF_IP,ip);
@@ -307,7 +308,7 @@ public class SignUp extends AppCompatActivity {
                             Common.savePrefValue(SignUp.this, Constants.USER_ROOM_TYPE, ""+2);
                         }
 
-                        User user = new User(user_id,first_name,last_name,ip,false,user_password,admin,local_ip);
+                        User user = new User(user_id,first_name,last_name,ip,false,user_password,admin,local_ip,mac_address);
 
                         Gson gson = new Gson();
                         String jsonText = Common.getPrefValue(getApplicationContext(),Common.USER_JSON);

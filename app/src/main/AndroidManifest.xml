@@ -124,7 +124,63 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name="com.spike.bot.activity.SmartDecviceListActivity"
+            android:name="com.spike.bot.activity.SmartDevice.BrandListActivity"
+            android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="com.spike.bot.activity.SmartDevice.SmartDecviceListActivity"
+            android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity"
+            android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="com.spike.bot.activity.SmartDevice.AddSMartDevicetoRoomActivity"
+            android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="com.spike.bot.activity.SmartDevice.SearchHueBridgeActivity"
+            android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="com.spike.bot.activity.SmartDevice.SearchSubHueBridgeActivity"
+            android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="com.spike.bot.activity.SmartDevice.PhilipsHueBridgeListActivity"
+            android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="com.spike.bot.activity.SmartDevice.PhilipsHueBridgeDeviceListActivity"
+            android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="com.spike.bot.activity.SmartDevice.PhilipsBulbNewListActivity"
             android:label="@string/title_activity_profile"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"

@@ -184,7 +184,6 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         holder.txtTotalDevices.setText("" + "99+ devices");
                     }else {
                         holder.txtTotalDevices.setText("" + section.getDevice_count() + " devices");
-
                     }
 
                     if (section.isExpanded()) {
@@ -672,7 +671,11 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 //                          itemIcon=R.drawable.on;
 //                      }
 //                    }else {
+                    if(item.getDeviceType().equalsIgnoreCase("3")){
+                        itemIcon = Common.getIcon(Integer.parseInt(item.getDeviceType()), item.getDevice_icon());
+                    }else {
                         itemIcon = Common.getIcon(item.getDeviceStatus(), item.getDevice_icon());
+                    }
 //                    }
                 } else {
 //                    holder.linearSwitchView.setBackgroundResource(R.drawable.drawable_black_boader);
@@ -877,17 +880,33 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     }
                 });
 
+//                if (item.getDeviceType().equalsIgnoreCase("-1")) {
+//                    holder.imgLongClick.setVisibility(View.VISIBLE);
+//                }else if(!TextUtils.isEmpty(item.getDeviceId()) && Integer.parseInt(item.getDeviceId()) == 1 && Integer.parseInt(item.getDeviceType()) == 1){
+//                    holder.imgLongClick.setVisibility(View.VISIBLE);
+//                } else if (item.getSensor_type().equalsIgnoreCase("irblaster")) {
+//                    holder.imgLongClick.setVisibility(View.VISIBLE);
+//                }else {
+//                    holder.imgLongClick.setVisibility(View.GONE);
+//                }
+
+
                 if (item.getDeviceType().equalsIgnoreCase("-1")) {
                     holder.imgLongClick.setVisibility(View.VISIBLE);
-                }else if(!TextUtils.isEmpty(item.getDeviceId()) && Integer.parseInt(item.getDeviceId()) == 1 && Integer.parseInt(item.getDeviceType()) == 1){
-                    holder.imgLongClick.setVisibility(View.VISIBLE);
-                } else if (item.getSensor_type().equalsIgnoreCase("irblaster")) {
+                }else if (item.getDeviceType().equalsIgnoreCase("2")) {
                     holder.imgLongClick.setVisibility(View.VISIBLE);
                 }else {
-                    holder.imgLongClick.setVisibility(View.GONE);
+                    if(!item.getDeviceType().equalsIgnoreCase("1")){
+                        holder.imgLongClick.setVisibility(View.GONE);
+                    }else {
+                        holder.imgLongClick.setVisibility(View.GONE);
+                    }
                 }
 
-                if (!TextUtils.isEmpty(item.getDeviceId()) && Integer.parseInt(item.getDeviceId()) == 1 && Integer.parseInt(item.getDeviceType()) == 1) {
+//                if (!TextUtils.isEmpty(item.getDeviceId()) && Integer.parseInt(item.getDeviceId()) == 1 && Integer.parseInt(item.getDeviceType()) == 1) {
+
+//                ChatApplication.logDisplay("device type is "+item.getDeviceName()+" "+item.getDeviceType());
+                if (!TextUtils.isEmpty(item.getDeviceType()) && Integer.parseInt(item.getDeviceType()) == 1) {
                     holder.iv_icon.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View view) {

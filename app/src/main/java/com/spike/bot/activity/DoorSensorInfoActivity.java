@@ -369,7 +369,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
                 if (doorSensorResModel.getDate().getDoorLists()[0].getUnreadLogs().length > 0) {
 
-                    txtAlertCount.setVisibility(View.VISIBLE);
+//                    txtAlertCount.setVisibility(View.VISIBLE);
                     int countTemp=doorSensorResModel.getDate().getDoorLists()[0].getUnreadLogs().length;
                     if(countTemp>99){
                         txtAlertCount.setText("99+");

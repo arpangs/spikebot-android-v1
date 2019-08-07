@@ -1004,7 +1004,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
                 if (tempList.size() > 0) {
                     try {
-
                         Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "true");
                         Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, tempList.get(0).getCloudIP());
                         Common.savePrefValue(Main2Activity.this, Constants.USER_ID, tempList.get(0).getUser_id());
@@ -1712,8 +1711,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                         String last_name = data.getString("last_name");
                         String user_id = data.getString("user_id");
                         String admin = data.getString("admin");
+                        String mac_address = data.getString("mac_address");
                         Constants.adminType = Integer.parseInt(admin);
-
 
                         Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "true");
                         Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, cloudIp);
@@ -1738,7 +1737,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                             toolbarTitle.setText(first_name);
                         }
 
-                        User user = new User(user_id, first_name, last_name, cloudIp, false, user_password, admin, local_ip);
+                        User user = new User(user_id, first_name, last_name, cloudIp, false, user_password, admin, local_ip,mac_address);
                         invalidateToolbarCloudImage();
                         Gson gson = new Gson();
                         String jsonText = Common.getPrefValue(getApplicationContext(), Common.USER_JSON);
@@ -2116,7 +2115,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         //
         else {
             mSocket = app.openSocket(webUrl);
-
+            ChatApplication.logDisplay("socket url "+webUrl);
             ChatApplication.url = webUrl;
 
             mSocket.on(Socket.EVENT_CONNECT, onConnect);
@@ -2338,7 +2337,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     ipAddressPI = array[0] + "." + array[1] + "." + array[2] + "." + Constants.IP_END;
                 }
 //
-//                ipAddressPI="192.168.75.111";
+//                ipAddressPI="192.168.175.119";
                 boolean isReachable = Common.isPortReachable(ipAddressPI, 80, Main2Activity.this);
 //                boolean isReachable = true;
 
@@ -2346,7 +2345,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
                 } else {
                     if (!TextUtils.isEmpty(ipLocal)) {
-                        if (isReachable && ipLocal.equalsIgnoreCase(ipAddressPI)) {
+                        if (isReachable && ipLocal.equalsIgnoreCase(ipAddressPI) && Common.getMacAddress(Main2Activity.this,ipAddressPI).equalsIgnoreCase(Constants.getMacAddress(Main2Activity.this))) {
+//                        if (isReachable && ipLocal.equalsIgnoreCase(ipAddressPI)) {
                             isFlagWifi = true;
                             isCloudConnected = false; //added by sagar
                             invalidateToolbarCloudImage();
@@ -2354,13 +2354,13 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                             wifiIpAddress = ipAddressPI;
                             ChatApplication.url = webUrl;
                             isClick = false;
-
                         } else {
                             ipAddressPI = "";
                             webUrl = ipAddressPI;
                         }
                     } else {
-                        if (isReachable) {
+                        if (isReachable && Common.getMacAddress(Main2Activity.this,ipAddressPI).equalsIgnoreCase(Constants.getMacAddress(Main2Activity.this))) {
+//                        if (isReachable) {
                             isFlagWifi = true;
                             isCloudConnected = false; //added by sagar
                             invalidateToolbarCloudImage();

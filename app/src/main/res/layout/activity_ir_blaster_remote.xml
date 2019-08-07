@@ -347,7 +347,6 @@
                 android:lines="1"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:text="Remote"
                 android:textColor="@android:color/white"
                 android:textSize="20sp" />
 

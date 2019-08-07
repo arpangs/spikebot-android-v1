@@ -71,7 +71,7 @@ import com.spike.bot.activity.RoomEditActivity_v2;
 import com.spike.bot.activity.ScheduleActivity;
 import com.spike.bot.activity.SensorDoorLogActivity;
 import com.spike.bot.activity.SensorUnassignedActivity;
-import com.spike.bot.activity.SmartDecviceListActivity;
+import com.spike.bot.activity.SmartDevice.BrandListActivity;
 import com.spike.bot.activity.SmartRemoteActivity;
 import com.spike.bot.activity.TempSensorInfoActivity;
 import com.spike.bot.activity.SignUp;
@@ -126,7 +126,6 @@ import io.fabric.sdk.android.Fabric;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
-import static com.spike.bot.core.Common.camera_key;
 import static com.spike.bot.core.Common.showToast;
 
 /**
@@ -243,24 +242,26 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     @Override
     public void onRefresh() {
         isRefredCheck = true;
+        swipeRefreshLayout.setRefreshing(true);
         if (Main2Activity.isCloudConnected) {
             runServiceInterface.executeService();
         } else {
             getDeviceList(1);
         }
-        swipeRefreshLayout.setRefreshing(true);
+
         sectionedExpandableLayoutHelper.setClickable(false);
 
     }
 
     public void RefreshAnotherFragment() {
         isRefredCheck = true;
+        swipeRefreshLayout.setRefreshing(true);
         if (Main2Activity.isCloudConnected) {
             runServiceInterface.executeService();
         } else {
             getDeviceList(12);
         }
-        swipeRefreshLayout.setRefreshing(true);
+
         sectionedExpandableLayoutHelper.setClickable(false);
     }
 
@@ -344,7 +345,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             public void onClick(View v) {
                 closeFABMenu();
                 // Intent intent=new Intent(getActivity(), SearchSmartDeviceActivity.class);
-                Intent intent = new Intent(getActivity(), SmartDecviceListActivity.class);
+                Intent intent = new Intent(getActivity(), BrandListActivity.class);
                 startActivity(intent);
 
             }
@@ -2738,7 +2739,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         }
     }
 
-    private void sendRemoteCommand(DeviceVO item) {
+    private void sendRemoteCommand(final DeviceVO item) {
 
         if (!ActivityHelper.isConnectingToInternet(getContext())) {
             Toast.makeText(getContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -2786,7 +2787,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
 
                     } else {
-                        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                        ChatApplication.showToast(getActivity(),item.getSensor_name()+" "+getActivity().getString(R.string.ir_error));
                     }
 
                 } catch (JSONException e) {
@@ -2799,7 +2800,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.logDisplay("result is ir error "+error.toString());
-                ChatApplication.showToast(getActivity(),"Please try again.");
+                ChatApplication.showToast(getActivity(),item.getSensor_name()+" "+getActivity().getString(R.string.ir_error));
             }
         }).execute();
     }
@@ -3472,7 +3473,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 //connect socket
                 startSocketConnection();
 
-//                swipeRefreshLayout.setRefreshing(false);
+                swipeRefreshLayout.setRefreshing(false);
                 sectionedExpandableLayoutHelper.setClickable(true);
                 ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
 
@@ -3834,7 +3835,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 //connect socket
                 startSocketConnection();
 
-//                swipeRefreshLayout.setRefreshing(false);
+                swipeRefreshLayout.setRefreshing(false);
                 sectionedExpandableLayoutHelper.setClickable(true);
                 ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
 

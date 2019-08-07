@@ -264,10 +264,10 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         switch (v.getId()){
             case R.id.remote_power_button:
 //                if(isRemoteActive == 1){
-                    if(isPowerOn) //TODO code here : if power button caption text is empty or nulll then user can't able to perform any action
-                        setPowerOnOff(TURN_OFF);
-                    else
-                        setPowerOnOff(TURN_ON);
+//                    if(isPowerOn) //TODO code here : if power button caption text is empty or nulll then user can't able to perform any action
+//                        setPowerOnOff(TURN_OFF);
+//                    else
+//                        setPowerOnOff(TURN_ON);
                     sendRemoteCommand();
 //                }else{
 //                    Common.showToast("Remote is Not Active");
@@ -759,6 +759,11 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
                     if(code == 200){
 
+                        if(isPowerOn) //TODO code here : if power button caption text is empty or nulll then user can't able to perform any action
+                        setPowerOnOff(TURN_OFF);
+                    else
+                        setPowerOnOff(TURN_ON);
+
                         ChatApplication.isMoodFragmentNeedResume = true;
                         SendRemoteCommandRes tmpIrBlasterCurrentStatusList = Common.jsonToPojo(result.toString(),
                                 SendRemoteCommandRes.class);
@@ -771,7 +776,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                         }
 
                     }else{
-                        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+                        ChatApplication.showToast(IRBlasterRemote.this,mRemoteName.getText()+" "+getString(R.string.ir_error));
                     }
 
                 } catch (JSONException e) {
@@ -782,7 +787,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.showToast(IRBlasterRemote.this,"Please try again.");
+                ChatApplication.showToast(IRBlasterRemote.this,mRemoteName.getText()+" "+getString(R.string.ir_error));
             }
         }).execute();
     }
@@ -804,7 +809,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
     public void remoteSpeed(String modeName){
         if(isRemoteActive == 1 && !isPowerOn){
-
+            Common.showToast("Remote is Not Active");
         }else{
             if(isRemoteActive == 1){
 //                if(mSpeedCurrentPos != speedList.size()){

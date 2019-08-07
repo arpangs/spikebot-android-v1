@@ -1201,7 +1201,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
 
     }
 
-    private void sendRemoteCommand(DeviceVO item){
+    private void sendRemoteCommand(final DeviceVO item){
 
         if (!ActivityHelper.isConnectingToInternet(getContext())) {
             Toast.makeText(getContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -1249,7 +1249,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
                     if(code == 200){
                      //   sectionedExpandableLayoutHelper.notifyDataSetChanged();
                     }else{
-                        Toast.makeText(getContext(),message,Toast.LENGTH_SHORT).show();
+                        ChatApplication.showToast(getActivity(),item.getDeviceName()+" "+getString(R.string.ir_error));
                     }
 
                 } catch (JSONException e) {
@@ -1262,7 +1262,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.logDisplay("result is ir error "+error.toString());
-                ChatApplication.showToast(getActivity(),"Please try again.");
+                ChatApplication.showToast(getActivity(),item.getDeviceName()+" "+getString(R.string.ir_error));
             }
 
         }).execute();

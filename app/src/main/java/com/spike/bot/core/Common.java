@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -21,18 +23,23 @@ import com.google.gson.internal.Primitives;
 import com.spike.bot.listener.RouterIssue;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -152,6 +159,38 @@ public class Common {
         return retVal;
     }
 
+    public static String getMacAddress(Context context,String ipaddress){
+        if (ipaddress == null)
+            return null;
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader("/proc/net/arp"));
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] splitted = line.split(" +");
+                if (splitted != null && splitted.length >= 4 && ipaddress.equals(splitted[0])) {
+                    // Basic sanity check
+                    String mac = splitted[3];
+                    if (mac.matches("..:..:..:..:..:..")) {
+                        ChatApplication.logDisplay("mac address is "+mac);
+                        return mac;
+                    } else {
+                        return null;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                br.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
     public static String TAG = "isReachableURL";
 
     /**
@@ -222,7 +261,7 @@ public class Common {
      * @param wping
      * @param ipping
      * @return
-     * @throws Exception
+     * @throws
      */
     public static boolean isReachable(int nping, int wping, String ipping) throws Exception {
 
@@ -335,6 +374,7 @@ public class Common {
                     case "heavyload":
                         resource = R.drawable.on;
                         break;
+
                     default:
                         resource = R.drawable.bulb_on;
                         break;
@@ -400,6 +440,15 @@ public class Common {
                         resource = R.drawable.bulb_off;
                         break;
                 }
+                break;
+
+            case 3:
+
+                switch (type) {
+                    case "Smart Bulb":
+                        resource = R.drawable.smart_bulb;
+                }
+
                 break;
 
         }

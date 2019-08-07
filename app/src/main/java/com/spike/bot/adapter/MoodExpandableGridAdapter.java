@@ -190,7 +190,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                 holder.sectionToggleButton.setChecked(section.isExpanded);
 
                 if(section.isExpanded){
-                  //  holder.text_section_edit.setVisibility(View.VISIBLE);
+                  //  holder.text_section_edit.setViisIRSensorOnClicksibility(View.VISIBLE);
                     holder.iv_mood_delete.setVisibility(View.VISIBLE);
                     holder.iv_mood_edit.setVisibility(View.VISIBLE);
                 }
@@ -378,14 +378,11 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                         Log.d("System out","mood postion is "+position);
 
                         if(item.getDevice_icon().equalsIgnoreCase("Remote_AC")){ //click on remote device id
-                           // mItemClickListener.itemClicked(item,"isIRSensorClick");
-                            item.setPower(item.getPower().equalsIgnoreCase("ON")? "OFF":"ON" );
+                         /*   item.setPower(item.getPower().equalsIgnoreCase("ON")? "OFF":"ON" );
                             item.setDeviceType("0");
-                            item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1:0 );
-//                            notifyItemChanged(v.getId(),item);
-                           // notifyItemChanged(position);
+                            item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1:0 );*/
                             mItemClickListener.itemClicked(item,"isIRSensorOnClick");
-                            notifityData.notifyData();
+//                            notifityData.notifyData();
                         }else{
 
                             item.setOldStatus(item.getDeviceStatus());

@@ -26,12 +26,16 @@ import android.widget.Toast;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.SmartDevice.ExpandableTestAdapter;
 import com.spike.bot.adapter.CameraListAdapter;
+import com.spike.bot.adapter.CameraListTempAdapter;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.camera.CameraPlayer;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
+import com.spike.bot.model.CameraSearchModel;
 import com.spike.bot.model.CameraVO;
+import com.spike.bot.model.CameraViewModel;
 import com.spike.bot.model.RoomVO;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
@@ -58,14 +62,15 @@ import static com.spike.bot.core.Constants.CAMERA_PATH;
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class CameraPlayBack extends AppCompatActivity implements CameraListAdapter.CameraClick{
+public class CameraPlayBack extends AppCompatActivity implements ExpandableTestAdapter.CameraClick{
 
     private TextInputEditText edt_start_date,edt_end_date;
     private Spinner sp_camera_list;
     private RoomVO roomVO;
     private ArrayList<CameraVO> cameraVOArrayList;
+
     private RecyclerView cameraList;
-    private CameraListAdapter cameraListAdapter;
+    private ExpandableTestAdapter cameraListAdapter;
     private TextView txt_no_date;
     private TextView txtTitle;
     private ImageView imgTitle;
@@ -86,6 +91,7 @@ public class CameraPlayBack extends AppCompatActivity implements CameraListAdapt
     public static String end_date ="";
     ArrayList<String> cameraStr;
 
+    ArrayList<CameraSearchModel> cameraArrayList=new ArrayList<>();
     private TextView txt_count;
 
     @Override
@@ -142,9 +148,6 @@ public class CameraPlayBack extends AppCompatActivity implements CameraListAdapt
             }
         });
         arrayList = new ArrayList<>();
-
-        cameraListAdapter = new CameraListAdapter(cameraVOs,CameraPlayBack.this);
-        cameraList.setAdapter(cameraListAdapter);
 
         startSocketConnection();
 
@@ -358,6 +361,7 @@ public class CameraPlayBack extends AppCompatActivity implements CameraListAdapt
                         JSONObject object = result.getJSONObject("data");
                         JSONArray jsonArray = object.getJSONArray("cameraList");
 
+                        cameraArrayList.clear();
                         for(int i=0;i<jsonArray.length();i++){
 
                             JSONObject ob = jsonArray.getJSONObject(i);
@@ -365,8 +369,13 @@ public class CameraPlayBack extends AppCompatActivity implements CameraListAdapt
                             String camera_name = ob.getString("camera_name");
                             JSONArray array = ob.getJSONArray("camera_files");
 
+                            CameraSearchModel cameraViewModel=new CameraSearchModel(false,camera_id,camera_name);
+                            cameraViewModel.setCamera_id(camera_id);
+                            cameraViewModel.setCamera_name(camera_name);
+
                             ArrayList<String> arrayListTemp = new ArrayList<String>();
 
+                            String videoName="";
                             for(int j=0; j<array.length();j++){
                                 String u_name = array.get(j).toString();
                                // arrayList.add(camera_id+"@"+camera_name+"@"+u_name);
@@ -374,11 +383,36 @@ public class CameraPlayBack extends AppCompatActivity implements CameraListAdapt
                                 cameraVO.setCamera_id(camera_id);
                                 cameraVO.setCamera_name(camera_name);
                                 cameraVO.setCamera_videopath(u_name);
+
+                                String[] separated = u_name.split("/");
+                                if(separated!=null){
+                                    if(separated[separated.length-1]!=null){
+                                        cameraVO.setLoadingUrl(separated[separated.length-1]);
+                                        String[] separed1=separated[separated.length-1].toString().split("-");
+                                        videoName="";
+                                        for (int k=1; k<separed1.length; k++){
+                                            if(k>=2){
+                                                if(k==2){
+                                                    videoName=videoName+separed1[k];
+                                                }else {
+                                                    videoName=videoName+"-"+separed1[k];
+                                                }
+                                            }
+
+                                        }
+                                        cameraVO.setCamera_ip(videoName);
+                                    }
+                                }
+
                                 cameraVOs.add(cameraVO);
                             }
 
+
+                            cameraViewModel.setArrayList(cameraVOs);
+                            cameraArrayList.add(cameraViewModel);
                         }
-                        cameraListAdapter.notifyDataSetChanged();
+
+                        setAdpater();
 
                     }else{
                         Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
@@ -412,8 +446,16 @@ public class CameraPlayBack extends AppCompatActivity implements CameraListAdapt
 
     }
 
+    private void setAdpater() {
+        if(cameraArrayList.size()>0){
+            cameraListAdapter = new ExpandableTestAdapter(this,cameraArrayList,CameraPlayBack.this);
+            cameraList.setAdapter(cameraListAdapter);
+            cameraListAdapter.notifyDataSetChanged();
+        }
+    }
+
     @Override
-    public void onCameraClick(int position, CameraVO cameraVO) {
+    public void onCameraClick(int group,int postion, CameraVO cameraVO) {
 
         //rtmp://home.deepfoods.net:11114/1516175178515_T4bw34W/2018-03-23_15.00.mp4
         //rtmp://home.deepfoods.net:11111/live/livestream1
@@ -424,11 +466,12 @@ public class CameraPlayBack extends AppCompatActivity implements CameraListAdapt
             ip = Constants.CAMERA_IP_CLOUD_RTMP ;
         }*/
 
-        //http://192.168.75.202/static/storage/1516175108972_RtW51YhVf/2018-03-17_21.15.mp4
+        //http://home.deepfoods.net:10000/static/storage/volume/pi/1564123250335_hgTonaqUq-2019-07-26_13.20.mp4
 
         Intent intent = new Intent(CameraPlayBack.this, VideoViewPLayer.class);
-        intent.putExtra("videoUrl",ip+""+cameraVO.getCamera_id()+"/"+cameraVO.getCamera_videopath()); //static/storage/camera_id/name
-        intent.putExtra("name", ""+cameraVO.getCamera_name());
+//        intent.putExtra("videoUrl",ip+""+cameraVO.getCamera_id()+cameraVO.getCamera_videopath());
+        intent.putExtra("videoUrl",ip+""+cameraArrayList.get(group).getArrayList().get(postion).getLoadingUrl());
+        intent.putExtra("name", ""+cameraArrayList.get(group).getCamera_name());
         intent.putExtra("isCloudConnect", Main2Activity.isCloudConnected);
         startActivity(intent);
 
@@ -545,6 +588,8 @@ public class CameraPlayBack extends AppCompatActivity implements CameraListAdapt
                         tiemPicker(editText,isEndDate);
                     }
                 }, mYear, mMonth, mDay);
+        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+
         datePickerDialog.show();
     }
 
@@ -630,5 +675,9 @@ public class CameraPlayBack extends AppCompatActivity implements CameraListAdapt
         return date;
     }
 
+    public void expandedView(int position,boolean isopen){
+
+
+    }
 
 }

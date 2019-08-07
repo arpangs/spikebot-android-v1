@@ -434,8 +434,6 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             JSONObject deviceObj = new JSONObject();
             try {
 
-                deviceObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-                deviceObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
                 deviceObj.put("start_time", onTime);
                 deviceObj.put("end_time", offTime);
                 deviceObj.put("alert_interval", edIntervalTime);
@@ -601,12 +599,12 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                             txtAlertCount.setVisibility(View.GONE);
                         }else {
                             if(unreadCount.length()>0){
-                                txtAlertCount.setVisibility(View.VISIBLE);
-                                if(Integer.parseInt(unreadCount)>99){
-                                    txtAlertCount.setText("99+");
-                                }else {
-                                    txtAlertCount.setText(""+unreadCount);
-                                }
+//                                txtAlertCount.setVisibility(View.VISIBLE);
+//                                if(Integer.parseInt(unreadCount)>99){
+//                                    txtAlertCount.setText("99+");
+//                                }else {
+//                                    txtAlertCount.setText(""+unreadCount);
+//                                }
                             }
                         }
 
@@ -630,7 +628,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
     private void setAlert() {
         recyclerAlert.setVisibility(View.VISIBLE);
         txt_empty_notification.setVisibility(View.GONE);
-        txtAlertCount.setVisibility(View.VISIBLE);
+//        txtAlertCount.setVisibility(View.VISIBLE);
         txtAlertCount.setText("" + arrayListAlert.size());
 
         recyclerAlert.getRecycledViewPool().clear();

@@ -409,7 +409,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
                             ChatApplication.showToast(WifiListActivity.this,""+result.toString());
                         }
                     }else {
-                        ChatApplication.showToast(WifiListActivity.this,""+result.toString());
+                        ChatApplication.showToast(WifiListActivity.this,"Please try again later.");
                     }
 
 
@@ -422,7 +422,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                ChatApplication.showToast(WifiListActivity.this,""+error.toString());
+                ChatApplication.showToast(WifiListActivity.this,"Please try again later.");
                 ChatApplication.logDisplay( "ir blaster is found result error " + error.toString());
                 //found
                 ActivityHelper.dismissProgressDialog();
