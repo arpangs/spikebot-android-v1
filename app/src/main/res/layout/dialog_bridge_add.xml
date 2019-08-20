@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Already Philips Hue Bridge Added."
+            android:gravity="center"
+            android:textSize="@dimen/_16sdp"
+            android:textColor="@color/txtPanal"
+            android:layout_marginTop="@dimen/_25sdp"/>
+
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/btnExtingBridge"
+            android:layout_width="@dimen/_245sdp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_30sdp"
+            android:layout_gravity="center"
+            android:textAllCaps="false"
+            android:textSize="@dimen/_14sdp"
+            android:textColor="@color/automation_white"
+            android:background="@drawable/drawable_blue_schedule"
+            android:text="Continue with existing HueBridge"/>
+
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/btnSearchBridge"
+            android:layout_width="@dimen/_245sdp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_30sdp"
+            android:layout_gravity="center"
+            android:textAllCaps="false"
+            android:textSize="@dimen/_14sdp"
+            android:textColor="@color/automation_white"
+            android:background="@drawable/drawable_blue_schedule"
+            android:text="Search New HueBridge"/>
+
+
+
+
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -124,6 +124,13 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
+            android:name="com.spike.bot.activity.SmartDevice.SearchDeviceActivity"
+            android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
             android:name="com.spike.bot.activity.SmartDevice.BrandListActivity"
             android:label="@string/title_activity_profile"
             android:screenOrientation="portrait"
@@ -167,6 +174,13 @@
 
         <activity
             android:name="com.spike.bot.activity.SmartDevice.PhilipsHueBridgeListActivity"
+            android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="com.spike.bot.activity.SmartDevice.AddOrSelectBridgeActivity"
             android:label="@string/title_activity_profile"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"
@@ -238,11 +252,12 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan|adjustResize"/>
 
+        <!--android:windowSoftInputMode="adjustPan|adjustResize"-->
         <activity
             android:name="com.spike.bot.activity.Main2Activity"
             android:screenOrientation="portrait"
             android:label="@string/app_name"
-            android:windowSoftInputMode="adjustPan|adjustResize"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -287,6 +302,7 @@
 
         <activity android:name="com.spike.bot.activity.SignUp"
             android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait"/>
 
         <activity android:name="com.spike.bot.activity.NotificationSetting"

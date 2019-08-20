@@ -406,7 +406,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
                                 showIRSensorDialog();
                             }
                         }else {
-                            ChatApplication.showToast(WifiListActivity.this,""+result.toString());
+                            ChatApplication.showToast(WifiListActivity.this,""+result.optString("response"));
                         }
                     }else {
                         ChatApplication.showToast(WifiListActivity.this,"Please try again later.");

@@ -260,18 +260,14 @@ public class ActivityHelper {
 
 	@SuppressLint("MissingPermission")
 	public static String getIMEI(Context context) {
-		String number = ""; 
-//		PackageManager pm = context.getPackageManager();
-//		if (pm.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)){
-//		    //has Telephony features.
-//		}
+		String number = "";
 		try {
 			TelephonyManager tm = (TelephonyManager) context.getSystemService(context.TELEPHONY_SERVICE);
 			number = tm.getDeviceId();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return number;
 	}
 

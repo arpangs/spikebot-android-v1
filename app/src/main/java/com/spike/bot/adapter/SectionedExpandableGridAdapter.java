@@ -671,12 +671,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 //                          itemIcon=R.drawable.on;
 //                      }
 //                    }else {
-                    if(item.getDeviceType().equalsIgnoreCase("3")){
-                        itemIcon = Common.getIcon(Integer.parseInt(item.getDeviceType()), item.getDevice_icon());
-                    }else {
+//
                         itemIcon = Common.getIcon(item.getDeviceStatus(), item.getDevice_icon());
-                    }
-//                    }
                 } else {
 //                    holder.linearSwitchView.setBackgroundResource(R.drawable.drawable_black_boader);
                     /*--Sensor type start--*/
@@ -830,7 +826,11 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         notifyItemChanged(position, item);
 
                         if (!item.isSensor()) {
-                            mItemClickListener.itemClicked(item, "itemclick", position);
+                            if(item.getDeviceType().equalsIgnoreCase("3")){
+                                mItemClickListener.itemClicked(item, "philipsClick", position);
+                            }else {
+                                mItemClickListener.itemClicked(item, "itemclick", position);
+                            }
                         } else {
                             if (item.getSensor_type().equalsIgnoreCase("irblaster")) {
                                     /*if(item.getIsActive() == 1){
@@ -864,6 +864,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         if (!item.isSensor()) {
                             if(item.getDeviceType().equalsIgnoreCase("-1")){
                                 tempClickListener.itemClicked(item, "heavyloadlongClick", true, position);
+                            }else if(item.getDeviceType().equalsIgnoreCase("3")){
+                                tempClickListener.itemClicked(item, "philipslongClick", true, position);
                             }
                         } else {
                             if (item.getSensor_type().equalsIgnoreCase("irblaster")) {
@@ -893,7 +895,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                 if (item.getDeviceType().equalsIgnoreCase("-1")) {
                     holder.imgLongClick.setVisibility(View.VISIBLE);
-                }else if (item.getDeviceType().equalsIgnoreCase("2")) {
+                }else if (item.getDeviceType().equalsIgnoreCase("2") || item.getDeviceType().equalsIgnoreCase("3")) {
                     holder.imgLongClick.setVisibility(View.VISIBLE);
                 }else {
                     if(!item.getDeviceType().equalsIgnoreCase("1")){

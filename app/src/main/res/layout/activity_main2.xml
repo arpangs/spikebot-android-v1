@@ -286,10 +286,6 @@
         android:background="@color/automation_white"
         android:gravity="center|top"
         android:orientation="vertical"
-        android:paddingTop="30dp"
-        android:paddingBottom="10dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
         android:visibility="gone">
 
         <android.support.v4.widget.NestedScrollView
@@ -305,7 +301,11 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingTop="30dp"
+                android:paddingBottom="10dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
                 android:orientation="vertical">
 
                 <ImageView
@@ -370,6 +370,7 @@
                         android:layout_width="0dp"
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
+                        android:textSize="@dimen/_15sdp"
                         android:textAllCaps="false"
                         android:textColor="@color/automation_white"
                         android:background="@drawable/button_radius"
@@ -383,6 +384,7 @@
                         android:layout_marginRight="10dp"
                         android:layout_marginLeft="10dp"
                         android:textAllCaps="false"
+                        android:textSize="@dimen/_15sdp"
                         android:textColor="@color/automation_white"
                         android:background="@drawable/button_radius"
                         android:layout_height="wrap_content"
@@ -391,13 +393,15 @@
                 </LinearLayout>
 
                 <Button
-                    android:id="@+id/btn_login_search"
-                    android:layout_marginTop="16dp"
+                    android:id="@+id/btnSignUp"
+                    android:layout_marginTop="@dimen/_30sdp"
                     android:layout_marginRight="10dp"
                     android:layout_marginLeft="10dp"
+                    android:textSize="@dimen/_15sdp"
                     android:background="@drawable/button_radius"
                     android:textColor="@color/automation_white"
-                    android:text="SEARCH HOME CONTROLLER"
+                    android:text="Sign up"
+                    android:textAllCaps="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 

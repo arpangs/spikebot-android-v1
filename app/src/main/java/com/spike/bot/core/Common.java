@@ -57,7 +57,6 @@ public class Common {
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean NisConnected = activeNetwork != null && activeNetwork.isConnected();
         if (NisConnected) {
-
             if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE)
                 return true;
             else
@@ -375,6 +374,9 @@ public class Common {
                         resource = R.drawable.on;
                         break;
 
+                    case "Smart Bulb":
+                        resource = R.drawable.philips_hue_on;
+                        break;
                     default:
                         resource = R.drawable.bulb_on;
                         break;
@@ -436,20 +438,22 @@ public class Common {
                     case "heavyload":
                         resource = R.drawable.off;
                         break;
+
+                    case "Smart Bulb":
+                        resource = R.drawable.philips_hue_off;
+                        break;
                     default:
                         resource = R.drawable.bulb_off;
                         break;
                 }
                 break;
 
-            case 3:
-
-                switch (type) {
-                    case "Smart Bulb":
-                        resource = R.drawable.smart_bulb;
-                }
-
-                break;
+//            case 3:
+//                switch (type) {
+//
+//                }
+//
+//                break;
 
         }
         return resource;

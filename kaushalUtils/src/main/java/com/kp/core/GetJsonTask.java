@@ -40,7 +40,6 @@ public class GetJsonTask extends AsyncTask<String, Void, String> {
 	protected String doInBackground(String... urls) {
 
 		try {
-
 			return ActivityHelper.CallJSONService(url, json, method);
 		} catch (HttpHostConnectException e) {
 			error = "Can't connect to server, Problem with server or your internet connection.";

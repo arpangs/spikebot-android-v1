@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/sky_blue"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="0.5">
+
+            <TextView
+                android:id="@+id/txtTitleBridge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Connect Your Bridge"
+                android:textColor="@color/sensor_button"
+                android:textSize="@dimen/_14sdp"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/_15sdp"/>
+
+            <ImageView
+                android:id="@+id/imgBridge"
+                android:layout_width="@dimen/_200sdp"
+                android:layout_height="@dimen/_250sdp"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_30sdp"
+                android:src="@drawable/bridge_image"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="1">
+
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/txtInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingRight="@dimen/_25sdp"
+                android:paddingLeft="@dimen/_25sdp"
+                android:textSize="@dimen/_14sdp"
+                android:gravity="center"
+                android:text="Get Started by powering your Bridge to Power Cable."
+                android:textColor="@color/txtPanal"/>
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/btnNext"
+                android:layout_width="@dimen/_150sdp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Next"
+                android:gravity="center"
+                android:paddingLeft="@dimen/_20sdp"
+                android:textAllCaps="false"
+                android:textColor="@color/sensor_button"
+                android:textSize="@dimen/_14sdp"
+                android:drawableRight="@drawable/btn_next"
+                android:background="@drawable/background_white_gray_border"
+                android:layout_marginTop="@dimen/_20sdp"/>
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

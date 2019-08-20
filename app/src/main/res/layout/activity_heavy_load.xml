@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/new_screen_resolution"
+    android:orientation="vertical">
+
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        tools:ignore="MissingConstraints">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/sky_blue"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_10sdp"
+            android:background="@drawable/drawable_white_cornor"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/_10sdp"
+                android:layout_weight="0.9"
+                android:singleLine="true"
+                android:text="Current usage :"
+                android:textStyle="bold"
+                android:textColor="@color/sensor_button"
+                android:textSize="@dimen/_14sdp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left|center"
+                android:padding="@dimen/_10sdp"
+                android:orientation="horizontal">
+
+
+                <TextView
+                    android:id="@+id/txtCurrentValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center|left"
+                    android:textStyle="bold"
+                    android:text="--"
+                    android:textColor="@color/automation_black"
+                    android:textSize="@dimen/_16sdp" />
+
+                <ImageView
+                    android:id="@+id/imgHL"
+                    android:layout_width="@dimen/_22sdp"
+                    android:layout_height="@dimen/_22sdp"
+                    android:visibility="gone"
+                    android:layout_marginLeft="@dimen/_15sdp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/_9sdp"
+                android:layout_margin="@dimen/_10sdp"
+                android:background="@drawable/drawable_white_cornor"
+                android:orientation="horizontal">
+
+
+
+                <LinearLayout
+                    android:background="@drawable/edt_border"
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginRight="@dimen/_10sdp"
+                    android:layout_height="@dimen/_32sdp">
+
+                    <Spinner
+                        android:id="@+id/spinnerMonth"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_32sdp"
+                        android:layout_weight="1" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:background="@drawable/edt_border"
+                    android:layout_width="match_parent"
+                    android:layout_marginLeft="@dimen/_10sdp"
+                    android:layout_weight="1"
+                    android:layout_height="@dimen/_32sdp">
+
+                    <Spinner
+                        android:id="@+id/spinnerYear"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_32sdp"
+                        android:layout_weight="1" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/txtNodataFound"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:textSize="@dimen/_15sdp"
+            android:text="No data found."
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="@color/automation_black"
+            android:layout_marginTop="@dimen/_40sdp"/>
+
+        <FrameLayout
+            android:id="@+id/frameChart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginRight="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:background="@color/automation_white"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/txtGraphTital"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/_15sdp"
+                        android:gravity="center"
+                        android:layout_marginLeft="@dimen/_12sdp"
+                        android:textColor="@color/sensor_button"/>
+
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/barChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_marginBottom="@dimen/_15sdp"
+                        android:layout_marginLeft="@dimen/_22sdp"/>
+
+                    <ImageView
+                        android:id="@+id/imageShowNext"
+                        android:layout_width="@dimen/_42sdp"
+                        android:layout_height="@dimen/_42sdp"
+                        android:layout_marginRight="@dimen/_5sdp"
+                        android:layout_gravity="center|right"
+                        android:src="@drawable/next_scoll"/>
+
+                    <TextView
+                        android:id="@+id/txtGraphType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:paddingTop="@dimen/_5sdp"
+                        android:gravity="center"
+                        android:layout_gravity="center|bottom"
+                        android:textSize="@dimen/_12sdp"
+                        android:textColor="@color/automation_black"/>
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+
+        <FrameLayout
+            android:layout_width="@dimen/_70sdp"
+            android:layout_height="match_parent"
+            android:layout_gravity="left">
+
+            <TextView
+                android:id="@+id/txtYAxis"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@color/automation_black"
+                android:gravity="left|center"
+                android:lines="1"
+                android:rotation="-90"
+                android:text="kWh (Units)"
+                android:textStyle="bold"
+                android:scaleType="fitCenter"
+                android:textSize="@dimen/_12sdp"
+                android:textColor="@color/automation_black"/>
+        </FrameLayout>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

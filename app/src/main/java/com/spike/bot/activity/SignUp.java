@@ -37,6 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -99,7 +100,13 @@ public class SignUp extends AppCompatActivity {
         btn_signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                singUP();
+
+                if(Common.isConnectedToMobile(SignUp.this)){
+                    ChatApplication.showToast(SignUp.this,"Please connect to your gateway's local network and try again.");
+                }else {
+                    singUP();
+                }
+
             }
         });
 
@@ -132,7 +139,7 @@ public class SignUp extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-     //   super.onBackPressed();
+        super.onBackPressed();
     }
 
     /**
@@ -164,6 +171,14 @@ public class SignUp extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
             return;
         }
+
+        InetAddress addr = Main2Activity.getLocalIpAddress(SignUp.this);
+        String hostname = addr.toString().replace("/", "");
+
+        String[] array = hostname.split("\\.");
+
+        String ipAddressPI = array[0] + "." + array[1] + "." + array[2] + "." + Constants.IP_END;
+
 
         if(TextUtils.isEmpty(edt_first_name.getText().toString())){
             edt_first_name.requestFocus();
@@ -229,14 +244,14 @@ public class SignUp extends AppCompatActivity {
             //Toast.makeText(getApplicationContext(),"Password not match",Toast.LENGTH_SHORT).show();
             return;
         }
-
+        ActivityHelper.showProgressDialog(SignUp.this,"Please wait...",false);
         ChatApplication app = ChatApplication.getInstance();
         if (mSocket != null && mSocket.connected()) {
         } else {
             mSocket = app.getSocket();
         }
-        webUrl = app.url;
-        String url = webUrl + Constants.SIGNUP_API;
+//        webUrl = app.url;
+        String url = "http://" + ipAddressPI + ":"  + Constants.SIGNUP_API;
         String token = FirebaseInstanceId.getInstance().getToken();
         Common.savePrefValue(getApplicationContext(),Constants.DEVICE_PUSH_TOKEN,token);
 
@@ -258,7 +273,7 @@ public class SignUp extends AppCompatActivity {
         }
 
         ChatApplication.logDisplay("url is "+url+" "+object);
-        ActivityHelper.showProgressDialog(SignUp.this,"Please wait...",false);
+
 
         new GetJsonTask(this,url ,"POST",object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
@@ -323,9 +338,16 @@ public class SignUp extends AppCompatActivity {
                         ChatApplication.isRefreshHome=false;
                         ChatApplication.isSignUp=true;
                         Main2Activity.isResumeConnect=false;
-                        Intent resultIntent = new Intent();
-                        setResult(Activity.RESULT_OK, resultIntent);
+
+                        webUrl = ipAddressPI;
+                        ChatApplication.url = webUrl;
+
+                        Intent intent=new Intent(SignUp.this,Main2Activity.class);
+                        startActivity(intent);
                         finish();
+//                        Intent resultIntent = new Intent();
+//                        setResult(Activity.RESULT_OK, resultIntent);
+//                        finish();
                     }
                     else{
                         Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
@@ -340,7 +362,8 @@ public class SignUp extends AppCompatActivity {
             }
             @Override
             public void onFailure(Throwable throwable, String error) {
-                Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                ChatApplication.logDisplay("error is "+error);
+                ChatApplication.showToast(SignUp.this,"Please connect to your gateway's local network and try again.");
                 ActivityHelper.dismissProgressDialog();
             }
         }).execute();

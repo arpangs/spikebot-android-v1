@@ -35,6 +35,7 @@ import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.activity.HeavyLoadDetailActivity;
 import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.activity.ScheduleListActivity;
+import com.spike.bot.activity.SmartColorPickerActivity;
 import com.spike.bot.activity.ir.blaster.IRBlasterRemote;
 import com.spike.bot.adapter.MoodExpandableLayoutHelper;
 import com.spike.bot.core.APIConst;
@@ -642,22 +643,38 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
             obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
-            obj.put("room_device_id", deviceVO.getRoomDeviceId());
-            obj.put("module_id", deviceVO.getModuleId());
-            obj.put("device_id", deviceVO.getDeviceId());
-            obj.put("device_status", deviceVO.getOldStatus());
-            obj.put("localData", userId.equalsIgnoreCase("0") ? "0" : "1");
-            //  obj.put("is_change","1");
+            if(deviceVO.getDeviceType().equalsIgnoreCase("3")){
+                obj.put("status",deviceVO.getDeviceStatus());
+                obj.put("bright","");
+                obj.put("is_rgb","0");//1;
+                obj.put("rgb_array","");
+                obj.put("room_device_id",deviceVO.getRoomDeviceId());
+            }else {
+                obj.put("room_device_id", deviceVO.getRoomDeviceId());
+                obj.put("module_id", deviceVO.getModuleId());
+                obj.put("device_id", deviceVO.getDeviceId());
+                obj.put("device_status", deviceVO.getOldStatus());
+                obj.put("localData", userId.equalsIgnoreCase("0") ? "0" : "1");
+                //  obj.put("is_change","1");
 
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         if (mSocket != null && !mSocket.connected()) {
+            //TODO code here for ACK TimeOut
+            mSocket.emit("socketChangeDevice", obj);
+        }else{
 
+            String url="";
+            if(deviceVO.getDeviceType().equalsIgnoreCase("3")){
+                url = ChatApplication.url + Constants.changeHueLightState;
+            }else {
+                url = ChatApplication.url + Constants.CHANGE_DEVICE_STATUS;
+            }
 
-            String url = ChatApplication.url + Constants.CHANGE_DEVICE_STATUS;
-
+            ChatApplication.logDisplay("Device roomPanelOnOff mood "+url+"  " + obj.toString());
             //  ChatApplication.logDisplay( "roomPanelOnOff obj " + obj.toString());
             //  ChatApplication.logDisplay( "roomPanelOnOff url " + url );
 
@@ -668,7 +685,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
                         int code = result.getInt("code"); //message
                         String message = result.getString("message");
                         if (code == 200) {
-                         //   sectionedExpandableLayoutHelper.notifyDataSetChanged();
+                            //   sectionedExpandableLayoutHelper.notifyDataSetChanged();
                         } else {
                             Toast.makeText(getActivity().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                         }
@@ -683,37 +700,6 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
                     Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_SHORT).show();
                 }
             }).execute();
-
-        }else{
-
-            //TODO code here for ACK TimeOut
-            mSocket.emit("socketChangeDevice", obj);
-
-//            mSocket.emit("socketChangeDevice", obj, new AckWithTimeOut(Constants.ACK_TIME_OUT) {
-//                @Override
-//                public void call(Object... args) {
-//
-//                    if(args!=null){
-//
-//                        if(args[0].toString().equalsIgnoreCase("No Ack")){
-//
-//                            Log.d("ACK_SOCKET_2","Panel AckWithTimeOut : "+ args[0].toString());
-//
-//                            getActivity().runOnUiThread(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    sectionedExpandableLayoutHelper.notifyDataSetChanged();
-//                                }
-//                            });
-//
-//
-//                        }else if(args[0].toString().equalsIgnoreCase("true")){
-//                            cancelTimer();
-//                            Log.d("ACK_SOCKET_2","Panel AckWithTimeOut : "+ args[0].toString());
-//                        }
-//                    }
-//                }
-//            });
 
         }
 
@@ -733,6 +719,16 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
             intent.putExtra("getRoomName",item.getRoomName());
             intent.putExtra("getModuleId",item.getModuleId());
             startActivity(intent);
+        }else if(action.equalsIgnoreCase("philipslongClick")){
+            if(item.getDeviceStatus()==1){
+                Intent intent=new Intent(getActivity(), SmartColorPickerActivity.class);
+                intent.putExtra("roomDeviceId",item.getRoomDeviceId());
+                intent.putExtra("getOriginal_room_device_id",item.getOriginal_room_device_id());
+                startActivity(intent);
+            }else {
+                ChatApplication.showToast(getActivity(),"Please device on");
+            }
+
 
         }else if(action.equalsIgnoreCase("isIRSensorOnClick")){
             sendRemoteCommand(item);

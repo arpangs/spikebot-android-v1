@@ -404,6 +404,8 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                             mItemClickListener.itemClicked(item,"isIRSensorClick");
                         }else if(item.getDeviceType().equalsIgnoreCase("-1")){
                             mItemClickListener.itemClicked(item, "heavyloadlongClick");
+                        }else if(item.getDeviceType().equalsIgnoreCase("3")){
+                            mItemClickListener.itemClicked(item, "philipslongClick");
                         }
                         return false;
                     }
@@ -429,7 +431,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
 
                 if(item.getDevice_icon().equalsIgnoreCase("Remote_AC")){
                     holder.imgLongClick.setVisibility(View.VISIBLE);
-                }else if(item.getDeviceType().equalsIgnoreCase("-1")){
+                }else if(item.getDeviceType().equalsIgnoreCase("-1") || item.getDeviceType().equalsIgnoreCase("3")){
                     holder.imgLongClick.setVisibility(View.VISIBLE);
                 }else {
                     if(item.getDeviceType().equalsIgnoreCase("1")){

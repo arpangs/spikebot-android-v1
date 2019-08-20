@@ -21,6 +21,7 @@ import android.view.View;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.spike.bot.ChatApplication;
 import com.spike.bot.model.User;
 
 import java.io.BufferedReader;
@@ -117,7 +118,6 @@ public class Constants {
     public static final String validatecamerakey = "/validatecamerakey";
     public static final String addHueLight = "/addHueLight";
     public static final String getHueRouterDetails = "/getHueRouterDetails";
-//    public static final String HueLightsList = "/HueLightsList";
     public static final String HueLightsList = "/PhilipsHueLightsList";
     public static final String HueLightState = "/HueLightState";
     public static final String createHueUSer = "/createHueUSer";
@@ -126,7 +126,6 @@ public class Constants {
 
     //added : 3-10-2018
     public static final String GET_ALL_UNASSIGNED_DEVICES = "/getAllUnassignedDevices";
-    public static final String GET_ALL_GETORIGINALDEVICES = "/getOriginalDevices/0";
     public static final String ADD_UN_CONFIGURED_DEVICE = "/addUnconfiguredDevice";
 
     //door sensor
@@ -184,7 +183,6 @@ public class Constants {
     public static final String CONFIGURE_IR_BLASTER_REQUEST = "/configureIRBlasterRequest";
     public static final String ADD_IR_BLASTER = "/AddIRBlaster";
     public static final String GET_IR_BLASTER_INFO = "/getIRBlasterInfo";
-    public static final String GET_IR_DEVICE_DETAILS = "/getIRDeviceDetails";
     public static final String getIRDeviceTypeBrands = "/getIRDeviceTypeBrands";
     public static final String SEND_REMOTE_COMMAND = "/sendRemoteCommand";
     public static final String GET_REMOTE_SCHEDULE_LIST = "/getRemoteScheduleList";
@@ -194,6 +192,8 @@ public class Constants {
     public static final String CHANGE_REMOTE_SCHEDULE_STATUS = "/changeRemoteScheduleStatus";
     public static final String getRoomList = "/getRoomList";
     public static final String getDeviceBrandRemoteList = "/getDeviceBrandRemoteList";
+    public static final String changeHueLightState = "/changeHueLightState";
+    public static final String getPhilipsHueParams = "/getPhilipsHueParams";
 
 
     //new api for IR Blaster
@@ -206,19 +206,18 @@ public class Constants {
     public static final String GET_IR_DEVICE_TYPE_LIST = "/getIRDeviceTypeList";
     public static final String UPDATE_REMOTE_DETAILS = "/updateRemoteDetails";
     public static final String DELETE_REMOTE = "/deleteRemote";
+    public static final String deletePhilipsHue = "/deletePhilipsHue";
 
     //panel
     public static final String ADD_CUSTOM_PANEL = "/addCustomPanel";
     public static final String CHANGE_ROOM_PANELMOOD_STATUS_NEW = "/changeRoomPanelMoodStatus";
     public static final String CONFIGURE_NEW_PANEL = "/configureNewPanel";
-    // public static final String CHANGE_ROOM_PANEL_STATUS = "/changeRoomPanelStatus";
 
     //devices
     public static final String CHANGE_DEVICE_STATUS = "/changeDeviceStatus";
     public static final String ADD_CUSTOME_DEVICE = "/addCustomDevice";
     public static final String CHANGE_FAN_SPEED = "/changeFanSpeed";
     public static final String DELETE_INDIVIDUAL_DEVICE = "/deleteIndividualDevice";
-    public static final String SAVE_EDIT_SWITCH = "/saveEditSwitch";
     public static final String GET_FAN_SPEED = "/getFanSpeed";
     public static final String CHECK_INDIVIDUAL_SWITCH_DETAILS = "/checkIndividualSwitchDetails";
 
@@ -245,7 +244,6 @@ public class Constants {
     //profile
     public static final String GET_USER_PROFILE_INFO = "/getuserProfileInfo";
     public static final String SAVE_USER_PROFILE_DETAILS = "/saveUserProfileDetails";
-    //public static final String SIGN_UP_DETAILS = "/signupdetails";
 
     //camera
     public static final String ADD_CAMERA = "/addCamera";
@@ -255,12 +253,6 @@ public class Constants {
     public static final String GET_CAMERA_RECORDING_BY_DATE = "/getCameraRecordingByDate";
 
     //others
-
-    //  public static final String GET_CAMERA_RECORD_BY_DATE = "/getCameraRecordingByDate";
-    //  public static final String SHOW_CAMERA_RECORDING = "/showCameraRecording";
-
-    //notifications
-   // public static final String GET_NOTIFICATION_INFO = "/getNotificationInfo";
     public static final String getScheduleNotification = "/getScheduleNotification";
     public static final String GET_FILTER_NOTIFICATION_INFO = "/filterNotificationInfo";
     public static final String GET_NOTIFICATION_LIST = "/getNotificationList";
@@ -326,6 +318,25 @@ public class Constants {
         return getuserIp;
     }
 
+    public static User getuser(Context context){
+        User user=new User();
+        String jsonText = Common.getPrefValue(context, Common.USER_JSON);
+        if (!TextUtils.isEmpty(jsonText)) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<User>>() {}.getType();
+            List<User> userList = gson.fromJson(jsonText, type);
+            if(userList.size()>0){
+                for(int i=0; i<userList.size(); i++){
+                    if(userList.get(i).getIsActive()){
+                        user=userList.get(i);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return user;
+    }
 
     public static String getuserCloudIP(Context context){
         String getuserIp="";
@@ -368,6 +379,28 @@ public class Constants {
     }
 
 
+    public static String getCouldIp(Context context){
+        String getuserIp="";
+        String jsonText = Common.getPrefValue(context, Common.USER_JSON);
+        if (!TextUtils.isEmpty(jsonText)) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<User>>() {}.getType();
+            List<User> userList = gson.fromJson(jsonText, type);
+            if(userList.size()>0){
+                for(int i=0; i<userList.size(); i++){
+                    if(userList.get(i).getIsActive()){
+                        getuserIp=userList.get(i).getCloudIP();
+                        break;
+                    }
+                }
+            }
+        }
+
+        return getuserIp;
+    }
+
+
+
     public static String getMacAddress(Context context){
         String getuserIp="";
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
@@ -379,6 +412,7 @@ public class Constants {
                 for(int i=0; i<userList.size(); i++){
                     if(userList.get(i).getIsActive()){
                         getuserIp=userList.get(i).getMac_address();
+//                        getuserIp="1234";
                         break;
                     }
                 }
@@ -405,6 +439,26 @@ public class Constants {
             }
         };
     }
+
+    public static boolean checkLoginAccountCount(Context context){
+        boolean isFlag=false;
+        String jsonText = Common.getPrefValue(context, Common.USER_JSON);
+        if (!TextUtils.isEmpty(jsonText)) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<User>>() {}.getType();
+            List<User> userList = gson.fromJson(jsonText, type);
+            if(userList.size()>0){
+                isFlag=true;
+            }else {
+                isFlag=false;
+            }
+        }else {
+            isFlag=false;
+        }
+
+        return isFlag;
+    }
+
 
     public static Bitmap takescreenshot(View v) {
         v.setDrawingCacheEnabled(true);
@@ -502,4 +556,13 @@ public class Constants {
 
         return days;
     }
+
+    public static int getIntFromColor(int Red, int Green, int Blue){
+        Red = (Red << 16) & 0x00FF0000; //Shift red 16-bits and mask out other stuff
+        Green = (Green << 8) & 0x0000FF00; //Shift Green 8-bits and mask out other stuff
+        Blue = Blue & 0x000000FF; //Mask out anything not blue.
+
+        return 0xFF000000 | Red | Green | Blue; //0xFF000000 for 100% Alpha. Bitwise OR everything together.
+    }
+
 }

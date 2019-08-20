@@ -811,7 +811,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             btnSensorDialog.setTextColor(getResources().getColor(R.color.txtPanal));
         }
 
-
     }
 
     public void hideMenu(boolean isvisible) {

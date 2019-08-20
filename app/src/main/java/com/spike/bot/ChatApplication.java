@@ -103,8 +103,6 @@ public class ChatApplication extends Application  {
         this.url = url;
         try {
             mSocket = IO.socket(url);
-
-
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }

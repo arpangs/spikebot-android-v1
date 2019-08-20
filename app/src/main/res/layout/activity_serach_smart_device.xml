@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/new_screen_resolution"
+    tools:context="com.spike.bot.activity.DeviceLogActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/sky_blue"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/linearVIew"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Welcome to \nPhilips Hue"
+                android:gravity="center"
+                android:textColor="@color/automation_black"
+                android:textSize="@dimen/_16sdp"
+                android:padding="@dimen/_10sdp"/>
+
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Please press philips bridge button..."
+                android:gravity="center"
+                android:textColor="@color/automation_black"
+                android:textSize="@dimen/_16sdp"
+                android:padding="@dimen/_10sdp"/>
+
+
+            <Button
+                android:id="@+id/btnRetry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Retry"
+                android:gravity="center"
+                android:layout_margin="@dimen/_30sdp"
+                android:textColor="@color/automation_black"
+                android:textSize="@dimen/_16sdp"
+                android:padding="@dimen/_10sdp"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/linearTabSchedule"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_5sdp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnAssign"
+                android:background="@drawable/drawable_blue_schedule"
+                android:text="Assign Device list"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:textAllCaps="false"
+                android:textColor="@color/automation_white"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/btnUnAssing"
+                android:layout_marginLeft="@dimen/_8sdp"
+                android:background="@drawable/drawable_gray_schedule"
+                android:textColor="@color/txtPanal"
+                android:text="Unassign Device list"
+                android:layout_weight="1"
+                android:textAllCaps="false"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerDevice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_7sdp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

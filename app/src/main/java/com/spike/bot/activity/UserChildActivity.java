@@ -380,6 +380,7 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
             tv_title.setText("Enter Password");
         }
 
+
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -391,6 +392,7 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void onClick(View v) {
                 if(edtPasswordChild.getText().length()>0){
+                    isClickFlag=true;
                     ChatApplication.keyBoardHideForce(UserChildActivity.this);
                     dialog.cancel();
                     strPassword=edtPasswordChild.getText().toString();

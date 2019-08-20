@@ -48,5 +48,9 @@
     <string name="fan_error">Currently physical Fan on</string>
     <string name="heavyload">heavyload</string>
     <string name="ir_error">did not respond</string>
+    <string name="bulb_title">Install Your Smart Blub</string>
+    <string name="bulb_info">First, make sure the power is off on the light your replacing. Swap the current blub with your Smart Blub.</string>
+    <string name="bulb_title1">Power up your smart blub</string>
+    <string name="bulb_info1">Power on thw light wait about five seconds untill the Smart blub blink  three times.</string>
 
 </resources>

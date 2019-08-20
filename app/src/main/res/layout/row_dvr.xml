@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/_2sdp"
+    android:orientation="vertical">
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/relInActiveCamera"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_100sdp"
+            android:gravity="center"
+            android:layout_gravity="center">
+
+            <ImageView
+                android:id="@+id/imgInactiveCamera"
+                android:layout_width="@dimen/_70sdp"
+                android:layout_height="@dimen/_70sdp"
+                android:src="@drawable/camera_off_inactive"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relCamera"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <com.spike.bot.camera.ZoomLayout
+                android:id="@+id/zoomLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/automation_white">
+
+                <cn.nodemedia.NodePlayerView
+                    android:id="@+id/player"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </cn.nodemedia.NodePlayerView>
+            </com.spike.bot.camera.ZoomLayout>
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/txtCameraName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#4D000000"
+            android:layout_gravity="top"
+            android:padding="@dimen/_7sdp"
+            android:textSize="@dimen/_14sdp"
+            android:textColor="@color/automation_white"
+            android:text="camera"/>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+
+
+    </FrameLayout>
+
+</LinearLayout>
