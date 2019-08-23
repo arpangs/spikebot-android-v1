@@ -43,8 +43,6 @@ public class ConnectivityReceiver extends BroadcastReceiver {
             }
 
         }
-
-
     }
 
     //for change network

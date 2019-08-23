@@ -893,9 +893,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 //                }
 
 
-                if (item.getDeviceType().equalsIgnoreCase("-1")) {
-                    holder.imgLongClick.setVisibility(View.VISIBLE);
-                }else if (item.getDeviceType().equalsIgnoreCase("2") || item.getDeviceType().equalsIgnoreCase("3")) {
+                if (item.getDeviceType().equalsIgnoreCase("1")|| item.getDeviceType().equalsIgnoreCase("-1")|| item.getDeviceType().equalsIgnoreCase("2") || item.getDeviceType().equalsIgnoreCase("3")) {
                     holder.imgLongClick.setVisibility(View.VISIBLE);
                 }else {
                     if(!item.getDeviceType().equalsIgnoreCase("1")){

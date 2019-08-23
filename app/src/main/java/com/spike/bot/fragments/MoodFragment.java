@@ -718,6 +718,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
             intent.putExtra("getRoomDeviceId",item.getOriginal_room_device_id());
             intent.putExtra("getRoomName",item.getRoomName());
             intent.putExtra("getModuleId",item.getModuleId());
+            intent.putExtra("device_id",item.getDeviceId());
             startActivity(intent);
         }else if(action.equalsIgnoreCase("philipslongClick")){
             if(item.getDeviceStatus()==1){

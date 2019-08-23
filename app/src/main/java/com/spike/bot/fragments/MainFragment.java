@@ -252,6 +252,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 
         sectionedExpandableLayoutHelper.setClickable(false);
 
+
     }
 
     public void RefreshAnotherFragment() {
@@ -267,6 +268,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 //        }
 
         sectionedExpandableLayoutHelper.setClickable(false);
+
     }
 
     private NestedScrollView main_scroll;
@@ -2739,6 +2741,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             intent.putExtra("getRoomDeviceId",item.getRoomDeviceId());
             intent.putExtra("getRoomName",item.getRoomName());
             intent.putExtra("getModuleId",item.getModuleId());
+            intent.putExtra("device_id",item.getDeviceId());
             startActivity(intent);
 
         }else if(action.equalsIgnoreCase("philipslongClick")){
@@ -3424,11 +3427,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             return;
         }
 
-//        if(TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ID))){
-//            showDialog = 1;
-//            loginPIEvent.showLogin();
-//            return;
-//        }
 
         if(!Constants.checkLoginAccountCount(getActivity())){
             ((Main2Activity) getActivity()).showLogin();
@@ -3452,37 +3450,11 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             mMessagesView = (RecyclerView) view.findViewById(R.id.messages);
         }
         mMessagesView.setClickable(false);
-//        if (mFab == null) {
-//            mFab = (FloatingActionButton) view.findViewById(R.id.fab);
-//        }
-//        mFab.setClickable(false);
-//        ((Main2Activity)getActivity()).toolbarTitle.setClickable(false);
-//        ((Main2Activity)getActivity()).toolbarImage.setClickable(false);
         roomList = new ArrayList<>();
         if (sectionedExpandableLayoutHelper != null) {
             sectionedExpandableLayoutHelper.notifyDataSetChanged();
         }
 
-
-//        if (TextUtils.isEmpty(ChatApplication.url)) {
-//            Gson gson = new Gson();
-//            String jsonTextTemp = Common.getPrefValue(getContext(), Common.USER_JSON);
-//            List<User> userList = new ArrayList<User>();
-//            if (!TextUtils.isEmpty(jsonTextTemp) && !jsonTextTemp.equals("null")) {
-//                Type type = new TypeToken<List<User>>() {
-//                }.getType();
-//                userList = gson.fromJson(jsonTextTemp, type);
-//            }
-//            for (int i = 0; i < userList.size(); i++) {
-//                if (userList.get(i).getIsActive()) {
-//                    webUrl = userList.get(i).getCloudIP();
-//                    ChatApplication.url = webUrl;
-//                    isCloudConnected = true;
-//                    break;
-//                }
-//            }
-//
-//        }
 
         if(!ChatApplication.url.startsWith("http://")){
             ChatApplication.url="http://"+ChatApplication.url;
@@ -3854,7 +3826,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         }
 
 //        if (showDialog == 1 || checkmessgae == 1 || checkmessgae == 6 || checkmessgae == 7 || checkmessgae == 8 || checkmessgae == 9 || checkmessgae == 10|| checkmessgae == 12) {
-            ActivityHelper.showProgressDialog(getActivity(), "Please Wait...", false);
+            ActivityHelper.showProgressDialog(getActivity(), "Connectiong to cloud", false);
 //        }
 
         roomList.clear();

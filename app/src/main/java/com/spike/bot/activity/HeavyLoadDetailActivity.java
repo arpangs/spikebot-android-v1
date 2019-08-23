@@ -84,7 +84,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
     public ImageView imgHL,imageShowNext;
     public FrameLayout frameChart;
     public TextView txtGraphType,txtYAxis,txtGraphTital,txtNodataFound;
-    public String room_device_id = "",getRoomName="",getModuleId="";
+    public String room_device_id = "",getRoomName="",getModuleId="",device_id="";
     public TextView txtCurrentValue;
     public Spinner spinnerYear, spinnerMonth;
     public boolean isApiStatus=false;
@@ -103,6 +103,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
         room_device_id = getIntent().getStringExtra("getRoomDeviceId");
         getRoomName = getIntent().getStringExtra("getRoomName");
         getModuleId = getIntent().getStringExtra("getModuleId");
+        device_id = getIntent().getStringExtra("device_id");
 
         setUiId();
     }
@@ -153,12 +154,16 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
 
         getHeavyloadDetails();
 
+
         final JSONObject object = new JSONObject();
         try {
             object.put("module_id", getModuleId);
+            object.put("device_id","0"+ device_id);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        ChatApplication.logDisplay("json is "+object.toString());
 
         mSocket.emit("socketHeavyLoadValues", object);
 

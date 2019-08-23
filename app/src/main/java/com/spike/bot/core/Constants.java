@@ -42,18 +42,18 @@ public class Constants {
     //device type =3 - philip
     // device type = 2 = Ac
 
-//    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
-    public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //119 testing
+    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
+//    public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //119 testing
 //    public static  String CLOUD_SERVER_URL = "http://52.201.70.116:8079"; // unuser
 //    public static  String CLOUD_SERVER_URL = "http://54.201.70.116:8079"; // unuser
 //    public static  String CLOUD_SERVER_URL = ""; //117 testing
 //http://52.24.23.7:8079
 //http://52.24.23.7:7
 //    public static  String IP_END = "111";  // cam /1234
-//    public static  String  IP_END = "119"; //101 //117 //222  vpk / 123456
-    public static  String  IP_END = "118"; // smart / 123
+//    public static  String  IP_END = "119"; //jhanvi / 123
+//    public static  String  IP_END = "118"; // smart / 123
 
-//    public  static  String  IP_END = "222"; //101 //117 //222
+    public  static  String  IP_END = "222"; //101 //117 //222
 //    public static  String  IP_END = "101"; //101 //117 //222
 //    public static final String  IP_END = "117"; //101 //117 //222 vip/123
     public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";
@@ -155,6 +155,7 @@ public class Constants {
     public static final String GET_UNASSIGNED_SENSORS = "/getUnassignedSensors";
     public static final String SAVE_UNCONFIGURED_SENSOR = "/saveUnconfiguredSensor";
     public static final String UPDATE_UNREAD_LOGS = "/updateUnReadLogs";
+    public static final String SAVE_EDIT_SWITCH = "/saveEditSwitch";
 
     //temp sensor
     public static final String GET_TEMP_SENSOR_INFO = "/getTempSensorInfo";
@@ -309,6 +310,7 @@ public class Constants {
                 for(int i=0; i<userList.size(); i++){
                     if(userList.get(i).getIsActive()){
                         getuserIp=userList.get(i).getLocal_ip();
+//                        getuserIp="192.168.175.222";
                         break;
                     }
                 }

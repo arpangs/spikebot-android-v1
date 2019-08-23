@@ -252,11 +252,10 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
     private void setPowerOnOff(String powerText){
         isPowerOn = powerText.contains("ON") ||  powerText.contains(TURN_ON) ;
-        txtRemoteState.setText(isPowerOn ? TURN_OFF : TURN_ON);
-        txtAcState.setText(isPowerOn ? "Ac state : ON" : "Ac state : OFF");
-        txtRemoteState.setTextColor(isPowerOn ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.username4) );
-        mPowerButton.setBackground(isPowerOn ?getResources().getDrawable(R.drawable.drawable_turn_on_btn) :getResources().getDrawable(R.drawable.drawable_turn_off_btn));
-        imgRemoteStatus.setImageDrawable(isPowerOn ?getResources().getDrawable(R.drawable.power_red) :getResources().getDrawable(R.drawable.power_green));
+        txtAcState.setText(isRemoteActive==1 ? "Ac state : ON" : "Ac state : OFF");
+        txtRemoteState.setTextColor(isRemoteActive==1 ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.username4) );
+        mPowerButton.setBackground(isRemoteActive==1 ?getResources().getDrawable(R.drawable.drawable_turn_on_btn) :getResources().getDrawable(R.drawable.drawable_turn_off_btn));
+        imgRemoteStatus.setImageDrawable(isRemoteActive==1 ?getResources().getDrawable(R.drawable.power_red) :getResources().getDrawable(R.drawable.power_green));
     }
 
     @Override
@@ -268,7 +267,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 //                        setPowerOnOff(TURN_OFF);
 //                    else
 //                        setPowerOnOff(TURN_ON);
-                    sendRemoteCommand();
+                    sendRemoteCommand(0);
 //                }else{
 //                    Common.showToast("Remote is Not Active");
 //                }
@@ -276,9 +275,9 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
             case R.id.remote_temp_minus:
                 ChatApplication.logDisplay("isOn : " + isPowerOn);
-                if(isRemoteActive == 1 && !isPowerOn){
-
-                }else{
+//                if(isRemoteActive == 1 && !isPowerOn){
+//
+//                }else{
                     if(isRemoteActive == 1){
                         if(tempCurrent != tempMinus){
                             tempCurrent --;
@@ -287,18 +286,18 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                             tempCurrent = tempMinus;
                         }
                       //  setTempText(tempCurrent);
-                        sendRemoteCommand();
+                        sendRemoteCommand(1);
                     }else{
                         Common.showToast("Remote is Not Active");
                     }
-                }
+//                }
 
                 break;
             case R.id.remote_temp_plus:
                 ChatApplication.logDisplay("isOn : " + isPowerOn);
-                if(isRemoteActive == 1 && !isPowerOn){
-
-                }else{
+//                if(isRemoteActive == 1 && !isPowerOn){
+//
+//                }else{
                     if(isRemoteActive == 1){
                         if(tempCurrent != tempPlus){
                             tempCurrent ++;
@@ -307,11 +306,11 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                             tempCurrent = tempPlus;
                         }
                        // setTempText(tempCurrent);
-                        sendRemoteCommand();
+                        sendRemoteCommand(1);
                     }else{
                         Common.showToast("Remote is Not Active");
                     }
-                }
+//                }
 
                 break;
             case R.id.remote_toolbar_back:
@@ -715,7 +714,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
     }
 
 
-    private void sendRemoteCommand(){
+    private void sendRemoteCommand(final int counting){
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -734,7 +733,13 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
      //   sendRemoteCommandReq.setIrblasterModuleid(mIrBlasterModuleId);
         ChatApplication.logDisplay("Found : " + mRoomDeviceId);
 
-        sendRemoteCommandReq.setPower(isPowerOn ? "ON" : "OFF");
+//        sendRemoteCommandReq.setPower(isPowerOn ? "ON" : "OFF");
+        if(counting==2 || counting==1){
+            sendRemoteCommandReq.setPower("ON");
+        }else {
+            sendRemoteCommandReq.setPower(isRemoteActive==0 ? "ON" : "OFF");
+        }
+
         sendRemoteCommandReq.setSpeed(moodName);
         sendRemoteCommandReq.setTemperature(tempCurrent);
         sendRemoteCommandReq.setRoomDeviceId(mRoomDeviceId);
@@ -758,22 +763,27 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                     String message = result.getString("message");
 
                     if(code == 200){
-
-                        if(isPowerOn) //TODO code here : if power button caption text is empty or nulll then user can't able to perform any action
-                        setPowerOnOff(TURN_OFF);
-                    else
-                        setPowerOnOff(TURN_ON);
-
                         ChatApplication.isMoodFragmentNeedResume = true;
                         SendRemoteCommandRes tmpIrBlasterCurrentStatusList = Common.jsonToPojo(result.toString(),
                                 SendRemoteCommandRes.class);
 
+//                        if(counting==0){
+                            if(tmpIrBlasterCurrentStatusList.getData().getRemoteCurrentStatusDetails().getPower().equalsIgnoreCase("ON")){
+                                isRemoteActive=1;
+//                                isPowerOn=true;
+                            }else {
+//                                isPowerOn=false;
+                                isRemoteActive=0;
+                            }
+
+                        if(isPowerOn)
+                            setPowerOnOff(TURN_OFF);
+                        else
+                            setPowerOnOff(TURN_ON);
+
                         updateRemoteUI(tmpIrBlasterCurrentStatusList.getData().getRemoteCurrentStatusDetails());
-                        if(isPowerOn){
-                            isRemoteActive=1;
-                        }else {
-                            isRemoteActive=0;
-                        }
+
+//                        }
 
                     }else{
                         ChatApplication.showToast(IRBlasterRemote.this,mRemoteName.getText()+" "+getString(R.string.ir_error));
@@ -808,9 +818,9 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
     }
 
     public void remoteSpeed(String modeName){
-        if(isRemoteActive == 1 && !isPowerOn){
-            Common.showToast("Remote is Not Active");
-        }else{
+//        if(isRemoteActive == 1 && !isPowerOn){
+//            Common.showToast("Remote is Not Active");
+//        }else{
             if(isRemoteActive == 1){
 //                if(mSpeedCurrentPos != speedList.size()){
 //                    mSpeedCurrentPos ++;
@@ -819,11 +829,11 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 //                    mSpeedCurrentPos =  0;
 //                }
                 setSpeedText(modeName);
-                sendRemoteCommand();
+                sendRemoteCommand(2);
             }else{
                 Common.showToast("Remote is Not Active");
             }
-        }
+//        }
     }
 
     @Override
