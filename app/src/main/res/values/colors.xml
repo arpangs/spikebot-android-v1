@@ -30,5 +30,6 @@
     <color name="device_button">#70808080</color>
     <color name="sensor_button">#0098C0</color>
     <color name="txtPanal">#808080</color>
+    <color name="green">#00c1A4</color>
 
 </resources>

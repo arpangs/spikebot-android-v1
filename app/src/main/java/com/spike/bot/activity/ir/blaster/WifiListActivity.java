@@ -347,9 +347,11 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
 
         //edWifiPassword.setText("ccocco123456");
 
-        edWifiIP.setText(Constants.getGateway(this));
+       // edWifiIP.setText(Constants.getGateway(this));
         edWifiIP.setSelection(edWifiPassword.getText().length());
         edWifiPassword.setSelection(edWifiPassword.getText().length());
+
+        edWifiIP.setText(""+Constants.getuserIp(this));
         txtSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -227,9 +227,27 @@
                         android:layout_height="0.5dp"/>
 
                     <TextView
+                        android:id="@+id/fabGas"
+                        android:layout_margin="@dimen/_2sdp"
+                        android:visibility="visible"
+                        android:padding="@dimen/_6sdp"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/automation_white"
+                        android:text="Add Gas Sensor"/>
+
+
+                    <View
+                        android:background="#FFF"
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"/>
+
+                    <TextView
                         android:id="@+id/fab_menu4"
                         android:layout_margin="@dimen/_2sdp"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         android:padding="@dimen/_6sdp"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -237,6 +255,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/automation_white"
                         android:text="Add Temp Sensor"/>
+
 
                     <View
                         android:background="#FFF"
@@ -284,7 +303,7 @@
                         android:textStyle="bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         android:textColor="@color/automation_white"
                         android:text="Add Multi Sensor"/>
 

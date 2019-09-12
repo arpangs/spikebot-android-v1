@@ -1,6 +1,5 @@
 package com.spike.bot.activity.SmartDevice;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,9 +10,12 @@ import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kp.core.ActivityHelper;
@@ -22,6 +24,10 @@ import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Main2Activity;
+import com.spike.bot.activity.RoomEditActivity_v2;
+import com.spike.bot.activity.TTLock.AddTTlockActivity;
+import com.spike.bot.activity.TTLock.AddTTlockToRoomActivity;
+import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -29,6 +35,8 @@ import com.spike.bot.model.SmartBrandDeviceModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by Sagar on 6/8/19.
@@ -40,17 +48,31 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
     Button btnExtingBridge,btnAddToroom;
 
     SmartBrandDeviceModel smartBrandDeviceModel;
-    String host_ip="",getBridge_name="",bridge_id="";
+    String isViewType="",ttlockId="",ttbridgeId="",host_ip="",getBridge_name="",bridge_id="",lockName="",door_sensor_module_id="",door_name="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_confrim);
 
-        bridge_id=getIntent().getStringExtra("bridge_id");
-        getBridge_name=getIntent().getStringExtra("getBridge_name");
-        host_ip=getIntent().getStringExtra("host_ip");
-        smartBrandDeviceModel=(SmartBrandDeviceModel)getIntent().getSerializableExtra("searchModel");
+        isViewType=getIntent().getStringExtra("isViewType");
+        if(isViewType.equalsIgnoreCase("ttLock")){
+//            ttbridgeId=getIntent().getStringExtra("gatewayId");
+//            ttlockId=getIntent().getStringExtra("lockId");
+//            lockName=getIntent().getStringExtra("lockName");
+        }else if(isViewType.equalsIgnoreCase("syncDoor")){
+            door_sensor_module_id=getIntent().getStringExtra("door_sensor_module_id");
+            door_name=getIntent().getStringExtra("door_sensor_name");
+
+            if(TextUtils.isEmpty(door_name)){
+                door_name="";
+            }
+        }else {
+            bridge_id = getIntent().getStringExtra("bridge_id");
+            getBridge_name = getIntent().getStringExtra("getBridge_name");
+            host_ip = getIntent().getStringExtra("host_ip");
+            smartBrandDeviceModel = (SmartBrandDeviceModel) getIntent().getSerializableExtra("searchModel");
+        }
         setId();
     }
 
@@ -77,14 +99,28 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
     @Override
     public void onClick(View v) {
         if(v==btnAddToroom){
-            addCustomRoom();
+//            if(isViewType.equalsIgnoreCase("ttLock")){
+//                addCustomRoom();
+//            }else {
+                addCustomRoom();
+//            }
         }else if(v==btnExtingBridge){
-            Intent intent=new Intent(this,AddSMartDevicetoRoomActivity.class);
-            intent.putExtra("searchModel",smartBrandDeviceModel);
-            intent.putExtra("bridge_id",bridge_id);
-            intent.putExtra("getBridge_name",getBridge_name);
-            intent.putExtra("host_ip",host_ip);
-            startActivity(intent);
+            if(isViewType.equalsIgnoreCase("ttLock") || isViewType.equalsIgnoreCase("syncDoor")){
+                Intent intent = new Intent(this, AddTTlockToRoomActivity.class);
+                intent.putExtra("door_sensor_module_id", ""+door_sensor_module_id);
+                intent.putExtra("door_sensor_name",""+door_name);
+//                intent.putExtra("lockName", lockName);
+//                intent.putExtra("lockId", ttlockId);
+//                intent.putExtra("gatewayId", ttbridgeId);
+                startActivity(intent);
+            }else {
+                Intent intent = new Intent(this, AddSMartDevicetoRoomActivity.class);
+                intent.putExtra("searchModel", smartBrandDeviceModel);
+                intent.putExtra("bridge_id", bridge_id);
+                intent.putExtra("getBridge_name", getBridge_name);
+                intent.putExtra("host_ip", host_ip);
+                startActivity(intent);
+            }
         }
     }
 
@@ -172,12 +208,242 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
                     if (code == 200) {
                         dialog.dismiss();
                         JSONObject jsonObject=new JSONObject(result.toString());
-                        getHueBridgeLightList(jsonObject.optString("data"));
+
+                        if(isViewType.equalsIgnoreCase("ttLock")){
+//                            addTTlockToRoom(jsonObject.optString("data"));
+
+                           intentNext(roomName.getText().toString(),jsonObject.optString("data"));
+                        }else if(isViewType.equalsIgnoreCase("syncDoor")){
+                            roomNameList.add(roomName.getText().toString());
+                            showAddSensorDialog(jsonObject.optString("data"));
+                        }else {
+                            getHueBridgeLightList(jsonObject.optString("data"));
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
                         ActivityHelper.dismissProgressDialog();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        }).execute();
+    }
+
+    ArrayList<String> roomNameList = new ArrayList<>();
+
+    private void showAddSensorDialog(String room_id){
+
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_add_sensordoor);
+        dialog.setCanceledOnTouchOutside(false);
+
+        final EditText edt_door_name = (EditText) dialog.findViewById(R.id.txt_door_sensor_name);
+        final TextView edt_door_module_id = (TextView) dialog.findViewById(R.id.txt_module_id);
+        final Spinner sp_room_list = (Spinner) dialog.findViewById(R.id.sp_room_list);
+
+        TextView dialogTitle = (TextView) dialog.findViewById(R.id.tv_title);
+        TextView txt_sensor_name = (TextView) dialog.findViewById(R.id.txt_sensor_name);
+
+        dialogTitle.setText("Add Door Sensor");
+        txt_sensor_name.setText("Door Name");
+
+        edt_door_module_id.setText(door_sensor_module_id);
+        edt_door_module_id.setFocusable(false);
+        edt_door_name.setText(""+door_name);
+
+        TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(this,roomNameList,1,false);
+        sp_room_list.setAdapter(customAdapter);
+
+        Button btn_cancel = (Button) dialog.findViewById(R.id.btn_door_cancel);
+        Button btn_save = (Button) dialog.findViewById(R.id.btn_door_save);
+        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
+
+        iv_close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        btn_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveSensor(dialog, edt_door_name, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list ,room_id);
+                dialog.dismiss();
+            }
+        });
+
+        if(!dialog.isShowing()){
+            dialog.show();
+        }
+    }
+
+
+    private void saveSensor(final Dialog dialog, EditText textInputEditText, String door_name,
+                            String door_module_id, Spinner sp_room_list, String room_id){
+
+        if(!ActivityHelper.isConnectingToInternet(AddDeviceConfirmActivity.this)){
+            Toast.makeText(AddDeviceConfirmActivity.this.getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if(TextUtils.isEmpty(textInputEditText.getText().toString())){
+            textInputEditText.setError("Enter Door Name");
+            textInputEditText.requestFocus();
+            return;
+        }
+
+        ActivityHelper.showProgressDialog(AddDeviceConfirmActivity.this,"Please wait.",false);
+
+        JSONObject obj = new JSONObject();
+        try {
+            int room_pos = sp_room_list.getSelectedItemPosition();
+
+            obj.put("room_id",room_id);
+            obj.put("room_name",roomNameList.get(room_pos));
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            obj.put("door_sensor_name", door_name);
+            obj.put("door_sensor_module_id",door_module_id);
+            obj.put("is_new",1);
+            obj.put("panel_id","");
+            obj.put("door_sensor_id","");
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String url = ChatApplication.url + Constants.ADD_DOOR_SENSOR;
+
+
+        new GetJsonTask(AddDeviceConfirmActivity.this,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                try {
+                    //{"code":200,"message":"success"}
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+
+                    if(code==200){
+
+                        if(!TextUtils.isEmpty(message)){
+                            Toast.makeText(AddDeviceConfirmActivity.this.getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                        }
+                        ActivityHelper.dismissProgressDialog();
+                        dialog.dismiss();
+
+                        setIntentMain();
+                    }
+                    else{
+                        Toast.makeText(AddDeviceConfirmActivity.this.getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                    }
+                    // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    ActivityHelper.dismissProgressDialog();
+
+                }
+            }
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        }).execute();
+    }
+
+    private void setIntentMain() {
+        Intent intent=new Intent(AddDeviceConfirmActivity.this, Main2Activity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        this.finish();
+    }
+
+
+    private void intentNext(String lockName,String room_id) {
+        Intent intent=new Intent(AddDeviceConfirmActivity.this, AddTTlockActivity.class);
+        intent.putExtra("lockName","");
+        intent.putExtra("room_id",room_id);
+        intent.putExtra("isFlagView",""+1);
+        startActivity(intent);
+    }
+
+    private void addTTlockToRoom(String data) {
+
+        if (!ActivityHelper.isConnectingToInternet(AddDeviceConfirmActivity.this)) {
+            Toast.makeText(AddDeviceConfirmActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ActivityHelper.showProgressDialog(AddDeviceConfirmActivity.this, "Please wait... ", false);
+
+        //{
+        //  "id":"8",
+        //        "uniqueid":"00:17:88:01:04:1a:94:d9-0b",
+        //        "host_ip":"192.168.175.69",
+        //        "smart_device_brand":"Philips Hue",
+        //        "smart_device_type":"Smart Bulb",
+        //        "smart_device_status":1,
+        //        "smart_device_brightness":100,
+        //        "smart_device_rgb":"[255,255,255]",
+        //        "smart_device_name":"Iot",
+        //  "user_id":"1559035111028_VojOpeeBF",
+        //  "is_new": 0,
+        //  "room_id":"1564203743397_0XzNFAfth",
+        //  "panel_id":"1564204083330_j9Rz-Agqr",
+        //  "room_device_id":"1564204083339_M3rJKZiVvY"
+        //}
+        String url = ChatApplication.url + Constants.addTTLock;
+
+        JSONObject jsonObject=new JSONObject();
+        try {
+            jsonObject.put("panel_id","" );
+            jsonObject.put("door_sensor_id","");
+
+            jsonObject.put("is_new",1 );
+            jsonObject.put("bridge_id",ttbridgeId);
+            jsonObject.put("lock_id",ttlockId);
+            jsonObject.put("room_id",data);
+
+            jsonObject.put("lock_name",lockName);
+            jsonObject.put("user_id", "" + Common.getPrefValue(this, Constants.USER_ID));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ChatApplication.logDisplay("smart is " + url);
+        new GetJsonTask(AddDeviceConfirmActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
+            @Override
+            public void onSuccess(JSONObject result) {
+                ActivityHelper.dismissProgressDialog();
+                try {
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    ChatApplication.showToast(AddDeviceConfirmActivity.this,message);
+                    if (code == 200) {
+                        Intent intent=new Intent(AddDeviceConfirmActivity.this, Main2Activity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
                 }
             }
 

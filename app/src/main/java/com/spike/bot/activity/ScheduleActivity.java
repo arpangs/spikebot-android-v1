@@ -2483,6 +2483,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
         }
 
+
         sortList(roomArrayList);
         roomArrayListTemp.clear();
         roomArrayListTemp=roomArrayList;
@@ -2751,6 +2752,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         for(int i=0; i<roomArrayListTemp.size(); i++){
             int count=0;
             for(int j=0; j<roomArrayListTemp.get(i).getPanelList().size(); j++){
+
                 for(int k=0; k<roomArrayListTemp.get(i).getPanelList().get(j).getDeviceList().size(); k++){
 
                     if(roomArrayListTemp.get(i).getPanelList().get(j).getDeviceList().get(k).isSelected()){

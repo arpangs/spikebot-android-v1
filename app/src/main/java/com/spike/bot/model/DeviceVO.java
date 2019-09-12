@@ -81,6 +81,36 @@ public class DeviceVO implements Serializable,Cloneable {
     private String remote_device_id;
     private String room_panel_id;
 
+    public int getLock_id() {
+        return lock_id;
+    }
+
+    public void setLock_id(int lock_id) {
+        this.lock_id = lock_id;
+    }
+
+    private int lock_id;
+
+    public int getDoor_lock_status() {
+        return door_lock_status;
+    }
+
+    public void setDoor_lock_status(int door_lock_status) {
+        this.door_lock_status = door_lock_status;
+    }
+
+    private int door_lock_status=1;
+
+    public int getDoor_subtype() {
+        return door_subtype;
+    }
+
+    public void setDoor_subtype(int door_subtype) {
+        this.door_subtype = door_subtype;
+    }
+
+    private int door_subtype;
+
     public String getDevice_nameTemp() {
         return device_nameTemp;
     }

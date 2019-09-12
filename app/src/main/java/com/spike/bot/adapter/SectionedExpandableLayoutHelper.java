@@ -126,7 +126,6 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                                 if(devicesList.get(i).getRemote_device_id().equalsIgnoreCase(deviceId) &&
                                         devicesList.get(i).getModuleId().equalsIgnoreCase(moduleId)){
 
-
                                     devicesList.get(i).setRemote_status(Integer.parseInt(deviceStatus) == 1 ? "ON" : "OFF");
                                 }
 
@@ -236,7 +235,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
      * @param door_sensor_id
      * @param door_sensor_status
      */
-    public void updateDoorStatus(String room_order, String door_sensor_id, String door_sensor_status){
+    public void updateDoorStatus(String room_order, String door_sensor_id, String door_sensor_status,String door_lock_status){
 
         DeviceVO item = new DeviceVO();
         item.setSensor_id(door_sensor_id);
@@ -258,6 +257,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
 
                             if(devicesList.get(i).getSensor_id().equalsIgnoreCase(door_sensor_id)){
                                 devicesList.get(i).setDoor_sensor_status(door_sensor_status);
+                                devicesList.get(i).setDoor_lock_status(Integer.parseInt(door_lock_status));
                             }
                         }
                     }

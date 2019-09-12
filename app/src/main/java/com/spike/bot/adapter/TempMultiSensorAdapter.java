@@ -32,12 +32,12 @@ import java.util.ArrayList;
 public class TempMultiSensorAdapter extends RecyclerView.Adapter<TempMultiSensorAdapter.SensorViewHolder>{
 
 //    SensorResModel.DATA.TempList.NotificationList[] notificationList;
-   ArrayList<SensorResModel.DATA.MultiSensorList.TempNotificationList> notificationList=new ArrayList<>();
+   ArrayList<SensorResModel.DATA.TempList.TempNotificationList> notificationList=new ArrayList<>();
     private boolean isCF;
     private OnNotificationSensorContextMenu onNotificationContextMenu;
     private Context mContext;
 
-    public TempMultiSensorAdapter(ArrayList<SensorResModel.DATA.MultiSensorList.TempNotificationList> arrayList, boolean cfType, OnNotificationSensorContextMenu onNotificationContextMenu){
+    public TempMultiSensorAdapter(ArrayList<SensorResModel.DATA.TempList.TempNotificationList> arrayList, boolean cfType, OnNotificationSensorContextMenu onNotificationContextMenu){
         this.notificationList = arrayList;
         this.isCF = cfType;
         this.onNotificationContextMenu = onNotificationContextMenu;
@@ -67,7 +67,7 @@ public class TempMultiSensorAdapter extends RecyclerView.Adapter<TempMultiSensor
             holder.viewLine.setVisibility(View.VISIBLE);
         }
         //\u2109 \u2103 (℉ & ℃)
-        final SensorResModel.DATA.MultiSensorList.TempNotificationList notification = notificationList.get(position);
+        final SensorResModel.DATA.TempList.TempNotificationList notification = notificationList.get(position);
 
         String minVal = "";
         String maxVal = "";
@@ -141,12 +141,11 @@ public class TempMultiSensorAdapter extends RecyclerView.Adapter<TempMultiSensor
     }
 
     /**
-     *
-     * @param v
+     *  @param v
      * @param notification
      * @param position
      */
-    private void displayContextMenu(View v, final SensorResModel.DATA.MultiSensorList.TempNotificationList notification, final int position) {
+    private void displayContextMenu(View v, final SensorResModel.DATA.TempList.TempNotificationList notification, final int position) {
 
         PopupMenu popup = new PopupMenu(mContext, v);
         @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(mContext, R.style.PopupMenu);

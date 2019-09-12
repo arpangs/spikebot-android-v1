@@ -154,7 +154,6 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
 
         getHeavyloadDetails();
 
-
         final JSONObject object = new JSONObject();
         try {
             object.put("module_id", getModuleId);
@@ -163,15 +162,19 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
             e.printStackTrace();
         }
 
-        ChatApplication.logDisplay("json is "+object.toString());
+        if(mSocket!=null){
+            mSocket.emit("socketHeavyLoadValues", object);
+        }
 
-        mSocket.emit("socketHeavyLoadValues", object);
+        ChatApplication.logDisplay("json is "+object.toString());
 
         countDownTimerSocket = new CountDownTimer(10000, 1000) {
             public void onTick(long millisUntilFinished) {
             }public void onFinish() {
                 ChatApplication.logDisplay("countDownTimerSocket calling " + object);
+                if(mSocket!=null) {
                     mSocket.emit("socketHeavyLoadValues", object);
+                }
                 if(countDownTimerSocket!=null){
                     countDownTimerSocket.start();
                 }

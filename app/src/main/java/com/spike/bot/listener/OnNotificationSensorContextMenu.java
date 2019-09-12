@@ -10,6 +10,6 @@ import com.spike.bot.model.SensorResModel;
  */
 public interface OnNotificationSensorContextMenu {
 
-    void onEditOpetion(SensorResModel.DATA.MultiSensorList.TempNotificationList notification, int position, boolean isEdit);
-    void onSwitchChanged(SensorResModel.DATA.MultiSensorList.TempNotificationList notification, SwitchCompat swithcCompact, int position, boolean isActive);
+    void onEditOpetion(SensorResModel.DATA.TempList.TempNotificationList notification, int position, boolean isEdit);
+    void onSwitchChanged(SensorResModel.DATA.TempList.TempNotificationList notification, SwitchCompat swithcCompact, int position, boolean isActive);
 }

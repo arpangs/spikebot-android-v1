@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.internal.Primitives;
 import com.spike.bot.listener.RouterIssue;
+import com.ttlock.bl.sdk.net.OkHttpRequest;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -158,7 +160,34 @@ public class Common {
         return retVal;
     }
 
-    public static String getMacAddress(Context context,String ipaddress){
+    public static String getMacAddr() {
+        try {
+            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface nif : all) {
+                if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
+
+                byte[] macBytes = nif.getHardwareAddress();
+                if (macBytes == null) {
+                    return "";
+                }
+
+                StringBuilder res1 = new StringBuilder();
+                for (byte b : macBytes) {
+                    res1.append(Integer.toHexString(b & 0xFF) + ":");
+                }
+
+                if (res1.length() > 0) {
+                    res1.deleteCharAt(res1.length() - 1);
+                }
+                return res1.toString();
+            }
+        } catch (Exception ex) {
+            //handle exception
+        }
+        return "";
+    }
+
+    public static String getMacAddress(Context context, String ipaddress) {
         if (ipaddress == null)
             return null;
         BufferedReader br = null;
@@ -171,7 +200,7 @@ public class Common {
                     // Basic sanity check
                     String mac = splitted[3];
                     if (mac.matches("..:..:..:..:..:..")) {
-                        ChatApplication.logDisplay("mac address is "+mac);
+                        ChatApplication.logDisplay("mac address is " + mac);
                         return mac;
                     } else {
                         return null;
@@ -377,6 +406,14 @@ public class Common {
                     case "Smart Bulb":
                         resource = R.drawable.philips_hue_on;
                         break;
+
+                    case "lockWithDoor":
+                        resource = R.drawable.door_unlocked;
+                        break;
+
+                    case "lockOnly":
+                        resource = R.drawable.unlock_only;
+                        break;
                     default:
                         resource = R.drawable.bulb_on;
                         break;
@@ -442,6 +479,15 @@ public class Common {
                     case "Smart Bulb":
                         resource = R.drawable.philips_hue_off;
                         break;
+
+                    case "lockWithDoor":
+                        resource = R.drawable.door_locked;
+                        break;
+
+                    case "lockOnly":
+                        resource = R.drawable.lock_only;
+                        break;
+
                     default:
                         resource = R.drawable.bulb_off;
                         break;
@@ -904,5 +950,25 @@ public class Common {
 
     public static Object fromJson(String jsonString, Type type) {
         return new Gson().fromJson(jsonString, type);
+    }
+
+    public static String isInitSuccess(String mac) {
+        String url = Constants.locK_base_uri + "/v3/gateway/isInitSuccess";
+        HashMap params = new HashMap();
+        params.put("clientId", Constants.client_id);
+        params.put("accessToken", Constants.access_token);
+        params.put("gatewayNetMac", mac);
+        params.put("date", String.valueOf(System.currentTimeMillis()));
+        return OkHttpRequest.sendPost(url, params);
+
+    }
+
+    public static String getUserId() {
+        String url = Constants.locK_base_uri + "v3/user/getUid";
+        HashMap params = new HashMap();
+        params.put("clientId", Constants.client_id);
+        params.put("accessToken", Constants.access_token);
+        params.put("date", String.valueOf(System.currentTimeMillis()));
+        return OkHttpRequest.sendPost(url, params);
     }
 }

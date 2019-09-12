@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
@@ -107,22 +108,6 @@ public class AddSMartDevicetoRoomActivity extends AppCompatActivity implements V
         }
         ActivityHelper.showProgressDialog(AddSMartDevicetoRoomActivity.this, "Please wait... ", false);
 
-        //{
-        //  "id":"8",
-        //        "uniqueid":"00:17:88:01:04:1a:94:d9-0b",
-        //        "host_ip":"192.168.175.69",
-        //        "smart_device_brand":"Philips Hue",
-        //        "smart_device_type":"Smart Bulb",
-        //        "smart_device_status":1,
-        //        "smart_device_brightness":100,
-        //        "smart_device_rgb":"[255,255,255]",
-        //        "smart_device_name":"Iot",
-        //  "user_id":"1559035111028_VojOpeeBF",
-        //  "is_new": 0,
-        //  "room_id":"1564203743397_0XzNFAfth",
-        //  "panel_id":"1564204083330_j9Rz-Agqr",
-        //  "room_device_id":"1564204083339_M3rJKZiVvY"
-        //}
         String url = ChatApplication.url + Constants.addHueLight;
 
         JSONObject jsonObject=new JSONObject();
@@ -163,6 +148,7 @@ public class AddSMartDevicetoRoomActivity extends AppCompatActivity implements V
                         Constants.activityAddDeviceConfirmActivity.finish();
                         Constants.activityPhilipsHueBridgeDeviceListActivity.finish();
                         Intent intent=new Intent(AddSMartDevicetoRoomActivity.this, Main2Activity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         finish();
                     }

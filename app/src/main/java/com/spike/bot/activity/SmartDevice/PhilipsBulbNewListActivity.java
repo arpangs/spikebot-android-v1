@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 public class PhilipsBulbNewListActivity extends AppCompatActivity {
 
     public Toolbar toolbar;
+    FloatingActionButton fab;
     public String host_ip="",getBridge_name="",bridge_id="";
     public RecyclerView recyclerSmartDevice;
     public TextView txtNodataFound;
@@ -62,6 +64,8 @@ public class PhilipsBulbNewListActivity extends AppCompatActivity {
         recyclerSmartDevice=findViewById(R.id.recyclerSmartDevice);
         txtNodataFound=findViewById(R.id.txtNodataFound);
         setSupportActionBar(toolbar);
+        fab=findViewById(R.id.fab);
+        fab.setVisibility(View.GONE);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -263,6 +267,7 @@ public class PhilipsBulbNewListActivity extends AppCompatActivity {
 
     private void callIntentConfi(SmartBrandDeviceModel smartBrandDeviceModel) {
         Intent intent=new Intent(this,AddDeviceConfirmActivity.class);
+        intent.putExtra("isViewType","smartDevice");
         intent.putExtra("searchModel",smartBrandDeviceModel);
         intent.putExtra("bridge_id",bridge_id);
         intent.putExtra("getBridge_name",getBridge_name);

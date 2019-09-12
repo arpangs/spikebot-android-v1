@@ -180,6 +180,12 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
                 holder.sectionTextView.setText(panel1.getPanelName());
                 holder.iv_room_panel_onoff.setVisibility(View.GONE);
 
+                if(panel1.getDeviceList().size()==0){
+                    holder.ll_background.setVisibility(View.GONE);
+                }else {
+                    holder.ll_background.setVisibility(View.VISIBLE);
+                }
+
                 break;
             case VIEW_TYPE_ITEM :
                 final DeviceVO item = (DeviceVO) mDataArrayList.get(position);
@@ -394,7 +400,7 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
                 //for item
         TextView itemTextView;
         ImageView iv_icon;
-        LinearLayout ll_room_item;
+        LinearLayout ll_room_item,ll_background;
         ImageView iv_icon_text;
         ImageView iv_icon_select;
         RelativeLayout rel_main_view;
@@ -417,6 +423,7 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
                 itemTextView = (TextView) view.findViewById(R.id.heading);
                 sectionTextView = itemTextView;
                 iv_room_panel_onoff = (ImageView) view.findViewById(R.id.iv_room_panel_onoff);
+                ll_background =  view.findViewById(R.id.ll_background);
 
             } else {
                 view_line_top = (View) view.findViewById(R.id.view_line_top);

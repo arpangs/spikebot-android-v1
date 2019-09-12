@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.model.User;
+import com.ttlock.bl.sdk.util.DigitUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,23 +33,26 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class Constants {
 
     //device type =3 - philip
     // device type = 2 = Ac
 
-    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
-//    public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //119 testing
+//    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
+//    public static  String CLOUD_SERVER_URL = "http://api.spikebot.io"; //222
+    public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //wifi / 123
 //    public static  String CLOUD_SERVER_URL = "http://52.201.70.116:8079"; // unuser
 //    public static  String CLOUD_SERVER_URL = "http://54.201.70.116:8079"; // unuser
 //    public static  String CLOUD_SERVER_URL = ""; //117 testing
 //http://52.24.23.7:8079
-//http://52.24.23.7:7
+//http://52.24.23.7:7 tester / 123
 //    public static  String IP_END = "111";  // cam /1234
 //    public static  String  IP_END = "119"; //jhanvi / 123
 //    public static  String  IP_END = "118"; // smart / 123
@@ -57,8 +61,11 @@ public class Constants {
 //    public static  String  IP_END = "101"; //101 //117 //222
 //    public static final String  IP_END = "117"; //101 //117 //222 vip/123
     public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";
+//    public static final String CAMERA_DEEP = "rtmp://vpn.spikebot.io";
     public static final String CAMERA_PATH = "/static/storage/volume/pi/";
 
+//    public static String startUrl="http://vpn.sp";
+    public static String startUrl="http://home.d";
 
     public static final int ACK_TIME_OUT = 5000;
     public static final int REMOTE_REQUEST_CODE = 10;
@@ -132,6 +139,7 @@ public class Constants {
     public static final String CONFIGURE_DOOR_SENSOR_REQUEST = "/configureDoorSensorRequest";
     public static final String ADD_DOOR_SENSOR = "/addDoorSensor";
     public static final String addMultiSensor = "/addMultiSensor";
+    public static final String addGasSensor = "/addGasSensor";
     public static final String addSmartRemote = "/addSmartRemote";
     public static final String GET_DOOR_SENSOR_INFO = "/getDoorSensorInfo";
     public static final String ADD_DOOR_SENSOR_NOTIFICATION = "/addDoorSensorNotification";
@@ -149,6 +157,10 @@ public class Constants {
     public static final String filterHeavyLoadData = "/filterHeavyLoadData";
     public static final String getHueBridgeList = "/getHueBridgeList";
     public static final String getSpikebotHueLightList = "/getSpikebotHueLightList";
+    public static final String changeLockSensorAutoLockStatus = "/changeLockSensorAutoLockStatus";
+    public static final String deleteDoorLock = "/deleteDoorLock";
+    public static final String addLockBridge = "/addLockBridge";
+    public static final String deleteTTLockBridge = "/deleteTTLockBridge";
 
     public static final String SENSOR_ROOM_DETAILS = "/sensorRoomDetails";
     public static final String SENSOR_NOTIFICATION = "/sensorNotification";
@@ -156,6 +168,7 @@ public class Constants {
     public static final String SAVE_UNCONFIGURED_SENSOR = "/saveUnconfiguredSensor";
     public static final String UPDATE_UNREAD_LOGS = "/updateUnReadLogs";
     public static final String SAVE_EDIT_SWITCH = "/saveEditSwitch";
+    public static final String configureGasSensorRequest = "/configureGasSensorRequest";
 
     //temp sensor
     public static final String GET_TEMP_SENSOR_INFO = "/getTempSensorInfo";
@@ -179,6 +192,7 @@ public class Constants {
     public static final String deleteMultiSensor = "/deleteMultiSensor";
     public static final String getCameraLogs = "/getCameraLogs";
     public static final String reportFalseImage = "/reportFalseImage";
+    public static final String changeTempSensorNotificationStatus = "/changeTempSensorNotificationStatus";
 
     //IR Blaster
     public static final String CONFIGURE_IR_BLASTER_REQUEST = "/configureIRBlasterRequest";
@@ -263,11 +277,26 @@ public class Constants {
     public static final String updateBadgeCount = "/updateBadgeCount";
     public static final String getCameraToken = "/getCameraToken/";
     public static final String getAllCameraToken = "/getAllCameraToken";
+    public static final String getLocalMacAddress = "/getLocalMacAddress";
+    public static final String addTTLock = "/addTTLock";
+    public static final String getLockLists = "/getLockLists";
+    public static final String deleteTTLock = "/deleteTTLock";
 
     /*----------------------------------------------------------------------*/
 
     public static final String DEVICE_TOKEN = "sTZka4A72j";
     public static final String ANDROID = "android";
+
+    //lock
+    public static final String client_id = "439063e312444f1f85050a52efcecd2e";
+    public static final String client_secret = "0ef1c49b70c02ae6314bde603d4e9b05";
+    public static  String access_token = "fac1734b6209dd5b3ea602c9cc7a15ae";
+    public static final String refresh_token = "5ca1a4bc670b16b571b1488a631e57fc";
+    public static final String lock_user_id_vip = "1769341";
+    public static final String lock_open_vip = "1930389027";
+    public static final String locK_base_uri = "http://open.ttlock.com.cn";
+    public static final String locK_add = "/v3/lock/initialize";
+
 
     /*-----------ununsed api-----------*/
     public static boolean isWifiConnect = false;
@@ -414,7 +443,6 @@ public class Constants {
                 for(int i=0; i<userList.size(); i++){
                     if(userList.get(i).getIsActive()){
                         getuserIp=userList.get(i).getMac_address();
-//                        getuserIp="1234";
                         break;
                     }
                 }
@@ -567,4 +595,12 @@ public class Constants {
         return 0xFF000000 | Red | Green | Blue; //0xFF000000 for 100% Alpha. Bitwise OR everything together.
     }
 
+    public static String getMillsTimeFormat(long date){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
+        return dateFormat.format(date);
+    }
+
+    public static String getpasswordLock() {
+       return DigitUtil.getMD5("vg99092vg");
+    }
 }

@@ -518,6 +518,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             return;
         }
 
+
         String webUrl = ChatApplication.url + Constants.UPDATE_TEMP_SENSOR;
 
         JSONObject jsonNotification = new JSONObject();
@@ -807,15 +808,39 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
         JSONObject jsonNotification = new JSONObject();
 
         try {
+            // "temp_sensor_id"	: "",
+            //  "min_temp_value": "",
+            //  "max_temp_value": "",
+            //  "is_in_C": ,                   //0 and 1 for Temp, -1 for Humidity
+            //  "min_humidity_value": ,
+            //  "max_humidity_value": ,
+            //  "days": "",
+            //  "user_id":"",
+            //  "phone_id": "",
+            //  "phone_type": ""
 
+
+            // "temp_sensor_id": "",
+            //  "temp_sensor_notification_id": "",
+            //  "min_temp_value": ,
+            //  "max_temp_value": ,
+            //  "is_in_C": ,
+            //  "min_humidity_value": "",
+            //  "max_humidity_value": "",
+            //  "days": "",
+            //  "user_id": "",
+            //  "phone_id": "",
+            //  "phone_type": ""
             if (isEdit) {
                 jsonNotification.put("temp_sensor_notification_id", temp_sensor_notification_id);
             }
 
             jsonNotification.put("temp_sensor_id", temp_sensor_id);
             jsonNotification.put("is_in_C", isCFSelected); //1=C 0=F
-            jsonNotification.put("min_value", minValue.getText().toString().trim());
-            jsonNotification.put("max_value", maxValue.getText().toString().trim());
+//            jsonNotification.put("min_value", minValue.getText().toString().trim());
+            jsonNotification.put("min_temp_value", minValue.getText().toString().trim());
+//            jsonNotification.put("max_value", maxValue.getText().toString().trim());
+            jsonNotification.put("max_temp_value", maxValue.getText().toString().trim());
             jsonNotification.put("days", repeatDayString);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -939,6 +964,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
 
         JSONObject jsonNotification = new JSONObject();
         try {
+
             jsonNotification.put("temp_sensor_id", temp_sensor_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -1117,6 +1143,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
 
         JSONObject jsonNotification = new JSONObject();
         try {
+
             jsonNotification.put("temp_sensor_notification_id", notificationList.getTempSensorNotificationId());
             jsonNotification.put("temp_sensor_id", temp_sensor_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -1234,8 +1261,17 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
 
         JSONObject object = new JSONObject();
         try {
+            //{
+            //  "temp_sensor_id"	: "",
+            //  "user_id":"",
+            //  "phone_id":"",
+            //  "phone_type":""
+            // }
+
             object.put("temp_sensor_id",temp_sensor_id);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1337,7 +1373,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                 //isCF = false;
             }
 
-            if (sensorResModel.getDate().getTempLists()[0].getNotificationLists().length > 0) {
+            if (sensorResModel.getDate().getTempLists()[0].getNotificationLists()!=null && sensorResModel.getDate().getTempLists()[0].getNotificationLists().length > 0) {
                 txtEmpty.setVisibility(View.GONE);
                 sensor_list.setVisibility(View.VISIBLE);
                 txtTempAlertCount.setVisibility(View.VISIBLE);

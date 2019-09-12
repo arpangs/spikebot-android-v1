@@ -48,7 +48,7 @@
             android:gravity="center|left"
             android:textColor="@color/sensor_button"
             android:background="@drawable/background_shadow"
-            android:text="Add to New Room"/>
+            android:text="Create New Room"/>
 
 
         <android.support.v7.widget.AppCompatButton

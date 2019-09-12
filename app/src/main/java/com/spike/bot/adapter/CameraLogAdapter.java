@@ -68,7 +68,6 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
     @Override
     public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
-
 //        if(position==0){
 //            holder.view_header.setVisibility(View.GONE);
 //        }else {

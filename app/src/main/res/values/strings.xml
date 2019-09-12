@@ -53,4 +53,11 @@
     <string name="bulb_title1">Power up your smart blub</string>
     <string name="bulb_info1">Power on thw light wait about five seconds untill the Smart blub blink  three times.</string>
 
+    <string name="words_wifi_name">WIFI name</string>
+    <string name="words_wifi_password">WIFI password</string>
+    <string name="words_account_password">Account password</string>
+    <string name="words_enter_gateway_password">enter WIFI password</string>
+    <string name="words_enter_account_password">enter account password</string>
+    <string name="words_ok">OK</string>
+
 </resources>

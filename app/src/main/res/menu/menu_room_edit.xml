@@ -4,6 +4,14 @@
     tools:context="com.spike.bot.MainActivity">
 
 
+    <item
+        android:id="@+id/actionEdit"
+        android:icon="@drawable/edit_blue"
+        android:orderInCategory="100"
+        android:title="Add"
+        android:visible="false"
+        app:showAsAction="always" />
+
 
     <item
         android:id="@+id/action_add"

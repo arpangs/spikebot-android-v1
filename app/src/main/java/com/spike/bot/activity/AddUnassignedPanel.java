@@ -1,6 +1,7 @@
 package com.spike.bot.activity;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +30,7 @@ import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
 import com.spike.bot.adapter.AddUnassignedPanelAdapter;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -170,6 +172,15 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
 
     @Override
     public void onClick(int position, UnassignedListRes.Data.RoomdeviceList roomdeviceList) {
+        if(roomdeviceList.getModuleId().equals("0") && roomdeviceList.getSensorIcon().equals("doorsensor")){
+
+            Intent intent=new Intent(this, AddDeviceConfirmActivity.class);
+            intent.putExtra("isViewType","syncDoor");
+            intent.putExtra("door_sensor_module_id",""+roomdeviceList.getSensorId());
+            intent.putExtra("door_sensor_name",""+roomdeviceList.getSensorName());
+            startActivity(intent);
+
+        }
         showAddDialog(roomdeviceList);
     }
 

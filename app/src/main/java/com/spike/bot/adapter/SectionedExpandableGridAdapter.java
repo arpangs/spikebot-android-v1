@@ -589,7 +589,12 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                 final PanelVO panel1 = (PanelVO) mDataArrayList.get(position);
 
-                holder.sectionTextView.setText(panel1.getPanelName());
+                if(panel1.getDeviceList().size()==0){
+                    holder.sectionTextView.setVisibility(View.GONE);
+                }else {
+                    holder.sectionTextView.setVisibility(View.VISIBLE);
+                    holder.sectionTextView.setText(panel1.getPanelName());
+                }
 
                 ChatApplication.logDisplay("panel status name is "+panel1.getPanelName());
                 ChatApplication.logDisplay("panel status name getPanel_status "+position);
@@ -677,22 +682,49 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 //                    holder.linearSwitchView.setBackgroundResource(R.drawable.drawable_black_boader);
                     /*--Sensor type start--*/
 
+                    //onlydoor, subtype=1
+                    //only lock, subtype=2
+                    //door+lock, subtype=3
                     if (item.getSensor_type().equalsIgnoreCase("irblaster")) {
 
                         holder.txt_temp_in_cf.setVisibility(View.INVISIBLE);
                         holder.iv_icon.setVisibility(View.VISIBLE);
-                        //   itemIcon = Common.getIcon(item.getIsActive(),item.getSensor_icon());
-//                        if (item.getIsActive() == 0) {
-//                            itemIcon = Common.getIconInActive(0, "Remote_AC");
-//                        } else {
-                            itemIcon = Common.getIcon(item.getRemote_status().equalsIgnoreCase("ON") ? 1 : 0, item.getSensor_icon()); //AC off icon
-//                        }
+                        itemIcon = Common.getIcon(item.getRemote_status().equalsIgnoreCase("ON") ? 1 : 0, item.getSensor_icon()); //AC off icon
 
                         holder.itemTextView.setVisibility(View.VISIBLE);
                         holder.itemTextView.setText(item.getSensor_name());
 
                         itemDeviceName = item.getSensor_name();
 
+                    }else if(item.getSensor_type().equalsIgnoreCase("door")){
+
+                        //onlydoor, subtype=1
+                        //only lock, subtype=2
+                        //door+lock, subtype=3
+
+                        if(item.getDoor_subtype()==1){
+                            if(TextUtils.isEmpty(item.getDoor_sensor_status())){
+                                item.setDoor_lock_status(1);
+                            }
+                            itemIcon = Common.getIcon(item.getDoor_sensor_status().equals("1") ? 1 : 0, item.getSensor_icon()); //AC off icon
+                        }else if(item.getDoor_subtype()==2){
+                            if(TextUtils.isEmpty(item.getDoor_lock_status()+"")){
+                                item.setDoor_lock_status(0);
+                            }
+                            ChatApplication.logDisplay("lock is "+item.getDoor_lock_status());
+                            itemIcon = Common.getIcon(item.getDoor_lock_status()==1 ? 1 : 0, "lockOnly"); //AC off icon
+
+                        }else {
+                            if(TextUtils.isEmpty(item.getDoor_lock_status()+"")){
+                                item.setDoor_lock_status(1);
+                            }
+                            itemIcon = Common.getIcon(item.getDoor_lock_status()==1 ? 1 : 0, "lockWithDoor"); //AC off icon
+                        }
+
+                        holder.itemTextView.setText(item.getSensor_name());
+                        holder.txt_temp_in_cf.setVisibility(View.INVISIBLE);
+
+                        itemDeviceName = item.getSensor_name();
                     } else {
 
                         holder.iv_icon_badge.setVisibility(View.VISIBLE);
@@ -787,7 +819,6 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             }else {
                                 itemIcon = Common.getIcon(status, item.getSensor_icon());
                             }
-
                         }
                     }
 
@@ -841,12 +872,20 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                                 // item.setOldStatus(item.getDeviceStatus());
                                 //item.setRemote_status(String.valueOf(item.getRemote_status().equalsIgnoreCase("ON")?"OFF" : "ON"));
                                 tempClickListener.itemClicked(item, "isIRSensorClick", true, position);
-                            } else {
+                            }
+//                            else if (item.getSensor_type().equalsIgnoreCase("door")) {
+//                                tempClickListener.itemClicked(item, "doorOpenClose", true, position);
+//                            }
+                            else {
                                 tempClickListener.itemClicked(item, "isSensorClick", true, position);
                             }
                         }
                     }
                 });
+
+                //onlydoor, subtype=1
+                //only lock, subtype=2
+                //door+lock, subtype=3
 
                 holder.iv_icon.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
@@ -875,7 +914,11 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                                         Common.showToast("Remote Not Active");
                                     }*/
                                 tempClickListener.itemClicked(item, "isIRSensorLongClick", true, position);
-                            } else {
+                            }
+//                            else if(item.getSensor_type().equalsIgnoreCase("door")){
+//                                tempClickListener.itemClicked(item, "doorLongClick", true, position);
+//                            }
+                            else {
                             }
                         }
                         return false;
@@ -906,7 +949,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 //                if (!TextUtils.isEmpty(item.getDeviceId()) && Integer.parseInt(item.getDeviceId()) == 1 && Integer.parseInt(item.getDeviceType()) == 1) {
 
 //                ChatApplication.logDisplay("device type is "+item.getDeviceName()+" "+item.getDeviceType());
-                if (!TextUtils.isEmpty(item.getDeviceType()) && Integer.parseInt(item.getDeviceType()) == 1) {
+                if ((!TextUtils.isEmpty(item.getDeviceType()) && Integer.parseInt(item.getDeviceType()) == 1)) {
                     holder.iv_icon.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View view) {

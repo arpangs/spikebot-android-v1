@@ -237,7 +237,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 //        if (isSensorLog) {
 //            getSensorLog(0);
 //        } else {
-        if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor")|| isCheckActivity.equals("multisensor")) {
+        if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor")|| isCheckActivity.equals("multisensor")) {
             getSensorLog(0);
         } else {
             getDeviceLog(0);
@@ -314,13 +314,13 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             jsonNotification.put("end_datetime", "");
             jsonNotification.put("start_datetime", "");
 
-            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor") || isCheckActivity.equals("multisensor")) {
+            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor") || isCheckActivity.equals("multisensor")) {
                 if (isCheckActivity.equals("doorSensor")) {
                     jsonNotification.put("sensor_type", "door");
-                } else if (isCheckActivity.equals("tempSensor")) {
+                } else if (isCheckActivity.equals("tempsensor")) {
                     jsonNotification.put("sensor_type", "temp");
                 }else if (isCheckActivity.equals("multisensor")) {
-                    jsonNotification.put("sensor_type", "multisensor");
+                    jsonNotification.put("sensor_type", "temp");
                 }
 
                 jsonNotification.put("module_id", "" + Mood_Id);
@@ -577,7 +577,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             deviceLogAdapter = new DeviceLogAdapter(DeviceLogActivity.this, deviceLogList);
             rv_device_log.setAdapter(deviceLogAdapter);
             deviceLogAdapter.notifyDataSetChanged();
-            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor") || isCheckActivity.equals("multisensor")) {
+            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor") || isCheckActivity.equals("multisensor")) {
 
                 if(isCheckActivity.equals("multisensor") && isMultiSensor){
                     unreadApiCall(true);
@@ -621,7 +621,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
         //isFilterType = false;
 
 
-//        if(isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor")){
+//        if(isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor")){
 //            isFilterType=true;
 //        }
         isScrollview = false;
@@ -663,7 +663,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             strpanelId = "";
             strDeviceId = "";
 
-            if(isCheckActivity.equals("tempSensor")){
+            if(isCheckActivity.equals("tempsensor")){
                 isSelectItem="1";
             }else if(isCheckActivity.equals("doorSensor")){
                 isSelectItem="2";
@@ -692,7 +692,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
         recyclerView.setAdapter(filterRootAdapter);
         filterRootAdapter.notifyDataSetChanged();
 
-        initSpinnerData(filterRootAdapter);
+
 
 
 //        if(isMarkAll){
@@ -702,12 +702,15 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 //        }
 
 
-//        if(isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor")){
-//            isSensorLog = true;
-//            isFilterType = true;
-//        }
+        if(isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor")){
+            isSensorLog = true;
+            isFilterType = true;
+
+        }
 
         udpateDailogButton(btnDeviceDialog, btnSensorDialog);
+
+        initSpinnerData(filterRootAdapter);
 
         btnSensorDialog.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -839,10 +842,10 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                 edt_start_date.setText("" + ChatApplication.getCurrentDate());
                 edt_end_date.setText("" + ChatApplication.getCurrentDateTime());
 
-                if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor")) {
+                if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor")) {
                     isSensorLog = true;
                     isFilterType = true;
-                    if(isCheckActivity.equals("tempSensor")){
+                    if(isCheckActivity.equals("tempsensor")){
                         isSelectItem="1";
                     }else if(isCheckActivity.equals("doorSensor")){
                         isSelectItem="2";
@@ -1000,11 +1003,11 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
     }
 
     private void setAdapterFilterVIew() {
-        if(isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor")){
+        if(isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor")){
             if (filterArrayList != null) {
                 filterArrayList.clear();
             }
-            if(isCheckActivity.equals("tempSensor")){
+            if(isCheckActivity.equals("tempsensor")){
                 for (int j = 0; j < filterArrayListSensorTemp.size(); j++)
                     if(filterArrayListSensorTemp.get(j).getName().equals("Temperature Sensor")){
                             for (int i = 0; i < filterArrayListSensorTemp.get(j).getSubFilters().size(); i++) {
@@ -1402,15 +1405,15 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                             RoomVO oneRoom = new RoomVO();
                             oneRoom.setRoomId("0");
 //                            if (room.equalsIgnoreCase("Temperature Sensor")) {
-                            if (room.equalsIgnoreCase("Multi Sensor")) {
+                            if (room.equalsIgnoreCase("Multi Sensor") || room.equalsIgnoreCase("Temperature Sensor") ) {
 //                                oneRoom.setRoomName("All Temp");
-                                oneRoom.setRoomName("All Multi sensor");
+                                oneRoom.setRoomName("All Temperature sensor");
                                 mListRoom.add(0, oneRoom);
-                                if(mSensorLogRes.getData().getMultiSensor()!=null){
-                                    for (int i = 0; i < mSensorLogRes.getData().getMultiSensor().size(); i++) {
+                                if(mSensorLogRes.getData().getTempSensor()!=null){
+                                    for (int i = 0; i < mSensorLogRes.getData().getTempSensor().size(); i++) {
                                         RoomVO roomVO = new RoomVO();
-                                        roomVO.setRoomName(mSensorLogRes.getData().getMultiSensor().get(i).getMultiSensorName());
-                                        roomVO.setRoomId(mSensorLogRes.getData().getMultiSensor().get(i).getRoomId());
+                                        roomVO.setRoomName(mSensorLogRes.getData().getTempSensor().get(i).getTempSensorName());
+                                        roomVO.setRoomId(mSensorLogRes.getData().getTempSensor().get(i).getRoomId());
                                         mListRoom.add(roomVO);
                                     }
                                 }
@@ -1671,7 +1674,17 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
         arrayPanelList.add("All Panel");
         for (int i = 0; i < panelVOSList.size(); i++) {
-            arrayPanelList.add(panelVOSList.get(i).getPanelName());
+            if(isFilterType){
+                if(panelVOSList.get(i).getPanel_type()==2){
+                    arrayPanelList.add(panelVOSList.get(i).getPanelName());
+                }
+            }else {
+                if(panelVOSList.get(i).getPanel_type()==0){
+                    arrayPanelList.add(panelVOSList.get(i).getPanelName());
+                }
+            }
+
+
         }
         defaultDeviceSpinner("All Device");
 
@@ -2163,7 +2176,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                         if (actionType.equalsIgnoreCase("Door Sensor")) {
                             object.put("sensor_type", "door");
                         } else {
-                            object.put("sensor_type", "multisensor");
+                            object.put("sensor_type", "temp");
                         }
 
                         object.put("room_id", "");
@@ -2468,8 +2481,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             deviceLogList.clear();
             isFilterType = false;
             deviceLogAdapter.notifyDataSetChanged();
-//            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor")) {
-            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor") || isCheckActivity.equals("multisensor")) {
+//            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor")) {
+            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor") || isCheckActivity.equals("multisensor")) {
 
                 getSensorLog(0);
             } else {
@@ -2492,7 +2505,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             deviceLogAdapter = new DeviceLogAdapter(DeviceLogActivity.this, deviceLogList);
             rv_device_log.setAdapter(deviceLogAdapter);
             deviceLogAdapter.notifyDataSetChanged();
-            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempSensor")|| isCheckActivity.equals("multisensor")) {
+            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor")|| isCheckActivity.equals("multisensor")) {
                 getSensorLog(0);
             } else {
                 //   udpateButton();
@@ -2542,7 +2555,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             JSONArray jsonArray = new JSONArray();
 
             JSONObject object = new JSONObject();
-            object.put("sensor_type","multisensor");
+            object.put("sensor_type","temp");
             object.put("module_id", ""+Mood_Id);
             object.put("room_id", ""+mRoomId);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));

@@ -329,6 +329,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                 holder.itemTextView.setText(item.getDeviceName());
 
                 if(item.getDeviceType().equalsIgnoreCase("2")){
+                    ChatApplication.logDisplay("remote is "+item.getDeviceStatus()+ " ,  "+item.getDevice_icon());
                     if(item.getIsActive() == 0){
                         holder.iv_icon.setImageResource(Common.getIconInActive(item.getDeviceStatus(),item.getDevice_icon()));
                     }else{

@@ -40,8 +40,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/new_screen_resolution"
-            >
+            android:background="@drawable/new_screen_resolution">
 
             <ScrollView
                 android:layout_width="match_parent"
@@ -62,7 +61,8 @@
                 <android.support.v7.widget.CardView
                     xmlns:android="http://schemas.android.com/apk/res/android"
                     xmlns:app="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/edt_txt_layout"
+                    android:id="@+id/cardViewDoor"
+                    android:visibility="visible"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -74,7 +74,10 @@
                     app:elevation="5dp">
 
                     <LinearLayout
-                        android:layout_margin="@dimen/_16sdp"
+                        android:layout_marginBottom="@dimen/_15sdp"
+                        android:layout_marginLeft="@dimen/_2sdp"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_marginRight="@dimen/_15sdp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
@@ -87,21 +90,46 @@
                             <ImageView
                                 android:id="@+id/img_temp_on"
                                 android:src="@drawable/on_door"
-                                android:layout_weight="0.30"
                                 android:layout_gravity="top"
-                                android:layout_width="0dp"
-                                android:layout_height="42dp" />
+                                android:layout_weight="0.25"
+                                android:layout_width="@dimen/_50sdp"
+                                android:layout_height="@dimen/_60sdp" />
 
-                            <EditText
-                                android:id="@+id/sensor_name"
-                                android:hint="Sensor Name"
-                                android:focusable="true"
-                                android:singleLine="true"
-                                android:imeOptions="actionDone"
-                                android:focusableInTouchMode="true"
-                                android:layout_weight="1.2"
+                            <LinearLayout
+                                android:visibility="gone"
                                 android:layout_width="0dp"
-                                android:layout_height="wrap_content" />
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1.2"
+                                android:orientation="vertical">
+
+                                <EditText
+                                    android:id="@+id/sensor_name"
+                                    android:hint="Sensor Name"
+                                    android:focusable="true"
+                                    android:singleLine="true"
+                                    android:textSize="@dimen/_14sdp"
+                                    android:imeOptions="actionDone"
+                                    android:background="@null"
+                                    android:textColorHint="@color/automation_black"
+                                    android:textColor="@color/automation_black"
+                                    android:focusableInTouchMode="true"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content" />
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0.5dp"
+                                    android:background="@color/txtPanal"/>
+
+                                <android.support.v7.widget.AppCompatTextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="@dimen/_4sdp"
+                                    android:text="Status Open/Close"
+                                    android:textColor="@color/green"
+                                    android:textSize="@dimen/_14sdp"/>
+
+                            </LinearLayout>
 
                             <RelativeLayout
                                 android:visibility="gone"
@@ -113,8 +141,8 @@
 
                                 <ImageView
                                     android:id="@+id/iv_icon"
-                                    android:layout_width="32dp"
-                                    android:layout_height="32dp"
+                                    android:layout_width="34dp"
+                                    android:layout_height="35dp"
                                     android:layout_marginTop="8dp"
                                     android:layout_gravity="center_horizontal"
                                     android:adjustViewBounds="true"
@@ -151,12 +179,31 @@
 
                             </RelativeLayout>
 
+                            <android.support.v7.widget.AppCompatTextView
+                                android:id="@+id/txtDoorStatus"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1.2"
+                                android:paddingTop="@dimen/_7sdp"
+                                android:textColor="@color/automation_red"
+                                android:textSize="@dimen/_16sdp"
+                                android:gravity="left|center"/>
+
+
+                            <ImageView
+                                android:id="@+id/imgDoorDelete"
+                                android:layout_width="@dimen/_25sdp"
+                                android:layout_height="@dimen/_25sdp"
+                                android:layout_marginTop="@dimen/_5sdp"
+                                android:visibility="visible"
+                                android:layout_gravity="center"
+                                android:src="@drawable/delete_blue"/>
+
                             <LinearLayout
                                 android:layout_weight="0.25"
-                                android:layout_marginTop="4dp"
                                 android:layout_width="0dp"
-                                android:layout_gravity="center"
-                                android:layout_height="wrap_content"
+                                android:gravity="center|bottom"
+                                android:layout_height="match_parent"
                                 android:orientation="vertical">
 
                                 <ImageView
@@ -169,6 +216,7 @@
                                 <TextView
                                     android:id="@+id/txt_bettery_per"
                                     android:text=""
+                                    android:textColor="@color/automation_black"
                                     android:layout_gravity="center"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content" />
@@ -188,6 +236,203 @@
                     android:background="#60808080"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"/>
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/cardViewLock"
+                    android:visibility="visible"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@color/automation_white"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="@dimen/_8sdp"
+                    app:cardCornerRadius="2dp"
+                    app:cardElevation="5dp"
+                    app:elevation="5dp">
+
+                    <LinearLayout
+                        android:visibility="visible"
+                        android:id="@+id/linearLock"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="@dimen/_5sdp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:visibility="gone"
+                            android:id="@+id/linearAddlockOptin"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_marginLeft="@dimen/_8sdp"
+                                android:layout_marginRight="@dimen/_8sdp"
+                                android:layout_marginTop="@dimen/_8sdp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+
+                                <TextView
+                                    android:text="Add Lock"
+                                    android:textSize="16sp"
+                                    android:layout_gravity="center"
+                                    android:layout_width="0dp"
+                                    android:layout_weight="0.50"
+                                    android:textColor="@color/txtPanal"
+                                    android:layout_height="wrap_content" />
+
+                                <TextView
+                                    android:textSize="14sp"
+                                    android:layout_gravity="center"
+                                    android:layout_width="0dp"
+                                    android:layout_weight="0.8"
+                                    android:textColor="@color/txtPanal"
+                                    android:layout_height="wrap_content" />
+
+
+                                <android.support.v7.widget.AppCompatTextView
+                                    android:id="@+id/txtAddLock"
+                                    android:text="Add"
+                                    android:textSize="16sp"
+                                    android:padding="5dp"
+                                    android:background="@drawable/btn_background_alert"
+                                    android:textColor="@color/sensor_button"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:layout_weight="0.2"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content" />
+
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="wrap_content"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="@dimen/_5sdp"
+                                android:background="@color/automation_dark_gray"
+                                android:visibility="visible" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/linearLockDoor"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="@dimen/_5sdp"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/imgLock"
+                                android:layout_width="@dimen/_80sdp"
+                                android:layout_height="@dimen/_80sdp"
+                                android:padding="@dimen/_10sdp"
+                                android:layout_gravity="center|left"
+                                android:src="@drawable/door_locked"/>
+
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1.2"
+                                        android:orientation="vertical">
+
+                                        <android.support.v7.widget.AppCompatTextView
+                                            android:id="@+id/txtlockStatus"
+                                            android:visibility="visible"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:textSize="@dimen/_16sdp"
+                                            android:textColor="@color/green"
+                                            android:singleLine="true" />
+
+                                        <LinearLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:gravity="center|left"
+                                            android:orientation="horizontal">
+
+                                            <android.support.v7.widget.AppCompatTextView
+                                                android:id="@+id/txtAutoLock"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:gravity="center"
+                                                android:padding="@dimen/_3sdp"
+                                                android:text="Auto Lock in 10s"
+                                                android:textColor="@color/txtPanal"
+                                                android:textSize="@dimen/_11sdp"/>
+
+                                            <android.support.v7.widget.SwitchCompat
+                                                android:id="@+id/switchAutoLock"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_marginLeft="@dimen/_2sdp"
+                                                android:textSize="@dimen/_11sdp"
+                                                android:text=""/>
+
+
+                                        </LinearLayout>
+
+                                    </LinearLayout>
+
+                                    <ImageView
+                                        android:id="@+id/imgLockDelete"
+                                        android:layout_width="@dimen/_25sdp"
+                                        android:layout_height="@dimen/_25sdp"
+                                        android:layout_gravity="center|top"
+                                        android:visibility="visible"
+                                        android:src="@drawable/delete_blue"/>
+
+
+                                    <LinearLayout
+                                        android:layout_weight="3"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:orientation="vertical">
+
+                                        <ImageView
+                                            android:src="@drawable/battery_4"
+                                            android:layout_gravity="center"
+                                            android:layout_width="32dp"
+                                            android:layout_marginRight="@dimen/_3sdp"
+                                            android:layout_height="32dp" />
+
+                                        <android.support.v7.widget.AppCompatTextView
+                                            android:id="@+id/txtBettrylock"
+                                            android:paddingTop="@dimen/_3sdp"
+                                            android:textSize="@dimen/_11sdp"
+                                            android:layout_gravity="center"
+                                            android:textColor="@color/automation_black"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content" />
+
+                                    </LinearLayout>
+
+
+
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                            </LinearLayout>
+
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
 
                 <android.support.v7.widget.CardView
                     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -387,9 +632,6 @@
                     </LinearLayout>
 
                 </android.support.v7.widget.CardView>
-
-
-
 
                 <View
                     android:visibility="gone"

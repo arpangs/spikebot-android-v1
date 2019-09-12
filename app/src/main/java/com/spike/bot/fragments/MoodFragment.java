@@ -662,7 +662,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
             e.printStackTrace();
         }
 
-        if (mSocket != null && !mSocket.connected()) {
+        if (mSocket != null && mSocket.connected()) {
             //TODO code here for ACK TimeOut
             mSocket.emit("socketChangeDevice", obj);
         }else{
@@ -1164,10 +1164,11 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
             e.printStackTrace();
         }
 
-        if(mSocket!=null && !mSocket.connected()){
+        if(mSocket!=null && mSocket.connected()){
+            mSocket.emit("changeRoomPanelMoodStatus", obj);
 
-
-                // String url =  webUrl + Constants.CHANGE_MOOD_STATUS;
+        }else{
+            // String url =  webUrl + Constants.CHANGE_MOOD_STATUS;
             String url =  webUrl + Constants.CHANGE_ROOM_PANELMOOD_STATUS_NEW;
             new GetJsonTask(getActivity(),url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
                 @Override
@@ -1191,9 +1192,6 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
                     Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
                 }
             }).execute();
-
-        }else{
-            mSocket.emit("changeRoomPanelMoodStatus", obj);
         }
 
     }
@@ -1219,7 +1217,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
 //        }else {
 //            sendRemoteCommandReq.setPower("ON");
 //        }
-        sendRemoteCommandReq.setPower(item.getPower());
+        sendRemoteCommandReq.setPower(item.getDeviceStatus()==0 ? "ON" : "OFF");
         sendRemoteCommandReq.setSpeed(item.getSpeed());
         sendRemoteCommandReq.setTemperature(Integer.parseInt(item.getTemperature()));
         sendRemoteCommandReq.setRoomDeviceId(item.getRoomDeviceId());
@@ -1233,6 +1231,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
         com.spike.bot.core.Log.d("sendRemoteCommand","" + mRemoteCommandReq);
 
         String url = ChatApplication.url + Constants.SEND_REMOTE_COMMAND;
+
         new GetJsonTaskRemote(getContext(), url, "POST", mRemoteCommandReq, new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {

@@ -1,10 +1,12 @@
 package com.spike.bot.activity.SmartDevice;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.Toast;
 
 import com.kp.core.ActivityHelper;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 public class BrandListActivity extends AppCompatActivity {
 
     public Toolbar toolbar;
+    FloatingActionButton fab;
     public RecyclerView recyclerSmartDevice;
 
     public SmartBrandAdapter smartBrandAdapter;
@@ -44,12 +47,14 @@ public class BrandListActivity extends AppCompatActivity {
 
     private void setId() {
         toolbar=findViewById(R.id.toolbar);
+        fab=findViewById(R.id.fab);
         recyclerSmartDevice=findViewById(R.id.recyclerSmartDevice);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setTitle("Select Your Brand");
+        fab.setVisibility(View.GONE);
         getSmartDevice();
     }
 

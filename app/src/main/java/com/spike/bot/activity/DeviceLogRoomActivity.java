@@ -184,7 +184,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
 
         if (isNotification.equalsIgnoreCase("roomSensorUnreadLogs")) {
             //toolbar.setTitle("Unread Logs");
-            setTitel("Unread Logs");
+            setTitel("Notification");
             getDeviceList(mStartIndex);
         } else {
             //toolbar.setTitle("All Logs");

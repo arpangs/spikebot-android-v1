@@ -40,6 +40,7 @@ import android.widget.Toast;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
 import com.spike.bot.activity.ir.blaster.IRRemoteAdd;
 import com.spike.bot.activity.ir.blaster.IRRemoteBrandListActivity;
 import com.spike.bot.activity.ir.blaster.WifiBlasterActivity;
@@ -94,10 +95,10 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
 
     private FloatingActionButton mFab;
     private CardView mFabMenuLayout;
-    private TextView fab_menu1,fab_menu2,fab_menu3,fab_menu4,fab_menu5,fab_menu6,fab_menu7,fab_Sensor;
+    private TextView fab_menu1,fab_menu2,fab_menu3,fab_menu4,fab_menu5,fab_menu6,fab_menu7,fab_Sensor,fabGas;
 
     public boolean addIRBlasterSensor = false,addTempSensor = false;;
-    public static int SENSOR_TYPE_DOOR = 1, SENSOR_TYPE_TEMP = 2 , SENSOR_TYPE_IR = 3,SENSOR_MULTITYPE=4;
+    public static int SENSOR_TYPE_DOOR = 1, SENSOR_TYPE_TEMP = 2 , SENSOR_TYPE_IR = 3,SENSOR_MULTITYPE=4,SENSOR_GAS=5;
 
 
     @Override
@@ -188,6 +189,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         fab_menu6 = (TextView) findViewById(R.id.fab_menu6);
         fab_menu7 = (TextView) findViewById(R.id.fab_menu7);
         fab_Sensor =  findViewById(R.id.fab_Sensor);
+        fabGas =  findViewById(R.id.fabGas);
 
         mFab = (FloatingActionButton) findViewById(R.id.fab);
 
@@ -276,11 +278,20 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             }
         });
 
+        fabGas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeFABMenu();
+                showOptionDialog(SENSOR_GAS);
+            }
+        });
+
     }
 
     /**
      * Configure Gateway Door Sensor
      */
+    int count=0;
     private Emitter.Listener configureGatewayDoorSensor = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -319,11 +330,85 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                         ActivityHelper.dismissProgressDialog();
 
                         if (TextUtils.isEmpty(message)) {
-                            showAddSensorDialog(door_sensor_module_id, false,false);
+//                            showAddSensorDialog(door_sensor_module_id, false,false);
+
+                            if(count==0){
+                                count=1;
+                                Intent intent=new Intent(RoomEditActivity_v2.this, AddDeviceConfirmActivity.class);
+                                intent.putExtra("isViewType","syncDoor");
+                                intent.putExtra("door_sensor_module_id",""+door_sensor_module_id);
+                                startActivity(intent);
+                            }
+
                         } else {
                             showConfigAlert(message);
                         }
 
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+        }
+    };
+
+
+    private Emitter.Listener configureGasSensor = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            RoomEditActivity_v2.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (countDownTimer != null) {
+                            countDownTimer.cancel();
+                        }
+
+                        roomIdList.clear();
+                        roomNameList.clear();
+
+                        //message, gas_sensor_module_id,room_list
+                        JSONObject object = new JSONObject(args[0].toString());
+
+                        String message = object.getString("message");
+
+                        String temp_sensor_module_id = object.getString("gas_sensor_module_id");
+
+                        if(TextUtils.isEmpty(message)){
+                           /* String roomList = object.getString("room_list");
+
+                            Object json = new JSONTokener(roomList).nextValue();*/
+
+                            JSONArray jsonArray = object.getJSONArray("room_list");
+                            for(int i=0;i<jsonArray.length();i++){
+                                JSONObject objectRoom = jsonArray.getJSONObject(i);
+                                String room_id = objectRoom.getString("room_id");
+                                String room_name = objectRoom.getString("room_name");
+
+                                roomIdList.add(room_id);
+                                roomNameList.add(room_name);
+                            }
+
+                           /* if (json instanceof JSONObject){
+
+                            }else if (json instanceof JSONArray){
+
+                            }*/
+                        }
+
+                        ActivityHelper.dismissProgressDialog();
+
+                        if(TextUtils.isEmpty(message)){
+                            showGasSensor(temp_sensor_module_id,true,false);
+                        }else{
+                            showConfigAlert(message);
+                            //Toast.makeText(getContext(),message,Toast.LENGTH_SHORT).show();
+                        }
+
+
+                        //  addRoom = false;
+                        // }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -475,6 +560,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             mSocket.on("configureTempSensor", configureTempSensor);
             mSocket.on("configureDoorSensor", configureGatewayDoorSensor);
             mSocket.on("configureMultiSensor", configureMultiSensor);
+            mSocket.on("configureGasSensor", configureGasSensor);
         }
     }
     @Override
@@ -484,7 +570,81 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             mSocket.off("configureGatewayDevice", configureGatewayDevice);
             mSocket.off("configureTempSensor", configureTempSensor);
             mSocket.off("configureMultiSensor", configureMultiSensor);
+            mSocket.off("configureDoorSensor", configureGatewayDoorSensor);
+            mSocket.off("configureGasSensor", configureGasSensor);
         }
+    }
+
+    private void showGasSensor(String door_module_id, final boolean isTempSensorRequest, final boolean isMultiSensor){
+
+        final Dialog dialog = new Dialog(RoomEditActivity_v2.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_add_sensordoor);
+        dialog.setCanceledOnTouchOutside(false);
+
+        final EditText edt_door_name = (EditText) dialog.findViewById(R.id.txt_door_sensor_name);
+        final TextView edt_door_module_id = (TextView) dialog.findViewById(R.id.txt_module_id);
+        final Spinner sp_room_list = (Spinner) dialog.findViewById(R.id.sp_room_list);
+
+        TextView dialogTitle = (TextView) dialog.findViewById(R.id.tv_title);
+        TextView txt_sensor_name = (TextView) dialog.findViewById(R.id.txt_sensor_name);
+
+        dialogTitle.setText("Add Gas Sensor");
+        txt_sensor_name.setText("Gas Name");
+
+        edt_door_module_id.setText(door_module_id);
+        edt_door_module_id.setFocusable(false);
+
+        TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(RoomEditActivity_v2.this,roomNameList,1,false);
+        sp_room_list.setAdapter(customAdapter);
+
+        int spinner_position = sp_room_list.getSelectedItemPosition();
+
+        sp_room_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        Button btn_cancel = (Button) dialog.findViewById(R.id.btn_door_cancel);
+        Button btn_save = (Button) dialog.findViewById(R.id.btn_door_save);
+        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
+
+        iv_close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isShowSensor = false;
+                dialog.dismiss();
+            }
+        });
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isShowSensor = false;
+                dialog.dismiss();
+            }
+        });
+        btn_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isShowSensor = false;
+                saveMultiSensor(dialog, edt_door_name, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list, isTempSensorRequest);
+                dialog.dismiss();
+            }
+        });
+
+        if(!dialog.isShowing() && !isShowSensor){
+            isShowSensor = true;
+            dialog.show();
+        }
+
     }
 
     /**
@@ -609,7 +769,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         }
 
         if(TextUtils.isEmpty(textInputEditText.getText().toString())){
-            textInputEditText.setError(isTempSensorRequest ? "Enter Temp Name" : "Enter Door Name");
+            textInputEditText.setError("Enter Gas Name");
             textInputEditText.requestFocus();
             return;
         }
@@ -619,25 +779,13 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         JSONObject obj = new JSONObject();
         try {
 
-            /*{
-	"multi_sensor_module_id"	: "047FC712004B1200",
-	"multi_sensor_name"	: "multiiiii",
-	"room_id":"1559293248046_zfWmmz7ZZ",
-	"room_name":"test",
-	"user_id":"1559035111028_VojOpeeBF",
-	"phone_id":"1234567",
-	"phone_type":"Android"
-	}
-            *
-            * */
-
             int room_pos = sp_room_list.getSelectedItemPosition();
 
             obj.put("room_id",roomIdList.get(room_pos));
             obj.put("room_name",roomNameList.get(room_pos));
             obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put("multi_sensor_name", door_name);
-            obj.put("multi_sensor_module_id",door_module_id);
+            obj.put("gas_sensor_name", door_name);
+            obj.put("gas_sensor_module_id",door_module_id);
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
@@ -646,7 +794,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             e.printStackTrace();
         }
 
-        String url = ChatApplication.url + Constants.addMultiSensor;
+        String url = ChatApplication.url + Constants.addGasSensor;
 
         new GetJsonTask(RoomEditActivity_v2.this,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
@@ -655,7 +803,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
                     String message = result.getString("message");
-
                     if(code==200){
 
                         if(!TextUtils.isEmpty(message)){
@@ -663,6 +810,8 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                         }
                         ActivityHelper.dismissProgressDialog();
                         dialog.dismiss();
+
+                        getDeviceList();
                     }
                     else{
                         Toast.makeText(RoomEditActivity_v2.this.getApplicationContext(), message , Toast.LENGTH_SHORT).show();
@@ -701,6 +850,14 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
 
         JSONObject obj = new JSONObject();
         try {
+
+            // "temp_sensor_module_id"	: "",
+            //  "temp_sensor_name"	: "",
+            //  "room_id":"",
+            //  "room_name":"",
+            //  "user_id":"",
+            //  "phone_id":"",
+            //  "phone_type":""
 
             int room_pos = sp_room_list.getSelectedItemPosition();
 
@@ -744,6 +901,8 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                         }
                         ActivityHelper.dismissProgressDialog();
                         dialog.dismiss();
+
+                        getDeviceList();
                     }
                     else{
                         Toast.makeText(RoomEditActivity_v2.this.getApplicationContext(), message , Toast.LENGTH_SHORT).show();
@@ -953,7 +1112,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         public void onFinish() {
             addRoom = false;
             ActivityHelper.dismissProgressDialog();
-            Toast.makeText(getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
+            ChatApplication.showToast(getApplicationContext(),"No New Device detected!");
         }
 
     };
@@ -1034,8 +1193,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         else if (id == R.id.action_save) {
             ActivityHelper.hideKeyboard(this);
 
-            HashMap<String, String> selectedTextMap = roomEditGridAdapter.getTextValues();
-
             roomEditGridAdapter.getPanelEditValue();
 
             ArrayList<PanelVO> mDataArrayList = roomEditGridAdapter.getDataArrayList();
@@ -1058,7 +1215,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
     public void saveRoom(ArrayList<PanelVO> panelVOs){
 
         if(TextUtils.isEmpty(et_toolbar_title.getText().toString())){
-
             et_toolbar_title.setError(Html.fromHtml("<font color='#FFFFFF'>Enter Room Name</font>"));
             et_toolbar_title.requestFocus();
             return;
@@ -1155,6 +1311,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             @Override
             public void onSuccess(JSONObject result) {
                 try {
+                    ActivityHelper.dismissProgressDialog();
                     ArrayList<RoomVO> roomList = new ArrayList<>();
                     JSONObject dataObject = result.getJSONObject("data");
 
@@ -1180,7 +1337,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                     e.printStackTrace();
                 }
                 finally {
-                    ActivityHelper.dismissProgressDialog();
                     if(room.getPanelList().size()==0){
                         txt_empty_room.setVisibility(View.VISIBLE);
                         mMessagesView.setVisibility(View.GONE);
@@ -1571,6 +1727,8 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                     getIRBlasterConfigData();
                 }else if(sensor_type == SENSOR_MULTITYPE){
                     getTempConfigData(true);
+                }else if(sensor_type == SENSOR_GAS){
+                    getgasConfigData(true);
                 }
             }
         });
@@ -1617,6 +1775,33 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                     e.printStackTrace();
                 } finally {
                 }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(RoomEditActivity_v2.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+        }).execute();
+    }
+
+    private void getgasConfigData(boolean flag) {
+        if (!ActivityHelper.isConnectingToInternet(RoomEditActivity_v2.this)) {
+            Toast.makeText(RoomEditActivity_v2.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ActivityHelper.showProgressDialog(RoomEditActivity_v2.this, "Searching Device attached ", false);
+        startTimer();
+
+        addTempSensor = true;
+
+        String url = ChatApplication.url + Constants.configureGasSensorRequest;
+
+        new GetJsonTask(RoomEditActivity_v2.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                ActivityHelper.dismissProgressDialog();
             }
 
             @Override
@@ -1794,10 +1979,14 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
     private void isUnassignedDoorSensor(final int isDoorSensor){
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
         String url = "";
-        if(isDoorSensor==4){
+        //muitl == 5
+        if(isDoorSensor==3){
+            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/2"; //0 door - 1 ir
+        }else if(isDoorSensor==4){
             url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/5"; //0 door - 1 ir
         }else {
-            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/2"; //0 door - 1 ir
+//            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/2"; //0 door - 1 ir
+            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/0"; //0 door - 1 ir
         }
 
         new GetJsonTask(this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL

@@ -144,7 +144,6 @@
                 <TextView
                     android:id="@+id/txt_temp_in_cf"
                     android:visibility="gone"
-                    android:text="35"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>

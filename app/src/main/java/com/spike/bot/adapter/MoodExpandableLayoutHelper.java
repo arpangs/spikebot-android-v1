@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import com.spike.bot.ChatApplication;
 import com.spike.bot.core.ListUtils;
 import com.spike.bot.customview.recycle.ItemClickMoodListener;
 import com.spike.bot.customview.recycle.MoodStateChangeListener;
@@ -83,20 +84,36 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
 
                         devicesList.get(i).setIs_locked(is_locked);
 
-                        if (devicesList.get(i).getModuleId().equalsIgnoreCase(moduleId)
-                                && devicesList.get(i).getDeviceId().equalsIgnoreCase(deviceId)) {
+                        if(devicesList.get(i).getDeviceType().equalsIgnoreCase("2")){
+                            ChatApplication.logDisplay("mood is tt"+devicesList.get(i).getDeviceId()+" "+deviceId);
+                            ChatApplication.logDisplay("mood is "+devicesList.get(i).getModuleId()+" "+moduleId);
 
-                            devicesList.get(i).setDeviceStatus(Integer.parseInt(deviceStatus));
+                            if(devicesList.get(i).getDeviceId().equalsIgnoreCase(deviceId) &&
+                                    devicesList.get(i).getModuleId().equalsIgnoreCase(moduleId)){
+                                ChatApplication.logDisplay("mood is tt treue");
 
-                            reloadDeviceList(devicesList.get(i));
+                                devicesList.get(i).setRemote_status(Integer.parseInt(deviceStatus) == 1 ? "ON" : "OFF");
+                                devicesList.get(i).setDeviceStatus(Integer.parseInt(deviceStatus));
+                            }
 
-                            // break;
+                        }else {
+
+                            if (devicesList.get(i).getModuleId().equalsIgnoreCase(moduleId)
+                                    && devicesList.get(i).getDeviceId().equalsIgnoreCase(deviceId)) {
+
+                                devicesList.get(i).setDeviceStatus(Integer.parseInt(deviceStatus));
+
+                                reloadDeviceList(devicesList.get(i));
+
+                                // break;
+                            }
                         }
                     }
               //  }
             }
           //  mSectionDataMap.put(key, panelsList);
         }
+        mSectionedExpandableGridAdapter.notifyDataSetChanged();
 
     }
 

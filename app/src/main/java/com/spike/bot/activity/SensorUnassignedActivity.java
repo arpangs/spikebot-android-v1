@@ -1,5 +1,6 @@
 package com.spike.bot.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
 import com.spike.bot.adapter.SensorUnassignedAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
@@ -42,6 +44,7 @@ import java.util.List;
 public class SensorUnassignedActivity extends AppCompatActivity{
 
     private Spinner spinner_room;
+    View viewLine;
     private RecyclerView list_sensor;
     private LinearLayout ll_sensor_list_empy,linear_progress;
 
@@ -65,6 +68,7 @@ public class SensorUnassignedActivity extends AppCompatActivity{
 
         spinner_room = (Spinner) findViewById(R.id.spinner_room);
         list_sensor = (RecyclerView) findViewById(R.id.list_sensor);
+        viewLine =  findViewById(R.id.viewLine);
         list_sensor.setLayoutManager(new GridLayoutManager(this,1));
 
         ll_sensor_list_empy = (LinearLayout) findViewById(R.id.ll_sensor_list);
@@ -79,6 +83,8 @@ public class SensorUnassignedActivity extends AppCompatActivity{
         }
 
         if(isDoorSensor == MainFragment.SENSOR_TYPE_DOOR){
+            spinner_room.setVisibility(View.GONE);
+            viewLine.setVisibility(View.GONE);
             isDoorSensor = 0;
         }else if(isDoorSensor == MainFragment.SENSOR_TYPE_TEMP){
             isDoorSensor = 1;
@@ -185,10 +191,15 @@ public class SensorUnassignedActivity extends AppCompatActivity{
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_save) {
-            if(spinner_room.getSelectedItemPosition()==0){
-                Toast.makeText(getApplicationContext(),"Please select room",Toast.LENGTH_LONG).show();
-            }else {
+
+            if(isDoorSensor == 0){
                 saveSensorUnassinged();
+            }else {
+                if (spinner_room.getSelectedItemPosition() == 0) {
+                    Toast.makeText(getApplicationContext(), "Please select room", Toast.LENGTH_LONG).show();
+                } else {
+                    saveSensorUnassinged();
+                }
             }
 
             return true;
@@ -228,6 +239,15 @@ public class SensorUnassignedActivity extends AppCompatActivity{
             return;
         }
 
+        if(isDoorSensor == 0){
+            Intent intent=new Intent(this, AddDeviceConfirmActivity.class);
+            intent.putExtra("isViewType","syncDoor");
+            intent.putExtra("door_sensor_module_id",""+unassigendSensorList.getSensorId());
+            intent.putExtra("door_sensor_name",""+unassigendSensorList.getSensorName());
+            startActivity(intent);
+
+            return;
+        }
       // "sensor_id": "1559654114379_MnqPvjkOE",
         //                "module_id": "328E131A004B1200",
         //                "sensor_type": "multisensor",

@@ -181,7 +181,8 @@ public class SignUp extends AppCompatActivity {
 
         String[] array = hostname.split("\\.");
 
-        String ipAddressPI = array[0] + "." + array[1] + "." + array[2] + "." + Constants.IP_END;
+//        String ipAddressPI = array[0] + "." + array[1] + "." + array[2] + "." + Constants.IP_END;
+        String ipAddressPI = array[0] + "." + array[1] + "." + array[2] + "." + array[3];
 
 
         if(TextUtils.isEmpty(edt_first_name.getText().toString())){
@@ -256,6 +257,7 @@ public class SignUp extends AppCompatActivity {
         }
 //        webUrl = app.url;
         String url = "http://" + ipAddressPI + ":"  + Constants.SIGNUP_API;
+//        String url = "http://" + "192.168.75.111" + ":"  + Constants.SIGNUP_API;
         String token = FirebaseInstanceId.getInstance().getToken();
         Common.savePrefValue(getApplicationContext(),Constants.DEVICE_PUSH_TOKEN,token);
 
@@ -345,8 +347,9 @@ public class SignUp extends AppCompatActivity {
 
                         webUrl = ipAddressPI;
                         ChatApplication.url = webUrl;
-
+                        ChatApplication.isCallDeviceList=true;
                         Intent intent=new Intent(SignUp.this,Main2Activity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
                         finish();
 //                        Intent resultIntent = new Intent();

@@ -9,7 +9,7 @@ import com.spike.bot.model.SensorResModel;
  * Gmail : vipul patel
  */
 public interface OnHumitySensorContextMenu {
-    void onEditHumityOpetion(SensorResModel.DATA.MultiSensorList.HumidityNotificationList notification, int position, boolean isEdit);
-    void onSwitchHumityChanged(SensorResModel.DATA.MultiSensorList.HumidityNotificationList notification, SwitchCompat swithcCompact, int position, boolean isActive);
+    void onEditHumityOpetion(SensorResModel.DATA.TempList.HumidityNotificationList notification, int position, boolean isEdit);
+    void onSwitchHumityChanged(SensorResModel.DATA.TempList.HumidityNotificationList notification, SwitchCompat swithcCompact, int position, boolean isActive);
 
 }

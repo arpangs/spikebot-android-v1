@@ -29,85 +29,128 @@
         android:padding="@dimen/_10sdp"
         android:orientation="vertical">
 
-
-        <android.support.v7.widget.AppCompatTextView
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Room List"
-            android:layout_marginTop="@dimen/_20sdp"
-            android:textColor="@color/automation_black"
-            android:textSize="@dimen/_14sdp"/>
+            android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_32sdp"
-            android:orientation="vertical"
-            android:layout_marginTop="@dimen/_4sdp"
-            android:background="@drawable/edt_border">
-
-            <android.support.v7.widget.AppCompatSpinner
-                android:id="@+id/spinnerRoom"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
 
-        </LinearLayout>
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/txtLockName"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Enter Lock Name"
+                    android:layout_marginTop="@dimen/_20sdp"
+                    android:textColor="@color/automation_black"
+                    android:textSize="@dimen/_14sdp"/>
 
-        <android.support.v7.widget.AppCompatTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Panel List"
-            android:layout_marginTop="@dimen/_20sdp"
-            android:textColor="@color/automation_black"
-            android:textSize="@dimen/_14sdp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_32sdp"
-            android:layout_marginTop="@dimen/_4sdp"
-            android:background="@drawable/edt_border">
-
-            <android.support.v7.widget.AppCompatSpinner
-                android:id="@+id/spinnerPanel"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </LinearLayout>
-
-        <android.support.v7.widget.AppCompatTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Device List"
-            android:layout_marginTop="@dimen/_20sdp"
-            android:textColor="@color/automation_black"
-            android:textSize="@dimen/_14sdp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_32sdp"
-            android:layout_marginTop="@dimen/_4sdp"
-            android:background="@drawable/edt_border">
-
-            <android.support.v7.widget.AppCompatSpinner
-                android:id="@+id/spinnerDevice"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </LinearLayout>
+                <android.support.v7.widget.AppCompatEditText
+                    android:visibility="gone"
+                    android:id="@+id/edtLockName"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_32sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="@drawable/edt_border"
+                    android:singleLine="true"
+                    android:maxLength="25"
+                    android:textColor="@color/txtPanal"
+                    android:textSize="@dimen/_14sdp"
+                    android:paddingRight="@dimen/_10sdp"
+                    android:paddingLeft="@dimen/_10sdp"/>
 
 
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/btnSubmit"
-            android:layout_width="@dimen/_180sdp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_40sdp"
-            android:text="Save"
-            android:layout_gravity="center"
-            android:background="@drawable/drawable_blue_schedule"
-            android:textSize="@dimen/_14sdp"
-            android:gravity="center"
-            android:textAllCaps="false"
-            android:textColor="@color/automation_white"/>
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Room List"
+                    android:layout_marginTop="@dimen/_20sdp"
+                    android:textColor="@color/automation_black"
+                    android:textSize="@dimen/_14sdp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_32sdp"
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:background="@drawable/edt_border">
+
+                    <android.support.v7.widget.AppCompatSpinner
+                        android:id="@+id/spinnerRoom"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+
+                </LinearLayout>
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Panel List"
+                    android:layout_marginTop="@dimen/_20sdp"
+                    android:textColor="@color/automation_black"
+                    android:textSize="@dimen/_14sdp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_32sdp"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:background="@drawable/edt_border">
+
+                    <android.support.v7.widget.AppCompatSpinner
+                        android:id="@+id/spinnerPanel"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </LinearLayout>
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/txtDeviceList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Device List"
+                    android:layout_marginTop="@dimen/_20sdp"
+                    android:textColor="@color/automation_black"
+                    android:textSize="@dimen/_14sdp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_32sdp"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:background="@drawable/edt_border">
+
+                    <android.support.v7.widget.AppCompatSpinner
+                        android:id="@+id/spinnerDevice"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </LinearLayout>
+
+
+                <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/btnSubmit"
+                    android:layout_width="@dimen/_180sdp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_40sdp"
+                    android:text="Save"
+                    android:layout_gravity="center"
+                    android:background="@drawable/drawable_blue_schedule"
+                    android:textSize="@dimen/_14sdp"
+                    android:gravity="center"
+                    android:textAllCaps="false"
+                    android:textColor="@color/automation_white"/>
+
+
+            </LinearLayout>
+
+
+        </ScrollView>
+
+
 
     </LinearLayout>
 

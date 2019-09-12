@@ -3,6 +3,7 @@ package com.spike.bot.core;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.spike.bot.ChatApplication;
 import com.spike.bot.model.AutoModeVO;
 import com.spike.bot.model.CameraVO;
 import com.spike.bot.model.DevicePanelVO;
@@ -517,6 +518,23 @@ public class JsonHelper {
                 String is_in_C = hasObject(deviceObj,"is_in_C") ? deviceObj.getString("is_in_C") : "";
                 String to_use = hasObject(deviceObj,"to_use") ? deviceObj.getString("to_use") : "";
                 int is_active = hasObject(deviceObj,"is_active") ? deviceObj.getInt("is_active") : 0;
+                int door_subtype = hasObject(deviceObj,"door_subtype") ? deviceObj.getInt("door_subtype") : -1;
+
+                int lock_id=-1;
+                if(TextUtils.isEmpty(deviceObj.optString("lock_id"))){
+                    lock_id =-1;
+                }else {
+                    lock_id = hasObject(deviceObj,"lock_id") ? deviceObj.optInt("lock_id") : -1;
+                }
+
+
+                int door_lock_status=0;
+
+                if(deviceObj.optString("door_lock_status").equals("null") ||TextUtils.isEmpty(deviceObj.optString("door_lock_status"))){
+                    door_lock_status = 0;
+                }else {
+                    door_lock_status = hasObject(deviceObj,"door_lock_status") ? deviceObj.optInt("door_lock_status") : 0;
+                }
 
                 String remote_status = hasObject(deviceObj,"remote_status") ? deviceObj.getString("remote_status") : "";
                 String remote_device_id = hasObject(deviceObj,"remote_device_id") ? deviceObj.getString("remote_device_id") : "";
@@ -546,6 +564,9 @@ public class JsonHelper {
                 d1.setRoom_panel_id(room_panel_id);
                 d1.setRemote_device_id(remote_device_id);
                 d1.setRemote_status(remote_status);
+                d1.setDoor_subtype(door_subtype);
+                d1.setLock_id(lock_id);
+                d1.setDoor_lock_status(door_lock_status);
                 sensor_name = deviceObj.getString("sensor_name");
                 Log.d("deviceObj","deviceObj : " + sensor_name);
 

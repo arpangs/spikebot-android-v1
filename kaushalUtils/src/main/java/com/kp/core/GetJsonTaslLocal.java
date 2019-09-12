@@ -1,24 +1,23 @@
 package com.kp.core;
 
-import java.io.IOException;
-import java.net.SocketException;
-import java.util.Map;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.os.AsyncTask;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.conn.HttpHostConnectException;
 import org.json.JSONObject;
 
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.os.AsyncTask;
-import android.support.v4.app.FragmentActivity;
-import android.text.TextUtils;
+import java.io.IOException;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.util.Map;
 
 /**
  * @author kaushal
  *
  */
-public class GetJsonTask extends AsyncTask<String, Void, String> {
+public class GetJsonTaslLocal extends AsyncTask<String, Void, String> {
 	private ProgressDialog mProgressDialog;
 	private ICallBack activity;
 	private Context context;
@@ -28,7 +27,7 @@ public class GetJsonTask extends AsyncTask<String, Void, String> {
 	private String error = null;
 	private String method = "POST";
 
-	public GetJsonTask(Context context, String url, String method, String json, ICallBack activity) {
+	public GetJsonTaslLocal(Context context, String url, String method, String json, ICallBack activity) {
 		this.activity = activity;
 		this.context = context;
 		this.url = url;
@@ -41,18 +40,22 @@ public class GetJsonTask extends AsyncTask<String, Void, String> {
 	protected String doInBackground(String... urls) {
 
 		try {
-			return ActivityHelper.CallJSONService(url, json, method);
-		} catch (HttpHostConnectException e) {
-			error = "Can't connect to server, Problem with server or your internet connection.";
-		} catch (SocketException e) {
-			error = "Connection problem, check your internet connection";
-		} catch (ClientProtocolException e) {
-			error = "Protocol Error occured.";
-		} catch (IOException e) {
-			error = "IO Error occured.";
+
+			return ActivityHelper.CallJSONService3(url, json, method);
 		} catch (Exception e) {
 			error = "Error occured.";
 		}
+//		catch (SocketTimeoutException e) {
+//			error = "Can't connect to server, Problem with server or your internet connection.";
+//		} catch (HttpHostConnectException e) {
+//			error = "Can't connect to server, Problem with server or your internet connection.";
+//		} catch (SocketException e) {
+//			error = "Connection problem, check your internet connection";
+//		} catch (ClientProtocolException e) {
+//			error = "Protocol Error occured.";
+//		} catch (IOException e) {
+//			error = "IO Error occured.";
+//		}
 		return null;
 	}
 
@@ -65,11 +68,8 @@ public class GetJsonTask extends AsyncTask<String, Void, String> {
 			// Log.d("soapDatainJsonObject", "1 soapDatainJsonObject==== " +
 			// soapDatainJsonObject.toString());
 
-			if(!TextUtils.isEmpty(result)){
-				JSONObject json = new JSONObject(result);
-				activity.onSuccess(json);
-			}
-
+			JSONObject json = new JSONObject(result);
+			activity.onSuccess(json);
 		} catch (Throwable e) {
 			activity.onFailure(e, error);
 		}

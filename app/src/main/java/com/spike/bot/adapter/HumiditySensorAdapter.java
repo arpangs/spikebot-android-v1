@@ -33,12 +33,12 @@ import java.util.ArrayList;
 public class HumiditySensorAdapter extends RecyclerView.Adapter<HumiditySensorAdapter.SensorViewHolder>{
 
     //    SensorResModel.DATA.TempList.NotificationList[] notificationList;
-    ArrayList<SensorResModel.DATA.MultiSensorList.HumidityNotificationList> notificationList=new ArrayList<>();
+    ArrayList<SensorResModel.DATA.TempList.HumidityNotificationList> notificationList=new ArrayList<>();
     private boolean isCF;
     private OnHumitySensorContextMenu onNotificationContextMenu;
     private Context mContext;
 
-    public HumiditySensorAdapter(ArrayList<SensorResModel.DATA.MultiSensorList.HumidityNotificationList> arrayList, boolean cfType, OnHumitySensorContextMenu onNotificationContextMenu){
+    public HumiditySensorAdapter(ArrayList<SensorResModel.DATA.TempList.HumidityNotificationList> arrayList, boolean cfType, OnHumitySensorContextMenu onNotificationContextMenu){
         this.notificationList = arrayList;
         this.isCF = cfType;
         this.onNotificationContextMenu = onNotificationContextMenu;
@@ -68,7 +68,7 @@ public class HumiditySensorAdapter extends RecyclerView.Adapter<HumiditySensorAd
             holder.viewLine.setVisibility(View.VISIBLE);
         }
         //\u2109 \u2103 (℉ & ℃)
-        final SensorResModel.DATA.MultiSensorList.HumidityNotificationList notification = notificationList.get(position);
+        final SensorResModel.DATA.TempList.HumidityNotificationList notification= notificationList.get(position);
 
 //        String minVal = "";
 //        String maxVal = "";
@@ -91,9 +91,9 @@ public class HumiditySensorAdapter extends RecyclerView.Adapter<HumiditySensorAd
         holder.txtMin.setText(""+notification.getMinHumidity()+" %");
         holder.txtMax.setText(""+notification.getMaxHumidity()+" %");
 
-        if(notification.getIsActive()>0){
-            holder.switchCompat.setChecked(notification.getIsActive() > 0);
-        }
+//        if(notification.getIsActive()>0){
+            holder.switchCompat.setChecked(notification.getIsActive()==0 ? false:true);
+//        }
 
         if(!TextUtils.isEmpty(notification.getDays()) && !notification.getDays().equalsIgnoreCase("null")){
             holder.txtDays.setText(Html.fromHtml(Common.htmlDaysFormat(notification.getDays())));
@@ -146,7 +146,7 @@ public class HumiditySensorAdapter extends RecyclerView.Adapter<HumiditySensorAd
      * @param notification
      * @param position
      */
-    private void displayContextMenu(View v, final SensorResModel.DATA.MultiSensorList.HumidityNotificationList notification, final int position) {
+    private void displayContextMenu(View v, final SensorResModel.DATA.TempList.HumidityNotificationList notification, final int position) {
 
         PopupMenu popup = new PopupMenu(mContext, v);
         @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(mContext, R.style.PopupMenu);

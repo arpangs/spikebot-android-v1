@@ -12,13 +12,18 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission-sdk-23 android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission-sdk-23 android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.FLASHLIGHT"/>
+    <uses-permission android:name="android.permission.READ_LOGS"
+        tools:ignore="ProtectedPermissions" />
 
-
+    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH" />
+    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <!--for Samsung-->
     <uses-permission android:name="com.sec.android.provider.badge.permission.READ"/>
@@ -73,6 +78,64 @@
             </intent-filter>
         </receiver>
 
+
+        <activity
+            android:name="com.spike.bot.activity.TTLock.AddTTlockActivity"
+            android:label="@string/title_activity_room_edit"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden" />
+
+        <activity
+            android:name="com.spike.bot.activity.TTLock.AddGatewayActivity"
+            android:label="@string/title_activity_room_edit"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden" />
+
+        <activity
+            android:name="com.spike.bot.activity.TTLock.LockBrandActivity"
+            android:label="@string/title_activity_room_edit"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
+        <activity
+            android:name="com.spike.bot.activity.TTLock.GatewayTypeActivity"
+            android:label="@string/title_activity_room_edit"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
+        <activity
+            android:name="com.spike.bot.activity.TTLock.AddTTlockToRoomActivity"
+            android:label="@string/title_activity_room_edit"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
+
+
+        <activity
+            android:name="com.spike.bot.activity.TTLock.GateWayListActivity"
+            android:label="@string/title_activity_room_edit"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
+        <activity
+            android:name="com.spike.bot.activity.TTLock.TTLockListActivity"
+            android:label="@string/title_activity_room_edit"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
+        <activity
+            android:name="com.spike.bot.activity.TTLock.LockUnlockActivity"
+            android:label="@string/title_activity_room_edit"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
         <activity
             android:name="com.spike.bot.activity.RoomEditActivity"
             android:label="@string/title_activity_room_edit"
@@ -108,7 +171,7 @@
             android:name="com.spike.bot.activity.ProfileActivity"
             android:label="@string/title_activity_profile"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan|adjustResize|stateAlwaysHidden"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="com.spike.bot.activity.DeviceLogActivity"
@@ -134,28 +197,28 @@
             android:name="com.spike.bot.activity.SmartDevice.BrandListActivity"
             android:label="@string/title_activity_profile"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"
+            android:windowSoftInputMode="stateAlwaysHidden"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name="com.spike.bot.activity.SmartDevice.SmartDecviceListActivity"
             android:label="@string/title_activity_profile"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"
+            android:windowSoftInputMode="stateAlwaysHidden"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name="com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity"
             android:label="@string/title_activity_profile"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"
+            android:windowSoftInputMode="stateAlwaysHidden"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name="com.spike.bot.activity.SmartDevice.AddSMartDevicetoRoomActivity"
             android:label="@string/title_activity_profile"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"
+            android:windowSoftInputMode="stateAlwaysHidden"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
@@ -246,6 +309,11 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden"/>
 
+        <activity android:name=".activity.Main2Activity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan|adjustResize|stateAlwaysHidden"/>
+
 
         <activity android:name=".activity.TempActivity"
             android:screenOrientation="portrait"
@@ -254,7 +322,7 @@
 
         <!--   android:name="com.spike.bot.activity.Main2Activity"-->
         <activity
-            android:name=".activity.Main2Activity"
+            android:name=".activity.LoginActivity"
             android:screenOrientation="portrait"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
@@ -430,6 +498,12 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
+
+
+
+        <service
+            android:name="com.ttlock.bl.sdk.service.DfuService"
+            android:exported="true" />
 
         <!--
      Google console Account with FCM ACCOUNT > anuj@spikebot.io / Hello$123

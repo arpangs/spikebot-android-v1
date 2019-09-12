@@ -180,6 +180,8 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             return;
         }
 
+        ActivityHelper.showProgressDialog(IRBlasterRemote.this, "Please Wait...", false);
+
         String url = ChatApplication.url + Constants.GET_REMOTE_INFO + "/"+mRemoteId;
         //  String url = ChatApplication.url + Constants.GET_REMOTE_INFO + "/"+mIRBlasterId;
         new GetJsonTask(this, url, "GET", "", new ICallBack() {
@@ -191,6 +193,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
+                    ActivityHelper.dismissProgressDialog();
                     if(code == 200){
 
                         mRemoteList = Common.jsonToPojo(result.toString(),RemoteDetailsRes.class);
@@ -208,6 +211,9 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                }
+                finally {
+                    ActivityHelper.dismissProgressDialog();
                 }
             }
 
@@ -253,15 +259,23 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
     private void setPowerOnOff(String powerText){
         isPowerOn = powerText.contains("ON") ||  powerText.contains(TURN_ON) ;
         txtAcState.setText(isRemoteActive==1 ? "Ac state : ON" : "Ac state : OFF");
+
+//        txtRemoteState.setTextColor(isRemoteActive==1 ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.username4) );
+//        mPowerButton.setBackground(isRemoteActive==1 ?getResources().getDrawable(R.drawable.drawable_turn_on_btn) :getResources().getDrawable(R.drawable.drawable_turn_off_btn));
+//        imgRemoteStatus.setImageDrawable(isRemoteActive==1 ?getResources().getDrawable(R.drawable.power_red) :getResources().getDrawable(R.drawable.power_green));
+
         txtRemoteState.setTextColor(isRemoteActive==1 ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.username4) );
+        txtRemoteState.setText(isRemoteActive==1 ? "Turn off": "Turn on" );
         mPowerButton.setBackground(isRemoteActive==1 ?getResources().getDrawable(R.drawable.drawable_turn_on_btn) :getResources().getDrawable(R.drawable.drawable_turn_off_btn));
         imgRemoteStatus.setImageDrawable(isRemoteActive==1 ?getResources().getDrawable(R.drawable.power_red) :getResources().getDrawable(R.drawable.power_green));
+
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.remote_power_button:
+
 //                if(isRemoteActive == 1){
 //                    if(isPowerOn) //TODO code here : if power button caption text is empty or nulll then user can't able to perform any action
 //                        setPowerOnOff(TURN_OFF);

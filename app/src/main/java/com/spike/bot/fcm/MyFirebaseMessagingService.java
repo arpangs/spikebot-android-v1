@@ -71,8 +71,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             if(TextUtils.isEmpty(badge)){
                 badge="0";
             }
-            int count  = Integer.parseInt(badge)+1;
-            badge= ""+count;
+//            int count  = Integer.parseInt(badge)+1;
+//            badge= ""+count;
 
             ChatApplication.logDisplay("Message data payload: badge " + badge);
 
@@ -83,6 +83,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 String title = remoteMessage.getData().get("title");
                 String body = remoteMessage.getData().get("body");
                 String attachment = remoteMessage.getData().get("attachment");
+                badge = remoteMessage.getData().get("badge");
 
                 if(!TextUtils.isEmpty(attachment)){
                     scheduleJob(title,body,attachment);

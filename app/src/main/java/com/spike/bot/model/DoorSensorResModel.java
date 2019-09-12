@@ -29,8 +29,74 @@ public class DoorSensorResModel {
         }
 
         public static class DoorList {
+            public void setmDoorSensorId(String mDoorSensorId) {
+                this.mDoorSensorId = mDoorSensorId;
+            }
+
+            public void setmDoorSensorMoudleId(String mDoorSensorMoudleId) {
+                this.mDoorSensorMoudleId = mDoorSensorMoudleId;
+            }
+
+            public void setmDoorSensorName(String mDoorSensorName) {
+                this.mDoorSensorName = mDoorSensorName;
+            }
+
+            public void setmDoorSensorVoltage(String mDoorSensorVoltage) {
+                this.mDoorSensorVoltage = mDoorSensorVoltage;
+            }
+
+            public void setmDoorSensorPerc(String mDoorSensorPerc) {
+                this.mDoorSensorPerc = mDoorSensorPerc;
+            }
+
+            public void setmIsUNread(String mIsUNread) {
+                this.mIsUNread = mIsUNread;
+            }
+
+            public void setmIsPushEnable(String mIsPushEnable) {
+                this.mIsPushEnable = mIsPushEnable;
+            }
+
+            public void setmDoorSensorStatus(String mDoorSensorStatus) {
+                this.mDoorSensorStatus = mDoorSensorStatus;
+            }
+
+            public void setmRoomName(String mRoomName) {
+                this.mRoomName = mRoomName;
+            }
+
+            public void setmCreatedDate(String mCreatedDate) {
+                this.mCreatedDate = mCreatedDate;
+            }
+
+            public void setNotificationLists(NotificationList[] notificationLists) {
+                this.notificationLists = notificationLists;
+            }
+
             @SerializedName("door_sensor_id")
             private String mDoorSensorId;
+
+            public int getIs_autolock_enable() {
+                return is_autolock_enable;
+            }
+
+            public void setIs_autolock_enable(int is_autolock_enable) {
+                this.is_autolock_enable = is_autolock_enable;
+            }
+
+            @SerializedName("is_autolock_enable")
+            private int is_autolock_enable=1;
+
+            public String getLock_data() {
+                return lock_data;
+            }
+
+            public void setLock_data(String lock_data) {
+                this.lock_data = lock_data;
+            }
+
+            @SerializedName("lock_data")
+            private String lock_data;
 
             public String getRoom_id() {
                 return room_id;
@@ -42,6 +108,28 @@ public class DoorSensorResModel {
 
             @SerializedName("room_id")
             private String room_id;
+
+            public String getDoor_subtype() {
+                return door_subtype;
+            }
+
+            public void setDoor_subtype(String door_subtype) {
+                this.door_subtype = door_subtype;
+            }
+
+            @SerializedName("door_subtype")
+            private String door_subtype;
+
+            public String getLock_id() {
+                return lock_id;
+            }
+
+            public void setLock_id(String lock_id) {
+                this.lock_id = lock_id;
+            }
+
+            @SerializedName("lock_id")
+            private String lock_id;
             @SerializedName("door_sensor_module_id")
             private String mDoorSensorMoudleId;
             @SerializedName("door_sensor_name")
@@ -54,8 +142,22 @@ public class DoorSensorResModel {
             private String mIsUNread;
             @SerializedName("is_push_enable")
             private String mIsPushEnable;
+
             @SerializedName("door_sensor_status")
             private String mDoorSensorStatus;
+
+            public String getDoor_lock_status() {
+                return door_lock_status;
+            }
+
+            public void setDoor_lock_status(String door_lock_status) {
+                this.door_lock_status = door_lock_status;
+            }
+
+            @SerializedName("door_lock_status")
+            private String door_lock_status="";
+
+
             @SerializedName("room_name")
             private String mRoomName;
             @SerializedName("created_date")

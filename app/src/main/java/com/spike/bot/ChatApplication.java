@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.multidex.MultiDex;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -20,6 +21,7 @@ import com.kp.core.DateHelper;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.core.CustomReportSender;
+import com.spike.bot.model.LockObj;
 import com.spike.bot.model.User;
 import com.spike.bot.receiver.ApplicationCrashHandler;
 import com.spike.bot.receiver.ConnectivityReceiver;
@@ -30,7 +32,15 @@ import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
@@ -66,6 +76,7 @@ public class ChatApplication extends Application  {
 
     private Socket mSocket;
     public static String url="";
+    public static String http="http://";
     public static boolean isRefreshDashBoard=false;
     public static boolean isRefreshSchedule=true;
     public static boolean isRefreshHome=false;
@@ -78,7 +89,8 @@ public class ChatApplication extends Application  {
     public static boolean isMoodFragmentNeedResume = false;
     public static boolean isEditActivityNeedResume = false;
     public static boolean isLogResume = false;
-    public static boolean isLocalFragmentResume = false;
+    public static boolean isLocalFragmentResume = true;
+    public static boolean isCallDeviceList = true;
 
     public static boolean isRefreshUserData = false;
 
@@ -88,6 +100,18 @@ public class ChatApplication extends Application  {
     public static int ADAPTER_POSITION = -1;
     public static String currentuserId = "";
     public static boolean isPushFound =true;
+
+    public static LockObj mTestLockObj;
+
+
+    public void saveChoosedLock(LockObj lockObj){
+        this.mTestLockObj = lockObj;
+    }
+
+    public LockObj getChoosedLock(){
+        return this.mTestLockObj;
+    }
+
 
     /*{
         try {
@@ -104,6 +128,7 @@ public class ChatApplication extends Application  {
         try {
             mSocket = IO.socket(url);
         } catch (URISyntaxException e) {
+            ChatApplication.logDisplay("erro is "+e.toString());
             throw new RuntimeException(e);
         }
         return mSocket;
@@ -313,6 +338,7 @@ public class ChatApplication extends Application  {
 
     public static void logDisplay(String message){
         if (BuildConfig.DEBUG) {
+//            createFileLog(message);
              Log.d("System out",""+message);
         }
     }
@@ -365,4 +391,47 @@ public class ChatApplication extends Application  {
         }
     };
 
+
+    public static void createFileLog(String message) {
+         StringBuilder log = null;
+        try {
+            Process process = Runtime.getRuntime().exec("logcat -d");
+            BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()));
+
+            log=new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                log.append(line);
+            }
+//            TextView tv = (TextView)findViewById(R.id.textView1);
+//            tv.setText(log.toString());
+        } catch (IOException e) {
+        }
+
+
+        //convert log to string
+        final String logString = new String(log.toString());
+
+        //create text file in SDCard
+        File sdCard = Environment.getExternalStorageDirectory();
+        File dir = new File (sdCard.getAbsolutePath() + "/myLogcat");
+        dir.mkdirs();
+        File file = new File(dir, "logcat.txt");
+
+        try {
+            //to write logcat in text file
+            FileOutputStream fOut = new FileOutputStream(file);
+            OutputStreamWriter osw = new OutputStreamWriter(fOut);
+
+            // Write the string to the file
+            osw.write(logString);
+            osw.flush();
+            osw.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
