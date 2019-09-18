@@ -27,6 +27,7 @@ import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.core.JsonHelper;
+import com.spike.bot.model.LockObj;
 import com.spike.bot.model.RoomVO;
 import com.spike.bot.model.SmartBrandDeviceModel;
 
@@ -52,6 +53,8 @@ public class AddSMartDevicetoRoomActivity extends AppCompatActivity implements V
     private ArrayList<String> stringRoomlist = new ArrayList<>();
     private ArrayList<String> stringPanellist = new ArrayList<>();
     private ArrayList<String> stringDevicelist = new ArrayList<>();
+    ArrayList<LockObj> lockObjArrayList=new ArrayList<>();
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,6 +65,7 @@ public class AddSMartDevicetoRoomActivity extends AppCompatActivity implements V
         getBridge_name=getIntent().getStringExtra("getBridge_name");
         host_ip=getIntent().getStringExtra("host_ip");
         smartBrandDeviceModel=(SmartBrandDeviceModel)getIntent().getSerializableExtra("searchModel");
+        lockObjArrayList=(ArrayList<LockObj>)getIntent().getSerializableExtra("lockObjs");
         setId();
     }
 
@@ -263,6 +267,8 @@ public class AddSMartDevicetoRoomActivity extends AppCompatActivity implements V
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,stringPanellist);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerPanel.setAdapter(dataAdapter);
+        panel_id="";
+        device_id="";
 
         spinnerPanel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -291,6 +297,7 @@ public class AddSMartDevicetoRoomActivity extends AppCompatActivity implements V
 
     private void setDeviceList(final int positionRoom, final int positionpanel) {
 
+        device_id="";
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,stringDevicelist);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDevice.setAdapter(dataAdapter);

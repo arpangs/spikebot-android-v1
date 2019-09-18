@@ -40,6 +40,9 @@ public class GetJsonTask2 extends AsyncTask<String, Void, String> {
 		this.method = method;
 		// this.parameter = parameter;
 		this.json = json;
+		if(!this.url.trim().startsWith("http")){
+			this.url="http://"+this.url;
+		}
 	}
 
 

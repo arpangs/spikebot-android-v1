@@ -66,8 +66,10 @@ import com.spike.bot.activity.CameraPlayBack;
 import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.activity.DeviceLogRoomActivity;
 import com.spike.bot.activity.DoorSensorInfoActivity;
+import com.spike.bot.activity.GasSensorActivity;
 import com.spike.bot.activity.HeavyLoadDetailActivity;
 import com.spike.bot.activity.MultiSensorActivity;
+import com.spike.bot.activity.RepeaterActivity;
 import com.spike.bot.activity.ScheduleListActivity;
 import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.activity.NotificationSetting;
@@ -290,7 +292,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     private NestedScrollView main_scroll;
     private FloatingActionButton mFab;
     private CardView mFabMenuLayout;
-    private TextView fab_menu1, fab_menu2, fab_menu3, fab_menu4, fab_menu5, fab_menu6, fab_menu7, fabZigbeeRemote, fabSmartDevice,fabLock;
+    private TextView fab_menu1, fab_menu2, fab_menu3, fab_menu4, fab_menu5, fab_menu6, fab_menu7, fabZigbeeRemote, fabSmartDevice,fabLock,fabrepeater;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -359,6 +361,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         fabSmartDevice = (TextView) view.findViewById(R.id.fabSmartDevice);
         fabZigbeeRemote = view.findViewById(R.id.fabZigbeeRemote);
         fabLock = view.findViewById(R.id.fabLock);
+        fabrepeater = view.findViewById(R.id.fabrepeater);
 
         mFab = (FloatingActionButton) view.findViewById(R.id.fab);
 
@@ -458,6 +461,15 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             public void onClick(View v) {
                 closeFABMenu();
                 startActivity(new Intent(getActivity(), LockBrandActivity.class));
+            }
+        });
+
+        fabrepeater.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeFABMenu();
+//                startActivity(new Intent(getActivity(), RepeaterActivity.class));
+                startActivity(new Intent(getActivity(), GasSensorActivity.class));
             }
         });
 
@@ -595,16 +607,31 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     public void startSocketConnection() { //◉
 
         ChatApplication app = ChatApplication.getInstance();
-        webUrl = app.url;
+        webUrl = ChatApplication.url;
 
         if (mSocket != null && mSocket.connected()) {
         } else {
 
+            if(!webUrl.startsWith("http")){
+                webUrl="http://"+webUrl;
+            }
             mSocket = app.getSocket();
+
+            if(mSocket!=null){
+                ChatApplication.logDisplay("chat app is null "+mSocket.connected());
+                if(mSocket.connected()==false){
+                    mSocket=null;
+                    ChatApplication.logDisplay("chat app is null");
+                }
+
+            }
+
             if(mSocket==null){
-                ChatApplication.logDisplay("msocket is call");
+                ChatApplication.logDisplay("chat app is call "+ChatApplication.url);
                 mSocket = app.openSocket(webUrl);
                 mSocket.on(Socket.EVENT_CONNECT, onConnect);
+                mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
+                mSocket.connect();
 //                ((Main2Activity)getActivity()).callSocket();
             }
             try {
@@ -630,9 +657,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             }
         }
 
-        //        mSocket.on(Socket.EVENT_CONNECT,onConnect);
-        //        mSocket.on(Socket.EVENT_DISCONNECT,onDisconnect);
-        //        mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
+//                mSocket.on(Socket.EVENT_CONNECT,onConnect);
+//                mSocket.on(Socket.EVENT_DISCONNECT,onDisconnect);
+//                mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
         //  mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
 
     }
@@ -643,7 +670,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     public void onDestroy() {
         super.onDestroy();
         if (mSocket != null) {
-            mSocket.emit("socketconnection", "android == disconnecti " + mSocket.id());
+//            mSocket.emit("socketconnection", "android == disconnecti " + mSocket.id());
            /* mSocket.disconnect();
             mSocket.off(Socket.EVENT_CONNECT, onConnect);
             mSocket.off(Socket.EVENT_DISCONNECT, onDisconnect);
@@ -675,6 +702,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             countDownTimerSocket.cancel();
             countDownTimerSocket.onFinish();
             countDownTimerSocket=null;
+        }
+        if(!ChatApplication.url.startsWith("http")){
+            ChatApplication.url="http://"+ChatApplication.url;
         }
 //        handlerHeavyLoad.removeCallbacksAndMessages(null);
         super.onPause();
@@ -830,6 +860,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         }
         //  ActivityHelper.showProgressDialog(getContext(),"Loading...",false);
 
+//        if(!ChatApplication.url.startsWith("http")){
+//            ChatApplication.url="http://"+ChatApplication.url;
+//        }
         String url = ChatApplication.url + Constants.GET_ALL_UNASSIGNED_DEVICES;
 
         new GetJsonTask(getContext(), url, "GET", "", new ICallBack() {
@@ -1205,6 +1238,10 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         //Toast.makeText(getActivity().getApplicationContext(), R.string.connect, Toast.LENGTH_SHORT).show();
                         isSocketConnected = true;
                     }
+                    if(!ChatApplication.url.startsWith("http")){
+                        ChatApplication.url="http://"+ChatApplication.url;
+                    }
+                    ChatApplication.logDisplay("chat app is connnect"+ChatApplication.url);
                     mSocket.emit("socketconnection", "android == startconnect  " + mSocket.id());
 
                     mSocket.on("ReloadDeviceStatusApp", reloadDeviceStatusApp);  // ac on off
@@ -1236,6 +1273,18 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                     isSocketConnected = false;
                     //Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
                     // openErrorDialog();
+
+//                    ChatApplication app = ChatApplication.getInstance();
+//                    webUrl = app.url;
+//                    if (!webUrl.startsWith("http")) {
+//                            webUrl = "http://" + webUrl;
+//                        }
+//                        mSocket = app.getSocket();
+//                            ChatApplication.logDisplay("chat app is call11" + ChatApplication.url);
+//                            mSocket = app.openSocket(webUrl);
+//                            mSocket.on(Socket.EVENT_CONNECT, onConnect);
+//                            mSocket.connect();
+
                 }
             });
         }
@@ -1533,9 +1582,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                             JSONObject object = new JSONObject(args[0].toString());
                             ChatApplication.logDisplay("door is "+object);
                             String room_order = object.optString("room_order");
-                            String door_sensor_id = object.getString("door_sensor_id");
-                            String door_sensor_status = object.getString("door_sensor_status");
-                            String door_lock_status = object.getString("door_lock_status");
+                            String door_sensor_id = object.optString("door_sensor_id");
+                            String door_sensor_status = object.optString("door_sensor_status");
+                            String door_lock_status = object.optString("door_lock_status");
 
                             sectionedExpandableLayoutHelper.updateDoorStatus(room_order, door_sensor_id, door_sensor_status,door_lock_status);
 
@@ -1593,15 +1642,18 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 public void run() {
                     if (args != null) {
                         try {
+
                             JSONObject object = new JSONObject(args[0].toString());
+                            ChatApplication.logDisplay("temp is "+object);
                             String room_id = object.getString("room_id");
                             String room_order = object.getString("room_order");
                             String temp_sensor_id = object.getString("temp_sensor_id");
                             String temp_celsius = object.getString("temp_celsius");
                             String temp_fahrenheit = object.getString("temp_fahrenheit");
                             String is_in_C = object.getString("is_in_C");
+                            String humidity = object.getString("humidity");
 
-                            sectionedExpandableLayoutHelper.updateTempSensor(room_id, room_order, temp_sensor_id, temp_celsius, temp_fahrenheit, is_in_C);
+                            sectionedExpandableLayoutHelper.updateTempSensor(room_id, room_order, temp_sensor_id, temp_celsius, temp_fahrenheit, is_in_C,humidity);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -2720,7 +2772,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 intent.putExtra("temp_module_id", item.getModuleId());
                 startActivity(intent);
             } else if (item.getSensor_type().equalsIgnoreCase("door")) {
-
+                ChatApplication.logDisplay("door call is intent "+mSocket.connected());
                 Intent intent = new Intent(getActivity(), DoorSensorInfoActivity.class);
                 intent.putExtra("door_sensor_id", item.getSensor_id());
                 intent.putExtra("door_room_name", item.getRoomName());
@@ -3534,6 +3586,13 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             public void onFinish() {
                 if(countFlow==0){
                     countFlow=2;
+                    ChatApplication app = ChatApplication.getInstance();
+                    app.closeSocket(webUrl);
+
+                    if (mSocket != null) {
+                        mSocket.disconnect();
+                        mSocket = null;
+                    }
                     ChatApplication.logDisplay("show is calling time ");
                     callColud(false);
                 }
@@ -3552,6 +3611,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             //local
             ((Main2Activity)getActivity()).webUrl=ChatApplication.http+Constants.getuserIp(getActivity())+":80";
             ChatApplication.url=ChatApplication.http+Constants.getuserIp(getActivity());
+            if(!ChatApplication.url.startsWith("http")){
+                ChatApplication.url="http://"+ChatApplication.url;
+            }
             ((Main2Activity)getActivity()).callSocket();
             ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
 
@@ -3559,6 +3621,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         }else {
             String colud=Constants.getuserCloudIP(getActivity());
             ChatApplication.url=colud;
+            if(!ChatApplication.url.startsWith("http")){
+                ChatApplication.url="http://"+ChatApplication.url;
+            }
             ((Main2Activity)getActivity()).webUrl=colud;
             ((Main2Activity)getActivity()).callSocket();
             ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
@@ -3646,6 +3711,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
 
                 try {
+                    startSocketConnection();
                     ActivityHelper.dismissProgressDialog();
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -3970,7 +4036,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 //            ChatApplication.url="http://"+ChatApplication.url;
 //        }
 
-        startSocketConnection();
         String url = ChatApplication.url + Constants.GET_DEVICES_LIST;
         JSONObject jsonObject = new JSONObject();
         try {
@@ -4011,7 +4076,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 ChatApplication.logDisplay("getDeviceList onSuccess local " + result.toString());
 
                 try {
-
+                    startSocketConnection();
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -4281,7 +4346,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         mMessagesView.setVisibility(View.VISIBLE);
                         txt_empty_schedule.setVisibility(View.GONE);
                     }
-
+                    if(mSocket!=null){
+                        mSocket.disconnect();
+                    }
                     callColud(false);
                 }
             }
@@ -4341,6 +4408,12 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
 //        String url = ChatApplication.url + Constants.GET_DEVICES_LIST;
 
         if(ChatApplication.isCallDeviceList) {
+            ChatApplication app = ChatApplication.getInstance();
+            app.closeSocket(webUrl);
+            if (mSocket != null) {
+                mSocket.disconnect();
+                mSocket = null;
+            }
             hideAdapter(false);
             sectionedExpandableLayoutHelper.clearData();
             if (Common.isNetworkConnected(getActivity())) {
@@ -4351,11 +4424,12 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         }else {
 //            if(ChatApplication.url.startsWith("http://home.")){
             if(ChatApplication.url.startsWith(Constants.startUrl)){
-                getDeviceCould(1);
+//                getDeviceCould(1);
+                getDeviceCloud(1);
             }else {
                 getDeviceLocal(1);
             }
-
+//getDeviceCloud
         }
 
 
@@ -4732,7 +4806,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         if (!token_id.equalsIgnoreCase("")) {
             url = url + "/" + token_id;
         }
-        startSocketConnection();
+
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("room_type", Integer.parseInt(Common.getPrefValue(getActivity(), Constants.USER_ROOM_TYPE)));
@@ -4769,7 +4843,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
 
                 try {
-
+//                    startSocketConnection();
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -4831,6 +4905,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                                 ((Main2Activity) getActivity()).isCloudConnected = true;
                                 // ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
                                 webUrl = userList.get(i).getCloudIP();
+                                if(!webUrl.startsWith("http")){
+                                    webUrl="http://"+webUrl;
+                                }
                                 ChatApplication.url = webUrl;
                             } else {
                                 userList.get(i).setIsActive(false);

@@ -590,9 +590,9 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 final PanelVO panel1 = (PanelVO) mDataArrayList.get(position);
 
                 if(panel1.getDeviceList().size()==0){
-                    holder.sectionTextView.setVisibility(View.GONE);
+                    holder.ll_background.setVisibility(View.GONE);
                 }else {
-                    holder.sectionTextView.setVisibility(View.VISIBLE);
+                    holder.ll_background.setVisibility(View.VISIBLE);
                     holder.sectionTextView.setText(panel1.getPanelName());
                 }
 
@@ -764,9 +764,10 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         if(humility.equalsIgnoreCase("null")){
                             tempInCF=tempInCF+" "+cf;
                         }else {
-                            tempInCF=tempInCF+" "+cf+" / "+item.getHumidity();
+                            tempInCF=tempInCF+" "+cf+" / "+item.getHumidity()+"%";
                         }
 
+                        ChatApplication.logDisplay("temp is d "+item.getTemp_in_f()+" "+item.getHumidity());
 
                         //holder.txt_temp_in_cf.setText(Html.fromHtml("<b>" + tempInCF + " " + cf + "</b>"));
                         holder.txt_temp_in_cf.setText(Html.fromHtml("<b>" + tempInCF+ "</b>"));

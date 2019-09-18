@@ -40,13 +40,29 @@ public class AddUnassignedPanelAdapter extends RecyclerView.Adapter<AddUnassigne
         final UnassignedListRes.Data.RoomdeviceList roomDevice = roomdeviceList.get(position);
 
         String mModuleName = "";
+        holder.mModuleId.setText("["+roomDevice.getModuleId()+"]");
         if(roomDevice.getIsModule() == 1){
             holder.mImageIcon.setImageResource(R.drawable.bulb_off);
             mModuleName = roomDevice.getModuleName();
 
         }else{
             mModuleName = roomDevice.getSensorName();
-            holder.mImageIcon.setImageResource(Common.getIcon(0,roomDevice.getSensorIcon()));
+
+            if(roomDevice.getSensorIcon().equals("doorsensor")){
+
+                if(roomDevice.getLock_subtype().equals("1")){
+                    holder.mImageIcon.setImageResource(R.drawable.off_door);
+                }else if(roomDevice.getLock_subtype().equals("2")){
+                    holder.mModuleId.setText("["+roomDevice.getLock_id()+"]");
+                    holder.mImageIcon.setImageResource(R.drawable.lock_only_grey);
+                }else {
+                    holder.mImageIcon.setImageResource(R.drawable.door_locked);
+                }
+
+            }else {
+                holder.mImageIcon.setImageResource(Common.getIcon(0, roomDevice.getSensorIcon()));
+
+            }
 
 //            if(roomDevice.getSensorIcon().equalsIgnoreCase("heavyload")){
 //                holder.mImageIcon.setImageResource(R.drawable.off);
@@ -56,7 +72,7 @@ public class AddUnassignedPanelAdapter extends RecyclerView.Adapter<AddUnassigne
 
 
         holder.mDeviceName.setText(mModuleName);
-        holder.mModuleId.setText("["+roomDevice.getModuleId()+"]");
+
 
         holder.mImgAdd.setOnClickListener(new View.OnClickListener() {
             @Override

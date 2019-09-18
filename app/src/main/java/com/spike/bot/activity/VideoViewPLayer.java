@@ -191,12 +191,13 @@ public class VideoViewPLayer extends AppCompatActivity{
             outputStream.flush();
             outputStream.close();
 
+            ChatApplication.showToast(this,"Saved.");
+
             ChatApplication.showToast(this,"Capture screenshot");
         } catch (Throwable e) {
             e.printStackTrace();
         }
     }
-
 
     public Bitmap takeScreenShot(Activity activity) {
 

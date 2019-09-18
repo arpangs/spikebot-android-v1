@@ -102,6 +102,39 @@ public class UnassignedListRes {
             @SerializedName("sensor_type")
             private String sensorType;
 
+            public String getLock_id() {
+                return lock_id;
+            }
+
+            public void setLock_id(String lock_id) {
+                this.lock_id = lock_id;
+            }
+
+            public String getLock_data() {
+                return lock_data;
+            }
+
+            public void setLock_data(String lock_data) {
+                this.lock_data = lock_data;
+            }
+
+            @SerializedName("lock_id")
+            private String lock_id;
+
+            @SerializedName("lock_data")
+            private String lock_data;
+
+            public String getLock_subtype() {
+                return lock_subtype;
+            }
+
+            public void setLock_subtype(String lock_subtype) {
+                this.lock_subtype = lock_subtype;
+            }
+
+            @SerializedName("lock_subtype")
+            private String lock_subtype;
+
             public String getSensorType() {
                 return sensorType;
             }

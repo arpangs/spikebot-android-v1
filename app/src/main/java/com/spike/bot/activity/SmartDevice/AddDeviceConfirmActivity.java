@@ -31,6 +31,8 @@ import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
+import com.spike.bot.model.LockInitResultObj;
+import com.spike.bot.model.LockObj;
 import com.spike.bot.model.SmartBrandDeviceModel;
 
 import org.json.JSONException;
@@ -47,8 +49,10 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
     Toolbar toolbar;
     Button btnExtingBridge,btnAddToroom;
 
+    ArrayList<LockObj> lockObjs=new ArrayList<>();
+
     SmartBrandDeviceModel smartBrandDeviceModel;
-    String isViewType="",ttlockId="",ttbridgeId="",host_ip="",getBridge_name="",bridge_id="",lockName="",door_sensor_module_id="",door_name="";
+    String isViewType="",ttlockId="",ttbridgeId="",host_ip="",getBridge_name="",bridge_id="",lockName="",door_sensor_module_id="",door_name="",door_type="",lock_data="",lock_id="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,15 +61,21 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
 
         isViewType=getIntent().getStringExtra("isViewType");
         if(isViewType.equalsIgnoreCase("ttLock")){
+            lockObjs=(ArrayList<LockObj>)getIntent().getSerializableExtra("lockObjs");
 //            ttbridgeId=getIntent().getStringExtra("gatewayId");
 //            ttlockId=getIntent().getStringExtra("lockId");
 //            lockName=getIntent().getStringExtra("lockName");
         }else if(isViewType.equalsIgnoreCase("syncDoor")){
             door_sensor_module_id=getIntent().getStringExtra("door_sensor_module_id");
             door_name=getIntent().getStringExtra("door_sensor_name");
+            door_type=getIntent().getStringExtra("door_type");
+            lock_id=getIntent().getStringExtra("lock_id");
+            lock_data=getIntent().getStringExtra("lock_data");
 
             if(TextUtils.isEmpty(door_name)){
                 door_name="";
+            } if(TextUtils.isEmpty(door_type)){
+                door_type="";
             }
         }else {
             bridge_id = getIntent().getStringExtra("bridge_id");
@@ -109,6 +119,12 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
                 Intent intent = new Intent(this, AddTTlockToRoomActivity.class);
                 intent.putExtra("door_sensor_module_id", ""+door_sensor_module_id);
                 intent.putExtra("door_sensor_name",""+door_name);
+                intent.putExtra("door_type",""+door_type);
+                intent.putExtra("lockObjs",lockObjs);
+                if(door_type.equals("2")){
+                    intent.putExtra("lock_id",""+lock_id);
+                    intent.putExtra("lock_data",""+lock_data);
+                }
 //                intent.putExtra("lockName", lockName);
 //                intent.putExtra("lockId", ttlockId);
 //                intent.putExtra("gatewayId", ttbridgeId);
@@ -250,8 +266,20 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         TextView dialogTitle = (TextView) dialog.findViewById(R.id.tv_title);
         TextView txt_sensor_name = (TextView) dialog.findViewById(R.id.txt_sensor_name);
 
-        dialogTitle.setText("Add Door Sensor");
-        txt_sensor_name.setText("Door Name");
+        if(!TextUtils.isEmpty(door_type)){
+
+            if(door_type.equals("1")){
+                dialogTitle.setText("Add Door Sensor");
+                txt_sensor_name.setText("Door Name");
+            }else if(door_type.equals("2")){
+                dialogTitle.setText("Add Lock");
+                txt_sensor_name.setText("Lock Name");
+            }
+        }else {
+            dialogTitle.setText("Add Door Sensor");
+            txt_sensor_name.setText("Door Name");
+        }
+
 
         edt_door_module_id.setText(door_sensor_module_id);
         edt_door_module_id.setFocusable(false);
@@ -280,7 +308,16 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveSensor(dialog, edt_door_name, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list ,room_id);
+                if(!TextUtils.isEmpty(door_type)){
+                    if(door_type.equals("1")){
+                        saveSensor(dialog, edt_door_name, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list ,room_id);
+                    }else if(door_type.equals("2")){
+                        callAddTTlock(dialog, edt_door_name, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list ,room_id);
+                    }
+                }else {
+                    saveSensor(dialog, edt_door_name, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list ,room_id);
+                }
+
                 dialog.dismiss();
             }
         });
@@ -289,6 +326,52 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
             dialog.show();
         }
     }
+
+
+    private void callAddTTlock(final Dialog dialog, EditText textInputEditText, String door_name,
+                               String door_module_id, Spinner sp_room_list, String room_id) {
+        ActivityHelper.showProgressDialog(this, " Please Wait...", false);
+        String url = ChatApplication.url + Constants.addTTLock;
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+
+            jsonObject.put("panel_id","" );
+            jsonObject.put("door_sensor_id","");
+            jsonObject.put("is_new",1 );
+
+            jsonObject.put("lock_id",lock_id);
+            jsonObject.put("room_id",room_id);
+            jsonObject.put("lock_data",lock_data);
+
+            jsonObject.put("lock_name",door_name);
+            jsonObject.put("user_id", "" + Common.getPrefValue(this, Constants.USER_ID));
+
+            ChatApplication.logDisplay("url is "+jsonObject);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ChatApplication.logDisplay("url is " + url);
+        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject jsonObject1) {
+                ChatApplication.logDisplay("result is "+jsonObject1);
+
+                if(jsonObject1.optString("code").equalsIgnoreCase("200")){
+                    dialog.dismiss();
+                    ActivityHelper.dismissProgressDialog();
+                    setIntentMain();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        }).execute();
+    }
+
 
 
     private void saveSensor(final Dialog dialog, EditText textInputEditText, String door_name,
@@ -300,7 +383,7 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         }
 
         if(TextUtils.isEmpty(textInputEditText.getText().toString())){
-            textInputEditText.setError("Enter Door Name");
+            textInputEditText.setError("Enter Name");
             textInputEditText.requestFocus();
             return;
         }
@@ -379,6 +462,7 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         intent.putExtra("lockName","");
         intent.putExtra("room_id",room_id);
         intent.putExtra("isFlagView",""+1);
+        intent.putExtra("lockObjs",lockObjs);
         startActivity(intent);
     }
 

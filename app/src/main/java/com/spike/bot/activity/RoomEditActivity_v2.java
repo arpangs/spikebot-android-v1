@@ -150,7 +150,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
 
       //  ActivityHelper.hideKeyboard(this);
         startSocketConnection();
-        getDeviceList();
 
         empty_add_image.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -286,6 +285,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             }
         });
 
+        getDeviceList();
     }
 
     /**
@@ -337,6 +337,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                                 Intent intent=new Intent(RoomEditActivity_v2.this, AddDeviceConfirmActivity.class);
                                 intent.putExtra("isViewType","syncDoor");
                                 intent.putExtra("door_sensor_module_id",""+door_sensor_module_id);
+                                intent.putExtra("door_type","1");
                                 startActivity(intent);
                             }
 
@@ -365,6 +366,9 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                             countDownTimer.cancel();
                         }
 
+                        // {"message":"","gas_sensor_module_id":"2098131A004B1200"
+                        // ,"room_list":[{"room_id":"1568453193284_gH0YwSg9q","room_name":"1"},{"room_id":"1568716945632_9VzX7baPT","room_name":"vpk"}]}
+
                         roomIdList.clear();
                         roomNameList.clear();
 
@@ -375,6 +379,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
 
                         String temp_sensor_module_id = object.getString("gas_sensor_module_id");
 
+                        ChatApplication.logDisplay("gas is "+object);
                         if(TextUtils.isEmpty(message)){
                            /* String roomList = object.getString("room_list");
 
@@ -846,7 +851,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             return;
         }
 
-        ActivityHelper.showProgressDialog(RoomEditActivity_v2.this,"Please wait.",false);
+        ActivityHelper.showProgressDialog(RoomEditActivity_v2.this,"Please wait...",false);
 
         JSONObject obj = new JSONObject();
         try {
@@ -1137,7 +1142,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         new GetJsonTask(this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL //POST
             @Override
             public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
+//                ActivityHelper.dismissProgressDialog();
 
             }
 
@@ -1297,6 +1302,8 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
     }
 
     public void getDeviceList(){
+//        ActivityHelper.showProgressDialog(this, "Please wait...", false);
+
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("room_id", room.getRoomId());
@@ -1304,7 +1311,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        ActivityHelper.showProgressDialog(this, "Please wait...", false);
         String url =  ChatApplication.url + Constants.GET_EDIT_ROOM_INFO;
 
         new GetJsonTask(this,url ,"POST",jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
@@ -1314,29 +1320,38 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                     ActivityHelper.dismissProgressDialog();
                     ArrayList<RoomVO> roomList = new ArrayList<>();
                     JSONObject dataObject = result.getJSONObject("data");
-
                     JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
-
+                    ChatApplication.logDisplay("result is "+roomArray);
                     roomList = JsonHelper.parseRoomArray(roomArray,false);
                     if(roomList.size()>0) {
                         room = roomList.get(0);
                         et_toolbar_title.setText(room.getRoomName());
-                    }
-                   // roomEditGridAdapter.generateDataList(room);
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                        if(room.getPanelList()!=null && room.getPanelList().size()>0){
                             roomEditGridAdapter = new RoomEditAdapterV2(room.getPanelList(), RoomEditActivity_v2.this,RoomEditActivity_v2.this);
                             mMessagesView.setAdapter(roomEditGridAdapter);
                             roomEditGridAdapter.notifyDataSetChanged();
                         }
-                    });
+
+                    }
+                   // roomEditGridAdapter.generateDataList(room);
+//
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+                            ActivityHelper.dismissProgressDialog();
+//                            roomEditGridAdapter = new RoomEditAdapterV2(room.getPanelList(), RoomEditActivity_v2.this,RoomEditActivity_v2.this);
+//                            mMessagesView.setAdapter(roomEditGridAdapter);
+//                            roomEditGridAdapter.notifyDataSetChanged();
+//                        }
+//                    });
 
                 } catch (JSONException e) {
+                    ActivityHelper.dismissProgressDialog();
                     e.printStackTrace();
                 }
                 finally {
+                    ActivityHelper.dismissProgressDialog();
                     if(room.getPanelList().size()==0){
                         txt_empty_room.setVisibility(View.VISIBLE);
                         mMessagesView.setVisibility(View.GONE);
@@ -1801,7 +1816,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         new GetJsonTask(RoomEditActivity_v2.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
+//                ActivityHelper.dismissProgressDialog();
             }
 
             @Override
@@ -1833,7 +1848,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         new GetJsonTask(RoomEditActivity_v2.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
+//                ActivityHelper.dismissProgressDialog();
             }
 
             @Override

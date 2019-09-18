@@ -9,6 +9,8 @@ buildscript {
 }
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -70,6 +72,14 @@ android {
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
     }
+
+    packagingOptions {
+        exclude 'META-INF/atomicfu.kotlin_module'
+    }
+//
+//    androidExtensions {
+//        experimental = true
+//    }
 }
 
 repositories {
@@ -130,7 +140,13 @@ dependencies {
     implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
 
+//    implementation "de.mrmaffen:vlc-android-sdk:2.0.6"
+//    implementation 'com.github.nisrulz:screenshott:2.0.0'
 
+    implementation 'com.github.anastr:speedviewlib:1.4.0'
+  //  kotlin
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+//    implementation 'android.core:core-ktx:1.0.2'
 
 }
 apply plugin: 'com.google.gms.google-services'

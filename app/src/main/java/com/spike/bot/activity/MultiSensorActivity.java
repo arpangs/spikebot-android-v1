@@ -189,11 +189,24 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                     if (args != null) {
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
-                            String room_id = object.getString("room_id");
-                            String temp_sensor_id = object.getString("temp_sensor_id");
-                            String temp_celsius = object.getString("temp_celsius");
-                            String temp_fahrenheit = object.getString("temp_fahrenheit");
+//                            String room_id = object.getString("room_id");
+//                            String temp_sensor_id = object.getString("temp_sensor_id");
+//                            String temp_celsius = object.getString("temp_celsius");
+//                            String temp_fahrenheit = object.getString("temp_fahrenheit");
 
+                            // {"room_id":"1568356634757_Yy4oiLUbl","room_order":0,"temp_sensor_id":"1568367831844_0ygOKL1C-","is_in_C":1,"temp_celsius":30,"temp_fahrenheit":86,"humidity":36}
+
+                            ChatApplication.logDisplay("temp is "+object);
+
+                            txtHumity.setText(object.optString("humidity")+" %");
+
+                            if (isCFSelected==1) {
+                                setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_yellow, R.drawable.txt_background_white, Color.parseColor("#FFFFFF"), Color.parseColor("#111111"));
+                                tempCFValue.setText(object.optString("temp_celsius") +" ");
+                            } else {
+                                setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_white, R.drawable.txt_background_yellow, Color.parseColor("#111111"), Color.parseColor("#FFFFFF"));
+                                tempCFValue.setText(object.optString("temp_fahrenheit")+" ");
+                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -253,29 +266,29 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                             //    "temp_in_C" = 28;
                             //    "temp_in_F" = 82;
                             //}]
-
-                            txtHumity.setText(object.optString("humidity")+" %");
-
-                            if (isCFSelected==1) {
-                                setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_yellow, R.drawable.txt_background_white, Color.parseColor("#FFFFFF"), Color.parseColor("#111111"));
-                                tempCFValue.setText(object.optString("temp_in_C") +" ");
-                            } else {
-                                setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_white, R.drawable.txt_background_yellow, Color.parseColor("#111111"), Color.parseColor("#FFFFFF"));
-                                tempCFValue.setText(object.optString("temp_in_F")+" ");
-                            }
-
-                            if(!TextUtils.isEmpty(object.optString("gas_status"))){
-                                if(object.optString("gas_status").equalsIgnoreCase("Normal")){
-                                    txtGasSensor.setText("Normal");
-                                    txtGasSensor.setTextColor(getResources().getColor(R.color.username5));
-                                }else {
-                                    txtGasSensor.setText("High");
-                                    txtGasSensor.setTextColor(getResources().getColor(R.color.automation_red));
-                                }
-
-                            }
-
-                            ChatApplication.logDisplay("changeMultiSensorValue is "+object);
+//
+//                            txtHumity.setText(object.optString("humidity")+" %");
+//
+//                            if (isCFSelected==1) {
+//                                setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_yellow, R.drawable.txt_background_white, Color.parseColor("#FFFFFF"), Color.parseColor("#111111"));
+//                                tempCFValue.setText(object.optString("temp_in_C") +" ");
+//                            } else {
+//                                setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_white, R.drawable.txt_background_yellow, Color.parseColor("#111111"), Color.parseColor("#FFFFFF"));
+//                                tempCFValue.setText(object.optString("temp_in_F")+" ");
+//                            }
+//
+//                            if(!TextUtils.isEmpty(object.optString("gas_status"))){
+//                                if(object.optString("gas_status").equalsIgnoreCase("Normal")){
+//                                    txtGasSensor.setText("Normal");
+//                                    txtGasSensor.setTextColor(getResources().getColor(R.color.username5));
+//                                }else {
+//                                    txtGasSensor.setText("High");
+//                                    txtGasSensor.setTextColor(getResources().getColor(R.color.automation_red));
+//                                }
+//
+//                            }
+//
+//                            ChatApplication.logDisplay("changeMultiSensorValue is "+object);
 
                         } catch (JSONException e) {
                             e.printStackTrace();

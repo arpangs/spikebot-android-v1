@@ -93,6 +93,8 @@
         <item name="android:textColor">#ff8bc34a</item>
         <item name="android:itemBackground">#ff8bc34a</item>
     </style>
-
+    <item name="player_display" type="id" />
+    <item name="player_display_box" type="id"/>
+    <item name="player_display_float_box" type="id"/>
 
 </resources>

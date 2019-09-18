@@ -2,6 +2,10 @@ package cn.nodemedia;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.SurfaceTexture;
 import android.os.Build;
 import android.os.Handler;
@@ -242,6 +246,19 @@ public class NodePlayerView extends FrameLayout implements SurfaceHolder.Callbac
             mRenderCallback.onSurfaceCreated(mSurface);
         }
 
+        Canvas canvas = null;
+        try {
+            canvas = surfaceHolder.lockCanvas(null);
+            synchronized (surfaceHolder) {
+                draw(canvas);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (canvas != null) {
+                surfaceHolder.unlockCanvasAndPost(canvas);
+            }
+        }
     }
 
     @Override
@@ -292,7 +309,14 @@ public class NodePlayerView extends FrameLayout implements SurfaceHolder.Callbac
 
     @Override
     public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
-
     }
 
+   public Bitmap _scratch;
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        _scratch  = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+        canvas.drawColor(Color.BLACK);
+        canvas.drawBitmap(_scratch, 10, 10, null);
+    }
 }

@@ -172,16 +172,27 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
 
     @Override
     public void onClick(int position, UnassignedListRes.Data.RoomdeviceList roomdeviceList) {
-        if(roomdeviceList.getModuleId().equals("0") && roomdeviceList.getSensorIcon().equals("doorsensor")){
 
-            Intent intent=new Intent(this, AddDeviceConfirmActivity.class);
-            intent.putExtra("isViewType","syncDoor");
-            intent.putExtra("door_sensor_module_id",""+roomdeviceList.getSensorId());
-            intent.putExtra("door_sensor_name",""+roomdeviceList.getSensorName());
-            startActivity(intent);
+        if(roomdeviceList.getIsModule() == 1){
+            showAddDialog(roomdeviceList);
+        }else {
+            if(roomdeviceList.getSensorIcon().equals("doorsensor")){
+                Intent intent=new Intent(this, AddDeviceConfirmActivity.class);
+                intent.putExtra("isViewType","syncDoor");
+                intent.putExtra("door_sensor_module_id",""+roomdeviceList.getModuleId());
+                intent.putExtra("door_sensor_name",""+roomdeviceList.getSensorName());
+                intent.putExtra("door_type",""+roomdeviceList.getLock_subtype());
+                if(roomdeviceList.getLock_subtype().equals("2")){
+                    intent.putExtra("lock_id",roomdeviceList.getLock_id());
+                    intent.putExtra("lock_data",roomdeviceList.getLock_data());
+                }
+                startActivity(intent);
 
+            }else {
+                showAddDialog(roomdeviceList);
+            }
         }
-        showAddDialog(roomdeviceList);
+
     }
 
     private Dialog mDialog;

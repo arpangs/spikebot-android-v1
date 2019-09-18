@@ -596,8 +596,14 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     private void listServiceTemp(final String msg, String ip, final int port, final boolean isFound, boolean isShow) {
 
-        final String openIp = (isFound) ? "http://" + ip + ":" + port : Constants.CLOUD_SERVER_URL;
-        ChatApplication.logDisplay("openIp is " + openIp);
+        String openIp="";
+        if(ip.startsWith(Constants.startUrlhttp)){
+            openIp   = (isFound) ? ip + ":" + port : Constants.CLOUD_SERVER_URL;
+        }else {
+            openIp  = (isFound) ?  "http://" +ip + ":" + port : Constants.CLOUD_SERVER_URL;
+        }
+
+        ChatApplication.logDisplay("openIp is connect " + openIp);
         webUrl = openIp;
 
 //        if (!ip.equalsIgnoreCase("") && !webUrl.equalsIgnoreCase(openIp)) {
@@ -829,13 +835,13 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         ChatApplication.logDisplay("onterminal is call onDestroy ");
 
         if (mSocket != null) {
-            mSocket.emit(TAG, "android == disconnect " + mSocket.id());
-            mSocket.disconnect();
-            mSocket.off(Socket.EVENT_CONNECT, onConnect);
-            mSocket.off(Socket.EVENT_DISCONNECT, onDisconnect);
-            mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
-            mSocket.on("deleteChildUser", deleteChildUser);
-            mSocket = null;
+//            mSocket.emit(TAG, "android == disconnect " + mSocket.id());
+//            mSocket.disconnect();
+//            mSocket.off(Socket.EVENT_CONNECT, onConnect);
+//            mSocket.off(Socket.EVENT_DISCONNECT, onDisconnect);
+//            mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
+//            mSocket.on("deleteChildUser", deleteChildUser);
+//            mSocket = null;
         }
         if (connectivityReceiver != null) {
             unregisterReceiver(connectivityReceiver);
@@ -1662,6 +1668,11 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                         }
                         mSocket.emit("socketconnection", "android == startconnect  " + mSocket.id());
 
+                        if(!ChatApplication.url.startsWith("http")){
+                            ChatApplication.url="http://"+ChatApplication.url;
+                        }
+
+                        ChatApplication.logDisplay("chat app is connnectmain"+ChatApplication.url);
                         //linear_login
                     }
                     mViewPager.setVisibility(View.VISIBLE);
@@ -2082,7 +2093,11 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 //            String ipAddressPI = array[0] + "." + array[1] + "." + array[2] + "." + Constants.IP_END;
 
 //            if (ipAddressPI.equalsIgnoreCase(local_ip)) {
+
                 webUrl = localIp;
+            if(!webUrl.startsWith("http")){
+                webUrl="http://"+webUrl;
+            }
                 ChatApplication.url = webUrl;
                 flagPicheck = false;
                 listServiceTemp("\nService resolved: ", webUrl, 80, true, false);
@@ -2105,6 +2120,9 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         } else {
             isNetwork = true;
             webUrl = cloudIp;
+            if(!webUrl.startsWith("http")){
+                webUrl="http://"+webUrl;
+            }
             ChatApplication.url = webUrl;
             isCloudConnected = true;
             flagPicheck = false;
@@ -2372,17 +2390,22 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         //
         else {
 
-            mSocket = app.openSocket(webUrl);
-            ChatApplication.logDisplay("socket url " + webUrl);
-            ChatApplication.url = webUrl;
-
-            mSocket.on(Socket.EVENT_CONNECT, onConnect);
-            mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
-            mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
-            mSocket.on("deleteChildUser", deleteChildUser);
-
-
-            mSocket.connect();
+//            mSocket = app.openSocket(webUrl);
+//            ChatApplication.logDisplay("socket url " + webUrl);
+//
+//            if(!webUrl.startsWith("http")){
+//                webUrl="http://"+ChatApplication.url;
+//            }
+//
+//            ChatApplication.url = webUrl;
+//
+//            mSocket.on(Socket.EVENT_CONNECT, onConnect);
+////            mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
+////            mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
+//            mSocket.on("deleteChildUser", deleteChildUser);
+//
+//
+//            mSocket.connect();
 
             SocketManager socketManager = SocketManager.getInstance();
 
@@ -2450,17 +2473,21 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         //
         else {
 
-            mSocket = app.openSocket(webUrl);
-            ChatApplication.logDisplay("socket url " + webUrl);
-            ChatApplication.url = webUrl;
-
-            mSocket.on(Socket.EVENT_CONNECT, onConnect);
-            mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
-            mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
-            mSocket.on("deleteChildUser", deleteChildUser);
-
-
-            mSocket.connect();
+//            mSocket = app.openSocket(webUrl);
+//            ChatApplication.logDisplay("socket url " + webUrl);
+//            if(!webUrl.startsWith("http")){
+//                webUrl="http://"+ChatApplication.url;
+//            }
+//
+//            ChatApplication.url = webUrl;
+//
+//            mSocket.on(Socket.EVENT_CONNECT, onConnect);
+//            mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
+////            mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);*/
+//            mSocket.on("deleteChildUser", deleteChildUser);
+//
+//
+//            mSocket.connect();
 
             //SocketManager.getInstance().connectSocket(ChatApplication.url, "80");
             SocketManager socketManager = SocketManager.getInstance();
@@ -2681,6 +2708,9 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                         invalidateToolbarCloudImage();
                         webUrl = ipAddressPI;
                         wifiIpAddress = ipAddressPI;
+                        if(!webUrl.startsWith("http")){
+                            webUrl="http://"+ChatApplication.url;
+                        }
                         ChatApplication.url = webUrl;
                         isClick = false;
                     } else {

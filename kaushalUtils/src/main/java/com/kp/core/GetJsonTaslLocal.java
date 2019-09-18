@@ -33,6 +33,9 @@ public class GetJsonTaslLocal extends AsyncTask<String, Void, String> {
 		this.url = url;
 		this.method = method;
 		this.json = json;
+//		if(!this.url.startsWith("http")){
+//			this.url="http://"+this.url;
+//		}
 	}
 
 

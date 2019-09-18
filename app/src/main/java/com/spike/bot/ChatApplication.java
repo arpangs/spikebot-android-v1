@@ -58,6 +58,7 @@ import java.util.regex.Pattern;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 import okhttp3.OkHttpClient;
 
 @ReportsCrashes(formKey = "",//1LZjNZVtIyc5O2-llj8VfHMsvDC2YdGkgNp3RiIGBL2I", // will not be used 1tgWQ58TdbvD0CGhW91Se2MwCFz_nlV1sezQrimsw6qw
@@ -126,7 +127,11 @@ public class ChatApplication extends Application  {
     public Socket openSocket(String url) {
         this.url = url;
         try {
-            mSocket = IO.socket(url);
+            IO.Options opts = new IO.Options();
+            opts.reconnection = true;
+//            opts.reconnectionDelay=200;
+
+            mSocket = IO.socket(url,opts);
         } catch (URISyntaxException e) {
             ChatApplication.logDisplay("erro is "+e.toString());
             throw new RuntimeException(e);
@@ -193,9 +198,20 @@ public class ChatApplication extends Application  {
 // Install the application crash handler
         ApplicationCrashHandler.installHandler();
 
+        if(mSocket!=null){
+//            mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
+        }
 
       //  Common.savePrefValue(getApplicationContext(),"","");
     }
+
+    private Emitter.Listener onDisconnect = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            ChatApplication.logDisplay("chat app is null application");
+            mSocket = openSocket(url);
+        }
+    };
 
     private static ChatApplication instance;
     public static ChatApplication getApp() {

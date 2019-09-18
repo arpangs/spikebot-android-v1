@@ -55,6 +55,7 @@
             android:id="@+id/linearList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/automation_white"
             android:layout_marginRight="@dimen/_10sdp"
             android:orientation="vertical">
 
@@ -62,6 +63,7 @@
                 android:id="@+id/recyclerRoomList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/automation_white"
                 android:layout_marginTop="@dimen/_5sdp" />
 
         </LinearLayout>

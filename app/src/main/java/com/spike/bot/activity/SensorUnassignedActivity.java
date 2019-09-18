@@ -242,8 +242,13 @@ public class SensorUnassignedActivity extends AppCompatActivity{
         if(isDoorSensor == 0){
             Intent intent=new Intent(this, AddDeviceConfirmActivity.class);
             intent.putExtra("isViewType","syncDoor");
-            intent.putExtra("door_sensor_module_id",""+unassigendSensorList.getSensorId());
+            intent.putExtra("door_sensor_module_id",""+unassigendSensorList.getModuleId());
             intent.putExtra("door_sensor_name",""+unassigendSensorList.getSensorName());
+            intent.putExtra("door_type",""+unassigendSensorList.getLock_subtype());
+            if(unassigendSensorList.getLock_subtype().equals("2")){
+                intent.putExtra("lock_id",""+unassigendSensorList.getLock_id());
+                intent.putExtra("lock_data",""+unassigendSensorList.getLock_data());
+            }
             startActivity(intent);
 
             return;

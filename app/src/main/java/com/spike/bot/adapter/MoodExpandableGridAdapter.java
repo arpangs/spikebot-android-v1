@@ -131,9 +131,9 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                 }
 
                 if (section.getRoom_status() == 1) {
-                    holder.iv_icon.setImageResource(R.drawable.smily_yello);
+                    holder.iv_icon.setImageResource(R.drawable.room_on);
                 } else {
-                    holder.iv_icon.setImageResource(R.drawable.smily_gray);
+                    holder.iv_icon.setImageResource(R.drawable.room_off);
                 }
 
                 holder.iv_icon.setOnClickListener(new View.OnClickListener() {

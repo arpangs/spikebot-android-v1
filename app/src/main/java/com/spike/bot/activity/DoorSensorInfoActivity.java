@@ -127,12 +127,14 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         }
     }
 
-    private ConnectivityReceiver connectivityReceiver;
+//    private ConnectivityReceiver connectivityReceiver;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_door_sensor_info);
+
+        ChatApplication.logDisplay("door call is start "+ChatApplication.url);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -145,13 +147,16 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         door_room_id = getIntent().getStringExtra("door_room_id");
         door_unread_count = getIntent().getStringExtra("door_unread_count");
         door_module_id = getIntent().getStringExtra("door_module_id");
+
+        startSocketConnection();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        ChatApplication.getInstance().setConnectivityListener(this);
+        ChatApplication.logDisplay("door call is "+ChatApplication.url);
+//        ChatApplication.getInstance().setConnectivityListener(this);
         if (ChatApplication.isLogResume) {
             ChatApplication.isLogResume = false;
             ChatApplication.isLocalFragmentResume = true;
@@ -161,12 +166,17 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         }
         bindView();
 
-        connectivityReceiver = new ConnectivityReceiver();
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver((BroadcastReceiver) connectivityReceiver, intentFilter);
+//        connectivityReceiver = new ConnectivityReceiver();
+//        final IntentFilter intentFilter = new IntentFilter();
+//        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+//        registerReceiver((BroadcastReceiver) connectivityReceiver, intentFilter);
         view_rel_badge.setClickable(true);
         getDoorSensorDetails();
+        ChatApplication.logDisplay("door call is "+ChatApplication.url);
+
+        if(mSocket!=null){
+            ChatApplication.logDisplay("connection is "+mSocket.connected());
+        }
     }
 
 
@@ -181,6 +191,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         if(mSocket!=null){
             mSocket.on("doorsensorvoltage", doorsensorvoltage);
             mSocket.on("unReadCount", unReadCount);
+            mSocket.on("changeDoorSensorStatus", changeDoorSensorStatus);
         }
 
     }
@@ -243,15 +254,72 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         }
     };
 
+    private Emitter.Listener changeDoorSensorStatus = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+                        try {
+                            //{"door_sensor_id":"1568731205713_SbQBf-JvXS","door_sensor_status":0,"door_lock_status":0}
+                            JSONObject object = new JSONObject(args[0].toString());
+                            ChatApplication.logDisplay("door is "+object);
+                            String room_order = object.optString("room_order");
+                            String door_sensor_id = object.optString("door_sensor_id");
+                            String door_sensor_status = object.optString("door_sensor_status");
+                            String door_lock_status = object.optString("door_lock_status");
+
+                            if(TextUtils.isEmpty(door_lock_status) || door_lock_status.equals("null")){
+                                door_lock_status="0";
+                            }
+
+                            if(TextUtils.isEmpty(door_sensor_status) || door_sensor_status.equals("null")){
+                                door_lock_status="0";
+                            }
+
+                            if(!TextUtils.isEmpty(door_lock_status) && !door_lock_status.equals("null")){
+                                doorSensorResModel.getDate().getDoorLists()[0].setDoor_lock_status(door_lock_status);
+                            }else {
+                                doorSensorResModel.getDate().getDoorLists()[0].setDoor_lock_status(""+0);
+                            }
+
+
+                            if(!TextUtils.isEmpty(door_sensor_status) && !door_sensor_status.equals("null")){
+                                doorSensorResModel.getDate().getDoorLists()[0].setmDoorSensorStatus(""+door_sensor_status);
+                            }else {
+                                doorSensorResModel.getDate().getDoorLists()[0].setmDoorSensorStatus("0");
+                            }
+
+                            //onlydoor, subtype=1
+                            //only lock, subtype=2
+                            //door+lock, subtype=3
+                            if(doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("2")){
+                                setLockStatus(2);
+                            }else if(doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("3")) {
+                                setLockStatus(3);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (connectivityReceiver != null) {
-            unregisterReceiver(connectivityReceiver);
-        }
+//        if (connectivityReceiver != null) {
+//            unregisterReceiver(connectivityReceiver);
+//        }
         if (mSocket != null) {
             mSocket.off("doorsensorvoltage", doorsensorvoltage);
             mSocket.off("unReadCount", unReadCount);
+            mSocket.on("changeDoorSensorStatus", changeDoorSensorStatus);
         }
     }
 
@@ -260,6 +328,9 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
      */
     private void getDoorSensorDetails() {
 
+        if(!ChatApplication.url.startsWith("http")){
+            ChatApplication.url="http://"+ChatApplication.url;
+        }
         String url = ChatApplication.url + Constants.GET_DOOR_SENSOR_INFO;
 
         ChatApplication.logDisplay("door "+url+" ");
@@ -279,7 +350,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
-                startSocketConnection();
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.logDisplay("door is "+result);
                 doorSensorResModel = Common.jsonToPojo(result.toString(), DoorSensorResModel.class);
@@ -553,6 +623,13 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
         Button btnSave = (Button) dialog.findViewById(R.id.btn_save);
         ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
+        TextView txtTitle =  dialog.findViewById(R.id.txtTitle);
+
+        if(switchAutoLock.isChecked()){
+            txtTitle.setText("Disable AutoLock");
+        }else {
+            txtTitle.setText("Enable AutoLock");
+        }
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -584,6 +661,8 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         }
         ActivityHelper.showProgressDialog(this, "Please Wait...", false);
         ChatApplication.logDisplay("count is "+count);
+        ChatApplication.logDisplay("count is "+mac_address);
+        ChatApplication.logDisplay("count is "+doorSensorResModel.getDate().getDoorLists()[0].getLock_data());
         TTLockClient.getDefault().setAutomaticLockingPeriod(count, doorSensorResModel.getDate().getDoorLists()[0].getLock_data(), mac_address,new SetAutoLockingPeriodCallback() {
             @Override
             public void onSetAutoLockingPeriodSuccess() {
@@ -609,7 +688,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             return;
         }
 
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        ActivityHelper.showProgressDialog(this, "Please wait...", false);
         String webUrl = ChatApplication.url + Constants.changeLockSensorAutoLockStatus;
 
         JSONObject jsonNotification = new JSONObject();
@@ -659,12 +738,12 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
     private void setLockStatus(int type) {
         if(type==2){
             imgLock.setImageResource(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? R.drawable.unlock_only: R.drawable.lock_only);
-            txtlockStatus.setText(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? "Lock Open": "Lock Close");
+            txtlockStatus.setText(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? "Unlocked": "Locked");
             txtlockStatus.setTextColor(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.green));
         }else {
 
             imgLock.setImageResource(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? R.drawable.unlock_only: R.drawable.lock_only);
-            txtlockStatus.setText(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? "Lock Open": "Lock Close");
+            txtlockStatus.setText(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? "Unlocked": "Locked");
             txtlockStatus.setTextColor(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.green));
 
             img_door_on.setImageResource(doorSensorResModel.getDate().getDoorLists()[0].getmDoorSensorStatus().equals("1") ? R.drawable.on_door: R.drawable.off_door);
@@ -726,7 +805,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             try {
                 object.put("lock_id",doorSensorResModel.getDate().getDoorLists()[0].getLock_id());
                 object.put("user_id",Common.getPrefValue(this, Constants.USER_ID));
-                object.put("door_sensor_status",doorSensorResModel.getDate().getDoorLists()[0].getmDoorSensorStatus().equals("1") ? 0:1 );
+                object.put("door_sensor_status",doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? 0:1 );
                 object.put("lock_status",doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? 0:1 );
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -735,7 +814,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             mSocket.emit("changeLockStatus",object);
 
             doorSensorResModel.getDate().getDoorLists()[0].setDoor_lock_status(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? "0":"1");
-            doorSensorResModel.getDate().getDoorLists()[0].setmDoorSensorStatus(doorSensorResModel.getDate().getDoorLists()[0].getmDoorSensorStatus().equals("1") ? "0":"1");
+            doorSensorResModel.getDate().getDoorLists()[0].setmDoorSensorStatus(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status());
 
             //onlydoor, subtype=1
             //only lock, subtype=2
@@ -870,9 +949,12 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         if(doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equals("1")){
             txtInputSensor.setHint("Enter sensor name");
             tv_title.setText("Sensor Name");
-        }else {
+        } else if(doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equals("2")) {
             txtInputSensor.setHint("Enter Lock name");
             tv_title.setText("Lock Name");
+        }else {
+            txtInputSensor.setHint("Enter Door/Lock name");
+            tv_title.setText("Door/Lock Name");
         }
 
         iv_close.setOnClickListener(new View.OnClickListener() {
@@ -885,6 +967,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ChatApplication.keyBoardHideForce(DoorSensorInfoActivity.this);
                 dialog.dismiss();
             }
         });
@@ -1237,9 +1320,9 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
     private void deleteSensor(int count) {
         String message="";
 
-        if(doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("1")){
+        if(count==1){
             message="Delete Door";
-        }else if(doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("2")){
+        }else if(count==2){
             message="Delete Lock";
         }else {
             message="Delete Door/Lock";
@@ -1248,11 +1331,11 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", ""+message, "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
             @Override
             public void onConfirmDialogYesClick() {
-
-                if(doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("3")) {
-                    deleteDoorSensor();
+                if(count==1 || count==2) {
+                    deleteManual(count);
                 }else {
-                    deleteManual();
+                    deleteDoorSensor();
+
                 }
 
             }
@@ -1264,7 +1347,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         newFragment.show(getFragmentManager(), "dialog");
     }
 
-    private void deleteManual() {
+    private void deleteManual(int count) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             //Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -1288,7 +1371,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         JSONObject jsonNotification = new JSONObject();
         try {
             jsonNotification.put("door_sensor_id", door_sensor_id);
-            jsonNotification.put("door_subtype", Integer.parseInt(doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype()));
+            jsonNotification.put("door_subtype", count);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));

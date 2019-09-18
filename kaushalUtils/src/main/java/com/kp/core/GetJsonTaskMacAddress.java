@@ -34,6 +34,9 @@ public class GetJsonTaskMacAddress extends AsyncTask<String, Void, String> {
 		this.url = url;
 		this.method = method;
 		this.json = json;
+		if(!this.url.trim().startsWith("http")){
+			this.url="http://"+this.url;
+		}
 	}
 
 

@@ -40,7 +40,19 @@ public class SensorUnassignedAdapter extends RecyclerView.Adapter<SensorUnassign
         final SensorUnassignedRes.Data.UnassigendSensorList unassigendSensorList = unassigendSensorLists.get(position);
 
         holder.sensorName.setText(unassigendSensorList.getSensorName());
-        holder.sensorImage.setImageResource(Common.getIcon(1,unassigendSensorList.getSensorIcon()));
+        if(unassigendSensorList.getSensorIcon().equals("doorsensor")){
+
+            if(unassigendSensorList.getLock_subtype().equals("1")){
+                holder.sensorImage.setImageResource(R.drawable.off_door);
+            }else if(unassigendSensorList.getLock_subtype().equals("2")){
+                holder.sensorImage.setImageResource(R.drawable.lock_only_grey);
+            }else {
+                holder.sensorImage.setImageResource(R.drawable.door_locked);
+            }
+
+        }else {
+            holder.sensorImage.setImageResource(Common.getIcon(1, unassigendSensorList.getSensorIcon()));
+        }
 
         if(unassigendSensorList.isChecked){
             holder.sensorChecked.setImageResource(R.drawable.icn_circle_grey_checked);

@@ -256,8 +256,15 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                         if(!TextUtils.isEmpty(devicesList.get(i).getSensor_type()) && devicesList.get(i).getSensor_type().equalsIgnoreCase("door")){
 
                             if(devicesList.get(i).getSensor_id().equalsIgnoreCase(door_sensor_id)){
-                                devicesList.get(i).setDoor_sensor_status(door_sensor_status);
-                                devicesList.get(i).setDoor_lock_status(Integer.parseInt(door_lock_status));
+                                if(!TextUtils.isEmpty(door_sensor_status) && !door_sensor_status.equals("null")){
+                                    devicesList.get(i).setDoor_sensor_status(door_sensor_status);
+                                }
+
+                                ChatApplication.logDisplay("door_lock_status is "+door_lock_status);
+                                if(!TextUtils.isEmpty(door_lock_status) && !door_lock_status.equals("null")){
+                                    devicesList.get(i).setDoor_lock_status(Integer.parseInt(door_lock_status));
+                                }
+
                             }
                         }
                     }
@@ -278,7 +285,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
      * @param temp_fahrenheit
      * @param is_in_C
      */
-    public void updateTempSensor(String room_id, String room_order, String temp_sensor_id, String temp_celsius, String temp_fahrenheit, String is_in_C){
+    public void updateTempSensor(String room_id, String room_order, String temp_sensor_id, String temp_celsius, String temp_fahrenheit, String is_in_C ,String humidity){
 
 
         for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
@@ -294,13 +301,14 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
 
                     for (int i = 0; i < devicesList.size(); i++) {
 
-                        if(!TextUtils.isEmpty(devicesList.get(i).getSensor_type()) && devicesList.get(i).getSensor_type().equalsIgnoreCase("temp")){
+                        if(!TextUtils.isEmpty(devicesList.get(i).getSensor_type()) && devicesList.get(i).getSensor_type().equalsIgnoreCase("tempsensor")){
 
                             if(devicesList.get(i).getSensor_id().equalsIgnoreCase(temp_sensor_id)){
 
                                 devicesList.get(i).setTemp_in_c(temp_celsius);
                                 devicesList.get(i).setTemp_in_f(temp_fahrenheit);
                                 devicesList.get(i).setIs_in_c(is_in_C); //last updated
+                                devicesList.get(i).setHumidity(humidity); //last updated
                             }
                         }
                     }
@@ -338,9 +346,9 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
 
                 for (int i = 0; i < devicesList.size(); i++) {
 
-                    if(sensor_type.equalsIgnoreCase("temp")){
+                    if(sensor_type.equalsIgnoreCase("tempsensor")){
 
-                        if(!TextUtils.isEmpty(devicesList.get(i).getSensor_type()) && devicesList.get(i).getSensor_type().equalsIgnoreCase("temp")){
+                        if(!TextUtils.isEmpty(devicesList.get(i).getSensor_type()) && devicesList.get(i).getSensor_type().equalsIgnoreCase("tempsensor")){
                             if(module_id.equalsIgnoreCase(devicesList.get(i).getModuleId())){
                                 devicesList.get(i).setIs_unread(sensor_unread);
                             }
@@ -380,7 +388,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
 
                 for (int i = 0; i < devicesList.size(); i++) {
 
-                    if(!TextUtils.isEmpty(devicesList.get(i).getSensor_type()) && devicesList.get(i).getSensor_type().equalsIgnoreCase("temp")){
+                    if(!TextUtils.isEmpty(devicesList.get(i).getSensor_type()) && devicesList.get(i).getSensor_type().equalsIgnoreCase("tempsensor")){
 
                         if(devicesList.get(i).getSensor_id().equalsIgnoreCase(sensor_id)){
 

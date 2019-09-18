@@ -48,7 +48,7 @@ public class Constants {
 //    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
 //    public static  String CLOUD_SERVER_URL = "http://api.spikebot.io"; //222
     public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //wifi / 123
-//    public static  String CLOUD_SERVER_URL = "http://52.201.70.116:8079"; // unuser
+// *-   public static  String CLOUD_SERVER_URL = "http://52.201.70.116:8079"; // unuser
 //    public static  String CLOUD_SERVER_URL = "http://54.201.70.116:8079"; // unuser
 //    public static  String CLOUD_SERVER_URL = ""; //117 testing
 //http://52.24.23.7:8079
@@ -169,6 +169,8 @@ public class Constants {
     public static final String UPDATE_UNREAD_LOGS = "/updateUnReadLogs";
     public static final String SAVE_EDIT_SWITCH = "/saveEditSwitch";
     public static final String configureGasSensorRequest = "/configureGasSensorRequest";
+    public static final String getRepeatorLists = "/getRepeatorLists";
+    public static final String configureRepeatorRequest = "/configureRepeatorRequest";
 
     //temp sensor
     public static final String GET_TEMP_SENSOR_INFO = "/getTempSensorInfo";
@@ -296,6 +298,7 @@ public class Constants {
     public static final String lock_open_vip = "1930389027";
     public static final String locK_base_uri = "http://open.ttlock.com.cn";
     public static final String locK_add = "/v3/lock/initialize";
+    public static final String startUrlhttp = "http:";
 
 
     /*-----------ununsed api-----------*/
@@ -500,13 +503,19 @@ public class Constants {
 
     public static Bitmap takescreenshotOfRootView(View view, RecyclerView recyclerView) {
 
-        view.measure(View.MeasureSpec.makeMeasureSpec(view.getWidth(), View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(view.getHeight(), View.MeasureSpec.EXACTLY));
-        view.layout((int) view.getX(), (int) view.getY(), (int) view.getX() + view.getMeasuredWidth(), (int) view.getY() + view.getMeasuredHeight());
+//        view.measure(View.MeasureSpec.makeMeasureSpec(view.getWidth(), View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(view.getHeight(), View.MeasureSpec.EXACTLY));
+//        view.layout((int) view.getX(), (int) view.getY(), (int) view.getX() + view.getMeasuredWidth(), (int) view.getY() + view.getMeasuredHeight());
+//
+//        view.setDrawingCacheEnabled(true);
+//        view.buildDrawingCache(true);
+//        Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
+//        view.setDrawingCacheEnabled(false);
 
-        view.setDrawingCacheEnabled(true);
-        view.buildDrawingCache(true);
-        Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
-        view.setDrawingCacheEnabled(false);
+        // create bitmap screen capture
+        View v1 = view;
+        v1.setDrawingCacheEnabled(true);
+        Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+//        v1.setDrawingCacheEnabled(false);
 
 
         return bitmap;

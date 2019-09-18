@@ -1,6 +1,7 @@
 package com.spike.bot.adapter.room;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.core.Common;
 import com.spike.bot.customview.recycle.ItemClickRoomEditListener;
@@ -54,6 +56,18 @@ public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapte
             itemDeviceName = item.getSensor_name();
             itemIcon = Common.getIcon(0,item.getSensor_icon());
             clickAction = "isSensorClick";
+
+            if(item.getSensor_icon().equals("doorsensor")){
+                if(item.getDoor_subtype()==1){
+                    itemIcon=R.drawable.off_door;
+                }else if(item.getDoor_subtype()==2){
+                    itemIcon=R.drawable.lock_only_grey;
+                }else {
+                    itemIcon=R.drawable.door_locked;
+                }
+                ChatApplication.logDisplay("item icon is "+item.getDoor_subtype());
+
+            }
         }
 
         if(item.getDevice_icon().equalsIgnoreCase("heavyload")){
@@ -70,7 +84,6 @@ public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapte
         holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
                     mItemClickListener.itemClicked(item, finalClickAction,view);
                 }
             });

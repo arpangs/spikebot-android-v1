@@ -206,6 +206,7 @@ public class NodePlayer implements NodePlayerView.RenderCallback {
         }
     }
 
+
     private native long jniInit(Object context, String premium);
 
     private native void jniDeInit();

@@ -518,7 +518,14 @@ public class JsonHelper {
                 String is_in_C = hasObject(deviceObj,"is_in_C") ? deviceObj.getString("is_in_C") : "";
                 String to_use = hasObject(deviceObj,"to_use") ? deviceObj.getString("to_use") : "";
                 int is_active = hasObject(deviceObj,"is_active") ? deviceObj.getInt("is_active") : 0;
-                int door_subtype = hasObject(deviceObj,"door_subtype") ? deviceObj.getInt("door_subtype") : -1;
+
+                int door_subtype=0;
+                if(TextUtils.isEmpty(deviceObj.optString("door_subtype")) || deviceObj.optString("door_subtype").equals("null")){
+                    door_subtype = 0;
+                }else {
+                    door_subtype = hasObject(deviceObj,"door_subtype") ? deviceObj.optInt("door_subtype") : 0;
+                }
+
 
                 int lock_id=-1;
                 if(TextUtils.isEmpty(deviceObj.optString("lock_id"))){

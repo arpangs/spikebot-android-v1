@@ -1,10 +1,13 @@
 package com.spike.bot.camera;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
@@ -39,6 +42,7 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -104,6 +108,9 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
         nodePlayer.setAudioEnable(true);
         nodePlayer.setPlayerView(player);
         nodePlayer.setMaxBufferTime(5);
+        nodePlayer.setSwfUrl(mMediaUrl);
+        nodePlayer.setPageUrl(mMediaUrl);
+        nodePlayer.seekTo(1);
 
         nodePlayer.setNodePlayerDelegate(new NodePlayerDelegate() {
             @Override
@@ -115,11 +122,14 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
                     ChatApplication.logDisplay("camera log is dispaly buffer "+ nodePlayer.getBufferPercentage());
                     ChatApplication.logDisplay("camera log is dispaly buffer "+ nodePlayer.getBufferPercentage());
                     ChatApplication.logDisplay("camera log is dispaly buffer isPlaying "+ nodePlayer.isPlaying());
+                    ChatApplication.logDisplay("camera log is dispaly buffer isPlaying "+ player.getCurrentPosition());
 
+                    player.seekTo(1);
                     progressDialog.dismiss();
                 }
             }
         });
+
 
         zoomlayout=(ZoomLayout)findViewById(R.id.zoomLayout);
         zoomlayout.setOnTouchListener(new View.OnTouchListener() {
@@ -250,27 +260,89 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
         loadView(player);
     }
 
+
+
+    public Bitmap takeScreenShot(int x, int y, int w, int h, GL10 gl) {
+            int b[]=new int[w*(y+h)];
+            int bt[]=new int[w*h];
+            IntBuffer ib=IntBuffer.wrap(b);
+            ib.position(0);
+            gl.glReadPixels(x, 0, w, y+h, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, ib);
+
+            for(int i=0, k=0; i<h; i++, k++)
+            {//remember, that OpenGL bitmap is incompatible with Android bitmap
+                //and so, some correction need.
+                for(int j=0; j<w; j++)
+                {
+                    int pix=b[i*w+j];
+                    int pb=(pix>>16)&0xff;
+                    int pr=(pix<<16)&0x00ff0000;
+                    int pix1=(pix&0xff00ff00) | pr | pb;
+                    bt[(h-k-1)*w+j]=pix1;
+                }
+            }
+
+
+            Bitmap sb=Bitmap.createBitmap(bt, w, h, Bitmap.Config.ARGB_8888);
+            return sb;
+
+    }
+
     public void loadView(View cardView){
 
         try {
+//            cardView.setDrawingCacheEnabled(true);
+//            Bitmap bitmap = Constants.takescreenshotOfRootView(this.getWindow().getDecorView().getRootView(),null);
+//            // Bitmap bitmap =  player.getDrawingCache();
+//            cardView.setDrawingCacheEnabled(false);
+//
+//            String mPath = Environment.getExternalStorageDirectory().toString() + "/"+ System.currentTimeMillis()+"camera.jpg";
+//
+//            File imageFile = new File(mPath);
+//            FileOutputStream outputStream = new FileOutputStream(imageFile);
+//            int quality = 100;
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+//            outputStream.flush();
+//            outputStream.close();
+
 
             cardView.setDrawingCacheEnabled(true);
-           // Bitmap bitmap =  loadBitmapFromView(cardView);
-           // Bitmap bitmap =  SavePixels(100,100,200,200);
-//            Bitmap bitmap =  saveOpenGL(200,200);
-            Bitmap bitmap = Constants.takescreenshotOfRootView(this.getWindow().getDecorView().getRootView(),null);
+
+
+//            View screenView = player.getmSurface().lockHardwareCanvas();
+//            screenView.setDrawingCacheEnabled(true);
+            Bitmap bitmap1 = player._scratch;
+//            screenView.setDrawingCacheEnabled(false);
+
+            //Define a bitmap with the same size as the view
+            Bitmap returnedBitmap = Bitmap.createBitmap(player.getRenderView().getWidth(), player.getRenderView().getHeight(),Bitmap.Config.ARGB_8888);
+            //Bind a canvas to it
+            Canvas canvas = new Canvas(returnedBitmap);
+            //Get the view's background
+            Drawable bgDrawable =player.getRootView().getRootView().getBackground();
+            if (bgDrawable!=null)
+                //has background drawable, then draw it on the canvas
+                bgDrawable.draw(canvas);
+            else
+                //does not have background drawable, then draw white background on the canvas
+                canvas.drawColor(Color.WHITE);
+            // draw the view on the canvas
+            player.getRenderView().draw(canvas);
+
+            Bitmap bitmap = Constants.takescreenshotOfRootView(player.getRenderView().getRootView(),null);
             // Bitmap bitmap =  player.getDrawingCache();
             cardView.setDrawingCacheEnabled(false);
 
             String mPath = Environment.getExternalStorageDirectory().toString() + "/"+ System.currentTimeMillis()+"camera.jpg";
 
             File imageFile = new File(mPath);
-            FileOutputStream outputStream = new
-                    FileOutputStream(imageFile);
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
             int quality = 100;
             bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
             outputStream.flush();
             outputStream.close();
+
+            ChatApplication.showToast(this,"Saved.");
 
         } catch (Throwable e) {
             e.printStackTrace();
