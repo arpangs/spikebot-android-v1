@@ -156,7 +156,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         SwipeRefreshLayout.OnRefreshListener, OnSmoothScrollList, TempClickListener {
 
     public static int showDialog = 1;
-    private Boolean isSocketConnected = true, flagisCould = false, flagHeavyload = false;
+    private Boolean isSocketConnected = true, flagisCould = false, flagHeavyload = false,isCheckFlow=false;
     public static Boolean isRefredCheck = true;
     private String userId = "0", token_id = "";
     private RecyclerView mMessagesView;
@@ -468,8 +468,8 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             @Override
             public void onClick(View v) {
                 closeFABMenu();
-//                startActivity(new Intent(getActivity(), RepeaterActivity.class));
-                startActivity(new Intent(getActivity(), GasSensorActivity.class));
+                startActivity(new Intent(getActivity(), RepeaterActivity.class));
+//                startActivity(new Intent(getActivity(), GasSensorActivity.class));
             }
         });
 
@@ -607,7 +607,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     public void startSocketConnection() { //◉
 
         ChatApplication app = ChatApplication.getInstance();
-        webUrl = ChatApplication.url;
+//        webUrl = ChatApplication.url;
 
         if (mSocket != null && mSocket.connected()) {
         } else {
@@ -623,7 +623,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                     mSocket=null;
                     ChatApplication.logDisplay("chat app is null");
                 }
-
             }
 
             if(mSocket==null){
@@ -632,6 +631,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 mSocket.on(Socket.EVENT_CONNECT, onConnect);
                 mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
                 mSocket.connect();
+//                ChatApplication.url=webUrl;
 //                ((Main2Activity)getActivity()).callSocket();
             }
             try {
@@ -910,6 +910,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     public static int SENSOR_TYPE_DOOR = 1;
     public static int SENSOR_TYPE_TEMP = 2;
     public static int SENSOR_TYPE_IR = 3;
+    public static int SENSOR_REPEATAR = 4;
 
     private void showOptionDialog(final int sensor_type) {
 
@@ -2759,6 +2760,16 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 intent.putExtra("temp_module_id", item.getModuleId());
                 startActivity(intent);
 
+            }else if (item.getSensor_type().equalsIgnoreCase("gassensor")) {
+
+//                Intent intent = new Intent(getActivity(), TempSensorInfoActivity.class);
+                Intent intent = new Intent(getActivity(), GasSensorActivity.class);
+                intent.putExtra("sensor_id", item.getSensor_id());
+                intent.putExtra("room_name", item.getRoomName());
+                intent.putExtra("room_id", item.getRoomId());
+                intent.putExtra("module_id", item.getModuleId());
+                startActivity(intent);
+
             } else if (item.getSensor_type().equalsIgnoreCase("multisensor")) {
                 if(item.getIsActive()== -1){
                     return;
@@ -3029,7 +3040,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                     code = result.getInt("code");
 
                     if (code == 200) {
-
+                        ActivityHelper.dismissProgressDialog();
                         JSONObject dataObject = result.optJSONObject("data");
 
                         String camera_vpn_port = dataObject.optString("camera_vpn_port");
@@ -3039,7 +3050,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                         url = url + item.getCamera_videopath();
                         String camera_name = item.getCamera_name();
 
-                        ChatApplication.logDisplay("isCloudConnect : " + camera_vpn_port + "  " + camera_url);
+                        ChatApplication.logDisplay("isCloudConnect : " + dataObject);
 
                         //TODO code here for cloud connected or not...
                         // rtmp://LOCAL_IP/live/livestream1528897402049_SJftJoAe7
@@ -3711,6 +3722,8 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
 
                 try {
+                    isCheckFlow=false;
+                    webUrl=ChatApplication.url;
                     startSocketConnection();
                     ActivityHelper.dismissProgressDialog();
                     int code = result.getInt("code");
@@ -4076,10 +4089,12 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 ChatApplication.logDisplay("getDeviceList onSuccess local " + result.toString());
 
                 try {
+                    webUrl=ChatApplication.url;
                     startSocketConnection();
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
+                        isCheckFlow=true;
                         hideAdapter(true);
                         mMessagesView.setVisibility(View.VISIBLE);
                         txt_empty_schedule.setVisibility(View.GONE);
@@ -4349,6 +4364,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                     if(mSocket!=null){
                         mSocket.disconnect();
                     }
+                    isCheckFlow=false;
                     callColud(false);
                 }
             }
@@ -5072,55 +5088,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 }
             }
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    public boolean checkLoginId(String userIdCheck) {
-        boolean isFlag = false;
-        String jsonText = Common.getPrefValue(getActivity(), Common.USER_JSON);
-        if (!TextUtils.isEmpty(jsonText)) {
-            Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {
-            }.getType();
-            List<User> userList = gson.fromJson(jsonText, type);
-
-            ChatApplication.logDisplay("user list is " + jsonText);
-            if (userList != null) {
-                if (userList.size() > 0) {
-                    if (isRefredCheck) {
-
-                        for (int i = 0; i < userList.size(); i++) {
-                            if (userList.get(i).getUser_id().equals(userIdCheck) && userList.get(i).getIsActive()) {
-                                isFlag = true;
-                                break;
-                            }
-                        }
-
-                        if (!isFlag) {
-                            flagisCould = true;
-                            for (int i = 0; i < userList.size(); i++) {
-                                if (userList.get(i).getIsActive()) {
-                                    webUrl = userList.get(i).getCloudIP();
-                                    break;
-                                }
-                            }
-                            ChatApplication.url = webUrl;
-                            isCloudConnected = true;
-                            //  invalidateToolbarCloudImage();
-                            Main2Activity.isClick = true;
-                            //     getDeviceCould(12);
-                            // cloudClickListener.click(userList.get(0));
-                            return false;
-                        }
-                    } else {
-                        isFlag = true;
-                    }
-                    return isFlag;
-                }
-            }
-
-
-        }
-        return isFlag;
     }
 
     //getMoodList

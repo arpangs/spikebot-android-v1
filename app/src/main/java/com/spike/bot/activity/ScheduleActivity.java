@@ -461,11 +461,13 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     //rg_schedule_type.check(R.id.rb_schedule_type_room);
                     rb_schedule_type_room.setChecked(true);
                     setBackGroundColorButton(true);
+                    btnMoodSchedule.setVisibility(View.GONE);
 
                 } else {
                     //rg_schedule_type.check(R.id.rb_schedule_type_mood);
                     rb_schedule_type_mood.setChecked(true);
                     setBackGroundColorButton(false);
+                    btnRoomSchedule.setVisibility(View.GONE);
                 }
                 et_schedule_name.setText(scheduleVO.getSchedule_name());
                 et_schedule_name.setSelection(et_schedule_name.getText().length());
@@ -777,12 +779,15 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             }
 
             int rId = rg_schedule_select.getCheckedRadioButtonId();
-
             if (rId == R.id.rb_schedule_select_schedule) {
                 showScheduleUI();
+                rb_schedule_select_auto.setVisibility(View.GONE);
             } else if (rId == R.id.rb_schedule_select_timer) {
                 showTimerUI();
+                rb_schedule_select_schedule.setVisibility(View.GONE);
             }
+
+
 
             final Date currentDate = new Date();
             et_on_time_hours.addTextChangedListener(new TextWatcher() {

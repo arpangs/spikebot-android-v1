@@ -151,8 +151,8 @@
             android:id="@+id/cameraList"
             android:visibility="visible"
             android:layout_marginTop="8dp"
-            android:layout_marginLeft="@dimen/_5sdp"
-            android:layout_marginRight="@dimen/_5sdp"
+            android:layout_marginLeft="@dimen/_7sdp"
+            android:layout_marginRight="@dimen/_7sdp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 

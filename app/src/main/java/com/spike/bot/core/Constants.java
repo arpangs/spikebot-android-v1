@@ -137,9 +137,11 @@ public class Constants {
 
     //door sensor
     public static final String CONFIGURE_DOOR_SENSOR_REQUEST = "/configureDoorSensorRequest";
-    public static final String ADD_DOOR_SENSOR = "/addDoorSensor";
+    public static final String ADD_DOOR_SENSOR = "/addDoorSensor"; // is_new=1 means new panel add & is_new=0 means exting panel add
     public static final String addMultiSensor = "/addMultiSensor";
     public static final String addGasSensor = "/addGasSensor";
+    public static final String addRepeator = "/addRepeator";
+    public static final String updateGasSensor = "/updateGasSensor";
     public static final String addSmartRemote = "/addSmartRemote";
     public static final String GET_DOOR_SENSOR_INFO = "/getDoorSensorInfo";
     public static final String ADD_DOOR_SENSOR_NOTIFICATION = "/addDoorSensorNotification";
@@ -171,6 +173,12 @@ public class Constants {
     public static final String configureGasSensorRequest = "/configureGasSensorRequest";
     public static final String getRepeatorLists = "/getRepeatorLists";
     public static final String configureRepeatorRequest = "/configureRepeatorRequest";
+    public static final String getGasSensorInfo = "/getGasSensorInfo";
+    public static final String deleteGasSensor = "/deleteGasSensor";
+    public static final String updateRepeator = "/updateRepeator";
+    public static final String deleteRepeator = "/deleteRepeator";
+    public static final String reassignRepeater = "/reassignRepeater";
+    public static final String getUnassignedRepeaterList = "/getUnassignedRepeaterList";
 
     //temp sensor
     public static final String GET_TEMP_SENSOR_INFO = "/getTempSensorInfo";

@@ -2,6 +2,7 @@ package com.spike.bot.activity;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -28,10 +29,12 @@ import com.google.gson.Gson;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
+import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
 import com.spike.bot.adapter.AddUnassignedPanelAdapter;
+import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.UnassignedListRes;
@@ -188,12 +191,87 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
                 }
                 startActivity(intent);
 
+            }else if(roomdeviceList.getSensorIcon().equals("repeater")){
+                    repetearAdd(roomdeviceList);
             }else {
                 showAddDialog(roomdeviceList);
             }
         }
 
     }
+
+    private void repetearAdd(UnassignedListRes.Data.RoomdeviceList roomdeviceList) {
+        ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Add in All Repeater ?", new ConfirmDialog.IDialogCallback() {
+            @Override
+            public void onConfirmDialogYesClick() {
+                addunAssignRepater(roomdeviceList);
+            }
+
+            @Override
+            public void onConfirmDialogNoClick() {
+            }
+        });
+        newFragment.show(this.getFragmentManager(), "dialog");
+    }
+
+
+    public void addunAssignRepater(UnassignedListRes.Data.RoomdeviceList  roomdeviceList){
+        ActivityHelper.showProgressDialog(this, "Please wait...", false);
+        String url = ChatApplication.url + Constants.reassignRepeater;
+
+        JSONObject object=new JSONObject();
+
+        try {
+            object.put("repeator_module_id",roomdeviceList.getRepeator_module_id());
+            object.put("repeator_name",roomdeviceList.getRepeator_name());
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ChatApplication.logDisplay("json "+url+" "+object);
+//{
+//	"repeator_module_id"	: "B04A1D1A004B1200",
+//		"repeator_name":"repeator new name",
+//	"user_id":"1566980189559_18CfbqxQo",
+//	"phone_id":"1234567",
+//	"phone_type":"Android"
+//}
+
+        new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
+            @Override
+            public void onSuccess(JSONObject result) {
+                ActivityHelper.dismissProgressDialog();
+                try {
+                    int code = result.getInt("code");
+                    ChatApplication.logDisplay("repeatar is "+result);
+                    if (code == 200) {
+                        ChatApplication.showToast(AddUnassignedPanel.this,result.optString("message"));
+                        AddUnassignedPanel.this.finish();
+                    }else {
+                        ChatApplication.showToast(AddUnassignedPanel.this,result.optString("message"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    ActivityHelper.dismissProgressDialog();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+                throwable.printStackTrace();
+            }
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+
+    }
+
 
     private Dialog mDialog;
     private Spinner mSpinnerRoom;
@@ -263,9 +341,9 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
         });
 
 
-        if(!mDialog.isShowing()){
+//        if(!mDialog.isShowing()){
             mDialog.show();
-        }
+//        }
     }
 
     /**

@@ -6,8 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.spike.bot.R;
-import com.squareup.picasso.Picasso;
 
 /**
  * Created by Sagar on 15/6/18.
@@ -38,7 +38,14 @@ public class CameraImagePush extends AppCompatActivity{
 
         //Clear.clearCache(Picasso.get());
 
-        Picasso.with(this).load(camera_url)
+//        Picasso.with(this).load(camera_url)
+//                .placeholder(R.drawable.loader2)
+//                .into(img_cam_view);
+
+
+        Glide.with(this)
+                .load(camera_url)
+                .error(R.drawable.loader2)
                 .placeholder(R.drawable.loader2)
                 .into(img_cam_view);
     }

@@ -59,6 +59,8 @@ public class AddUnassignedPanelAdapter extends RecyclerView.Adapter<AddUnassigne
                     holder.mImageIcon.setImageResource(R.drawable.door_locked);
                 }
 
+            }else if(roomDevice.getSensorIcon().equals("repeater")){
+                holder.mImageIcon.setImageResource(R.drawable.gray_repeater);
             }else {
                 holder.mImageIcon.setImageResource(Common.getIcon(0, roomDevice.getSensorIcon()));
 

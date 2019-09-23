@@ -65,8 +65,6 @@ public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapte
                 }else {
                     itemIcon=R.drawable.door_locked;
                 }
-                ChatApplication.logDisplay("item icon is "+item.getDoor_subtype());
-
             }
         }
 

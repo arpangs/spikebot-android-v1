@@ -23,23 +23,36 @@
         </android.support.design.widget.AppBarLayout>
 
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
         <FrameLayout
+            android:id="@+id/frameVideo"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_5sdp"
+            android:layout_height="@dimen/_250sdp"
             android:layout_gravity="center">
 
 
-                <VideoView
-                    android:id="@+id/video_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"/>
+            <VideoView
+                android:visibility="gone"
+                android:id="@+id/video_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"/>
 
-                <ProgressBar
-                    android:id="@+id/progressBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"/>
+            <ProgressBar
+                android:visibility="gone"
+                android:id="@+id/progressBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
         </FrameLayout>
+
+
+    </LinearLayout>
 
 </LinearLayout>

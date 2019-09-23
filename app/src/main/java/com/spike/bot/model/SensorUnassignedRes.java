@@ -42,7 +42,7 @@ public class SensorUnassignedRes {
         this.data = data;
     }
 
-    public class Data {
+    public static class Data {
 
         @SerializedName("unassigend_sensor_list")
         private List<UnassigendSensorList> unassigendSensorList = null;
@@ -65,7 +65,7 @@ public class SensorUnassignedRes {
             this.roomList = roomList;
         }
 
-        public class UnassigendSensorList {
+        public static class UnassigendSensorList {
 
             @SerializedName("sensor_id")
             private String sensorId;

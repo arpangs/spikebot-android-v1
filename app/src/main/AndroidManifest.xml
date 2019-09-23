@@ -373,7 +373,8 @@
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name="com.spike.bot.activity.VideoViewPLayer"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            />
 
         <activity android:name="com.spike.bot.activity.CameraEdit"
             android:theme="@style/AppTheme.NoActionBar"/>

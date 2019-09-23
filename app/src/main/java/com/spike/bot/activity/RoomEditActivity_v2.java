@@ -330,8 +330,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                         ActivityHelper.dismissProgressDialog();
 
                         if (TextUtils.isEmpty(message)) {
-//                            showAddSensorDialog(door_sensor_module_id, false,false);
-
                             if(count==0){
                                 count=1;
                                 Intent intent=new Intent(RoomEditActivity_v2.this, AddDeviceConfirmActivity.class);
@@ -340,7 +338,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                                 intent.putExtra("door_type","1");
                                 startActivity(intent);
                             }
-
                         } else {
                             showConfigAlert(message);
                         }
@@ -366,9 +363,8 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                             countDownTimer.cancel();
                         }
 
-                        // {"message":"","gas_sensor_module_id":"2098131A004B1200"
-                        // ,"room_list":[{"room_id":"1568453193284_gH0YwSg9q","room_name":"1"},{"room_id":"1568716945632_9VzX7baPT","room_name":"vpk"}]}
-
+                        // {"message":"","gas_sensor_module_id":"90A1131A004B1200",
+                        // "room_list":[{"room_id":"1568871959065_EhP9gsNij","room_name":"jhanvi"},{"room_id":"1568878822877_a22pysXNL","room_name":"vpj"}]}
                         roomIdList.clear();
                         roomNameList.clear();
 
@@ -408,9 +404,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                             showGasSensor(temp_sensor_module_id,true,false);
                         }else{
                             showConfigAlert(message);
-                            //Toast.makeText(getContext(),message,Toast.LENGTH_SHORT).show();
                         }
-
 
                         //  addRoom = false;
                         // }

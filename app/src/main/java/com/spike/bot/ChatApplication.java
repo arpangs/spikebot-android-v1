@@ -26,6 +26,7 @@ import com.spike.bot.model.User;
 import com.spike.bot.receiver.ApplicationCrashHandler;
 import com.spike.bot.receiver.ConnectivityReceiver;
 
+import io.clappr.player.Player;
 import io.fabric.sdk.android.Fabric;
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -197,21 +198,9 @@ public class ChatApplication extends Application  {
         ACRA.getErrorReporter().setReportSender(new CustomReportSender(this.getApplicationContext()));
 // Install the application crash handler
         ApplicationCrashHandler.installHandler();
-
-        if(mSocket!=null){
-//            mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
-        }
-
+        Player.initialize(this);
       //  Common.savePrefValue(getApplicationContext(),"","");
     }
-
-    private Emitter.Listener onDisconnect = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            ChatApplication.logDisplay("chat app is null application");
-            mSocket = openSocket(url);
-        }
-    };
 
     private static ChatApplication instance;
     public static ChatApplication getApp() {

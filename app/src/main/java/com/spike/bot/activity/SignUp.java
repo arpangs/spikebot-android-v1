@@ -256,8 +256,8 @@ public class SignUp extends AppCompatActivity {
             mSocket = app.getSocket();
         }
 //        webUrl = app.url;
-        String url = "http://" + ipAddressPI + ":"  + Constants.SIGNUP_API;
-//        String url = "http://" + "192.168.175.121" + ":"  + Constants.SIGNUP_API;
+//        String url = "http://" + ipAddressPI + ":"  + Constants.SIGNUP_API;
+        String url = "http://" + "192.168.175.121" + ":"  + Constants.SIGNUP_API;
         String token = FirebaseInstanceId.getInstance().getToken();
         Common.savePrefValue(getApplicationContext(),Constants.DEVICE_PUSH_TOKEN,token);
 

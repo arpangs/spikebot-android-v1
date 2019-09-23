@@ -414,6 +414,10 @@ public class Common {
                     case "lockOnly":
                         resource = R.drawable.unlock_only;
                         break;
+
+                        case "gassensor":
+                        resource = R.drawable.fire_and_gas;
+                        break;
                     default:
                         resource = R.drawable.bulb_on;
                         break;
@@ -486,6 +490,10 @@ public class Common {
 
                     case "lockOnly":
                         resource = R.drawable.lock_only;
+                        break;
+
+                    case "gassensor":
+                        resource = R.drawable.fire_and_gas_gray;
                         break;
 
                     default:

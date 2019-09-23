@@ -33,8 +33,6 @@ import com.spike.bot.activity.ImageZoomActivity;
 import com.spike.bot.customview.CustomEditText;
 import com.spike.bot.model.CameraPushLog;
 import com.spike.bot.model.NotificationList;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.util.ArrayList;

@@ -2083,6 +2083,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     public void setWifiLocalflow(String localIp, String cloudIp, String mac_address,int isCount) {
 
+        ChatApplication.logDisplay("count is ss "+isCount);
         if (Common.isNetworkConnected(Main2Activity.this)) {
             isWifiConnect = true;
 
@@ -2701,22 +2702,22 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 if (Constants.isWifiConnect) {
 
                 } else {
-                    ChatApplication.logDisplay("ip address is found " + ipAddressPI + " " + Constants.getGateway(Main2Activity.this));
-                    if (ipAddressPI.equalsIgnoreCase("" + Constants.getGateway(Main2Activity.this))) {
-                        isFlagWifi = true;
-                        isCloudConnected = false; //added by sagar
-                        invalidateToolbarCloudImage();
-                        webUrl = ipAddressPI;
-                        wifiIpAddress = ipAddressPI;
-                        if(!webUrl.startsWith("http")){
-                            webUrl="http://"+ChatApplication.url;
-                        }
-                        ChatApplication.url = webUrl;
-                        isClick = false;
-                    } else {
-                        ipAddressPI = "";
-                        webUrl = ipAddressPI;
-                    }
+//                    ChatApplication.logDisplay("ip address is found " + ipAddressPI + " " + Constants.getGateway(Main2Activity.this));
+//                    if (ipAddressPI.equalsIgnoreCase("" + Constants.getGateway(Main2Activity.this))) {
+//                        isFlagWifi = true;
+//                        isCloudConnected = false; //added by sagar
+//                        invalidateToolbarCloudImage();
+//                        webUrl = ipAddressPI;
+//                        wifiIpAddress = ipAddressPI;
+////                        if(!webUrl.startsWith("http")){
+////                            webUrl="http://"+ChatApplication.url;
+////                        }
+////                        ChatApplication.url = webUrl;
+////                        isClick = false;
+//                    } else {
+//                        ipAddressPI = "";
+//                        webUrl = ipAddressPI;
+//                    }
 
 //                    if (!TextUtils.isEmpty(ipLocal)) {
 ////                        if (isReachable && ipLocal.equalsIgnoreCase(ipAddressPI) && Common.getMacAddress(Main2Activity.this,ipAddressPI).equalsIgnoreCase(Constants.getMacAddress(Main2Activity.this))) {

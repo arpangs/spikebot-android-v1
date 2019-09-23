@@ -108,22 +108,13 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
         nodePlayer.setAudioEnable(true);
         nodePlayer.setPlayerView(player);
         nodePlayer.setMaxBufferTime(5);
-        nodePlayer.setSwfUrl(mMediaUrl);
-        nodePlayer.setPageUrl(mMediaUrl);
-        nodePlayer.seekTo(1);
+
+        ChatApplication.logDisplay("media is "+mMediaUrl);
 
         nodePlayer.setNodePlayerDelegate(new NodePlayerDelegate() {
             @Override
             public void onEventCallback(NodePlayer player, int event, String msg) {
                 if(player.isPlaying() && msg.equals("NetStream.Buffer.Full")){
-                    ChatApplication.logDisplay("camera log is dispaly "+event+" "+msg);
-                    ChatApplication.logDisplay("camera log is dispaly "+ player.getDuration());
-                    ChatApplication.logDisplay("camera log is dispaly "+ nodePlayer.isLive());
-                    ChatApplication.logDisplay("camera log is dispaly buffer "+ nodePlayer.getBufferPercentage());
-                    ChatApplication.logDisplay("camera log is dispaly buffer "+ nodePlayer.getBufferPercentage());
-                    ChatApplication.logDisplay("camera log is dispaly buffer isPlaying "+ nodePlayer.isPlaying());
-                    ChatApplication.logDisplay("camera log is dispaly buffer isPlaying "+ player.getCurrentPosition());
-
                     player.seekTo(1);
                     progressDialog.dismiss();
                 }
@@ -311,7 +302,6 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
 
 //            View screenView = player.getmSurface().lockHardwareCanvas();
 //            screenView.setDrawingCacheEnabled(true);
-            Bitmap bitmap1 = player._scratch;
 //            screenView.setDrawingCacheEnabled(false);
 
             //Define a bitmap with the same size as the view

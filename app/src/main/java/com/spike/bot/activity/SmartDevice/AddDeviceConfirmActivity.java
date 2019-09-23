@@ -410,6 +410,7 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         }
 
         String url = ChatApplication.url + Constants.ADD_DOOR_SENSOR;
+        ChatApplication.logDisplay("url is "+url+" "+obj);
 
 
         new GetJsonTask(AddDeviceConfirmActivity.this,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
@@ -518,6 +519,7 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
                     String message = result.getString("message");
                     ChatApplication.showToast(AddDeviceConfirmActivity.this,message);
                     if (code == 200) {
+                        ChatApplication.isCallDeviceList=true;
                         Intent intent=new Intent(AddDeviceConfirmActivity.this, Main2Activity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
@@ -591,6 +593,7 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
+                        ChatApplication.isCallDeviceList=true;
                         Constants.activityPhilipsHueBridgeDeviceListActivity.finish();
                         Intent intent=new Intent(AddDeviceConfirmActivity.this, Main2Activity.class);
                         startActivity(intent);

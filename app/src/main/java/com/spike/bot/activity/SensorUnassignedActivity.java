@@ -20,16 +20,19 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
 import com.spike.bot.adapter.SensorUnassignedAdapter;
+import com.spike.bot.adapter.UnAssignRepeatarAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.fragments.MainFragment;
+import com.spike.bot.model.RepeaterModel;
 import com.spike.bot.model.RoomVO;
 import com.spike.bot.model.SensorUnassignedRes;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,8 +53,11 @@ public class SensorUnassignedActivity extends AppCompatActivity{
 
     ArrayAdapter spinnerArrayAdapter;
     private SensorUnassignedAdapter sensorUnassignedAdapter;
+    private UnAssignRepeatarAdapter unAssignRepeatarAdapter;
     private int isDoorSensor;
     public String roomName="",roomId="";
+
+    ArrayList<SensorUnassignedRes.Data.UnassigendSensorList> arrayListRepeter=new ArrayList<>();
 
     List<SensorUnassignedRes.Data.RoomList> roomList=new ArrayList<>();
 
@@ -91,17 +97,82 @@ public class SensorUnassignedActivity extends AppCompatActivity{
         }else if(isDoorSensor == MainFragment.SENSOR_TYPE_IR){
             isDoorSensor = 2;
             getSupportActionBar().setTitle("Unassigned IR List");
+        }else if(isDoorSensor == MainFragment.SENSOR_REPEATAR){
+            isDoorSensor = 10;
+            getSupportActionBar().setTitle("Unassigned Repeater List");
         }else {
             isDoorSensor = 5;
             getSupportActionBar().setTitle("Multi Sensor");
         }
 
-        getSensorUnAssignedDetails(isDoorSensor);
+        if(isDoorSensor == MainFragment.SENSOR_REPEATAR){
+            callReptorList();
+        }else {
+            getSensorUnAssignedDetails(isDoorSensor);
+        }
 
     }
 
-    private void getSensorUnAssignedDetails(int sensor_type){
+    private void callReptorList(){
 
+        String url = ChatApplication.url + Constants.getUnassignedRepeaterList ;
+
+        linear_progress.setVisibility(View.VISIBLE);
+
+        new GetJsonTask(getApplicationContext(), url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                //   ActivityHelper.dismissProgressDialog();
+                linear_progress.setVisibility(View.GONE);
+
+                if(result.optInt("code")==200){
+                    list_sensor.setVisibility(View.VISIBLE);
+                    ll_sensor_list_empy.setVisibility(View.GONE);
+
+                    try {
+                        arrayListRepeter.clear();
+                        JSONObject object=new JSONObject(result.toString());
+
+                        JSONArray array=object.optJSONArray("data");
+
+                        // "repeator_module_id": "B04A1D1A004B1200",
+                        //      "repeator_name": "repeater name g",
+                        //      "is_active": 1
+                        for(int i=0; i<array.length(); i++){
+                            JSONObject object1=array.optJSONObject(i);
+                            SensorUnassignedRes.Data.UnassigendSensorList repeaterModel=new SensorUnassignedRes.Data.UnassigendSensorList();
+                            repeaterModel.setSensorName(object1.optString("repeator_name"));
+                            repeaterModel.setSensorId(object1.optString("repeator_module_id"));
+//                            repeaterModel.set(object1.optString("is_active"));
+
+                            arrayListRepeter.add(repeaterModel);
+                        }
+
+                        if(arrayListRepeter.size()>0){
+                            unAssignRepeatarAdapter = new UnAssignRepeatarAdapter(SensorUnassignedActivity.this,arrayListRepeter);
+                            list_sensor.setAdapter(unAssignRepeatarAdapter);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }else{
+                    Toast.makeText(getApplicationContext(),result.optString("message"),Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                linear_progress.setVisibility(View.GONE);
+                throwable.printStackTrace();
+                Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+        }).execute();
+
+    }
+
+
+    private void getSensorUnAssignedDetails(int sensor_type){
 
         String url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/"+sensor_type; //0 door - 1 temp
 
@@ -194,6 +265,8 @@ public class SensorUnassignedActivity extends AppCompatActivity{
 
             if(isDoorSensor == 0){
                 saveSensorUnassinged();
+            }else if(isDoorSensor==10){
+                saveRepeatar();
             }else {
                 if (spinner_room.getSelectedItemPosition() == 0) {
                     Toast.makeText(getApplicationContext(), "Please select room", Toast.LENGTH_LONG).show();
@@ -207,6 +280,73 @@ public class SensorUnassignedActivity extends AppCompatActivity{
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void saveRepeatar() {
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if(unAssignRepeatarAdapter==null){
+            return;
+        }
+
+        SensorUnassignedRes.Data.UnassigendSensorList unassigendSensorList = unAssignRepeatarAdapter.getSelectedSensor();
+        if(unassigendSensorList == null){
+            String message = "Select at least one Repeater";
+            Toast.makeText(getApplicationContext(),message ,Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            //"repeator_module_id"	: "B04A1D1A004B1200",
+            //		"repeator_name":"repeator new name",
+            //	"user_id":"1566980189559_18CfbqxQo",
+            //	"phone_id":"1234567",
+            //	"phone_type":"Android"
+            jsonObject.put("repeator_module_id",unassigendSensorList.getSensorId());
+            jsonObject.put("repeator_name",unassigendSensorList.getSensorName());
+            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String webUrl = ChatApplication.url + Constants.reassignRepeater;
+
+        ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        new GetJsonTask(this, webUrl, "POST", jsonObject.toString(), new ICallBack() {
+            @Override
+            public void onSuccess(JSONObject result) {
+
+                ChatApplication.logDisplay("onSuccess result : " + result.toString());
+                ActivityHelper.dismissProgressDialog();
+                try {
+
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+                    if(code == 200){
+                        finish();
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        }).execute();
+
     }
 
     private void saveSensorUnassinged(){

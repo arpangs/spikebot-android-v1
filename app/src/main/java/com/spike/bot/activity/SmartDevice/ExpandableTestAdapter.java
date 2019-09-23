@@ -82,12 +82,15 @@ public class ExpandableTestAdapter  extends ExpandableRecyclerView.Adapter<Expan
     @Override
     public void onBindChildViewHolder(final ChildViewHolder holder, final int group, final int position) {
         super.onBindChildViewHolder(holder, group, position);
-//        holder.txtCameraLink.setText(getChildItem(group, position));
-        holder.txtCameraLink.setText(arrayList.get(group).getArrayList().get(position).getCamera_ip());
+
+//        holder.txtCameraLink.setText(arrayList.get(group).getArrayList().get(position).getCamera_ip());
+        holder.txtCameraLink.setText(arrayList.get(group).getArrayList().get(position).getCamera_name()+" "+arrayList.get(group).getArrayList().get(position).getCamera_ip());
+
+        holder.view.setId(group);
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cameraPlayBack.onCameraClick(group,position,arrayList.get(group).getArrayList().get(position));
+                cameraPlayBack.onCameraClick(holder.view.getId(),position,arrayList.get(holder.view.getId()).getArrayList().get(position));
             }
         });
     }

@@ -498,13 +498,13 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                                 if (section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("temp") ||
                                         section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("irblaster") ||
                                         section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("multisensor") ||
+                                        section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("gassensor") ||
                                         section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("door")) {
 
                                     flag = true;
                                 }
                             }
                         }
-
                     }
 
                     String isunRead = section.getIs_unread();
@@ -686,7 +686,6 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     //only lock, subtype=2
                     //door+lock, subtype=3
                     if (item.getSensor_type().equalsIgnoreCase("irblaster")) {
-
                         holder.txt_temp_in_cf.setVisibility(View.INVISIBLE);
                         holder.iv_icon.setVisibility(View.VISIBLE);
                         itemIcon = Common.getIcon(item.getRemote_status().equalsIgnoreCase("ON") ? 1 : 0, item.getSensor_icon()); //AC off icon
@@ -715,16 +714,69 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             itemIcon = Common.getIcon(item.getDoor_lock_status()==1 ? 1 : 0, "lockOnly"); //AC off icon
 
                         }else {
-                            if(TextUtils.isEmpty(item.getDoor_lock_status()+"")){
+                            if(TextUtils.isEmpty(item.getDoor_sensor_status()+"")){
                                 item.setDoor_lock_status(1);
                             }
-                            itemIcon = Common.getIcon(item.getDoor_lock_status()==1 ? 1 : 0, "lockWithDoor"); //AC off icon
+                            itemIcon = Common.getIcon(item.getDoor_sensor_status().equals("1") ? 1 : 0, "lockWithDoor"); //AC off icon
                         }
 
                         holder.itemTextView.setText(item.getSensor_name());
                         holder.txt_temp_in_cf.setVisibility(View.INVISIBLE);
 
                         itemDeviceName = item.getSensor_name();
+
+                        if (!TextUtils.isEmpty(item.getIs_unread())) {
+                            if (Integer.parseInt(item.getIs_unread()) > 0) {
+                                holder.iv_icon_badge.setVisibility(View.VISIBLE);
+                                holder.iv_icon_badge.setText(item.getIs_unread());
+
+                                if (Integer.parseInt(item.getIs_unread()) > 99) {
+                                    holder.iv_icon_badge.setText("99+");
+                                    holder.iv_icon_badge.getLayoutParams().width = Common.dpToPx(mContext, 27);
+                                    holder.iv_icon_badge.getLayoutParams().height = Common.dpToPx(mContext, 27);
+                                } else {
+                                    holder.iv_icon_badge.getLayoutParams().width = Common.dpToPx(mContext, 27);
+                                    holder.iv_icon_badge.getLayoutParams().height = Common.dpToPx(mContext, 27);
+                                }
+
+                            } else {
+                                holder.iv_icon_badge.setVisibility(View.GONE);
+                            }
+                        } else {
+                            holder.iv_icon_badge.setVisibility(View.GONE);
+                        }
+
+                    }else if(item.getSensor_type().equals("gassensor")){
+                        holder.txt_temp_in_cf.setVisibility(View.INVISIBLE);
+                        holder.iv_icon.setVisibility(View.VISIBLE);
+                        itemIcon = Common.getIcon(1, item.getSensor_icon()); //AC off icon
+
+                        holder.itemTextView.setVisibility(View.VISIBLE);
+                        holder.itemTextView.setText(item.getSensor_name());
+
+                        itemDeviceName = item.getSensor_name();
+
+                        if (!TextUtils.isEmpty(item.getIs_unread())) {
+                            if (Integer.parseInt(item.getIs_unread()) > 0) {
+                                holder.iv_icon_badge.setVisibility(View.VISIBLE);
+                                holder.iv_icon_badge.setText(item.getIs_unread());
+
+                                if (Integer.parseInt(item.getIs_unread()) > 99) {
+                                    holder.iv_icon_badge.setText("99+");
+                                    holder.iv_icon_badge.getLayoutParams().width = Common.dpToPx(mContext, 27);
+                                    holder.iv_icon_badge.getLayoutParams().height = Common.dpToPx(mContext, 27);
+                                } else {
+                                    holder.iv_icon_badge.getLayoutParams().width = Common.dpToPx(mContext, 27);
+                                    holder.iv_icon_badge.getLayoutParams().height = Common.dpToPx(mContext, 27);
+                                }
+
+                            } else {
+                                holder.iv_icon_badge.setVisibility(View.GONE);
+                            }
+                        } else {
+                            holder.iv_icon_badge.setVisibility(View.GONE);
+                        }
+
                     } else {
 
                         holder.iv_icon_badge.setVisibility(View.VISIBLE);

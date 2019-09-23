@@ -278,7 +278,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                                 door_lock_status="0";
                             }
 
-                            if(!TextUtils.isEmpty(door_lock_status) && !door_lock_status.equals("null")){
+                            if(!TextUtils.isEmpty(door_lock_status) && door_lock_status.length()>0){
                                 doorSensorResModel.getDate().getDoorLists()[0].setDoor_lock_status(door_lock_status);
                             }else {
                                 doorSensorResModel.getDate().getDoorLists()[0].setDoor_lock_status(""+0);
@@ -298,6 +298,8 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                                 setLockStatus(2);
                             }else if(doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("3")) {
                                 setLockStatus(3);
+                            }else {
+                                setLockStatus(4);
                             }
 
                         } catch (JSONException e) {
@@ -339,6 +341,8 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         try {
             object.put("door_sensor_id",door_sensor_id);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -490,9 +494,10 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                 cardViewDoor.setVisibility(View.VISIBLE);
                 cardViewLock.setVisibility(View.GONE);
 
-                img_door_on.setImageResource(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("0") ? R.drawable.off_door: R.drawable.on_door);
-                txtDoorStatus.setText(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("0") ? "Door Close" : "Door Open");
+                img_door_on.setImageResource(doorSensorResModel.getDate().getDoorLists()[0].getmDoorSensorStatus().equals("0") ? R.drawable.off_door: R.drawable.on_door);
+                txtDoorStatus.setText(doorSensorResModel.getDate().getDoorLists()[0].getmDoorSensorStatus().equals("0") ? "Door Close" : "Door Open");
 
+                setLockStatus(4);
             }else if(doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("2")){
 //                linearAddlockOptin.setVisibility(View.GONE);
 //                linearLockDoor.setVisibility(View.VISIBLE);
@@ -676,7 +681,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                 ActivityHelper.dismissProgressDialog();
                 switchAutoLock.setChecked(switchAutoLock.isChecked());
                 ChatApplication.logDisplay("auto lock done error ");
-                ChatApplication.showToast(DoorSensorInfoActivity.this,""+error);
+//                ChatApplication.showToast(DoorSensorInfoActivity.this,""+error);
             }
         });
     }
@@ -740,6 +745,10 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             imgLock.setImageResource(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? R.drawable.unlock_only: R.drawable.lock_only);
             txtlockStatus.setText(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? "Unlocked": "Locked");
             txtlockStatus.setTextColor(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.green));
+        }else if(type==4){
+            img_door_on.setImageResource(doorSensorResModel.getDate().getDoorLists()[0].getmDoorSensorStatus().equals("1") ? R.drawable.on_door: R.drawable.off_door);
+            txtDoorStatus.setText(doorSensorResModel.getDate().getDoorLists()[0].getmDoorSensorStatus().equals("1") ? "Door Open": "Door Close");
+            txtDoorStatus.setTextColor(doorSensorResModel.getDate().getDoorLists()[0].getmDoorSensorStatus().equals("1") ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.green));
         }else {
 
             imgLock.setImageResource(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? R.drawable.unlock_only: R.drawable.lock_only);

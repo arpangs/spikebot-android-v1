@@ -75,6 +75,31 @@ public class UnassignedListRes {
             @SerializedName("room_id")
             @Expose
             private String roomId;
+
+            public String getRepeator_module_id() {
+                return repeator_module_id;
+            }
+
+            public void setRepeator_module_id(String repeator_module_id) {
+                this.repeator_module_id = repeator_module_id;
+            }
+
+            public String getRepeator_name() {
+                return repeator_name;
+            }
+
+            public void setRepeator_name(String repeator_name) {
+                this.repeator_name = repeator_name;
+            }
+
+            @SerializedName("repeator_module_id")
+            @Expose
+            private String repeator_module_id;
+
+            @SerializedName("repeator_name")
+            @Expose
+            private String repeator_name;
+
             @SerializedName("module_id")
             @Expose
             private String moduleId;
@@ -83,7 +108,7 @@ public class UnassignedListRes {
             private String moduleName;
             @SerializedName("is_module")
             @Expose
-            private Integer isModule;
+            private Integer isModule=0;
             @SerializedName("roomList")
             @Expose
             private RoomList_ roomList;

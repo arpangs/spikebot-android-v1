@@ -346,7 +346,7 @@ public class CameraPlayBack extends AppCompatActivity implements ExpandableTestA
             @Override
             public void onSuccess(JSONObject result) {
 
-                cameraVOs.clear();
+//                cameraVOs.clear();
 
                 ChatApplication.ADAPTER_POSITION = -1;
 
@@ -357,13 +357,14 @@ public class CameraPlayBack extends AppCompatActivity implements ExpandableTestA
                     code = result.getInt("code");
                     String message = result.getString("message");
                     if(code==200){
+                        cameraArrayList.clear();
+
 
                         JSONObject object = result.getJSONObject("data");
                         JSONArray jsonArray = object.getJSONArray("cameraList");
 
-                        cameraArrayList.clear();
                         for(int i=0;i<jsonArray.length();i++){
-
+//                            cameraVOs.clear();
                             JSONObject ob = jsonArray.getJSONObject(i);
                             String camera_id = ob.getString("camera_id");
                             String camera_name = ob.getString("camera_name");
@@ -373,16 +374,18 @@ public class CameraPlayBack extends AppCompatActivity implements ExpandableTestA
                             cameraViewModel.setCamera_id(camera_id);
                             cameraViewModel.setCamera_name(camera_name);
 
-                            ArrayList<String> arrayListTemp = new ArrayList<String>();
-
                             String videoName="";
+                            ArrayList<CameraVO>  templist=new ArrayList<>();
                             for(int j=0; j<array.length();j++){
+
                                 String u_name = array.get(j).toString();
                                // arrayList.add(camera_id+"@"+camera_name+"@"+u_name);
                                 CameraVO cameraVO = new CameraVO();
                                 cameraVO.setCamera_id(camera_id);
                                 cameraVO.setCamera_name(camera_name);
                                 cameraVO.setCamera_videopath(u_name);
+
+                                ChatApplication.logDisplay("name is "+u_name);
 
                                 String[] separated = u_name.split("/");
                                 if(separated!=null){
@@ -404,11 +407,11 @@ public class CameraPlayBack extends AppCompatActivity implements ExpandableTestA
                                     }
                                 }
 
-                                cameraVOs.add(cameraVO);
+                                templist.add(cameraVO);
                             }
-
-
-                            cameraViewModel.setArrayList(cameraVOs);
+//                            cameraVOs.addAll(templist);
+//                            cameraViewModel.setArrayList(cameraVOs);
+                            cameraViewModel.setArrayList(templist);
                             cameraArrayList.add(cameraViewModel);
                         }
 
@@ -420,7 +423,7 @@ public class CameraPlayBack extends AppCompatActivity implements ExpandableTestA
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }finally {
-                    if(cameraVOs.isEmpty()){
+                    if(cameraArrayList.isEmpty()){
                         txt_no_date.setVisibility(View.VISIBLE);
                         cameraList.setVisibility(View.GONE);
                     }else{
@@ -469,8 +472,9 @@ public class CameraPlayBack extends AppCompatActivity implements ExpandableTestA
         //http://home.deepfoods.net:10000/static/storage/volume/pi/1564123250335_hgTonaqUq-2019-07-26_13.20.mp4
 
         Intent intent = new Intent(CameraPlayBack.this, VideoViewPLayer.class);
-//        intent.putExtra("videoUrl",ip+""+cameraVO.getCamera_id()+cameraVO.getCamera_videopath());
-        intent.putExtra("videoUrl",ip+""+cameraArrayList.get(group).getArrayList().get(postion).getLoadingUrl());
+        intent.putExtra("videoUrl",ip+""+cameraVO.getCamera_id()+cameraVO.getCamera_videopath());
+//        intent.putExtra("videoUrl",ip+""+cameraArrayList.get(group).getArrayList().get(postion).getLoadingUrl());
+        intent.putExtra("videoUrl",ip+""+cameraVO.getLoadingUrl());
         intent.putExtra("name", ""+cameraArrayList.get(group).getCamera_name());
         intent.putExtra("isCloudConnect", Main2Activity.isCloudConnected);
         startActivity(intent);
