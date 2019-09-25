@@ -201,7 +201,7 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
     }
 
     private void repetearAdd(UnassignedListRes.Data.RoomdeviceList roomdeviceList) {
-        ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Add in All Repeater ?", new ConfirmDialog.IDialogCallback() {
+        ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Add?", new ConfirmDialog.IDialogCallback() {
             @Override
             public void onConfirmDialogYesClick() {
                 addunAssignRepater(roomdeviceList);

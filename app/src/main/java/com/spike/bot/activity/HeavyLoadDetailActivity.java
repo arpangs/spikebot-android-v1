@@ -638,12 +638,17 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
             txtGraphType.setVisibility(View.VISIBLE);
             txtYAxis.setVisibility(View.VISIBLE);
             txtGraphTital.setVisibility(View.VISIBLE);
+
+            int totalWv=0;
+            for(int i=0; i<heavyModel.getGraphData().size(); i++){
+                totalWv=totalWv+heavyModel.getGraphData().get(i).getEnergy();
+            }
             if(currentDay==12){
                 txtGraphType.setText("Year : "+spinnerYear.getSelectedItem());
-                txtGraphTital.setText("Yearly Graph");
+                txtGraphTital.setText("Yearly Graph : "+totalWv);
             }else {
                 txtGraphType.setText("Month : "+spinnerMonth.getSelectedItem());
-                txtGraphTital.setText("Monthly Graph");
+                txtGraphTital.setText("Monthly Graph : "+totalWv);
             }
 
 

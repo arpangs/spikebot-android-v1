@@ -37,6 +37,7 @@ import java.text.SimpleDateFormat;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -48,6 +49,7 @@ public class Constants {
 //    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
 //    public static  String CLOUD_SERVER_URL = "http://api.spikebot.io"; //222
     public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //wifi / 123
+//
 // *-   public static  String CLOUD_SERVER_URL = "http://52.201.70.116:8079"; // unuser
 //    public static  String CLOUD_SERVER_URL = "http://54.201.70.116:8079"; // unuser
 //    public static  String CLOUD_SERVER_URL = ""; //117 testing
@@ -80,8 +82,9 @@ public class Constants {
     public static final String USER_TYPE = "user_type";
     public static final String USER_ADMIN_TYPE = "user_admin_type";
     public static final String USER_ROOM_TYPE = "user_room_type";
-    public static final String couldIp = "";
-    public static final String startIp = "";
+    public static int lockDate = 0;
+    public static String socketIp = "";
+    public static int socketType = 0;
     public static int adminType = 1;
     public static int room_type = 0;
 
@@ -619,5 +622,31 @@ public class Constants {
 
     public static String getpasswordLock() {
        return DigitUtil.getMD5("vg99092vg");
+    }
+
+    public static int twoDateDiff(String enddate){
+        SimpleDateFormat myFormat = new SimpleDateFormat("dd-MM-yyyy");
+//        String dateBeforeString = "31 01 2014";
+//        String dateAfterString = "02 02 2014";
+        int daysBetween=0;
+        try {
+            Date c = Calendar.getInstance().getTime();
+            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+            String startdate = df.format(c);
+
+            Date dateBefore = myFormat.parse(startdate);
+            Date dateAfter = myFormat.parse(enddate);
+            long difference = dateAfter.getTime() - dateBefore.getTime();
+            daysBetween= (int) (difference / (1000*60*60*24));
+            /* You can also convert the milliseconds to days using this method
+             * float daysBetween =
+             *         TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS)
+             */
+            System.out.println("Number of Days between dates: "+daysBetween);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return daysBetween;
     }
 }

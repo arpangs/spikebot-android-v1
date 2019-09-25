@@ -98,13 +98,16 @@ public class SensorUnassignedActivity extends AppCompatActivity{
             isDoorSensor = 2;
             getSupportActionBar().setTitle("Unassigned IR List");
         }else if(isDoorSensor == MainFragment.SENSOR_REPEATAR){
+            spinner_room.setVisibility(View.GONE);
+            viewLine.setVisibility(View.GONE);
             isDoorSensor = 10;
-            getSupportActionBar().setTitle("Unassigned Repeater List");
+            getSupportActionBar().setTitle("Unassigned List");
         }else {
             isDoorSensor = 5;
             getSupportActionBar().setTitle("Multi Sensor");
         }
 
+        //10 is repeatar unaasign
         if(isDoorSensor == MainFragment.SENSOR_REPEATAR){
             callReptorList();
         }else {
@@ -265,9 +268,10 @@ public class SensorUnassignedActivity extends AppCompatActivity{
 
             if(isDoorSensor == 0){
                 saveSensorUnassinged();
-            }else if(isDoorSensor==10){
+            } else if(isDoorSensor==10){
                 saveRepeatar();
-            }else {
+            }
+            else {
                 if (spinner_room.getSelectedItemPosition() == 0) {
                     Toast.makeText(getApplicationContext(), "Please select room", Toast.LENGTH_LONG).show();
                 } else {
@@ -369,7 +373,7 @@ public class SensorUnassignedActivity extends AppCompatActivity{
         if(unassigendSensorList == null){
 
             String message = "";
-            if(isDoorSensor == 0 || isDoorSensor == 1){
+            if(isDoorSensor == 0 || isDoorSensor == 1 || isDoorSensor==10|| isDoorSensor==5){
                 message = "Select at least one Sensor";
             }else if(isDoorSensor == 2){
                 message = "Select at least one blaster";
@@ -421,6 +425,8 @@ public class SensorUnassignedActivity extends AppCompatActivity{
                 sensor_t = "irblaster";
             }else if(unassigendSensorList.getSensorIcon().equalsIgnoreCase("multisensor")){
                 sensor_t = "multisensor";
+            }else if(unassigendSensorList.getSensorIcon().equalsIgnoreCase("gassensor")){
+                sensor_t = "gas";
             }
 
             jsonObject.put("sensor_type",sensor_t);

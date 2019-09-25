@@ -23,7 +23,6 @@ import android.widget.VideoView;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.Placcer.VideoClapper;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,8 +31,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import io.clappr.player.Player;
-import io.clappr.player.base.Event;
 
 
 /**
@@ -50,8 +47,6 @@ public class VideoViewPLayer extends AppCompatActivity{
     String videoUrl = "",name="";
     MediaController mediaController;
     boolean isMute=false;
-
-    VideoClapper  videoClapper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -77,40 +72,32 @@ public class VideoViewPLayer extends AppCompatActivity{
         frameVideo =  findViewById(R.id.frameVideo);
        // videoView.setVideoPath(videoUrl).getPlayer().start();
 
-//        videoView.setVideoPath(videoUrl);
-//        videoView.requestFocus();
-//        // create an object of media controller
-//        mediaController = new MediaController(this);
-//        videoView.setMediaController(mediaController);
-//
-//        progressBar.setVisibility(View.VISIBLE);
-//
-//        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-//
-//            @Override
-//            public void onPrepared(MediaPlayer mp) {
-//                mp.start();
-//                mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
-//
-//                    @Override
-//                    public void onVideoSizeChanged(MediaPlayer mp, int arg1, int arg2) {
-//                        progressBar.setVisibility(View.GONE);
-//                        mp.start();
-//                        mp.setLooping(true);
-//                    }
-//                });
-//
-//
-//            }
-//        });
+        videoView.setVideoPath(videoUrl);
+        videoView.requestFocus();
+        // create an object of media controller
+        mediaController = new MediaController(this);
+        videoView.setMediaController(mediaController);
 
-        setView();
-    }
+        progressBar.setVisibility(View.VISIBLE);
 
-    public void setView(){
-        ChatApplication.logDisplay("media is "+videoUrl);
-        videoClapper=new VideoClapper(VideoViewPLayer.this,R.id.frameVideo,videoUrl);
-        videoClapper.setView();
+        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.start();
+                mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+
+                    @Override
+                    public void onVideoSizeChanged(MediaPlayer mp, int arg1, int arg2) {
+                        progressBar.setVisibility(View.GONE);
+                        mp.start();
+                        mp.setLooping(true);
+                    }
+                });
+
+
+            }
+        });
     }
 
     @Override
@@ -237,11 +224,5 @@ public class VideoViewPLayer extends AppCompatActivity{
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        videoClapper.checkScreenOrientation(newConfig.orientation);
     }
 }

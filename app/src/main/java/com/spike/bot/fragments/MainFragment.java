@@ -910,7 +910,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
     public static int SENSOR_TYPE_DOOR = 1;
     public static int SENSOR_TYPE_TEMP = 2;
     public static int SENSOR_TYPE_IR = 3;
-    public static int SENSOR_REPEATAR = 4;
+    public static int SENSOR_REPEATAR = 10;
 
     private void showOptionDialog(final int sensor_type) {
 
@@ -3729,6 +3729,8 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
+                        Constants.socketType=1;
+                        Constants.socketIp=ChatApplication.url;
                         hideAdapter(true);
                         JSONObject dataObject = result.getJSONObject("data");
                         ((Main2Activity)getActivity()).getUserDialogClick(true);
@@ -4077,7 +4079,6 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                 if (ChatApplication.isPushFound) {
                     getBadgeClear(getActivity());
                 }
-
                 mMessagesView.setClickable(true);
                 responseErrorCode.onSuccess();
 
@@ -4094,6 +4095,8 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
+                        Constants.socketType=0;
+                        Constants.socketIp=ChatApplication.url;
                         isCheckFlow=true;
                         hideAdapter(true);
                         mMessagesView.setVisibility(View.VISIBLE);

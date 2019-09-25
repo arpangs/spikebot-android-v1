@@ -1993,6 +1993,8 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/2"; //0 door - 1 ir
         }else if(isDoorSensor==4){
             url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/5"; //0 door - 1 ir
+        }else if(isDoorSensor==5){
+            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/5"; //0 door - 1 ir
         }else {
 //            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/2"; //0 door - 1 ir
             url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/0"; //0 door - 1 ir

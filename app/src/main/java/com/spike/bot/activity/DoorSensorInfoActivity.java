@@ -52,9 +52,11 @@ import com.spike.bot.adapter.DoorSensorInfoAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
+import com.spike.bot.core.Log;
 import com.spike.bot.customview.OnSwipeTouchListener;
 import com.spike.bot.dialog.ICallback;
 import com.spike.bot.dialog.TimePickerFragment12;
+import com.spike.bot.model.AccountInfo;
 import com.spike.bot.model.DoorSensorResModel;
 import com.spike.bot.receiver.ConnectivityReceiver;
 import com.kp.core.ActivityHelper;
@@ -65,6 +67,8 @@ import com.kp.core.dialog.ConfirmDialog;
 import com.ttlock.bl.sdk.api.TTLockClient;
 import com.ttlock.bl.sdk.callback.SetAutoLockingPeriodCallback;
 import com.ttlock.bl.sdk.entity.LockError;
+import com.ttlock.bl.sdk.util.DigitUtil;
+import com.ttlock.bl.sdk.util.GsonUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -763,6 +767,14 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
     }
 
     private void callLockBatterystatus() {
+
+        //check access token refresh
+        if(Constants.lockDate<86400){
+
+        }else {
+            callTTAuth();
+        }
+
         ActivityHelper.showProgressDialog(this, "Please Wait...", false);
         GetDataService apiService = RetrofitAPIManager.provideClientApi();
 
@@ -797,6 +809,45 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 ActivityHelper.dismissProgressDialog();
+                ChatApplication.logDisplay("tt lock reponse is error");
+            }
+        });
+    }
+
+    private void callTTAuth() {
+
+        GetDataService apiService = RetrofitAPIManager.provideClientApi();
+        Call<String> call = apiService.auth(Constants.client_id, Constants.client_secret, "password", "vipulgk@tasktower.com",  DigitUtil.getMD5("vg99092vg"),"http://open.ttlock.com.cn");
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if(response.code()==200){
+                    ChatApplication.logDisplay("tt lock reponse is response ");
+                    String json = response.body();
+                    try {
+                        //}{
+                        //  access_token='fac1734b6209dd5b3ea602c9cc7a15ae',
+                        //  refresh_token='5ca1a4bc670b16b571b1488a631e57fc',
+                        //  uid=1769341,
+                        //  openid=1930389027,
+                        //  scope='user,key,room',
+                        //  token_type='Bearer',
+                        //  expires_in=2496266
+                        //}
+
+                        JSONObject object=new JSONObject(json);
+                        Constants.lockDate=object.optInt("expires_in");
+                        Constants.access_token=object.optString("access_token");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }else {
+                    ChatApplication.logDisplay("tt lock reponse is error ff ");
+                }
+            }
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
                 ChatApplication.logDisplay("tt lock reponse is error");
             }
         });
@@ -1224,7 +1275,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             return;
         }
 
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        ActivityHelper.showProgressDialog(this, "Please wait...", false);
 
         String webUrl = "";
         if (!isNotification) {
