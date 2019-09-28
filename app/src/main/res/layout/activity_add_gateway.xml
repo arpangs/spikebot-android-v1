@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/sky_blue"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/linearBridge"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Long Press the SETTING Key on the Gateway"
+                android:textColor="@color/automation_black"
+                android:textSize="@dimen/_13sdp"
+                android:gravity="center"
+                android:padding="@dimen/_12sdp"/>
+
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_250sdp"
+                android:layout_marginLeft="@dimen/_30sdp"
+                android:layout_marginRight="@dimen/_30sdp"
+                android:background="@drawable/smart_lock_01"
+                android:layout_marginTop="@dimen/_30sdp" />
+
+            <TextView
+                android:id="@+id/txtDerc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Long Press the SETTING key until Green LED blinks faster, then press the Next button."
+                android:textColor="@color/automation_black"
+                android:textSize="@dimen/_13sdp"
+                android:gravity="center"
+                android:padding="@dimen/_12sdp"/>
+
+            <Button
+                android:id="@+id/btnSubmit"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="@dimen/_30sdp"
+                android:layout_marginLeft="@dimen/_50sdp"
+                android:layout_marginRight="@dimen/_50sdp"
+                android:textColor="@color/automation_white"
+                android:background="@color/sensor_button"
+                android:text="Add" />
+
+
+        </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/linearWifiBridge"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_marginLeft="15dp"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:textSize="@dimen/_13sdp"
+                        android:textColor="@color/automation_black"
+                        android:text="Wifi Name"
+                        android:gravity="center_vertical"/>
+                    <TextView
+                        android:id="@+id/wifiName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:textSize="@dimen/_13sdp"
+                        android:layout_marginRight="15dp"
+                        android:textColor="@color/txtPanal"
+                        android:text=""/>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dp"
+                    android:background="@color/automation_black"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_marginLeft="15dp"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:textSize="@dimen/_13sdp"
+                        android:textColor="@color/automation_black"
+                        android:text="@string/words_wifi_password"
+                        android:gravity="center_vertical"/>
+                    <EditText
+                        android:id="@+id/password"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_marginRight="15dp"
+                        android:textSize="@dimen/_13sdp"
+                        android:textColor="@color/txtPanal"
+                        android:background="@null"
+                        android:hint="@string/words_enter_gateway_password"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dp"
+                    android:background="@color/automation_black"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_marginLeft="15dp"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:textSize="@dimen/_13sdp"
+                        android:textColor="@color/automation_black"
+                        android:text="Gateway Name"
+                        android:gravity="center_vertical"/>
+                    <EditText
+                        android:id="@+id/etGatewayname"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:textSize="@dimen/_13sdp"
+                        android:layout_marginRight="15dp"
+                        android:textColor="@color/txtPanal"
+                        android:background="@null"
+                        android:hint="Enter Gateway name"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dp"
+                    android:background="@color/automation_black"/>
+
+                <Button
+                    android:id="@+id/btnNext"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="@dimen/_50sdp"
+                    android:layout_marginLeft="@dimen/_50sdp"
+                    android:layout_marginRight="@dimen/_50sdp"
+                    android:textColor="@color/automation_white"
+                    android:background="@color/sensor_button"
+                    android:text="Next" />
+
+            </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

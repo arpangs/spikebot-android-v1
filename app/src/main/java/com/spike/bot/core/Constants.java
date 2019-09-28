@@ -82,6 +82,7 @@ public class Constants {
     public static final String USER_TYPE = "user_type";
     public static final String USER_ADMIN_TYPE = "user_admin_type";
     public static final String USER_ROOM_TYPE = "user_room_type";
+    public static final String lock_exe = "lock_exe";
     public static int lockDate = 0;
     public static String socketIp = "";
     public static int socketType = 0;
@@ -166,6 +167,9 @@ public class Constants {
     public static final String deleteDoorLock = "/deleteDoorLock";
     public static final String addLockBridge = "/addLockBridge";
     public static final String deleteTTLockBridge = "/deleteTTLockBridge";
+    public static final String updateTTLockActiveStatus = "/updateTTLockActiveStatus";
+    public static final String curtainadd = "/curtain/add";
+    public static final String curtainupdate = "curtain/update";
 
     public static final String SENSOR_ROOM_DETAILS = "/sensorRoomDetails";
     public static final String SENSOR_NOTIFICATION = "/sensorNotification";
@@ -182,6 +186,8 @@ public class Constants {
     public static final String deleteRepeator = "/deleteRepeator";
     public static final String reassignRepeater = "/reassignRepeater";
     public static final String getUnassignedRepeaterList = "/getUnassignedRepeaterList";
+    public static final String curtainconfigure= "/curtain/configure";
+    public static final String curtainunassigned= "/curtain/unassigned";
 
     //temp sensor
     public static final String GET_TEMP_SENSOR_INFO = "/getTempSensorInfo";
@@ -303,13 +309,17 @@ public class Constants {
     //lock
     public static final String client_id = "439063e312444f1f85050a52efcecd2e";
     public static final String client_secret = "0ef1c49b70c02ae6314bde603d4e9b05";
-    public static  String access_token = "fac1734b6209dd5b3ea602c9cc7a15ae";
+//    public static  String access_token = "fac1734b6209dd5b3ea602c9cc7a15ae";
+    public static  String access_token = "a74549ab15d07ecd988e26f50985aee7";
     public static final String refresh_token = "5ca1a4bc670b16b571b1488a631e57fc";
     public static final String lock_user_id_vip = "1769341";
     public static final String lock_open_vip = "1930389027";
     public static final String locK_base_uri = "http://open.ttlock.com.cn";
     public static final String locK_add = "/v3/lock/initialize";
+    public static final String lockUserName = "ttchatcrash@gmail.com";
+    public static final String lockPassword = "ttchat$123";
     public static final String startUrlhttp = "http:";
+    public static final int lockUserId = 1941573;
 
 
     /*-----------ununsed api-----------*/

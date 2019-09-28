@@ -418,6 +418,9 @@ public class Common {
                         case "gassensor":
                         resource = R.drawable.fire_and_gas;
                         break;
+                        case "curtain":
+                        resource = R.drawable.curtain_open;
+                        break;
                     default:
                         resource = R.drawable.bulb_on;
                         break;
@@ -496,6 +499,10 @@ public class Common {
                         resource = R.drawable.fire_and_gas_gray;
                         break;
 
+                    case "curtain":
+                        resource = R.drawable.curtain_open;
+                        break;
+
                     default:
                         resource = R.drawable.bulb_off;
                         break;
@@ -539,10 +546,10 @@ public class Common {
                 resource = R.drawable.temp_off_inactive;
                 break;
             case "tempsensor":
-                resource = R.drawable.off_temperature;
+                resource = R.drawable.temp_off_inactive;
                 break;
             case "heavyload":
-                resource = R.drawable.off_temperature;
+                resource = R.drawable.heavuload_inactive;
                 break;
 
             case "multisensor":

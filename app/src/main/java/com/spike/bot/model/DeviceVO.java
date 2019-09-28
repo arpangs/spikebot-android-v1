@@ -59,7 +59,7 @@ public class DeviceVO implements Serializable,Cloneable {
     private String sensor_name;
     private String sensor_voltage;
     private String sensor_icon;
-    private String door_sensor_status;
+    private String door_sensor_status="";
     private String sensor_type="";
     private String is_unread;
     private String created_date;
@@ -100,6 +100,25 @@ public class DeviceVO implements Serializable,Cloneable {
     }
 
     private int door_lock_status=1;
+
+    public int getIs_door_active() {
+        return is_door_active;
+    }
+
+    public void setIs_door_active(int is_door_active) {
+        this.is_door_active = is_door_active;
+    }
+
+    public int getIs_lock_active() {
+        return is_lock_active;
+    }
+
+    public void setIs_lock_active(int is_lock_active) {
+        this.is_lock_active = is_lock_active;
+    }
+
+    private int is_door_active=0;
+    private int is_lock_active=0;
 
     public int getDoor_subtype() {
         return door_subtype;

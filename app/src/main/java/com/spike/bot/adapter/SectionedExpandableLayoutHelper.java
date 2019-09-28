@@ -264,7 +264,6 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                                 if(!TextUtils.isEmpty(door_lock_status) && !door_lock_status.equals("null")){
                                     devicesList.get(i).setDoor_lock_status(Integer.parseInt(door_lock_status));
                                 }
-
                             }
                         }
                     }

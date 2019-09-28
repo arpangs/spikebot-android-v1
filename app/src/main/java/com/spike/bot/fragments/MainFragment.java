@@ -63,6 +63,7 @@ import com.spike.bot.activity.CameraEdit;
 import com.spike.bot.activity.CameraGridActivity;
 import com.spike.bot.activity.CameraNotificationActivity;
 import com.spike.bot.activity.CameraPlayBack;
+import com.spike.bot.activity.Curtain.CurtainActivity;
 import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.activity.DeviceLogRoomActivity;
 import com.spike.bot.activity.DoorSensorInfoActivity;
@@ -2701,6 +2702,11 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
         }else if (action.equalsIgnoreCase("philipsClick")) {
             deviceOnOff(item, position);
             //  item.setDeviceStatus(item.getDeviceStatus()==0?1:0);
+        }else if (action.equalsIgnoreCase("curtain")) {
+            Intent intent = new Intent(getActivity(), CurtainActivity.class);
+            intent.putExtra("curtain_id", item.getDeviceId());
+            startActivity(intent);
+
         } else if (action.equalsIgnoreCase("scheduleclick")) {
             //   Log.d("", action + " itemClicked itemClicked DeviceVO " + item.getDeviceName());
             Intent intent = new Intent(getActivity(), ScheduleActivity.class);
@@ -2749,7 +2755,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Item
             tmpDeviceV0 = item;
             tmpPosition = position;
 
-            if (item.getSensor_type().equalsIgnoreCase("tempsensor")) {
+            if (item.getSensor_type().equalsIgnoreCase("tempsensor") && item.getIsActive()==1) {
 
 //                Intent intent = new Intent(getActivity(), TempSensorInfoActivity.class);
                 Intent intent = new Intent(getActivity(), MultiSensorActivity.class);

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/linear_login"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:background="@color/automation_white"
+        android:gravity="center|top"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingTop="30dp"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:src="@drawable/ic_app_launcher"
+                        android:scaleType="fitXY"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <ImageView
+                        android:layout_marginTop="20dp"
+                        android:src="@drawable/ic_app_title"
+                        android:scaleType="fitXY"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <!-- android:text="parth2326"-->
+                    <EditText
+                        android:id="@+id/et_username"
+                        android:layout_marginTop="24dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:singleLine="true"
+                        android:maxLength="30"
+                        android:hint="Username"
+                        android:inputType="text" />
+
+                    <!--   android:text="Test123#"-->
+                    <EditText
+                        android:id="@+id/et_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:singleLine="true"
+                        android:maxLength="20"
+                        android:layout_marginTop="16dp"
+                        android:hint="Password"
+                        android:inputType="textPassword" />
+
+
+                    <LinearLayout
+                        android:layout_marginTop="@dimen/_20sdp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:visibility="gone"
+                            android:id="@+id/btn_cancel"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:textAllCaps="false"
+                            android:layout_marginRight="10dp"
+                            android:textColor="@color/automation_white"
+                            android:background="@drawable/button_radius"
+                            android:layout_height="wrap_content"
+                            android:text="cancel" />
+
+                        <Button
+                            android:id="@+id/btn_SKIP"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:visibility="visible"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:textSize="@dimen/_15sdp"
+                            android:textAllCaps="false"
+                            android:textColor="@color/automation_white"
+                            android:background="@drawable/button_radius"
+                            android:layout_height="wrap_content"
+                            android:text="Skip" />
+
+                        <Button
+                            android:id="@+id/btn_login"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:textAllCaps="false"
+                            android:textSize="@dimen/_15sdp"
+                            android:textColor="@color/automation_white"
+                            android:background="@drawable/button_radius"
+                            android:layout_height="wrap_content"
+                            android:text="Login" />
+
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/btnSignUp"
+                        android:layout_marginTop="@dimen/_30sdp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:textSize="@dimen/_15sdp"
+                        android:background="@drawable/button_radius"
+                        android:textColor="@color/automation_white"
+                        android:text="Sign up"
+                        android:textAllCaps="false"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
+
+    </LinearLayout>
+
+</LinearLayout>

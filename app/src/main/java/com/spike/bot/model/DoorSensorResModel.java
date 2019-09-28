@@ -24,11 +24,64 @@ public class DoorSensorResModel {
         @SerializedName("doorList")
         private DoorList[] doorLists;
 
+        public DATA.bridgeList[] getBridgeList() {
+            return bridgeList;
+        }
+
+        public void setBridgeList(DATA.bridgeList[] bridgeList) {
+            this.bridgeList = bridgeList;
+        }
+
+        @SerializedName("bridgeList")
+        private bridgeList[] bridgeList;
+
         public DoorList[] getDoorLists() {
             return doorLists;
         }
 
-        public static class DoorList {
+        public static class bridgeList {
+
+            //  "id": 2,
+            //        "bridge_id": "7035",
+            //        "bridge_name": "hk"
+
+            public int getBridge_id() {
+                return bridge_id;
+            }
+
+            public void setBridge_id(int bridge_id) {
+                this.bridge_id = bridge_id;
+            }
+
+            public String getBridge_name() {
+                return bridge_name;
+            }
+
+            public void setBridge_name(String bridge_name) {
+                this.bridge_name = bridge_name;
+            }
+
+            public int getId() {
+                return id;
+            }
+
+            public void setId(int id) {
+                this.id = id;
+            }
+
+            @SerializedName("bridge_id")
+            private int bridge_id;
+
+
+            @SerializedName("bridge_name")
+            private String bridge_name;
+
+            @SerializedName("id")
+            private int id;
+
+        }
+
+            public static class DoorList {
             public void setmDoorSensorId(String mDoorSensorId) {
                 this.mDoorSensorId = mDoorSensorId;
             }
@@ -75,6 +128,31 @@ public class DoorSensorResModel {
 
             @SerializedName("door_sensor_id")
             private String mDoorSensorId;
+
+            //    "is_lock_active": null,
+                //        "is_door_active": 1,
+
+                public String getIs_lock_active() {
+                    return is_lock_active;
+                }
+
+                public void setIs_lock_active(String is_lock_active) {
+                    this.is_lock_active = is_lock_active;
+                }
+
+                public String getIs_door_active() {
+                    return is_door_active;
+                }
+
+                public void setIs_door_active(String is_door_active) {
+                    this.is_door_active = is_door_active;
+                }
+
+                @SerializedName("is_lock_active")
+                private String is_lock_active;
+
+                @SerializedName("is_door_active")
+                private String is_door_active;
 
             public int getIs_autolock_enable() {
                 return is_autolock_enable;

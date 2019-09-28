@@ -485,6 +485,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
+<activity android:name=".activity.Curtain.CurtainActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -531,6 +536,8 @@
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/default_notification_channel_id"/>-->
 
+
+        <!--tt lock login ttchatcrash@gmail.com / ttchat$123-->
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="c0d1eedb6db67baf3bc4ceedbe67ac87f6fc95a2" />

@@ -95,10 +95,10 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
 
     private FloatingActionButton mFab;
     private CardView mFabMenuLayout;
-    private TextView fab_menu1,fab_menu2,fab_menu3,fab_menu4,fab_menu5,fab_menu6,fab_menu7,fab_Sensor,fabGas;
+    private TextView fab_menu1,fab_menu2,fab_menu3,fab_menu4,fab_menu5,fab_menu6,fab_menu7,fab_Sensor,fabGas,fabCurtain;
 
     public boolean addIRBlasterSensor = false,addTempSensor = false;;
-    public static int SENSOR_TYPE_DOOR = 1, SENSOR_TYPE_TEMP = 2 , SENSOR_TYPE_IR = 3,SENSOR_MULTITYPE=4,SENSOR_GAS=5;
+    public static int SENSOR_TYPE_DOOR = 1, SENSOR_TYPE_TEMP = 2 , SENSOR_TYPE_IR = 3,SENSOR_MULTITYPE=4,SENSOR_GAS=5,Curtain=6;
 
 
     @Override
@@ -189,6 +189,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         fab_menu7 = (TextView) findViewById(R.id.fab_menu7);
         fab_Sensor =  findViewById(R.id.fab_Sensor);
         fabGas =  findViewById(R.id.fabGas);
+        fabCurtain =  findViewById(R.id.fabCurtain);
 
         mFab = (FloatingActionButton) findViewById(R.id.fab);
 
@@ -282,6 +283,14 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             public void onClick(View v) {
                 closeFABMenu();
                 showOptionDialog(SENSOR_GAS);
+            }
+        });
+
+        fabCurtain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeFABMenu();
+                showOptionDialog(Curtain);
             }
         });
 
@@ -408,6 +417,85 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
 
                         //  addRoom = false;
                         // }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+        }
+    };
+
+
+
+    private Emitter.Listener configureCurtain = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            RoomEditActivity_v2.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (countDownTimer != null) {
+                            countDownTimer.cancel();
+                        }
+
+//                        ActivityHelper.dismissProgressDialog();
+                        roomIdList.clear();
+                        roomNameList.clear();
+
+                        //{"message":"","curtain_module_id":"8AA1131A004B1200","module_type":3,"device_id":"2"}
+                        // {"message":"Curtain is already configured before","curtain_module_id":""}
+                        //{
+                        //  "message": "",
+                        //  "curtain_module_id": "8AA1131A004B1200",
+                        //  "module_type": 3,
+                        //  "device_id": "2",
+                        //  "room_list": [
+                        //    {
+                        //      "room_id": "1569495690914_2SK_n6rX7",
+                        //      "room_name": "vip"
+                        //    },
+                        //    {
+                        //      "room_id": "1569564785527_3pspddidL",
+                        //      "room_name": "jLock"
+                        //    },
+                        //    {
+                        //      "room_id": "1569579320536_XEt-DV9HU",
+                        //      "room_name": "hitesh"
+                        //    }
+                        //  ]
+                        //}
+                        JSONObject object = new JSONObject(args[0].toString());
+
+                        String message = object.optString("message");
+
+                        String temp_sensor_module_id = object.optString("curtain_module_id");
+
+                        ChatApplication.logDisplay("cartain is "+object);
+                        if(TextUtils.isEmpty(message)){
+                           /* String roomList = object.getString("room_list");
+
+                            Object json = new JSONTokener(roomList).nextValue();*/
+
+                            JSONArray jsonArray = object.getJSONArray("room_list");
+                            for(int i=0;i<jsonArray.length();i++){
+                                JSONObject objectRoom = jsonArray.getJSONObject(i);
+                                String room_id = objectRoom.getString("room_id");
+                                String room_name = objectRoom.getString("room_name");
+
+                                roomIdList.add(room_id);
+                                roomNameList.add(room_name);
+                            }
+                        }
+
+                        ActivityHelper.dismissProgressDialog();
+
+                        if(TextUtils.isEmpty(message)){
+                            showGasSensor(temp_sensor_module_id,true,true);
+                        }else{
+                            showConfigAlert(message);
+                        }
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -560,6 +648,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             mSocket.on("configureDoorSensor", configureGatewayDoorSensor);
             mSocket.on("configureMultiSensor", configureMultiSensor);
             mSocket.on("configureGasSensor", configureGasSensor);
+            mSocket.on("configureCurtain", configureCurtain);
         }
     }
     @Override
@@ -571,6 +660,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             mSocket.off("configureMultiSensor", configureMultiSensor);
             mSocket.off("configureDoorSensor", configureGatewayDoorSensor);
             mSocket.off("configureGasSensor", configureGasSensor);
+            mSocket.off("configureCurtain", configureCurtain);
         }
     }
 
@@ -588,8 +678,13 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         TextView dialogTitle = (TextView) dialog.findViewById(R.id.tv_title);
         TextView txt_sensor_name = (TextView) dialog.findViewById(R.id.txt_sensor_name);
 
-        dialogTitle.setText("Add Gas Sensor");
-        txt_sensor_name.setText("Gas Name");
+        if(isMultiSensor){
+            dialogTitle.setText("Add Curtain Sensor");
+            txt_sensor_name.setText("Curtain Name");
+        }else {
+            dialogTitle.setText("Add Gas Sensor");
+            txt_sensor_name.setText("Gas Name");
+        }
 
         edt_door_module_id.setText(door_module_id);
         edt_door_module_id.setFocusable(false);
@@ -633,9 +728,20 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isShowSensor = false;
-                saveMultiSensor(dialog, edt_door_name, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list, isTempSensorRequest);
-                dialog.dismiss();
+
+                if (edt_door_name.getText().toString().trim().length() == 0) {
+                    ChatApplication.showToast(RoomEditActivity_v2.this, "Please enter name");
+                } else {
+                    isShowSensor = false;
+                    if (isMultiSensor) {
+                        addCurtain(dialog, edt_door_name, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list, isTempSensorRequest);
+                        dialog.dismiss();
+                    }else {
+                        saveMultiSensor(dialog, edt_door_name, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list, isTempSensorRequest);
+                        dialog.dismiss();
+                    }
+
+                }
             }
         });
 
@@ -644,6 +750,80 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             dialog.show();
         }
 
+    }
+
+    private void addCurtain(final Dialog dialog, EditText textInputEditText, String door_name,
+                            String door_module_id, Spinner sp_room_list, final boolean isTempSensorRequest) {
+
+
+        ActivityHelper.showProgressDialog(RoomEditActivity_v2.this,"Please wait.",false);
+
+        JSONObject obj = new JSONObject();
+        try {
+
+            //{
+            //    "phone_id": "6929FCC2-5124-4D93-B98B-0E1C100109CD",
+            //    "phone_type": "IOS",
+            //    "room_id": "1569564785527_3pspddidL",
+            //    "room_name": "jLock",
+            //    "user_id": "1569305102710_GtdsJ7yBl",
+            //    "curtain_module_id": "8AA1131A004B1200",
+            //    "curtain_name": "bari nu curtain"
+            //}
+
+            int room_pos = sp_room_list.getSelectedItemPosition();
+
+            obj.put("room_id",roomIdList.get(room_pos));
+            obj.put("room_name",roomNameList.get(room_pos));
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            obj.put("curtain_name", door_name);
+            obj.put("curtain_module_id",door_module_id);
+            //curtain_type = h , v
+            obj.put("curtain_type","v");
+
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String url = ChatApplication.url + Constants.curtainadd;
+
+        new GetJsonTask(RoomEditActivity_v2.this,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                try {
+                    //{"code":200,"message":"success"}
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if(code==200){
+
+                        if(!TextUtils.isEmpty(message)){
+                            Toast.makeText(RoomEditActivity_v2.this.getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                        }
+                        ActivityHelper.dismissProgressDialog();
+                        dialog.dismiss();
+
+                        getDeviceList();
+                    }
+                    else{
+                        Toast.makeText(RoomEditActivity_v2.this.getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                    }
+                    // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    ActivityHelper.dismissProgressDialog();
+
+                }
+            }
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        }).execute();
     }
 
     /**
@@ -1737,7 +1917,9 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                 }else if(sensor_type == SENSOR_MULTITYPE){
                     getTempConfigData(true);
                 }else if(sensor_type == SENSOR_GAS){
-                    getgasConfigData(true);
+                    getgasConfigData(SENSOR_GAS);
+                }else if(sensor_type == Curtain){
+                    getgasConfigData(Curtain);
                 }
             }
         });
@@ -1745,7 +1927,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-
                 isUnassignedDoorSensor(sensor_type);
 
             }
@@ -1794,7 +1975,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         }).execute();
     }
 
-    private void getgasConfigData(boolean flag) {
+    private void getgasConfigData(int type) {
         if (!ActivityHelper.isConnectingToInternet(RoomEditActivity_v2.this)) {
             Toast.makeText(RoomEditActivity_v2.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -1804,8 +1985,13 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         startTimer();
 
         addTempSensor = true;
+        String url="";
+        if(type==SENSOR_GAS){
+           url= ChatApplication.url + Constants.configureGasSensorRequest;
+        }else {
+            url = ChatApplication.url + Constants.curtainconfigure;
+        }
 
-        String url = ChatApplication.url + Constants.configureGasSensorRequest;
 
         new GetJsonTask(RoomEditActivity_v2.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
@@ -1991,6 +2177,8 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         //muitl == 5
         if(isDoorSensor==3){
             url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/2"; //0 door - 1 ir
+        }if(isDoorSensor==Curtain){
+            url = ChatApplication.url + Constants.curtainunassigned+"/curtain" ; //0 door - 1 ir
         }else if(isDoorSensor==4){
             url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/5"; //0 door - 1 ir
         }else if(isDoorSensor==5){

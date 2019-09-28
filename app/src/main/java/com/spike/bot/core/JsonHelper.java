@@ -329,6 +329,19 @@ public class JsonHelper {
                 }
 
 
+                if(objPanel.has("curtainList")){
+                    panelVO.setSensorPanel(false);
+                    JSONArray deviceArray = objPanel.getJSONArray("curtainList");
+                    ArrayList<DeviceVO> deviceList = new ArrayList<DeviceVO>();
+                    deviceList = JsonHelper.curtainList(deviceArray,roomName,panel_name,roomId,isParseOriginal,panel_id);
+                    panelVO.setDeviceList(deviceList);
+                    panelVO.setRemoteAvabile(false);
+                    if(isDevicePanel){
+                        isDevicePanel = true;
+                    }
+                }
+
+
 //                if(roomVO.getRoomName().equalsIgnoreCase("Iot")){
 //                    Log.d("isDevicePanel","Found : " + isDevicePanel + " Panel name : " + panelVO.getPanelName());
 //                }
@@ -343,6 +356,104 @@ public class JsonHelper {
             }
         }
         return panelList;
+    }
+
+    private static ArrayList<DeviceVO> curtainList(JSONArray deviceArray, String roomName, String panel_name, String roomId, boolean isParseOriginal, String panel_id) {
+        ArrayList<DeviceVO> deviceList = new ArrayList<DeviceVO>();
+
+        for(int j=0 ; j < deviceArray.length() ; j++){
+
+            try {
+
+                //                  "id": 5,
+                //                  "curtain_id": "1569593485079_bDWbxUEFis",
+                //                  "curtain_module_id": "8AA1131A004B1200",
+                //                  "room_id": "1569495690914_2SK_n6rX7",
+                //                  "panel_id": "1569593485052_5cNWF-r1e",
+                //                  "curtain_name": "curtains",
+                //                  "curtain_icon": "curtain",
+                //                  "home_controller_device_id": "b8:27:eb:42:3f:42",
+                //                  "is_active": 1,
+                //                  "created_by": "1569305102710_GtdsJ7yBl",
+                //                  "created_date": "2019-09-27 19:41:25",
+                //                  "modified_by": null,
+                //                  "modified_date": null
+                //
+
+                JSONObject deviceObj = deviceArray.getJSONObject(j);
+                String device_name = deviceObj.getString("curtain_name");
+                String device_nameTemp = deviceObj.getString("curtain_name");
+
+//                int is_original =  deviceObj.has("is_alive")? deviceObj.getInt("is_original"):0;
+
+                String module_id = deviceObj.getString("curtain_module_id");
+                String room_device_id = deviceObj.getString("room_id");
+
+                String device_id = deviceObj.getString("curtain_id");
+//                int device_status = deviceObj.getInt("device_status");
+                String device_type = "";
+//                String device_specific_value = deviceObj.has("device_specific_value")?deviceObj.optString("device_specific_value"):"";
+                String device_icon = deviceObj.getString("curtain_icon");
+                int auto_on_off_value =  deviceObj.has("auto_on_off_value")? deviceObj.getInt("auto_on_off_value"):0;
+//                int schedule_value =  deviceObj.has("schedule_value")? deviceObj.getInt("schedule_value"):0;
+                int is_active =  deviceObj.has("is_active")? deviceObj.getInt("is_active"):0;
+//                int is_alive =  deviceObj.has("is_alive")? deviceObj.getInt("is_alive"):0;
+//                int temperature =  deviceObj.has("temperature")? deviceObj.optInt("temperature"):0;
+//                int is_locked =  deviceObj.has("is_locked")? deviceObj.optInt("is_locked"):0;
+//                String mode =  deviceObj.has("mode")? deviceObj.optString("mode"):"";
+//                String power =  deviceObj.has("power")? deviceObj.optString("power"):"";
+
+//                String room_name =  deviceObj.has("room_name")? deviceObj.getString("room_name"):"";
+//                String panel_name =  deviceObj.has("panel_name")? deviceObj.getString("panel_name"):"";
+
+                String original_room_device_id = deviceObj.has("curtain_id") ? deviceObj.getString("curtain_id") : "";
+
+                String room_panel_id = hasObject(deviceObj,"room_panel_id") ? deviceObj.getString("room_panel_id") : "";
+
+                DeviceVO d1 = new DeviceVO();
+                d1.setRoom_panel_id(room_panel_id);
+                Log.d("RoomIDSCH","id : " + roomId);
+                d1.setRoomId(roomId);
+                d1.setPanel_id(panel_id);
+//                d1.setMood_id(mood_id);
+                d1.setDeviceName(device_name);
+                d1.setModuleId(module_id);
+                d1.setSensor(false);
+                d1.setRoomDeviceId(room_device_id);
+                d1.setDeviceId(device_id);
+//                d1.setDeviceStatus(device_status);
+                d1.setDevice_icon(device_icon);
+//                d1.setDeviceSpecificValue(device_specific_value);
+                d1.setIsActive(is_active);
+//                d1.setIsAlive(is_alive);
+                d1.setAuto_on_off_value(auto_on_off_value);
+//                d1.setSchedule_value(schedule_value);
+                d1.setDeviceType(device_type);
+                d1.setOriginal_room_device_id(original_room_device_id);
+//                d1.setTemperature(""+temperature) ;
+//                d1.setMode(""+mode); ;
+//                d1.setPower(""+power);
+//                d1.setDevice_nameTemp(""+device_nameTemp);
+//                d1.setIs_locked(is_locked);
+//                if(!TextUtils.isEmpty(room_name)){
+//                    d1.setRoomName(room_name);
+//                }else{
+                    d1.setRoomName(roomName);
+//                }
+//                if(!TextUtils.isEmpty(panel_name)){
+                    d1.setPanel_name(panel_name);
+//                }else{
+//                    d1.setPanel_name(panelName);
+//                }
+//                d1.setIs_original(is_original);
+                deviceList.add(d1);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.d("", "Exception parseDeviceArray " + e.getMessage());
+            }
+        }
+        return deviceList;
     }
 
     public static ArrayList<DeviceVO> parseIrRemoteArray(RoomVO roomVO, PanelVO panelVO, JSONArray sensorArray, String roomName, String panel_name, String roomId, boolean isParseOriginal, String panel_id){
@@ -491,6 +602,8 @@ public class JsonHelper {
         return deviceList;
     }
 
+
+
     public static ArrayList<DeviceVO> parseSensorArray(RoomVO roomVO, PanelVO panelVO, JSONArray sensorArray, String roomName, String panel_name, String roomId, boolean isParseOriginal, String panel_id){
 
         ArrayList<DeviceVO> deviceList = new ArrayList<DeviceVO>();
@@ -543,6 +656,24 @@ public class JsonHelper {
                     door_lock_status = hasObject(deviceObj,"door_lock_status") ? deviceObj.optInt("door_lock_status") : 0;
                 }
 
+                //"is_door_active": null,
+                //                  "is_lock_active": -1,
+
+                int is_door_active=0,is_lock_active=0 ;
+                if(deviceObj.optString("is_door_active").equals("null") ||TextUtils.isEmpty(deviceObj.optString("is_door_active"))){
+                    is_door_active = 0;
+                }else {
+                    is_door_active = hasObject(deviceObj,"is_door_active") ? deviceObj.optInt("is_door_active") : 0;
+                }
+
+
+                if(deviceObj.optString("is_lock_active").equals("null") ||TextUtils.isEmpty(deviceObj.optString("is_lock_active"))){
+                    is_lock_active = 0;
+                }else {
+                    is_lock_active = hasObject(deviceObj,"is_lock_active") ? deviceObj.optInt("is_lock_active") : 0;
+                }
+
+
                 String remote_status = hasObject(deviceObj,"remote_status") ? deviceObj.getString("remote_status") : "";
                 String remote_device_id = hasObject(deviceObj,"remote_device_id") ? deviceObj.getString("remote_device_id") : "";
 
@@ -567,6 +698,8 @@ public class JsonHelper {
 
                 DeviceVO d1 = new DeviceVO();
                 d1.setSpeed(speed);
+                d1.setIs_door_active(is_door_active);
+                d1.setIs_lock_active(is_lock_active);
                 d1.setTemprature(temperature);
                 d1.setRoom_panel_id(room_panel_id);
                 d1.setRemote_device_id(remote_device_id);
@@ -604,6 +737,7 @@ public class JsonHelper {
                 String room_device_id = deviceObj.has("room_device_id") ? deviceObj.getString("room_device_id") : "";
                 String is_original = deviceObj.has("is_original") ? deviceObj.getString("is_original") : "";
 
+
                 d1.setPanel_id(panel_id);
                 d1.setDeviceId(device_id);
                 d1.setDeviceStatus(device_status);
@@ -634,6 +768,7 @@ public class JsonHelper {
                 d1.setIs_in_c(is_in_C);
                 d1.setHumidity(humidity);
                 d1.setTo_use(to_use);
+
                 if(!TextUtils.isEmpty(is_original)){
                     d1.setIs_original(Integer.parseInt(is_original));
                 }
@@ -661,7 +796,6 @@ public class JsonHelper {
         }else{
           //  panelVO.setActivePanel(true);
         }
-        Log.d("sensorArraylength","Lengtj : "+ sensorArray.length() + " : Room Name : " + roomVO.getRoomName());
 
         return deviceList;
     }

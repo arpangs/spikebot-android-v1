@@ -706,18 +706,55 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                                 item.setDoor_lock_status(1);
                             }
                             itemIcon = Common.getIcon(item.getDoor_sensor_status().equals("1") ? 1 : 0, item.getSensor_icon()); //AC off icon
+
+                            if(item.getIs_door_active()==-1){
+                                itemIcon = R.drawable.door_off_inactive;
+                            }
+
                         }else if(item.getDoor_subtype()==2){
                             if(TextUtils.isEmpty(item.getDoor_lock_status()+"")){
                                 item.setDoor_lock_status(0);
                             }
-                            ChatApplication.logDisplay("lock is "+item.getDoor_lock_status());
                             itemIcon = Common.getIcon(item.getDoor_lock_status()==1 ? 1 : 0, "lockOnly"); //AC off icon
 
+                            if(item.getIs_lock_active()== -1){
+                                itemIcon = R.drawable.gray_lock_disabled;
+                            }
                         }else {
                             if(TextUtils.isEmpty(item.getDoor_sensor_status()+"")){
                                 item.setDoor_lock_status(1);
                             }
-                            itemIcon = Common.getIcon(item.getDoor_sensor_status().equals("1") ? 1 : 0, "lockWithDoor"); //AC off icon
+                            itemIcon = Common.getIcon(item.getDoor_sensor_status().equals("1") ? 1 : 0, "lockWithDoor");
+
+                            if(item.getIs_lock_active() == -1 && item.getIs_door_active() == -1){
+                                itemIcon=R.drawable.green_lock_gray_door_both_disabled;
+                            }else if(item.getIs_lock_active() == -1 && item.getIs_door_active() ==1){
+                                if(item.getDoor_sensor_status().equals("1")){
+                                    itemIcon=R.drawable.yellow_door_gray_lock_disabled;
+                                }else {
+                                    itemIcon=R.drawable.gray_door_gray_lock_disabled;
+                                }
+                                ChatApplication.logDisplay("door status is "+item.getDoor_sensor_status());
+                            }else if(item.getIs_lock_active() == 1 && item.getIs_door_active() == -1){
+                                if(item.getDoor_lock_status()==1){
+                                    itemIcon=R.drawable.red_lock_gray_door_disabled;
+                                }else {
+                                    itemIcon=R.drawable.green_lock_gray_door_disabled;
+                                }
+                            }else if(item.getIs_lock_active() == 1 && item.getIs_door_active() == 1){
+
+                                if(item.getDoor_sensor_status().equals("1") && item.getDoor_lock_status()==1){
+                                    itemIcon=R.drawable.door_unlocked;
+                                }else if(item.getDoor_sensor_status().equals("1") && item.getDoor_lock_status()==0){
+                                    itemIcon=R.drawable.green_lock;
+                                }else if(item.getDoor_sensor_status().equals("0") && item.getDoor_lock_status()==1){
+                                    itemIcon=R.drawable.red_lock;
+                                }else if(item.getDoor_sensor_status().equals("0") && item.getDoor_lock_status()==0){
+                                    itemIcon=R.drawable.door_locked;
+
+                                }
+
+                            }
                         }
 
                         holder.itemTextView.setText(item.getSensor_name());
@@ -858,7 +895,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         }
 
                         if (item.getIsActive() == -1) {
-                            if (item.getSensor_type() != null && item.getSensor_type().equalsIgnoreCase("temp")) {
+                            if (item.getSensor_type() != null && item.getSensor_type().equalsIgnoreCase("tempsensor")) {
                                 itemIcon = Common.getIconInActive(status, item.getSensor_type());
                             } else if (item.getSensor_type() != null && item.getSensor_type().equalsIgnoreCase("multisensor")) {
                                 itemIcon = Common.getIconInActive(status, item.getSensor_type());
@@ -912,6 +949,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         if (!item.isSensor()) {
                             if(item.getDeviceType().equalsIgnoreCase("3")){
                                 mItemClickListener.itemClicked(item, "philipsClick", position);
+                            }else if(item.getDevice_icon().equalsIgnoreCase("curtain")){
+                                mItemClickListener.itemClicked(item, "curtain", position);
                             }else {
                                 mItemClickListener.itemClicked(item, "itemclick", position);
                             }

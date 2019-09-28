@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/sky_blue"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+
+    <LinearLayout
+        android:id="@+id/linearLockInfo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Touch any key to Activate the Keypad"
+            android:textColor="@color/automation_black"
+            android:textSize="@dimen/_13sdp"
+            android:gravity="center"
+            android:padding="@dimen/_12sdp"/>
+
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_280sdp"
+            android:src="@drawable/smart_lock_600x600"/>
+
+        <TextView
+            android:id="@+id/txtDerc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Please touch any key to Activate the Lock and put it in PAIRING Mode. Press Next"
+            android:textColor="@color/automation_black"
+            android:textSize="@dimen/_13sdp"
+            android:gravity="center"
+            android:padding="@dimen/_12sdp"/>
+
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/btnStartScan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_30sdp"
+            android:text="Next"
+            android:background="@color/sensor_button"
+            android:textSize="@dimen/_14sdp"
+            android:textAllCaps="false"
+            android:textColor="@color/automation_white"/>
+
+
+    </LinearLayout>
+
+
+    <android.support.v7.widget.RecyclerView
+        android:visibility="gone"
+        android:id="@+id/recyclerViewLock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_10sdp"/>
+
+
+</LinearLayout>
