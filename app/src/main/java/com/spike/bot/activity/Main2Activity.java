@@ -105,18 +105,18 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         ConnectivityReceiver.ConnectivityReceiverListener, CloudAdapter.CloudClickListener,
         MainFragment.OnHeadlineSelectedListener, RunServiceInterface, ResponseErrorCode, SocketListener, LoginPIEvent, RouterIssue {
 
+    private String ERROR_STRING = "No Internet found.\n" + "Check your connection or try again.";
+    private String SPIKE_BOT_DOWN = "Spike Bot Server is Down!!!";
     private static final String TAG = "Main2Activity";
-    private SectionsPagerAdapter mSectionsPagerAdapter;
-    private CustomViewPager mViewPager;
-    private WifiManager.MulticastLock lock;
-
+    public static boolean isClick = false;
+    public static String LOCAL_MESSAGE = "Connecting...";
     public static ImageView mToolBarSettings;
     public static TabLayout tabLayout;
     public static int lastTabPos = 0;
     public static TextView toolbarTitle;
     public static TextView txt_error_value;
     public static boolean flagPicheck = false, flagLogin = false;
-    public boolean isFlagWifi = false, isLoginTimeCount = false;
+
     public ImageView deepsImage, toolbarImage, mImageCloud;
     TextView txt_connection, txt_add_acoount;
     LinearLayout linear_main, linear_retry, linear_progress, linear_login;
@@ -124,13 +124,22 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     EditText et_username, et_password;
     Button btn_login, button_retry, btn_cancel, btnSignUp, btn_SKIP;
     public Toolbar toolbar;
-    List<User> userList;
+
     // PopupWindow popupWindow;
     private CloudAdapter cloudAdapter;
     private RecyclerView recyclerView;
     PowerManager.WakeLock wakeLock;
     private ProgressDialog progressBar;
     public MainFragment mainFragment1;
+
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private CustomViewPager mViewPager;
+    private WifiManager.MulticastLock lock;
+
+    public boolean isFlagWifi = false, isLoginTimeCount = false;
+
+    List<User> userList;
+
 
     //current
 
@@ -142,19 +151,12 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             @Override
             public void run() {
                 if (!TextUtils.isEmpty(ChatApplication.url)) {
-//                    if (ChatApplication.url.startsWith("http://home")) {
                     if (ChatApplication.url.startsWith(Constants.startUrl)) {
                         mImageCloud.setImageResource(R.drawable.cloud);
                     } else {
                         mImageCloud.setImageResource(R.drawable.wifi);
                     }
                 }
-//                if (WifiBlasterActivity.setMobileDataEnabled(Main2Activity.this)) {
-//                    mImageCloud.setImageResource(R.drawable.cloud);
-//                } else {
-//                    mImageCloud.setImageResource(R.drawable.wifi);
-//                }
-
             }
         });
 
@@ -194,15 +196,10 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        String userFname = Common.getPrefValue(ChatApplication.getInstance(), "first_name");
-        String userLname = Common.getPrefValue(ChatApplication.getInstance(), "last_name");
-
-        // setTitle(""+userFname + " " + userLname);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
         token = FirebaseInstanceId.getInstance().getToken();
-
         Common.savePrefValue(getApplicationContext(), Constants.DEVICE_PUSH_TOKEN, token);
+
         mViewPager = (CustomViewPager) findViewById(R.id.container);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -283,22 +280,18 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     //check cloud url
                     String isLogin = Common.getPrefValue(getApplicationContext(), Constants.PREF_CLOUDLOGIN);
                     String cloudIp = Common.getPrefValue(getApplicationContext(), Constants.PREF_IP);
+
                     if (userId.equalsIgnoreCase("0") && isLogin.equalsIgnoreCase("true") && cloudIp.equalsIgnoreCase(webUrl)) {
-                        startSocketConnection();
+                        startSocketConnectionNew();
                     } else {
                         runService();
                     }
-
-                    //  runService();
-
                 } else {
-                    //deepsImage.setVisibility(View.VISIBLE);
                     linear_progress.setVisibility(View.VISIBLE);
                     hideAlertDialog();
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            //deepsImage.setVisibility(View.GONE);
                             linear_progress.setVisibility(View.GONE);
                             showAlertDialog(ERROR_STRING);
                         }
@@ -316,11 +309,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         if (!TextUtils.isEmpty(jsonText)) {
             Type type = new TypeToken<List<User>>() {}.getType();
             userList = gson.fromJson(jsonText, type);
-            // toolbarImage.setVisibility(View.VISIBLE);
-            // getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
-        //  toolbarTitle.setText("" + userFname + " " + userLname);
         toolbarTitle.setText(Constants.getUserName(this));
         toolbarTitle.setOnClickListener(this);
         mImageCloud.setOnClickListener(this);
@@ -345,6 +335,9 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     }
 
+    public void tabShow(boolean b){
+        tabLayout.setVisibility(b==true ? View.VISIBLE :View.GONE);
+    }
     private void tabClickItem() {
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -360,7 +353,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 // i defined all icons in an array ordered in order of tabs appearances
                 // call tab.getPosition() to get active tab index.
                 tab_icon.setImageResource(navIconsActive[tab.getPosition()]);
-                //   reloadFragment2();
             }
 
             @Override
@@ -384,10 +376,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     }
 
 
-    private String ERROR_STRING = "No Internet found.\n" +
-            "Check your connection or try again.";
-    private String SPIKE_BOT_DOWN = "Spike Bot Server is Down!!!";
-
     @Override
     public void onErrorCode(int errorResponseCode) {
         showAlertDialog(SPIKE_BOT_DOWN);
@@ -395,7 +383,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void executeService() {
-        // toolbarTitle.setText("      ");
         runService2();
 
     }
@@ -408,10 +395,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     public void onArticleSelected(String name) {
         if (toolbarTitle != null)
             toolbarTitle.setText(Constants.getUserName(this));
-//            toolbarTitle.setText(name);
         else {
-            toolbarTitle = (TextView) findViewById(R.id.toolbarTitle);
-//            toolbarTitle.setText(name);
+            toolbarTitle =  findViewById(R.id.toolbarTitle);
             toolbarTitle.setText(Constants.getUserName(this));
             toolbarTitle.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -422,10 +407,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    public static boolean isClick = false;
-    public static String CLOUD_MESSAGE = "Connecting to cloud...";
-    public static String LOCAL_MESSAGE = "Connecting...";
-
     private void showConnectingCloudDialog(String message) {
         if (progressBar == null) {
             progressBar = new ProgressDialog(Main2Activity.this);
@@ -433,8 +414,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         progressBar.setCancelable(false);
         progressBar.setMessage(message);
         progressBar.show();
-        // linearCloud.setVisibility(View.VISIBLE);
-        //mViewPager.setVisibility(View.GONE);
     }
 
     private void hideConnectingCloudDialog() {
@@ -443,8 +422,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             progressBar.dismiss();
             progressBar = null;
         }
-        // mViewPager.setVisibility(View.VISIBLE);
-        // linearCloud.setVisibility(View.GONE);
     }
 
 
@@ -477,7 +454,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             return;
         }
         if (!TextUtils.isEmpty(user.getCloudIP())) {
-            showConnectingCloudDialog(CLOUD_MESSAGE);
+//            showConnectingCloudDialog(CLOUD_MESSAGE);
 
             linear_progress.setVisibility(View.VISIBLE);
 
@@ -488,8 +465,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             String cloudIp = "", local_ip = "",mac_address="";
             String jsonText = Common.getPrefValue(getApplicationContext(), Common.USER_JSON);
             if (!TextUtils.isEmpty(jsonText)) {
-                Type type = new TypeToken<List<User>>() {
-                }.getType();
+                Type type = new TypeToken<List<User>>() {}.getType();
                 userList = gson.fromJson(jsonText, type);
 
                 for (int i = 0; i < userList.size(); i++) {
@@ -498,6 +474,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                         cloudIp = userList.get(i).getCloudIP();
                         local_ip = userList.get(i).getLocal_ip();
                         mac_address = userList.get(i).getLocal_ip();
+                        ChatApplication.currentuserId=userList.get(i).getUser_id();
                     } else {
                         userList.get(i).setIsActive(false);
                     }
@@ -531,71 +508,11 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
             ChatApplication.isCallDeviceList=true;
             setWifiLocalflow(local_ip,cloudIp,mac_address,0);
-
-//            setLoginFlow(local_ip, cloudIp);
-
-//            if (Common.isNetworkConnected(Main2Activity.this)) {
-//                isWifiConnect = true;
-//
-//                InetAddress addr = getLocalIpAddress(Main2Activity.this);
-//                String hostname = addr.toString().replace("/", "");
-//                String[] array = hostname.split("\\.");
-//
-//                String ipAddressPI = array[0] + "." + array[1] + "." + array[2] + "." + Constants.IP_END;
-//
-//                if (ipAddressPI.equalsIgnoreCase(local_ip)) {
-//                    webUrl = ipAddressPI;
-//                    ChatApplication.url = webUrl;
-//                    flagPicheck = false;
-//                    listService("\nService resolved: ", webUrl, 80, true, false);
-//                    loginDialog(false, false);
-//                    reloadFragment();
-//                } else {
-//                    isNetwork = true;
-//                    webUrl = cloudIp;
-//                    ChatApplication.url = webUrl;
-//                    isCloudConnected = true;
-//                    flagPicheck = false;
-//
-//                    openSocket();
-//                    isResumeConnect = false;
-//                    flagLogin = true;
-//                    ChatApplication.isRefreshHome = false;
-//                }
-//
-//            } else {
-//                isNetwork = true;
-//                webUrl = cloudIp;
-//                ChatApplication.url = webUrl;
-//                isCloudConnected = true;
-//                flagPicheck = false;
-//
-//                openSocket();
-//                isResumeConnect = false;
-//                flagLogin = true;
-//                ChatApplication.isRefreshHome = false;
-//            }
-//
-//            ChatApplication app = ChatApplication.getInstance();
-//            app.closeSocket(webUrl);
-//
-//            if (mSocket != null) {
-//                mSocket.disconnect();
-//                mSocket = null;
-//            }
-//
-//            startSocketConnection();
-//            isFlagWifi = false;
-//            isResumeConnect = false;
-//            mainFragment1.RefreshAnotherFragment();
-//            mViewPager.setCurrentItem(0);
-//            mainFragment1.showDialog = 1;
         }
 
     }
 
     private void listServiceTemp(final String msg, String ip, final int port, final boolean isFound, boolean isShow) {
-
         String openIp="";
         if(ip.startsWith(Constants.startUrlhttp)){
             openIp   = (isFound) ? ip + ":" + port : Constants.CLOUD_SERVER_URL;
@@ -605,19 +522,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
         ChatApplication.logDisplay("openIp is connect " + openIp);
         webUrl = openIp;
-
-//        if (!ip.equalsIgnoreCase("") && !webUrl.equalsIgnoreCase(openIp)) {
-//            webUrl = openIp;
-//            openSocket();
-//        } else if (ip.equalsIgnoreCase("")) {
-//            openSocket();
-//        } else if (webUrl.equalsIgnoreCase(openIp)) {
-//            if (!isFound) {
-//                hideAlertDialog();
-//                linear_progress.setVisibility(View.GONE);
-//            }
-//        }
-
     }
     /**
      *
@@ -756,12 +660,11 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         if (ChatApplication.isRefreshUserData) {
             if (!TextUtils.isEmpty(userFname) && !TextUtils.isEmpty(userLname)) {
                 if (toolbarTitle != null) {
-                    //toolbarTitle.setText(userFname + " " + userLname);
                     toolbarTitle.setText(Constants.getUserName(this));
                 }
             }
         }
-        toolbarTitle = (TextView) findViewById(R.id.toolbarTitle);
+        toolbarTitle = findViewById(R.id.toolbarTitle);
         toolbarTitle.setOnClickListener(this);
         ChatApplication.getInstance().setConnectivityListener(this);
         tabClickItem();
@@ -809,11 +712,11 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                             String user_id = object.optString("user_id");
                             if (Common.getPrefValue(Main2Activity.this, Constants.USER_ID).equalsIgnoreCase(user_id)) {
 
-                                if (Common.isNetworkConnected(Main2Activity.this)) {
-                                    isWifiConnect = true;
-                                    wifiIpAddress = "";
-                                    asyncTask = new Main2Activity.ServiceEventAsync(Constants.getuserIp(Main2Activity.this)).execute();
-                                }
+//                                if (Common.isNetworkConnected(Main2Activity.this)) {
+//                                    isWifiConnect = true;
+//                                    wifiIpAddress = "";
+//                                    asyncTask = new Main2Activity.ServiceEventAsync(Constants.getuserIp(Main2Activity.this)).execute();
+//                                }
 
                                 childRemoveSQLite();
                                 ChatApplication.showToast(Main2Activity.this, message);
@@ -840,7 +743,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 //            mSocket.off(Socket.EVENT_CONNECT, onConnect);
 //            mSocket.off(Socket.EVENT_DISCONNECT, onDisconnect);
 //            mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
-//            mSocket.on("deleteChildUser", deleteChildUser);
+            mSocket.off("deleteChildUser", deleteChildUser);
 //            mSocket = null;
         }
         if (connectivityReceiver != null) {
@@ -1006,8 +909,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
         if (!TextUtils.isEmpty(jsonText)) {
 
-            Type type = new TypeToken<List<User>>() {
-            }.getType();
+            Type type = new TypeToken<List<User>>() {}.getType();
             uList = gson.fromJson(jsonText, type);
 
             boolean isFoundUser = false;
@@ -1024,15 +926,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             }
 
             if (isFoundUser) {
-
-//
-//                new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
-//                    @Override
-//                    public void onSuccess(JSONObject result) {
-//                        ActivityHelper.dismissProgressDialog();
                 int code = 0;
-
-
                 String jsonCurProduct = gson.toJson(tempList);
                 ChatApplication.logDisplay("user name logout: " + tempList.size());
 
@@ -1139,8 +1033,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
         if (!TextUtils.isEmpty(jsonText)) {
 
-            Type type = new TypeToken<List<User>>() {
-            }.getType();
+            Type type = new TypeToken<List<User>>() {}.getType();
             uList = gson.fromJson(jsonText, type);
 
             boolean isFoundUser = false;
@@ -1224,122 +1117,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
                                         ChatApplication.isCallDeviceList = true;
                                         setWifiLocalflow(tempList.get(0).getLocal_ip(),tempList.get(0).getCloudIP(),tempList.get(0).getMac_address(),0);
-
-//                                        if (Common.isNetworkConnected(Main2Activity.this)) {
-//                                            isWifiConnect = true;
-//
-//                                            InetAddress addr = getLocalIpAddress(Main2Activity.this);
-//                                            String hostname = addr.toString().replace("/", "");
-//                                            String[] array = hostname.split("\\.");
-//
-//                                            String ipAddressPI = array[0] + "." + array[1] + "." + array[2] + "." + Constants.IP_END;
-//
-//                                            if (ipAddressPI.equalsIgnoreCase(tempList.get(0).getLocal_ip())) {
-//                                                webUrl = ipAddressPI;
-//                                                ChatApplication.url = webUrl;
-//                                                flagPicheck = false;
-//                                                listService("\nService resolved: ", webUrl, 80, true, false);
-//                                                loginDialog(false, false);
-//                                                reloadFragment();
-//                                            } else {
-//                                                isNetwork = true;
-//                                                webUrl = tempList.get(0).getCloudIP();
-//                                                ChatApplication.url = webUrl;
-//                                                isCloudConnected = true;
-//                                                flagPicheck = false;
-//
-//                                                openSocket();
-//                                                isResumeConnect = false;
-//                                                flagLogin = true;
-//                                                ChatApplication.isRefreshHome = false;
-//                                            }
-//
-//                                        } else {
-//                                            isNetwork = true;
-//                                            webUrl = tempList.get(0).getCloudIP();
-//                                            ;
-//                                            ChatApplication.url = webUrl;
-//                                            isCloudConnected = true;
-//                                            flagPicheck = false;
-//
-//                                            openSocket();
-//                                            isResumeConnect = false;
-//                                            flagLogin = true;
-//                                            ChatApplication.isRefreshHome = false;
-//                                        }
-//
-//                                        ChatApplication app = ChatApplication.getInstance();
-//                                        app.closeSocket(webUrl);
-//
-//                                        if (mSocket != null) {
-//                                            mSocket.disconnect();
-//                                            mSocket = null;
-//
-//                                        }
-//                                        startSocketConnection();
-//                                        isFlagWifi = false;
-//                                        isResumeConnect = false;
-//                                        mainFragment1.RefreshAnotherFragment();
-//                                        mViewPager.setCurrentItem(0);
-//                                        mainFragment1.showDialog = 1;
-
-
-//                                        if (Common.isNetworkConnected(Main2Activity.this)) {
-//                                            isWifiConnect = true;
-//
-//                                            InetAddress addr = getLocalIpAddress(Main2Activity.this);
-//                                            String hostname = addr.toString().replace("/", "");
-//                                            String[] array = hostname.split("\\.");
-//
-//                                            String ipAddressPI = array[0] + "." + array[1] + "." + array[2] + "." + Constants.IP_END;
-//
-//                                            if (ipAddressPI.equalsIgnoreCase(tempList.get(0).getLocal_ip())) {
-//                                                webUrl = ipAddressPI;
-//                                                ChatApplication.url = webUrl;
-//                                                flagPicheck = false;
-//                                                listService("\nService resolved: ", webUrl, 80, true, false);
-//                                                loginDialog(false, false);
-////                                                reloadFragment();
-//                                            } else {
-//                                                isNetwork = true;
-//                                                webUrl = tempList.get(0).getCloudIP();
-//                                                ChatApplication.url = webUrl;
-//                                                isCloudConnected = true;
-//                                                flagPicheck = false;
-//
-//                                                openSocket();
-//                                                isResumeConnect = false;
-//                                                flagLogin = true;
-//                                                ChatApplication.isRefreshHome = false;
-//                                            }
-//
-//                                        } else {
-//                                            isNetwork = true;
-//                                            webUrl = tempList.get(0).getCloudIP();
-//                                            ChatApplication.url = webUrl;
-//                                            isCloudConnected = true;
-//                                            flagPicheck = false;
-//
-//                                            openSocket();
-//                                            isResumeConnect = false;
-//                                            flagLogin = true;
-//                                            ChatApplication.isRefreshHome = false;
-//                                        }
-//
-//
-//                                        toolbarTitle.setText(tempList.get(0).getFirstname());
-//                                        ChatApplication app = ChatApplication.getInstance();
-//                                        app.closeSocket(webUrl);
-//
-//                                        if (mSocket != null) {
-//                                            mSocket.disconnect();
-//                                            mSocket = null;
-//                                        }
-//                                        MainFragment.showDialog = 1;
-//                                        startSocketConnection();
-//                                        mainFragment1.RefreshAnotherFragment();
-//                                        mViewPager.setCurrentItem(0);
-
 
                                     } catch (Exception ex) {
                                         ex.printStackTrace();
@@ -2384,6 +2161,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         ChatApplication app = ChatApplication.getInstance();
 
         if (mSocket != null && mSocket.connected() && app.url.equalsIgnoreCase(webUrl)) {
+            mSocket.on("deleteChildUser", deleteChildUser);
         }
         //using @SerializedName we can customize the model name maping.when we are dealing with API and
         //we need to convert JSON response to direct Model class then make sure your api key filed name and model method name both are same.
@@ -2467,6 +2245,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         ChatApplication app = ChatApplication.getInstance();
 
         if (mSocket != null && mSocket.connected() && app.url.equalsIgnoreCase(webUrl)) {
+            mSocket.on("deleteChildUser", deleteChildUser);
         }
         //using @SerializedName we can customize the model name maping.when we are dealing with API and
         //we need to convert JSON response to direct Model class then make sure your api key filed name and model method name both are same.
@@ -2579,7 +2358,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onProgress() {
-        showConnectingCloudDialog(LOCAL_MESSAGE);
+//        showConnectingCloudDialog(LOCAL_MESSAGE);
     }
 
     @Override
@@ -2821,7 +2600,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         showAlertDialog(errrString);
     }
 
-    private void showAlertDialog(String erroString) {
+    public void showAlertDialog(String erroString) {
         hideConnectingCloudDialog();
         txt_error_value.setText(erroString);
         if (linear_retry.getVisibility() == View.GONE) {
@@ -2831,7 +2610,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    private void hideAlertDialog() {
+    public void hideAlertDialog() {
         linear_main.setVisibility(View.VISIBLE);
         linear_retry.setVisibility(View.GONE);
     }

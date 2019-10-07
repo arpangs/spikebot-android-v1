@@ -59,6 +59,15 @@
     <uses-permission android:name="me.everything.badger.permission.BADGE_COUNT_READ"/>
     <uses-permission android:name="me.everything.badger.permission.BADGE_COUNT_WRITE"/>
 
+    <uses-sdk android:targetSdkVersion="28" />
+    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH"/>
+    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_ADMIN"/>
+
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
+
+
     <application
         android:largeHeap="true"
         android:allowClearUserData="true"
@@ -124,6 +133,13 @@
 
         <activity
             android:name="com.spike.bot.activity.TTLock.TTLockListActivity"
+            android:label="@string/title_activity_room_edit"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
+        <activity
+            android:name="com.spike.bot.Beacon.BeaconActivity"
             android:label="@string/title_activity_room_edit"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
@@ -325,7 +341,7 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan|adjustResize"/>
 
-        <activity android:name=".activity.RepeaterActivity"
+        <activity android:name=".activity.Repeatar.RepeaterActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan|adjustResize"/>
@@ -398,7 +414,7 @@
 
 
         <activity android:name="com.spike.bot.activity.DoorSensorInfoActivity"
-            android:windowSoftInputMode="adjustPan|stateHidden|adjustResize"
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden|adjustResize"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name="com.spike.bot.activity.SensorDoorLogActivity"
@@ -480,7 +496,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <activity android:name=".activity.HeavyLoadDetailActivity"
+        <activity android:name=".activity.HeavyLoad.HeavyLoadDetailActivity"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>

@@ -1,9 +1,15 @@
 package com.spike.bot.activity.TTLock;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -88,10 +94,42 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
         btnNext.setOnClickListener(this);
         btnSubmit.setOnClickListener(this);
 
+        startScan();
         initView();
 
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
+    private void startScan(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 11);
+            return;
+        }
+        initView();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(grantResults.length == 0 ){
+            return;
+        }
+
+        switch (requestCode) {
+            case 11: {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    initView();
+                } else {
+                    if (permissions[0].equals(Manifest.permission.ACCESS_COARSE_LOCATION)){
+
+                    }
+                }
+                break;
+            }
+            default:
+                break;
+        }
+    }
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();

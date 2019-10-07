@@ -33,6 +33,7 @@ import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.core.JsonHelper;
 import com.spike.bot.model.LockObj;
+import com.spike.bot.model.PanelVO;
 import com.spike.bot.model.RoomVO;
 import com.spike.bot.model.SmartBrandDeviceModel;
 
@@ -60,6 +61,7 @@ public class AddTTlockToRoomActivity extends AppCompatActivity implements View.O
     private ArrayList<String> stringPanellist = new ArrayList<>();
     private ArrayList<String> stringRoomlist = new ArrayList<>();
     private ArrayList<String> stringDevicelist = new ArrayList<>();
+    private ArrayList<String> stringDevicelistId = new ArrayList<>();
     ArrayList<LockObj> lockObjArrayList=new ArrayList<>();
 
     @Override
@@ -227,7 +229,7 @@ public class AddTTlockToRoomActivity extends AppCompatActivity implements View.O
 //                obj.put("door_sensor_name",""+door_name);
 //            }
 
-            if(TextUtils.isEmpty(device_id) && device_id.length()==0){
+            if(TextUtils.isEmpty(device_id) || device_id.length()==0){
                 obj.put("panel_id","");
                 obj.put("door_sensor_id","");
             }else {
@@ -426,8 +428,10 @@ public class AddTTlockToRoomActivity extends AppCompatActivity implements View.O
                 panel_id="";
                 device_id="";
                 stringPanellist.clear();
+                int posTemp=0;
                 for(int i=0; i<roomList.get(position).getPanelList().size(); i++){
                     if(roomList.get(position).getPanelList().get(i).getPanel_type()==2){
+                        posTemp=i;
                         stringPanellist.add(roomList.get(position).getPanelList().get(i).getPanelName());
                     }
 
@@ -436,7 +440,7 @@ public class AddTTlockToRoomActivity extends AppCompatActivity implements View.O
                 if(stringPanellist.size()>0){
                     spinnerPanel.setVisibility(View.VISIBLE);
 
-                    setPanelList(position);
+                    setPanelList(position,roomList.get(position).getPanelList().get(posTemp));
                 }else {
                     spinnerPanel.setVisibility(View.GONE);
                     spinnerDevice.setVisibility(View.GONE);
@@ -450,7 +454,7 @@ public class AddTTlockToRoomActivity extends AppCompatActivity implements View.O
         });
     }
 
-    private void setPanelList(final int positionRoom) {
+    private void setPanelList(int positionRoom,PanelVO panelVO) {
         panel_id="";
         device_id="";
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,stringPanellist);
@@ -460,29 +464,33 @@ public class AddTTlockToRoomActivity extends AppCompatActivity implements View.O
         spinnerPanel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                panel_id=roomList.get(positionRoom).getPanelList().get(position).getPanelId();
+                panel_id=panelVO.getPanelId();
                 device_id="";
                 door_name="";
                 stringDevicelist.clear();
 //                stringDevicelist.add("");
-                for(int i=0; i<roomList.get(positionRoom).getPanelList().get(position).getDeviceList().size(); i++){
+                for(int i=0; i<panelVO.getDeviceList().size(); i++){
                     if(!TextUtils.isEmpty(door_sensor_module_id)){
                         //only lock show
                         ChatApplication.logDisplay("door_sensor_module_id is "+door_type);
                         if(door_type.equals("1")){
-                            if (roomList.get(positionRoom).getPanelList().get(position).getDeviceList().get(i).getDoor_subtype() == 2) {
-                                stringDevicelist.add(roomList.get(positionRoom).getPanelList().get(position).getDeviceList().get(i).getSensor_name());
+                            ChatApplication.logDisplay("door_sensor_module_id subtype "+" "+panelVO.getDeviceList().get(i).getDeviceName()+" "+panelVO.getDeviceList().get(i).getDoor_subtype());
+                            if (panelVO.getDeviceList().get(i).getDoor_subtype() == 2) {
+                                stringDevicelist.add(panelVO.getDeviceList().get(i).getSensor_name());
+                                stringDevicelistId.add(panelVO.getDeviceList().get(i).getSensor_id());
                             }
                         }else {
-                            if (roomList.get(positionRoom).getPanelList().get(position).getDeviceList().get(i).getDoor_subtype() == 1) {
-                                stringDevicelist.add(roomList.get(positionRoom).getPanelList().get(position).getDeviceList().get(i).getSensor_name());
+                            if (panelVO.getDeviceList().get(i).getDoor_subtype() == 1) {
+                                stringDevicelist.add(panelVO.getDeviceList().get(i).getSensor_name());
+                                stringDevicelistId.add(panelVO.getDeviceList().get(i).getSensor_id());
                             }
                         }
 
                     }else {
                         // only door show
-                        if (roomList.get(positionRoom).getPanelList().get(position).getDeviceList().get(i).getDoor_subtype() == 1) {
-                            stringDevicelist.add(roomList.get(positionRoom).getPanelList().get(position).getDeviceList().get(i).getSensor_name());
+                        if (panelVO.getDeviceList().get(i).getDoor_subtype() == 1) {
+                            stringDevicelist.add(panelVO.getDeviceList().get(i).getSensor_name());
+                            stringDevicelistId.add(panelVO.getDeviceList().get(i).getSensor_id());
                         }
                     }
                 }
@@ -491,7 +499,7 @@ public class AddTTlockToRoomActivity extends AppCompatActivity implements View.O
                     spinnerDevice.setVisibility(View.VISIBLE);
                     setDeviceList(positionRoom,position);
                 }else {
-//                    spinnerDevice.setVisibility(View.GONE);
+                    spinnerDevice.setVisibility(View.GONE);
                 }
             }
 
@@ -511,15 +519,11 @@ public class AddTTlockToRoomActivity extends AppCompatActivity implements View.O
         spinnerDevice.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                if(position>0){
-                    door_name=roomList.get(positionRoom).getPanelList().get(positionpanel).getDeviceList().get(position).getSensor_name();
-                    device_id=roomList.get(positionRoom).getPanelList().get(positionpanel).getDeviceList().get(position).getSensor_id();
-//                }
-//                else {
-//                    door_name="";
-//                    device_id="";
-//
-//                }
+//                door_name=roomList.get(positionRoom).getPanelList().get(positionpanel).getDeviceList().get(position).getSensor_name();
+//                device_id=roomList.get(positionRoom).getPanelList().get(positionpanel).getDeviceList().get(position).getSensor_id();
+
+                door_name=stringDevicelist.get(position);
+                device_id=stringDevicelistId.get(position);
 
                 ChatApplication.logDisplay("device is "+device_id);
             }

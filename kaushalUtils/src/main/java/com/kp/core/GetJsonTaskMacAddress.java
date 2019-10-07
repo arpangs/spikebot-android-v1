@@ -19,11 +19,9 @@ import java.util.concurrent.TimeoutException;
  *
  */
 public class GetJsonTaskMacAddress extends AsyncTask<String, Void, String> {
-	private ProgressDialog mProgressDialog;
 	private ICallBack activity;
 	private Context context;
 	private String result = "", url;
-	private Map<String, String> parameter;
 	String json = "";
 	private String error = null;
 	private String method = "POST";
@@ -66,11 +64,6 @@ public class GetJsonTaskMacAddress extends AsyncTask<String, Void, String> {
 	@Override
 	protected void onPostExecute(String result) {
 		try {
-			// JSONObject soapDatainJsonObject =
-			// XML.toJSONObject(result.toString());
-			// Log.d("soapDatainJsonObject", "1 soapDatainJsonObject==== " +
-			// soapDatainJsonObject.toString());
-
 			JSONObject json = new JSONObject(result);
 			activity.onSuccess(json);
 		} catch (Throwable e) {

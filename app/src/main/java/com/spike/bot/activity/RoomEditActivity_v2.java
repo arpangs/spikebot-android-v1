@@ -778,8 +778,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             obj.put("curtain_name", door_name);
             obj.put("curtain_module_id",door_module_id);
-            //curtain_type = h , v
-            obj.put("curtain_type","v");
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
@@ -2178,7 +2176,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         if(isDoorSensor==3){
             url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/2"; //0 door - 1 ir
         }if(isDoorSensor==Curtain){
-            url = ChatApplication.url + Constants.curtainunassigned+"/curtain" ; //0 door - 1 ir
+            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS+"/curtain" ; //0 door - 1 ir
         }else if(isDoorSensor==4){
             url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/5"; //0 door - 1 ir
         }else if(isDoorSensor==5){

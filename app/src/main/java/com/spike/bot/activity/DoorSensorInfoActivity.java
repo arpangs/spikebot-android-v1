@@ -44,6 +44,7 @@ import com.spike.bot.R;
 import com.spike.bot.Retrofit.GetDataService;
 import com.spike.bot.Retrofit.RetrofitAPIManager;
 import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
+import com.spike.bot.activity.TTLock.AddTTlockActivity;
 import com.spike.bot.activity.TTLock.TTLockListActivity;
 import com.spike.bot.adapter.DoorAlertAdapter;
 import com.spike.bot.adapter.DoorSensorInfoAdapter;
@@ -99,7 +100,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
     private EditText sensorName;
     private TextView txt_empty_notification, txt_empty_notificationALert, txtTempCount, txtAlertTempCount;
-    private ImageView img_door_on, imgBattery, view_rel_badge, imgLock, imgLockDelete, imgDoorDelete,doorAddButton;
+    private ImageView img_door_on, imgBattery, view_rel_badge, imgLock, imgLockDelete, imgDoorDelete,doorAddButton,imgLockBattery;
     private TextView batteryPercentage;
     private LinearLayout linearAlertDown, linearAlertExpand, linearLock, linearAddlockOptin, linearLockDoor;
     public CardView cardViewLock, cardViewDoor;
@@ -119,7 +120,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
     DoorSensorResModel doorSensorResModel;
     private String door_sensor_id, door_room_name, door_room_id, door_module_id, mac_address = "";
     private Socket mSocket;
-    private String door_unread_count = "";
+    private String door_unread_count = "",door_subtype="";
 
     //gatwway list
     ArrayList<LockObj> gatewayList = new ArrayList<>();
@@ -153,6 +154,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         door_room_id = getIntent().getStringExtra("door_room_id");
         door_unread_count = getIntent().getStringExtra("door_unread_count");
         door_module_id = getIntent().getStringExtra("door_module_id");
+        door_subtype = getIntent().getStringExtra("door_subtype");
 
         startSocketConnection();
     }
@@ -172,12 +174,19 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         }
         bindView();
 
+        if(!door_subtype.equals("1")&& Constants.lockDate < 86400 || TextUtils.isEmpty(Common.getPrefValue(DoorSensorInfoActivity.this, Constants.lock_token))){
+            //check access token refresh
+                callTTAuth();
+        }else {
+            getDoorSensorDetails();
+        }
+
 //        connectivityReceiver = new ConnectivityReceiver();
 //        final IntentFilter intentFilter = new IntentFilter();
 //        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 //        registerReceiver((BroadcastReceiver) connectivityReceiver, intentFilter);
         view_rel_badge.setClickable(true);
-        getDoorSensorDetails();
+
         ChatApplication.logDisplay("door call is " + ChatApplication.url);
 
         if (mSocket != null) {
@@ -826,12 +835,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
     private void callLockBatterystatus() {
 
-        //check access token refresh
-        if (Constants.lockDate < 86400) {
-            callTTAuth();
-        }
-
-        ActivityHelper.showProgressDialog(this, "Please Wait...", false);
+        ActivityHelper.showProgressDialog(this, "Fetching Lock Details...", false);
         GetDataService apiService = RetrofitAPIManager.provideClientApi();
 
         Call<String> call = apiService.lockDetails(Constants.client_id, Constants.access_token, Integer.parseInt(doorSensorResModel.getDate().getDoorLists()[0].getLock_id()), System.currentTimeMillis());
@@ -849,6 +853,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                         JSONObject object = new JSONObject(json);
 
                         if (!TextUtils.isEmpty(object.optString("electricQuantity"))) {
+                            imgLockBattery.setImageResource(Common.getBatteryIcon(object.optString("electricQuantity")));
                             txtBettrylock.setText(object.optString("electricQuantity") + " %");
                             mac_address = object.optString("lockMac");
 
@@ -882,7 +887,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (response.code() == 200) {
-                    ChatApplication.logDisplay("tt lock reponse is response ");
+
                     String json = response.body();
                     try {
                         //}{
@@ -898,6 +903,10 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                         JSONObject object = new JSONObject(json);
                         Constants.lockDate = object.optInt("expires_in");
                         Constants.access_token = object.optString("access_token");
+                        Common.savePrefValue(ChatApplication.getInstance(), Constants.lock_exe, ""+Constants.lockDate);
+                        Common.savePrefValue(ChatApplication.getInstance(), Constants.lock_token, Constants.access_token);
+                        ChatApplication.logDisplay("tt lock reponse is response "+object);
+                        getDoorSensorDetails();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -965,7 +974,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
     private void callGatewayList() {
 
-        ActivityHelper.showProgressDialog(this, "Please Wait...", false);
+        ActivityHelper.showProgressDialog(this, "Fetching Bridge Details...", false);
         GetDataService apiService = RetrofitAPIManager.provideClientApi();
         Call<String> call = apiService.gatewaylist(Constants.client_id, Constants.access_token, 1, 20, System.currentTimeMillis());
         call.enqueue(new Callback<String>() {
@@ -1386,6 +1395,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         linearAddlockOptin = findViewById(R.id.linearAddlockOptin);
         txtlockStatus = findViewById(R.id.txtlockStatus);
         txtBettrylock = findViewById(R.id.txtBettrylock);
+        imgLockBattery = findViewById(R.id.imgLockBattery);
         txtDoorStatus = findViewById(R.id.txtDoorStatus);
         cardViewDoor = findViewById(R.id.cardViewDoor);
         cardViewLock = findViewById(R.id.cardViewLock);

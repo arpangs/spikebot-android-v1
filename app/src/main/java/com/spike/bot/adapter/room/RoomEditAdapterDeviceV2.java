@@ -49,7 +49,12 @@ public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapte
         String clickAction = "1";
         if(!item.isSensor()){
             itemDeviceName = item.getDeviceName();
-            itemIcon = Common.getIcon(0,item.getDevice_icon());
+            if(item.getDevice_icon().equals("curtain")){
+                itemIcon = Common.getIcon(0,item.getDevice_icon());
+            }else {
+                itemIcon = Common.getIcon(0,item.getDevice_icon());
+            }
+
             clickAction = "1";
         }else{
 
@@ -63,7 +68,7 @@ public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapte
                 }else if(item.getDoor_subtype()==2){
                     itemIcon=R.drawable.lock_only_grey;
                 }else {
-                    itemIcon=R.drawable.door_locked;
+                    itemIcon=R.drawable.gray_door_red_lock_disabled;
                 }
             }
         }

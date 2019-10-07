@@ -32,7 +32,7 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.AddMoodActivity;
 import com.spike.bot.activity.DeviceLogActivity;
-import com.spike.bot.activity.HeavyLoadDetailActivity;
+import com.spike.bot.activity.HeavyLoad.HeavyLoadDetailActivity;
 import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.activity.ScheduleListActivity;
 import com.spike.bot.activity.SmartColorPickerActivity;

@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.core.Constants;
 import com.spike.bot.customview.recycle.ItemClickRoomEditListener;
@@ -105,7 +106,12 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
                 holder.iv_room_panel_add.setVisibility(View.GONE);
             }
         }else {
-            holder.iv_room_panel_add.setVisibility(View.VISIBLE);
+            ChatApplication.logDisplay("panel type "+item1.getPanel_type());
+            if(item1.getPanel_type()==5){
+                holder.iv_room_panel_add.setVisibility(View.GONE);
+            }else {
+                holder.iv_room_panel_add.setVisibility(View.VISIBLE);
+            }
         }
 
         holder.et_panel.setTag(item1.getPanelId());

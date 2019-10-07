@@ -176,7 +176,7 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
     @Override
     public void onClick(int position, UnassignedListRes.Data.RoomdeviceList roomdeviceList) {
 
-        if(roomdeviceList.getIsModule() == 1){
+        if(roomdeviceList.getIsModule() == 1 || roomdeviceList.getIsModule()==3){
             showAddDialog(roomdeviceList);
         }else {
             if(roomdeviceList.getSensorIcon().equals("doorsensor")){
@@ -299,12 +299,13 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
         mImageClose = (ImageView)mDialog.findViewById(R.id.iv_close);
         TextView mAddName = (TextView) mDialog.findViewById(R.id.tv_panel_name);
 
-
-
         mPanelName.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         mPanelName.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
 
         if(roomdeviceList.getIsModule() == 1){
+            mAddName.setText("Panel Name");
+            mPanelName.setText(roomdeviceList.getModuleName());
+        }else if(roomdeviceList.getIsModule()==3){
             mAddName.setText("Panel Name");
             mPanelName.setText(roomdeviceList.getModuleName());
         }else{
@@ -336,7 +337,11 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
         mBtnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                savePanel(roomdeviceList,roomIdList.get(mSpinnerRoom.getSelectedItemPosition()),mPanelName.getText().toString().trim());
+                if(roomdeviceList.getIsModule()==3){
+                    savePanelCurtain(roomdeviceList,roomIdList.get(mSpinnerRoom.getSelectedItemPosition()),mPanelName.getText().toString().trim(),mDialog);
+                }else {
+                    savePanel(roomdeviceList,roomIdList.get(mSpinnerRoom.getSelectedItemPosition()),mPanelName.getText().toString().trim(),mDialog);
+                }
             }
         });
 
@@ -346,13 +351,94 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
 //        }
     }
 
+    private void savePanelCurtain(UnassignedListRes.Data.RoomdeviceList roomdeviceList, String roomId, String panelName, Dialog mDialog){
+
+        if(!ActivityHelper.isConnectingToInternet(this)){
+            Toast.makeText(getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if(mSpinnerRoom.getSelectedItemPosition() == 0){
+            showToast("Please select Room Name");
+            return;
+        }
+
+        if(TextUtils.isEmpty(mPanelName.getText().toString().trim())){
+            mPanelName.setError("Enter Panel Name");
+            mPanelName.requestFocus();
+            return;
+        }
+
+        ActivityHelper.showProgressDialog(this,"Loading...",false);
+        String mRequestJson = "";
+        JSONObject object = new JSONObject();
+        try {
+            //{
+            //    "phone_id": "6929FCC2-5124-4D93-B98B-0E1C100109CD",
+            //    "phone_type": "IOS",
+            //    "room_id": "1569564785527_3pspddidL",
+            //    "room_name": "jLock",
+            //    "user_id": "1569305102710_GtdsJ7yBl",
+            //    "curtain_module_id": "8AA1131A004B1200",
+            //    "curtain_name": "bari nu curtain"
+            //}
+
+            object.put("curtain_module_id",roomdeviceList.getModuleId());
+            object.put("curtain_name",roomdeviceList.getSensorName());
+            object.put("room_id",roomId);
+            object.put("room_name",mSpinnerRoom.getSelectedItem().toString());
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        mRequestJson = object.toString();
+
+        String url = ChatApplication.url + Constants.curtainadd;
+
+        ChatApplication.logDisplay("assign is "+url+" "+mRequestJson);
+
+        new GetJsonTask(this, url, "POST", mRequestJson, new ICallBack() {
+            @Override
+            public void onSuccess(JSONObject result) {
+                mDialog.dismiss();
+                ActivityHelper.dismissProgressDialog();
+                try {
+
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+
+                    if(!TextUtils.isEmpty(message)){
+                        showToast("Panel added successfully");
+                    }
+
+                    if(code == 200){
+                        finish();
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        }).execute();
+
+    }
+
     /**
      * Save panel
      * @param roomdeviceList roomDeviceList
      * @param roomId roomId
      * @param panelName panelName
+     * @param mDialog
      */
-    private void savePanel(UnassignedListRes.Data.RoomdeviceList roomdeviceList, String roomId, String panelName){
+    private void savePanel(UnassignedListRes.Data.RoomdeviceList roomdeviceList, String roomId, String panelName, Dialog mDialog){
 
         if(!ActivityHelper.isConnectingToInternet(this)){
             Toast.makeText(getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
@@ -396,64 +482,14 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
             }
 
             mRequestJson = object.toString();
-
-//        if(roomdeviceList.getIsModule() == 1){
-//
-//            UnassignedPanelRes unassignedPanelRes = new UnassignedPanelRes();
-//            unassignedPanelRes.setIsModule(roomdeviceList.getIsModule());
-//            unassignedPanelRes.setPanelName(panelName);
-//            unassignedPanelRes.setRoomId(roomId);
-//
-//            List<UnassignedPanelRes.DeviceList> unPanelList = new ArrayList<>();
-//            List<UnassignedListRes.Data.RoomdeviceList.DeviceList> deviceLists = roomdeviceList.getDeviceList();
-//
-//            for(UnassignedListRes.Data.RoomdeviceList.DeviceList device : deviceLists){
-//                UnassignedPanelRes.DeviceList dList = new UnassignedPanelRes.DeviceList();
-//                dList.setModuleId(device.getModuleId());
-//                dList.setDeviceId(device.getDeviceId());
-//                dList.setDeviceIcon(device.getDeviceIcon());
-//                dList.setDeviceName(device.getDeviceName());
-//                dList.setModuleName(device.getModuleName());
-//                dList.setOriginalRoomDeviceId(device.getOriginalRoomDeviceId());
-//                dList.setRoomDeviceId(device.getRoomDeviceId());
-//                dList.setPanelId(device.getPanelId());
-//                dList.setDeviceStatus(device.getDeviceStatus());
-//                dList.setDeviceSpecificValue(device.getDeviceSpecificValue());
-//                dList.setDeviceType(device.getDeviceType());
-//
-//                unPanelList.add(dList);
-//                unassignedPanelRes.setDeviceList(unPanelList);
-//            }
-//
-//            Gson gson = new Gson();
-//            mRequestJson =  gson.toJson(unassignedPanelRes);
-//
-//
-//        }else{
-//
-//            JSONObject object = new JSONObject();
-//            try {
-//                object.put("is_module",roomdeviceList.getIsModule());
-//                object.put("room_id",roomId);
-//                object.put("sensor_id",roomdeviceList.getSensorId());
-//                object.put("sensor_name",panelName);
-//                object.put("room_name",mSpinnerRoom.getSelectedItem().toString());
-//                object.put("module_id",roomdeviceList.getModuleId());
-//                object.put("sensor_type",roomdeviceList.getSensorType());
-//                object.put("sensor_icon",roomdeviceList.getSensorIcon());
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//
-//            mRequestJson = object.toString();
-//        }
-
         String url = ChatApplication.url + Constants.ADD_UN_CONFIGURED_DEVICE;
+
+        ChatApplication.logDisplay("assign is "+url+" "+mRequestJson);
 
         new GetJsonTask(this, url, "POST", mRequestJson, new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
-
+                mDialog.dismiss();
                 ActivityHelper.dismissProgressDialog();
                 try {
 

@@ -22,14 +22,11 @@ import java.util.Map;
  *
  */
 public class GetJsonTask2 extends AsyncTask<String, Void, String> {
-	private ProgressDialog mProgressDialog;
 	private ICallBack2 activity;
 	private Context context;
 	private String result = "", url;
-	private Map<String, String> parameter;
 	String json = "";
 	private String error = null;
-//	private int responseErrorCode = 0;
 	private String method = "POST";
 	public static HttpURLConnection con = null;
 
@@ -38,7 +35,6 @@ public class GetJsonTask2 extends AsyncTask<String, Void, String> {
 		this.context = context;
 		this.url = url;
 		this.method = method;
-		// this.parameter = parameter;
 		this.json = json;
 		if(!this.url.trim().startsWith("http")){
 			this.url="http://"+this.url;
@@ -49,9 +45,7 @@ public class GetJsonTask2 extends AsyncTask<String, Void, String> {
 
 	@Override
 	protected String doInBackground(String... urls) {
-
 		try {
-
 			StringBuilder params=new StringBuilder("");
 			String result="";
 			String url1 =url ;
@@ -59,28 +53,12 @@ public class GetJsonTask2 extends AsyncTask<String, Void, String> {
 			URL obj = new URL(url1);
 
 			HttpURLConnection con =httpConnection(obj,method);
-//			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-//
-//			con.setRequestMethod(method);
-//			con.setRequestProperty("User-Agent", "Mozilla/5.0");
-//			con.setRequestProperty("Accept-Language", "UTF-8");
-//			con.setRequestProperty("Content-Type", "application/json");
-//			con.setRequestProperty("Accept", "application/json");
-//			con.setConnectTimeout(60000);
-//			con.setReadTimeout(60000);
-//			con.setUseCaches( false );
 			if(method.equalsIgnoreCase("POST")){
-//		    	JSONObject json = new JSONObject();
-//		        json.putAll( parameter );
 				con.setDoOutput(true);
 				OutputStreamWriter outputStreamWriter = new OutputStreamWriter(con.getOutputStream());
 				outputStreamWriter.write(json);
 				outputStreamWriter.flush();
 			}
-			//int responseCode = con.getResponseCode();
-			UtilsConstants.logDisplay("\nSending 'POST' request to URL : " + url);
-			UtilsConstants.logDisplay("Post parameters : " + params);
-			//System.out.println("Response Code : " + responseCode);
 
 			BufferedReader in ;//= new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String inputLine;
@@ -89,11 +67,8 @@ public class GetJsonTask2 extends AsyncTask<String, Void, String> {
 			//con.getErrorStream() for error
 
 			if (con.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
-				//_is = con.getInputStream();
 				in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			} else {
-				/* error from server */
-				//_is = con.getErrorStream();
 				in = new BufferedReader(new InputStreamReader(con.getErrorStream()));
 			}
 
@@ -123,15 +98,10 @@ public class GetJsonTask2 extends AsyncTask<String, Void, String> {
 	@Override
 	protected void onPostExecute(String result) {
 		try {
-			// JSONObject soapDatainJsonObject =
-			// XML.toJSONObject(result.toString());
-			// Log.d("soapDatainJsonObject", "1 soapDatainJsonObject==== " +
-			// soapDatainJsonObject.toString());
-
 			JSONObject json = new JSONObject(result);
 			activity.onSuccess(json);
 		} catch (Throwable e) {
-			//activity.onFailure(e, error,responseErrorCode);
+			activity.onFailure(e, error,500);
 		}
 	}
 	/*
@@ -141,22 +111,18 @@ public class GetJsonTask2 extends AsyncTask<String, Void, String> {
 	public static HttpURLConnection httpConnection(URL obj, String method){
 
 		try {
-			try {
-//				if(con==null){
-					con = (HttpURLConnection) obj.openConnection();
-//				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			con = (HttpURLConnection) obj.openConnection();
 			con.setRequestMethod(method);
 			con.setRequestProperty("User-Agent", "Mozilla/5.0");
 			con.setRequestProperty("Accept-Language", "UTF-8");
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Accept", "application/json");
-			con.setConnectTimeout(60000);
-			con.setReadTimeout(60000);
+			con.setConnectTimeout(5000);
+			con.setReadTimeout(5000);
 			con.setUseCaches( false );
 		} catch (ProtocolException e) {
+			e.printStackTrace();
+		}catch (IOException e) {
 			e.printStackTrace();
 		}
 		return con;

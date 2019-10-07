@@ -33,6 +33,7 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.Retrofit.GetDataService;
 import com.spike.bot.Retrofit.RetrofitAPIManager;
+import com.spike.bot.activity.LoginActivity;
 import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.adapter.TTlockAdapter.LockListAdapter;
 import com.spike.bot.core.Common;
@@ -157,7 +158,7 @@ public class AddTTlockActivity extends AppCompatActivity  implements View.OnClic
         mListApapter.setOnLockItemClick(this);
 
         //check access token refresh
-        if (Constants.lockDate < 86400) {
+        if (Constants.lockDate < 86400 || TextUtils.isEmpty(Common.getPrefValue(AddTTlockActivity.this, Constants.lock_token))) {
             calllogin();
         }
 
@@ -197,6 +198,7 @@ public class AddTTlockActivity extends AppCompatActivity  implements View.OnClic
                             Constants.lockDate=object.optInt("expires_in");
                             Constants.access_token=object.optString("access_token");
                             Common.savePrefValue(ChatApplication.getInstance(), Constants.lock_exe, ""+Constants.lockDate);
+                            Common.savePrefValue(ChatApplication.getInstance(), Constants.lock_token, Constants.access_token);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

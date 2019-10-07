@@ -21,7 +21,8 @@
             android:layout_gravity="center"
             android:layout_width="@dimen/_27sdp"
             android:layout_height="@dimen/_27sdp"
-            android:src="@drawable/smart_lock_icon"/>
+            android:scaleType="fitXY"
+            android:src="@drawable/smart_lock_icon_brand"/>
 
         <TextView
             android:layout_width="match_parent"

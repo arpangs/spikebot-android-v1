@@ -22,7 +22,7 @@ public class GetJsonTask extends AsyncTask<String, Void, String> {
 	private ProgressDialog mProgressDialog;
 	private ICallBack activity;
 	private Context context;
-	private String result = "", url;
+	private String  url="";
 	private Map<String, String> parameter;
 	String json = "";
 	private String error = null;
@@ -63,15 +63,8 @@ public class GetJsonTask extends AsyncTask<String, Void, String> {
 	@Override
 	protected void onPostExecute(String result) {
 		try {
-			// JSONObject soapDatainJsonObject =
-			// XML.toJSONObject(result.toString());
-			// Log.d("soapDatainJsonObject", "1 soapDatainJsonObject==== " +
-			// soapDatainJsonObject.toString());
-
-			if(!TextUtils.isEmpty(result)){
 				JSONObject json = new JSONObject(result);
 				activity.onSuccess(json);
-			}
 
 		} catch (Throwable e) {
 			activity.onFailure(e, error);

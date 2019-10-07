@@ -258,7 +258,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
             return;
         }
 
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        ActivityHelper.showProgressDialog(this, "Please wait.", true);
 
         JSONObject obj = new JSONObject();
         try {
@@ -287,6 +287,9 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
         new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
+
+                ChatApplication.logDisplay("obj result: " +result);
+
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -317,6 +320,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
 
             @Override
             public void onFailure(Throwable throwable, String error) {
+                ChatApplication.logDisplay("obj result: error " +error);
                 ActivityHelper.dismissProgressDialog();
             }
         }).execute();
@@ -387,14 +391,13 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
             return;
         }
 
-        ActivityHelper.showProgressDialog(WifiListActivity.this, "Please wait... ", false);
+        ActivityHelper.showProgressDialog(WifiListActivity.this, "Please wait... ", true);
         String url = "http://" + wifiIP + "/wifisave?s=" + wiFiList.getNetworkName() + "&p=" + s+"&$="+edWifiIP;
 
         ChatApplication.logDisplay("url is "+url);
         new GetJsonTask(WifiListActivity.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL //POST
             @Override
             public void onSuccess(final JSONObject result) {
-
                 ChatApplication.logDisplay( "ir blaster is found result " + result.toString());
 
                 try {
@@ -404,19 +407,21 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
                             Constants.isWifiConnectSave=true;
                             moduleId=result.optString("moduleId");
                             if(moduleId.length()>1){
-                                isNetworkChange=true;
-                                showIRSensorDialog();
+                                setSaveView();
                             }
                         }else {
+                            ActivityHelper.dismissProgressDialog();
                             ChatApplication.showToast(WifiListActivity.this,""+result.optString("response"));
                         }
                     }else {
+                        ActivityHelper.dismissProgressDialog();
                         ChatApplication.showToast(WifiListActivity.this,"Please try again later.");
                     }
 
 
                 } catch (Exception e) {
                     e.printStackTrace();
+                    ActivityHelper.dismissProgressDialog();
                 } finally {
                     ActivityHelper.dismissProgressDialog();
                 }
@@ -432,6 +437,21 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner ,
               //  Toast.makeText(WifiListActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
+    }
+
+    private void setSaveView() {
+        new CountDownTimer(2500, 1000) {
+                public void onTick(long millisUntilFinished) {
+                }
+
+                public void onFinish() {
+                    ActivityHelper.dismissProgressDialog();
+                    isNetworkChange=true;
+                    showIRSensorDialog();
+                }
+
+            }.start();
+
     }
 
     @Override

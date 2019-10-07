@@ -173,7 +173,7 @@
                 android:id="@+id/linear_retry"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/automation_white"
+                android:background="@drawable/new_screen_resolution"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:visibility="gone">
@@ -185,7 +185,7 @@
                     android:layout_marginTop="16dp"
                     android:gravity="center"
                     android:padding="4dp"
-                    android:text="Oh no!"
+                    android:text="Please try again."
                     android:textAppearance="@android:style/TextAppearance.Large" />
 
                 <TextView
@@ -201,11 +201,12 @@
 
                 <Button
                     android:id="@+id/button_retry"
-                    android:layout_width="wrap_content"
+                    android:layout_width="@dimen/_100sdp"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
-                    android:background="@drawable/button_border"
-                    android:text="RETRY"
+                    android:background="@color/automation_white"
+                    android:text="Retry"
+                    android:textAllCaps="false"
                     android:textSize="18sp" />
 
             </LinearLayout>

@@ -198,7 +198,13 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
                             ChatApplication.logDisplay("temp is "+object);
 
-                            txtHumity.setText(object.optString("humidity")+" %");
+//                            txtHumity.setText(object.optString("humidity")+" %");
+
+                            if(!TextUtils.isEmpty(object.optString("humidity"))){
+                                txtHumity.setText(object.optString("humidity")+" %");
+                            }else {
+                                txtHumity.setText("--");
+                            }
 
                             if (isCFSelected==1) {
                                 setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_yellow, R.drawable.txt_background_white, Color.parseColor("#FFFFFF"), Color.parseColor("#111111"));
@@ -314,18 +320,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    private GestureDetector gestureDetector;
-
-
-
-
-    private class SingleTapConfirm extends GestureDetector.SimpleOnGestureListener {
-
-        @Override
-        public boolean onSingleTapUp(MotionEvent event) {
-            return true;
-        }
-    }
 
     private void bindView() {
 
@@ -698,7 +692,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     private void updateTempSensor() {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            // Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             showToast("" + R.string.disconnect);
             return;
         }
@@ -1918,6 +1911,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                     sensorResModel.getDate().getTempLists()[0].getHumidity()!=null){
 
                 txtHumity.setText(sensorResModel.getDate().getTempLists()[0].getHumidity()+" %");
+            }else {
+                txtHumity.setText("--");
             }
             //humibity
 

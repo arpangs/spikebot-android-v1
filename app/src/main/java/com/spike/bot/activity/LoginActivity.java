@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatTextView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -24,8 +25,6 @@ import com.spike.bot.R;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
-import com.spike.bot.core.Log;
-import com.spike.bot.dialog.CustomProgress;
 import com.spike.bot.model.User;
 
 import org.json.JSONObject;
@@ -41,7 +40,8 @@ import java.util.List;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     public EditText et_username,et_password;
-    public Button btn_SKIP,btn_login,btnSignUp;
+    public Button btn_login,btnSignUp;
+    public AppCompatTextView btn_SKIP;
     public String imei="",token="",isFlag="";
 
     private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
@@ -72,42 +72,32 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         btn_SKIP.setOnClickListener(this);
         btnSignUp.setOnClickListener(this);
 
-        CustomProgress customProgress = CustomProgress.getInstance();
-
-// now you have the instance of CustomProgres
-// for showing the ProgressBar
-
-//        customProgress.showProgress(this, "Please wwww", false);
-
     }
 
     @Override
     protected void onResume() {
-
         if(TextUtils.isEmpty(Common.getPrefValue(LoginActivity.this, Constants.lock_exe)) &&
-                Common.getPrefValue(LoginActivity.this, Constants.lock_exe).length()==0){
+                Common.getPrefValue(LoginActivity.this, Constants.lock_exe).length()==0 || TextUtils.isEmpty(Common.getPrefValue(LoginActivity.this, Constants.lock_token))){
             Constants.lockDate=0;
         }else {
             Constants.lockDate= Integer.parseInt(Common.getPrefValue(LoginActivity.this, Constants.lock_exe));
+            Constants.access_token= Common.getPrefValue(LoginActivity.this, Constants.lock_token);
         }
         if (isFlag.equalsIgnoreCase("true")) {
             btn_SKIP.setVisibility(View.VISIBLE);
         }else if( Constants.checkLoginAccountCount(this)){
+            ChatApplication.currentuserId = Constants.getuser(this).getUser_id();
             startHomeIntent();
         }else {
-            btn_SKIP.setVisibility(View.GONE);
+            btn_SKIP.setVisibility(View.INVISIBLE);
         }
         super.onResume();
     }
 
-
-
     private void getUUId() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE},
-                        PERMISSIONS_REQUEST_READ_PHONE_STATE);
+            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE},PERMISSIONS_REQUEST_READ_PHONE_STATE);
                 return;
             } else {
                 imei = ActivityHelper.getIMEI(this);

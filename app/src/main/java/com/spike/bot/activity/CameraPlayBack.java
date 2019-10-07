@@ -66,7 +66,6 @@ public class CameraPlayBack extends AppCompatActivity implements ExpandableTestA
 
     private TextInputEditText edt_start_date,edt_end_date;
     private Spinner sp_camera_list;
-    private RoomVO roomVO;
     private ArrayList<CameraVO> cameraVOArrayList;
 
     private RecyclerView cameraList;

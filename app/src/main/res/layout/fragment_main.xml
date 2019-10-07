@@ -70,6 +70,37 @@
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <LinearLayout
+        android:id="@+id/linear_retry"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/new_screen_resolution"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="Please try again."
+            android:textAppearance="@android:style/TextAppearance.Large" />
+
+        <Button
+            android:id="@+id/button_retry"
+            android:layout_width="@dimen/_100sdp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@color/automation_white"
+            android:text="Retry"
+            android:textAllCaps="false"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/txt_empty_schedule"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -98,53 +129,6 @@
             android:layout_gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:visibility="gone">
-
-        <EditText
-            android:id="@+id/message_input"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/prompt_message"
-            android:imeActionId="@+id/send"
-            android:imeActionLabel="@string/action_send"
-            android:imeOptions="actionSend"
-            android:inputType="text"
-            android:maxLines="1"
-            android:singleLine="true" />
-
-        <ImageButton
-            android:id="@+id/send_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/action_send"
-            android:src="@android:drawable/ic_menu_send" />
-
-        <TextView
-            android:id="@+id/send_button_on"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="2dp"
-            android:padding="10dp"
-            android:text="on" />
-
-        <TextView
-            android:id="@+id/send_button_off"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="2dp"
-            android:padding="10dp"
-            android:text="off" />
 
     </LinearLayout>
 
@@ -184,81 +168,6 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/linear_retry"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/automation_white"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:gravity="center"
-            android:padding="6dp"
-            android:text="Retry"
-            android:textAppearance="@android:style/TextAppearance.Large" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:padding="8dp"
-            android:text="No Internet found. Check your
-              connection or try again."
-            android:textAppearance="@android:style/TextAppearance.Medium" />
-
-        <Button
-            android:id="@+id/button_retry"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:background="@drawable/button_border"
-            android:text="RETRY"
-            android:textSize="18sp" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linear_login"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/automation_white"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:paddingBottom="125dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:visibility="gone">
-
-        <EditText
-            android:id="@+id/et_username"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Enter User Name"
-            android:inputType="text" />
-
-        <EditText
-            android:id="@+id/et_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Enter Password"
-            android:inputType="textPassword" />
-
-        <Button
-            android:id="@+id/btn_login"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="LOGIN" />
-    </LinearLayout>
-
 
     <!--Fab Menu Star-->
     <FrameLayout
@@ -295,7 +204,7 @@
                     android:padding="@dimen/_6sdp"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/automation_white"
                     android:text="Add Room"/>
@@ -311,7 +220,7 @@
                     android:padding="@dimen/_6sdp"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/automation_white"
                     android:text="Add Camera"/>
@@ -382,28 +291,10 @@
                     android:padding="@dimen/_6sdp"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/automation_white"
-                    android:text="All IR Blaster"/>
-
-                <View
-                    android:visibility="visible"
-                    android:background="#FFF"
                     android:layout_width="match_parent"
-                    android:layout_height="0.5dp"/>
-
-                <TextView
-                    android:id="@+id/fab_menu7"
-                    android:layout_margin="@dimen/_2sdp"
-                    android:padding="@dimen/_6sdp"
-                    android:textSize="16sp"
-                    android:visibility="visible"
-                    android:textStyle="bold"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/automation_white"
-                    android:text="Unassigned List"/>
+                    android:text="All IR Blasters"/>
 
                 <View
                     android:visibility="visible"
@@ -418,7 +309,7 @@
                     android:textSize="16sp"
                     android:visibility="visible"
                     android:textStyle="bold"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/automation_white"
                     android:text="Smart Remote"/>
@@ -429,6 +320,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"/>
 
+
+
                 <TextView
                     android:id="@+id/fabSmartDevice"
                     android:layout_margin="@dimen/_2sdp"
@@ -436,10 +329,10 @@
                     android:textSize="16sp"
                     android:visibility="visible"
                     android:textStyle="bold"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/automation_white"
-                    android:text="Smart Device"/>
+                    android:text="Smart Devices"/>
 
                 <View
                     android:visibility="visible"
@@ -472,10 +365,47 @@
                     android:textSize="16sp"
                     android:visibility="visible"
                     android:textStyle="bold"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/automation_white"
-                    android:text="Repeater"/>
+                    android:text="All Repeaters"/>
+
+                <View
+                    android:visibility="visible"
+                    android:background="#FFF"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"/>
+
+                <TextView
+                    android:id="@+id/fab_menu7"
+                    android:layout_margin="@dimen/_2sdp"
+                    android:padding="@dimen/_6sdp"
+                    android:textSize="16sp"
+                    android:visibility="visible"
+                    android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/automation_white"
+                    android:text="Unassigned List"/>
+
+                <View
+                    android:visibility="visible"
+                    android:background="#FFF"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"/>
+
+
+                <TextView
+                    android:id="@+id/fab_beacon"
+                    android:layout_margin="@dimen/_2sdp"
+                    android:padding="@dimen/_6sdp"
+                    android:textSize="16sp"
+                    android:visibility="visible"
+                    android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/automation_white"
+                    android:text="Beacon Search"/>
 
             </LinearLayout>
 

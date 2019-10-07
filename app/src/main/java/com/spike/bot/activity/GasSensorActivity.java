@@ -153,8 +153,9 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
 
                             //"room_id":"1569405933287_jyzwqWwos","gas_sensor_id":"1569409977792_MP9OiH_QS","gas_value":"Normal","gas_current_value":5,"threshold_value":10}
 
-                            setLevel(object.optString("gas_value"));
-
+                            if(sensor_id.equals(object.optString("gas_sensor_id"))){
+                                setLevel(object.optString("gas_value"));
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

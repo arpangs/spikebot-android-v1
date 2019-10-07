@@ -97,6 +97,9 @@ public class SensorUnassignedActivity extends AppCompatActivity{
         }else if(isDoorSensor == MainFragment.SENSOR_TYPE_IR){
             isDoorSensor = 2;
             getSupportActionBar().setTitle("Unassigned IR List");
+        }else if(isDoorSensor == MainFragment.Curtain){
+            isDoorSensor = 6;
+            getSupportActionBar().setTitle("Curtain List");
         }else if(isDoorSensor == MainFragment.SENSOR_REPEATAR){
             spinner_room.setVisibility(View.GONE);
             viewLine.setVisibility(View.GONE);
@@ -177,7 +180,12 @@ public class SensorUnassignedActivity extends AppCompatActivity{
 
     private void getSensorUnAssignedDetails(int sensor_type){
 
-        String url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/"+sensor_type; //0 door - 1 temp
+        String url="";
+        if(sensor_type==6){
+             url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/curtain"; //0 door - 1 temp
+        }else {
+            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/"+sensor_type; //0 door - 1 temp
+        }
 
         linear_progress.setVisibility(View.VISIBLE);
 
@@ -270,6 +278,8 @@ public class SensorUnassignedActivity extends AppCompatActivity{
                 saveSensorUnassinged();
             } else if(isDoorSensor==10){
                 saveRepeatar();
+            }else if(isDoorSensor==6){
+                saveCurtain();
             }
             else {
                 if (spinner_room.getSelectedItemPosition() == 0) {
@@ -284,6 +294,82 @@ public class SensorUnassignedActivity extends AppCompatActivity{
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void saveCurtain() {
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+       /* if(spinner_room.getSelectedItemPosition() == 0) {
+            Toast.makeText(getApplicationContext(),"Select Sensor Room Name.",Toast.LENGTH_SHORT).show();
+            return;
+        }*/
+
+        if(sensorUnassignedAdapter==null){
+            return;
+        }
+
+        SensorUnassignedRes.Data.UnassigendSensorList unassigendSensorList = sensorUnassignedAdapter.getSelectedSensor();
+        if(unassigendSensorList == null){
+
+            String message = "";
+            if(isDoorSensor == 6 ){
+                message = "Select at least one curtain";
+            }
+
+            Toast.makeText(getApplicationContext(),message ,Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int position=spinner_room.getSelectedItemPosition() - 1;
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("curtain_module_id",unassigendSensorList.getModuleId());
+            jsonObject.put("curtain_name",unassigendSensorList.getSensorName());
+            jsonObject.put("room_id",roomList.get(position).getRoomId());
+            jsonObject.put("room_name",roomList.get(position).getRoomName());
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String webUrl = ChatApplication.url + Constants.curtainadd;
+
+        ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        new GetJsonTask(this, webUrl, "POST", jsonObject.toString(), new ICallBack() {
+            @Override
+            public void onSuccess(JSONObject result) {
+
+                ChatApplication.logDisplay("onSuccess result : " + result.toString());
+                ActivityHelper.dismissProgressDialog();
+                try {
+
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+
+                    if(code == 200){
+                        ChatApplication.isMainFragmentNeedResume = true;
+                        ChatApplication.isEditActivityNeedResume = true;
+                        finish();
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        }).execute();
+
     }
 
     private void saveRepeatar() {

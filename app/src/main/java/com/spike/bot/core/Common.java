@@ -342,6 +342,13 @@ public class Common {
     public static int getIcon(int status, String type) {
         int resource = R.drawable.bulb_on;
         switch (status) {
+
+            case -1:
+                switch (type) {
+                    case "curtain":
+                        resource = R.drawable.curtain_closed;
+                        break;
+                }
             case 1:
                 switch (type) {
                     case "bulb":
@@ -418,6 +425,7 @@ public class Common {
                         case "gassensor":
                         resource = R.drawable.fire_and_gas;
                         break;
+
                         case "curtain":
                         resource = R.drawable.curtain_open;
                         break;
@@ -500,7 +508,7 @@ public class Common {
                         break;
 
                     case "curtain":
-                        resource = R.drawable.curtain_open;
+                        resource = R.drawable.curtain_closed;
                         break;
 
                     default:

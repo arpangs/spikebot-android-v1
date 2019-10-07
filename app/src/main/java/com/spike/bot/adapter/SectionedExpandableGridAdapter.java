@@ -72,7 +72,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
         this.mCameraClickListener = mCameraClickListener;
     }
 
-    SectionedExpandableGridAdapter(Context context, ArrayList<Object> dataArrayList,
+        SectionedExpandableGridAdapter(Context context, ArrayList<Object> dataArrayList,
                                    final GridLayoutManager gridLayoutManager, ItemClickListener itemClickListener,
                                    OnSmoothScrollList onSmoothScroll, TempClickListener tempClickListener, SectionStateChangeListener sectionStateChangeListener) {
         mContext = context;
@@ -597,7 +597,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 }
 
                 ChatApplication.logDisplay("panel status name is "+panel1.getPanelName());
-                ChatApplication.logDisplay("panel status name getPanel_status "+position);
+                ChatApplication.logDisplay("panel status name getPanel_status "+panel1.getDeviceList().size());
 
                 if (panel1.getPanel_status() == 1) { //|| position%2 ==1
                     holder.iv_room_panel_onoff.setImageResource(R.drawable.room_on);
@@ -624,12 +624,13 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 });
 
 
-                if (panel1.getType().equalsIgnoreCase("camera")) {
+                //5 for curtain
+                if (panel1.getType().equalsIgnoreCase("camera") || panel1.getPanel_type()==5) {
                     holder.txt_recording.setVisibility(View.GONE);
                     holder.txt_recording.setText(Html.fromHtml("<font color=\"red\">◉</font> <font color=\"#FFFFFF\">RECORDINGS</font>"));
                     holder.iv_room_panel_onoff.setVisibility(View.GONE);//INVISIBLE
 
-                    holder.sectionTextView.setVisibility(View.GONE);
+//                    holder.sectionTextView.setVisibility(View.GONE);
                     holder.txt_recording.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -938,13 +939,11 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         if (!isClickable)
                             return;
 
-                        item.setOldStatus(item.getDeviceStatus());
-                        item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1 : 0);
-//                        if(item.getIs_locked()==1){
-//                            item.setIs_locked(item.getIs_locked() == 0 ? 1 : 0);
-//                        }
-
-                        notifyItemChanged(position, item);
+                        if(!item.getDevice_icon().equals("curtain")){
+                            item.setOldStatus(item.getDeviceStatus());
+                            item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1 : 0);
+                            notifyItemChanged(position, item);
+                        }
 
                         if (!item.isSensor()) {
                             if(item.getDeviceType().equalsIgnoreCase("3")){

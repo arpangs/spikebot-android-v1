@@ -3,8 +3,10 @@ package com.spike.bot;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.RemoteException;
 import android.support.multidex.MultiDex;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -18,6 +20,7 @@ import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.DateHelper;
+import com.spike.bot.activity.LoginActivity;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.core.CustomReportSender;
@@ -51,6 +54,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -199,8 +203,6 @@ public class ChatApplication extends Application  {
 // Install the application crash handler
         ApplicationCrashHandler.installHandler();
       //  Common.savePrefValue(getApplicationContext(),"","");
-
-
     }
 
     private Emitter.Listener onDisconnect = new Emitter.Listener() {
@@ -449,4 +451,7 @@ public class ChatApplication extends Application  {
             e.printStackTrace();
         }
     }
+
+    //beacon
+
 }

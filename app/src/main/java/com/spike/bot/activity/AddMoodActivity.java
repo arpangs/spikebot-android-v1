@@ -601,6 +601,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
                     } else {
                         arrayListRoomId.add(dPanel.getRoomId());
+                        ob1.put("room_id", dPanel.getRoomId());
                         ob1.put("module_id", dPanel.getModuleId());
                         ob1.put("device_id", dPanel.getDeviceId());
                         ob1.put("room_device_id", dPanel.getRoomDeviceId());
@@ -650,6 +651,8 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                 try {
 
                     ChatApplication.isMoodFragmentNeedResume = true;
+
+                    ChatApplication.logDisplay("mood is "+result);
 
                     int code = result.getInt("code");
                     String message = result.getString("message");

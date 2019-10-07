@@ -44,14 +44,6 @@
                 android:layout_height="wrap_content">
 
 
-                <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="@dimen/_100sdp"
-                        android:layout_height="@dimen/_100sdp"
-                        android:layout_gravity="center"
-                        android:visibility="visible"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:src="@drawable/middle"/>
 
 
                 <LinearLayout
@@ -64,14 +56,12 @@
                         android:layout_height="@dimen/_170sdp"
                         android:orientation="vertical">
 
-                        <ImageView
-                            android:id="@+id/imm"
+                        <android.support.v7.widget.AppCompatImageView
+                            android:id="@+id/imgOpen"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="?attr/selectableItemBackground"
-                            android:clickable="true"
                             android:layout_gravity="bottom"
-                            android:src="@drawable/up_side"/>
+                            android:src="@drawable/open_enabled"/>
 
                     </LinearLayout>
 
@@ -81,16 +71,24 @@
                         android:layout_height="@dimen/_170sdp"
                         android:orientation="vertical">
 
-                        <ImageView
+                        <android.support.v7.widget.AppCompatImageView
+                            android:id="@+id/imgClose"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="?attr/selectableItemBackground"
-                            android:clickable="true"
                             android:layout_alignParentBottom="true"
-                            android:src="@drawable/down_side"/>
+                            android:src="@drawable/close_disabled"/>
 
                     </LinearLayout>
                 </LinearLayout>
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:id="@+id/imgPause"
+                    android:layout_width="@dimen/_100sdp"
+                    android:layout_height="@dimen/_100sdp"
+                    android:layout_gravity="center"
+                    android:visibility="visible"
+                    android:src="@drawable/puse_enabled"/>
+
             </FrameLayout>
         </LinearLayout>
     </LinearLayout>

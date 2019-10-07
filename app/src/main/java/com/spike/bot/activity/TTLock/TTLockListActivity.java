@@ -78,6 +78,10 @@ public class TTLockListActivity extends AppCompatActivity {
         fab.setVisibility(View.GONE);
 
 
+        Intent intent=new Intent(this, Main2Activity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     @Override

@@ -139,7 +139,9 @@ dependencies {
 
   //  kotlin
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-//    implementation 'android.core:core-ktx:1.0.2'
+
+    //beacon
+    implementation 'uk.co.alt236:bluetooth-le-library-android:1.0.0'
 
 
 }

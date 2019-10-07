@@ -46,27 +46,21 @@ public class Constants {
     //device type =3 - philip
     // device type = 2 = Ac
 
-//    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
+    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
 //    public static  String CLOUD_SERVER_URL = "http://api.spikebot.io"; //222
-    public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //wifi / 123
+//    public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //wifi / 123
 //
 // *-   public static  String CLOUD_SERVER_URL = "http://52.201.70.116:8079"; // unuser
 //    public static  String CLOUD_SERVER_URL = "http://54.201.70.116:8079"; // unuser
 //    public static  String CLOUD_SERVER_URL = ""; //117 testing
-//http://52.24.23.7:8079
-//http://52.24.23.7:7 tester / 123
-//    public static  String IP_END = "111";  // cam /1234
-//    public static  String  IP_END = "119"; //jhanvi / 123
-//    public static  String  IP_END = "118"; // smart / 123
+//    public static  String IP_END = "111";  // vipul/123
+//    public static  String  IP_END = "117"; // jhanvi / 123
+//    public static  String  IP_END = "118"; // bhumi / 123
 
-    public  static  String  IP_END = "222"; //101 //117 //222
-//    public static  String  IP_END = "101"; //101 //117 //222
-//    public static final String  IP_END = "117"; //101 //117 //222 vip/123
+    public  static  String  IP_END = "222";
     public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";
-//    public static final String CAMERA_DEEP = "rtmp://vpn.spikebot.io";
     public static final String CAMERA_PATH = "/static/storage/volume/pi/";
 
-//    public static String startUrl="http://vpn.sp";
     public static String startUrl="http://home.d";
 
     public static final int ACK_TIME_OUT = 5000;
@@ -83,6 +77,7 @@ public class Constants {
     public static final String USER_ADMIN_TYPE = "user_admin_type";
     public static final String USER_ROOM_TYPE = "user_room_type";
     public static final String lock_exe = "lock_exe";
+    public static final String lock_token = "lock_token";
     public static int lockDate = 0;
     public static String socketIp = "";
     public static int socketType = 0;
@@ -169,7 +164,9 @@ public class Constants {
     public static final String deleteTTLockBridge = "/deleteTTLockBridge";
     public static final String updateTTLockActiveStatus = "/updateTTLockActiveStatus";
     public static final String curtainadd = "/curtain/add";
-    public static final String curtainupdate = "curtain/update";
+    public static final String curtainupdate = "/curtain/update";
+    public static final String curtaindelete = "/curtain/delete";
+    public static final String curtainupdatestatus= "/curtain/update-status";
 
     public static final String SENSOR_ROOM_DETAILS = "/sensorRoomDetails";
     public static final String SENSOR_NOTIFICATION = "/sensorNotification";
@@ -188,6 +185,7 @@ public class Constants {
     public static final String getUnassignedRepeaterList = "/getUnassignedRepeaterList";
     public static final String curtainconfigure= "/curtain/configure";
     public static final String curtainunassigned= "/curtain/unassigned";
+    public static final String curtainunassignedlist= "/unassigned";
 
     //temp sensor
     public static final String GET_TEMP_SENSOR_INFO = "/getTempSensorInfo";
@@ -593,36 +591,12 @@ public class Constants {
         //November - 30 days 11
         //December - 31 days 12
 
-//        Calendar c = Calendar.getInstance();
-//        int month = c.get(Calendar.MONTH);
-
-//        int valueOfDay=0;
-
-//        YearMonth yearMonthObject = YearMonth.of(2019, 07);
-//        int daysInMonth = yearMonthObject.lengthOfMonth(); //28
-
             Calendar calendar = Calendar.getInstance();
             int date = 1;
             calendar.set(year, month, date);
            int  days = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-//        if(month==1 || month==3 || month==5 || month==7 || month==8 || month==10 || month==12){
-//            valueOfDay =31;
-//        }else if(month==4 || month==6  || month==9 || month==11 ){
-//            valueOfDay =30;
-//        }else {
-//            valueOfDay =28;
-//        }
-
         return days;
-    }
-
-    public static int getIntFromColor(int Red, int Green, int Blue){
-        Red = (Red << 16) & 0x00FF0000; //Shift red 16-bits and mask out other stuff
-        Green = (Green << 8) & 0x0000FF00; //Shift Green 8-bits and mask out other stuff
-        Blue = Blue & 0x000000FF; //Mask out anything not blue.
-
-        return 0xFF000000 | Red | Green | Blue; //0xFF000000 for 100% Alpha. Bitwise OR everything together.
     }
 
     public static String getMillsTimeFormat(long date){
@@ -634,6 +608,12 @@ public class Constants {
        return DigitUtil.getMD5("vg99092vg");
     }
 
+    public static void startUrlset(){
+        if(!ChatApplication.url.startsWith("http")){
+            ChatApplication.url="http://"+ChatApplication.url;
+        }
+
+    }
     public static int twoDateDiff(String enddate){
         SimpleDateFormat myFormat = new SimpleDateFormat("dd-MM-yyyy");
 //        String dateBeforeString = "31 01 2014";

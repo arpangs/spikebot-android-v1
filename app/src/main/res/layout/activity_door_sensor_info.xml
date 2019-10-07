@@ -404,6 +404,7 @@
                                         android:orientation="vertical">
 
                                         <ImageView
+                                            android:id="@+id/imgLockBattery"
                                             android:src="@drawable/battery_4"
                                             android:layout_gravity="center"
                                             android:layout_width="32dp"

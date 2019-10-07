@@ -109,7 +109,10 @@ public class CameraDeviceLogActivity  extends AppCompatActivity {
     public void resetData(){
         isLoading=false;
         arrayList.clear();
-        cameraLogAdapter.notifyDataSetChanged();
+        if(cameraLogAdapter!=null){
+            cameraLogAdapter.notifyDataSetChanged();
+        }
+
         start_date="";
         end_date="";
         notification_number=0;
