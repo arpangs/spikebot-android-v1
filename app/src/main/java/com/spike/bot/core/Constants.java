@@ -31,8 +31,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -638,5 +640,21 @@ public class Constants {
         }
 
         return daysBetween;
+    }
+
+    public static InetAddress getLocalIpAddress(Context context) {
+        WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        int ipAddress = wifiInfo.getIpAddress();
+        InetAddress address = null;
+        try {
+            address = InetAddress.getByName(String.format(Locale.ENGLISH,
+                    "%d.%d.%d.%d", (ipAddress & 0xff), (ipAddress >> 8 & 0xff),
+                    (ipAddress >> 16 & 0xff), (ipAddress >> 24 & 0xff)));
+
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        return address;
     }
 }

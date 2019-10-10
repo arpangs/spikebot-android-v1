@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -20,11 +18,9 @@ import com.spike.bot.R;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.internal.Primitives;
-import com.spike.bot.listener.RouterIssue;
 import com.ttlock.bl.sdk.net.OkHttpRequest;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -34,7 +30,6 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -94,245 +89,8 @@ public class Common {
                 && activeNetwork.isConnectedOrConnecting();
     }
 
-    /**
-     * check network is reachable or not using process execute command
-     */
-    public static void isReachableProcess() {
-        Process p1 = null;
-        try {
-            p1 = Runtime.getRuntime().exec("ping www.google.com");
-            Log.i("CmdName", "using cmd :" + p1.waitFor());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * @param addr
-     * @param openPort
-     * @param timeOutMillis
-     * @return
-     */
-    private static boolean isReachable(String addr, int openPort, int timeOutMillis) {
-        // Any Open port on other machine
-        // openPort =  22 - ssh, 80 or 443 - webserver, 25 - mailserver etc.
-        try {
-            try (Socket soc = new Socket()) {
-                soc.connect(new InetSocketAddress(addr, openPort), timeOutMillis);
-            }
-            return true;
-        } catch (IOException ex) {
-            return false;
-        }
-    }
-
-    /**
-     * check ip or port is reachable or not using socket
-     *
-     * @param inHost
-     * @param inPort
-     * @return
-     */
-    public static boolean isPortReachable(String inHost, int inPort, RouterIssue routerIssue) {
-
-        Socket socket = null;
-        boolean retVal = false;
-
-        try {
-            socket = new Socket(inHost, inPort);
-            socket.setSoTimeout(1000);
-            retVal = true;
-        } catch (IOException e) {
-            routerIssue.wifiConnectionIssue(false);
-            e.printStackTrace();
-        } finally {
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return retVal;
-    }
-
-    public static String getMacAddr() {
-        try {
-            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
-            for (NetworkInterface nif : all) {
-                if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
-
-                byte[] macBytes = nif.getHardwareAddress();
-                if (macBytes == null) {
-                    return "";
-                }
-
-                StringBuilder res1 = new StringBuilder();
-                for (byte b : macBytes) {
-                    res1.append(Integer.toHexString(b & 0xFF) + ":");
-                }
-
-                if (res1.length() > 0) {
-                    res1.deleteCharAt(res1.length() - 1);
-                }
-                return res1.toString();
-            }
-        } catch (Exception ex) {
-            //handle exception
-        }
-        return "";
-    }
-
-    public static String getMacAddress(Context context, String ipaddress) {
-        if (ipaddress == null)
-            return null;
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader("/proc/net/arp"));
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] splitted = line.split(" +");
-                if (splitted != null && splitted.length >= 4 && ipaddress.equals(splitted[0])) {
-                    // Basic sanity check
-                    String mac = splitted[3];
-                    if (mac.matches("..:..:..:..:..:..")) {
-                        ChatApplication.logDisplay("mac address is " + mac);
-                        return mac;
-                    } else {
-                        return null;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                br.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
     public static String TAG = "isReachableURL";
 
-    /**
-     * Check is given IP is reachable or not
-     *
-     * @param context
-     * @param urlAddress
-     * @return
-     */
-    public static boolean IsReachable(Context context, String urlAddress) {
-        // First, check we have any sort of connectivity
-        final ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        final NetworkInfo netInfo = connMgr.getActiveNetworkInfo();
-        boolean isReachable = false;
-
-        //String osName = System.getProperty("os.name");
-        // String cmd = executeCmd("ls -l", false);
-
-        if (netInfo != null && netInfo.isConnected()) {
-            // Some sort of connection is open, check if server is reachable
-            try {
-                //URL url = new URL("http://10.0.2.2");
-                URL url = new URL(urlAddress);
-                HttpURLConnection urlc = (HttpURLConnection) url.openConnection();
-                urlc.setRequestProperty("User-Agent", "Android Application");
-                urlc.setRequestProperty("Connection", "close");
-                //urlc.setConnectTimeout( 2500);
-                urlc.setConnectTimeout(1000);
-                urlc.setReadTimeout(1000);
-                urlc.connect();
-                isReachable = (urlc.getResponseCode() == 200);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return isReachable;
-    }
-
-
-    public static String executeCmd(String cmd, boolean sudo) {
-        try {
-
-            Process p;
-            if (!sudo)
-                p = Runtime.getRuntime().exec(cmd);
-            else {
-                p = Runtime.getRuntime().exec(new String[]{"su", "-c", cmd});
-            }
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-            String s;
-            String res = "";
-            while ((s = stdInput.readLine()) != null) {
-                res += s + "\n";
-            }
-            p.destroy();
-            return res;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "";
-
-    }
-
-    /**
-     * @param nping
-     * @param wping
-     * @param ipping
-     * @return
-     * @throws
-     */
-    public static boolean isReachable(int nping, int wping, String ipping) throws Exception {
-
-        int nReceived = 0;
-        int nLost = 0;
-
-        Runtime runtime = Runtime.getRuntime();
-        Process process = runtime.exec("ping -n " + nping + " -w " + wping + " " + ipping);
-        Scanner scanner = new Scanner(process.getInputStream());
-        process.waitFor();
-        ArrayList<String> strings = new ArrayList<>();
-        String data = "";
-        //
-        while (scanner.hasNextLine()) {
-            String string = scanner.nextLine();
-            data = data + string + "\n";
-            strings.add(string);
-        }
-
-        if (data.contains("IP address must be specified.")
-                || (data.contains("Ping request could not find host " + ipping + ".")
-                || data.contains("Please check the name and try again."))) {
-            throw new Exception(data);
-        } else if (nping > strings.size()) {
-            throw new Exception(data);
-        }
-
-        int index = 2;
-
-        for (int i = index; i < nping + index; i++) {
-            String string = strings.get(i);
-            if (string.contains("Destination host unreachable.")) {
-                nLost++;
-            } else if (string.contains("Request timed out.")) {
-                nLost++;
-            } else if (string.contains("bytes") && string.contains("time") && string.contains("TTL")) {
-                nReceived++;
-            } else {
-            }
-        }
-
-        return nReceived > 0;
-    }
 
     /**
      * @param status
@@ -950,26 +708,6 @@ public class Common {
         return wifi.isConnected();
     }
 
-    /**
-     * @param context
-     * @return
-     */
-    public static boolean isInternetAccessible(Context context) {
-        if (isWifiAvailable(context)) {
-            try {
-                HttpURLConnection urlc = (HttpURLConnection) (new URL("https://www.google.com").openConnection());
-                urlc.setRequestProperty("User-Agent", "Test");
-                urlc.setRequestProperty("Connection", "close");
-                urlc.setConnectTimeout(200);
-                urlc.connect();
-                return (urlc.getResponseCode() == 200);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-        }
-        return false;
-    }
 
     public static Object fromJson(String jsonString, Type type) {
         return new Gson().fromJson(jsonString, type);

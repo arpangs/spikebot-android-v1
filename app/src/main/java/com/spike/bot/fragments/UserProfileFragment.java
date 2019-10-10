@@ -153,7 +153,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             Toast.makeText(getContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
             return;
         }
-        ActivityHelper.showProgressDialog(getContext(),"Please wait.",false);
+        ActivityHelper.showProgressDialog(getContext(),"Please wait....",false);
 
         String url = ChatApplication.url + Constants.GET_USER_PROFILE_INFO;
 
@@ -161,6 +161,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             @Override
             public void onSuccess(JSONObject result) {
                 try {
+                    ActivityHelper.dismissProgressDialog();
                     //{"code":200,"message":"success","data":{"userProfileData":[{"user_email":"test@gmail.com","first_name":"test","last_name":"patel","user_name":"test","user_phone":"123123"}]}}
                     int code = result.getInt("code");
                     String message = result.getString("message");

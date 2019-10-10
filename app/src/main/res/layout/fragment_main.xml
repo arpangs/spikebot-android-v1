@@ -400,7 +400,7 @@
                     android:layout_margin="@dimen/_2sdp"
                     android:padding="@dimen/_6sdp"
                     android:textSize="16sp"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:textStyle="bold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

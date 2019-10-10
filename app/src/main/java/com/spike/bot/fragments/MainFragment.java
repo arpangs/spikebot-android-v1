@@ -5,12 +5,16 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
@@ -93,9 +97,9 @@ import com.spike.bot.core.JsonHelper;
 import com.spike.bot.customview.recycle.ItemClickListener;
 import com.spike.bot.dialog.FanDialog;
 import com.spike.bot.dialog.ICallback;
+import com.spike.bot.listener.DeviceListRefreshView;
 import com.spike.bot.listener.LoginPIEvent;
 import com.spike.bot.listener.ResponseErrorCode;
-import com.spike.bot.listener.RunServiceInterface;
 import com.spike.bot.listener.SocketListener;
 import com.spike.bot.listener.OnSmoothScrollList;
 import com.spike.bot.listener.TempClickListener;
@@ -115,6 +119,7 @@ import com.kp.core.ICallBack2;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.model.UnassignedListRes;
 import com.spike.bot.model.User;
+import com.spike.bot.receiver.ConnectivityReceiver;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -142,7 +147,7 @@ import static com.spike.bot.core.Common.showToast;
  */
 
 public class MainFragment extends Fragment implements ItemClickListener, SectionedExpandableGridAdapter.CameraClickListener,
-        SwipeRefreshLayout.OnRefreshListener, OnSmoothScrollList, TempClickListener {
+        SwipeRefreshLayout.OnRefreshListener, OnSmoothScrollList, TempClickListener , DeviceListRefreshView {
 
     public static int showDialog = 1;
     public static Boolean isRefredCheck = true, isItemClickView=false;
@@ -176,7 +181,6 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
     // This does not mean the Activity is fully initialized.
 
     public static OnHeadlineSelectedListener mCallback;
-    RunServiceInterface runServiceInterface;
     ResponseErrorCode responseErrorCode;
     LoginPIEvent loginPIEvent;
     SocketListener socketListener;
@@ -202,7 +206,6 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             this.activity = (Activity) context;
         }
         try {
-            runServiceInterface = (RunServiceInterface) activity;
             mCallback = (OnHeadlineSelectedListener) activity;
             responseErrorCode = (ResponseErrorCode) activity;
             loginPIEvent = (LoginPIEvent) activity;
@@ -254,7 +257,6 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         getDeviceList(1);
         sectionedExpandableLayoutHelper.setClickable(false);
     }
-
     private NestedScrollView main_scroll;
     private FloatingActionButton mFab;
     private CardView mFabMenuLayout;
@@ -264,7 +266,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Fabric.with(getActivity(), new Crashlytics());
         view = inflater.inflate(R.layout.fragment_main, container, false);
-
+        ((Main2Activity)getActivity()).setCallBack(this);
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(this);
@@ -301,7 +303,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         sectionedExpandableLayoutHelper.setCameraClick(MainFragment.this);
 
         if (!isCallVisibleHint) {
-            onLoadFragment();
+//            onLoadFragment();
         }
 
         empty_add_image.setOnClickListener(new View.OnClickListener() {
@@ -324,11 +326,14 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!isFABOpen) {
-                    showFABMenu();
-                } else {
-                    closeFABMenu();
+                if(isItemClickView){
+                    if (!isFABOpen) {
+                        showFABMenu();
+                    } else {
+                        closeFABMenu();
+                    }
                 }
+
 
             }
         });
@@ -437,17 +442,18 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         mFab.setVisibility(View.VISIBLE);
         linear_retry.setVisibility(View.GONE);
         ((Main2Activity)getActivity()).mToolBarSettings.setClickable(true);
-        ((Main2Activity)getActivity()).tabLayout.setVisibility(View.VISIBLE);
+        ((Main2Activity)getActivity()).linearTab.setVisibility(View.VISIBLE);
         ChatApplication.isCallDeviceList=true;
         getDeviceList(1);
     }
 
     public void errorViewClick(){
       //  m_progressDialog.dismiss();
+
         mFab.setVisibility(View.GONE);
         linear_retry.setVisibility(View.VISIBLE);
         ((Main2Activity)getActivity()).mToolBarSettings.setClickable(false);
-        ((Main2Activity)getActivity()).tabLayout.setVisibility(View.GONE);
+        ((Main2Activity)getActivity()).linearTab.setVisibility(View.GONE);
 
     }
 
@@ -487,6 +493,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         empty_add_image.setVisibility(View.VISIBLE);
         txt_empty_text.setText("Add Room");
 
+        ((Main2Activity)getActivity()).setCallBack(this);
         if (ChatApplication.isLocalFragmentResume) {
             ChatApplication.isLocalFragmentResume = false;
             getDeviceList(2);
@@ -494,6 +501,8 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         } else if (ChatApplication.isMainFragmentNeedResume) {
             ChatApplication.isMainFragmentNeedResume = false;
             onLoadFragment();
+        }else{
+            getDeviceList(15);
         }
     }
 
@@ -561,6 +570,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         if (mSocket != null) {
             mSocket.off("ReloadDeviceStatusApp", reloadDeviceStatusApp);
             mSocket.off("roomStatus", roomStatus);
@@ -2238,6 +2248,16 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         this.activity = activity;
     }
 
+    //network change
+    @Override
+    public void deviceRefreshView(int count) {
+        if(count==0){
+            errorViewClick();
+        }else {
+            getDeviceList(1);
+        }
+    }
+
     public interface OnHeadlineSelectedListener {
         public void onArticleSelected(String name);
 
@@ -2397,7 +2417,9 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 //                    showProgressDialog(getActivity(), "Connecting to cloud...", true);
                 }
             } else {
+                if(!m_progressDialog.isShowing()){
                     showProgressDialog(getActivity(), "Please Wait...", true);
+                }
             }
         }
 
@@ -2436,7 +2458,6 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             public void onSuccess(JSONObject result) {
                 dismissProgressDialog();
                 ChatApplication.isCallDeviceList = false;
-                ((Main2Activity) getActivity()).wifiConnectionIssue(true);
                 if (ChatApplication.isPushFound) {
                     getBadgeClear(getActivity());
                 }
@@ -2587,7 +2608,8 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                         ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
 
                         //JSONArray userList = dataObject.getJSONArray("userList");
-                        Main2Activity.changestatus();
+
+                        ((Main2Activity)getActivity()).changestatus();
                         if (roomArray.length() == 0) {
                             mMessagesView.setVisibility(View.GONE);
                             txt_empty_schedule.setVisibility(View.VISIBLE);
@@ -2698,7 +2720,6 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             public void onSuccess(JSONObject result) {
                 dismissProgressDialog();
                 ChatApplication.isCallDeviceList = false;
-                ((Main2Activity) getActivity()).wifiConnectionIssue(true);
                 if (ChatApplication.isPushFound) {
                     getBadgeClear(getActivity());
                 }
@@ -2853,7 +2874,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                         sectionedExpandableLayoutHelper.notifyDataSetChanged();
                         ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
 
-                        Main2Activity.changestatus();
+                        ((Main2Activity)getActivity()).changestatus();
                         if (roomArray.length() == 0) {
                             mMessagesView.setVisibility(View.GONE);
                             txt_empty_schedule.setVisibility(View.VISIBLE);
@@ -2943,7 +2964,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             mFab.setVisibility(View.VISIBLE);
             linear_retry.setVisibility(View.GONE);
             ((Main2Activity)getActivity()).mToolBarSettings.setClickable(true);
-            ((Main2Activity)getActivity()).tabLayout.setVisibility(View.VISIBLE);
+            ((Main2Activity)getActivity()).linearTab.setVisibility(View.VISIBLE);
             ChatApplication.isCallDeviceList=true;
         }
 
@@ -2952,7 +2973,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         }
         ChatApplication.logDisplay("show progress is " + showDialog);
 
-        roomList.clear();
+//        roomList.clear();
         if (mMessagesView == null) {
             mMessagesView = (RecyclerView) view.findViewById(R.id.messages);
         }
@@ -3018,8 +3039,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             ChatApplication.logDisplay("m_progressDialog is null not");
             m_progressDialog.cancel();
             m_progressDialog.dismiss();
-            m_progressDialog=null;
-           // m_progressDialog=null;
+//            m_progressDialog=null;
         }
     }
 

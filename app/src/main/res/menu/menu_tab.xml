@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <item
+            android:id="@+id/navigationDashboard"
+            android:icon="@drawable/dasboard_drey"
+            android:title="@string/menu_dashboard1" />
+
+        <item
+            android:id="@+id/navigationMood"
+            android:icon="@drawable/mood_grey"
+            android:title="@string/menu_mood1" />
+
+        <item
+            android:id="@+id/navigationSchedule"
+            android:icon="@drawable/schedule_grey"
+            android:title="@string/menu_schedule1" />
+
+
+</menu>

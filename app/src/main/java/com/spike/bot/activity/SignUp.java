@@ -176,7 +176,7 @@ public class SignUp extends AppCompatActivity {
             return;
         }
 
-        InetAddress addr = Main2Activity.getLocalIpAddress(SignUp.this);
+        InetAddress addr = Constants.getLocalIpAddress(SignUp.this);
         String hostname = addr.toString().replace("/", "");
 
         String[] array = hostname.split("\\.");

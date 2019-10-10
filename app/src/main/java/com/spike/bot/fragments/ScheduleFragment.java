@@ -44,7 +44,6 @@ import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.core.JsonHelper;
 import com.spike.bot.listener.ResponseErrorCode;
-import com.spike.bot.listener.RunServiceInterface;
 import com.spike.bot.model.ScheduleVO;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
@@ -135,7 +134,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     // This event fires 1st, before creation of fragment or any views
     // The onAttach method is called when the Fragment instance is associated with an Activity.
     // This does not mean the Activity is fully initialized.
-    RunServiceInterface runServiceInterface;
     ResponseErrorCode responseErrorCode;
 
     private static MainFragment instance = null;
@@ -152,7 +150,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             /*if(activity instanceof Main2Activity){
 
             }*/
-                    runServiceInterface = (RunServiceInterface) activity;
                     responseErrorCode = (ResponseErrorCode) activity;
                     mCallback = (MainFragment.OnHeadlineSelectedListener) activity;
                 } catch (ClassCastException e) {
@@ -185,26 +182,9 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void onRefresh() {
         isRefreshonScroll = true;
-        if (Main2Activity.isCloudConnected && runServiceInterface != null) {
-            String jsonText = Common.getPrefValue(getActivity(), Common.USER_JSON);
-            if (!TextUtils.isEmpty(jsonText)) {
-                Gson gson = new Gson();
-                Type type = new TypeToken<List<User>>() {
-                }.getType();
-                List<User> userList = gson.fromJson(jsonText, type);
-                if (userList.size() == 1) {
-                } else {
-                    ((Main2Activity) getActivity()).setCouldMethod();
-                    //  runServiceInterface.executeService();
-                }
-            }
-
-        }
-
         swipeRefreshLayout.setRefreshing(true);
         scheduleRoomAdapter.setClickable(false);
         if (activity instanceof Main2Activity) {
-            ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
             if (getUserList().size() > 0) {
                 displayTital();
             }
@@ -244,21 +224,18 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_schedule, container, false);
         try {
-            isMood = getArguments().getBoolean("isMood");
-            moodId = getArguments().getString("moodId");
-            roomId = getArguments().getString("roomId");
-            isActivityType = getArguments().getString("isActivityType");
-            try {
+            if(getActivity().getIntent()!=null) {
+
+                isMood = getArguments().getBoolean("isMood");
+                moodId = getArguments().getString("moodId");
+                roomId = getArguments().getString("roomId");
+                isActivityType = getArguments().getString("isActivityType");
                 moodId2 = getArguments().getString("moodId2");
                 moodId3 = getArguments().getString("moodId3");
                 isRoomMainFm = getArguments().getString("isRoomMainFm");
                 selection = getArguments().getInt("selection");
                 isMoodAdapter = getArguments().getBoolean("isMoodAdapter");
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }

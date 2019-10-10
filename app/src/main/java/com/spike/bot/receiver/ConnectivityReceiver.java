@@ -13,6 +13,7 @@ import com.spike.bot.core.Constants;
 
 public class ConnectivityReceiver extends BroadcastReceiver {
 
+    public static int counter=0;
     public static ConnectivityReceiverListener connectivityReceiverListener;
     public static ConnectivityReceiverWifi connectivityReceiverWifi;
 
@@ -28,7 +29,6 @@ public class ConnectivityReceiver extends BroadcastReceiver {
         final boolean isConnected = activeNetwork != null
                 && activeNetwork.isConnected();
 
-        Log.d("System out", "onNetworkConnectionChanged isConnected111 : " + isConnected);
 
         if (Constants.isWifiConnect) {
             if (Constants.isWifiConnectSave) {
@@ -37,10 +37,11 @@ public class ConnectivityReceiver extends BroadcastReceiver {
                 }
             }
         } else {
-            if (connectivityReceiverListener != null) {
+            //counter means that first double time calling api so
+            if (connectivityReceiverListener != null && counter>0) {
                 connectivityReceiverListener.onNetworkConnectionChanged(isConnected);
-
             }
+            counter++;
 
         }
     }

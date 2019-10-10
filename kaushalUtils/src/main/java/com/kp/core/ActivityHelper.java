@@ -80,10 +80,10 @@ public class ActivityHelper {
 
     public static void showProgressDialog(final Context p_context, final String p_loadingMessage, final boolean p_isCancelable) {
         // m_progressDialog = null;
-//        if (m_progressDialog != null && m_progressDialog.isShowing()) {
-//            // m_progressDialog.isShowing();
-//            return;
-//        }
+        if (m_progressDialog != null && m_progressDialog.isShowing()) {
+            // m_progressDialog.isShowing();
+            return;
+        }
             Log.d("System out","is showing dialog ss ");
             m_progressDialog = new ProgressDialog(p_context);
         m_progressDialog.setMessage(p_loadingMessage);
@@ -100,7 +100,6 @@ public class ActivityHelper {
             if (m_progressDialog != null) {
                 m_progressDialog.cancel();
                 m_progressDialog.dismiss();
-                m_progressDialog=null;
             }
         } catch (Throwable e) {
         }

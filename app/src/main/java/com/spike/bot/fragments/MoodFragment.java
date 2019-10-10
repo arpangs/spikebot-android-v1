@@ -46,7 +46,6 @@ import com.spike.bot.customview.recycle.ItemClickMoodListener;
 import com.spike.bot.dialog.FanDialog;
 import com.spike.bot.dialog.ICallback;
 import com.spike.bot.listener.ResponseErrorCode;
-import com.spike.bot.listener.RunServiceInterface;
 import com.spike.bot.model.DeviceVO;
 import com.spike.bot.model.PanelVO;
 import com.spike.bot.model.RoomVO;
@@ -77,14 +76,8 @@ import io.socket.emitter.Emitter;
  */
 public class MoodFragment extends Fragment implements View.OnClickListener,ItemClickMoodListener ,SwipeRefreshLayout.OnRefreshListener {
 
-    private static final String TAG = "MainFragment";
-
-    private static final int REQUEST_LOGIN = 0;
-    private static final int TYPING_TIMER_LENGTH = 600;
-
     MainFragment.OnHeadlineSelectedListener mCallback;
-
-    private Boolean isSocketConnected = true,isRefreshonScroll=false;
+    private Boolean isRefreshonScroll=false;
     private RecyclerView mMessagesView;
     private Socket mSocket;
     MoodExpandableLayoutHelper sectionedExpandableLayoutHelper;
@@ -111,7 +104,6 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
     // The onAttach method is called when the Fragment instance is associated with an Activity.
     // This does not mean the Activity is fully initialized.
 
-    RunServiceInterface runServiceInterface;
     ResponseErrorCode responseErrorCode;
 
     private Activity activity;
@@ -122,7 +114,6 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
             this.activity = (Activity) context;
         }
         try {
-            runServiceInterface = (RunServiceInterface) activity;
             responseErrorCode = (ResponseErrorCode) activity;
             mCallback = (MainFragment.OnHeadlineSelectedListener) activity;
         } catch (ClassCastException e) {
@@ -167,23 +158,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
     @Override
     public void onRefresh() {
         isRefreshonScroll=true;
-        if(Main2Activity.isCloudConnected){
-           // runServiceInterface.executeService();
-            String jsonText = Common.getPrefValue(getActivity(), Common.USER_JSON);
-            if (!TextUtils.isEmpty(jsonText)) {
-                Gson gson = new Gson();
-                Type type = new TypeToken<List<User>>() {}.getType();
-                List<User> userList = gson.fromJson(jsonText, type);
-                if(userList.size()==1){
-                }else {
-                    ((Main2Activity)getActivity()).setCouldMethod();
-                    //  runServiceInterface.executeService();
-                }
-            }
-        }
         mCallback.onArticleSelected(""+userName);
-        ((Main2Activity)getActivity()).invalidateToolbarCloudImage();
-
         swipeRefreshLayout.setRefreshing(true);
         sectionedExpandableLayoutHelper.setClickable(false);
         getDeviceList();

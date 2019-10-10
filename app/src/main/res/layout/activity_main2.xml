@@ -150,15 +150,15 @@
 
             </FrameLayout>
 
-            <com.spike.bot.customview.CustomViewPager
+          <!--  <com.spike.bot.customview.CustomViewPager
                 android:id="@+id/container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_above="@+id/tabs"
                 android:visibility="visible"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                app:layout_behavior="@string/appbar_scrolling_view_behavior" />-->
 
-            <android.support.design.widget.TabLayout
+         <!--   <android.support.design.widget.TabLayout
                 android:id="@+id/tabs"
                 style="@style/customTabLayout"
                 android:layout_width="match_parent"
@@ -168,46 +168,30 @@
                 app:tabGravity="fill"
                 app:tabTextAppearance="@style/MyTabLayoutTextAppearance"
                 app:tabTextColor="@color/automation_white" />
+-->
 
-            <LinearLayout
-                android:id="@+id/linear_retry"
+            <FrameLayout
+                android:id="@+id/container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/new_screen_resolution"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone">
+                android:layout_above="@+id/linearTab"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-                <TextView
+            <LinearLayout
+                android:id="@+id/linearTab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:orientation="vertical">
+
+                <android.support.design.widget.BottomNavigationView
+                    android:id="@+id/tabs"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="16dp"
-                    android:gravity="center"
-                    android:padding="4dp"
-                    android:text="Please try again."
-                    android:textAppearance="@android:style/TextAppearance.Large" />
-
-                <TextView
-                    android:visibility="gone"
-                    android:id="@+id/txt_error_value"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:padding="2dp"
-                    android:text="No Internet found.\nCheck your connection or try again."
-                    android:textAppearance="@android:style/TextAppearance.Medium" />
-
-                <Button
-                    android:id="@+id/button_retry"
-                    android:layout_width="@dimen/_100sdp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:background="@color/automation_white"
-                    android:text="Retry"
-                    android:textAllCaps="false"
-                    android:textSize="18sp" />
+                    android:layout_height="@dimen/_62sdp"
+                    app:itemIconTint="@drawable/bottom_nav_icon_color_selector"
+                    app:itemTextColor="@drawable/bottom_nav_icon_color_selector"
+                    app:itemIconSize="@dimen/_21sdp"
+                    app:menu="@menu/menu_tab"/>
 
             </LinearLayout>
 
@@ -249,168 +233,8 @@
 
             </LinearLayout>
 
-            <!--  <FrameLayout
-                  android:layout_marginBottom="380dp"
-                  android:layout_alignParentBottom="true"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent">
-
-                  <android.support.design.widget.FloatingActionButton
-                      android:id="@+id/fab"
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:layout_marginBottom="60dp"
-                      android:layout_gravity="end"
-                      android:tint="@color/automation_white"
-                      android:background="@color/sky_blue"
-                      app:backgroundTint="@color/sky_blue"
-                      android:layout_margin="@dimen/fab_margin"
-                      android:src="@drawable/icn_add" />
-
-              </FrameLayout>-->
-
-
-
-
-
-
         </RelativeLayout>
 
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linear_login"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:background="@color/automation_white"
-        android:gravity="center|top"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <android.support.v4.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fitsSystemWindows="true">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingTop="30dp"
-                android:paddingBottom="10dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:src="@drawable/ic_app_launcher"
-                    android:scaleType="fitXY"
-                    android:layout_gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <ImageView
-                    android:layout_marginTop="20dp"
-                    android:src="@drawable/ic_app_title"
-                    android:scaleType="fitXY"
-                    android:layout_gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <EditText
-                    android:id="@+id/et_username"
-                    android:layout_marginTop="24dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:singleLine="true"
-                    android:maxLength="30"
-                    android:text="wifi2"
-                    android:hint="Username"
-                    android:inputType="text" />
-
-                <EditText
-                    android:id="@+id/et_password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:singleLine="true"
-                    android:maxLength="20"
-                    android:layout_marginTop="16dp"
-                    android:text="123"
-                    android:hint="Password"
-                    android:inputType="textPassword" />
-
-
-                <LinearLayout
-                    android:layout_marginTop="20dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <Button
-                        android:visibility="gone"
-                        android:id="@+id/btn_cancel"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:textAllCaps="false"
-                        android:layout_marginRight="10dp"
-                        android:textColor="@color/automation_white"
-                        android:background="@drawable/button_radius"
-                        android:layout_height="wrap_content"
-                        android:text="cancel" />
-
-                    <Button
-                        android:id="@+id/btn_SKIP"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:textSize="@dimen/_15sdp"
-                        android:textAllCaps="false"
-                        android:textColor="@color/automation_white"
-                        android:background="@drawable/button_radius"
-                        android:layout_height="wrap_content"
-                        android:text="Skip" />
-
-                    <Button
-                        android:id="@+id/btn_login"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_marginLeft="10dp"
-                        android:textAllCaps="false"
-                        android:textSize="@dimen/_15sdp"
-                        android:textColor="@color/automation_white"
-                        android:background="@drawable/button_radius"
-                        android:layout_height="wrap_content"
-                        android:text="Login" />
-
-                </LinearLayout>
-
-                <Button
-                    android:id="@+id/btnSignUp"
-                    android:layout_marginTop="@dimen/_30sdp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginLeft="10dp"
-                    android:textSize="@dimen/_15sdp"
-                    android:background="@drawable/button_radius"
-                    android:textColor="@color/automation_white"
-                    android:text="Sign up"
-                    android:textAllCaps="false"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-            </LinearLayout>
-            </LinearLayout>
-        </android.support.v4.widget.NestedScrollView>
 
     </LinearLayout>
 
