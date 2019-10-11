@@ -426,6 +426,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         empty_add_image.setVisibility(View.VISIBLE);
         txt_empty_text.setText("Add Room");
 
+        ChatApplication.logDisplay("array is "+roomList.size());
         ((Main2Activity)getActivity()).setCallBack(this);
         if (ChatApplication.isLocalFragmentResume) {
             ChatApplication.isLocalFragmentResume = false;

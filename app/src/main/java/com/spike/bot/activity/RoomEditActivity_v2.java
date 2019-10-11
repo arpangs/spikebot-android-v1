@@ -261,12 +261,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             @Override
             public void onClick(View v) {
                 closeFABMenu();
-                //startActivity(new Intent(RoomEditActivity_v2.this, IRBlasterAddActivity.class));
-
                 showOptionDialogIr(SENSOR_TYPE_IR);
-//                Intent intent=new Intent(RoomEditActivity_v2.this,WifiBlasterActivity.class);
-//                intent.putExtra("roomId",""+room.getRoomId());
-//                startActivity(intent);
             }
         });
 
@@ -1986,7 +1981,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         String url="";
         if(type==SENSOR_GAS){
            url= ChatApplication.url + Constants.configureGasSensorRequest;
-        }else {
+        }else if(type==Curtain){
             url = ChatApplication.url + Constants.curtainconfigure;
         }
 

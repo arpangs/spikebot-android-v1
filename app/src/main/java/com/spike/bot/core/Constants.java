@@ -7,10 +7,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.StateListDrawable;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -51,7 +55,7 @@ public class Constants {
 //    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
 //    public static  String CLOUD_SERVER_URL = "http://api.spikebot.io"; //222
     public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //wifi / 123
-//
+
 // *-   public static  String CLOUD_SERVER_URL = "http://52.201.70.116:8079"; // unuser
 //    public static  String CLOUD_SERVER_URL = "http://54.201.70.116:8079"; // unuser
 //    public static  String CLOUD_SERVER_URL = ""; //117 testing
@@ -186,8 +190,9 @@ public class Constants {
     public static final String reassignRepeater = "/reassignRepeater";
     public static final String getUnassignedRepeaterList = "/getUnassignedRepeaterList";
     public static final String curtainconfigure= "/curtain/configure";
-    public static final String curtainunassigned= "/curtain/unassigned";
-    public static final String curtainunassignedlist= "/unassigned";
+    public static final String deviceconfigure= "device/configure/";
+
+
 
     //temp sensor
     public static final String GET_TEMP_SENSOR_INFO = "/getTempSensorInfo";
@@ -657,4 +662,6 @@ public class Constants {
         }
         return address;
     }
+
+
 }

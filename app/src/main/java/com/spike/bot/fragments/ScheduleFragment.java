@@ -849,13 +849,13 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             ll_recycler.setVisibility(View.VISIBLE);
             rv_mood.setVisibility(View.VISIBLE);
 
-            if(scheduleRoomAdapter==null){
+//            if(scheduleRoomAdapter==null){
                 scheduleRoomAdapter = new ScheduleAdapter(getActivity(), scheduleRoomArrayList, ScheduleFragment.this, true, false);
                 rv_mood.setAdapter(scheduleRoomAdapter);
                 scheduleRoomAdapter.notifyDataSetChanged();
-            }else {
-                scheduleRoomAdapter.notifyDataSetChanged();
-            }
+//            }else {
+//                scheduleRoomAdapter.notifyDataSetChanged();
+//            }
 
 
             updateButton(btnRoomSchedule, btnMoodSchedule);

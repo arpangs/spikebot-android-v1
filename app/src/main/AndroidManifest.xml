@@ -153,13 +153,6 @@
             android:windowSoftInputMode="stateAlwaysHidden" />
 
         <activity
-            android:name="com.spike.bot.activity.RoomEditActivity"
-            android:label="@string/title_activity_room_edit"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateHidden" />
-
-        <activity
             android:name="com.spike.bot.activity.RoomEditActivity_v2"
             android:label="@string/title_activity_room_edit"
             android:screenOrientation="portrait"
