@@ -62,11 +62,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -83,12 +79,14 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
     MoodExpandableLayoutHelper sectionedExpandableLayoutHelper;
 
     private ArrayList<RoomVO> moodList = new ArrayList<>();
-    private String userId = "0" ;
-    private String token_id = "",userName="";
+    private String userId = "0" ,token_id = "",userName="",panel_name="",panel_id="",webUrl="";
 
     private LinearLayout txt_empty_schedule;
-    private TextView txt_empty_text;
     private ImageView empty_add_image;
+
+    ResponseErrorCode responseErrorCode;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private Activity activity;
 
     public MoodFragment() {
         super();
@@ -104,9 +102,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
     // The onAttach method is called when the Fragment instance is associated with an Activity.
     // This does not mean the Activity is fully initialized.
 
-    ResponseErrorCode responseErrorCode;
 
-    private Activity activity;
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -146,14 +142,10 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
         if(mSocket!=null) {
             mSocket.off("ReloadDeviceStatusApp", reloadDeviceStatusApp);
             mSocket.off("updateChildUser", updateChildUser);
-//            mSocket.off("deleteChildUser", deleteChildUser);
-          //  mSocket.off("changeMoodSocket", changeMoodSocket);
             mSocket.off("roomStatus", roomStatus);
-          //  mSocket.off("panelStatus", panelStatus);
-
         }
     }
-    private SwipeRefreshLayout swipeRefreshLayout;
+
 
     @Override
     public void onRefresh() {
@@ -173,18 +165,14 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //String videoRtspUrl = "rtsp://192.168.175.101/video/play2.sdp";
-
-        mMessagesView = (RecyclerView) view.findViewById(R.id.messages);
+        mMessagesView =  view.findViewById(R.id.messages);
         mMessagesView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        linear_progress = (LinearLayout) view.findViewById(R.id.linear_progress);
-        txt_empty_text = (TextView)view.findViewById(R.id.txt_empty_text);
-        txt_empty_schedule = (LinearLayout)view.findViewById(R.id.txt_empty_schedule);
+        txt_empty_schedule = view.findViewById(R.id.txt_empty_schedule);
 
-        empty_add_image = (ImageView) view.findViewById(R.id.empty_add_image);
+        empty_add_image =  view.findViewById(R.id.empty_add_image);
 
-        mFab = (FloatingActionButton) view.findViewById(R.id.fab);
+        mFab = view.findViewById(R.id.fab);
 
 
         txt_empty_schedule.setVisibility(View.GONE);
@@ -212,12 +200,6 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
             }
         });
 
-        //////////////////
-       // videoRtspUrl = "rtsp://192.168.175.105:10554/udp/av0_0";
-//        videoRtspUrl ="rtsp://192.168.75.111/Streaming/Channels/1";
-//        Intent intent = new Intent(getActivity().getApplicationContext(), VideoVLC2Activity.class);
-//        intent.putExtra("videoUrl", videoRtspUrl);
-//        startActivity(intent);
 
         getActivity().runOnUiThread(new Runnable() {
             @Override
@@ -294,227 +276,6 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
 
     }
 
-    Menu menu;
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.menu_main, menu);
-        this.menu = menu;
-    }
-    public void hideShowMenu(boolean flag ){
-        if(menu!=null){
-                try {
-                        menu.findItem(R.id.action_add).setVisible(flag);
-                        menu.findItem(R.id.action_setting).setVisible(flag);
-                }
-                catch (Exception e){
-                }
-        }
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_add) {
-            //openAddPopup(tv_header);
-            Intent intent = new Intent(getActivity(), AddMoodActivity.class);
-            intent.putExtra("isMoodAdapter",false);
-            intent.putExtra("editMode",false);
-            startActivity(intent);
-
-            return true;
-        }
-        else if (id == R.id.action_setting) {
-            //openSettingPopup(tv_header);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    private Emitter.Listener deleteChildUser = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            if (getActivity() == null) {
-                return;
-            }
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-
-                        try {
-                            JSONObject object = new JSONObject(args[0].toString());
-                            String message=object.optString("message");
-                            String user_id=object.optString("user_id");
-                            if(Common.getPrefValue(getActivity(), Constants.USER_ID).equalsIgnoreCase(user_id)){
-                                ((Main2Activity)getActivity()).logoutCloudUser();
-                                ChatApplication.showToast(getActivity(),message);
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener updateChildUser = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            if (getActivity() == null) {
-                return;
-            }
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-
-                        try {
-                            JSONObject object = new JSONObject(args[0].toString());
-
-                            String message=object.optString("message");
-                            String user_id=object.optString("user_id");
-                            if(Common.getPrefValue(getActivity(), Constants.USER_ID).equalsIgnoreCase(user_id)){
-                                getDeviceList();
-                                ChatApplication.showToast(getActivity(),message);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener reloadDeviceStatusApp = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            if(getActivity()==null){
-                return;
-            }
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                if(args!=null) {
-
-                        try{
-
-                            JSONObject object = new JSONObject(args[0].toString());
-                            String module_id = object.getString("module_id");
-                            String device_id = object.getString("device_id");
-                            String device_status = object.getString("device_status");
-                            int is_locked = object.optInt("is_locked");
-
-                            sectionedExpandableLayoutHelper.updateItem(module_id, device_id, device_status,is_locked);
-                            // sectionedExpandableLayoutHelper.notifyDataSetChanged();
-
-                        }catch (Exception ex){ ex.printStackTrace(); }
-
-                }
-                }
-            });
-        }
-    };
-    private Emitter.Listener changeMoodSocket = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            if(getActivity()==null){
-                return;
-            }
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if(args!=null) {
-                        try {
-                            JSONObject moodJsonObj = new JSONObject(args[0].toString());
-                            String mood_id = moodJsonObj.getString("mood_id");
-                            String mood_status = moodJsonObj.getString("mood_status");
-
-
-                            sectionedExpandableLayoutHelper.updateMood(mood_id, mood_status);
-                          //  sectionedExpandableLayoutHelper.notifyDataSetChanged();
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener roomStatus = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            if (getActivity() == null) {
-                return;
-            }
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-                        try {
-
-
-                                JSONObject object = new JSONObject(args[0].toString());
-                                String room_id = object.getString("room_id");
-                                String room_status = object.getString("room_status");
-
-                                sectionedExpandableLayoutHelper.updateMood(room_id, room_status);
-                                // sectionedExpandableLayoutHelper.notifyDataSetChanged();
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-        }
-    };
-//    private Emitter.Listener panelStatus = new Emitter.Listener() {
-//        @Override
-//        public void call(final Object... args) {
-//            if (getActivity() == null) {
-//                return;
-//            }
-//            getActivity().runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//
-//                    if (args != null) {
-//                        try{
-//
-//                            Log.d("sensorV3","panelStatus mood : " + args.length + " toString : " + args.toString());
-//
-//                            JSONObject object = new JSONObject(args[0].toString());
-//                            // String room_order = object.getString("room_order");
-//                            // String panel_order = object.getString("panel_order");
-//                            String panel_id = object.getString("panel_id");
-//                            String panel_status = object.getString("panel_status");
-//
-//                            sectionedExpandableLayoutHelper.updatePanel(panel_id, panel_status);
-//                            // sectionedExpandableLayoutHelper.notifyDataSetChanged();
-//
-//                        }catch (Exception ex){ ex.printStackTrace(); }
-//
-//                    }
-//                }
-//            });
-//        }
-//    };
-
-    String panel_id = "";
-    String panel_name = "";
     // Room buttons click
 
     /**
@@ -538,12 +299,6 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
         }else if(action.equalsIgnoreCase("expandclick")){
 
         }else if(action.equalsIgnoreCase("deleteclick")){
-          /*  int index = moodList.indexOf(moodVO);
-            if(index!=-1){
-             moodList.get(index)
-            }*/
-
-
 
           String msg ="";
             if(roomVO.getIs_schedule()==1){
@@ -569,12 +324,6 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
         }
         else if(action.equalsIgnoreCase("editclick")){
 
-            //edit
-//            Intent intent = new Intent(getActivity(),RoomEditActivity.class);
-//            intent.putExtra("room",moodVO);
-//            startActivity(intent);
-
-
             Intent intent = new Intent(getActivity(), AddMoodActivity.class);
             intent.putExtra("editMode",true);
             intent.putExtra("moodVO",roomVO);
@@ -593,7 +342,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
         }else if(action.equalsIgnoreCase("imgSch")){
 
             Intent intent = new Intent(getActivity(), ScheduleListActivity.class);
-            //intent.putExtra("scheduleIcon",true);
+            //intent.putExtra("isMood",true);
             intent.putExtra("moodName",roomVO.getRoomName());
             //intent.putExtra("moodId",item.getPanelId());
             intent.putExtra("moodId",roomVO.getRoomId());
@@ -760,10 +509,6 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
 
         if(action.equalsIgnoreCase("scheduleclick")){
            ChatApplication.logDisplay(action +" itemClicked itemClicked DeviceVO "  );
-            /*Intent intent = new Intent(getActivity(),ScheduleActivity.class);
-            intent.putExtra("item",item);
-            intent.putExtra("schedule",true);
-            startActivity(intent);*/
 
             String moodName = "";
             String moodId = "";
@@ -934,12 +679,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
            ChatApplication.logDisplay("mSocket.connect()= "  + mSocket.id() );
         }
     }
-    String webUrl = "";
 
-    private LinearLayout  linear_progress;
-    private TextView txt_connection;
-
-    public static boolean isResumeConnect = false;
     /// all webservice call below.
     public void getDeviceList(){
         ChatApplication.logDisplay( "getDeviceList");
@@ -948,7 +688,6 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
         }
 
         String url = webUrl + Constants.GET_DEVICES_LIST;
-//        String url = webUrl + Constants.GET_DEVICES_LIST + "/"+Constants.DEVICE_TOKEN + "/1/0";
         if(!token_id.equalsIgnoreCase("")){
             url = url +"/" + token_id;
         }
@@ -1035,20 +774,6 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    /**
-     * sort moodList
-     * @param moodList
-     */
-    
-    private void sortMoodList(ArrayList<RoomVO> moodList) {
-        Collections.sort(moodList, new Comparator<RoomVO>() {
-            @Override
-            public int compare(RoomVO o1, RoomVO o2) {
-                return Integer.parseInt(o2.getRoomId()) - Integer.parseInt(o1.getRoomId());
-            }
-        });
-
-    }
 
     /**
      * DeleteMood
@@ -1143,16 +868,12 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
             mSocket.emit("changeRoomPanelMoodStatus", obj);
 
         }else{
-            // String url =  webUrl + Constants.CHANGE_MOOD_STATUS;
             String url =  webUrl + Constants.CHANGE_ROOM_PANELMOOD_STATUS_NEW;
             new GetJsonTask(getActivity(),url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
                 @Override
                 public void onSuccess(JSONObject result) {
                     ChatApplication.logDisplay( "moodStatusOnOff onSuccess " + result.toString());
                     try {
-                        int code = result.getInt("code");
-                        String message = result.getString("message");
-                        // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -1181,17 +902,6 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
         SendRemoteCommandReq sendRemoteCommandReq = new SendRemoteCommandReq();
         sendRemoteCommandReq.setRemoteid(item.getOriginal_room_device_id());
 
-
-        // sendRemoteCommandReq.setCodesetid(String.valueOf(irBlasterCurrentStatusList.getCodesetId()));
-        //   sendRemoteCommandReq.setIrblasterid(mIrBlasterId);
-        //   sendRemoteCommandReq.setIrblasterModuleid(mIrBlasterModuleId);
-
-
-//        if(item.getIsActive()==0){
-//            sendRemoteCommandReq.setPower("OFF");
-//        }else {
-//            sendRemoteCommandReq.setPower("ON");
-//        }
         sendRemoteCommandReq.setPower(item.getDeviceStatus()==0 ? "ON" : "OFF");
         sendRemoteCommandReq.setSpeed(item.getSpeed());
         sendRemoteCommandReq.setTemperature(Integer.parseInt(item.getTemperature()));
@@ -1215,10 +925,8 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
                 try {
 
                     int code = result.getInt("code");
-                    String message = result.getString("message");
 
                     if(code == 200){
-                     //   sectionedExpandableLayoutHelper.notifyDataSetChanged();
                     }else{
                         ChatApplication.showToast(getActivity(),item.getDeviceName()+" "+getString(R.string.ir_error));
                     }
@@ -1274,7 +982,6 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
                 try {
 
                     int code = result.getInt("code");
-                    String message = result.getString("message");
                     if (code == 200) {
 
                         JSONObject dataObject = result.getJSONObject("data");
@@ -1288,12 +995,10 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
                         String camera_key = userObject.optString("camera_key");
                         Common.savePrefValue(ChatApplication.getInstance(), Common.camera_key, camera_key);
                         ChatApplication.currentuserId = userId;
-                        String userPassword = "";
                         mCallback.onArticleSelected("" + userFirstName);
 
                         MainFragment.saveCurrentId(getActivity(), userId, userId);
                         if (userObject.has("user_password")) {
-                            userPassword = userObject.getString("user_password");
                         }
                     }
                 } catch (JSONException e) {
@@ -1307,5 +1012,121 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+
+
+    private Emitter.Listener updateChildUser = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (getActivity() == null) {
+                return;
+            }
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+
+                            String message=object.optString("message");
+                            String user_id=object.optString("user_id");
+                            if(Common.getPrefValue(getActivity(), Constants.USER_ID).equalsIgnoreCase(user_id)){
+                                getDeviceList();
+                                ChatApplication.showToast(getActivity(),message);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener reloadDeviceStatusApp = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if(getActivity()==null){
+                return;
+            }
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(args!=null) {
+
+                        try{
+
+                            JSONObject object = new JSONObject(args[0].toString());
+                            String module_id = object.getString("module_id");
+                            String device_id = object.getString("device_id");
+                            String device_status = object.getString("device_status");
+                            int is_locked = object.optInt("is_locked");
+
+                            sectionedExpandableLayoutHelper.updateItem(module_id, device_id, device_status,is_locked);
+                            // sectionedExpandableLayoutHelper.notifyDataSetChanged();
+
+                        }catch (Exception ex){ ex.printStackTrace(); }
+
+                    }
+                }
+            });
+        }
+    };
+    private Emitter.Listener changeMoodSocket = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if(getActivity()==null){
+                return;
+            }
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(args!=null) {
+                        try {
+                            JSONObject moodJsonObj = new JSONObject(args[0].toString());
+                            String mood_id = moodJsonObj.getString("mood_id");
+                            String mood_status = moodJsonObj.getString("mood_status");
+
+
+                            sectionedExpandableLayoutHelper.updateMood(mood_id, mood_status);
+                            //  sectionedExpandableLayoutHelper.notifyDataSetChanged();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener roomStatus = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (getActivity() == null) {
+                return;
+            }
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+                        try {
+
+
+                            JSONObject object = new JSONObject(args[0].toString());
+                            String room_id = object.getString("room_id");
+                            String room_status = object.getString("room_status");
+
+                            sectionedExpandableLayoutHelper.updateMood(room_id, room_status);
+                            // sectionedExpandableLayoutHelper.notifyDataSetChanged();
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+    };
 }
-//http://192.168.175.222/caminfo/1514298076050_BJEkoRy7f dsp blackrock equal nifty 50 fund

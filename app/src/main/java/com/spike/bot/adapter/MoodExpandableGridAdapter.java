@@ -308,19 +308,17 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
 
                 holder.iv_mood_panel_schedule_click.setVisibility(GONE);
 
-                holder.iv_mood_panel_schedule_click.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(!isClickable)
-                            return;
-                        mItemClickListener.itemClicked(panel1,"scheduleclick");
-                        //mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded);
-                    }
-                });
-                //holder.iv_mood_panel_schedule_click.setImageResource(R.drawable.timeschedule);
-                holder.iv_mood_panel_schedule_click.setImageResource(R.drawable.ic_scheduler_new);
-               /* if(panel1.getPanel_status()==1 ){ //|| position%2 ==1
-                }*/
+//                holder.iv_mood_panel_schedule_click.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        if(!isClickable)
+//                            return;
+//                        mItemClickListener.itemClicked(panel1,"scheduleclick");
+//                        //mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded);
+//                    }
+//                });
+//                holder.iv_mood_panel_schedule_click.setImageResource(R.drawable.ic_scheduler_new);
+
 
                 break;
             case VIEW_TYPE_ITEM :

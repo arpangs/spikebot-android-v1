@@ -150,37 +150,48 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         SwipeRefreshLayout.OnRefreshListener, OnSmoothScrollList, TempClickListener , DeviceListRefreshView {
 
     public static int showDialog = 1;
-    public static Boolean isRefredCheck = true, isItemClickView=false;
-    private Boolean isSocketConnected = true;
+    public static Boolean isRefredCheck = true, isItemClickView=false,isResumeConnect=false;
     public static DeviceVO tmpDeviceV0;
     public static int tmpPosition = -1;
     public static Activity activity;
-    public static int SENSOR_TYPE_DOOR = 1;
-    public static int SENSOR_TYPE_TEMP = 2;
-    public static int SENSOR_TYPE_IR = 3;
-    public static int SENSOR_REPEATAR = 10;
-    public static int Curtain = 6;
+    public static int SENSOR_TYPE_DOOR = 1,SENSOR_TYPE_TEMP = 2,SENSOR_TYPE_IR = 3,SENSOR_REPEATAR = 10,Curtain = 6;
+    private Boolean isSocketConnected = true;
+    public static OnHeadlineSelectedListener mCallback;
 
     public View view;
     private RecyclerView mMessagesView;
     public RelativeLayout relativeMainfragment;
-    private LinearLayout linear_progress, txt_empty_schedule,linear_retry;
-    private TextView txt_empty_text, txt_connection;
+    private LinearLayout txt_empty_schedule,linear_retry;
     private ImageView empty_add_image;
     Button button_retry;
+    Toolbar toolbar;
+    private SwipeRefreshLayout swipeRefreshLayout;
+
+    public boolean isFABOpen=false,isCloudConnected=false;
+    private NestedScrollView main_scroll;
+    private FloatingActionButton mFab;
+    private CardView mFabMenuLayout;
+    private TextView txt_empty_text,fab_menu1, fab_menu2, fab_menu3, fab_menu4, fab_menu5, fab_menu6, fab_menu7, fabZigbeeRemote, fabSmartDevice, fabLock, fabrepeater,fab_beacon;
+
 
     private ArrayList<RoomVO> roomList = new ArrayList<>();
+    private List<UnassignedListRes.Data.RoomList> roomListUn;
+    ArrayList<CameraVO> cameraList = new ArrayList<CameraVO>();
+    public static ArrayList<PiDetailsModel> piDetailsModelArrayList = new ArrayList<PiDetailsModel>();
+
+    private int SIGN_IP_REQUEST_CODE = 204,countFlow = 0;
+
     public SectionedExpandableLayoutHelper sectionedExpandableLayoutHelper;
 
-    private String userId = "0";
+    private String userId = "0",webUrl="";
     private Socket mSocket;
     // auto service find
     public CloudAdapter.CloudClickListener cloudClickListener;
+    Gson gsonType;
     // This event fires 1st, before creation of fragment or any views
     // The onAttach method is called when the Fragment instance is associated with an Activity.
     // This does not mean the Activity is fully initialized.
 
-    public static OnHeadlineSelectedListener mCallback;
     ResponseErrorCode responseErrorCode;
     LoginPIEvent loginPIEvent;
     SocketListener socketListener;
@@ -193,7 +204,6 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
     public static MainFragment newInstance() {
         MainFragment fragment = new MainFragment();
         Bundle args = new Bundle();
-        //args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
     }
@@ -217,22 +227,6 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 
     }
 
-    /**
-     * Display Alert dialog when found door or temp sensor config already configured
-     *
-     * @param alertMessage
-     */
-    private void showConfigAlert(String alertMessage) {
-        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity());
-        builder.setMessage(alertMessage);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        builder.create().show();
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -246,9 +240,6 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         super.onViewCreated(view, savedInstanceState);
     }
 
-    Toolbar toolbar;
-    private SwipeRefreshLayout swipeRefreshLayout;
-
     @Override
     public void onRefresh() {
         isRefredCheck = true;
@@ -257,44 +248,41 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         getDeviceList(1);
         sectionedExpandableLayoutHelper.setClickable(false);
     }
-    private NestedScrollView main_scroll;
-    private FloatingActionButton mFab;
-    private CardView mFabMenuLayout;
-    private TextView fab_menu1, fab_menu2, fab_menu3, fab_menu4, fab_menu5, fab_menu6, fab_menu7, fabZigbeeRemote, fabSmartDevice, fabLock, fabrepeater,fab_beacon;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Fabric.with(getActivity(), new Crashlytics());
         view = inflater.inflate(R.layout.fragment_main, container, false);
+
+        //for callback network change
         ((Main2Activity)getActivity()).setCallBack(this);
-        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
+
+        toolbar =  getActivity().findViewById(R.id.toolbar);
+        swipeRefreshLayout =  view.findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(this);
-        mMessagesView = (RecyclerView) view.findViewById(R.id.messages);
+        mMessagesView =  view.findViewById(R.id.messages);
         mMessagesView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        main_scroll = (NestedScrollView) view.findViewById(R.id.main_scroll);
-        txt_connection = (TextView) view.findViewById(R.id.txt_connection);
-        linear_progress = (LinearLayout) view.findViewById(R.id.linear_progress);
+        main_scroll =  view.findViewById(R.id.main_scroll);
         relativeMainfragment = view.findViewById(R.id.relativeMainfragment);
-        txt_empty_text = (TextView) view.findViewById(R.id.txt_empty_text);
-        txt_empty_schedule = (LinearLayout) view.findViewById(R.id.txt_empty_schedule);
-        empty_add_image = (ImageView) view.findViewById(R.id.empty_add_image);
-        mFabMenuLayout = (CardView) view.findViewById(R.id.fabLayout1);
-        fab_menu1 = (TextView) view.findViewById(R.id.fab_menu1);
-        fab_menu2 = (TextView) view.findViewById(R.id.fab_menu2);
-        fab_menu3 = (TextView) view.findViewById(R.id.fab_menu3);
-        fab_menu4 = (TextView) view.findViewById(R.id.fab_menu4);
-        fab_menu5 = (TextView) view.findViewById(R.id.fab_menu5);
-        fab_menu6 = (TextView) view.findViewById(R.id.fab_menu6);
-        fab_menu7 = (TextView) view.findViewById(R.id.fab_menu7);
-        fabSmartDevice = (TextView) view.findViewById(R.id.fabSmartDevice);
+        txt_empty_text =  view.findViewById(R.id.txt_empty_text);
+        txt_empty_schedule =  view.findViewById(R.id.txt_empty_schedule);
+        empty_add_image =  view.findViewById(R.id.empty_add_image);
+        mFabMenuLayout =  view.findViewById(R.id.fabLayout1);
+        fab_menu1 = view.findViewById(R.id.fab_menu1);
+        fab_menu2 = view.findViewById(R.id.fab_menu2);
+        fab_menu3 = view.findViewById(R.id.fab_menu3);
+        fab_menu4 = view.findViewById(R.id.fab_menu4);
+        fab_menu5 = view.findViewById(R.id.fab_menu5);
+        fab_menu6 = view.findViewById(R.id.fab_menu6);
+        fab_menu7 = view.findViewById(R.id.fab_menu7);
+        fabSmartDevice = view.findViewById(R.id.fabSmartDevice);
         fabZigbeeRemote = view.findViewById(R.id.fabZigbeeRemote);
         fabLock = view.findViewById(R.id.fabLock);
         fabrepeater = view.findViewById(R.id.fabrepeater);
         fab_beacon = view.findViewById(R.id.fab_beacon);
         button_retry = view.findViewById(R.id.button_retry);
         linear_retry = view.findViewById(R.id.linear_retry);
-        mFab = (FloatingActionButton) view.findViewById(R.id.fab);
+        mFab =  view.findViewById(R.id.fab);
 
         txt_empty_schedule.setVisibility(View.GONE);
         ChatApplication.isRefreshDashBoard = true;
@@ -302,10 +290,12 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         sectionedExpandableLayoutHelper = new SectionedExpandableLayoutHelper(activity, mMessagesView, MainFragment.this, MainFragment.this, MainFragment.this, Constants.SWITCH_NUMBER);
         sectionedExpandableLayoutHelper.setCameraClick(MainFragment.this);
 
-        if (!isCallVisibleHint) {
-//            onLoadFragment();
-        }
+        clickListerFolatingBtn();
 
+        return view;
+    }
+
+    private void clickListerFolatingBtn() {
         empty_add_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -359,13 +349,6 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             }
         });
 
-//        fab_menu5.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                closeFABMenu();
-//                startActivity(new Intent(getActivity(), IRRemoteAdd.class));
-//            }
-//        });
 
         fab_menu6.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -412,7 +395,6 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             @Override
             public void onClick(View v) {
                 closeFABMenu();
-//                startActivity(new Intent(getActivity(), BeaconActivity.class));
                 startActivity(new Intent(getActivity(), BeaconActivity.class));
             }
         });
@@ -434,57 +416,8 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         });
 
 
-        return view;
     }
 
-    // view refresh
-    private void refreshAllView() {
-        mFab.setVisibility(View.VISIBLE);
-        linear_retry.setVisibility(View.GONE);
-        ((Main2Activity)getActivity()).mToolBarSettings.setClickable(true);
-        ((Main2Activity)getActivity()).linearTab.setVisibility(View.VISIBLE);
-        ChatApplication.isCallDeviceList=true;
-        getDeviceList(1);
-    }
-
-    public void errorViewClick(){
-      //  m_progressDialog.dismiss();
-
-        mFab.setVisibility(View.GONE);
-        linear_retry.setVisibility(View.VISIBLE);
-        ((Main2Activity)getActivity()).mToolBarSettings.setClickable(false);
-        ((Main2Activity)getActivity()).linearTab.setVisibility(View.GONE);
-
-    }
-
-    /**
-     * Display Fab Menu with subFab Button
-     */
-    boolean isFABOpen = false;
-
-    private void showFABMenu() {
-        isFABOpen = true;
-        mFabMenuLayout.setVisibility(View.VISIBLE);
-    }
-
-    public void closeFABMenu() {
-        isFABOpen = false;
-        mFabMenuLayout.setVisibility(View.GONE);
-        if (!isFABOpen) {
-            mFabMenuLayout.setVisibility(View.GONE);
-        }
-    }
-
-    private boolean isCallVisibleHint = false;
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        isCallVisibleHint = true;
-        if (isVisibleToUser) {
-            onLoadFragment();
-        }
-    }
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -506,6 +439,12 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         }
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        this.activity = activity;
+    }
+
     /**
      * {@link SectionedExpandableGridAdapter#}
      *
@@ -524,11 +463,364 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             }
         });
     }
+    @Override
+    public void onPause() {
+        Constants.startUrlset();
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mSocket != null) {
+            mSocket.off("ReloadDeviceStatusApp", reloadDeviceStatusApp);
+            mSocket.off("roomStatus", roomStatus);
+            mSocket.off("panelStatus", panelStatus);
+            mSocket.off("changeDoorSensorStatus", changeDoorSensorStatus);
+            mSocket.off("changeTempSensorValue", changeTempSensorValue);
+            mSocket.off("unReadCount", unReadCount);
+            mSocket.off("sensorStatus", sensorStatus);
+            mSocket.off("updateChildUser", updateChildUser);
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            onLoadFragment();
+        }
+    }
+
+
+    // Room buttons click
+    @Override
+    public void itemClicked(final RoomVO roomVO, String action) {
+        closeFABMenu();
+        if (action.equalsIgnoreCase("heavyloadSocketon")) {
+
+        } else if (action.equalsIgnoreCase("heavyloadSocketoff")) {
+
+        } else if (action.equalsIgnoreCase("showGridCamera")) {
+            Intent intent = new Intent(getActivity(), CameraGridActivity.class);
+            intent.putExtra("cameraList", cameraList);
+            startActivity(intent);
+
+        } else if (action.equalsIgnoreCase("refreshCamera")) {
+            getDeviceList(1);
+
+        } else if (action.equalsIgnoreCase("onoffclick")) {
+            //on off room
+            if (action.equalsIgnoreCase("onOffclick")) {
+                roomPanelOnOff(null, roomVO, roomVO.getRoomId(), "", roomVO.getOld_room_status(), 1);
+            }
+        } else if (action.equalsIgnoreCase("editclick_false")) {
+            Intent intent = new Intent(getActivity(), RoomEditActivity_v2.class);
+            intent.putExtra("room", roomVO);
+            startActivity(intent);
+
+        } else if (action.equalsIgnoreCase("cameraopen")) {
+
+            Intent intent = new Intent(getActivity(), CameraPlayBack.class);
+            if (roomVO != null) {
+                intent.putExtra("room", roomVO);
+            } else {
+                intent.putExtra("room", new RoomVO());
+            }
+            intent.putExtra("cameraList", cameraList);
+            startActivity(intent);
+
+        } else if (action.equalsIgnoreCase("editclick_true")) {
+            Intent intent = new Intent(getActivity(), CameraEdit.class);
+            intent.putExtra("cameraList", cameraList);
+            intent.putExtra("isEditable", false);
+            startActivity(intent);
+        } else if (action.equalsIgnoreCase("deleteRoom")) {
+            ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
+                @Override
+                public void onConfirmDialogYesClick() {
+                    deleteRoom(roomVO);
+                }
+
+                @Override
+                public void onConfirmDialogNoClick() {
+                }
+            });
+            newFragment.show(getActivity().getFragmentManager(), "dialog");
+
+        } else if (action.equalsIgnoreCase("icnLog")) {
+            Intent intent = new Intent(getActivity(), DeviceLogActivity.class);
+            intent.putExtra("ROOM_ID", roomVO.getRoomId());
+            intent.putExtra("activity_type", roomVO.getType());
+            intent.putExtra("isCheckActivity", "room");
+            intent.putExtra("isRoomName", "" + roomVO.getRoomName());
+            startActivity(intent);
+        } else if (action.equalsIgnoreCase("icnSch")) {
+            Intent intent = new Intent(getActivity(), ScheduleListActivity.class);
+            intent.putExtra("moodId3", roomVO.getRoomId());
+            intent.putExtra("roomId", roomVO.getRoomId());
+            intent.putExtra("roomName", roomVO.getRoomName());
+            intent.putExtra("selection", 1);
+            intent.putExtra("isMoodAdapter", true);
+            intent.putExtra("isActivityType", "1");
+            intent.putExtra("isRoomMainFm", "room");
+            startActivity(intent);
+        } else if (action.equalsIgnoreCase("icnSensorLog")) {
+            Intent intent = new Intent(getActivity(), DeviceLogRoomActivity.class);
+            intent.putExtra("ROOM_ID", roomVO.getRoomId());
+            intent.putExtra("IS_SENSOR", "" + true);
+            intent.putExtra("room_name", "" + roomVO.getRoomName());
+            intent.putExtra("isNotification", "roomSensorUnreadLogs");
+            startActivity(intent);
+        } else if (action.equalsIgnoreCase("cameraDevice")) {
+            Intent intent = new Intent(getActivity(), CameraDeviceLogActivity.class);
+            startActivity(intent);
+        } else if (action.equalsIgnoreCase("cameraNotification")) {
+            Intent intent = new Intent(getActivity(), CameraNotificationActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    // Panel buttons click
+    @Override
+    public void itemClicked(PanelVO panelVO, String action) {
+        closeFABMenu();
+        if (action.equalsIgnoreCase("onOffclick")) {
+            roomPanelOnOff(panelVO, null, "", panelVO.getPanelId(), panelVO.getOldStatus(), 2);
+        }
+    }
+
+    /**
+     * @param item
+     * @param action
+     */
+    @Override
+    public void itemClicked(final DeviceVO item, String action, int position) {
+        closeFABMenu();
+        if (action.equalsIgnoreCase("itemclick")) {
+            deviceOnOff(item, position);
+        } else if (action.equalsIgnoreCase("philipsClick")) {
+            deviceOnOff(item, position);
+        } else if (action.equalsIgnoreCase("curtain")) {
+            Intent intent = new Intent(getActivity(), CurtainActivity.class);
+            intent.putExtra("curtain_id", item.getDeviceId());
+            intent.putExtra("module_id", item.getModuleId());
+            intent.putExtra("curtain_name", item.getDeviceName());
+            intent.putExtra("curtain_status", ""+item.getDeviceStatus());
+            startActivity(intent);
+        } else if (action.equalsIgnoreCase("scheduleclick")) {
+            Intent intent = new Intent(getActivity(), ScheduleActivity.class);
+            intent.putExtra("item", item);
+            intent.putExtra("schedule", true);
+            startActivity(intent);
+        }
+        if (action.equalsIgnoreCase("longclick")) {
+            int getDeviceSpecificValue = 0;
+            if (!TextUtils.isEmpty(item.getDeviceSpecificValue())) {
+                getDeviceSpecificValue = Integer.parseInt(item.getDeviceSpecificValue());
+            }
+            FanDialog fanDialog = new FanDialog(getActivity(), item.getRoomDeviceId(), getDeviceSpecificValue, new ICallback() {
+                @Override
+                public void onSuccess(String str) {
+                    if (str.contains("yes")) {
+                    }
+                }
+            });
+            fanDialog.show();
+        }
+
+    }
+
+    /**
+     * Temperature Device Click listener handle
+     *
+     * @param item
+     * @param action
+     * @param isTemp
+     */
+    @Override
+    public void itemClicked(DeviceVO item, String action, boolean isTemp, int position) {
+
+        if (action.equalsIgnoreCase("isSensorClick") && isTemp) { //start sensor details activity
+
+            tmpDeviceV0 = item;
+            tmpPosition = position;
+
+            if (item.getSensor_type().equalsIgnoreCase("tempsensor") && item.getIsActive() == 1) {
+                Intent intent = new Intent(getActivity(), MultiSensorActivity.class);
+                intent.putExtra("temp_sensor_id", item.getSensor_id());
+                intent.putExtra("temp_room_name", item.getRoomName());
+                intent.putExtra("temp_room_id", item.getRoomId());
+                intent.putExtra("temp_unread_count", item.getIs_unread());
+                intent.putExtra("temp_module_id", item.getModuleId());
+                startActivity(intent);
+
+            } else if (item.getSensor_type().equalsIgnoreCase("gassensor")) {
+                if (item.getIsActive() == -1) {
+                    return;
+                }
+                Intent intent = new Intent(getActivity(), GasSensorActivity.class);
+                intent.putExtra("sensor_id", item.getSensor_id());
+                intent.putExtra("room_name", item.getRoomName());
+                intent.putExtra("room_id", item.getRoomId());
+                intent.putExtra("module_id", item.getModuleId());
+                startActivity(intent);
+
+            } else if (item.getSensor_type().equalsIgnoreCase("multisensor")) {
+                if (item.getIsActive() == -1) {
+                    return;
+                }
+
+                Intent intent = new Intent(getActivity(), MultiSensorActivity.class);
+                intent.putExtra("temp_sensor_id", item.getSensor_id());
+                intent.putExtra("temp_room_name", item.getRoomName());
+                intent.putExtra("temp_room_id", item.getRoomId());
+                intent.putExtra("temp_unread_count", item.getIs_unread());
+                intent.putExtra("temp_module_id", item.getModuleId());
+                startActivity(intent);
+            } else if (item.getSensor_type().equalsIgnoreCase("door")) {
+                ChatApplication.logDisplay("door call is intent " + mSocket.connected());
+                Intent intent = new Intent(getActivity(), DoorSensorInfoActivity.class);
+                intent.putExtra("door_sensor_id", item.getSensor_id());
+                intent.putExtra("door_room_name", item.getRoomName());
+                intent.putExtra("door_room_id", item.getRoomId());
+                intent.putExtra("door_unread_count", item.getIs_unread());
+                intent.putExtra("door_module_id", item.getModuleId());
+                intent.putExtra("door_subtype", "" + item.getDoor_subtype());
+                startActivity(intent);
+            }
+        } else if (action.equalsIgnoreCase("heavyloadlongClick")) {
+            Intent intent = new Intent(getActivity(), HeavyLoadDetailActivity.class);
+            intent.putExtra("getRoomDeviceId", item.getRoomDeviceId());
+            intent.putExtra("getRoomName", item.getRoomName());
+            intent.putExtra("getModuleId", item.getModuleId());
+            intent.putExtra("device_id", item.getDeviceId());
+            startActivity(intent);
+
+        } else if (action.equalsIgnoreCase("philipslongClick")) {
+            //on-off remote
+            if (item.getDeviceStatus() == 1) {
+                Intent intent = new Intent(getActivity(), SmartColorPickerActivity.class);
+                intent.putExtra("roomDeviceId", item.getRoomDeviceId());
+                intent.putExtra("getOriginal_room_device_id", item.getOriginal_room_device_id());
+                startActivity(intent);
+            } else {
+                ChatApplication.showToast(getActivity(), "Please device on");
+            }
+
+
+        } else if (action.equalsIgnoreCase("isIRSensorClick")) {
+            //on-off remote
+            sendRemoteCommand(item, "isIRSensorClick");
+        } else if (action.equalsIgnoreCase("doorOpenClose") && item.getDoor_subtype() != 1) {
+            callDoorRemotly(item);
+        } else if (action.equalsIgnoreCase("isIRSensorLongClick")) {
+
+            Intent intent = new Intent(getActivity(), IRBlasterRemote.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("REMOTE_IS_ACTIVE", item.getDeviceStatus());
+            bundle.putSerializable("REMOTE_ID", item.getSensor_id());
+            bundle.putSerializable("IR_BLASTER_ID", item.getSensor_id());
+            // intent.putExtra("IR_BLASTER_ID",item.getIr_blaster_id());
+            intent.putExtra("IR_BLASTER_ID", item.getSensor_id());
+            intent.putExtra("ROOM_DEVICE_ID", item.getRoomDeviceId());
+            intent.putExtras(bundle);
+            startActivity(intent);
+        } else if (action.equalsIgnoreCase("doorLongClick")) {
+            Intent intent = new Intent(getActivity(), DoorSensorInfoActivity.class);
+            intent.putExtra("door_sensor_id", item.getSensor_id());
+            intent.putExtra("door_room_name", item.getRoomName());
+            intent.putExtra("door_room_id", item.getRoomId());
+            intent.putExtra("door_unread_count", item.getIs_unread());
+            intent.putExtra("door_module_id", item.getModuleId());
+            startActivity(intent);
+        }
+    }
+
+    /**
+     * @param item
+     * @param action
+     */
+
+    @Override
+    public void itemClicked(CameraVO item, String action) {
+        if (action.equalsIgnoreCase("editcamera")) {
+            Intent intent = new Intent(getActivity(), CameraEdit.class);
+            intent.putExtra("cameraList", cameraList);
+            intent.putExtra("cameraSelcet", item);
+            intent.putExtra("isEditable", false);
+            startActivity(intent);
+        } else if (action.equalsIgnoreCase("cameraLog")) {
+            Intent intent = new Intent(getActivity(), CameraDeviceLogActivity.class);
+            intent.putExtra("cameraId", "" + item.getCamera_id());
+            startActivity(intent);
+        } else {
+            callCameraToken(item, action);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SIGN_IP_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            getDeviceList(10);
+        }
+    }
+
+    //network change
+    @Override
+    public void deviceRefreshView(int count) {
+        if(count==0){
+            errorViewClick();
+        }else {
+            getDeviceList(1);
+        }
+    }
+
+    // view refresh
+    private void refreshAllView() {
+        mFab.setVisibility(View.VISIBLE);
+        linear_retry.setVisibility(View.GONE);
+        ((Main2Activity)getActivity()).mToolBarSettings.setClickable(true);
+        ((Main2Activity)getActivity()).linearTab.setVisibility(View.VISIBLE);
+        ChatApplication.isCallDeviceList=true;
+        getDeviceList(1);
+    }
+
+    public void errorViewClick(){
+        mFab.setVisibility(View.GONE);
+        linear_retry.setVisibility(View.VISIBLE);
+        ((Main2Activity)getActivity()).mToolBarSettings.setClickable(false);
+        ((Main2Activity)getActivity()).linearTab.setVisibility(View.GONE);
+
+    }
+
+    /**
+     * Display Fab Menu with subFab Button
+     */
+
+    private void showFABMenu() {
+        isFABOpen = true;
+        mFabMenuLayout.setVisibility(View.VISIBLE);
+    }
+
+    public void closeFABMenu() {
+        isFABOpen = false;
+        mFabMenuLayout.setVisibility(View.GONE);
+        if (!isFABOpen) {
+            mFabMenuLayout.setVisibility(View.GONE);
+        }
+    }
 
     public void startSocketConnection() { //◉
 
         ChatApplication app = ChatApplication.getInstance();
-//        webUrl = ChatApplication.url;
 
         if (mSocket != null && mSocket.connected()) {
         } else {
@@ -566,29 +858,6 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         }
     }
 
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (mSocket != null) {
-            mSocket.off("ReloadDeviceStatusApp", reloadDeviceStatusApp);
-            mSocket.off("roomStatus", roomStatus);
-            mSocket.off("panelStatus", panelStatus);
-            mSocket.off("changeDoorSensorStatus", changeDoorSensorStatus);
-            mSocket.off("changeTempSensorValue", changeTempSensorValue);
-            mSocket.off("unReadCount", unReadCount);
-            mSocket.off("sensorStatus", sensorStatus);
-            mSocket.off("updateChildUser", updateChildUser);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        Constants.startUrlset();
-        super.onPause();
-    }
-
     public void onLoadFragment() {
         if (activity != null) {
             Main2Activity activity = (Main2Activity) getActivity();
@@ -612,183 +881,6 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         } else {
             getDeviceList(5);
         }
-    }
-
-
-    Menu menu;
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        //inflater.inflate(R.menu.menu_main, menu);
-        this.menu = menu;
-    }
-
-    public void hideShowMenu(boolean flag) {
-        if (menu != null) {
-
-            try {
-                menu.findItem(R.id.action_add).setVisible(flag);
-                menu.findItem(R.id.action_setting).setVisible(flag);
-            } catch (Exception e) {
-            }
-
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_add) {
-            openAddPopup(toolbar);//tv_header
-            return true;
-        } else if (id == R.id.action_setting) {
-            openSettingPopup(toolbar);//tv_header
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void openAddPopup(final View v) {//,final ICallBackAction actionCallBack
-        PopupMenu popup = new PopupMenu(getActivity(), v);
-        @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(getActivity(), R.style.PopupMenu);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            popup = new PopupMenu(wrapper, v, Gravity.RIGHT);
-        } else {
-            popup = new PopupMenu(wrapper, v);
-        }
-        popup.getMenuInflater().inflate(R.menu.menu_room_add_popup, popup.getMenu());
-
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-//				Toast.makeText(activity, " moveAction - "  ,Toast.LENGTH_SHORT).show();
-                switch (item.getItemId()) {
-                    case R.id.action_add_room:
-                        ChatApplication.isOpenDialog = false;
-                        addCustomRoom();
-                        break;
-                    case R.id.action_add_camera:
-                        addCamera();
-                        break;
-
-                    case R.id.action_add_door_sensor:
-//                        showOptionDialog(SENSOR_TYPE_DOOR);
-
-                        break;
-                    case R.id.action_add_temp:
-//                        showOptionDialog(SENSOR_TYPE_TEMP);
-                        break;
-                    case R.id.action_ir_blaster:
-                        startActivity(new Intent(getActivity(), IRBlasterAddActivity.class));
-                        break;
-                    case R.id.action_add_remote:
-                        startActivity(new Intent(getActivity(), IRRemoteAdd.class));
-                        break;
-                    case R.id.action_unassigned_panel:
-                        getUnAssignedList();
-                        break;
-                    default:
-                        break;
-                }
-                return true;
-            }
-        });
-        popup.show();
-    }
-
-    private List<UnassignedListRes.Data.RoomList> roomListUn;
-
-    private void getUnAssignedList() {
-
-        if (!ActivityHelper.isConnectingToInternet(getContext())) {
-            showToast("" + R.string.disconnect);
-            return;
-        }
-
-        String url = ChatApplication.url + Constants.GET_ALL_UNASSIGNED_DEVICES;
-
-        new GetJsonTask(getContext(), url, "GET", "", new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
-
-                ChatApplication.logDisplay("onSuccess result : " + result.toString());
-                dismissProgressDialog();
-                try {
-
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-
-                    if (code == 200) {
-
-                        UnassignedListRes unassignedListRes = Common.jsonToPojo(result.toString(), UnassignedListRes.class);
-                        roomListUn = unassignedListRes.getData().getRoomList();
-                        if (roomListUn.size() > 0) {
-                            startActivity(new Intent(getActivity(), AddUnassignedPanel.class));
-                        } else {
-                            ChatApplication.showToast(getActivity(), "No Unassigned Module");
-                        }
-
-                    } else {
-                        if (!TextUtils.isEmpty(message)) {
-                            showToast(message);
-                        }
-                    }
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                dismissProgressDialog();
-            }
-        }).execute();
-
-    }
-
-    private void isUnassignedDoorSensor(final int isDoorSensor) {
-        String url = "";
-        if (isDoorSensor == SENSOR_TYPE_DOOR) {
-            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/0"; //0 door - 1 door
-        } else if (isDoorSensor == SENSOR_TYPE_TEMP) {
-            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/1"; //0 door - 1 temp
-        } else if (isDoorSensor == SENSOR_TYPE_IR) {
-            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/2"; //0 door - 1 ir
-        }
-
-        new GetJsonTask(getActivity(), url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                SensorUnassignedRes sensorUnassignedRes = Common.jsonToPojo(result.toString(), SensorUnassignedRes.class);
-
-                if (sensorUnassignedRes.getCode() == 200) {
-
-                    if (sensorUnassignedRes.getData() != null && sensorUnassignedRes.getData().getUnassigendSensorList().size() > 0) {
-                        Intent intent = new Intent(getActivity(), SensorUnassignedActivity.class);
-                        intent.putExtra("isDoorSensor", isDoorSensor);
-                        startActivity(intent);
-                    } else {
-                        Toast.makeText(getContext(), sensorUnassignedRes.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                throwable.printStackTrace();
-                Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
-            }
-        }).execute();
-
-
     }
 
     private void addCamera() {
@@ -861,6 +953,56 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 
     }
 
+    private void getUnAssignedList() {
+
+        if (!ActivityHelper.isConnectingToInternet(getContext())) {
+            showToast("" + R.string.disconnect);
+            return;
+        }
+
+        String url = ChatApplication.url + Constants.GET_ALL_UNASSIGNED_DEVICES;
+
+        new GetJsonTask(getContext(), url, "GET", "", new ICallBack() {
+            @Override
+            public void onSuccess(JSONObject result) {
+
+                ChatApplication.logDisplay("onSuccess result : " + result.toString());
+                dismissProgressDialog();
+                try {
+
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+
+                    if (code == 200) {
+
+                        UnassignedListRes unassignedListRes = Common.jsonToPojo(result.toString(), UnassignedListRes.class);
+                        roomListUn = unassignedListRes.getData().getRoomList();
+                        if (roomListUn.size() > 0) {
+                            startActivity(new Intent(getActivity(), AddUnassignedPanel.class));
+                        } else {
+                            ChatApplication.showToast(getActivity(), "No Unassigned Module");
+                        }
+
+                    } else {
+                        if (!TextUtils.isEmpty(message)) {
+                            showToast(message);
+                        }
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                dismissProgressDialog();
+            }
+        }).execute();
+
+    }
+
     /**
      * @param camera_name : c1
      * @param camera_ip   : 192.168.75.113
@@ -924,66 +1066,1473 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 
     }
 
-    //not used
-    public void openSettingPopup(final View v) {//,final ICallBackAction actionCallBack
-        PopupMenu popup = new PopupMenu(getActivity(), v);
-        @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(getActivity(), R.style.PopupMenu);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            popup = new PopupMenu(wrapper, v, Gravity.RIGHT);
-        } else {
-            popup = new PopupMenu(wrapper, v);
-        }
 
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, new String[]{});
-        arrayAdapter.notifyDataSetChanged();
-        popup.getMenuInflater().inflate(R.menu.menu_room_setting_popup, popup.getMenu());
+    private void deviceOnOff(final DeviceVO deviceVO, final int position) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
 
-        final Main2Activity activity = (Main2Activity) getActivity();
-        if (!activity.isCloudConnected) {
-            popup.getMenu().findItem(R.id.action_logout).setVisible(false);
-        }
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_device_log:
-                        // getconfigureData();
-                        Intent intent = new Intent(activity, DeviceLogActivity.class);
-                        intent.putExtra("isCheckActivity", "AllType");
-                        startActivity(intent);
-                        break;
-                    case R.id.action_sensor_log:
-                        Intent logIntent = new Intent(getActivity(), SensorDoorLogActivity.class);
-                        startActivity(logIntent);
-                        break;
-                    case R.id.action_notification_settings:
-                        Intent intentNotification = new Intent(activity, NotificationSetting.class);
-                        startActivity(intentNotification);
-                        break;
-                    case R.id.action_profile:
-                        Intent intentProfile = new Intent(activity, ProfileActivity.class);
-                        startActivity(intentProfile);
-                        break;
-                    case R.id.action_logout:
-                        //clear pref and open login screen
-                        Common.savePrefValue(getActivity(), Constants.PREF_CLOUDLOGIN, "false");
-                        Common.savePrefValue(getActivity(), Constants.PREF_IP, "");
-                        ChatApplication app = ChatApplication.getInstance();
-                        app.closeSocket(webUrl);
-                        Main2Activity activity = (Main2Activity) getActivity();
-                        activity.loginDialog(true, false);
-                        break;
-
-                    default:
-                        break;
-                }
-                return true;
+            if (deviceVO.getDeviceType().equalsIgnoreCase("3")) {
+                obj.put("status", deviceVO.getDeviceStatus());
+                obj.put("bright", "");
+                obj.put("is_rgb", "0");//1;
+                obj.put("rgb_array", "");
+                obj.put("room_device_id", deviceVO.getRoomDeviceId());
+            } else {
+                obj.put("room_device_id", deviceVO.getRoomDeviceId());
+                obj.put("module_id", deviceVO.getModuleId());
+                obj.put("device_id", deviceVO.getDeviceId());
+                obj.put("device_status", deviceVO.getOldStatus());
+                obj.put("localData", userId.equalsIgnoreCase("0") ? "0" : "1");
             }
-        });
-        popup.show();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ChatApplication.logDisplay("onoff is "+obj);
+
+        if (mSocket != null && mSocket.connected()) {
+            mSocket.emit("socketChangeDeviceAck", obj, new AckWithTimeOut(Constants.ACK_TIME_OUT) {
+                @Override
+                public void call(Object... args) {
+                    if (args != null) {
+                        if (args[0].toString().equalsIgnoreCase("No Ack")) {
+                            updateDeviceOfflineMode(deviceVO);
+
+                        } else if (args[0].toString().equalsIgnoreCase("true")) {
+                            cancelTimer();
+                        }
+                    }
+                }
+            });
+
+        } else {
+            callDeviceOnOffApi(deviceVO, obj);
+        }
     }
 
-    //// not used
+    /**
+     * offline device status updated
+     *
+     * @param deviceVO
+     */
+    private void updateDeviceOfflineMode(final DeviceVO deviceVO) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                sectionedExpandableLayoutHelper.updateItem(deviceVO.getModuleId(),
+                        String.valueOf(deviceVO.getDeviceId()), String.valueOf(deviceVO.getOldStatus()), deviceVO.getIs_locked());
+            }
+        });
+    }
+
+    private void updateRoomOfflineMode(final RoomVO roomVO) {
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                sectionedExpandableLayoutHelper.updateRoom(roomVO.getRoomId(), String.valueOf(roomVO.getOld_room_status()));
+            }
+        });
+    }
+
+    /**
+     * offline panel device status updated
+     *
+     * @param panelVO
+     */
+    private void updatePanelDeviceOfflineMode(final PanelVO panelVO) {
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                sectionedExpandableLayoutHelper.updatePanel(panelVO.getPanelId(), String.valueOf(panelVO.getOldStatus()), panelVO.getRoom_panel_id());
+            }
+        });
+    }
+
+    private void callDeviceOnOffApi(final DeviceVO deviceVO, JSONObject obj) {
+
+        String url = "";
+        if (deviceVO.getDeviceType().equalsIgnoreCase("3")) {
+            url = ChatApplication.url + Constants.changeHueLightState;
+        } else {
+            url = ChatApplication.url + Constants.CHANGE_DEVICE_STATUS;
+        }
+
+        ChatApplication.logDisplay("Device roomPanelOnOff obj " + obj.toString());
+
+        new GetJsonTask(getActivity(), url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                ChatApplication.logDisplay("roomPanelOnOff onSuccess " + result.toString());
+                try {
+                    int code = result.getInt("code"); //message
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
+                    } else {
+                        ChatApplication.showToast(getActivity(), message);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } finally {
+                    ChatApplication.logDisplay("Device roomPanelOnOff finally ");
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ChatApplication.logDisplay("roomPanelOnOff onFailure " + error);
+                updateDeviceOfflineMode(deviceVO);
+            }
+        }).execute();
+    }
+
+    private void roomPanelOnOff(final PanelVO panelVO, final RoomVO roomVO, String roomId, String panelId, int panel_status, int type) {
+
+        final JSONObject obj = new JSONObject();
+        try {
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
+            obj.put("room_id", roomId);
+            obj.put("panel_id", panelId);
+            obj.put("device_status", panel_status);
+            obj.put("operationtype", type);
+            obj.put("localData", userId.equalsIgnoreCase("0") ? "0" : "1");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (mSocket != null && mSocket.connected()) {
+            ChatApplication.logDisplay("roomPanelOnOff");
+
+            mSocket.emit("changeRoomPanelMoodStatusAck", obj, new AckWithTimeOut(Constants.ACK_TIME_OUT) {
+                @Override
+                public void call(Object... args) {
+                    if (args != null) {
+                        if (args[0].toString().equalsIgnoreCase("No Ack")) {
+
+                            if (panelVO != null) {
+                                updatePanelDeviceOfflineMode(panelVO);
+                            } else if (roomVO != null) {
+                                updateRoomOfflineMode(roomVO);
+                            }
+
+                        } else if (args[0].toString().equalsIgnoreCase("true")) {
+                            cancelTimer();
+                        }
+                    }
+                }
+            });
+
+        } else {
+            callPanelOnOffApi(obj);
+
+        }
+    }
+
+    private void callPanelOnOffApi(JSONObject obj) {
+
+        String url = ChatApplication.url + Constants.CHANGE_ROOM_PANELMOOD_STATUS_NEW;
+
+        new GetJsonTask(getActivity(), url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                ChatApplication.logDisplay("roomPanelOnOff onSuccess " + result.toString());
+                try {
+                    int code = result.getInt("code"); //message
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
+                    } else {
+                        ChatApplication.showToast(getActivity(), message);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } finally {
+                    ChatApplication.logDisplay("roomPanelOnOff finally ");
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ChatApplication.logDisplay("roomPanelOnOff onFailure " + error);
+            }
+        }).execute();
+
+    }
+
+
+
+
+    /**
+     * Delete Room
+     *
+     * @param roomVO
+     */
+
+    private void deleteRoom(RoomVO roomVO) {
+        if (!ActivityHelper.isConnectingToInternet(getActivity())) {
+            ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
+            return;
+        }
+        JSONObject object = new JSONObject();
+        try {
+            object.put("room_id", roomVO.getRoomId());
+            object.put("room_name", roomVO.getRoomName());
+            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            object.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ChatApplication.logDisplay("ob : " + object.toString());
+        String url = webUrl + Constants.DELETE_ROOM;
+        new GetJsonTask(getActivity(), url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                dismissProgressDialog();
+                ChatApplication.logDisplay("getconfigureData onSuccess " + result.toString());
+                try {
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        ChatApplication.showToast(getActivity(), message);
+                        getDeviceList(8);
+                    } else {
+                        ChatApplication.showToast(getActivity(), message);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                dismissProgressDialog();
+                ChatApplication.logDisplay("getconfigureData onFailure " + error);
+                ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
+            }
+        }).execute();
+    }
+
+
+
+    private void doorOpenCLose(DeviceVO item) {
+
+        if (mSocket != null) {
+            JSONObject object = new JSONObject();
+            try {
+                object.put("lock_id", item.getLock_id());
+                object.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
+                object.put("door_sensor_status", item.getDoor_sensor_status().equals("1") ? 0 : 1);
+                object.put("lock_status", item.getDoor_sensor_status().equals("1") ? 0 : 1);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            ChatApplication.logDisplay("door json " + object);
+            mSocket.emit("changeLockStatus", object);
+        }
+
+    }
+
+    private void callDoorRemotly(DeviceVO item) {
+        showProgressDialog(getActivity(), "Please Wait...", false);
+        GetDataService apiService = RetrofitAPIManager.provideClientApi();
+
+        Call<ResponseBody> call;
+        if (item.getDoor_sensor_status().equalsIgnoreCase("1")) {
+            call = apiService.unlockGatewayUse(Constants.client_id, Constants.access_token, item.getLock_id(), System.currentTimeMillis());
+        } else {
+            call = apiService.lockGatewayUse(Constants.client_id, Constants.access_token, item.getLock_id(), System.currentTimeMillis());
+        }
+        ChatApplication.logDisplay("door json call");
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                dismissProgressDialog();
+                if (response.code() == 200) {
+                    doorOpenCLose(item);
+                    ChatApplication.logDisplay("lock is " + response.body().toString());
+
+                } else {
+                    ChatApplication.logDisplay("tt lock reponse is error ff ");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                dismissProgressDialog();
+                ChatApplication.logDisplay("tt lock reponse is error");
+            }
+        });
+    }
+
+    private void sendRemoteCommand(final DeviceVO item, String philipslongClick) {
+
+        if (!ActivityHelper.isConnectingToInternet(getContext())) {
+            ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
+            return;
+        }
+        String mRemoteCommandReq = "";
+        String url = "";
+
+        url = ChatApplication.url + Constants.SEND_REMOTE_COMMAND;
+        SendRemoteCommandReq sendRemoteCommandReq = new SendRemoteCommandReq();
+        sendRemoteCommandReq.setRemoteid(item.getSensor_id());
+
+        sendRemoteCommandReq.setPower(item.getRemote_status().equalsIgnoreCase("OFF") ? "ON" : "OFF");
+        sendRemoteCommandReq.setSpeed(item.getSpeed());
+        sendRemoteCommandReq.setTemperature(item.getTemprature());
+        sendRemoteCommandReq.setRoomDeviceId(item.getRoomDeviceId());
+        sendRemoteCommandReq.setPhoneId(APIConst.PHONE_ID_VALUE);
+        sendRemoteCommandReq.setPhoneType(APIConst.PHONE_TYPE_VALUE);
+
+        Gson gson = new Gson();
+        mRemoteCommandReq = gson.toJson(sendRemoteCommandReq);
+
+        new GetJsonTaskRemote(getContext(), url, "POST", mRemoteCommandReq, new ICallBack() {
+            @Override
+            public void onSuccess(JSONObject result) {
+                dismissProgressDialog();
+                try {
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    ChatApplication.logDisplay("result is ir " + result);
+                    if (code == 200) {
+                        ChatApplication.isMoodFragmentNeedResume = true;
+                        SendRemoteCommandRes tmpIrBlasterCurrentStatusList = Common.jsonToPojo(result.toString(), SendRemoteCommandRes.class);
+                    } else {
+                        ChatApplication.showToast(getActivity(), item.getSensor_name() + " " + getActivity().getString(R.string.ir_error));
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } finally {
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                dismissProgressDialog();
+                ChatApplication.logDisplay("result is ir error " + error.toString());
+                ChatApplication.showToast(getActivity(), item.getSensor_name() + " " + getActivity().getString(R.string.ir_error));
+            }
+        }).execute();
+    }
+
+    private void callCameraToken(final CameraVO item, final String action) {
+        showProgressDialog(getActivity(), " Please Wait...", false);
+        String url = ChatApplication.url + Constants.getCameraToken + item.getCamera_id();
+
+        ChatApplication.logDisplay("url is " + url);
+        new GetJsonTask(getActivity(), url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                int code = 0;
+                try {
+                    code = result.getInt("code");
+
+                    if (code == 200) {
+                        dismissProgressDialog();
+                        JSONObject dataObject = result.optJSONObject("data");
+
+                        String camera_vpn_port = dataObject.optString("camera_vpn_port");
+                        String camera_url = dataObject.optString("camera_url");
+
+                        String url="";
+
+//                        String url = item.getCamera_ip();
+//                        url = url + item.getCamera_videopath();
+                        String camera_name = item.getCamera_name();
+
+//                        ChatApplication.logDisplay("isCloudConnect : " + dataObject+" "+camera_vpn_port);
+
+                        if (Main2Activity.isCloudConnected) {
+                            url = Constants.CAMERA_DEEP + ":" + camera_vpn_port + "" + camera_url;
+                        } else {
+                            String tmpurl = ChatApplication.url + "" + camera_url;
+                            url = tmpurl.replace("http", "rtmp").replace(":80", ""); //replace port number to blank String
+                        }
+                        ChatApplication.logDisplay("isCloudConnect : " +camera_vpn_port+" "+url);
+                        //start camera rtsp player
+                        Intent intent = new Intent(getActivity(), CameraPlayer.class);
+                        intent.putExtra("videoUrl", url);
+                        intent.putExtra("name", camera_name);
+                        intent.putExtra("isCloudConnect", Main2Activity.isCloudConnected);
+                        startActivity(intent);
+                        dismissProgressDialog();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } finally {
+                    dismissProgressDialog();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                dismissProgressDialog();
+            }
+        }).execute();
+
+    }
+    //counter for 7 wait depay
+    CountDownTimer countDownTimer = new CountDownTimer(7000, 4000) {
+
+        public void onTick(long millisUntilFinished) {
+        }
+
+        public void onFinish() {
+            /*- SOCKET Response:
+            - 'configureGatewayDevice'
+                    - parameter: module_id, device_id
+                    - Open Popup and Fill below data: module_id, device_id*/
+            addRoom = false;
+            dismissProgressDialog();
+            ChatApplication.showToast(getActivity(), "No New Device detected!");
+        }
+
+    };
+
+    /*dialog enter key camera*/
+    public void addKeyCamera() {
+
+        final Dialog dialog = new Dialog(getContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setContentView(R.layout.dialog_add_camera_key);
+
+        final TextInputEditText room_name = (TextInputEditText) dialog.findViewById(R.id.edt_room_name);
+        room_name.setSingleLine(true);
+
+        InputFilter[] filterArray = new InputFilter[1];
+        filterArray[0] = new InputFilter.LengthFilter(25);
+        room_name.setFilters(filterArray);
+
+        Button btnSave = (Button) dialog.findViewById(R.id.btn_save);
+        Button btn_cancel = (Button) dialog.findViewById(R.id.btn_cancel);
+        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
+        iv_close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveCameraKey(room_name, dialog);
+            }
+        });
+
+        if (!dialog.isShowing()) {
+            dialog.show();
+        }
+    }
+
+    boolean addRoom = false;
+
+    /**
+     * Show custom room dialog
+     */
+    public void addCustomRoom() {
+
+        final Dialog dialog = new Dialog(getContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setContentView(R.layout.dialog_add_custome_room);
+
+        final TextInputEditText room_name = (TextInputEditText) dialog.findViewById(R.id.edt_room_name);
+        room_name.setSingleLine(true);
+
+        InputFilter[] filterArray = new InputFilter[1];
+        filterArray[0] = new InputFilter.LengthFilter(25);
+        room_name.setFilters(filterArray);
+
+        Button btnSave = (Button) dialog.findViewById(R.id.btn_save);
+        Button btn_cancel = (Button) dialog.findViewById(R.id.btn_cancel);
+        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
+        iv_close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveCustomRoom(room_name, dialog);
+            }
+        });
+
+        if (!dialog.isShowing()) {
+            dialog.show();
+        }
+    }
+
+    /*
+     * camera key check is valid or not..
+     * */
+
+    private void saveCameraKey(EditText roomName, final Dialog dialog) {
+
+        if (!ActivityHelper.isConnectingToInternet(getActivity())) {
+            ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
+            return;
+        }
+
+        if (TextUtils.isEmpty(roomName.getText().toString().trim())) {
+            roomName.setError("Enter key name");
+            return;
+        }
+
+        JSONObject object = new JSONObject();
+        try {
+            object.put("key", roomName.getText().toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        showProgressDialog(getActivity(), "Searching Device attached ", false);
+
+        String url = webUrl + Constants.validatecamerakey;
+
+        new GetJsonTask(getActivity(), url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                dismissProgressDialog();
+                ChatApplication.logDisplay("getconfigureData onSuccess " + result.toString());
+                try {
+                    //{"code":200,"message":"success"}
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+
+                    if (code == 200) {
+                        dialog.dismiss();
+                        Common.savePrefValue(ChatApplication.getInstance(), Common.camera_key, "1");
+                        ChatApplication.showToast(getActivity(), message);
+                        Toast.makeText(activity.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                        addCamera();
+                    } else if (code == 301) {
+                        ChatApplication.showToast(getActivity(), message);
+                    } else {
+                        ChatApplication.showToast(getActivity(), message);
+                    }
+                    // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                dismissProgressDialog();
+                ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
+            }
+        }).execute();
+    }
+
+    /**
+     * Call api for save custom room
+     *
+     * @param roomName mRoomName
+     * @param dialog   mDialog instance
+     */
+    private void saveCustomRoom(EditText roomName, final Dialog dialog) {
+
+        if (!ActivityHelper.isConnectingToInternet(getActivity())) {
+            ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
+            return;
+        }
+
+        if (TextUtils.isEmpty(roomName.getText().toString().trim())) {
+            roomName.setError("Enter Room name");
+            return;
+        }
+
+        JSONObject object = new JSONObject();
+        try {
+            object.put("room_name", roomName.getText().toString());
+            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            object.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ChatApplication.logDisplay("ob : " + object.toString());
+        showProgressDialog(getActivity(), "Searching Device attached ", false);
+
+        String url = webUrl + Constants.ADD_CUSTOME_ROOM;
+
+        new GetJsonTask(getActivity(), url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                dismissProgressDialog();
+                ChatApplication.logDisplay("getconfigureData onSuccess " + result.toString());
+                try {
+                    //{"code":200,"message":"success"}
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+
+                    if (code == 200) {
+                        dialog.dismiss();
+                        ChatApplication.showToast(getActivity(), message);
+                        getDeviceList(9);
+                    } else if (code == 301) {
+                        ChatApplication.showToast(getActivity(), message);
+                    } else {
+                        ChatApplication.showToast(getActivity(), message);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    {
+                        dismissProgressDialog();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                dismissProgressDialog();
+                ChatApplication.logDisplay("getconfigureData onFailure " + error);
+                ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
+            }
+        }).execute();
+    }
+
+    public interface OnHeadlineSelectedListener {
+        public void onArticleSelected(String name);
+
+        void onLogout(boolean isLogout);
+    }
+
+    public static void saveCurrentId(Context context, String userId, String gatewayIp) {
+        Gson gson = new Gson();
+        String jsonText = Common.getPrefValue(context, Common.USER_JSON);
+        Type type = new TypeToken<List<User>>() {}.getType();
+        List<User> userList = gson.fromJson(jsonText, type);
+
+        for (int i = 0; i < userList.size(); i++) {
+            if (userList.get(i).getUser_id().equals(userId)) {
+                userList.get(i).setIsActive(true);
+                userList.get(i).setGateway_ip(gatewayIp);
+                mCallback.onArticleSelected("" + userList.get(i).getFirstname());
+            } else {
+                userList.get(i).setIsActive(false);
+            }
+        }
+        if (userList.size() > 0) {
+            String jsonCurProduct = gson.toJson(userList);
+            Common.savePrefValue(context, Common.USER_JSON, jsonCurProduct);
+        }
+    }
+
+    public void getMacAddress(String locaIp) {
+        countFlow = 0;
+        String url = ChatApplication.http + locaIp + Constants.getLocalMacAddress;
+
+        ChatApplication.logDisplay("url is " + url);
+        new GetJsonTaskMacAddress(getActivity(), url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                countFlow = 1;
+                countDownTimer.cancel();
+                // {"code":200,"message":"Success","data":{"mac_address":"b8:27:eb:f7:45:b3"}}
+
+                ChatApplication.logDisplay("reponse is mac " + result.toString());
+//                dismissProgressDialog();
+                try {
+                    JSONObject object = new JSONObject(result.toString());
+                    JSONObject jsonObject = object.optJSONObject("data");
+
+                    if (jsonObject != null && countFlow != 2) {
+                        if (jsonObject.optString("mac_address").equalsIgnoreCase(Constants.getMacAddress(getActivity()))) {
+                            callColud(true);
+                        } else {
+                            callColud(false);
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+//                dismissProgressDialog();
+                countDownTimer.cancel();
+                ChatApplication.logDisplay("reponse is mac error " + error.toString());
+                if (countFlow != 2) {
+                    countFlow = 1;
+                    callColud(false);
+                }
+
+
+            }
+        }).execute();
+
+        CountDownTimer countDownTimer = new CountDownTimer(3000, 1000) {
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+                if (countFlow == 0) {
+                    countFlow = 2;
+                    ChatApplication app = ChatApplication.getInstance();
+                    app.closeSocket(webUrl);
+
+                    if (mSocket != null) {
+                        mSocket.disconnect();
+                        mSocket = null;
+                    }
+                    ChatApplication.logDisplay("show is calling time ");
+                    callColud(false);
+                }
+
+            }
+
+        };
+        countDownTimer.start();
+
+
+    }
+
+    private void callColud(boolean isflag) {
+        ChatApplication.logDisplay("show is call " + isflag);
+        if (isflag) {
+            //local
+            ((Main2Activity) getActivity()).webUrl = ChatApplication.http + Constants.getuserIp(getActivity()) + ":80";
+            ChatApplication.url = ChatApplication.http + Constants.getuserIp(getActivity());
+           Constants.startUrlset();
+            ((Main2Activity) getActivity()).callSocket();
+            ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
+
+            getDeviceLocal(0);
+        } else {
+            String colud = Constants.getuserCloudIP(getActivity());
+            ChatApplication.url = colud;
+            Constants.startUrlset();
+            ((Main2Activity) getActivity()).webUrl = colud;
+            ((Main2Activity) getActivity()).callSocket();
+            ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
+
+            getDeviceCloud(0);
+        }
+
+    }
+
+    public void getDeviceCloud(int isShow) {
+
+        if (swipeRefreshLayout != null) {
+            if (swipeRefreshLayout.isRefreshing()) {
+                showDialog = 1;
+            }
+        }
+
+        if (isShow == 0) {
+            if (ChatApplication.url.startsWith(Constants.startUrl)) {
+                if (m_progressDialog.isShowing()) {
+                   m_progressDialog.setMessage("Connecting to cloud...");
+                }else {
+//                    showProgressDialog(getActivity(), "Connecting to cloud...", true);
+                }
+            } else {
+                if(!m_progressDialog.isShowing()){
+                    showProgressDialog(getActivity(), "Please Wait...", true);
+                }
+            }
+        }
+
+
+        roomList.clear();
+        if (mMessagesView == null) {
+            mMessagesView = (RecyclerView) view.findViewById(R.id.messages);
+        }
+        mMessagesView.setClickable(false);
+        roomList = new ArrayList<>();
+        if (sectionedExpandableLayoutHelper != null) {
+            sectionedExpandableLayoutHelper.notifyDataSetChanged();
+        }
+
+        String url = ChatApplication.url + Constants.GET_DEVICES_LIST;
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("room_type", 0);
+            jsonObject.put("is_sensor_panel", 1);
+            jsonObject.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
+
+            if (TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE))) {
+                jsonObject.put("admin", 1);
+            } else {
+                jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE)));
+            }
+            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ChatApplication.logDisplay("jsonObject is dashboard cloud " + url + "   " + jsonObject.toString());
+        new GetJsonTask2(activity, url, "POST", jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                dismissProgressDialog();
+                ChatApplication.isCallDeviceList = false;
+                if (ChatApplication.isPushFound) {
+                    getBadgeClear(getActivity());
+                }
+                isItemClickView=true;
+                mMessagesView.setClickable(true);
+                responseErrorCode.onSuccess();
+                swipeRefreshLayout.setRefreshing(false);
+                sectionedExpandableLayoutHelper.setClickable(true);
+                ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
+
+                try {
+                    ((Main2Activity)getActivity()).tabShow(true);
+                    Main2Activity.isCloudConnected=true;
+                    webUrl = ChatApplication.url;
+                    startSocketConnection();
+                    dismissProgressDialog();
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        Constants.socketType = 1;
+                        Constants.socketIp = ChatApplication.url;
+                        hideAdapter(true);
+                        JSONObject dataObject = result.getJSONObject("data");
+                        ((Main2Activity) getActivity()).getUserDialogClick(true);
+
+                        if(gsonType==null){
+                            gsonType=new Gson();
+                        }
+
+                        roomList = new ArrayList<>();
+
+                        JSONArray userListArray = dataObject.optJSONArray("userList");
+                        if (userListArray.length() == 0) {
+                            Common.savePrefValue(ChatApplication.getInstance(), "first_name", "");
+                            Common.savePrefValue(ChatApplication.getInstance(), "last_name", "");
+                            if (!TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ID))) {
+                                ((Main2Activity) getActivity()).logoutCloudUser();
+                            }
+
+                            return;
+                        }
+
+
+                        JSONObject userObject = userListArray.optJSONObject(0);
+                        String userId = userObject.getString("user_id");
+                        String userFirstName = userObject.getString("first_name");
+                        String userLastName = userObject.getString("last_name");
+                        String camera_key = userObject.optString("camera_key");
+                        String is_active = userObject.optString("is_active");
+                        String gateway_ip = userObject.optString("gateway_ip");
+
+                        if (is_active.equalsIgnoreCase("0")) {
+                            ((Main2Activity) getActivity()).logoutCloudUser();
+                            return;
+                        }
+
+                        Common.savePrefValue(ChatApplication.getInstance(), Common.camera_key, camera_key);
+                        String userPassword = "";
+                        if (userObject.has("user_password")) {
+                            userPassword = userObject.getString("user_password");
+                        }
+
+
+                        /**
+                         * If Network connected on cloud then check user password is changed or not
+                         * if changed then logout user
+                         */
+//                        if (Main2Activity.isCloudConnected && !TextUtils.isEmpty(userPassword)) {
+                        if (!TextUtils.isEmpty(userPassword)) {
+                            String jsonTextTemp1 = Common.getPrefValue(getContext(), Common.USER_JSON);
+                            List<User> userList1 = new ArrayList<User>();
+                            if (!TextUtils.isEmpty(jsonTextTemp1)) {
+                                Type type = new TypeToken<List<User>>() {}.getType();
+                                userList1 = gsonType.fromJson(jsonTextTemp1, type);
+                            }
+
+                            for (User user : userList1) {
+                                if (user.isActive()) {
+                                    if (user.getUser_id().equalsIgnoreCase(userId) && !user.getPassword().equalsIgnoreCase(userPassword)) {
+//                                        showLogoutAlert();
+                                        ChatApplication.showToast(getActivity(), "Password has been changed!");
+                                        ((Main2Activity) getActivity()).logoutCloudUser();
+                                    }
+
+                                }
+                            }
+                        }
+                        //End user pass checking
+                        try {
+                            if (userObject.has("is_logout")) {
+                                int isLogout = userObject.getInt("is_logout");
+                                if (isLogout == 1 && Main2Activity.isCloudConnected) {
+                                    mCallback.onLogout(true);
+                                }
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+
+                        Common.savePrefValue(ChatApplication.getInstance(), "first_name", userFirstName);
+                        Common.savePrefValue(ChatApplication.getInstance(), "last_name", userLastName);
+                        Common.savePrefValue(getContext(), Constants.USER_PASSWORD, userPassword);
+
+
+                        /**
+                         * <h1>for set ToolBar title in MainActivity2</h1>
+                         * {@link Main2Activity#toolbarTitle}
+                         * @see Main2Activity#toolbar
+                         */
+                        mCallback.onArticleSelected("" + userFirstName);
+
+                        JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
+                        roomList = JsonHelper.parseRoomArray(roomArray, false);
+                        sectionedExpandableLayoutHelper.addSectionList(roomList);
+                        JSONArray cameraArray = dataObject.getJSONArray("cameradeviceList");
+                        if (cameraArray.length() > 0) {
+                            cameraList = JsonHelper.parseCameraArray(cameraArray);
+
+                            RoomVO section = new RoomVO();
+                            section.setRoomName("Camera");
+                            section.setRoomId("Camera");
+
+                            ArrayList<PanelVO> panelList = new ArrayList<>();
+                            PanelVO panel = new PanelVO();
+                            panel.setPanelName("Devices");
+                            panel.setType("camera");
+                            panel.setCameraList(cameraList);
+
+                            panelList.add(panel);
+
+                            section.setPanelList(panelList);
+                            section.setIs_unread(cameraList.get(0).getTotal_unread());
+
+                            roomList.add(section);
+
+                            /*camera device counting*/
+                            for (int i = 0; i < roomList.size(); i++) {
+                                if (roomList.get(i).getRoomId().equalsIgnoreCase("Camera")) {
+                                    roomList.get(i).setDevice_count("" + roomList.get(i).getPanelList().get(0).getCameraList().size());
+                                }
+                            }
+
+                            //comment if roomList empty could not display cameraList for remove this conditions
+                            // sectionedExpandableLayoutHelper.addCameraList(JsonHelper.parseCameraArray(cameraArray));
+                            sectionedExpandableLayoutHelper.addSectionList(roomList);
+                        }
+                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
+                        ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
+
+                        //JSONArray userList = dataObject.getJSONArray("userList");
+
+                        ((Main2Activity)getActivity()).changestatus();
+                        if (roomArray.length() == 0) {
+                            mMessagesView.setVisibility(View.GONE);
+                            txt_empty_schedule.setVisibility(View.VISIBLE);
+                        } else {
+                            mMessagesView.setVisibility(View.VISIBLE);
+                            txt_empty_schedule.setVisibility(View.GONE);
+                        }
+
+                        setUserTypeValue();
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } finally {
+                    showDialog = 0;
+                    if (roomList != null) {
+                        CameraDeviceLogActivity.getCameraList = roomList.get(roomList.size() - 1).getPanelList().get(0).getCameraList();
+                    }
+                    mMessagesView.setClickable(true);
+                    mFab.setClickable(true);
+                    swipeRefreshLayout.setRefreshing(false);
+                    if (roomList.size() == 0) {
+                        mMessagesView.setVisibility(View.GONE);
+                        txt_empty_schedule.setVisibility(View.VISIBLE);
+                    } else {
+                        mMessagesView.setVisibility(View.VISIBLE);
+                        txt_empty_schedule.setVisibility(View.GONE);
+                    }
+                    dismissProgressDialog();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error, int reCode) {
+                isItemClickView=false;
+                swipeRefreshLayout.setRefreshing(false);
+                dismissProgressDialog();
+                //set custom homer controller not found error message on dashboard
+                if (reCode == 503 || reCode == 404) {
+                    responseErrorCode.onErrorCode(reCode);
+                }
+                ((Main2Activity)getActivity()).tabShow(false);
+                ChatApplication.logDisplay("reCode getDeviceList onFailure " + reCode);
+                sectionedExpandableLayoutHelper = new SectionedExpandableLayoutHelper(activity, mMessagesView, MainFragment.this, MainFragment.this, MainFragment.this, Constants.SWITCH_NUMBER);
+                sectionedExpandableLayoutHelper.setCameraClick(MainFragment.this);
+                sectionedExpandableLayoutHelper.setClickable(true);
+                sectionedExpandableLayoutHelper.notifyDataSetChanged();
+
+                ChatApplication.isCallDeviceList=true;
+                errorViewClick();
+//                ChatApplication.showToast(getActivity(), "Please try again");
+            }
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+    }
+
+    public void getDeviceLocal(int isShow) {
+
+        if (swipeRefreshLayout != null) {
+            if (swipeRefreshLayout.isRefreshing()) {
+                showDialog = 1;
+            }
+        }
+
+        if (isShow == 0) {
+//            if (m_progressDialog == null) {
+                if(m_progressDialog!=null){
+                    if(!m_progressDialog.isShowing()){
+                        showProgressDialog(getActivity(), "Please Wait...", true);
+                    }
+                }
+//            }
+        }
+
+        roomList.clear();
+        if (mMessagesView == null) {
+            mMessagesView =  view.findViewById(R.id.messages);
+        }
+
+        mMessagesView.setClickable(false);
+        roomList = new ArrayList<>();
+        if (sectionedExpandableLayoutHelper != null) {
+            sectionedExpandableLayoutHelper.notifyDataSetChanged();
+        }
+
+        String url = ChatApplication.url + Constants.GET_DEVICES_LIST;
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("room_type", 0);
+            jsonObject.put("is_sensor_panel", 1);
+            jsonObject.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
+
+            if (TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE))) {
+                jsonObject.put("admin", 1);
+            } else {
+                jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE)));
+            }
+            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ChatApplication.logDisplay("jsonObject is dashboard local " + url + "   " + jsonObject.toString());
+        new GetJsonTaslLocal(activity, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                dismissProgressDialog();
+                ChatApplication.isCallDeviceList = false;
+                if (ChatApplication.isPushFound) {
+                    getBadgeClear(getActivity());
+                }
+                mMessagesView.setClickable(true);
+                responseErrorCode.onSuccess();
+                swipeRefreshLayout.setRefreshing(false);
+                sectionedExpandableLayoutHelper.setClickable(true);
+                ChatApplication.logDisplay("getDeviceList onSuccess local " + result.toString());
+
+                try {
+                    Main2Activity.isCloudConnected=false;
+                    ((Main2Activity)getActivity()).tabShow(true);
+                    isItemClickView=true;
+                    webUrl = ChatApplication.url;
+                    startSocketConnection();
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+
+                        if(gsonType==null){
+                            gsonType=new Gson();
+                        }
+                        Constants.socketType = 0;
+                        Constants.socketIp = ChatApplication.url;
+                        hideAdapter(true);
+                        mMessagesView.setVisibility(View.VISIBLE);
+                        txt_empty_schedule.setVisibility(View.GONE);
+                        JSONObject dataObject = result.optJSONObject("data");
+                        ((Main2Activity) getActivity()).getUserDialogClick(true);
+                        roomList = new ArrayList<>();
+                        JSONArray userListArray = dataObject.getJSONArray("userList");
+
+                        //oppen signup page if userList found zero length
+                        if (userListArray.length() == 0) {
+                            Common.savePrefValue(ChatApplication.getInstance(), "first_name", "");
+                            Common.savePrefValue(ChatApplication.getInstance(), "last_name", "");
+
+                            if (!TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ID))) {
+                                ((Main2Activity) getActivity()).logoutCloudUser();
+                            }
+                            return;
+                        }
+
+                        JSONObject userObject = userListArray.optJSONObject(0);
+                        String userId = userObject.optString("user_id");
+                        String userFirstName = userObject.optString("first_name");
+                        String userLastName = userObject.optString("last_name");
+                        String camera_key = userObject.optString("camera_key");
+                        String is_active = userObject.optString("is_active");
+                        String gateway_ip = userObject.optString("gateway_ip");
+
+                        if (is_active.equalsIgnoreCase("0")) {
+                            ((Main2Activity) getActivity()).logoutCloudUser();
+                            return;
+                        }
+
+                        Common.savePrefValue(ChatApplication.getInstance(), Common.camera_key, camera_key);
+                        String userPassword = "";
+                        if (userObject.has("user_password")) {
+                            userPassword = userObject.optString("user_password");
+                        }
+
+                        /**
+                         * If Network connected on cloud then check user password is changed or not
+                         * if changed then logout user
+                         */
+//                        if (Main2Activity.isCloudConnected && !TextUtils.isEmpty(userPassword)) {
+                        Gson gson=new Gson();
+                        if (!TextUtils.isEmpty(userPassword)) {
+                            String jsonTextTemp1 = Common.getPrefValue(getContext(), Common.USER_JSON);
+                            List<User> userList1 = new ArrayList<User>();
+                            if (!TextUtils.isEmpty(jsonTextTemp1)) {
+                                Type type = new TypeToken<List<User>>() {
+                                }.getType();
+                                userList1 = gson.fromJson(jsonTextTemp1, type);
+                            }
+
+                            for (User user : userList1) {
+                                if (user.isActive()) {
+                                    if (user.getUser_id().equalsIgnoreCase(userId) && !user.getPassword().equalsIgnoreCase(userPassword)) {
+//                                        showLogoutAlert();
+                                        ChatApplication.showToast(getActivity(), "Password has been changed!");
+                                        ((Main2Activity) getActivity()).logoutCloudUser();
+                                    }
+
+                                }
+                            }
+                        }
+                        //End user pass checking
+
+
+                        try {
+                            if (userObject.has("is_logout")) {
+                                int isLogout = userObject.getInt("is_logout");
+                                if (isLogout == 1 && Main2Activity.isCloudConnected) {
+                                    mCallback.onLogout(true);
+                                }
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+
+                        Common.savePrefValue(ChatApplication.getInstance(), "first_name", userFirstName);
+                        Common.savePrefValue(ChatApplication.getInstance(), "last_name", userLastName);
+                        Common.savePrefValue(getContext(), Constants.USER_PASSWORD, userPassword);
+
+
+                        // getActivity().setTitle("" + userFirstName + " " + userLastName);
+                        /**
+                         * <h1>for set ToolBar title in MainActivity2</h1>
+                         * {@link Main2Activity#toolbarTitle}
+                         * @see Main2Activity#toolbar
+                         */
+                        mCallback.onArticleSelected("" + userFirstName);
+
+                        JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
+                        roomList = JsonHelper.parseRoomArray(roomArray, false);
+                        sectionedExpandableLayoutHelper.addSectionList(roomList);
+
+
+                        JSONArray cameraArray = dataObject.getJSONArray("cameradeviceList");
+                        if (cameraArray.length() > 0) {
+                            cameraList = JsonHelper.parseCameraArray(cameraArray);
+
+                            RoomVO section = new RoomVO();
+                            section.setRoomName("Camera");
+                            section.setRoomId("Camera");
+
+                            ArrayList<PanelVO> panelList = new ArrayList<>();
+                            PanelVO panel = new PanelVO();
+                            panel.setPanelName("Devices");
+                            panel.setType("camera");
+                            panel.setCameraList(cameraList);
+
+                            panelList.add(panel);
+
+                            section.setPanelList(panelList);
+                            section.setIs_unread(cameraList.get(0).getTotal_unread());
+
+                            roomList.add(section);
+
+                            /*camera device counting*/
+                            for (int i = 0; i < roomList.size(); i++) {
+                                if (roomList.get(i).getRoomId().equalsIgnoreCase("Camera")) {
+                                    roomList.get(i).setDevice_count("" + roomList.get(i).getPanelList().get(0).getCameraList().size());
+                                }
+                            }
+
+                            //comment if roomList empty could not display cameraList for remove this conditions
+                            // sectionedExpandableLayoutHelper.addCameraList(JsonHelper.parseCameraArray(cameraArray));
+                            sectionedExpandableLayoutHelper.addSectionList(roomList);
+                        }
+                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
+                        ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
+
+                        ((Main2Activity)getActivity()).changestatus();
+                        if (roomArray.length() == 0) {
+                            mMessagesView.setVisibility(View.GONE);
+                            txt_empty_schedule.setVisibility(View.VISIBLE);
+                        } else {
+                            mMessagesView.setVisibility(View.VISIBLE);
+                            txt_empty_schedule.setVisibility(View.GONE);
+                        }
+
+                        setUserTypeValue();
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } finally {
+                    dismissProgressDialog();
+                    showDialog = 0;
+                    if (roomList != null) {
+                        CameraDeviceLogActivity.getCameraList = roomList.get(roomList.size() - 1).getPanelList().get(0).getCameraList();
+                    }
+                    mMessagesView.setClickable(true);
+                    mFab.setClickable(true);
+                    swipeRefreshLayout.setRefreshing(false);
+                    if (roomList.size() == 0) {
+                        mMessagesView.setVisibility(View.GONE);
+                        txt_empty_schedule.setVisibility(View.VISIBLE);
+                    } else {
+                        mMessagesView.setVisibility(View.VISIBLE);
+                        txt_empty_schedule.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                swipeRefreshLayout.setRefreshing(false);
+                ChatApplication.logDisplay("show is call local error" + error);
+                if (!TextUtils.isEmpty(error)) {
+                    isItemClickView=false;
+                    ChatApplication.logDisplay("show is call local error22 " + error);
+                    sectionedExpandableLayoutHelper = new SectionedExpandableLayoutHelper(activity, mMessagesView, MainFragment.this, MainFragment.this, MainFragment.this, Constants.SWITCH_NUMBER);
+                    sectionedExpandableLayoutHelper.setCameraClick(MainFragment.this);
+                    sectionedExpandableLayoutHelper.setClickable(true);
+                    sectionedExpandableLayoutHelper.notifyDataSetChanged();
+
+                    if (roomList.size() == 0) {
+                        mMessagesView.setVisibility(View.GONE);
+                        txt_empty_schedule.setVisibility(View.VISIBLE);
+                    } else {
+                        mMessagesView.setVisibility(View.VISIBLE);
+                        txt_empty_schedule.setVisibility(View.GONE);
+                    }
+                    if (mSocket != null) {
+                        mSocket.disconnect();
+                    }
+                    ((Main2Activity)getActivity()).tabShow(false);
+                    callColud(false);
+                }
+            }
+
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+    }
+
+    public void hideAdapter(boolean isflag) {
+        mMessagesView.setVisibility(isflag == true ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    /// all webservice call below. check local & cloud
+    public void getDeviceList(final int checkmessgae) {
+        if (getActivity() == null) {
+            return;
+        }
+
+        if (!Constants.checkLoginAccountCount(getActivity())) {
+            ((Main2Activity) getActivity()).showLogin();
+            return;
+        }
+
+        if (swipeRefreshLayout != null) {
+            if (swipeRefreshLayout.isRefreshing()) {
+                showDialog = 1;
+            }
+        }
+
+        if(linear_retry.getVisibility()==View.VISIBLE){
+            mFab.setVisibility(View.VISIBLE);
+            linear_retry.setVisibility(View.GONE);
+            ((Main2Activity)getActivity()).mToolBarSettings.setClickable(true);
+            ((Main2Activity)getActivity()).linearTab.setVisibility(View.VISIBLE);
+            ChatApplication.isCallDeviceList=true;
+        }
+
+        if (showDialog == 1 || checkmessgae == 1 || checkmessgae == 6 || checkmessgae == 7 || checkmessgae == 8 || checkmessgae == 10) {
+            showProgressDialog(getActivity(), " Please Wait...", true);
+        }
+        ChatApplication.logDisplay("show progress is " + showDialog);
+
+//        roomList.clear();
+        if (mMessagesView == null) {
+            mMessagesView = (RecyclerView) view.findViewById(R.id.messages);
+        }
+        mMessagesView.setClickable(false);
+        roomList = new ArrayList<>();
+        if (sectionedExpandableLayoutHelper != null) {
+            sectionedExpandableLayoutHelper.notifyDataSetChanged();
+        }
+        Constants.startUrlset();
+        if (ChatApplication.isCallDeviceList) {
+            ChatApplication app = ChatApplication.getInstance();
+            app.closeSocket(webUrl);
+            if (mSocket != null) {
+                mSocket.disconnect();
+                mSocket = null;
+            }
+            hideAdapter(false);
+            sectionedExpandableLayoutHelper.clearData();
+            if (Common.isNetworkConnected(getActivity())) {
+                ((Main2Activity)getActivity()).tabShow(false);
+                getMacAddress(Constants.getuserIp(getActivity()));
+            } else {
+                callColud(false);
+            }
+        } else {
+            if (ChatApplication.url.startsWith(Constants.startUrl)) {
+//                getDeviceCould(1);
+                getDeviceCloud(1);
+            } else {
+                getDeviceLocal(1);
+            }
+        }
+    }
+
+    public void setUserTypeValue() {
+        if (!TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE))) {
+            if (Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
+                mFab.setVisibility(View.GONE);
+                ((Main2Activity) getActivity()).toolbarImage.setVisibility(View.VISIBLE);
+                ((Main2Activity) getActivity()).toolbarTitle.setClickable(true);
+                ((Main2Activity) getActivity()).toolbarImage.setClickable(true);
+
+                ((Main2Activity) getActivity()).toolbarTitle.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+            } else {
+                mFab.setVisibility(View.VISIBLE);
+                ((Main2Activity) getActivity()).toolbarTitle.setClickable(true);
+                ((Main2Activity) getActivity()).toolbarImage.setClickable(true);
+                ((Main2Activity) getActivity()).toolbarImage.setVisibility(View.VISIBLE);
+                ((Main2Activity) getActivity()).toolbarTitle.setTextColor(getResources().getColor(R.color.sky_blue));
+            }
+        }
+    }
+
+    ProgressDialog m_progressDialog;
+    public void showProgressDialog(Context context, String message, boolean iscancle){
+        m_progressDialog=new ProgressDialog(getActivity());
+        m_progressDialog.setMessage(message);
+        m_progressDialog.setCanceledOnTouchOutside(true);
+        m_progressDialog.show();
+    }
+    public void dismissProgressDialog(){
+        if(m_progressDialog!=null){
+            ChatApplication.logDisplay("m_progressDialog is null not");
+            m_progressDialog.cancel();
+            m_progressDialog.dismiss();
+//            m_progressDialog=null;
+        }
+    }
+
+    //getMoodList
+    public static void getBadgeClear(final Context context) {
+        if (!Constants.checkLoginAccountCount(context)) {
+            return;
+        }
+        String url = ChatApplication.url + Constants.updateBadgeCount;
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            if (activity == null) {
+                jsonObject.put("user_id", "");
+            } else {
+                jsonObject.put("user_id", "" + Common.getPrefValue(activity, Constants.USER_ID));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ChatApplication.logDisplay("url is " + url);
+        new GetJsonTask(context, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                ChatApplication.isPushFound = false;
+
+                clearNotification(context);
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+
+            }
+        }).execute();
+    }
+
+    public static void clearNotification(Context context) {
+        // Clear all notification
+        NotificationManager nMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        nMgr.cancelAll();
+    }
+
     private Emitter.Listener onConnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -1290,1796 +2839,4 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             });
         }
     };
-
-    private void deviceOnOff(final DeviceVO deviceVO, final int position) {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
-
-            if (deviceVO.getDeviceType().equalsIgnoreCase("3")) {
-                obj.put("status", deviceVO.getDeviceStatus());
-                obj.put("bright", "");
-                obj.put("is_rgb", "0");//1;
-                obj.put("rgb_array", "");
-                obj.put("room_device_id", deviceVO.getRoomDeviceId());
-            } else {
-                obj.put("room_device_id", deviceVO.getRoomDeviceId());
-                obj.put("module_id", deviceVO.getModuleId());
-                obj.put("device_id", deviceVO.getDeviceId());
-                obj.put("device_status", deviceVO.getOldStatus());
-                obj.put("localData", userId.equalsIgnoreCase("0") ? "0" : "1");
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("onoff is "+obj);
-
-        if (mSocket != null && mSocket.connected()) {
-            mSocket.emit("socketChangeDeviceAck", obj, new AckWithTimeOut(Constants.ACK_TIME_OUT) {
-                @Override
-                public void call(Object... args) {
-                    if (args != null) {
-                        if (args[0].toString().equalsIgnoreCase("No Ack")) {
-                            updateDeviceOfflineMode(deviceVO);
-
-                        } else if (args[0].toString().equalsIgnoreCase("true")) {
-                            cancelTimer();
-                        }
-                    }
-                }
-            });
-
-        } else {
-            callDeviceOnOffApi(deviceVO, obj);
-
-            /*mSocket.emit("socketChangeDevice", obj, new Ack() {
-                @Override
-                public void call(Object... args) {
-                    if(args!=null){
-                        Ack ack = (Ack) args[args.length - 1];
-                        ack.call();
-                        Log.d("ACK_SOCKET","isAck : "+ ack);
-                    }
-                }
-            });*/
-        }
-    }
-
-    /**
-     * offline device status updated
-     *
-     * @param deviceVO
-     */
-    private void updateDeviceOfflineMode(final DeviceVO deviceVO) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                sectionedExpandableLayoutHelper.updateItem(deviceVO.getModuleId(),
-                        String.valueOf(deviceVO.getDeviceId()), String.valueOf(deviceVO.getOldStatus()), deviceVO.getIs_locked());
-            }
-        });
-    }
-
-    private void updateRoomOfflineMode(final RoomVO roomVO) {
-
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                sectionedExpandableLayoutHelper.updateRoom(roomVO.getRoomId(), String.valueOf(roomVO.getOld_room_status()));
-            }
-        });
-    }
-
-    /**
-     * offline panel device status updated
-     *
-     * @param panelVO
-     */
-    private void updatePanelDeviceOfflineMode(final PanelVO panelVO) {
-
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                sectionedExpandableLayoutHelper.updatePanel(panelVO.getPanelId(), String.valueOf(panelVO.getOldStatus()), panelVO.getRoom_panel_id());
-            }
-        });
-    }
-
-    private void callDeviceOnOffApi(final DeviceVO deviceVO, JSONObject obj) {
-
-        String url = "";
-        if (deviceVO.getDeviceType().equalsIgnoreCase("3")) {
-            url = ChatApplication.url + Constants.changeHueLightState;
-        } else {
-            url = ChatApplication.url + Constants.CHANGE_DEVICE_STATUS;
-        }
-
-        ChatApplication.logDisplay("Device roomPanelOnOff obj " + obj.toString());
-
-        new GetJsonTask(getActivity(), url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                ChatApplication.logDisplay("roomPanelOnOff onSuccess " + result.toString());
-                try {
-                    int code = result.getInt("code"); //message
-                    String message = result.getString("message");
-                    if (code == 200) {
-                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
-                    } else {
-                        ChatApplication.showToast(getActivity(), message);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                    ChatApplication.logDisplay("Device roomPanelOnOff finally ");
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ChatApplication.logDisplay("roomPanelOnOff onFailure " + error);
-                updateDeviceOfflineMode(deviceVO);
-            }
-        }).execute();
-    }
-
-    private void roomPanelOnOff(final PanelVO panelVO, final RoomVO roomVO, String roomId, String panelId, int panel_status, int type) {
-
-        final JSONObject obj = new JSONObject();
-        try {
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
-            obj.put("room_id", roomId);
-            obj.put("panel_id", panelId);
-            obj.put("device_status", panel_status);
-            obj.put("operationtype", type);
-            obj.put("localData", userId.equalsIgnoreCase("0") ? "0" : "1");
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        if (mSocket != null && mSocket.connected()) {
-            ChatApplication.logDisplay("roomPanelOnOff");
-
-            mSocket.emit("changeRoomPanelMoodStatusAck", obj, new AckWithTimeOut(Constants.ACK_TIME_OUT) {
-                @Override
-                public void call(Object... args) {
-                    if (args != null) {
-                        if (args[0].toString().equalsIgnoreCase("No Ack")) {
-
-                            if (panelVO != null) {
-                                updatePanelDeviceOfflineMode(panelVO);
-                            } else if (roomVO != null) {
-                                updateRoomOfflineMode(roomVO);
-                            }
-
-                        } else if (args[0].toString().equalsIgnoreCase("true")) {
-                            cancelTimer();
-                        }
-                    }
-                }
-            });
-
-        } else {
-            callPanelOnOffApi(obj);
-
-        }
-    }
-
-    private void callPanelOnOffApi(JSONObject obj) {
-
-        String url = ChatApplication.url + Constants.CHANGE_ROOM_PANELMOOD_STATUS_NEW;
-
-        new GetJsonTask(getActivity(), url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                ChatApplication.logDisplay("roomPanelOnOff onSuccess " + result.toString());
-                try {
-                    int code = result.getInt("code"); //message
-                    String message = result.getString("message");
-                    if (code == 200) {
-                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
-                    } else {
-                        ChatApplication.showToast(getActivity(), message);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                    ChatApplication.logDisplay("roomPanelOnOff finally ");
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ChatApplication.logDisplay("roomPanelOnOff onFailure " + error);
-            }
-        }).execute();
-
-    }
-
-    // Room buttons click
-    @Override
-    public void itemClicked(final RoomVO roomVO, String action) {
-        closeFABMenu();
-        if (action.equalsIgnoreCase("heavyloadSocketon")) {
-
-        } else if (action.equalsIgnoreCase("heavyloadSocketoff")) {
-
-        } else if (action.equalsIgnoreCase("showGridCamera")) {
-            Intent intent = new Intent(getActivity(), CameraGridActivity.class);
-            intent.putExtra("cameraList", cameraList);
-            startActivity(intent);
-
-        } else if (action.equalsIgnoreCase("refreshCamera")) {
-            getDeviceList(1);
-
-        } else if (action.equalsIgnoreCase("onoffclick")) {
-            //on off room
-            if (action.equalsIgnoreCase("onOffclick")) {
-                roomPanelOnOff(null, roomVO, roomVO.getRoomId(), "", roomVO.getOld_room_status(), 1);
-            }
-        } else if (action.equalsIgnoreCase("editclick_false")) {
-            Intent intent = new Intent(getActivity(), RoomEditActivity_v2.class);
-            intent.putExtra("room", roomVO);
-            startActivity(intent);
-
-        } else if (action.equalsIgnoreCase("cameraopen")) {
-
-            Intent intent = new Intent(getActivity(), CameraPlayBack.class);
-            if (roomVO != null) {
-                intent.putExtra("room", roomVO);
-            } else {
-                intent.putExtra("room", new RoomVO());
-            }
-            intent.putExtra("cameraList", cameraList);
-            startActivity(intent);
-
-        } else if (action.equalsIgnoreCase("editclick_true")) {
-            Intent intent = new Intent(getActivity(), CameraEdit.class);
-            intent.putExtra("cameraList", cameraList);
-            intent.putExtra("isEditable", false);
-            startActivity(intent);
-        } else if (action.equalsIgnoreCase("deleteRoom")) {
-            ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
-                @Override
-                public void onConfirmDialogYesClick() {
-                    deleteRoom(roomVO);
-                }
-
-                @Override
-                public void onConfirmDialogNoClick() {
-                }
-            });
-            newFragment.show(getActivity().getFragmentManager(), "dialog");
-
-        } else if (action.equalsIgnoreCase("icnLog")) {
-            Intent intent = new Intent(getActivity(), DeviceLogActivity.class);
-            intent.putExtra("ROOM_ID", roomVO.getRoomId());
-            intent.putExtra("activity_type", roomVO.getType());
-            intent.putExtra("isCheckActivity", "room");
-            intent.putExtra("isRoomName", "" + roomVO.getRoomName());
-            startActivity(intent);
-        } else if (action.equalsIgnoreCase("icnSch")) {
-            Intent intent = new Intent(getActivity(), ScheduleListActivity.class);
-            intent.putExtra("moodId3", roomVO.getRoomId());
-            intent.putExtra("roomId", roomVO.getRoomId());
-            intent.putExtra("roomName", roomVO.getRoomName());
-            intent.putExtra("selection", 1);
-            intent.putExtra("isMoodAdapter", true);
-            intent.putExtra("isActivityType", "1");
-            intent.putExtra("isRoomMainFm", "room");
-            startActivity(intent);
-        } else if (action.equalsIgnoreCase("icnSensorLog")) {
-            Intent intent = new Intent(getActivity(), DeviceLogRoomActivity.class);
-            intent.putExtra("ROOM_ID", roomVO.getRoomId());
-            intent.putExtra("IS_SENSOR", "" + true);
-            intent.putExtra("room_name", "" + roomVO.getRoomName());
-            intent.putExtra("isNotification", "roomSensorUnreadLogs");
-            startActivity(intent);
-        } else if (action.equalsIgnoreCase("cameraDevice")) {
-            Intent intent = new Intent(getActivity(), CameraDeviceLogActivity.class);
-            startActivity(intent);
-        } else if (action.equalsIgnoreCase("cameraNotification")) {
-            Intent intent = new Intent(getActivity(), CameraNotificationActivity.class);
-            startActivity(intent);
-        }
-    }
-
-
-    /**
-     * Delete Room
-     *
-     * @param roomVO
-     */
-
-    private void deleteRoom(RoomVO roomVO) {
-        if (!ActivityHelper.isConnectingToInternet(getActivity())) {
-            ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
-            return;
-        }
-        JSONObject object = new JSONObject();
-        try {
-            object.put("room_id", roomVO.getRoomId());
-            object.put("room_name", roomVO.getRoomName());
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("ob : " + object.toString());
-        String url = webUrl + Constants.DELETE_ROOM;
-        new GetJsonTask(getActivity(), url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                dismissProgressDialog();
-                ChatApplication.logDisplay("getconfigureData onSuccess " + result.toString());
-                try {
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    if (code == 200) {
-                        ChatApplication.showToast(getActivity(), message);
-                        getDeviceList(8);
-                    } else {
-                        ChatApplication.showToast(getActivity(), message);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                dismissProgressDialog();
-                ChatApplication.logDisplay("getconfigureData onFailure " + error);
-                ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
-            }
-        }).execute();
-    }
-
-    // Panel buttons click
-    @Override
-    public void itemClicked(PanelVO panelVO, String action) {
-        closeFABMenu();
-        if (action.equalsIgnoreCase("onOffclick")) {
-            roomPanelOnOff(panelVO, null, "", panelVO.getPanelId(), panelVO.getOldStatus(), 2);
-        }
-    }
-
-    /**
-     * @param item
-     * @param action
-     */
-    @Override
-    public void itemClicked(final DeviceVO item, String action, int position) {
-        closeFABMenu();
-        if (action.equalsIgnoreCase("itemclick")) {
-            deviceOnOff(item, position);
-        } else if (action.equalsIgnoreCase("philipsClick")) {
-            deviceOnOff(item, position);
-        } else if (action.equalsIgnoreCase("curtain")) {
-            Intent intent = new Intent(getActivity(), CurtainActivity.class);
-            intent.putExtra("curtain_id", item.getDeviceId());
-            intent.putExtra("module_id", item.getModuleId());
-            intent.putExtra("curtain_name", item.getDeviceName());
-            intent.putExtra("curtain_status", ""+item.getDeviceStatus());
-            startActivity(intent);
-        } else if (action.equalsIgnoreCase("scheduleclick")) {
-            Intent intent = new Intent(getActivity(), ScheduleActivity.class);
-            intent.putExtra("item", item);
-            intent.putExtra("schedule", true);
-            startActivity(intent);
-        }
-        if (action.equalsIgnoreCase("longclick")) {
-            int getDeviceSpecificValue = 0;
-            if (!TextUtils.isEmpty(item.getDeviceSpecificValue())) {
-                getDeviceSpecificValue = Integer.parseInt(item.getDeviceSpecificValue());
-            }
-            FanDialog fanDialog = new FanDialog(getActivity(), item.getRoomDeviceId(), getDeviceSpecificValue, new ICallback() {
-                @Override
-                public void onSuccess(String str) {
-                    if (str.contains("yes")) {
-                    }
-                }
-            });
-            fanDialog.show();
-        }
-
-    }
-
-    /**
-     * Temperature Device Click listener handle
-     *
-     * @param item
-     * @param action
-     * @param isTemp
-     */
-    @Override
-    public void itemClicked(DeviceVO item, String action, boolean isTemp, int position) {
-
-        if (action.equalsIgnoreCase("isSensorClick") && isTemp) { //start sensor details activity
-
-            tmpDeviceV0 = item;
-            tmpPosition = position;
-
-            if (item.getSensor_type().equalsIgnoreCase("tempsensor") && item.getIsActive() == 1) {
-                Intent intent = new Intent(getActivity(), MultiSensorActivity.class);
-                intent.putExtra("temp_sensor_id", item.getSensor_id());
-                intent.putExtra("temp_room_name", item.getRoomName());
-                intent.putExtra("temp_room_id", item.getRoomId());
-                intent.putExtra("temp_unread_count", item.getIs_unread());
-                intent.putExtra("temp_module_id", item.getModuleId());
-                startActivity(intent);
-
-            } else if (item.getSensor_type().equalsIgnoreCase("gassensor")) {
-                if (item.getIsActive() == -1) {
-                    return;
-                }
-                Intent intent = new Intent(getActivity(), GasSensorActivity.class);
-                intent.putExtra("sensor_id", item.getSensor_id());
-                intent.putExtra("room_name", item.getRoomName());
-                intent.putExtra("room_id", item.getRoomId());
-                intent.putExtra("module_id", item.getModuleId());
-                startActivity(intent);
-
-            } else if (item.getSensor_type().equalsIgnoreCase("multisensor")) {
-                if (item.getIsActive() == -1) {
-                    return;
-                }
-
-                Intent intent = new Intent(getActivity(), MultiSensorActivity.class);
-                intent.putExtra("temp_sensor_id", item.getSensor_id());
-                intent.putExtra("temp_room_name", item.getRoomName());
-                intent.putExtra("temp_room_id", item.getRoomId());
-                intent.putExtra("temp_unread_count", item.getIs_unread());
-                intent.putExtra("temp_module_id", item.getModuleId());
-                startActivity(intent);
-            } else if (item.getSensor_type().equalsIgnoreCase("door")) {
-                ChatApplication.logDisplay("door call is intent " + mSocket.connected());
-                Intent intent = new Intent(getActivity(), DoorSensorInfoActivity.class);
-                intent.putExtra("door_sensor_id", item.getSensor_id());
-                intent.putExtra("door_room_name", item.getRoomName());
-                intent.putExtra("door_room_id", item.getRoomId());
-                intent.putExtra("door_unread_count", item.getIs_unread());
-                intent.putExtra("door_module_id", item.getModuleId());
-                intent.putExtra("door_subtype", "" + item.getDoor_subtype());
-                startActivity(intent);
-            }
-        } else if (action.equalsIgnoreCase("heavyloadlongClick")) {
-            Intent intent = new Intent(getActivity(), HeavyLoadDetailActivity.class);
-            intent.putExtra("getRoomDeviceId", item.getRoomDeviceId());
-            intent.putExtra("getRoomName", item.getRoomName());
-            intent.putExtra("getModuleId", item.getModuleId());
-            intent.putExtra("device_id", item.getDeviceId());
-            startActivity(intent);
-
-        } else if (action.equalsIgnoreCase("philipslongClick")) {
-            //on-off remote
-            if (item.getDeviceStatus() == 1) {
-                Intent intent = new Intent(getActivity(), SmartColorPickerActivity.class);
-                intent.putExtra("roomDeviceId", item.getRoomDeviceId());
-                intent.putExtra("getOriginal_room_device_id", item.getOriginal_room_device_id());
-                startActivity(intent);
-            } else {
-                ChatApplication.showToast(getActivity(), "Please device on");
-            }
-
-
-        } else if (action.equalsIgnoreCase("isIRSensorClick")) {
-            //on-off remote
-            sendRemoteCommand(item, "isIRSensorClick");
-        } else if (action.equalsIgnoreCase("doorOpenClose") && item.getDoor_subtype() != 1) {
-            callDoorRemotly(item);
-        } else if (action.equalsIgnoreCase("isIRSensorLongClick")) {
-
-            Intent intent = new Intent(getActivity(), IRBlasterRemote.class);
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("REMOTE_IS_ACTIVE", item.getDeviceStatus());
-            bundle.putSerializable("REMOTE_ID", item.getSensor_id());
-            bundle.putSerializable("IR_BLASTER_ID", item.getSensor_id());
-            // intent.putExtra("IR_BLASTER_ID",item.getIr_blaster_id());
-            intent.putExtra("IR_BLASTER_ID", item.getSensor_id());
-            intent.putExtra("ROOM_DEVICE_ID", item.getRoomDeviceId());
-            intent.putExtras(bundle);
-            startActivity(intent);
-        } else if (action.equalsIgnoreCase("doorLongClick")) {
-            Intent intent = new Intent(getActivity(), DoorSensorInfoActivity.class);
-            intent.putExtra("door_sensor_id", item.getSensor_id());
-            intent.putExtra("door_room_name", item.getRoomName());
-            intent.putExtra("door_room_id", item.getRoomId());
-            intent.putExtra("door_unread_count", item.getIs_unread());
-            intent.putExtra("door_module_id", item.getModuleId());
-            startActivity(intent);
-        }
-    }
-
-    private void doorOpenCLose(DeviceVO item) {
-
-        if (mSocket != null) {
-            JSONObject object = new JSONObject();
-            try {
-                object.put("lock_id", item.getLock_id());
-                object.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
-                object.put("door_sensor_status", item.getDoor_sensor_status().equals("1") ? 0 : 1);
-                object.put("lock_status", item.getDoor_sensor_status().equals("1") ? 0 : 1);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            ChatApplication.logDisplay("door json " + object);
-            mSocket.emit("changeLockStatus", object);
-        }
-
-    }
-
-    private void callDoorRemotly(DeviceVO item) {
-        showProgressDialog(getActivity(), "Please Wait...", false);
-        GetDataService apiService = RetrofitAPIManager.provideClientApi();
-
-        Call<ResponseBody> call;
-        if (item.getDoor_sensor_status().equalsIgnoreCase("1")) {
-            call = apiService.unlockGatewayUse(Constants.client_id, Constants.access_token, item.getLock_id(), System.currentTimeMillis());
-        } else {
-            call = apiService.lockGatewayUse(Constants.client_id, Constants.access_token, item.getLock_id(), System.currentTimeMillis());
-        }
-        ChatApplication.logDisplay("door json call");
-
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                dismissProgressDialog();
-                if (response.code() == 200) {
-                    doorOpenCLose(item);
-                    ChatApplication.logDisplay("lock is " + response.body().toString());
-
-                } else {
-                    ChatApplication.logDisplay("tt lock reponse is error ff ");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                dismissProgressDialog();
-                ChatApplication.logDisplay("tt lock reponse is error");
-            }
-        });
-    }
-
-    private void sendRemoteCommand(final DeviceVO item, String philipslongClick) {
-
-        if (!ActivityHelper.isConnectingToInternet(getContext())) {
-            ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
-            return;
-        }
-        String mRemoteCommandReq = "";
-        String url = "";
-
-        url = ChatApplication.url + Constants.SEND_REMOTE_COMMAND;
-        SendRemoteCommandReq sendRemoteCommandReq = new SendRemoteCommandReq();
-        sendRemoteCommandReq.setRemoteid(item.getSensor_id());
-
-        sendRemoteCommandReq.setPower(item.getRemote_status().equalsIgnoreCase("OFF") ? "ON" : "OFF");
-        sendRemoteCommandReq.setSpeed(item.getSpeed());
-        sendRemoteCommandReq.setTemperature(item.getTemprature());
-        sendRemoteCommandReq.setRoomDeviceId(item.getRoomDeviceId());
-        sendRemoteCommandReq.setPhoneId(APIConst.PHONE_ID_VALUE);
-        sendRemoteCommandReq.setPhoneType(APIConst.PHONE_TYPE_VALUE);
-
-        Gson gson = new Gson();
-        mRemoteCommandReq = gson.toJson(sendRemoteCommandReq);
-
-        new GetJsonTaskRemote(getContext(), url, "POST", mRemoteCommandReq, new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
-                dismissProgressDialog();
-                try {
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    ChatApplication.logDisplay("result is ir " + result);
-                    if (code == 200) {
-                        ChatApplication.isMoodFragmentNeedResume = true;
-                        SendRemoteCommandRes tmpIrBlasterCurrentStatusList = Common.jsonToPojo(result.toString(), SendRemoteCommandRes.class);
-                    } else {
-                        ChatApplication.showToast(getActivity(), item.getSensor_name() + " " + getActivity().getString(R.string.ir_error));
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                dismissProgressDialog();
-                ChatApplication.logDisplay("result is ir error " + error.toString());
-                ChatApplication.showToast(getActivity(), item.getSensor_name() + " " + getActivity().getString(R.string.ir_error));
-            }
-        }).execute();
-    }
-
-
-    /**
-     * @param item
-     * @param action
-     */
-
-    @Override
-    public void itemClicked(CameraVO item, String action) {
-        if (action.equalsIgnoreCase("editcamera")) {
-            Intent intent = new Intent(getActivity(), CameraEdit.class);
-            intent.putExtra("cameraList", cameraList);
-            intent.putExtra("cameraSelcet", item);
-            intent.putExtra("isEditable", false);
-            startActivity(intent);
-        } else if (action.equalsIgnoreCase("cameraLog")) {
-            Intent intent = new Intent(getActivity(), CameraDeviceLogActivity.class);
-            intent.putExtra("cameraId", "" + item.getCamera_id());
-            startActivity(intent);
-        } else {
-            callCameraToken(item, action);
-        }
-    }
-
-    private void callCameraToken(final CameraVO item, final String action) {
-        showProgressDialog(getActivity(), " Please Wait...", false);
-        String url = ChatApplication.url + Constants.getCameraToken + item.getCamera_id();
-
-        ChatApplication.logDisplay("url is " + url);
-        new GetJsonTask(getActivity(), url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                int code = 0;
-                try {
-                    code = result.getInt("code");
-
-                    if (code == 200) {
-                        dismissProgressDialog();
-                        JSONObject dataObject = result.optJSONObject("data");
-
-                        String camera_vpn_port = dataObject.optString("camera_vpn_port");
-                        String camera_url = dataObject.optString("camera_url");
-
-                        String url = item.getCamera_ip();
-                        url = url + item.getCamera_videopath();
-                        String camera_name = item.getCamera_name();
-
-                        ChatApplication.logDisplay("isCloudConnect : " + dataObject);
-
-                        if (Main2Activity.isCloudConnected) {
-                            url = Constants.CAMERA_DEEP + ":" + camera_vpn_port + "" + camera_url;
-                        } else {
-                            String tmpurl = ChatApplication.url + "" + camera_url;
-                            url = tmpurl.replace("http", "rtmp").replace(":80", ""); //replace port number to blank String
-                        }
-                        //start camera rtsp player
-                        Intent intent = new Intent(getActivity(), CameraPlayer.class);
-                        intent.putExtra("videoUrl", url);
-                        intent.putExtra("name", camera_name);
-                        intent.putExtra("isCloudConnect", Main2Activity.isCloudConnected);
-                        startActivity(intent);
-                        dismissProgressDialog();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                    dismissProgressDialog();
-                }
-
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                dismissProgressDialog();
-            }
-        }).execute();
-
-    }
-    ////////////////////////////////////////////////////////////////////////////
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    String webUrl = "";
-    boolean isCloudConnected = false;
-    public static boolean isResumeConnect = false;
-    //startTimer();
-    CountDownTimer countDownTimer = new CountDownTimer(7000, 4000) {
-
-        public void onTick(long millisUntilFinished) {
-        }
-
-        public void onFinish() {
-            /*- SOCKET Response:
-            - 'configureGatewayDevice'
-                    - parameter: module_id, device_id
-                    - Open Popup and Fill below data: module_id, device_id*/
-            addRoom = false;
-            dismissProgressDialog();
-            ChatApplication.showToast(getActivity(), "No New Device detected!");
-        }
-
-    };
-
-    public void startTimer() {
-        //  timerObj = new Timer();
-        try {
-            countDownTimer.start();
-        } catch (Exception e) {
-        }
-    }
-
-    /*dialog enter key camera*/
-    public void addKeyCamera() {
-
-        final Dialog dialog = new Dialog(getContext());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setContentView(R.layout.dialog_add_camera_key);
-
-        final TextInputEditText room_name = (TextInputEditText) dialog.findViewById(R.id.edt_room_name);
-        room_name.setSingleLine(true);
-
-        InputFilter[] filterArray = new InputFilter[1];
-        filterArray[0] = new InputFilter.LengthFilter(25);
-        room_name.setFilters(filterArray);
-
-        Button btnSave = (Button) dialog.findViewById(R.id.btn_save);
-        Button btn_cancel = (Button) dialog.findViewById(R.id.btn_cancel);
-        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
-        iv_close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        btn_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveCameraKey(room_name, dialog);
-            }
-        });
-
-        if (!dialog.isShowing()) {
-            dialog.show();
-        }
-    }
-
-    boolean addRoom = false;
-
-    /**
-     * Show custom room dialog
-     */
-    public void addCustomRoom() {
-
-        final Dialog dialog = new Dialog(getContext());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setContentView(R.layout.dialog_add_custome_room);
-
-        final TextInputEditText room_name = (TextInputEditText) dialog.findViewById(R.id.edt_room_name);
-        room_name.setSingleLine(true);
-
-        InputFilter[] filterArray = new InputFilter[1];
-        filterArray[0] = new InputFilter.LengthFilter(25);
-        room_name.setFilters(filterArray);
-
-        Button btnSave = (Button) dialog.findViewById(R.id.btn_save);
-        Button btn_cancel = (Button) dialog.findViewById(R.id.btn_cancel);
-        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
-        iv_close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        btn_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveCustomRoom(room_name, dialog);
-            }
-        });
-
-        if (!dialog.isShowing()) {
-            dialog.show();
-        }
-    }
-
-    /*
-     * camera key check is valid or not..
-     * */
-
-    private void saveCameraKey(EditText roomName, final Dialog dialog) {
-
-        if (!ActivityHelper.isConnectingToInternet(getActivity())) {
-            ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
-            return;
-        }
-
-        if (TextUtils.isEmpty(roomName.getText().toString().trim())) {
-            roomName.setError("Enter key name");
-            return;
-        }
-
-        JSONObject object = new JSONObject();
-        try {
-            object.put("key", roomName.getText().toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        showProgressDialog(getActivity(), "Searching Device attached ", false);
-
-        String url = webUrl + Constants.validatecamerakey;
-
-        new GetJsonTask(getActivity(), url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                dismissProgressDialog();
-                ChatApplication.logDisplay("getconfigureData onSuccess " + result.toString());
-                try {
-                    //{"code":200,"message":"success"}
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-
-                    if (code == 200) {
-                        dialog.dismiss();
-                        Common.savePrefValue(ChatApplication.getInstance(), Common.camera_key, "1");
-                        ChatApplication.showToast(getActivity(), message);
-                        Toast.makeText(activity.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                        addCamera();
-                    } else if (code == 301) {
-                        ChatApplication.showToast(getActivity(), message);
-                    } else {
-                        ChatApplication.showToast(getActivity(), message);
-                    }
-                    // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                dismissProgressDialog();
-                ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
-            }
-        }).execute();
-    }
-
-    /**
-     * Call api for save custom room
-     *
-     * @param roomName mRoomName
-     * @param dialog   mDialog instance
-     */
-    private void saveCustomRoom(EditText roomName, final Dialog dialog) {
-
-        if (!ActivityHelper.isConnectingToInternet(getActivity())) {
-            ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
-            return;
-        }
-
-        if (TextUtils.isEmpty(roomName.getText().toString().trim())) {
-            roomName.setError("Enter Room name");
-            return;
-        }
-
-        JSONObject object = new JSONObject();
-        try {
-            object.put("room_name", roomName.getText().toString());
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("ob : " + object.toString());
-        showProgressDialog(getActivity(), "Searching Device attached ", false);
-
-        String url = webUrl + Constants.ADD_CUSTOME_ROOM;
-
-        new GetJsonTask(getActivity(), url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                dismissProgressDialog();
-                ChatApplication.logDisplay("getconfigureData onSuccess " + result.toString());
-                try {
-                    //{"code":200,"message":"success"}
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-
-                    if (code == 200) {
-                        dialog.dismiss();
-                        ChatApplication.showToast(getActivity(), message);
-                        getDeviceList(9);
-                    } else if (code == 301) {
-                        ChatApplication.showToast(getActivity(), message);
-                    } else {
-                        ChatApplication.showToast(getActivity(), message);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    {
-                        dismissProgressDialog();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                dismissProgressDialog();
-                ChatApplication.logDisplay("getconfigureData onFailure " + error);
-                ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
-            }
-        }).execute();
-    }
-
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        this.activity = activity;
-    }
-
-    //network change
-    @Override
-    public void deviceRefreshView(int count) {
-        if(count==0){
-            errorViewClick();
-        }else {
-            getDeviceList(1);
-        }
-    }
-
-    public interface OnHeadlineSelectedListener {
-        public void onArticleSelected(String name);
-
-        void onLogout(boolean isLogout);
-    }
-
-    ArrayList<CameraVO> cameraList = new ArrayList<CameraVO>();
-    public static ArrayList<PiDetailsModel> piDetailsModelArrayList = new ArrayList<PiDetailsModel>();
-
-    private int SIGN_IP_REQUEST_CODE = 204;
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SIGN_IP_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            getDeviceList(10);
-        }
-    }
-
-    public static void saveCurrentId(Context context, String userId, String gatewayIp) {
-        Gson gson = new Gson();
-        String jsonText = Common.getPrefValue(context, Common.USER_JSON);
-        Type type = new TypeToken<List<User>>() {}.getType();
-        List<User> userList = gson.fromJson(jsonText, type);
-
-        for (int i = 0; i < userList.size(); i++) {
-            if (userList.get(i).getUser_id().equals(userId)) {
-                userList.get(i).setIsActive(true);
-                userList.get(i).setGateway_ip(gatewayIp);
-                mCallback.onArticleSelected("" + userList.get(i).getFirstname());
-            } else {
-                userList.get(i).setIsActive(false);
-            }
-        }
-        if (userList.size() > 0) {
-            String jsonCurProduct = gson.toJson(userList);
-            Common.savePrefValue(context, Common.USER_JSON, jsonCurProduct);
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    int countFlow = 0;
-
-    public void getMacAddress(String locaIp) {
-        countFlow = 0;
-        String url = ChatApplication.http + locaIp + Constants.getLocalMacAddress;
-
-        ChatApplication.logDisplay("url is " + url);
-        new GetJsonTaskMacAddress(getActivity(), url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                countFlow = 1;
-                countDownTimer.cancel();
-                // {"code":200,"message":"Success","data":{"mac_address":"b8:27:eb:f7:45:b3"}}
-
-                ChatApplication.logDisplay("reponse is mac " + result.toString());
-//                dismissProgressDialog();
-                try {
-                    JSONObject object = new JSONObject(result.toString());
-                    JSONObject jsonObject = object.optJSONObject("data");
-
-                    if (jsonObject != null && countFlow != 2) {
-                        if (jsonObject.optString("mac_address").equalsIgnoreCase(Constants.getMacAddress(getActivity()))) {
-                            callColud(true);
-                        } else {
-                            callColud(false);
-                        }
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-//                dismissProgressDialog();
-                countDownTimer.cancel();
-                ChatApplication.logDisplay("reponse is mac error " + error.toString());
-                if (countFlow != 2) {
-                    countFlow = 1;
-                    callColud(false);
-                }
-
-
-            }
-        }).execute();
-
-        CountDownTimer countDownTimer = new CountDownTimer(3000, 1000) {
-            public void onTick(long millisUntilFinished) {
-            }
-
-            public void onFinish() {
-                if (countFlow == 0) {
-                    countFlow = 2;
-                    ChatApplication app = ChatApplication.getInstance();
-                    app.closeSocket(webUrl);
-
-                    if (mSocket != null) {
-                        mSocket.disconnect();
-                        mSocket = null;
-                    }
-                    ChatApplication.logDisplay("show is calling time ");
-                    callColud(false);
-                }
-
-            }
-
-        };
-        countDownTimer.start();
-
-
-    }
-
-    private void callColud(boolean isflag) {
-        ChatApplication.logDisplay("show is call " + isflag);
-        if (isflag) {
-            //local
-            ((Main2Activity) getActivity()).webUrl = ChatApplication.http + Constants.getuserIp(getActivity()) + ":80";
-            ChatApplication.url = ChatApplication.http + Constants.getuserIp(getActivity());
-           Constants.startUrlset();
-            ((Main2Activity) getActivity()).callSocket();
-            ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
-
-            getDeviceLocal(0);
-        } else {
-            String colud = Constants.getuserCloudIP(getActivity());
-            ChatApplication.url = colud;
-            Constants.startUrlset();
-            ((Main2Activity) getActivity()).webUrl = colud;
-            ((Main2Activity) getActivity()).callSocket();
-            ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
-
-            getDeviceCloud(0);
-        }
-
-    }
-
-    Gson gsonType;
-    public void getDeviceCloud(int isShow) {
-
-        if (swipeRefreshLayout != null) {
-            if (swipeRefreshLayout.isRefreshing()) {
-                showDialog = 1;
-            }
-        }
-
-        if (isShow == 0) {
-            if (ChatApplication.url.startsWith(Constants.startUrl)) {
-                if (m_progressDialog.isShowing()) {
-                   m_progressDialog.setMessage("Connecting to cloud...");
-                }else {
-//                    showProgressDialog(getActivity(), "Connecting to cloud...", true);
-                }
-            } else {
-                if(!m_progressDialog.isShowing()){
-                    showProgressDialog(getActivity(), "Please Wait...", true);
-                }
-            }
-        }
-
-
-        roomList.clear();
-        if (mMessagesView == null) {
-            mMessagesView = (RecyclerView) view.findViewById(R.id.messages);
-        }
-        mMessagesView.setClickable(false);
-        roomList = new ArrayList<>();
-        if (sectionedExpandableLayoutHelper != null) {
-            sectionedExpandableLayoutHelper.notifyDataSetChanged();
-        }
-
-        String url = ChatApplication.url + Constants.GET_DEVICES_LIST;
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("room_type", 0);
-            jsonObject.put("is_sensor_panel", 1);
-            jsonObject.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
-
-            if (TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE))) {
-                jsonObject.put("admin", 1);
-            } else {
-                jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE)));
-            }
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("jsonObject is dashboard cloud " + url + "   " + jsonObject.toString());
-        new GetJsonTask2(activity, url, "POST", jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                dismissProgressDialog();
-                ChatApplication.isCallDeviceList = false;
-                if (ChatApplication.isPushFound) {
-                    getBadgeClear(getActivity());
-                }
-
-                mMessagesView.setClickable(true);
-                responseErrorCode.onSuccess();
-                swipeRefreshLayout.setRefreshing(false);
-                sectionedExpandableLayoutHelper.setClickable(true);
-                ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
-
-                try {
-                    ((Main2Activity)getActivity()).tabShow(true);
-                    isItemClickView=true;
-                    webUrl = ChatApplication.url;
-                    startSocketConnection();
-                    dismissProgressDialog();
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    if (code == 200) {
-                        Constants.socketType = 1;
-                        Constants.socketIp = ChatApplication.url;
-                        hideAdapter(true);
-                        JSONObject dataObject = result.getJSONObject("data");
-                        ((Main2Activity) getActivity()).getUserDialogClick(true);
-
-                        if(gsonType==null){
-                            gsonType=new Gson();
-                        }
-
-                        roomList = new ArrayList<>();
-
-                        JSONArray userListArray = dataObject.optJSONArray("userList");
-                        if (userListArray.length() == 0) {
-                            Common.savePrefValue(ChatApplication.getInstance(), "first_name", "");
-                            Common.savePrefValue(ChatApplication.getInstance(), "last_name", "");
-                            if (!TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ID))) {
-                                ((Main2Activity) getActivity()).logoutCloudUser();
-                            }
-
-                            return;
-                        }
-
-
-                        JSONObject userObject = userListArray.optJSONObject(0);
-                        String userId = userObject.getString("user_id");
-                        String userFirstName = userObject.getString("first_name");
-                        String userLastName = userObject.getString("last_name");
-                        String camera_key = userObject.optString("camera_key");
-                        String is_active = userObject.optString("is_active");
-                        String gateway_ip = userObject.optString("gateway_ip");
-
-                        if (is_active.equalsIgnoreCase("0")) {
-                            ((Main2Activity) getActivity()).logoutCloudUser();
-                            return;
-                        }
-
-                        Common.savePrefValue(ChatApplication.getInstance(), Common.camera_key, camera_key);
-                        String userPassword = "";
-                        if (userObject.has("user_password")) {
-                            userPassword = userObject.getString("user_password");
-                        }
-
-
-                        /**
-                         * If Network connected on cloud then check user password is changed or not
-                         * if changed then logout user
-                         */
-//                        if (Main2Activity.isCloudConnected && !TextUtils.isEmpty(userPassword)) {
-                        if (!TextUtils.isEmpty(userPassword)) {
-                            String jsonTextTemp1 = Common.getPrefValue(getContext(), Common.USER_JSON);
-                            List<User> userList1 = new ArrayList<User>();
-                            if (!TextUtils.isEmpty(jsonTextTemp1)) {
-                                Type type = new TypeToken<List<User>>() {}.getType();
-                                userList1 = gsonType.fromJson(jsonTextTemp1, type);
-                            }
-
-                            for (User user : userList1) {
-                                if (user.isActive()) {
-                                    if (user.getUser_id().equalsIgnoreCase(userId) && !user.getPassword().equalsIgnoreCase(userPassword)) {
-//                                        showLogoutAlert();
-                                        ChatApplication.showToast(getActivity(), "Password has been changed!");
-                                        ((Main2Activity) getActivity()).logoutCloudUser();
-                                    }
-
-                                }
-                            }
-                        }
-                        //End user pass checking
-                        try {
-                            if (userObject.has("is_logout")) {
-                                int isLogout = userObject.getInt("is_logout");
-                                if (isLogout == 1 && Main2Activity.isCloudConnected) {
-                                    mCallback.onLogout(true);
-                                }
-                            }
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-
-                        Common.savePrefValue(ChatApplication.getInstance(), "first_name", userFirstName);
-                        Common.savePrefValue(ChatApplication.getInstance(), "last_name", userLastName);
-                        Common.savePrefValue(getContext(), Constants.USER_PASSWORD, userPassword);
-
-
-                        /**
-                         * <h1>for set ToolBar title in MainActivity2</h1>
-                         * {@link Main2Activity#toolbarTitle}
-                         * @see Main2Activity#toolbar
-                         */
-                        mCallback.onArticleSelected("" + userFirstName);
-
-                        JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
-                        roomList = JsonHelper.parseRoomArray(roomArray, false);
-                        sectionedExpandableLayoutHelper.addSectionList(roomList);
-                        JSONArray cameraArray = dataObject.getJSONArray("cameradeviceList");
-                        if (cameraArray.length() > 0) {
-                            cameraList = JsonHelper.parseCameraArray(cameraArray);
-
-                            RoomVO section = new RoomVO();
-                            section.setRoomName("Camera");
-                            section.setRoomId("Camera");
-
-                            ArrayList<PanelVO> panelList = new ArrayList<>();
-                            PanelVO panel = new PanelVO();
-                            panel.setPanelName("Devices");
-                            panel.setType("camera");
-                            panel.setCameraList(cameraList);
-
-                            panelList.add(panel);
-
-                            section.setPanelList(panelList);
-                            section.setIs_unread(cameraList.get(0).getTotal_unread());
-
-                            roomList.add(section);
-
-                            /*camera device counting*/
-                            for (int i = 0; i < roomList.size(); i++) {
-                                if (roomList.get(i).getRoomId().equalsIgnoreCase("Camera")) {
-                                    roomList.get(i).setDevice_count("" + roomList.get(i).getPanelList().get(0).getCameraList().size());
-                                }
-                            }
-
-                            //comment if roomList empty could not display cameraList for remove this conditions
-                            // sectionedExpandableLayoutHelper.addCameraList(JsonHelper.parseCameraArray(cameraArray));
-                            sectionedExpandableLayoutHelper.addSectionList(roomList);
-                        }
-                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
-                        ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
-
-                        //JSONArray userList = dataObject.getJSONArray("userList");
-
-                        ((Main2Activity)getActivity()).changestatus();
-                        if (roomArray.length() == 0) {
-                            mMessagesView.setVisibility(View.GONE);
-                            txt_empty_schedule.setVisibility(View.VISIBLE);
-                        } else {
-                            mMessagesView.setVisibility(View.VISIBLE);
-                            txt_empty_schedule.setVisibility(View.GONE);
-                        }
-
-                        setUserTypeValue();
-                    }
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                    showDialog = 0;
-                    if (roomList != null) {
-                        CameraDeviceLogActivity.getCameraList = roomList.get(roomList.size() - 1).getPanelList().get(0).getCameraList();
-                    }
-                    mMessagesView.setClickable(true);
-                    mFab.setClickable(true);
-                    swipeRefreshLayout.setRefreshing(false);
-                    if (roomList.size() == 0) {
-                        mMessagesView.setVisibility(View.GONE);
-                        txt_empty_schedule.setVisibility(View.VISIBLE);
-                    } else {
-                        mMessagesView.setVisibility(View.VISIBLE);
-                        txt_empty_schedule.setVisibility(View.GONE);
-                    }
-                    dismissProgressDialog();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error, int reCode) {
-                isItemClickView=false;
-                swipeRefreshLayout.setRefreshing(false);
-                dismissProgressDialog();
-                //set custom homer controller not found error message on dashboard
-                if (reCode == 503 || reCode == 404) {
-                    responseErrorCode.onErrorCode(reCode);
-                }
-                ((Main2Activity)getActivity()).tabShow(false);
-                ChatApplication.logDisplay("reCode getDeviceList onFailure " + reCode);
-                sectionedExpandableLayoutHelper = new SectionedExpandableLayoutHelper(activity, mMessagesView, MainFragment.this, MainFragment.this, MainFragment.this, Constants.SWITCH_NUMBER);
-                sectionedExpandableLayoutHelper.setCameraClick(MainFragment.this);
-                sectionedExpandableLayoutHelper.setClickable(true);
-                sectionedExpandableLayoutHelper.notifyDataSetChanged();
-
-                ChatApplication.isCallDeviceList=true;
-                errorViewClick();
-//                ChatApplication.showToast(getActivity(), "Please try again");
-            }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-    }
-
-    public void getDeviceLocal(int isShow) {
-
-        if (swipeRefreshLayout != null) {
-            if (swipeRefreshLayout.isRefreshing()) {
-                showDialog = 1;
-            }
-        }
-
-        if (isShow == 0) {
-//            if (m_progressDialog == null) {
-                if(m_progressDialog!=null){
-                    if(!m_progressDialog.isShowing()){
-                        showProgressDialog(getActivity(), "Please Wait...", true);
-                    }
-                }
-//            }
-        }
-
-        roomList.clear();
-        if (mMessagesView == null) {
-            mMessagesView =  view.findViewById(R.id.messages);
-        }
-
-        mMessagesView.setClickable(false);
-        roomList = new ArrayList<>();
-        if (sectionedExpandableLayoutHelper != null) {
-            sectionedExpandableLayoutHelper.notifyDataSetChanged();
-        }
-
-        String url = ChatApplication.url + Constants.GET_DEVICES_LIST;
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("room_type", 0);
-            jsonObject.put("is_sensor_panel", 1);
-            jsonObject.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
-
-            if (TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE))) {
-                jsonObject.put("admin", 1);
-            } else {
-                jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE)));
-            }
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("jsonObject is dashboard local " + url + "   " + jsonObject.toString());
-        new GetJsonTaslLocal(activity, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                dismissProgressDialog();
-                ChatApplication.isCallDeviceList = false;
-                if (ChatApplication.isPushFound) {
-                    getBadgeClear(getActivity());
-                }
-                mMessagesView.setClickable(true);
-                responseErrorCode.onSuccess();
-                swipeRefreshLayout.setRefreshing(false);
-                sectionedExpandableLayoutHelper.setClickable(true);
-                ChatApplication.logDisplay("getDeviceList onSuccess local " + result.toString());
-
-                try {
-                    ((Main2Activity)getActivity()).tabShow(true);
-                    isItemClickView=true;
-                    webUrl = ChatApplication.url;
-                    startSocketConnection();
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    if (code == 200) {
-
-                        if(gsonType==null){
-                            gsonType=new Gson();
-                        }
-                        Constants.socketType = 0;
-                        Constants.socketIp = ChatApplication.url;
-                        hideAdapter(true);
-                        mMessagesView.setVisibility(View.VISIBLE);
-                        txt_empty_schedule.setVisibility(View.GONE);
-                        JSONObject dataObject = result.optJSONObject("data");
-                        ((Main2Activity) getActivity()).getUserDialogClick(true);
-                        roomList = new ArrayList<>();
-                        JSONArray userListArray = dataObject.getJSONArray("userList");
-
-                        //oppen signup page if userList found zero length
-                        if (userListArray.length() == 0) {
-                            Common.savePrefValue(ChatApplication.getInstance(), "first_name", "");
-                            Common.savePrefValue(ChatApplication.getInstance(), "last_name", "");
-
-                            if (!TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ID))) {
-                                ((Main2Activity) getActivity()).logoutCloudUser();
-                            }
-                            return;
-                        }
-
-                        JSONObject userObject = userListArray.optJSONObject(0);
-                        String userId = userObject.optString("user_id");
-                        String userFirstName = userObject.optString("first_name");
-                        String userLastName = userObject.optString("last_name");
-                        String camera_key = userObject.optString("camera_key");
-                        String is_active = userObject.optString("is_active");
-                        String gateway_ip = userObject.optString("gateway_ip");
-
-                        if (is_active.equalsIgnoreCase("0")) {
-                            ((Main2Activity) getActivity()).logoutCloudUser();
-                            return;
-                        }
-
-                        Common.savePrefValue(ChatApplication.getInstance(), Common.camera_key, camera_key);
-                        String userPassword = "";
-                        if (userObject.has("user_password")) {
-                            userPassword = userObject.optString("user_password");
-                        }
-
-                        /**
-                         * If Network connected on cloud then check user password is changed or not
-                         * if changed then logout user
-                         */
-//                        if (Main2Activity.isCloudConnected && !TextUtils.isEmpty(userPassword)) {
-                        Gson gson=new Gson();
-                        if (!TextUtils.isEmpty(userPassword)) {
-                            String jsonTextTemp1 = Common.getPrefValue(getContext(), Common.USER_JSON);
-                            List<User> userList1 = new ArrayList<User>();
-                            if (!TextUtils.isEmpty(jsonTextTemp1)) {
-                                Type type = new TypeToken<List<User>>() {
-                                }.getType();
-                                userList1 = gson.fromJson(jsonTextTemp1, type);
-                            }
-
-                            for (User user : userList1) {
-                                if (user.isActive()) {
-                                    if (user.getUser_id().equalsIgnoreCase(userId) && !user.getPassword().equalsIgnoreCase(userPassword)) {
-//                                        showLogoutAlert();
-                                        ChatApplication.showToast(getActivity(), "Password has been changed!");
-                                        ((Main2Activity) getActivity()).logoutCloudUser();
-                                    }
-
-                                }
-                            }
-                        }
-                        //End user pass checking
-
-
-                        try {
-                            if (userObject.has("is_logout")) {
-                                int isLogout = userObject.getInt("is_logout");
-                                if (isLogout == 1 && Main2Activity.isCloudConnected) {
-                                    mCallback.onLogout(true);
-                                }
-                            }
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-
-                        Common.savePrefValue(ChatApplication.getInstance(), "first_name", userFirstName);
-                        Common.savePrefValue(ChatApplication.getInstance(), "last_name", userLastName);
-                        Common.savePrefValue(getContext(), Constants.USER_PASSWORD, userPassword);
-
-
-                        // getActivity().setTitle("" + userFirstName + " " + userLastName);
-                        /**
-                         * <h1>for set ToolBar title in MainActivity2</h1>
-                         * {@link Main2Activity#toolbarTitle}
-                         * @see Main2Activity#toolbar
-                         */
-                        mCallback.onArticleSelected("" + userFirstName);
-
-                        JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
-                        roomList = JsonHelper.parseRoomArray(roomArray, false);
-                        sectionedExpandableLayoutHelper.addSectionList(roomList);
-
-
-                        JSONArray cameraArray = dataObject.getJSONArray("cameradeviceList");
-                        if (cameraArray.length() > 0) {
-                            cameraList = JsonHelper.parseCameraArray(cameraArray);
-
-                            RoomVO section = new RoomVO();
-                            section.setRoomName("Camera");
-                            section.setRoomId("Camera");
-
-                            ArrayList<PanelVO> panelList = new ArrayList<>();
-                            PanelVO panel = new PanelVO();
-                            panel.setPanelName("Devices");
-                            panel.setType("camera");
-                            panel.setCameraList(cameraList);
-
-                            panelList.add(panel);
-
-                            section.setPanelList(panelList);
-                            section.setIs_unread(cameraList.get(0).getTotal_unread());
-
-                            roomList.add(section);
-
-                            /*camera device counting*/
-                            for (int i = 0; i < roomList.size(); i++) {
-                                if (roomList.get(i).getRoomId().equalsIgnoreCase("Camera")) {
-                                    roomList.get(i).setDevice_count("" + roomList.get(i).getPanelList().get(0).getCameraList().size());
-                                }
-                            }
-
-                            //comment if roomList empty could not display cameraList for remove this conditions
-                            // sectionedExpandableLayoutHelper.addCameraList(JsonHelper.parseCameraArray(cameraArray));
-                            sectionedExpandableLayoutHelper.addSectionList(roomList);
-                        }
-                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
-                        ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
-
-                        ((Main2Activity)getActivity()).changestatus();
-                        if (roomArray.length() == 0) {
-                            mMessagesView.setVisibility(View.GONE);
-                            txt_empty_schedule.setVisibility(View.VISIBLE);
-                        } else {
-                            mMessagesView.setVisibility(View.VISIBLE);
-                            txt_empty_schedule.setVisibility(View.GONE);
-                        }
-
-                        setUserTypeValue();
-                    }
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                    dismissProgressDialog();
-                    showDialog = 0;
-                    if (roomList != null) {
-                        CameraDeviceLogActivity.getCameraList = roomList.get(roomList.size() - 1).getPanelList().get(0).getCameraList();
-                    }
-                    mMessagesView.setClickable(true);
-                    mFab.setClickable(true);
-                    swipeRefreshLayout.setRefreshing(false);
-                    if (roomList.size() == 0) {
-                        mMessagesView.setVisibility(View.GONE);
-                        txt_empty_schedule.setVisibility(View.VISIBLE);
-                    } else {
-                        mMessagesView.setVisibility(View.VISIBLE);
-                        txt_empty_schedule.setVisibility(View.GONE);
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                swipeRefreshLayout.setRefreshing(false);
-                isItemClickView=false;
-                ChatApplication.logDisplay("show is call local error" + error);
-                if (!TextUtils.isEmpty(error)) {
-                    ChatApplication.logDisplay("show is call local error22 " + error);
-                    sectionedExpandableLayoutHelper = new SectionedExpandableLayoutHelper(activity, mMessagesView, MainFragment.this, MainFragment.this, MainFragment.this, Constants.SWITCH_NUMBER);
-                    sectionedExpandableLayoutHelper.setCameraClick(MainFragment.this);
-                    sectionedExpandableLayoutHelper.setClickable(true);
-                    sectionedExpandableLayoutHelper.notifyDataSetChanged();
-
-                    if (roomList.size() == 0) {
-                        mMessagesView.setVisibility(View.GONE);
-                        txt_empty_schedule.setVisibility(View.VISIBLE);
-                    } else {
-                        mMessagesView.setVisibility(View.VISIBLE);
-                        txt_empty_schedule.setVisibility(View.GONE);
-                    }
-                    if (mSocket != null) {
-                        mSocket.disconnect();
-                    }
-                    ((Main2Activity)getActivity()).tabShow(false);
-                    callColud(false);
-                }
-            }
-
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-    }
-
-    public void hideAdapter(boolean isflag) {
-        mMessagesView.setVisibility(isflag == true ? View.VISIBLE : View.INVISIBLE);
-    }
-
-    /// all webservice call below. check local & cloud
-    public void getDeviceList(final int checkmessgae) {
-        if (getActivity() == null) {
-            return;
-        }
-
-        if (!Constants.checkLoginAccountCount(getActivity())) {
-            ((Main2Activity) getActivity()).showLogin();
-            return;
-        }
-
-        if (swipeRefreshLayout != null) {
-            if (swipeRefreshLayout.isRefreshing()) {
-                showDialog = 1;
-            }
-        }
-
-        if(linear_retry.getVisibility()==View.VISIBLE){
-            mFab.setVisibility(View.VISIBLE);
-            linear_retry.setVisibility(View.GONE);
-            ((Main2Activity)getActivity()).mToolBarSettings.setClickable(true);
-            ((Main2Activity)getActivity()).linearTab.setVisibility(View.VISIBLE);
-            ChatApplication.isCallDeviceList=true;
-        }
-
-        if (showDialog == 1 || checkmessgae == 1 || checkmessgae == 6 || checkmessgae == 7 || checkmessgae == 8 || checkmessgae == 10) {
-            showProgressDialog(getActivity(), " Please Wait...", true);
-        }
-        ChatApplication.logDisplay("show progress is " + showDialog);
-
-//        roomList.clear();
-        if (mMessagesView == null) {
-            mMessagesView = (RecyclerView) view.findViewById(R.id.messages);
-        }
-        mMessagesView.setClickable(false);
-        roomList = new ArrayList<>();
-        if (sectionedExpandableLayoutHelper != null) {
-            sectionedExpandableLayoutHelper.notifyDataSetChanged();
-        }
-        Constants.startUrlset();
-        if (ChatApplication.isCallDeviceList) {
-            ChatApplication app = ChatApplication.getInstance();
-            app.closeSocket(webUrl);
-            if (mSocket != null) {
-                mSocket.disconnect();
-                mSocket = null;
-            }
-            hideAdapter(false);
-            sectionedExpandableLayoutHelper.clearData();
-            if (Common.isNetworkConnected(getActivity())) {
-                ((Main2Activity)getActivity()).tabShow(false);
-                getMacAddress(Constants.getuserIp(getActivity()));
-            } else {
-                callColud(false);
-            }
-        } else {
-            if (ChatApplication.url.startsWith(Constants.startUrl)) {
-//                getDeviceCould(1);
-                getDeviceCloud(1);
-            } else {
-                getDeviceLocal(1);
-            }
-        }
-    }
-
-    public void setUserTypeValue() {
-        if (!TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE))) {
-            if (Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
-                mFab.setVisibility(View.GONE);
-                ((Main2Activity) getActivity()).toolbarImage.setVisibility(View.VISIBLE);
-                ((Main2Activity) getActivity()).toolbarTitle.setClickable(true);
-                ((Main2Activity) getActivity()).toolbarImage.setClickable(true);
-
-                ((Main2Activity) getActivity()).toolbarTitle.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
-            } else {
-                mFab.setVisibility(View.VISIBLE);
-                ((Main2Activity) getActivity()).toolbarTitle.setClickable(true);
-                ((Main2Activity) getActivity()).toolbarImage.setClickable(true);
-                ((Main2Activity) getActivity()).toolbarImage.setVisibility(View.VISIBLE);
-                ((Main2Activity) getActivity()).toolbarTitle.setTextColor(getResources().getColor(R.color.sky_blue));
-            }
-        }
-    }
-
-    ProgressDialog m_progressDialog;
-    public void showProgressDialog(Context context, String message, boolean iscancle){
-        m_progressDialog=new ProgressDialog(getActivity());
-        m_progressDialog.setMessage(message);
-        m_progressDialog.setCanceledOnTouchOutside(true);
-        m_progressDialog.show();
-    }
-    public void dismissProgressDialog(){
-        if(m_progressDialog!=null){
-            ChatApplication.logDisplay("m_progressDialog is null not");
-            m_progressDialog.cancel();
-            m_progressDialog.dismiss();
-//            m_progressDialog=null;
-        }
-    }
-
-    //getMoodList
-    public static void getBadgeClear(final Context context) {
-        if (!Constants.checkLoginAccountCount(context)) {
-            return;
-        }
-        String url = ChatApplication.url + Constants.updateBadgeCount;
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-            if (activity == null) {
-                jsonObject.put("user_id", "");
-            } else {
-                jsonObject.put("user_id", "" + Common.getPrefValue(activity, Constants.USER_ID));
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("url is " + url);
-        new GetJsonTask(context, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                ChatApplication.isPushFound = false;
-
-                clearNotification(context);
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-
-            }
-        }).execute();
-    }
-
-    public static void clearNotification(Context context) {
-        // Clear all notification
-        NotificationManager nMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        nMgr.cancelAll();
-    }
 }

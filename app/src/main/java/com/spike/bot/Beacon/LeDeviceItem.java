@@ -17,6 +17,16 @@ public class LeDeviceItem implements RecyclerViewItem {
 
     private  boolean rssRange =false;
 
+    public boolean isOnOff() {
+        return onOff;
+    }
+
+    public void setOnOff(boolean onOff) {
+        this.onOff = onOff;
+    }
+
+    private boolean onOff;
+
     public LeDeviceItem(final BluetoothLeDevice device) {
         this.device = device;
     }

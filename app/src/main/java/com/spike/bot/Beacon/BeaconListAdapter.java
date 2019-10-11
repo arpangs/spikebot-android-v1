@@ -47,7 +47,7 @@ public class BeaconListAdapter extends RecyclerView.Adapter<BeaconListAdapter.Se
         Log.d("System out","mLeScanCallback is 22 adapter "+arrayListLog.get(position).getDevice().getScanRecord());
         holder.txtMacAddress.setText("Address : "+arrayListLog.get(position).getDevice().getAddress());
         holder.txtName.setText("Name : "+arrayListLog.get(position).getDevice().getName());
-        holder.txtRss.setText("RSSI : "+arrayListLog.get(position).getDevice().getRunningAverageRssi());
+        holder.txtRss.setText("RSSI : "+arrayListLog.get(position).getDevice().getRssi());
     }
 
 

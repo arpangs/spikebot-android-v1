@@ -2,6 +2,7 @@ package com.spike.bot.Beacon;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
@@ -55,6 +56,7 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
     private BluetoothLeScanner mScanner;
     private BluetoothLeDeviceStore mDeviceStore;
 
+    public ProgressDialog progressDialog;
     public int count=0;
     private long lastSyncTimeStamp = 0;
     Dialog dialog;
@@ -85,11 +87,16 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
                             }else {
                                 for (int i = 0; i < itemList.size(); i++) {
                                     if (itemList.get(i).getDevice().getAddress().equals(leDevice.getAddress())) {
-                                        itemList.set(i,new LeDeviceItem(leDevice));
+                                        Log.d("System out","mLeScanCallback is 22 name "+leDevice.getRssi());
+
+//                                        itemList.set(i,new LeDeviceItem(leDevice));
+
                                         LeDeviceItem leDeviceItem=new LeDeviceItem(leDevice);
                                         leDeviceItem.setRssRange(itemList.get(i).isRssRange());
+                                        leDeviceItem.setOnOff(itemList.get(i).isOnOff());
 
                                         itemListTemp.set(i,leDeviceItem);
+                                        itemList.set(i,leDeviceItem);
                                     }else {
                                         itemList.add(new LeDeviceItem(leDevice));
                                         itemListTemp.add(new LeDeviceItem(leDevice));
@@ -102,9 +109,11 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            if(itemList.size()>0){
+                                progressDialog.dismiss();
+                            }
                             long currentTime = System.currentTimeMillis();
-                            if((currentTime - lastSyncTimeStamp) >= 2000 ){
-                                Log.d("System out","mLeScanCallback is 22 size "+itemList.size());
+                            if((currentTime - lastSyncTimeStamp) >= 900 ){
                                 beaconListAdapter.notifyDataSetChanged();
                                 setSyncRange();
                                 lastSyncTimeStamp=currentTime;
@@ -142,13 +151,22 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
         mDeviceStore = new BluetoothLeDeviceStore();
         mBluetoothUtils = new BluetoothUtils(this);
         mScanner = new BluetoothLeScanner(mLeScanCallback, mBluetoothUtils);
+
+        dialog = new Dialog(BeaconActivity.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCanceledOnTouchOutside(false);
+
+        progressDialog=new ProgressDialog(this);
+        progressDialog.setMessage("Beacon searching...");
+        progressDialog.setCanceledOnTouchOutside(true);
     }
 
     @Override
-    protected void onStop() {
+    protected void onDestroy() {
         mScanner.scanLeDevice(-1, false);
-        super.onStop();
+        super.onDestroy();
     }
+
 
     @Override
     public void onResume() {
@@ -171,6 +189,7 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         if(v==btnClick){
+            progressDialog.show();
             itemList.clear();
             itemListTemp.clear();
             startScan();
@@ -180,16 +199,21 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
     private void setSyncRange() {
         if(itemListTemp.size()>0){
             for(int i=0; i<itemListTemp.size(); i++){
-                ChatApplication.logDisplay("rss is "+itemListTemp.get(i).getDevice().getRunningAverageRssi());
-                if(itemListTemp.get(i).getDevice().getRunningAverageRssi()> -40){
-                    itemListTemp.get(i).setRssRange(true);
-                    showDialog();
+                ChatApplication.logDisplay("rss is "+itemListTemp.get(i).getDevice().getRssi());
+                if(itemListTemp.get(i).getDevice().getRssi()> -70){
+//                    itemList.get(i).setOnOff(true);
+//                    itemListTemp.get(i).setOnOff(true);
+                    if(!dialog.isShowing()){
+                        showDialog1(i);
+                    }
                     break;
-                }else if(itemListTemp.get(i).getDevice().getRunningAverageRssi()< -90){
-                    if(itemListTemp.get(i).isRssRange()){
+                }else if(itemListTemp.get(i).getDevice().getRssi()< -75){
+                    Log.d("System out","mLeScanCallback is false found "+itemListTemp.get(i).isOnOff());
+                    if(itemListTemp.get(i).isOnOff()){
+                        itemListTemp.get(i).setOnOff(false);
+                        itemList.get(i).setOnOff(false);
                         callDeviceOnOffApi();
                     }
-                    itemListTemp.get(i).setRssRange(false);
                    if(dialog!=null){
                        dialog.dismiss();
                        dialog.cancel();
@@ -198,7 +222,7 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
             }
         }
     }
-    public void showDialog(){
+    public void showDialog1(int i){
 
         if(dialog==null){
             dialog = new Dialog(BeaconActivity.this);
@@ -226,7 +250,9 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
+//                dialog.dismiss();
+                itemListTemp.get(i).setOnOff(true);
+                itemList.get(i).setOnOff(true);
                 callDeviceOnOffApi();
             }
         });
@@ -250,7 +276,7 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
             obj.put("module_id", "0785ED0B004B1200");
             obj.put("device_id", "3");
             if(count==1){
-                obj.put("device_status",0);
+                obj.put("device_status",1);
                 count=0;
             }else {
                 count=1;

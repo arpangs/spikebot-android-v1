@@ -49,7 +49,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
     @Override
     public int getItemViewType(int position) {
-
         return R.layout.row_room_schedule;
     }
 
@@ -87,7 +86,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     public int getItemCount() {
         return scheduleArrayList.size();
     }
-    String url;
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int listPosition) {
@@ -95,11 +93,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         final ScheduleVO scheduleVO = scheduleArrayList.get(listPosition);
 
         try {
-
-            if(listPosition==0){
-            }
-
-
             if(scheduleVO.getIs_timer() == 1){
 
                 if(scheduleVO.getSchedule_status()==1) {

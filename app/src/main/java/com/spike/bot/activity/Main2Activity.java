@@ -93,7 +93,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         MainFragment.OnHeadlineSelectedListener, ResponseErrorCode, SocketListener, LoginPIEvent , BottomNavigationView.OnNavigationItemSelectedListener {
 
     private String ERROR_STRING = "No Internet found.\n" + "Check your connection or try again.";
-    public static boolean flagPicheck = false, flagLogin = false,isResumeConnect=false;
+    public static boolean flagPicheck = false, flagLogin = false,isResumeConnect=false,isCloudConnected=false;
     private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
 
     public  BottomNavigationView tabLayout;
@@ -115,18 +115,15 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     public ScheduleFragment scheduleFragment;
 
     private FrameLayout mViewPager;
-
     private Socket mSocket;
-    public String imei="",userId="0";
-    public boolean  isSocketConnected = true,isTimerStart=false,isTimerEnd=false,doubleBackToExitPressedOnce=false;
+    public String imei="",userId="0",webUrl = "",token="";
+    public boolean  isSocketConnected = true,isTimerStart=false,isTimerEnd=false,doubleBackToExitPressedOnce=false,isWifiConnect = false, isNetwork = false;
 
     Gson gson;
     private ConnectivityReceiver connectivityReceiver;
     public Dialog dialogUser;
 
     List<User> userList = new ArrayList<User>();
-
-
 
 
     @SuppressLint("InvalidWakeLockTag")
@@ -1002,11 +999,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    public String webUrl = "", wifiIpAddress = "";
-    public static boolean isCloudConnected = false;
-    public String token = "";
-    boolean isWifiConnect = false, isNetwork = false;
-
     public void setWifiLocalflow(String localIp, String cloudIp, String mac_address,int isCount) {
 
         ChatApplication.logDisplay("count is ss "+isCount);
@@ -1058,6 +1050,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         mainFragment1.isResumeConnect=true;
         mainFragment1.showDialog = 1;
         getUserDialogClick(true);
+        tabLayout.setSelectedItemId(R.id.navigationDashboard);
         deviceListRefreshView.deviceRefreshView(1);
     }
 
@@ -1075,25 +1068,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         linear_progress.setVisibility(View.GONE);
     }
 
-    public void startSocketConnection() {
-
-        if (Constants.isWifiConnect) {
-            return;
-        }
-        ChatApplication app = ChatApplication.getInstance();
-
-        if (mSocket != null && mSocket.connected() && app.url.equalsIgnoreCase(webUrl)) {
-            mSocket.on("deleteChildUser", deleteChildUser);
-        }
-
-        if (!mSocket.connected()) {
-            ChatApplication.isMainFragmentNeedResume = true;
-        }
-        mViewPager.setVisibility(View.VISIBLE);
-
-        loginDialog(false, false);
-        linear_progress.setVisibility(View.GONE);
-    }
 
     public void showAlertDialog(String erroString) {
 

@@ -105,20 +105,6 @@ public class ActivityHelper {
         }
     }
 
-    public static void dismissProgressDialog1(Context context) {
-        try {
-            if (m_progressDialog != null ) {
-                m_progressDialog.cancel();
-                m_progressDialog.dismiss();
-            }else {
-                m_progressDialog = new ProgressDialog(context);
-                m_progressDialog.cancel();
-                m_progressDialog.dismiss();
-            }
-        } catch (Throwable e) {
-        }
-    }
-
     public static void showDialog(final Context p_context, String title, String p_message, final int p_action) {
 
         AlertDialog.Builder m_builder = new AlertDialog.Builder(p_context);
