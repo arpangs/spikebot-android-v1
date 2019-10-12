@@ -11,22 +11,13 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
-import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.SearchAdapter;
 import com.spike.bot.adapter.SearchClick;
-import com.spike.bot.core.Common;
-import com.spike.bot.core.Constants;
 import com.spike.bot.model.DataSearch;
 import com.spike.bot.model.DeviceBrandRemoteList;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -34,11 +25,11 @@ import java.util.ArrayList;
  * Created by Sagar on 22/1/19.
  * Gmail : jethvasagar2@gmail.com
  */
-public class SearchActivity extends AppCompatActivity implements SearchClick{
+public class SearchActivity extends AppCompatActivity implements SearchClick {
 
     public EditText edSearch;
     public RecyclerView recyclerSearch;
-    public String mBrandId="";
+    public String mBrandId = "";
     public DataSearch arrayList;
 
     SearchAdapter searchAdapter;
@@ -49,9 +40,8 @@ public class SearchActivity extends AppCompatActivity implements SearchClick{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        mBrandId=getIntent().getStringExtra("mBrandId");
-//        arrayList=(DataSearch)getIntent().getSerializableExtra("arrayList");
-        arrayList= IRRemoteBrandListActivity.arrayList;
+        mBrandId = getIntent().getStringExtra("mBrandId");
+        arrayList = IRRemoteBrandListActivity.arrayList;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
@@ -64,12 +54,10 @@ public class SearchActivity extends AppCompatActivity implements SearchClick{
     }
 
     private void init() {
-        recyclerSearch=findViewById(R.id.recyclerSearch);
-        edSearch=findViewById(R.id.edSearch);
-        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(this);
+        recyclerSearch = findViewById(R.id.recyclerSearch);
+        edSearch = findViewById(R.id.edSearch);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerSearch.setLayoutManager(linearLayoutManager);
-
-       // getIRRemoteDetails();
 
         edSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -91,7 +79,7 @@ public class SearchActivity extends AppCompatActivity implements SearchClick{
 
         filterdNames.clear();
         for (DeviceBrandRemoteList s : arrayList.getDeviceBrandRemoteList()) {
-                filterdNames.add(s);
+            filterdNames.add(s);
         }
         setAdapter(filterdNames);
 
@@ -99,20 +87,19 @@ public class SearchActivity extends AppCompatActivity implements SearchClick{
 
     private void filter(String search) {
         filterdNames.clear();
-        if(search.length()>0){
+        if (search.length() > 0) {
 
             for (DeviceBrandRemoteList s : arrayList.getDeviceBrandRemoteList()) {
                 if (s.getModelNumber().toLowerCase().contains(search.toLowerCase())) {
                     filterdNames.add(s);
                 }
             }
-           setAdapter(filterdNames);
-        }else {
+            setAdapter(filterdNames);
+        } else {
             for (DeviceBrandRemoteList s : arrayList.getDeviceBrandRemoteList()) {
                 filterdNames.add(s);
             }
             setAdapter(filterdNames);
-            //recyclerSearch.setVisibility(View.GONE);
         }
     }
 
@@ -123,68 +110,27 @@ public class SearchActivity extends AppCompatActivity implements SearchClick{
         return true;
     }
 
-    private void getIRRemoteDetails() {
-
-        if (!ActivityHelper.isConnectingToInternet(this)) {
-            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        ActivityHelper.showProgressDialog(SearchActivity.this, "Please Wait...", false);
-
-        String url = ChatApplication.url + Constants.getDeviceBrandRemoteList + "/" + mBrandId;
-        new GetJsonTask(this, url, "GET", "", new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
-                try {
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-
-                    if (code == 200) {
-
-                        ChatApplication.logDisplay( "remote res : " + result.toString());
-                        arrayList = Common.jsonToPojo(result.getString("data").toString(),DataSearch.class);
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                    }
-
-                } catch (JSONException e) {
-                    ActivityHelper.dismissProgressDialog();
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                throwable.printStackTrace();
-                ActivityHelper.dismissProgressDialog();
-            }
-        }).execute();
-    }
-
     private void setAdapter(ArrayList<DeviceBrandRemoteList> filterdNames) {
 
-        if(filterdNames.size()>0){
+        if (filterdNames.size() > 0) {
             recyclerSearch.setVisibility(View.VISIBLE);
-            searchAdapter=new SearchAdapter(this,filterdNames,this);
+            searchAdapter = new SearchAdapter(this, filterdNames, this);
             recyclerSearch.setAdapter(searchAdapter);
             searchAdapter.notifyDataSetChanged();
-        }else {
+        } else {
             recyclerSearch.setVisibility(View.GONE);
         }
     }
 
     @Override
     public void searchItemClick(DeviceBrandRemoteList deviceBrandRemoteList) {
-        if(deviceBrandRemoteList.getIrCode()!=null){
+        if (deviceBrandRemoteList.getIrCode() != null) {
             ActivityHelper.hideKeyboard(SearchActivity.this);
             Intent intent = new Intent();
-            intent.putExtra("onOffValue",deviceBrandRemoteList.getIrCode());
-            intent.putExtra("brand_name",deviceBrandRemoteList.getBrandName());
-            intent.putExtra("model_number",deviceBrandRemoteList.getModelNumber());
-            intent.putExtra("remote_codeset_id",""+deviceBrandRemoteList.getremote_codeset_id());
+            intent.putExtra("onOffValue", deviceBrandRemoteList.getIrCode());
+            intent.putExtra("brand_name", deviceBrandRemoteList.getBrandName());
+            intent.putExtra("model_number", deviceBrandRemoteList.getModelNumber());
+            intent.putExtra("remote_codeset_id", "" + deviceBrandRemoteList.getremote_codeset_id());
             setResult(RESULT_OK, intent);
             finish();
 

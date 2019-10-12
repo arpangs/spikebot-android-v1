@@ -61,6 +61,7 @@ public class SmartDecviceListActivity extends AppCompatActivity {
         return true;
     }
 
+    /** get All smarat device list */
     public void getSmartDevice() {
         if (!ActivityHelper.isConnectingToInternet(SmartDecviceListActivity.this)) {
             Toast.makeText(SmartDecviceListActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();

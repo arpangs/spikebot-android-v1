@@ -1,6 +1,5 @@
 package com.spike.bot.activity.SmartDevice;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -61,7 +60,6 @@ public class SearchSubHueBridgeActivity extends AppCompatActivity implements Vie
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-//        toolbar.setTitle("Search Bridge");
 
         btnNext = findViewById(R.id.btnNext);
         btnNext.setOnClickListener(this);
@@ -137,8 +135,6 @@ public class SearchSubHueBridgeActivity extends AppCompatActivity implements Vie
         edtName.setFilters(filterArray);
 
         inputName.setHint("Enter name");
-//        edtName.setHint("Enter name");
-//        room_name.setHint("Enter name");
         Button btnSave = (Button) dialog.findViewById(R.id.btn_save);
         Button btn_cancel = (Button) dialog.findViewById(R.id.btn_cancel);
         ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
@@ -165,7 +161,7 @@ public class SearchSubHueBridgeActivity extends AppCompatActivity implements Vie
 
                     View view = dialog.getCurrentFocus();
                     if (view != null) {
-                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                     }
 
@@ -182,7 +178,7 @@ public class SearchSubHueBridgeActivity extends AppCompatActivity implements Vie
         }
     }
 
-
+    /** Add bridge*/
     public void callAddbridge(final JSONObject object, final String s, final TextInputEditText edtName) {
         if (!ActivityHelper.isConnectingToInternet(SearchSubHueBridgeActivity.this)) {
             Toast.makeText(SearchSubHueBridgeActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();

@@ -34,11 +34,11 @@ import java.util.ArrayList;
 public class PhilipsHueBridgeListActivity extends AppCompatActivity {
 
     public Toolbar toolbar;
-    public String brandId="";
+    public String brandId = "";
     TextView txtNodataFound;
     public RecyclerView recyclerSmartDevice;
     public BridgeListAdapter bridgeListAdapter;
-    public ArrayList<SmartBrandModel> arrayList=new ArrayList<>();
+    public ArrayList<SmartBrandModel> arrayList = new ArrayList<>();
 
 
     @Override
@@ -46,14 +46,14 @@ public class PhilipsHueBridgeListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_smart_device_list);
 
-        brandId=getIntent().getStringExtra("brandId");
+        brandId = getIntent().getStringExtra("brandId");
         setId();
     }
 
     private void setId() {
-        toolbar=findViewById(R.id.toolbar);
-        txtNodataFound=findViewById(R.id.txtNodataFound);
-        recyclerSmartDevice=findViewById(R.id.recyclerSmartDevice);
+        toolbar = findViewById(R.id.toolbar);
+        txtNodataFound = findViewById(R.id.txtNodataFound);
+        recyclerSmartDevice = findViewById(R.id.recyclerSmartDevice);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -71,10 +71,10 @@ public class PhilipsHueBridgeListActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.actionAdd:
-                Intent intent=new Intent(PhilipsHueBridgeListActivity.this, SearchHueBridgeActivity.class);
-                intent.putExtra("brandId",""+brandId);
+                Intent intent = new Intent(PhilipsHueBridgeListActivity.this, SearchHueBridgeActivity.class);
+                intent.putExtra("brandId", "" + brandId);
                 startActivity(intent);
                 break;
             case android.R.id.home:
@@ -108,20 +108,16 @@ public class PhilipsHueBridgeListActivity extends AppCompatActivity {
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
-                        JSONObject jsonObject=new JSONObject(result.toString());
-                        ChatApplication.logDisplay("data is "+result);
+                        JSONObject jsonObject = new JSONObject(result.toString());
+                        ChatApplication.logDisplay("data is " + result);
                         //{"code":200,"message":"Success","data":{"hue_bridge_list":[]}}
-                        JSONObject object=jsonObject.optJSONObject("data");
-                        JSONArray jsonArray=object.optJSONArray("hue_bridge_list");
-                        if(jsonArray==null || jsonArray.length()==0){
+                        JSONObject object = jsonObject.optJSONObject("data");
+                        JSONArray jsonArray = object.optJSONArray("hue_bridge_list");
+                        if (jsonArray == null || jsonArray.length() == 0) {
                             txtNodataFound.setVisibility(View.VISIBLE);
                             recyclerSmartDevice.setVisibility(View.GONE);
-                            ChatApplication.showToast(PhilipsHueBridgeListActivity.this,"No bridge found");
-//                            Intent intent=new Intent(PhilipsHueBridgeListActivity.this, SearchHueBridgeActivity.class);
-//                            intent.putExtra("brandId",""+brandId);
-//                            startActivity(intent);
-//                            finish();
-                        }else {
+                            ChatApplication.showToast(PhilipsHueBridgeListActivity.this, "No bridge found");
+                        } else {
                             //{"code":200,"message":"Success",
                             // "data":{"hue_bridge_list":[{"id":1,"host_ip":"192.168.175.74","bridge_id":"TTfzwGKNNCTzoyqnIe99x0tYfAGIBwRoGW-7uQrd","bridge_type":"Philips Hue"
                             // ,"bridge_name":"test"}]}}
@@ -129,10 +125,10 @@ public class PhilipsHueBridgeListActivity extends AppCompatActivity {
                             txtNodataFound.setVisibility(View.GONE);
                             recyclerSmartDevice.setVisibility(View.VISIBLE);
 
-                            for(int i=0; i<jsonArray.length(); i++){
-                                JSONObject jsonObject1=jsonArray.optJSONObject(i);
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject jsonObject1 = jsonArray.optJSONObject(i);
 
-                                SmartBrandModel smartBrandModel=new SmartBrandModel();
+                                SmartBrandModel smartBrandModel = new SmartBrandModel();
                                 smartBrandModel.setId(jsonObject1.optString("id"));
                                 smartBrandModel.setHost_ip(jsonObject1.optString("host_ip"));
                                 smartBrandModel.setBridge_id(jsonObject1.optString("bridge_id"));
@@ -140,8 +136,8 @@ public class PhilipsHueBridgeListActivity extends AppCompatActivity {
                                 smartBrandModel.setBridge_name(jsonObject1.optString("bridge_name"));
                                 arrayList.add(smartBrandModel);
                             }
-                            
-                            if(arrayList.size()>0){
+
+                            if (arrayList.size() > 0) {
                                 setAdpater();
                             }
                         }
@@ -161,10 +157,10 @@ public class PhilipsHueBridgeListActivity extends AppCompatActivity {
     }
 
     private void setAdpater() {
-        LinearLayoutManager layoutManager=new LinearLayoutManager(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerSmartDevice.setLayoutManager(layoutManager);
 
-        bridgeListAdapter=new BridgeListAdapter(this,arrayList,1);
+        bridgeListAdapter = new BridgeListAdapter(this, arrayList, 1);
         recyclerSmartDevice.setAdapter(bridgeListAdapter);
 
     }

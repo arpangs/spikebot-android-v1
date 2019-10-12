@@ -70,6 +70,14 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
     private List<IRBlasterAddRes.Data.IrList> irList;
     public FloatingActionButton floatingActionButton;
 
+    ArrayList<String> roomIdList = new ArrayList<>();
+    ArrayList<String> roomNameList = new ArrayList<>();
+    public static int SENSOR_TYPE_IR = 3;
+    List<IRBlasterAddRes.Data.RoomList> roomLists;
+    private Dialog mDialog;
+    EditText mBlasterName;
+    Dialog irDialog;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,11 +150,8 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         }
     }
 
-    private Menu menu;
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-       // getMenuInflater().inflate(R.menu.menu_add, menu);
         return true;
     }
 
@@ -161,9 +166,6 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
 
         return super.onOptionsItemSelected(item);
     }
-
-    ArrayList<String> roomIdList = new ArrayList<>();
-    ArrayList<String> roomNameList = new ArrayList<>();
 
     private Emitter.Listener configureIRBlaster = new Emitter.Listener() {
         @Override
@@ -238,7 +240,6 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         builder.create().show();
     }
 
-    Dialog irDialog;
     private void showIRSensorDialog(String ir_module_id){
 
         if(irDialog == null){
@@ -377,7 +378,6 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
                     else{
                         Common.showToast(message);
                     }
-                    // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -392,8 +392,6 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             }
         }).execute();
     }
-
-    public static int SENSOR_TYPE_IR = 3;
 
     private void showOptionDialog(final int sensor_type){
 
@@ -415,7 +413,6 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                //getIRBlasterConfigData();
                 Intent intent=new Intent(IRBlasterAddActivity.this,WifiBlasterActivity.class);
                 startActivity(intent);
             }
@@ -448,7 +445,6 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         new GetJsonTask(this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                //   ActivityHelper.dismissProgressDialog();
                 ChatApplication.logDisplay("result : " + result.toString());
 
                 SensorUnassignedRes sensorUnassignedRes = Common.jsonToPojo(result.toString(),SensorUnassignedRes.class);
@@ -475,43 +471,6 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
 
     }
 
-    //get config IR Blaster
-    public boolean addIRBlasterSensor = false;
-
-    private void getIRBlasterConfigData() {
-        ChatApplication.logDisplay("configIRBlaster");
-        if (!ActivityHelper.isConnectingToInternet(getApplicationContext())) {
-            Common.showToast(""+R.string.disconnect);
-            return;
-        }
-
-        ActivityHelper.showProgressDialog(this, "Searching for IR Blaster", false);
-
-        startTimer();
-        addIRBlasterSensor = true;
-        String url = ChatApplication.url + Constants.CONFIGURE_IR_BLASTER_REQUEST;
-        new GetJsonTask(this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                //ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay( "configIRBlaster onSuccess " + result.toString());
-                try {
-                    // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
-                Common.showToast(""+R.string.disconnect);
-            }
-        }).execute();
-    }
-
-
     //startTimer();
     CountDownTimer countDownTimer = new CountDownTimer(7000, 4000) {
 
@@ -521,23 +480,10 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         public void onFinish() {
             ActivityHelper.dismissProgressDialog();
             ChatApplication.showToast(getApplicationContext(),"No New Device detected!");
-            //showAddSensorDialog("212121");
         }
 
     };
 
-    public void startTimer() {
-        //  timerObj = new Timer();
-        try {
-            countDownTimer.start();
-        } catch (Exception e) {
-            ChatApplication.logDisplay( "TimerTask configureGatewayDevice Exception " + e.getMessage());
-        }
-    }
-
-
-
-    List<IRBlasterAddRes.Data.RoomList> roomLists;
     /**
      * get IR Blaster list
      */
@@ -679,7 +625,6 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
      * Display IR Blaster Edit Dialog
      * Create Singleton class for prevent multiple instances of Dialog
      */
-    private Dialog mDialog;
     private Dialog getDialogContext(){
         if(mDialog == null){
             mDialog = new Dialog(this);
@@ -690,7 +635,6 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         return mDialog;
     }
 
-    EditText mBlasterName;
     /**
      *
      * @param ir

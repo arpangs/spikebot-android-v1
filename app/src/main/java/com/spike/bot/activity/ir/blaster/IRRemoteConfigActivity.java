@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,7 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
@@ -39,9 +37,7 @@ import com.spike.bot.core.Constants;
 import com.spike.bot.model.AddRemoteReq;
 import com.spike.bot.model.DataSearch;
 import com.spike.bot.model.DeviceBrandRemoteList;
-import com.spike.bot.model.IRBlasterAddRes;
 import com.spike.bot.model.IRRemoteOnOffReq;
-import com.spike.bot.model.IRRemoteOnOffRes;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,21 +50,22 @@ import java.util.List;
  */
 public class IRRemoteConfigActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private TextView remote_room_txt,mTestButtons,mRespondNo,mRespondYes,mPowerValue,mTxtBlasterName,txtModelNumber;
+    private TextView remote_room_txt, mTestButtons, mRespondNo, mRespondYes, mPowerValue, mTxtBlasterName, txtModelNumber;
     private ImageView mImgLeft, mImgRight;
     private ImageView mImgPower;
     private LinearLayout mRespondView;
 
-    private String mIRDeviceId, mIrDeviceType, mRoomId ,mBrandId,mIRBlasterModuleId,mIRBrandType,mIRBLasterId,mRoomName,
-            mBlasterName ,mBrandType,brand_name="",model_number="",onOffValue="",
-            remote_codeset_id="",mOn, mOff, mCodeSet;
+    private String mIRDeviceId, mIrDeviceType, mRoomId, mBrandId, mIRBlasterModuleId, mIRBrandType, mIRBLasterId, mRoomName,
+            mBlasterName, mBrandType, brand_name = "", model_number = "", onOffValue = "",
+            remote_codeset_id = "", mCodeSet;
 
     private Spinner mSpinnerBlaster, mSpinnerMode;
     private EditText mRemoteDefaultTemp;
-    IRRemoteOnOffRes irRemoteOnOffRes;
     private boolean isRequestTypeOn = false;
-    private int mTotalState = 1,mCurrentState = 1,RESPOND_CONST = 1; //1 on command : 2 off command
+    private int mTotalState = 1, mCurrentState = 1, RESPOND_CONST = 1; //1 on command : 2 off command
     public static DataSearch arrayList;
+    EditText mEdtRemoteName;
+    private Dialog mDialog;
 
     public static class Power {
 
@@ -82,8 +79,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ir_remote_config);
 
-        arrayList=IRRemoteBrandListActivity.arrayList;
-//        arrayList=( DataSearch)getIntent().getSerializableExtra("arrayList");
+        arrayList = IRRemoteBrandListActivity.arrayList;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
@@ -95,10 +91,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         RESPOND_CONST = 1;
 
         syncIntent();
-
         bindView();
-
-        //getIRRemoteDetails();
     }
 
     private void syncIntent() {
@@ -116,12 +109,12 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         ChatApplication.logDisplay("Found : " + mBlasterName);
         getSupportActionBar().setTitle("" + mBrandType);
 
-        if(arrayList.getDeviceBrandRemoteList()!=null &&
-                arrayList.getDeviceBrandRemoteList().size()>0){
+        if (arrayList.getDeviceBrandRemoteList() != null &&
+                arrayList.getDeviceBrandRemoteList().size() > 0) {
             onOffValue = arrayList.getDeviceBrandRemoteList().get(0).getIrCode();
             model_number = arrayList.getDeviceBrandRemoteList().get(0).getModelNumber();
             brand_name = arrayList.getDeviceBrandRemoteList().get(0).getBrandName();
-            remote_codeset_id = ""+arrayList.getDeviceBrandRemoteList().get(0).getremote_codeset_id();
+            remote_codeset_id = "" + arrayList.getDeviceBrandRemoteList().get(0).getremote_codeset_id();
         }
     }
 
@@ -175,11 +168,10 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_filter) {
             Intent intent = new Intent(this, SearchActivity.class);
-            intent.putExtra("mBrandId",""+mBrandId);
-//            intent.putExtra("arrayList",arrayList);
+            intent.putExtra("mBrandId", "" + mBrandId);
             startActivityForResult(intent, 1);
             return true;
-        }else if (id == android.R.id.home) {
+        } else if (id == android.R.id.home) {
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
@@ -188,7 +180,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
-            if(resultCode == RESULT_OK) {
+            if (resultCode == RESULT_OK) {
                 hideRespondView();
                 respondNoEvent();
                 setPowerValue(Power.ON);
@@ -196,96 +188,25 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
                 brand_name = data.getStringExtra("brand_name");
                 remote_codeset_id = data.getStringExtra("remote_codeset_id");
                 model_number = data.getStringExtra("model_number");
-                txtModelNumber.setText("Model : "+model_number);
-                ChatApplication.logDisplay("model_number is "+model_number);
+                txtModelNumber.setText("Model : " + model_number);
+                ChatApplication.logDisplay("model_number is " + model_number);
             }
         }
     }
 
-    private void getIRRemoteDetails() {
-
-        if (!ActivityHelper.isConnectingToInternet(this)) {
-            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        ActivityHelper.showProgressDialog(IRRemoteConfigActivity.this, "Please Wait...", false);
-
-        String url = ChatApplication.url + Constants.getDeviceBrandRemoteList + "/" + mBrandId;
-        new GetJsonTask(this, url, "GET", "", new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
-                try {
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    if (code == 200) {
-                        arrayList = Common.jsonToPojo(result.getString("data").toString(), DataSearch.class);
-
-                        //initData(irRemoteOnOffRes.getData());
-                        initData(arrayList.getDeviceBrandRemoteList());
-
-                        if(arrayList.getDeviceBrandRemoteList()!=null &&
-                            arrayList.getDeviceBrandRemoteList().size()>0){
-                            onOffValue = arrayList.getDeviceBrandRemoteList().get(0).getIrCode();
-                            model_number = arrayList.getDeviceBrandRemoteList().get(0).getModelNumber();
-                            brand_name = arrayList.getDeviceBrandRemoteList().get(0).getBrandName();
-                            remote_codeset_id = ""+arrayList.getDeviceBrandRemoteList().get(0).getremote_codeset_id();
-                        }
-
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                    }
-
-                } catch (JSONException e) {
-                    ActivityHelper.dismissProgressDialog();
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                throwable.printStackTrace();
-                ActivityHelper.dismissProgressDialog();
-            }
-        }).execute();
-    }
-
-    /**
-     * @param data
-     */
-   // private List<IRRemoteOnOffRes.Data.OnoffList> mOnoffLists;
 
     private void initData(List<DeviceBrandRemoteList> data) {
 
-//        mOnoffLists = data.getOnoffList();
         mTotalState = data.size();
 
-//        mCodeSet = data.getOnoffList().get(0).getId();
-//        mOn = data.getOnoffList().get(0).getON();
-//        mOff = data.getOnoffList().get(0).getOFF();
-
         setTotalText(mTotalState);
-        if(data.size()>0){
-            model_number=data.get(0).getModelNumber();
-            txtModelNumber.setText("Model : "+model_number);
-            onOffValue=arrayList.getDeviceBrandRemoteList().get(0).getIrCode();
-            remote_codeset_id=""+arrayList.getDeviceBrandRemoteList().get(0).getremote_codeset_id();
-            brand_name=arrayList.getDeviceBrandRemoteList().get(0).getBrandName();
+        if (data.size() > 0) {
+            model_number = data.get(0).getModelNumber();
+            txtModelNumber.setText("Model : " + model_number);
+            onOffValue = arrayList.getDeviceBrandRemoteList().get(0).getIrCode();
+            remote_codeset_id = "" + arrayList.getDeviceBrandRemoteList().get(0).getremote_codeset_id();
+            brand_name = arrayList.getDeviceBrandRemoteList().get(0).getBrandName();
         }
-    }
-
-    /**
-     * update current remote state in const
-     */
-    private void getOnOffCommandPositon() {
-
-//        if (mOnoffLists != null) {
-//            mCodeSet = mOnoffLists.get(mCurrentState - 1).getId();
-//            mOn = mOnoffLists.get(mCurrentState - 1).getON();
-//            mOff = mOnoffLists.get(mCurrentState - 1).getOFF();
-//        }
     }
 
     /**
@@ -301,7 +222,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         }
 
         IRRemoteOnOffReq irRemoteOnOffReq = new IRRemoteOnOffReq(mIRBlasterModuleId, mCodeSet, (RESPOND_CONST == 1) ? "ON" : "OFF"
-                , APIConst.PHONE_ID_VALUE, APIConst.PHONE_TYPE_VALUE,onOffValue);
+                , APIConst.PHONE_ID_VALUE, APIConst.PHONE_TYPE_VALUE, onOffValue);
         Gson gson = new Gson();
         String mStrOnOffReq = gson.toJson(irRemoteOnOffReq);
 
@@ -320,7 +241,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
 
                         if (code == 200) {
 
-                            ChatApplication.logDisplay( "remote res : " + result.toString());
+                            ChatApplication.logDisplay("remote res : " + result.toString());
                             showRespondView();
 
                         } else {
@@ -341,9 +262,6 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
             }
         }).execute();
     }
-
-    EditText mEdtRemoteName;
-    private Dialog mDialog;
 
     private void showRemoteSaveDialog() {
         if (mDialog == null) {
@@ -400,10 +318,10 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
             @Override
             public void onClick(View v) {
 
-                ChatApplication.logDisplay(" mNumber is "+model_number);
-                ChatApplication.logDisplay(" mNumber is "+brand_name);
-                ChatApplication.logDisplay(" mNumber is "+onOffValue);
-                ChatApplication.logDisplay(" mNumber is "+remote_codeset_id);
+                ChatApplication.logDisplay(" mNumber is " + model_number);
+                ChatApplication.logDisplay(" mNumber is " + brand_name);
+                ChatApplication.logDisplay(" mNumber is " + onOffValue);
+                ChatApplication.logDisplay(" mNumber is " + remote_codeset_id);
 
                 if (TextUtils.isEmpty(mEdtRemoteName.getText().toString().trim())) {
                     mEdtRemoteName.requestFocus();
@@ -456,75 +374,6 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         imm.hideSoftInputFromWindow(edt.getWindowToken(), 0);
     }
 
-    private List<IRBlasterAddRes.Data.IrList> irList;
-    List<IRBlasterAddRes.Data.RoomList> roomLists;
-
-    /**
-     * get IR Blaster list
-     */
-    private void getIRBlasterList() {
-
-        if (!ActivityHelper.isConnectingToInternet(this)) {
-            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String URL = ChatApplication.url + Constants.GET_IR_BLASTER_LIST;
-
-
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
-        new GetJsonTask(this, URL, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay( "result : " + result.toString());
-
-                IRBlasterAddRes irBlasterAddRes = Common.jsonToPojo(result.toString(), IRBlasterAddRes.class);
-                if (irBlasterAddRes.getCode() == 200) {
-                    irList = irBlasterAddRes.getData().getIrList();
-                    roomLists = irBlasterAddRes.getData().getRoomList();
-
-                    final ArrayAdapter roomAdapter1 = new ArrayAdapter(getApplicationContext(), R.layout.spinner, irList);
-                    mSpinnerBlaster.setAdapter(roomAdapter1);
-
-                    remote_room_txt.setText("" + mSpinnerBlaster.getSelectedItem().toString());
-
-                    for (IRBlasterAddRes.Data.IrList ir : irList) {
-                        if (ir.getIrBlasterName().equalsIgnoreCase(mBlasterName)) {
-                            remote_room_txt.setText("" + ir.getRoomName());
-                        }
-                    }
-
-                   /* mSpinnerBlaster.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                            IRBlasterAddRes.Data.IrList irList = (IRBlasterAddRes.Data.IrList) mSpinnerBlaster.getSelectedItem();
-                            remote_room_txt.setText(""+irList.getRoomName());
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
-
-                        }
-                    });*/
-
-                } else {
-                    Common.showToast(irBlasterAddRes.getMessage());
-                }
-
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                throwable.printStackTrace();
-                Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
-            }
-        }).execute();
-
-    }
-
     /**
      * save Remote
      *
@@ -538,9 +387,9 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         }
 
         ActivityHelper.showProgressDialog(IRRemoteConfigActivity.this, "Please Wait...", false);
-        AddRemoteReq addRemoteReq = new AddRemoteReq(Common.getPrefValue(this, Constants.USER_ID),mIRDeviceId, mIrDeviceType, mBrandId, mIRBrandType, mCodeSet,
+        AddRemoteReq addRemoteReq = new AddRemoteReq(Common.getPrefValue(this, Constants.USER_ID), mIRDeviceId, mIrDeviceType, mBrandId, mIRBrandType, mCodeSet,
                 remoteName, mIRBLasterId, mIRBlasterModuleId, mRoomId, mSpinnerMode.getSelectedItem().toString(), mRemoteDefaultTemp.getText().toString().trim(),
-                APIConst.PHONE_ID_KEY, APIConst.PHONE_TYPE_VALUE,brand_name,remote_codeset_id,model_number,onOffValue);
+                APIConst.PHONE_ID_KEY, APIConst.PHONE_TYPE_VALUE, brand_name, remote_codeset_id, model_number, onOffValue);
         addRemoteReq.setUpdate_type(0);
 
         Gson gson = new Gson();
@@ -561,7 +410,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
                     if (code == 200) {
                         ChatApplication.isEditActivityNeedResume = true;
                         hideSaveDialog();
-                        ChatApplication.logDisplay( "remote res : " + result.toString());
+                        ChatApplication.logDisplay("remote res : " + result.toString());
                         hideRespondView();
                         Intent returnIntent = new Intent();
                         setResult(Activity.RESULT_OK, returnIntent);
@@ -572,9 +421,8 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                }
-                finally {
-                        ActivityHelper.dismissProgressDialog();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
                 }
             }
 
@@ -586,15 +434,6 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         }).execute();
     }
 
-  /*  @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            onBackPressed();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-*/
     @Override
     public void onClick(View v) {
 
@@ -748,21 +587,20 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
 
     private void setStepText(int state) {
 
-        getOnOffCommandPositon();
         mTestButtons.setText("Test buttons(" + state + "/" + mTotalState + ")");
-        if(state>0){
-            model_number=arrayList.getDeviceBrandRemoteList().get(state-1).getModelNumber();
-            onOffValue=arrayList.getDeviceBrandRemoteList().get(state-1).getIrCode();
-            remote_codeset_id=""+arrayList.getDeviceBrandRemoteList().get(state-1).getremote_codeset_id();
-            brand_name=arrayList.getDeviceBrandRemoteList().get(state-1).getBrandName();
-        }else {
-            model_number=arrayList.getDeviceBrandRemoteList().get(state).getModelNumber();
-            onOffValue=arrayList.getDeviceBrandRemoteList().get(state).getIrCode();
-            remote_codeset_id=""+arrayList.getDeviceBrandRemoteList().get(state).getremote_codeset_id();
-            brand_name=arrayList.getDeviceBrandRemoteList().get(state).getBrandName();
+        if (state > 0) {
+            model_number = arrayList.getDeviceBrandRemoteList().get(state - 1).getModelNumber();
+            onOffValue = arrayList.getDeviceBrandRemoteList().get(state - 1).getIrCode();
+            remote_codeset_id = "" + arrayList.getDeviceBrandRemoteList().get(state - 1).getremote_codeset_id();
+            brand_name = arrayList.getDeviceBrandRemoteList().get(state - 1).getBrandName();
+        } else {
+            model_number = arrayList.getDeviceBrandRemoteList().get(state).getModelNumber();
+            onOffValue = arrayList.getDeviceBrandRemoteList().get(state).getIrCode();
+            remote_codeset_id = "" + arrayList.getDeviceBrandRemoteList().get(state).getremote_codeset_id();
+            brand_name = arrayList.getDeviceBrandRemoteList().get(state).getBrandName();
         }
 
-        txtModelNumber.setText("Model : "+model_number);
+        txtModelNumber.setText("Model : " + model_number);
     }
 
     /**
