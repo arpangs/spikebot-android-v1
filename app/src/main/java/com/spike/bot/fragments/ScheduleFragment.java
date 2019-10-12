@@ -225,7 +225,8 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         view = inflater.inflate(R.layout.fragment_schedule, container, false);
         try {
             ChatApplication.logDisplay("adapter is show "+isMood);
-            isMood = getArguments().getBoolean("isMood");
+//            isMood = getArguments().getBoolean("isMood");
+            isMood = getActivity().getIntent().getBooleanExtra("isMood",false);
             moodId = getArguments().getString("moodId");
             roomId = getArguments().getString("roomId");
             isActivityType = getArguments().getString("isActivityType");

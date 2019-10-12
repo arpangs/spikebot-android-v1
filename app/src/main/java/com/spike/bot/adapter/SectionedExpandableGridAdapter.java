@@ -860,7 +860,11 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         ChatApplication.logDisplay("temp is d "+item.getTemp_in_f()+" "+item.getHumidity());
 
                         //holder.txt_temp_in_cf.setText(Html.fromHtml("<b>" + tempInCF + " " + cf + "</b>"));
-                        holder.txt_temp_in_cf.setText(Html.fromHtml("<b>" + tempInCF+ "</b>"));
+                        if(item.getIsActive()!=-1){
+                            holder.txt_temp_in_cf.setText(Html.fromHtml("<b>" + tempInCF+ "</b>"));
+                        }else {
+                            holder.txt_temp_in_cf.setText(Html.fromHtml("<b>" + "-- "+cf+ "</b>"));
+                        }
 
                         if (item.getSensor_type().equalsIgnoreCase("door")) {
                             holder.txt_temp_in_cf.setVisibility(View.INVISIBLE); //INVISIBLE

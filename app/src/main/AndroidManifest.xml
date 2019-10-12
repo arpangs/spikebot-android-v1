@@ -524,6 +524,9 @@
             </intent-filter>
         </service>
 
+        <!--for beacon services stop-->
+        <service android:name=".receiver.StickyService"></service>
+
 
 
         <service

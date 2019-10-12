@@ -26,6 +26,7 @@ import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.User;
+import com.spike.bot.receiver.StickyService;
 
 import org.json.JSONObject;
 
@@ -71,6 +72,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         btn_login.setOnClickListener(this);
         btn_SKIP.setOnClickListener(this);
         btnSignUp.setOnClickListener(this);
+
+        //for beacon service stop when application kill
+        Intent stickyService = new Intent(this, StickyService.class);
+        startService(stickyService);
 
     }
 

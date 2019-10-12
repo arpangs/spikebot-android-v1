@@ -2,11 +2,11 @@ package com.spike.bot;
 
 import android.app.Activity;
 import android.app.Application;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Environment;
-import android.os.RemoteException;
 import android.support.multidex.MultiDex;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -20,7 +20,13 @@ import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.DateHelper;
-import com.spike.bot.activity.LoginActivity;
+import com.kp.core.GetJsonTask;
+import com.kp.core.ICallBack;
+import com.spike.bot.Beacon.BluetoothLeDeviceStore;
+import com.spike.bot.Beacon.BluetoothLeScanner;
+import com.spike.bot.Beacon.BluetoothUtils;
+import com.spike.bot.Beacon.LeDeviceItem;
+import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.core.CustomReportSender;
@@ -28,33 +34,29 @@ import com.spike.bot.model.LockObj;
 import com.spike.bot.model.User;
 import com.spike.bot.receiver.ApplicationCrashHandler;
 import com.spike.bot.receiver.ConnectivityReceiver;
+import com.spike.bot.receiver.StickyService;
 
 import io.fabric.sdk.android.Fabric;
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
-import java.net.ProtocolException;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -63,7 +65,9 @@ import java.util.regex.Pattern;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
-import okhttp3.OkHttpClient;
+import uk.co.alt236.bluetoothlelib.device.BluetoothLeDevice;
+import uk.co.alt236.bluetoothlelib.device.beacon.BeaconType;
+import uk.co.alt236.bluetoothlelib.device.beacon.BeaconUtils;
 
 @ReportsCrashes(formKey = "",//1LZjNZVtIyc5O2-llj8VfHMsvDC2YdGkgNp3RiIGBL2I", // will not be used 1tgWQ58TdbvD0CGhW91Se2MwCFz_nlV1sezQrimsw6qw
 //mailTo = "kaushalap@gochetak.com",
@@ -107,6 +111,14 @@ public class ChatApplication extends Application  {
     public static boolean isPushFound =true;
 
     public static LockObj mTestLockObj;
+
+    //beacon
+    private long lastSyncTimeStamp = 0;
+    public BluetoothUtils mBluetoothUtils;
+    public static BluetoothLeScanner mScanner;
+    public BluetoothLeDeviceStore mDeviceStore;
+    List<LeDeviceItem> itemList = new ArrayList<>();
+    List<LeDeviceItem> itemListTemp = new ArrayList<>();
 
 
     public void saveChoosedLock(LockObj lockObj){
@@ -194,6 +206,7 @@ public class ChatApplication extends Application  {
     @Override
     public void onCreate() {
         super.onCreate();
+        ChatApplication.logDisplay("on trim memory create");
         Fabric.with(this, new Crashlytics());
         mInstance = this;
         context = this;
@@ -202,7 +215,20 @@ public class ChatApplication extends Application  {
         ACRA.getErrorReporter().setReportSender(new CustomReportSender(this.getApplicationContext()));
 // Install the application crash handler
         ApplicationCrashHandler.installHandler();
-      //  Common.savePrefValue(getApplicationContext(),"","");
+
+        mDeviceStore = new BluetoothLeDeviceStore();
+        mBluetoothUtils = new BluetoothUtils(getContext());
+        mScanner = new BluetoothLeScanner(mLeScanCallback, mBluetoothUtils);
+
+        final boolean isBluetoothOn = mBluetoothUtils.isBluetoothOn();
+        final boolean isBluetoothLePresent = mBluetoothUtils.isBluetoothLeSupported();
+        mDeviceStore.clear();
+
+        mBluetoothUtils.askUserToEnableBluetoothIfNeeded();
+        if (isBluetoothOn && isBluetoothLePresent) {
+            mScanner.scanLeDevice(-1, true);
+        }
+
     }
 
     private Emitter.Listener onDisconnect = new Emitter.Listener() {
@@ -454,4 +480,111 @@ public class ChatApplication extends Application  {
 
     //beacon
 
+    private void setSyncRange() {
+        if(itemListTemp.size()>0){
+            for(int i=0; i<itemListTemp.size(); i++){
+//                ChatApplication.logDisplay("rss is "+itemListTemp.get(i).getDevice().getRunningAverageRssi());
+                if(itemListTemp.get(i).getDevice().getRunningAverageRssi()> -70 && !itemListTemp.get(i).isOnOff()){
+                    //off 1, on 0
+                    itemListTemp.get(i).setOnOff(true);
+                    itemList.get(i).setOnOff(true);
+                    callDeviceOnOffApi(0,i);
+                    break;
+                }else if(itemListTemp.get(i).getDevice().getRunningAverageRssi()< -75 && itemListTemp.get(i).isOnOff()){
+//                    Log.d("System out","mLeScanCallback is false found "+itemListTemp.get(i).isOnOff());
+                        itemListTemp.get(i).setOnOff(false);
+                        itemList.get(i).setOnOff(false);
+                        callDeviceOnOffApi(1,i);
+                }
+            }
+        }
+    }
+
+    private final BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
+        @Override
+        public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
+
+            final BluetoothLeDevice deviceLe = new BluetoothLeDevice(device, rssi, scanRecord, System.currentTimeMillis());
+            mDeviceStore.addDevice(deviceLe);
+
+            for (final BluetoothLeDevice leDevice : mDeviceStore.getDeviceList()) {
+                if (BeaconUtils.getBeaconType(leDevice) == BeaconType.IBEACON) {
+//                    itemList.add(new IBeaconItem(new IBeaconDevice(leDevice)));
+                } else {
+                    if(!TextUtils.isEmpty(leDevice.getName())){
+//                        Log.d("System out","mLeScanCallback is 22 name "+leDevice.getName());
+                        if(leDevice.getName().startsWith("SBC")){
+                            if(itemList.size()==0){
+                                itemList.add(new LeDeviceItem(leDevice));
+                                itemListTemp.add(new LeDeviceItem(leDevice));
+                            }else {
+                                for (int i = 0; i < itemList.size(); i++) {
+                                    if (itemList.get(i).getDevice().getAddress().equals(leDevice.getAddress())) {
+//                                        Log.d("System out","mLeScanCallback is 22 name "+leDevice.getRunningAverageRssi());
+
+//                                        itemList.set(i,new LeDeviceItem(leDevice));
+
+                                        LeDeviceItem leDeviceItem=new LeDeviceItem(leDevice);
+                                        leDeviceItem.setRssRange(itemList.get(i).isRssRange());
+                                        leDeviceItem.setOnOff(itemList.get(i).isOnOff());
+
+                                        itemListTemp.set(i,leDeviceItem);
+                                        itemList.set(i,leDeviceItem);
+                                    }else {
+                                        itemList.add(new LeDeviceItem(leDevice));
+                                        itemListTemp.add(new LeDeviceItem(leDevice));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    long currentTime = System.currentTimeMillis();
+                    if((currentTime - lastSyncTimeStamp) >= 900 ){
+                        setSyncRange();
+                        lastSyncTimeStamp=currentTime;
+                    }
+                }
+            }
+
+        }
+    };
+
+    private void callDeviceOnOffApi(int i,int position) {
+
+        String url = "";
+
+        JSONObject obj=new JSONObject();
+
+        try {
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            obj.put("user_id", "1528702842286_HyGYPsieQ");
+            obj.put("room_device_id", "1528703556507_H1f2SqsieX");
+            obj.put("module_id", "0785ED0B004B1200");
+            obj.put("device_id", "3");
+            obj.put("device_status",i);
+            obj.put("localData", "0");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        url = "http://home.deepfoods.net:11105" + Constants.CHANGE_DEVICE_STATUS;
+
+
+//        ChatApplication.logDisplay("Device roomPanelOnOff obj "+url+"  " + obj.toString());
+
+        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                ChatApplication.logDisplay("Device roomPanelOnOff obj result " + result.toString());
+
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ChatApplication.logDisplay("roomPanelOnOff onFailure " + error);
+            }
+        }).execute();
+    }
 }

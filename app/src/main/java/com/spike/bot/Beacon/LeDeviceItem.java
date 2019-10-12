@@ -6,7 +6,6 @@ public class LeDeviceItem implements RecyclerViewItem {
 
     private final BluetoothLeDevice device;
 
-
     public boolean isRssRange() {
         return rssRange;
     }

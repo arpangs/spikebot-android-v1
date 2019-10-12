@@ -56,7 +56,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            ChatApplication.logDisplay("Message data payload: " + remoteMessage.getData());
+//            ChatApplication.logDisplay("Message data payload: " + remoteMessage.getData());
 
             if (/* Check if data needs to be processed by long running job */ true) {
                 // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
@@ -74,7 +74,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 //            int count  = Integer.parseInt(badge)+1;
 //            badge= ""+count;
 
-            ChatApplication.logDisplay("Message data payload: badge " + badge);
+//            ChatApplication.logDisplay("Message data payload: badge " + badge);
 
             if(!TextUtils.isEmpty(message)){
                 sendNotification(message);

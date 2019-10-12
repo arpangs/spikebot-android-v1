@@ -9,10 +9,10 @@ import android.content.pm.PackageManager;
 
 public final class BluetoothUtils {
     public final static int REQUEST_ENABLE_BT = 2001;
-    private final Activity mActivity;
+    private final Context mActivity;
     private final BluetoothAdapter mBluetoothAdapter;
 
-    public BluetoothUtils(final Activity activity) {
+    public BluetoothUtils(final Context activity) {
         mActivity = activity;
         final BluetoothManager btManager = (BluetoothManager) mActivity.getSystemService(Context.BLUETOOTH_SERVICE);
         mBluetoothAdapter = btManager.getAdapter();
@@ -21,7 +21,8 @@ public final class BluetoothUtils {
     public void askUserToEnableBluetoothIfNeeded() {
         if (isBluetoothLeSupported() && (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled())) {
             final Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            mActivity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            //change it than not working scan
+         //   mActivity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
     }
 
