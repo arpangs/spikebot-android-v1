@@ -2,32 +2,20 @@ package com.spike.bot.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.FrameLayout;
 
-//import org.videolan.libvlc.IVideoPlayer;
 import com.spike.bot.R;
+
+//import org.videolan.libvlc.IVideoPlayer;
 
 public class VideoVLCActivity extends AppCompatActivity {//implements IVideoPlayer
     private static final String TAG = VideoVLCActivity.class.getSimpleName();
 
-    // size of the video
-    private int mVideoHeight;
-    private int mVideoWidth;
-    private int mVideoVisibleHeight;
-    private int mVideoVisibleWidth;
-    private int mSarNum;
-    private int mSarDen;
-
     private SurfaceView mSurfaceView;
     private FrameLayout mSurfaceFrame;
     private SurfaceHolder mSurfaceHolder;
-    private Surface mSurface = null;
-
-   // private LibVLC mLibVLC;
-
     private String mMediaUrl;
 
     @Override

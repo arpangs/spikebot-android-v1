@@ -7,9 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -26,10 +23,8 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
@@ -37,13 +32,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.kp.core.ActivityHelper;
+import com.kp.core.GetJsonTask;
+import com.kp.core.ICallBack;
+import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.adapter.DoorAlertAdapter;
 import com.spike.bot.adapter.TempAlertAdapter;
 import com.spike.bot.adapter.TempSensorInfoAdapter;
 import com.spike.bot.core.APIConst;
@@ -52,10 +49,6 @@ import com.spike.bot.core.Constants;
 import com.spike.bot.customview.OnSwipeTouchListener;
 import com.spike.bot.model.SensorResModel;
 import com.spike.bot.receiver.ConnectivityReceiver;
-import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
-import com.kp.core.dialog.ConfirmDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -105,6 +98,15 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
     SensorResModel.DATA.TempList[] tempLists;
     SensorResModel.DATA.TempList.NotificationList[] notificationList;
 
+    private TextView text_day_1, text_day_2, text_day_3, text_day_4, text_day_5, text_day_6, text_day_7;
+    Dialog tempSensorNotificationDialog;
+
+    private int mScrollState = AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
+    private int lastVisibleItem, totalItemCount;
+    private boolean isLoading = false;
+    private int visibleThreshold = 0;
+    private boolean isScrollToEndPosition = false;
+
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
         if (!isConnected) {
@@ -143,7 +145,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
         if (ChatApplication.isLogResume) {
             ChatApplication.isLogResume = false;
             ChatApplication.isLocalFragmentResume = true;
-            //  getSensorDetails();
             sensorLog.setVisibility(View.GONE);
         }
         bindView();
@@ -165,36 +166,9 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
         } else {
             mSocket = app.getSocket();
         }
-        mSocket.on("changeTempSensorValue", changeTempSensorValue);
         mSocket.on("unReadCount", unReadCount);
     }
 
-
-    private Emitter.Listener changeTempSensorValue = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-
-            TempSensorInfoActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    if (args != null) {
-                        try {
-                            JSONObject object = new JSONObject(args[0].toString());
-                            String room_id = object.getString("room_id");
-                            String temp_sensor_id = object.getString("temp_sensor_id");
-                            String temp_celsius = object.getString("temp_celsius");
-                            String temp_fahrenheit = object.getString("temp_fahrenheit");
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-        }
-    };
 
     private Emitter.Listener unReadCount = new Emitter.Listener() {
         @Override
@@ -210,7 +184,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                             String sensor_unread = object.getString("sensor_unread");
                             String module_id = object.getString("module_id");
                             String room_id = object.getString("room_id");
-                            String room_unread = object.getString("room_unread");
 
                             if (sensor_type.equalsIgnoreCase("temp") && temp_module_id.equalsIgnoreCase(module_id) && temp_room_id.equalsIgnoreCase(room_id)) {
                                 setTempUnreadCount(sensor_unread);
@@ -233,19 +206,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             unregisterReceiver(connectivityReceiver);
         }
         if (mSocket != null) {
-            mSocket.off("changeTempSensorValue", changeTempSensorValue);
             mSocket.off("unReadCount", unReadCount);
-        }
-    }
-
-    private GestureDetector gestureDetector;
-
-
-    private class SingleTapConfirm extends GestureDetector.SimpleOnGestureListener {
-
-        @Override
-        public boolean onSingleTapUp(MotionEvent event) {
-            return true;
         }
     }
 
@@ -300,7 +261,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             }
         });
 
-        // gestureDetector = new GestureDetector(this, new SingleTapConfirm());
 
         notiSwitchOnOff.setOnTouchListener(new OnSwipeTouchListener(TempSensorInfoActivity.this) {
             @Override
@@ -340,13 +300,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                 }
             }
         });
-        /*notiSwitchOnOff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                notiSwitchOnOff.setChecked(!notiSwitchOnOff.isChecked());
-                showAlertDialog("", notiSwitchOnOff,!notiSwitchOnOff.isChecked(),false);
-            }
-        });*/
 
         notiSwitchOnOff.setVisibility(View.GONE);
 
@@ -462,15 +415,12 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                         notificationList = sensorResModel.getDate().getTempLists()[0].getNotificationLists();
                         tempSensorInfoAdapter.notifyItemChanged(position, sensorResModel.getDate().getTempLists()[0].getNotificationLists()[position]);
 
-                        //tempSensorInfoAdapter = new TempSensorInfoAdapter(notificationList,isCF,TempSensorInfoActivity.this);
-                        //sensor_list.setAdapter(tempSensorInfoAdapter);
                         tempSensorInfoAdapter.notifyDataSetChanged();
 
                         //adapter auto scroll
                     }
                     if (!TextUtils.isEmpty(message)) {
                         showToast(message);
-                        //Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
                     }
 
                 } catch (JSONException e) {
@@ -508,7 +458,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
     private void updateTempSensor() {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            // Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             showToast("" + R.string.disconnect);
             return;
         }
@@ -545,7 +494,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                     String message = result.getString("message");
                     if (!TextUtils.isEmpty(message)) {
                         showToast(message);
-                        //Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
                     }
                     if (code == 200) {
                         finish();
@@ -562,13 +510,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             }
         }).execute();
     }
-
-
-    //Common.setBackground(this, text_schedule_1, true);
-
-    private TextView text_day_1, text_day_2, text_day_3, text_day_4, text_day_5, text_day_6, text_day_7;
-
-    Dialog tempSensorNotificationDialog;
 
     /**
      * @param notificationList
@@ -766,7 +707,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
     private void addNotification(final TextView txt_notification_alert, EditText minValue, final EditText maxValue, boolean isEdit, String temp_sensor_notification_id) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            //Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             showToast("" + R.string.disconnect);
             return;
         }
@@ -782,18 +722,10 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             return;
         }
 
-       /* int min = Integer.parseInt(minValue.getText().toString().trim());
-        int max = Integer.parseInt(maxValue.getText().toString().trim());
-
-        if(max < min){
-            maxValue.setError("Max value Less than Min Value");
-            return;
-        }*/
 
         getRepeatString();
 
         if (TextUtils.isEmpty(repeatDayString)) {
-            //Toast.makeText(this, "Select Repeat Days", Toast.LENGTH_SHORT).show();
             showToastCenter("Select Repeat Days");
             return;
         }
@@ -806,40 +738,14 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
         }
 
         JSONObject jsonNotification = new JSONObject();
-
         try {
-            // "temp_sensor_id"	: "",
-            //  "min_temp_value": "",
-            //  "max_temp_value": "",
-            //  "is_in_C": ,                   //0 and 1 for Temp, -1 for Humidity
-            //  "min_humidity_value": ,
-            //  "max_humidity_value": ,
-            //  "days": "",
-            //  "user_id":"",
-            //  "phone_id": "",
-            //  "phone_type": ""
-
-
-            // "temp_sensor_id": "",
-            //  "temp_sensor_notification_id": "",
-            //  "min_temp_value": ,
-            //  "max_temp_value": ,
-            //  "is_in_C": ,
-            //  "min_humidity_value": "",
-            //  "max_humidity_value": "",
-            //  "days": "",
-            //  "user_id": "",
-            //  "phone_id": "",
-            //  "phone_type": ""
             if (isEdit) {
                 jsonNotification.put("temp_sensor_notification_id", temp_sensor_notification_id);
             }
 
             jsonNotification.put("temp_sensor_id", temp_sensor_id);
             jsonNotification.put("is_in_C", isCFSelected); //1=C 0=F
-//            jsonNotification.put("min_value", minValue.getText().toString().trim());
             jsonNotification.put("min_temp_value", minValue.getText().toString().trim());
-//            jsonNotification.put("max_value", maxValue.getText().toString().trim());
             jsonNotification.put("max_temp_value", maxValue.getText().toString().trim());
             jsonNotification.put("days", repeatDayString);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -851,9 +757,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
         }
 
         ChatApplication.logDisplay("json : " + jsonNotification.toString());
-
-        //  ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
@@ -883,7 +786,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                             maxValue.setFocusableInTouchMode(true);
                             maxValue.requestFocus();
                             maxValue.setError(message);
-                            // showToastCenter(message);
                         }
                     }
 
@@ -955,7 +857,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
 
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            //Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             showToast("" + R.string.disconnect);
             return;
         }
@@ -973,18 +874,15 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             e.printStackTrace();
         }
 
-        //  ActivityHelper.showProgressDialog(this, "Please wait.", false);
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
 
                 ChatApplication.logDisplay("result : " + result.toString());
-                //  ActivityHelper.dismissProgressDialog();
                 try {
 
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    //Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
                     if (!TextUtils.isEmpty(message)) {
                         showToast(message);
                     }
@@ -1000,7 +898,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                //  ActivityHelper.dismissProgressDialog();
             }
         }).execute();
 
@@ -1039,13 +936,12 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                 } else {
                     setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_white, R.drawable.txt_background_yellow, Color.parseColor("#111111"), Color.parseColor("#FFFFFF"));
                     tempCFValue.setText(tmpF + " " + Common.getF() + " ");
-                    //isCF = false;
                 }
 
 
             }
 
-            if (notificationList != null && tempSensorInfoAdapter!=null) {
+            if (notificationList != null && tempSensorInfoAdapter != null) {
 
                 for (int i = 0; i < notificationList.length; i++) {
                     SensorResModel.DATA.TempList.NotificationList notificationListModel = notificationList[i];
@@ -1059,25 +955,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                     tempSensorInfoAdapter.notifyItemChanged(i, notificationListModel);
                 }
                 tempSensorInfoAdapter.notifyDataSetChanged();
-            }
-
-            //tempSensorInfoAdapter = new TempSensorInfoAdapter(notificationList,isCF,TempSensorInfoActivity.this);
-            //sensor_list.setAdapter(tempSensorInfoAdapter);
-
-
-            final int speedScroll = 150;
-            if (isScrollToEndPosition) {
-               /* new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(notificationList!=null){
-                            sensor_list.smoothScrollToPosition(lastVisibleItem);//TODO
-                        }
-                    }
-                },speedScroll);*/
-                if (notificationList != null) {
-                    //  sensor_list.smoothScrollToPosition(lastVisibleItem);
-                }
             }
         }
     }
@@ -1120,7 +997,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
      */
     @Override
     public void onSwitchChanged(SensorResModel.DATA.TempList.NotificationList notification, SwitchCompat swithcCompact, int position, boolean isActive) {
-
         showAlertDialog(notification.getTempSensorNotificationId(), swithcCompact, isActive, true, position);
 
     }
@@ -1138,9 +1014,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             return;
         }
 
-
         String webUrl = ChatApplication.url + Constants.DELETE_TEMP_SENSOR_NOTIFICATION;
-
         JSONObject jsonNotification = new JSONObject();
         try {
 
@@ -1174,7 +1048,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                     }
                     if (!TextUtils.isEmpty(message)) {
                         showToast(message);
-                        //Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
                     }
 
                 } catch (JSONException e) {
@@ -1184,7 +1057,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                // ActivityHelper.dismissProgressDialog();
             }
         }).execute();
 
@@ -1227,7 +1099,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
     }
 
 
-
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
@@ -1253,11 +1124,11 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
     /**
      * getSensorDetails
      */
-    SensorResModel sensorResModel=new SensorResModel();
+    SensorResModel sensorResModel = new SensorResModel();
 
     private void getSensorDetails() {
 
-        String url = ChatApplication.url + Constants.GET_TEMP_SENSOR_INFO ;
+        String url = ChatApplication.url + Constants.GET_TEMP_SENSOR_INFO;
 
         JSONObject object = new JSONObject();
         try {
@@ -1268,10 +1139,10 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             //  "phone_type":""
             // }
 
-            object.put("temp_sensor_id",temp_sensor_id);
+            object.put("temp_sensor_id", temp_sensor_id);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1373,12 +1244,11 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                 //isCF = false;
             }
 
-            if (sensorResModel.getDate().getTempLists()[0].getNotificationLists()!=null && sensorResModel.getDate().getTempLists()[0].getNotificationLists().length > 0) {
+            if (sensorResModel.getDate().getTempLists()[0].getNotificationLists() != null && sensorResModel.getDate().getTempLists()[0].getNotificationLists().length > 0) {
                 txtEmpty.setVisibility(View.GONE);
                 sensor_list.setVisibility(View.VISIBLE);
                 txtTempAlertCount.setVisibility(View.VISIBLE);
-                txtTempAlertCount.setText("("+sensorResModel.getDate().getTempLists()[0].getNotificationLists().length + " Added)");
-                //    txt_empty_notification.setVisibility(View.GONE);
+                txtTempAlertCount.setText("(" + sensorResModel.getDate().getTempLists()[0].getNotificationLists().length + " Added)");
 
                 notificationList = sensorResModel.getDate().getTempLists()[0].getNotificationLists();
                 if (isCFDone) {
@@ -1414,13 +1284,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                 sensor_list.setAdapter(tempSensorInfoAdapter);
                 tempSensorInfoAdapter.notifyDataSetChanged();
 
-//                if (notificationList.length > 0) {
-//                    txtTempCount.setText("Alert " + notificationList.length + " Added");
-//                } else {
-//                    txtTempCount.setText("Alert 0 Added");
-//                }
-
-
                 final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) sensor_list.getLayoutManager();
 
                 sensor_list.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -1444,17 +1307,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                     }
                 });
 
-                /*final int speedScroll = 150;
-                if(isScrollToEndPosition){
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(notificationList!=null){
-                                sensor_list.smoothScrollToPosition(lastVisibleItem);
-                            }
-                        }
-                    },speedScroll);
-                }*/
                 if (isScrollToEndPosition) {
                     if (notificationList != null) { //auto alert list view scroll if user scroll end of list
                         sensor_list.smoothScrollToPosition(lastVisibleItem);
@@ -1467,19 +1319,16 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                 txtTempCount.setText("Alert");
                 sensor_list.setVisibility(View.GONE);
                 txtEmpty.setVisibility(View.VISIBLE);
-                // txt_empty_notification.setVisibility(View.VISIBLE);
             }
 
 
             if (sensorResModel.getDate().getTempLists()[0].getUnreadLogs() != null) {
-
-
                 if (sensorResModel.getDate().getTempLists()[0].getUnreadLogs().size() > 0) {
 
-                    int countTemp=sensorResModel.getDate().getTempLists()[0].getUnreadLogs().size();
-                    if(countTemp>99){
+                    int countTemp = sensorResModel.getDate().getTempLists()[0].getUnreadLogs().size();
+                    if (countTemp > 99) {
                         txtAlertCount.setText("99+");
-                    }else {
+                    } else {
                         txtAlertCount.setText("" + countTemp);
                     }
 
@@ -1491,10 +1340,10 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                     recyclerAlert.setVisibility(View.VISIBLE);
                     txtAlertCount.setVisibility(View.VISIBLE);
                     txt_empty_notification.setVisibility(View.GONE);
-                    int countTemp=sensorResModel.getDate().getTempLists()[0].getUnreadLogs().size();
-                    if(countTemp>99){
+                    int countTemp = sensorResModel.getDate().getTempLists()[0].getUnreadLogs().size();
+                    if (countTemp > 99) {
                         txtAlertCount.setText("99+");
-                    }else {
+                    } else {
                         txtAlertCount.setText("" + countTemp);
                     }
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(TempSensorInfoActivity.this);
@@ -1517,66 +1366,41 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
         }
     }
 
-    private int mScrollState = AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
-    private int lastVisibleItem, totalItemCount;
-    private boolean isLoading = false;
-    private int visibleThreshold = 0;
-    private boolean isScrollToEndPosition = false;
-
-
     public void unreadApiCall(final boolean b) {
 
-        if(recyclerAlert.getVisibility()==View.VISIBLE){
+        if (recyclerAlert.getVisibility() == View.VISIBLE) {
 
-        }else {
+        } else {
             checkIntent(b);
             return;
         }
 
-        if(sensorResModel.getDate()==null){
+        if (sensorResModel.getDate() == null) {
             return;
         }
-        if(sensorResModel.getDate().getTempLists()==null){
+        if (sensorResModel.getDate().getTempLists() == null) {
             return;
         }
-        if(sensorResModel.getDate().getTempLists().length==0){
+        if (sensorResModel.getDate().getTempLists().length == 0) {
             return;
         }
 
         String webUrl = ChatApplication.url + Constants.UPDATE_UNREAD_LOGS;
 
         JSONObject jsonObject = new JSONObject();
-        try
-
-        {
+        try {
 
             JSONArray jsonArray = new JSONArray();
-
-//            for (RoomVO roomVO : unReadLogs) {
-//
-                JSONObject object = new JSONObject();
-//
-                object.put("sensor_type","temp");
-//
-//                if (roomVO.getRoomName().equalsIgnoreCase("All")) {
-                   // object.put("module_id", ""+sensorResModel.getDate().getTempLists()[0].getTempSensorMoudleId());
-                    object.put("module_id", ""+sensorResModel.getDate().getTempLists()[0].getTempSensorMoudleId());
-                    object.put("room_id", ""+sensorResModel.getDate().getTempLists()[0].getRoomId());
-                     object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-//                } else {
-//                    object.put("module_id", roomVO.getModule_id());
-//                    object.put("room_id", roomVO.getRoomId());
-//                }
-//
-                jsonArray.put(object);
-//            }
-
+            JSONObject object = new JSONObject();
+            object.put("sensor_type", "temp");
+            object.put("module_id", "" + sensorResModel.getDate().getTempLists()[0].getTempSensorMoudleId());
+            object.put("room_id", "" + sensorResModel.getDate().getTempLists()[0].getRoomId());
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonArray.put(object);
             jsonObject.put("update_logs", jsonArray);
 
         } catch (
-                JSONException e)
-
-        {
+                JSONException e) {
             e.printStackTrace();
         }
 
@@ -1585,9 +1409,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                 ICallBack() {
                     @Override
                     public void onSuccess(JSONObject result) {
-
                         checkIntent(b);
-
                     }
 
                     @Override
@@ -1595,7 +1417,6 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
                         checkIntent(b);
                     }
                 }).
-
                 executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
     }
@@ -1603,13 +1424,13 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
     private void checkIntent(boolean b) {
         if (b) {
             Intent intent = new Intent(TempSensorInfoActivity.this, DeviceLogActivity.class);
-            intent.putExtra("ROOM_ID", ""+sensorResModel.getDate().getTempLists()[0].getRoomId());
-            intent.putExtra("Mood_Id", ""+sensorResModel.getDate().getTempLists()[0].getTempSensorMoudleId());
+            intent.putExtra("ROOM_ID", "" + sensorResModel.getDate().getTempLists()[0].getRoomId());
+            intent.putExtra("Mood_Id", "" + sensorResModel.getDate().getTempLists()[0].getTempSensorMoudleId());
             intent.putExtra("activity_type", "temp");
             intent.putExtra("IS_SENSOR", true);
             intent.putExtra("tabSelect", "show");
-            intent.putExtra("isCheckActivity","tempSensor");
-            intent.putExtra("isRoomName",""+sensorName.getText().toString());
+            intent.putExtra("isCheckActivity", "tempSensor");
+            intent.putExtra("isRoomName", "" + sensorName.getText().toString());
             startActivity(intent);
         } else {
             TempSensorInfoActivity.this.finish();

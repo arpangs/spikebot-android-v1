@@ -1,11 +1,8 @@
 package com.spike.bot.activity;
 
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -19,7 +16,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
@@ -37,8 +33,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +56,7 @@ public class CameraGridActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_grid);
 
-        toolbar =  findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         tabLayout = findViewById(R.id.tabDots);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -74,25 +68,9 @@ public class CameraGridActivity extends AppCompatActivity {
     }
 
     private void setUi() {
-//        cameraVOArrayList = (ArrayList<CameraVO>) getIntent().getExtras().getSerializable("cameraList");
         toolbar.setTitle("Camera List");
         recyclerDvr = findViewById(R.id.recyclerDvr);
-
         getAllCameraList();
-
-//        recyclerDvr.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//            public void onPageScrollStateChanged(int state) {
-//            }
-//
-//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//
-//            }
-//
-//            public void onPageSelected(int position) {
-//                // Check if this is the page you want.
-//            }
-//        });
-
     }
 
     @Override
@@ -110,13 +88,13 @@ public class CameraGridActivity extends AppCompatActivity {
         Drawable drawable1 = menu.findItem(R.id.action_screenshot).getIcon();
 
         Drawable drawable = DrawableCompat.wrap(drawable1);
-        DrawableCompat.setTint(drawable, ContextCompat.getColor(this,R.color.automation_white));
+        DrawableCompat.setTint(drawable, ContextCompat.getColor(this, R.color.automation_white));
         menu.findItem(R.id.action_screenshot).setIcon(drawable);
         return true;
     }
 
-    public void setObject(toolBarImageCapture  toolBarImageCapture){
-        this.toolBarImageCapture=toolBarImageCapture;
+    public void setObject(toolBarImageCapture toolBarImageCapture) {
+        this.toolBarImageCapture = toolBarImageCapture;
     }
 
     @Override
@@ -125,11 +103,7 @@ public class CameraGridActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_screenshot) {
             if (checkPermission(this)) {
-
                 toolBarImageCapture.imageCapture();
-
-//                loadView(cameraListFragment.recyclerView);
-
             }
             return true;
         }
@@ -150,6 +124,9 @@ public class CameraGridActivity extends AppCompatActivity {
         return false;
     }
 
+    /**
+     * Get all camera list based on user_id
+     */
 
     public void getAllCameraList() {
         ActivityHelper.showProgressDialog(CameraGridActivity.this, " Please Wait...", false);
@@ -172,7 +149,7 @@ public class CameraGridActivity extends AppCompatActivity {
                 try {
                     code = result.getInt("code");
                     String message = result.getString("message");
-                    ChatApplication.logDisplay("result is "+result.toString());
+                    ChatApplication.logDisplay("result is " + result.toString());
                     if (code == 200) {
                         JSONArray dataObject = result.optJSONArray("data");
                         cameraVOArrayList = JsonHelper.parseCameraArray(dataObject);
@@ -182,7 +159,7 @@ public class CameraGridActivity extends AppCompatActivity {
                             setAdapter();
                         }
                     } else {
-                        ChatApplication.showToast(CameraGridActivity.this,""+ message);
+                        ChatApplication.showToast(CameraGridActivity.this, "" + message);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -225,7 +202,6 @@ public class CameraGridActivity extends AppCompatActivity {
         }
 
         recyclerDvr.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
-
         tabLayout.setupWithViewPager(recyclerDvr, true);
 
     }
@@ -246,7 +222,7 @@ public class CameraGridActivity extends AppCompatActivity {
                     cameraVOArrayListTemp.add(cameraVOArrayList.get(i));
                 }
             }
-            return cameraListFragment.newInstance(cameraVOArrayListTemp,recyclerDvr.getHeight());
+            return cameraListFragment.newInstance(cameraVOArrayListTemp, recyclerDvr.getHeight());
         }
 
         @Override
@@ -255,8 +231,8 @@ public class CameraGridActivity extends AppCompatActivity {
         }
     }
 
-    public interface  toolBarImageCapture{
+    public interface toolBarImageCapture {
 
-        public void imageCapture();
+        void imageCapture();
     }
 }

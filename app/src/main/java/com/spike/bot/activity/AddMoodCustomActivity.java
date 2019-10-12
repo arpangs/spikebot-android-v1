@@ -52,61 +52,56 @@ import java.util.List;
 
 import io.socket.client.Socket;
 
-public class AddMoodCustomActivity extends AppCompatActivity implements ItemClickMoodListener,ItemClickListener {
+public class AddMoodCustomActivity extends AppCompatActivity implements ItemClickMoodListener, ItemClickListener {
 
-    public static  String TAG = "AddMoodActivity";
+    public static String TAG = "AddMoodActivity";
     ArrayList<RoomVO> roomList = new ArrayList<>();
     private RecyclerView mMessagesView;
     MoodDeviceListLayoutHelper deviceListLayoutHelper;
-    AutoCompleteTextView et_switch_name ;
-    Spinner sp_device_type,spinner_mood_icon; //for mood selection
+    AutoCompleteTextView et_switch_name;
+    Spinner sp_device_type, spinner_mood_icon; //for mood selection
     ImageView sp_drop_down;
-    String panel_id,panel_name;
+    String panel_id, panel_name;
 
     RoomVO moodVO = new RoomVO();
     RoomListArrayAdapter moodIconArrayAdapter;
-    boolean editMode = false,isMap = false ,isMoodAdapter = false;
+    boolean editMode = false, isMap = false, isMoodAdapter = false;
+
+    private Socket mSocket;
+    String webUrl = "";
+    public Dialog dialog = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mood_add);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //toolbar.setTitle("test");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         mMessagesView = (RecyclerView) findViewById(R.id.messages);
 
-        et_switch_name = (AutoCompleteTextView) findViewById(R.id.et_switch_name );
+        et_switch_name = (AutoCompleteTextView) findViewById(R.id.et_switch_name);
 
-        sp_device_type = (Spinner ) findViewById(R.id.sp_device_type );
+        sp_device_type = (Spinner) findViewById(R.id.sp_device_type);
 
-        spinner_mood_icon = (Spinner ) findViewById(R.id.spinner_mood_icon );
-        //set the fixed height window popup menu dropdown in spinner
-       /* try {
-            Field popup = Spinner.class.getDeclaredField("mPopup");
-            ListPopupWindow popupWindow = (ListPopupWindow) popup.get(spinner_mood_icon);
-            popupWindow.setHeight(100);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }*/
+        spinner_mood_icon = (Spinner) findViewById(R.id.spinner_mood_icon);
 
-        sp_drop_down = (ImageView)findViewById(R.id.sp_drop_down);
+        sp_drop_down = (ImageView) findViewById(R.id.sp_drop_down);
 
         //moodVO.getMood_name()
         JSONArray device_iconsArray = new JSONArray();
         try {
             JSONObject obj = new JSONObject();
-            obj.put("device_icon_name","work");
+            obj.put("device_icon_name", "work");
             device_iconsArray.put(obj);
 
             JSONObject obj1 = new JSONObject();
-            obj1.put("device_icon_name","home");
+            obj1.put("device_icon_name", "home");
             device_iconsArray.put(obj1);
 
             JSONObject obj2 = new JSONObject();
-            obj2.put("device_icon_name","night");
+            obj2.put("device_icon_name", "night");
             device_iconsArray.put(obj2);
 
         } catch (JSONException e) {
@@ -115,22 +110,22 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
 
         try {
 
-            editMode = getIntent().getExtras().getBoolean("editMode",false);
+            editMode = getIntent().getExtras().getBoolean("editMode", false);
             moodVO = (RoomVO) getIntent().getExtras().getSerializable("moodVO");
-            isMap  =  getIntent().getBooleanExtra("isMap",false);
-            isMoodAdapter  =  getIntent().getBooleanExtra("isMoodAdapter",false);
+            isMap = getIntent().getBooleanExtra("isMap", false);
+            isMoodAdapter = getIntent().getBooleanExtra("isMoodAdapter", false);
             panel_id = getIntent().getStringExtra("panel_id");
             panel_name = getIntent().getStringExtra("panel_name");
-            if(moodVO!=null){
+            if (moodVO != null) {
                 et_switch_name.setText(moodVO.getRoomName());
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        if(editMode){
+        if (editMode) {
             toolbar.setTitle("Edit Mood");
-        }else{
+        } else {
             toolbar.setTitle("Add Mood");
         }
 
@@ -148,11 +143,13 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
         getDeviceList();
 
     }
+
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_mood_save, menu);
@@ -167,27 +164,26 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
     ArrayList<String> flags = new ArrayList<>();
 
     private void setSpinnerValue(JSONArray device_iconsArray) {
-        try{
+        try {
 
             flags = new ArrayList<String>();
-            for(int i=0;i<device_iconsArray.length();i++){
+            for (int i = 0; i < device_iconsArray.length(); i++) {
                 try {
                     flags.add(device_iconsArray.getJSONObject(i).getString("device_icon_name"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-            //int flags[] = {R.drawable.bulb_on, R.drawable.fan_on, R.drawable.tv_on, R.drawable.cfl_on, R.drawable.microwave_oven_on};
-            TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(this,flags,1,true);
+            TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(this, flags, 1, true);
             sp_device_type.setAdapter(customAdapter);
 
-            if(moodVO!=null){
+            if (moodVO != null) {
 
-                for(int i=0;i<device_iconsArray.length();i++){
+                for (int i = 0; i < device_iconsArray.length(); i++) {
                     try {
-                        if(moodVO.getRoom_icon()!=null){
+                        if (moodVO.getRoom_icon() != null) {
 
-                            if(device_iconsArray.getJSONObject(i).getString("device_icon_name").equalsIgnoreCase(moodVO.getRoom_icon())){
+                            if (device_iconsArray.getJSONObject(i).getString("device_icon_name").equalsIgnoreCase(moodVO.getRoom_icon())) {
                                 sp_device_type.setSelection(i);
                             }
                         }
@@ -197,11 +193,13 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
                 }
             }
 
-        }catch (Exception ex){ ex.printStackTrace(); }
-
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
 
     }
+
     ArrayList<DeviceVO> deviceVOArrayList;
 
     @Override
@@ -213,21 +211,22 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_save) {
 
-            try{
+            try {
                 room_device_id = deviceListLayoutHelper.getSelectedItemIds();
                 deviceVOArrayList = deviceListLayoutHelper.getSelectedItemList();
 
-                if(deviceVOArrayList.size()==0){
-                    Toast.makeText(getApplicationContext(),"Select atleast one Switch ", Toast.LENGTH_SHORT).show();
+                if (deviceVOArrayList.size() == 0) {
+                    Toast.makeText(getApplicationContext(), "Select atleast one Switch ", Toast.LENGTH_SHORT).show();
                     return true;
                 }
-                if(editMode){
+                if (editMode) {
+                    saveMood();
+                } else {
                     saveMood();
                 }
-                else{
-                    saveMood();
-                }
-            }catch (Exception ex){ ex.printStackTrace(); }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
 
 
             return true;
@@ -238,34 +237,34 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
 
     List<String> moodList = new ArrayList<>();
     private List<RoomVO> moodIconList = new ArrayList<>();
-    /// all webservice call below.
-    public void getDeviceList(){
 
-        if(!ActivityHelper.isConnectingToInternet(this)){
-            Toast.makeText(getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
+    /// all webservice call below.
+    public void getDeviceList() {
+
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-        ActivityHelper.showProgressDialog(this,"Please wait.",false);
+        ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
         roomList = new ArrayList<>();
         ChatApplication app = (ChatApplication) getApplication();
         String webUrl = app.url;
 
-      //  String url =  webUrl + Constants.GET_DEVICES_LIST + "/" +Constants.DEVICE_TOKEN +"/0/0"; //old url for get mood name list
-        String url =  webUrl + Constants.GET_MOOD_DETAILS ; //get mood name list with the mood icon name / not display sensor panel
+        String url = webUrl + Constants.GET_MOOD_DETAILS; //get mood name list with the mood icon name / not display sensor panel
 
 
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("room_type",0);
+            jsonObject.put("room_type", 0);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         //clear moodIcon list
-        if(moodIconList != null)
+        if (moodIconList != null)
             moodIconList.clear();
 
-        new GetJsonTask(this,url ,"GET","", new ICallBack() { //Constants.CHAT_SERVER_URL
+        new GetJsonTask(this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 try {
@@ -273,11 +272,11 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
                     JSONObject dataObject = result.getJSONObject("data");
                     moodList.clear();
 
-                    if(dataObject.has("moodNames")){
+                    if (dataObject.has("moodNames")) {
 
                         JSONArray moodNamesArray = dataObject.getJSONArray("moodNames");
 
-                        for(int i=0 ; i < moodNamesArray.length(); i++){
+                        for (int i = 0; i < moodNamesArray.length(); i++) {
                             JSONObject moodObject = moodNamesArray.getJSONObject(i);
                             String moodId = moodObject.getString("id");
                             String moodName = moodObject.getString("mood_name");
@@ -291,31 +290,21 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
                         }
 
                         //mood icon dropdown spinner...
-                        moodIconArrayAdapter = new RoomListArrayAdapter(AddMoodCustomActivity.this,R.layout.row_spinner_item,R.id.txt_spinner_title,
-                                moodIconList,"");
+                        moodIconArrayAdapter = new RoomListArrayAdapter(AddMoodCustomActivity.this, R.layout.row_spinner_item, R.id.txt_spinner_title,
+                                moodIconList, "");
                         spinner_mood_icon.setAdapter(moodIconArrayAdapter);
 
-                         if(moodVO!=null){
-                             for (int i = 0; i < moodIconList.size(); i++) {
-                                 RoomVO roomVO = moodIconList.get(i);
-                                 if (roomVO.getRoomName().equalsIgnoreCase(moodVO.getRoomName())) {
-                                     spinner_mood_icon.setSelection(i);
-                                 }
-                             }
-                         }
+                        if (moodVO != null) {
+                            for (int i = 0; i < moodIconList.size(); i++) {
+                                RoomVO roomVO = moodIconList.get(i);
+                                if (roomVO.getRoomName().equalsIgnoreCase(moodVO.getRoomName())) {
+                                    spinner_mood_icon.setSelection(i);
+                                }
+                            }
+                        }
                         final ArrayAdapter<String> adapter =
                                 new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, moodList);
                         et_switch_name.setAdapter(adapter);
-                      //  et_switch_name.showDropDown();
-
-                        /*et_switch_name.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                            @Override
-                            public void onFocusChange(View v, boolean hasFocus) {
-                                if(hasFocus){
-                                    et_switch_name.showDropDown();
-                                }
-                            }
-                        });*/
                         et_switch_name.setOnTouchListener(new View.OnTouchListener() {
                             @Override
                             public boolean onTouch(View v, MotionEvent event) {
@@ -327,18 +316,16 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
                     }
 
                     JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
-                    roomList = JsonHelper.parseRoomArray(roomArray,true);
+                    roomList = JsonHelper.parseRoomArray(roomArray, true);
 
                     setData(roomList);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                }
-                finally {
+                } finally {
                     ActivityHelper.dismissProgressDialog();
-//                    deepsImage.setVisibility(View.GONE);
-//                    txt_connection.setVisibility(View.GONE);
                 }
             }
+
             @Override
             public void onFailure(Throwable throwable, String error) {
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -347,163 +334,142 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
         }).execute();
     }
 
-
-    public String selectedRoomId;
-
-    private void sortList(final List<RoomVO> roomVOs){
+    private void sortList(final List<RoomVO> roomVOs) {
 
         Collections.sort(roomVOs, new Comparator<RoomVO>() {
             @Override
             public int compare(RoomVO o1, RoomVO o2) {
-                return Boolean.compare(o2.isExpanded,o1.isExpanded);
+                return Boolean.compare(o2.isExpanded, o1.isExpanded);
             }
         });
     }
 
 
-    public void setData(ArrayList<RoomVO> roomList){
+    public void setData(ArrayList<RoomVO> roomList) {
 
-        if(moodVO!=null){
+        if (moodVO != null) {
             List<DeviceVO> deviceVOList = moodVO.getPanelList().get(0).getDeviceList();
 
 
-                for(RoomVO roomVO : roomList){
+            for (RoomVO roomVO : roomList) {
 
-                    List<PanelVO> panelVOList = roomVO.getPanelList();
+                List<PanelVO> panelVOList = roomVO.getPanelList();
 
-                    for(PanelVO panelVO : panelVOList){
-                        ArrayList<DeviceVO> deviceList = panelVO.getDeviceList();
+                for (PanelVO panelVO : panelVOList) {
+                    ArrayList<DeviceVO> deviceList = panelVO.getDeviceList();
 
-                        for(DeviceVO deviceVO : deviceList){
+                    for (DeviceVO deviceVO : deviceList) {
 
-                            for(DeviceVO deviceVORoot : deviceVOList){ ////select original devices
+                        for (DeviceVO deviceVORoot : deviceVOList) { ////select original devices
 
-                                if(deviceVO.getRoomDeviceId().equalsIgnoreCase(deviceVORoot.getOriginal_room_device_id())){
-                                    roomVO.setExpanded(true);
-                                    deviceVO.setSelected(true);
-                                }
+                            if (deviceVO.getRoomDeviceId().equalsIgnoreCase(deviceVORoot.getOriginal_room_device_id())) {
+                                roomVO.setExpanded(true);
+                                deviceVO.setSelected(true);
                             }
                         }
-
                     }
+
                 }
+            }
         }
 
         sortList(roomList);
 
-        deviceListLayoutHelper = new MoodDeviceListLayoutHelper(this,mMessagesView,this,Constants.SWITCH_NUMBER,isMoodAdapter);
+        deviceListLayoutHelper = new MoodDeviceListLayoutHelper(this, mMessagesView, this, Constants.SWITCH_NUMBER, isMoodAdapter);
         deviceListLayoutHelper.addSectionList(roomList);
-     //   if(!isMap){
-           // if(moodVO!=null && !isMoodAdapter){
-           //     deviceListLayoutHelper.setSelection(moodVO.getRoom_device_id());
-          //  }
-      //  }
-
         deviceListLayoutHelper.notifyDataSetChanged();
 
     }
+
     String room_device_id = "";
 
-    public void saveMood(){
+    public void saveMood() {
 
-        if(!ActivityHelper.isConnectingToInternet(this)){
-            Toast.makeText(getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-    //    ActivityHelper.showProgressDialog(this,"Please wait.",false);
 
         ChatApplication app = (ChatApplication) getApplication();
         String webUrl = app.url;
-        String url =  "";
+        String url = "";
 
-        if(editMode){
-            url =  webUrl + Constants.SAVEEDITMOOD ;
-        }
-        else{
-          //  url =  webUrl + Constants.ADD_NEW_MOOD ;
-            url =  webUrl + Constants.ADD_NEW_MOOD_NEW ;
+        if (editMode) {
+            url = webUrl + Constants.SAVEEDITMOOD;
+        } else {
+            url = webUrl + Constants.ADD_NEW_MOOD_NEW;
         }
         JSONObject moodObj = new JSONObject();
         try {
 
             moodObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            moodObj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            moodObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             moodObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
-           // RoomVO room = (RoomVO) spinner_mood_icon.getSelectedItem();
+            // RoomVO room = (RoomVO) spinner_mood_icon.getSelectedItem();
 
-            if(editMode){
-                moodObj.put("room_id",moodVO.getRoomId());
-                moodObj.put("panel_id",panel_id);
-                moodObj.put("panel_name",panel_name);
-            }else{
-                moodObj.put("room_id","");
-                moodObj.put("panel_id","");
+            if (editMode) {
+                moodObj.put("room_id", moodVO.getRoomId());
+                moodObj.put("panel_id", panel_id);
+                moodObj.put("panel_name", panel_name);
+            } else {
+                moodObj.put("room_id", "");
+                moodObj.put("panel_id", "");
             }
             /**
              * check if mood name entered is custom or selected in dropdown list
              */
             boolean isCustom = false;
-            for(String mList : moodList){
-                if(mList.equalsIgnoreCase(et_switch_name.getText().toString().trim())){
+            for (String mList : moodList) {
+                if (mList.equalsIgnoreCase(et_switch_name.getText().toString().trim())) {
                     isCustom = true;
                 }
             }
 
-            moodObj.put("is_custom",isCustom ? 0 : 1);
-
-
-          //  moodObj.put("room_name",room.getRoomName());
-            moodObj.put("room_name",et_switch_name.getText().toString().trim());
-           // moodObj.put("room_icon",flags.get(sp_device_type.getSelectedItemPosition()).toString());
-            moodObj.put("room_icon","home");
-          //  moodObj.put("room_device_id",room_device_id);
+            moodObj.put("is_custom", isCustom ? 0 : 1);
+            moodObj.put("room_name", et_switch_name.getText().toString().trim());
+            moodObj.put("room_icon", "home");
 
             JSONArray jsonArrayDevice = new JSONArray();
-            String ss_room_devices = "";
 
             JSONArray array = new JSONArray();
 
-            for(DeviceVO dPanel : deviceVOArrayList){
+            for (DeviceVO dPanel : deviceVOArrayList) {
 
                 JSONObject ob1 = new JSONObject();
-                ob1.put("module_id",dPanel.getModuleId());
-                ob1.put("device_id",dPanel.getDeviceId());
-                ob1.put("room_device_id",dPanel.getRoomDeviceId());
+                ob1.put("module_id", dPanel.getModuleId());
+                ob1.put("device_id", dPanel.getDeviceId());
+                ob1.put("room_device_id", dPanel.getRoomDeviceId());
 
-                ob1.put("device_icon",dPanel.getDevice_icon());
-                ob1.put("device_name",dPanel.getDeviceName());
-                ob1.put("device_status",dPanel.getDeviceStatus());
-                ob1.put("device_specific_value",dPanel.getDeviceSpecificValue());
-                ob1.put("device_type",dPanel.getDeviceType());
+                ob1.put("device_icon", dPanel.getDevice_icon());
+                ob1.put("device_name", dPanel.getDeviceName());
+                ob1.put("device_status", dPanel.getDeviceStatus());
+                ob1.put("device_specific_value", dPanel.getDeviceSpecificValue());
+                ob1.put("device_type", dPanel.getDeviceType());
 
-                ob1.put("original_room_device_id",dPanel.getOriginal_room_device_id());
-                ob1.put("is_active",dPanel.getIsActive());
-                ob1.put("is_alive",dPanel.getIsAlive());
-                ob1.put("is_original",dPanel.getIs_original());
+                ob1.put("original_room_device_id", dPanel.getOriginal_room_device_id());
+                ob1.put("is_active", dPanel.getIsActive());
+                ob1.put("is_alive", dPanel.getIsAlive());
+                ob1.put("is_original", dPanel.getIs_original());
 
                 jsonArrayDevice.put(ob1);
 
-                // ss_room_devices += dPanel.getModuleId()+""+dPanel.getDeviceId()+",";
-               // ss_room_devices += dPanel.getRoomDeviceId()+",";
-
-                try{
-                //    array.put(ss_room_devices.substring(0, ss_room_devices.lastIndexOf(","))); //remove last comma of String index @String str = "abc,xyz,"
+                try {
                     array.put(dPanel.getRoomDeviceId()); //remove last comma of String index @String str = "abc,xyz,"
-                }catch (Exception ex){
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }
 
-            if(editMode){
-                moodObj.put("room_devices",array);
+            if (editMode) {
+                moodObj.put("room_devices", array);
             }
-            moodObj.put("deviceList",jsonArrayDevice);
+            moodObj.put("deviceList", jsonArrayDevice);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        new GetJsonTask(this,url ,"POST",moodObj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        new GetJsonTask(this, url, "POST", moodObj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 try {
@@ -512,29 +478,25 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
 
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    if(code == 200){
+                    if (code == 200) {
                         ChatApplication.isRefreshDashBoard = true;
-                        //ChatApplication.isRefreshHome = true;
                         ChatApplication.isRefreshMood = true;
-                        if(!TextUtils.isEmpty(message)){
-                            Toast.makeText(getApplicationContext().getApplicationContext(),  message , Toast.LENGTH_SHORT).show();
+                        if (!TextUtils.isEmpty(message)) {
+                            Toast.makeText(getApplicationContext().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                         }
                         ActivityHelper.dismissProgressDialog();
                         finish();
-                    }
-                    else{
-                        Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                }
-                finally {
+                } finally {
                     ActivityHelper.dismissProgressDialog();
-//                    deepsImage.setVisibility(View.GONE);
-//                    txt_connection.setVisibility(View.GONE);
                 }
             }
+
             @Override
             public void onFailure(Throwable throwable, String error) {
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -553,14 +515,14 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
 
     @Override
     public void itemClicked(DeviceVO deviceVO, String action) {
-        if(action.equalsIgnoreCase("disable_device")){
+        if (action.equalsIgnoreCase("disable_device")) {
             getDeviceDetails(deviceVO.getOriginal_room_device_id());
         }
     }
 
     @Override
     public void itemClicked(DeviceVO deviceVO, String action, int position) {
-        if(action.equalsIgnoreCase("disable_device")){
+        if (action.equalsIgnoreCase("disable_device")) {
             getDeviceDetails(deviceVO.getOriginal_room_device_id());
         }
     }
@@ -569,56 +531,50 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
     public void itemClicked(CameraVO cameraVO, String action) {
     }
 
-    private Socket mSocket;
-    String webUrl = "";
-
-    private void getDeviceDetails(String original_room_device_id){
+    private void getDeviceDetails(String original_room_device_id) {
 
         //original_room_device_id
 
         ChatApplication app = ChatApplication.getInstance();
-        if(mSocket!=null && mSocket.connected()){
-        }
-        else{
+        if (mSocket != null && mSocket.connected()) {
+        } else {
             mSocket = app.getSocket();
         }
         webUrl = app.url;
 
-        String url = webUrl + Constants.GET_MOOD_DEVICE_DETAILS+"/"+original_room_device_id ;
+        String url = webUrl + Constants.GET_MOOD_DEVICE_DETAILS + "/" + original_room_device_id;
 
-        new GetJsonTask2(AddMoodCustomActivity.this,url ,"GET","", new ICallBack2() { //Constants.CHAT_SERVER_URL
+        new GetJsonTask2(AddMoodCustomActivity.this, url, "GET", "", new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 int code = 0;
                 try {
                     code = result.getInt("code");
                     String message = result.getString("message");
-                    if(code==200){
+                    if (code == 200) {
 
                         JSONObject object = result.getJSONObject("data");
                         String room_name = object.getString("room_name");
                         String panel_name = object.getString("panel_name");
-
-                        //ActivityHelper.showDialog(AddMoodActivity.this,getString(R.string.app_name),room_name + " (" + panel_name + ")" ,ActivityHelper.NO_ACTION);
-                        showDeviceDialog(room_name,panel_name);
+                        showDeviceDialog(room_name, panel_name);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
             }
+
             @Override
-            public void onFailure(Throwable throwable, String error , int responseCode) {
+            public void onFailure(Throwable throwable, String error, int responseCode) {
             }
         }).execute();
     }
 
-    public Dialog dialog = null;
-    public synchronized void showDeviceDialog(  String roomName, String panelName){
+    public synchronized void showDeviceDialog(String roomName, String panelName) {
 
-        if(dialog == null) {
+        if (dialog == null) {
             dialog = new Dialog(AddMoodCustomActivity.this);
-        }else{
+        } else {
             dialog.show();
         }
 
@@ -626,8 +582,8 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
         dialog.setCanceledOnTouchOutside(false);
         dialog.setContentView(R.layout.dialog_virtual_devices);
 
-        TextView txtRoom = (TextView)dialog.findViewById(R.id.vtxt_room);
-        TextView txtPanel = (TextView)dialog.findViewById(R.id.vtvt_panel);
+        TextView txtRoom = (TextView) dialog.findViewById(R.id.vtxt_room);
+        TextView txtPanel = (TextView) dialog.findViewById(R.id.vtvt_panel);
 
         txtRoom.setText(roomName);
         txtPanel.setText(panelName);
@@ -642,7 +598,7 @@ public class AddMoodCustomActivity extends AppCompatActivity implements ItemClic
         });
 
 
-        if(!dialog.isShowing()){
+        if (!dialog.isShowing()) {
             dialog.show();
         }
 

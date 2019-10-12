@@ -1,25 +1,18 @@
 package com.spike.bot.activity;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.kp.core.ActivityHelper;
@@ -27,18 +20,12 @@ import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.ir.blaster.IRBlasterAddActivity;
-import com.spike.bot.activity.ir.blaster.IRRemoteAdd;
-import com.spike.bot.adapter.DeviceLogAdapter;
 import com.spike.bot.adapter.LogRoomAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.DeviceLog;
-import com.spike.bot.model.DeviceVO;
 import com.spike.bot.model.Filter;
-import com.spike.bot.model.PanelVO;
-import com.spike.bot.model.RoomVO;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,15 +34,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.widget.NumberPicker.OnScrollListener.SCROLL_STATE_IDLE;
-
 /**
  * Created by Sagar on 24/12/18.
  * Gmail : jethvasagar2@gmail.com
  */
 public class DeviceLogRoomActivity extends AppCompatActivity {
 
-    public String isNotification = "",room_name="", ROOM_ID = "", IS_SENSOR = "", typeSelection = "1";
+    public String isNotification = "", room_name = "", ROOM_ID = "", IS_SENSOR = "", typeSelection = "1";
     public int mStartIndex = 0;
 
     Toolbar toolbar;
@@ -116,63 +101,19 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_filter) {
 
-            Intent intent = new Intent(this,DeviceLogActivity.class);
-            intent.putExtra("ROOM_ID",ROOM_ID);
-            intent.putExtra("activity_type","room");
-            intent.putExtra("isCheckActivity","room");
+            Intent intent = new Intent(this, DeviceLogActivity.class);
+            intent.putExtra("ROOM_ID", ROOM_ID);
+            intent.putExtra("activity_type", "room");
+            intent.putExtra("isCheckActivity", "room");
             startActivity(intent);
-            //showDialogFilter(toolbar);
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void showDialogFilter(Toolbar toolbar) {
-        PopupMenu popup = new PopupMenu(DeviceLogRoomActivity.this, toolbar);
-        @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenu);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            popup = new PopupMenu(wrapper, toolbar, Gravity.RIGHT);
-        } else {
-            popup = new PopupMenu(wrapper, toolbar);
-        }
-        popup.getMenuInflater().inflate(R.menu.menu_logs, popup.getMenu());
 
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.actionAll:
-                        setTitel("All Logs");
-                        setAllData("1");
-                        break;
-                    case R.id.actionSensor:
-                        setTitel("Sensor Logs");
-                        setAllData("0");
-                        break;
-                    case R.id.actionDevice:
-                        setTitel("Device Logs");
-                        setAllData("-1");
-                        break;
-                    default:
-                        break;
-                }
-                return true;
-            }
-        });
-        popup.show();
-    }
-
-    public void setTitel(String titel){
-        toolbar.setTitle(room_name+" "+titel);
-    }
-    private void setAllData(String all) {
-        isScrollDown=false;
-        typeSelection = all;
-        mStartIndex = 0;
-        deviceLogList.clear();
-        filterArrayListTemp.clear();
-        filterArrayList.clear();
-        getDeviceList(mStartIndex);
+    public void setTitel(String titel) {
+        toolbar.setTitle(room_name + " " + titel);
     }
 
     private void init() {
@@ -183,11 +124,9 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
         rv_device_log.setLayoutManager(linearLayoutManager);
 
         if (isNotification.equalsIgnoreCase("roomSensorUnreadLogs")) {
-            //toolbar.setTitle("Unread Logs");
             setTitel("Notification");
             getDeviceList(mStartIndex);
         } else {
-            //toolbar.setTitle("All Logs");
             setTitel("All Logs");
             getDeviceList(mStartIndex);
 
@@ -227,10 +166,10 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
         }
         ActivityHelper.showProgressDialog(DeviceLogRoomActivity.this, "Please wait.", false);
 
-        String url="";
+        String url = "";
         if (isNotification.equals("roomSensorUnreadLogs")) {
             url = ChatApplication.url + Constants.roomSensorUnreadLogs;
-        }else {
+        } else {
             url = ChatApplication.url + Constants.roomLogs;
         }
 
@@ -238,20 +177,20 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
         try {
             if (isNotification.equals("roomSensorUnreadLogs")) {
                 /*	"room_id":"",				"notification_number":	*/
-                object.put("notification_number", ""+position);
+                object.put("notification_number", "" + position);
                 object.put("room_id", ROOM_ID);
             } else {
 /*"room_id":"","log_type"://0 for sensor, -1 for device and 1 for all
 "notification_number":
  * */
-                object.put("notification_number",""+ position);
+                object.put("notification_number", "" + position);
                 object.put("room_id", ROOM_ID);
                 object.put("log_type", Integer.parseInt(typeSelection));
             }
 
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            object.put(APIConst.PHONE_ID_KEY,APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -289,19 +228,19 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
 
                         JSONArray notificationArray = dataObj.optJSONArray("notificationList");
 
-                        if (notificationArray==null || notificationArray.length()==0) {
-                            isScrollDown=true;
-                            if(mStartIndex==0){
+                        if (notificationArray == null || notificationArray.length() == 0) {
+                            isScrollDown = true;
+                            if (mStartIndex == 0) {
                                 ll_empty.setVisibility(View.VISIBLE);
                                 rv_device_log.setVisibility(View.GONE);
                                 Toast.makeText(getApplicationContext(), "No data found.", Toast.LENGTH_SHORT).show();
                             }
-                            isLoading=true;
+                            isLoading = true;
                         } else {
-                            isScrollDown=false;
-                            isLoading=false;
+                            isScrollDown = false;
+                            isLoading = false;
                         }
-                        if(notificationArray!=null){
+                        if (notificationArray != null) {
                             for (int i = 0; i < notificationArray.length(); i++) {
                                 JSONObject jsonObject = notificationArray.getJSONObject(i);
                                 String activity_action = jsonObject.getString("activity_action");
@@ -309,13 +248,10 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
                                 String activity_description = jsonObject.getString("activity_description");
                                 String activity_time = jsonObject.getString("activity_time");
                                 String is_unread = jsonObject.optString("is_unread");
-                                //  String activity_state = jsonObject.getString("activity_state");
 
-                                //String activity_action, String activity_type, String activity_description, String activity_time, String activity_state
-
-                                deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "","",is_unread));
+                                deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "", "", is_unread));
                             }
-                            if(!TextUtils.isEmpty(notificationArray.toString())){
+                            if (!TextUtils.isEmpty(notificationArray.toString())) {
                                 setAdapter();
                             }
 
@@ -325,7 +261,6 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     }
-                    // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -345,15 +280,15 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
     }
 
     private void setAdapter() {
-        if(rv_device_log.getVisibility()==View.GONE){
+        if (rv_device_log.getVisibility() == View.GONE) {
             ll_empty.setVisibility(View.GONE);
             rv_device_log.setVisibility(View.VISIBLE);
         }
-        if(mStartIndex==0){
-            deviceLogAdapter = new LogRoomAdapter(DeviceLogRoomActivity.this, deviceLogList,isNotification);
+        if (mStartIndex == 0) {
+            deviceLogAdapter = new LogRoomAdapter(DeviceLogRoomActivity.this, deviceLogList, isNotification);
             rv_device_log.setAdapter(deviceLogAdapter);
             deviceLogAdapter.notifyDataSetChanged();
-        }else {
+        } else {
             deviceLogAdapter.notifyDataSetChanged();
         }
         mStartIndex = mStartIndex + 25;
@@ -362,7 +297,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (isNotification.equalsIgnoreCase("roomSensorUnreadLogs")
-                && deviceLogList.size()>0) {
+                && deviceLogList.size() > 0) {
             callreadCountApi();
         }
         super.onBackPressed();
@@ -373,17 +308,14 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
         String webUrl = ChatApplication.url + Constants.UPDATE_UNREAD_LOGS;
 
         JSONObject jsonObject = new JSONObject();
-        try
-
-        {
+        try {
 
             JSONArray jsonArray = new JSONArray();
 
             JSONObject object = new JSONObject();
-//
-            object.put("sensor_type","");
+            object.put("sensor_type", "");
             object.put("module_id", "");
-            object.put("room_id", ""+ROOM_ID);
+            object.put("room_id", "" + ROOM_ID);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             jsonArray.put(object);
             jsonObject.put("update_logs", jsonArray);
@@ -397,19 +329,14 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
                 ICallBack() {
                     @Override
                     public void onSuccess(JSONObject result) {
-
                         DeviceLogRoomActivity.this.finish();
-                       // checkIntent(b);
-
                     }
 
                     @Override
                     public void onFailure(Throwable throwable, String error) {
                         DeviceLogRoomActivity.this.finish();
-                      //  checkIntent(b);
                     }
                 }).
-
                 executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 }

@@ -1,7 +1,6 @@
 package com.spike.bot.activity;
 
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
@@ -32,21 +31,20 @@ import java.util.HashMap;
 import java.util.List;
 
 
-
 /**
  * Created by Sagar on 22/3/18.
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class VideoViewPLayer extends AppCompatActivity{
+public class VideoViewPLayer extends AppCompatActivity {
 
     VideoView videoView;
     ProgressBar progressBar;
     LinearLayout linearPlayer;
     FrameLayout frameVideo;
-    String videoUrl = "",name="";
+    String videoUrl = "", name = "";
     MediaController mediaController;
-    boolean isMute=false;
+    boolean isMute = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,17 +58,16 @@ public class VideoViewPLayer extends AppCompatActivity{
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
 
-        videoUrl =  getIntent().getExtras().getString("videoUrl");
-        name =  getIntent().getExtras().getString("name");
+        videoUrl = getIntent().getExtras().getString("videoUrl");
+        name = getIntent().getExtras().getString("name");
 
         setTitle(name);
         //String link = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
 
-        videoView =  findViewById(R.id.video_view);
-        progressBar =  findViewById(R.id.progressBar);
-        linearPlayer =  findViewById(R.id.linearPlayer);
-        frameVideo =  findViewById(R.id.frameVideo);
-       // videoView.setVideoPath(videoUrl).getPlayer().start();
+        videoView = findViewById(R.id.video_view);
+        progressBar = findViewById(R.id.progressBar);
+        linearPlayer = findViewById(R.id.linearPlayer);
+        frameVideo = findViewById(R.id.frameVideo);
 
         videoView.setVideoPath(videoUrl);
         videoView.requestFocus();
@@ -108,15 +105,16 @@ public class VideoViewPLayer extends AppCompatActivity{
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_playback, menu);;
+        getMenuInflater().inflate(R.menu.menu_playback, menu);
+        ;
         MenuItem muteIcon = menu.findItem(R.id.action_mute);
-        if(isMute)
+        if (isMute)
             muteIcon.setIcon(R.drawable.icn_mute);
         else
             muteIcon.setIcon(R.drawable.icn_unmute);
         return true;
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -127,13 +125,10 @@ public class VideoViewPLayer extends AppCompatActivity{
 
                 loadView(videoView);
             }
-            /*Bitmap bitmap = SavePixels(0,0,videoView.getWidth(),videoView.getHeight());*/
 
             return true;
-        }else if(id == R.id.action_mute){
-
-            isMute =!isMute;
-            //videoView.getPlayer().setMute(!isMute);
+        } else if (id == R.id.action_mute) {
+            isMute = !isMute;
             invalidateOptionsMenu();
 
             return true;
@@ -157,35 +152,15 @@ public class VideoViewPLayer extends AppCompatActivity{
         return false;
     }
 
-    public void loadView(VideoView cardView){
+    public void loadView(VideoView cardView) {
 
         try {
-//
-//            cardView.setDrawingCacheEnabled(true);
-//           // Bitmap bitmap =  loadBitmapFromView(cardView);
-//            Bitmap bitmap =  videoView.getDrawingCache();
-//            cardView.setDrawingCacheEnabled(false);
-//
-//
-//            String mPath =
-//                    Environment.getExternalStorageDirectory().toString() + "/camera.jpg";
-//
-//            File imageFile = new File(mPath);
-//            FileOutputStream outputStream = new
-//                    FileOutputStream(imageFile);
-//            int quality = 100;
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
-//            outputStream.flush();
-//            outputStream.close();
-
             cardView.setDrawingCacheEnabled(true);
 
-
-//            Bitmap bitmap = Constants.takescreenshotOfRootView(this.getWindow().getDecorView().getRootView(),null);
-            Bitmap bitmap  = takeScreenShot(this);
+            Bitmap bitmap = takeScreenShot(this);
             cardView.setDrawingCacheEnabled(false);
 
-            String mPath = Environment.getExternalStorageDirectory().toString() + "/"+System.currentTimeMillis()+"camera.jpg";
+            String mPath = Environment.getExternalStorageDirectory().toString() + "/" + System.currentTimeMillis() + "camera.jpg";
 
             File imageFile = new File(mPath);
             FileOutputStream outputStream = new
@@ -195,9 +170,9 @@ public class VideoViewPLayer extends AppCompatActivity{
             outputStream.flush();
             outputStream.close();
 
-            ChatApplication.showToast(this,"Saved.");
+            ChatApplication.showToast(this, "Saved.");
 
-            ChatApplication.showToast(this,"Capture screenshot");
+            ChatApplication.showToast(this, "Capture screenshot");
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -205,7 +180,7 @@ public class VideoViewPLayer extends AppCompatActivity{
 
     public Bitmap takeScreenShot(Activity activity) {
 
-        MediaMetadataRetriever retriever = new  MediaMetadataRetriever();
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(videoUrl, new HashMap<String, String>());
 
         int currentPosition = videoView.getCurrentPosition(); //in millisecond

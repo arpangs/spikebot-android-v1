@@ -14,7 +14,7 @@ import com.spike.bot.R;
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class CameraImagePush extends AppCompatActivity{
+public class CameraImagePush extends AppCompatActivity {
 
     private ImageView img_cam_view;
 
@@ -24,24 +24,10 @@ public class CameraImagePush extends AppCompatActivity{
 
         setContentView(R.layout.activity_camera_url_view);
 
-        /*  Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);*/
-
         img_cam_view = (ImageView) findViewById(R.id.img_cam_view);
         //img_cam_view
 
         String camera_url = getIntent().getStringExtra("camera_url");
-        String camera_body = getIntent().getStringExtra("camera_body");
-
-        //Clear.clearCache(Picasso.get());
-
-//        Picasso.with(this).load(camera_url)
-//                .placeholder(R.drawable.loader2)
-//                .into(img_cam_view);
-
 
         Glide.with(this)
                 .load(camera_url)
@@ -53,7 +39,7 @@ public class CameraImagePush extends AppCompatActivity{
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == android.R.id.home){
+        if (id == android.R.id.home) {
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);

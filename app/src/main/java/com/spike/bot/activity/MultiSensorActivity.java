@@ -2,14 +2,11 @@ package com.spike.bot.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -27,10 +24,8 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
@@ -58,7 +53,6 @@ import com.spike.bot.listener.OnNotificationSensorContextMenu;
 import com.spike.bot.model.SensorResModel;
 import com.spike.bot.receiver.ConnectivityReceiver;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -81,24 +75,23 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         OnNotificationSensorContextMenu, OnHumitySensorContextMenu,
         ConnectivityReceiver.ConnectivityReceiverListener {
 
-    private RecyclerView sensor_list, recyclerAlert,sensor_list_temp;
+    private RecyclerView sensor_list, recyclerAlert, sensor_list_temp;
     private TempMultiSensorAdapter tempSensorInfoAdapter;
     private HumiditySensorAdapter humiditySensorAdapter;
 
     public ScrollView scrollviewMulti;
     private EditText sensorName;
     public View viewEditSensor;
-    private TextView txtAlert, txtAlertCount, txtEmpty,txtEmpty_temp,txtHumity,txtGasSensor;
-    private ImageView imgBattery, view_rel_badge,iv_icon_edit,imgLog;
+    private TextView txtAlert, txtAlertCount, txtEmpty, txtEmpty_temp, txtHumity, txtGasSensor;
+    private ImageView imgBattery, view_rel_badge, iv_icon_edit, imgLog;
     private TextView batteryPercentage, txt_empty_notification, txtTempCount;
     private TextView tempCFValue, txtTempAlertCount;
-    private TextView txtCButton, txtFButton,txtTempAlertCount_temp,txtTempCount_temp;
-//    private SwitchCompat notiSwitchOnOff,switch_noti_onoff_temp;
-    private TextView txtAddButton,txtAddButtonTemp;
+    private TextView txtCButton, txtFButton, txtTempAlertCount_temp, txtTempCount_temp;
+    private TextView txtAddButton, txtAddButtonTemp;
     private Button btn_delete;
-    private ToggleButton toggleAlert,toggleAlert_temp,toggleAlertSensor;
-    private LinearLayout linearAlertExpand, linearAlertDown,linearAlertExpand_temp,linearAlertDown_temp,linearMultisensor;
-    private boolean flagAlert = false,flagAlertTemp=false,flagEditSensor=false,flagSensorNoti=false;
+    private ToggleButton toggleAlert, toggleAlert_temp, toggleAlertSensor;
+    private LinearLayout linearAlertExpand, linearAlertDown, linearAlertExpand_temp, linearAlertDown_temp, linearMultisensor;
+    private boolean flagAlert = false, flagAlertTemp = false, flagEditSensor = false, flagSensorNoti = false;
 
     private String temp_sensor_id, temp_room_name, temp_room_id, temp_module_id;
     private int isCFSelected = -1;
@@ -107,8 +100,18 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     private Socket mSocket;
 
     SensorResModel.DATA.TempList[] tempLists;
-    ArrayList<SensorResModel.DATA.TempList.TempNotificationList> notificationList =new ArrayList<>();
-    ArrayList<SensorResModel.DATA.TempList.HumidityNotificationList> notificationHumidityList =new ArrayList<>();
+    ArrayList<SensorResModel.DATA.TempList.TempNotificationList> notificationList = new ArrayList<>();
+    ArrayList<SensorResModel.DATA.TempList.HumidityNotificationList> notificationHumidityList = new ArrayList<>();
+
+    private int mScrollState = AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
+    private int lastVisibleItem, totalItemCount;
+    private boolean isLoading = false;
+    private int visibleThreshold = 0;
+    private boolean isScrollToEndPosition = false;
+
+    private TextView text_day_1, text_day_2, text_day_3, text_day_4, text_day_5, text_day_6, text_day_7;
+    Dialog tempSensorNotificationDialog;
+    public boolean isCFDone = false;
 
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
@@ -116,8 +119,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             showToast("Disconnected, Please check your internet connection");
         }
     }
-
-//    private ConnectivityReceiver connectivityReceiver;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -147,15 +148,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         if (ChatApplication.isLogResume) {
             ChatApplication.isLogResume = false;
             ChatApplication.isLocalFragmentResume = true;
-            //  getSensorDetails();
-//            sensorLog.setVisibility(View.GONE);
         }
         bindView();
-
-//        connectivityReceiver = new ConnectivityReceiver();
-//        final IntentFilter intentFilter = new IntentFilter();
-//        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-//        registerReceiver((BroadcastReceiver) connectivityReceiver, intentFilter);
         view_rel_badge.setClickable(true);
         getSensorDetails();
         scrollviewMulti.fullScroll(ScrollView.FOCUS_UP);
@@ -170,10 +164,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             mSocket = app.getSocket();
         }
 
-        if(mSocket!=null){
+        if (mSocket != null) {
             mSocket.on("changeTempSensorValue", changeTempSensorValue);
-            mSocket.on("unReadCount", unReadCount);
-            mSocket.on("changeMultiSensorValue", changeMultiSensorValue);
         }
     }
 
@@ -189,29 +181,23 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                     if (args != null) {
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
-//                            String room_id = object.getString("room_id");
-//                            String temp_sensor_id = object.getString("temp_sensor_id");
-//                            String temp_celsius = object.getString("temp_celsius");
-//                            String temp_fahrenheit = object.getString("temp_fahrenheit");
 
                             // {"room_id":"1568356634757_Yy4oiLUbl","room_order":0,"temp_sensor_id":"1568367831844_0ygOKL1C-","is_in_C":1,"temp_celsius":30,"temp_fahrenheit":86,"humidity":36}
 
-                            ChatApplication.logDisplay("temp is "+object);
+                            ChatApplication.logDisplay("temp is " + object);
 
-//                            txtHumity.setText(object.optString("humidity")+" %");
-
-                            if(!TextUtils.isEmpty(object.optString("humidity"))){
-                                txtHumity.setText(object.optString("humidity")+" %");
-                            }else {
+                            if (!TextUtils.isEmpty(object.optString("humidity"))) {
+                                txtHumity.setText(object.optString("humidity") + " %");
+                            } else {
                                 txtHumity.setText("--");
                             }
 
-                            if (isCFSelected==1) {
+                            if (isCFSelected == 1) {
                                 setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_yellow, R.drawable.txt_background_white, Color.parseColor("#FFFFFF"), Color.parseColor("#111111"));
-                                tempCFValue.setText(object.optString("temp_celsius") +" ");
+                                tempCFValue.setText(object.optString("temp_celsius") + " ");
                             } else {
                                 setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_white, R.drawable.txt_background_yellow, Color.parseColor("#111111"), Color.parseColor("#FFFFFF"));
-                                tempCFValue.setText(object.optString("temp_fahrenheit")+" ");
+                                tempCFValue.setText(object.optString("temp_fahrenheit") + " ");
                             }
 
                         } catch (JSONException e) {
@@ -222,101 +208,12 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             });
         }
     };
-
-    private Emitter.Listener unReadCount = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            MultiSensorActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    if (args != null) {
-                        try {
-                            JSONObject object = new JSONObject(args[0].toString());
-                            String sensor_type = object.getString("sensor_type");
-                            String sensor_unread = object.getString("sensor_unread");
-                            String module_id = object.getString("module_id");
-                            String room_id = object.getString("room_id");
-                            String room_unread = object.getString("room_unread");
-
-                            if (sensor_type.equalsIgnoreCase("temp") && temp_module_id.equalsIgnoreCase(module_id) && temp_room_id.equalsIgnoreCase(room_id)) {
-                                setTempUnreadCount(sensor_unread);
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener changeMultiSensorValue = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            MultiSensorActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    if (args != null) {
-                        try {
-                            JSONObject object = new JSONObject(args[0].toString());
-                            //[{
-                            //    "gas_status" = Normal;
-                            //    humidity = 22;
-                            //    "is_in_C" = 1;
-                            //    "multi_sensor_id" = "1561119898083_wE4svmRfN";
-                            //    "room_id" = "1559719722430_hp_nJGEwO";
-                            //    "room_order" = 0;
-                            //    "temp_in_C" = 28;
-                            //    "temp_in_F" = 82;
-                            //}]
-//
-//                            txtHumity.setText(object.optString("humidity")+" %");
-//
-//                            if (isCFSelected==1) {
-//                                setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_yellow, R.drawable.txt_background_white, Color.parseColor("#FFFFFF"), Color.parseColor("#111111"));
-//                                tempCFValue.setText(object.optString("temp_in_C") +" ");
-//                            } else {
-//                                setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_white, R.drawable.txt_background_yellow, Color.parseColor("#111111"), Color.parseColor("#FFFFFF"));
-//                                tempCFValue.setText(object.optString("temp_in_F")+" ");
-//                            }
-//
-//                            if(!TextUtils.isEmpty(object.optString("gas_status"))){
-//                                if(object.optString("gas_status").equalsIgnoreCase("Normal")){
-//                                    txtGasSensor.setText("Normal");
-//                                    txtGasSensor.setTextColor(getResources().getColor(R.color.username5));
-//                                }else {
-//                                    txtGasSensor.setText("High");
-//                                    txtGasSensor.setTextColor(getResources().getColor(R.color.automation_red));
-//                                }
-//
-//                            }
-//
-//                            ChatApplication.logDisplay("changeMultiSensorValue is "+object);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-        }
-    };
-
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-//        if (connectivityReceiver != null) {
-//            unregisterReceiver(connectivityReceiver);
-//        }
         if (mSocket != null) {
             mSocket.off("changeTempSensorValue", changeTempSensorValue);
-            mSocket.off("unReadCount", unReadCount);
-            mSocket.off("changeMultiSensorValue", changeMultiSensorValue);
         }
     }
 
@@ -337,7 +234,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         recyclerAlert = (RecyclerView) findViewById(R.id.recyclerAlert);
 
         sensorName = (EditText) findViewById(R.id.sensor_name);
-//        sensorLog = (TextView) findViewById(R.id.iv_icon_badge);
         imgBattery = (ImageView) findViewById(R.id.img_battery);
         batteryPercentage = (TextView) findViewById(R.id.txt_bettery_per);
         tempCFValue = (TextView) findViewById(R.id.txt_tmp_incf);
@@ -354,20 +250,18 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         txtTempAlertCount = (TextView) findViewById(R.id.txtTempAlertCount);
         txtTempAlertCount_temp = (TextView) findViewById(R.id.txtTempAlertCount_temp);
         txtHumity = (TextView) findViewById(R.id.txtHumity);
-        iv_icon_edit =  findViewById(R.id.iv_icon_edit);
-        viewEditSensor =  findViewById(R.id.viewEditSensor);
-        scrollviewMulti =  findViewById(R.id.scrollviewMulti);
-        toggleAlertSensor =  findViewById(R.id.toggleAlertSensor);
-        txtGasSensor =  findViewById(R.id.txtGasSensor);
-        linearMultisensor =  findViewById(R.id.linearMultisensor);
-        imgLog =  findViewById(R.id.imgLog);
+        iv_icon_edit = findViewById(R.id.iv_icon_edit);
+        viewEditSensor = findViewById(R.id.viewEditSensor);
+        scrollviewMulti = findViewById(R.id.scrollviewMulti);
+        toggleAlertSensor = findViewById(R.id.toggleAlertSensor);
+        txtGasSensor = findViewById(R.id.txtGasSensor);
+        linearMultisensor = findViewById(R.id.linearMultisensor);
+        imgLog = findViewById(R.id.imgLog);
 
         txtTempCount = (TextView) findViewById(R.id.txtTempCount);
         txtTempCount_temp = (TextView) findViewById(R.id.txtTempCount_temp);
         txt_empty_notification = (TextView) findViewById(R.id.txt_empty_notification);
 
-//        notiSwitchOnOff = (SwitchCompat) findViewById(R.id.switch_noti_onoff);
-//        switch_noti_onoff_temp = (SwitchCompat) findViewById(R.id.switch_noti_onoff_temp);
         txtAddButton = (TextView) findViewById(R.id.btnAdd);
         txtAddButtonTemp = (TextView) findViewById(R.id.btnAdd_temp);
 
@@ -409,31 +303,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         sensorName.setFocusable(false);
         sensorName.setFocusableInTouchMode(false);
         sensorName.setClickable(false);
-        // gestureDetector = new GestureDetector(this, new SingleTapConfirm());
-
-//        notiSwitchOnOff.setOnTouchListener(new OnSwipeTouchListener(MultiSensorActivity.this) {
-//            @Override
-//            public void onClick() {
-//                super.onClick();
-//                notiSwitchOnOff.setChecked(notiSwitchOnOff.isChecked());
-//                showAlertDialog("", notiSwitchOnOff, !notiSwitchOnOff.isChecked(), false, -1);
-//            }
-//
-//            @Override
-//            public void onSwipeLeft() {
-//                super.onSwipeLeft();
-//                notiSwitchOnOff.setChecked(notiSwitchOnOff.isChecked());
-//                showAlertDialog("", notiSwitchOnOff, !notiSwitchOnOff.isChecked(), false, -1);
-//            }
-//
-//            @Override
-//            public void onSwipeRight() {
-//                super.onSwipeRight();
-//                notiSwitchOnOff.setChecked(notiSwitchOnOff.isChecked());
-//                showAlertDialog("", notiSwitchOnOff, !notiSwitchOnOff.isChecked(), false, -1);
-//            }
-//
-//        });
 
         toggleAlert.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -468,30 +337,17 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         toggleAlertSensor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(flagSensorNoti){
-                    flagSensorNoti=false;
+                if (flagSensorNoti) {
+                    flagSensorNoti = false;
                     toggleAlertSensor.setChecked(flagSensorNoti);
                     recyclerAlert.setVisibility(View.GONE);
-                }else {
-                    flagSensorNoti=true;
+                } else {
+                    flagSensorNoti = true;
                     toggleAlertSensor.setChecked(flagSensorNoti);
                     recyclerAlert.setVisibility(View.VISIBLE);
                 }
             }
         });
-        /*notiSwitchOnOff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                notiSwitchOnOff.setChecked(!notiSwitchOnOff.isChecked());
-                showAlertDialog("", notiSwitchOnOff,!notiSwitchOnOff.isChecked(),false);
-            }
-        });*/
-
-//        notiSwitchOnOff.setVisibility(View.GONE);
-
-        setTempUnreadCount(temp_unread_count);
-
-
     }
 
     /**
@@ -501,7 +357,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
      * @param isNotification
      * @param position
      */
-    private void showAlertDialog(final String tempSensorNotificationId, final SwitchCompat notiSwitchOnOff, final boolean isActive, final boolean isNotification, final int position ,int isType) {
+    private void showAlertDialog(final String tempSensorNotificationId, final SwitchCompat notiSwitchOnOff, final boolean isActive, final boolean isNotification, final int position, int isType) {
 
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
         builder1.setTitle("Notification Alert");
@@ -512,7 +368,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                 "Yes",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        tempSensorNotificationStatus(tempSensorNotificationId, notiSwitchOnOff, !notiSwitchOnOff.isChecked(), isNotification, position,isType);
+                        tempSensorNotificationStatus(tempSensorNotificationId, notiSwitchOnOff, !notiSwitchOnOff.isChecked(), isNotification, position, isType);
                         dialog.cancel();
                     }
                 });
@@ -540,7 +396,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
      * @param isActive
      * @param position
      */
-    private void tempSensorNotificationStatus(String tempSensorNotificationId, final SwitchCompat notiSwitchOnOff, boolean isActive, boolean isNotification, final int position,final int isType) {
+    private void tempSensorNotificationStatus(String tempSensorNotificationId, final SwitchCompat notiSwitchOnOff, boolean isActive, boolean isNotification, final int position, final int isType) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             //Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -578,12 +434,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         JSONObject jsonNotification = new JSONObject();
 
         try {
-//            if (isNotification) {
-                jsonNotification.put("temp_sensor_notification_id", tempSensorNotificationId);
-                jsonNotification.put("is_active", isActive ? 1 : 0);
-//            } else {
-//                jsonNotification.put("is_push_enable", isActive ? 1 : 0);
-//            }
+            jsonNotification.put("temp_sensor_notification_id", tempSensorNotificationId);
+            jsonNotification.put("is_active", isActive ? 1 : 0);
             jsonNotification.put("temp_sensor_id", temp_sensor_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -603,11 +455,10 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
-                        //  notiSwitchOnOff.setChecked(!notiSwitchOnOff.isChecked());
                         JSONObject dataObject = result.getJSONObject("data");
                         String is_active = dataObject.getString("is_active");
 
-                        if(isType==1){
+                        if (isType == 1) {
                             if (position != -1) {
                                 sensorResModel.getDate().getTempLists()[0].getTempNotificationList().get(position).setIsActive(is_active);
                             }
@@ -620,10 +471,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                             notificationList = sensorResModel.getDate().getTempLists()[0].getTempNotificationList();
                             tempSensorInfoAdapter.notifyItemChanged(position, sensorResModel.getDate().getTempLists()[0].getTempNotificationList().get(position));
 
-                            //tempSensorInfoAdapter = new TempSensorInfoAdapter(notificationList,isCF,MultiSensorActivity.this);
-                            //sensor_list.setAdapter(tempSensorInfoAdapter);
                             tempSensorInfoAdapter.notifyDataSetChanged();
-                        }else {
+                        } else {
                             if (position != -1) {
                                 sensorResModel.getDate().getTempLists()[0].getHumidityNotificationList().get(position).setIsActive(Integer.valueOf(is_active));
                             }
@@ -633,20 +482,13 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                                 isCF = true;
                             }
 
-//                            notificationList = sensorResModel.getDate().getTempLists()[0].getHumidityNotificationList();
                             humiditySensorAdapter.notifyItemChanged(position, sensorResModel.getDate().getTempLists()[0].getHumidityNotificationList().get(position));
-
-                            //tempSensorInfoAdapter = new TempSensorInfoAdapter(notificationList,isCF,MultiSensorActivity.this);
-                            //sensor_list.setAdapter(tempSensorInfoAdapter);
                             humiditySensorAdapter.notifyDataSetChanged();
                         }
 
-
-                        //adapter auto scroll
                     }
                     if (!TextUtils.isEmpty(message)) {
                         showToast(message);
-                        //Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
                     }
 
                 } catch (JSONException e) {
@@ -666,12 +508,11 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_room_edit, menu);
         MenuItem menulog = menu.findItem(R.id.action_log).setVisible(false);
-        MenuItem menuAdd = menu.findItem(R.id.action_add).setVisible(false);
 
         Drawable drawable = menu.findItem(R.id.action_log).getIcon();
 
         drawable = DrawableCompat.wrap(drawable);
-        DrawableCompat.setTint(drawable, ContextCompat.getColor(this,R.color.automation_white));
+        DrawableCompat.setTint(drawable, ContextCompat.getColor(this, R.color.automation_white));
         menulog.setIcon(drawable);
         return super.onCreateOptionsMenu(menu);
     }
@@ -681,8 +522,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         int id = item.getItemId();
         if (id == R.id.action_save) {
             updateTempSensor();
-        }else if (id == R.id.action_log) {
-//            unreadApiCall(true);
+        } else if (id == R.id.action_log) {
             checkIntent(true);
         }
 
@@ -737,7 +577,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                     String message = result.getString("message");
                     if (!TextUtils.isEmpty(message)) {
                         showToast(message);
-                        //Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
                     }
                     if (code == 200) {
                         finish();
@@ -754,13 +593,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             }
         }).execute();
     }
-
-
-    //Common.setBackground(this, text_schedule_1, true);
-
-    private TextView text_day_1, text_day_2, text_day_3, text_day_4, text_day_5, text_day_6, text_day_7;
-
-    Dialog tempSensorNotificationDialog;
 
     /**
      * @param notificationList
@@ -790,13 +622,9 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         text_day_6 = (TextView) tempSensorNotificationDialog.findViewById(R.id.text_day_6);
         text_day_7 = (TextView) tempSensorNotificationDialog.findViewById(R.id.text_day_7);
 
-//        if (isCFSelected == 1) {
-//            edit_min_value.setHint("Min Value " + Common.getC());
-//            edit_max_value.setHint("Max Value " + Common.getC());
-//        } else {
-            edit_min_value.setHint("Min %" );
-            edit_max_value.setHint("Max %");
-//        }
+        edit_min_value.setHint("Min %");
+        edit_max_value.setHint("Max %");
+
 
         edit_min_value.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
         edit_min_value.addTextChangedListener(new TextWatcher() {
@@ -896,13 +724,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         } else {
 
             dayOfWeek = notificationList.getDays();
-//            if (isCFSelected == 1) {
-                edit_min_value.setText(""+notificationList.getMinHumidity());
-                edit_max_value.setText(""+notificationList.getMaxHumidity());
-//            } else {
-//                edit_min_value.setText(notificationList.getMinHumidity());
-//                edit_max_value.setText(notificationList.getMaxHumidity());
-//            }
+            edit_min_value.setText("" + notificationList.getMinHumidity());
+            edit_max_value.setText("" + notificationList.getMaxHumidity());
 
             if (dayOfWeek.contains("0")) {
                 Common.setBackground(this, text_day_1, true);
@@ -938,9 +761,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         button_save_notification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 hideKeyboard();
-
                 addHumity(txt_notification_alert, edit_min_value, edit_max_value, isEdit, isEdit ? notificationList.getMultiSensorNotificationId() : "");
             }
 
@@ -1139,10 +960,12 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    /**
+     * add humidity
+     */
     private void addHumity(final TextView txt_notification_alert, EditText minValue, final EditText maxValue, boolean isEdit, String temp_sensor_notification_id) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            //Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             showToast("" + R.string.disconnect);
             return;
         }
@@ -1158,18 +981,9 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             return;
         }
 
-       /* int min = Integer.parseInt(minValue.getText().toString().trim());
-        int max = Integer.parseInt(maxValue.getText().toString().trim());
-
-        if(max < min){
-            maxValue.setError("Max value Less than Min Value");
-            return;
-        }*/
-
         getRepeatString();
 
         if (TextUtils.isEmpty(repeatDayString)) {
-            //Toast.makeText(this, "Select Repeat Days", Toast.LENGTH_SHORT).show();
             showToastCenter("Select Repeat Days");
             return;
         }
@@ -1185,8 +999,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
         JSONObject jsonNotification = new JSONObject();
         try {
-
-//            /temp_sensor_notification_id
             if (isEdit) {
                 jsonNotification.put("temp_sensor_notification_id", temp_sensor_notification_id);
             }
@@ -1237,7 +1049,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                             maxValue.setFocusableInTouchMode(true);
                             maxValue.requestFocus();
                             maxValue.setError(message);
-                            // showToastCenter(message);
                         }
                     }
 
@@ -1257,12 +1068,11 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     private void addNotification(final TextView txt_notification_alert, EditText minValue, final EditText maxValue, boolean isEdit, String temp_sensor_notification_id) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            //Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             showToast("" + R.string.disconnect);
             return;
         }
 
-        if (TextUtils.isEmpty(minValue.getText().toString().trim()) || minValue.getText().toString().equals("+")|| minValue.getText().toString().equals("-")) {
+        if (TextUtils.isEmpty(minValue.getText().toString().trim()) || minValue.getText().toString().equals("+") || minValue.getText().toString().equals("-")) {
             minValue.requestFocus();
             minValue.setError("Enter Min. Value");
             return;
@@ -1273,18 +1083,9 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             return;
         }
 
-       /* int min = Integer.parseInt(minValue.getText().toString().trim());
-        int max = Integer.parseInt(maxValue.getText().toString().trim());
-
-        if(max < min){
-            maxValue.setError("Max value Less than Min Value");
-            return;
-        }*/
-
         getRepeatString();
 
         if (TextUtils.isEmpty(repeatDayString)) {
-            //Toast.makeText(this, "Select Repeat Days", Toast.LENGTH_SHORT).show();
             showToastCenter("Select Repeat Days");
             return;
         }
@@ -1333,8 +1134,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
         ChatApplication.logDisplay("json : " + jsonNotification.toString());
 
-        //  ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
@@ -1364,7 +1163,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                             maxValue.setFocusableInTouchMode(true);
                             maxValue.requestFocus();
                             maxValue.setError(message);
-                            // showToastCenter(message);
                         }
                     }
 
@@ -1380,8 +1178,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         }).execute();
 
     }
-
-    public boolean isCFDone = false;
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -1416,7 +1212,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
         } else if (id == R.id.view_rel_badge) {
             view_rel_badge.setClickable(false);
-//            unreadApiCall(true);
         } else if (id == R.id.linearAlertDown) {
             if (flagAlert) {
                 flagAlert = false;
@@ -1437,37 +1232,36 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                 toggleAlert_temp.setChecked(flagAlertTemp);
                 linearAlertExpand_temp.setVisibility(View.VISIBLE);
             }
-        }else if(v==iv_icon_edit || v==sensorName){
-            if(flagEditSensor){
+        } else if (v == iv_icon_edit || v == sensorName) {
+            if (flagEditSensor) {
                 viewEditSensor.setVisibility(View.GONE);
-                flagEditSensor=false;
+                flagEditSensor = false;
                 sensorName.setCursorVisible(false);
                 sensorName.setFocusableInTouchMode(false);
                 sensorName.setClickable(false);
                 ChatApplication.closeKeyboard(this);
-//                scrollviewMulti.fullScroll(ScrollView.FOCUS_UP);
-            }else {
+            } else {
                 viewEditSensor.setVisibility(View.VISIBLE);
 
-                flagEditSensor=true;
+                flagEditSensor = true;
                 sensorName.setCursorVisible(true);
                 sensorName.setFocusable(true);
                 sensorName.setFocusableInTouchMode(true);
                 sensorName.setClickable(true);
                 sensorName.requestFocus();
-                ChatApplication.keyBoardShow(this,sensorName);
+                ChatApplication.keyBoardShow(this, sensorName);
             }
-        }else if(v==toggleAlertSensor || v==linearMultisensor){
-            if(flagSensorNoti){
-                flagSensorNoti=false;
+        } else if (v == toggleAlertSensor || v == linearMultisensor) {
+            if (flagSensorNoti) {
+                flagSensorNoti = false;
                 toggleAlertSensor.setChecked(flagSensorNoti);
                 recyclerAlert.setVisibility(View.GONE);
-            }else {
-                flagSensorNoti=true;
+            } else {
+                flagSensorNoti = true;
                 toggleAlertSensor.setChecked(flagSensorNoti);
                 recyclerAlert.setVisibility(View.VISIBLE);
             }
-        }else if(v==imgLog){
+        } else if (v == imgLog) {
             checkIntent(true);
         }
     }
@@ -1479,7 +1273,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            //Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             showToast("" + R.string.disconnect);
             return;
         }
@@ -1504,18 +1297,16 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             e.printStackTrace();
         }
 
-        //  ActivityHelper.showProgressDialog(this, "Please wait.", false);
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
 
                 ChatApplication.logDisplay("result : " + result.toString());
-                  ActivityHelper.dismissProgressDialog();
+                ActivityHelper.dismissProgressDialog();
                 try {
 
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    //Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
                     if (!TextUtils.isEmpty(message)) {
                         showToast(message);
                     }
@@ -1531,7 +1322,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                //  ActivityHelper.dismissProgressDialog();
             }
         }).execute();
 
@@ -1565,21 +1355,21 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
                 if (isCF) {
                     setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_yellow, R.drawable.txt_background_white, Color.parseColor("#FFFFFF"), Color.parseColor("#111111"));
-                    tempCFValue.setText(tmpC +" ");
+                    tempCFValue.setText(tmpC + " ");
 
                 } else {
                     setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_white, R.drawable.txt_background_yellow, Color.parseColor("#111111"), Color.parseColor("#FFFFFF"));
-                    tempCFValue.setText(tmpF+" ");
+                    tempCFValue.setText(tmpF + " ");
                 }
 
 
             }
 
-            if (notificationList != null && tempSensorInfoAdapter!=null) {
+            if (notificationList != null && tempSensorInfoAdapter != null) {
 
                 for (int i = 0; i < notificationList.size(); i++) {
 
-                    SensorResModel.DATA.TempList.TempNotificationList notificationListModel=notificationList.get(i);
+                    SensorResModel.DATA.TempList.TempNotificationList notificationListModel = notificationList.get(i);
 
                     if (isCF) {
                         notificationListModel.setCFActive(true);
@@ -1590,21 +1380,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                     tempSensorInfoAdapter.notifyItemChanged(i, notificationListModel);
                 }
                 tempSensorInfoAdapter.notifyDataSetChanged();
-            }
-//
-            final int speedScroll = 150;
-            if (isScrollToEndPosition) {
-               /* new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(notificationList!=null){
-                            sensor_list.smoothScrollToPosition(lastVisibleItem);//TODO
-                        }
-                    }
-                },speedScroll);*/
-                if (notificationList != null) {
-                    //  sensor_list.smoothScrollToPosition(lastVisibleItem);
-                }
             }
         }
     }
@@ -1624,7 +1399,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
                 @Override
                 public void onConfirmDialogYesClick() {
-                    deleteTempSensorNotification(notification,null);
+                    deleteTempSensorNotification(notification, null);
                 }
 
                 @Override
@@ -1639,7 +1414,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
     /**
      * check if temp sensro notification status update or not
-     *  @param notification
+     *
+     * @param notification
      * @param swithcCompact
      * @param position
      * @param isActive
@@ -1647,19 +1423,19 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onSwitchChanged(SensorResModel.DATA.TempList.TempNotificationList notification, SwitchCompat swithcCompact, int position, boolean isActive) {
 
-        showAlertDialog(notification.getMultiSensorNotificationId(), swithcCompact, isActive, true, position,1);
+        showAlertDialog(notification.getMultiSensorNotificationId(), swithcCompact, isActive, true, position, 1);
 
     }
 
     /**
      * Delete temp sensor notification
-     *  @param notificationList
+     *
+     * @param notificationList
      * @param notification
      */
     private void deleteTempSensorNotification(SensorResModel.DATA.TempList.TempNotificationList notificationList, SensorResModel.DATA.TempList.HumidityNotificationList notification) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            //Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             showToast("" + R.string.disconnect);
             return;
         }
@@ -1677,10 +1453,10 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         JSONObject jsonNotification = new JSONObject();
         try {
 
-            if(notificationList!=null){
+            if (notificationList != null) {
                 jsonNotification.put("temp_sensor_notification_id", notificationList.getMultiSensorNotificationId());
 
-            }else {
+            } else {
                 jsonNotification.put("temp_sensor_notification_id", notification.getMultiSensorNotificationId());
             }
             jsonNotification.put("temp_sensor_id", temp_sensor_id);
@@ -1697,7 +1473,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             public void onSuccess(JSONObject result) {
 
                 ChatApplication.logDisplay("result : " + result.toString());
-                 ActivityHelper.dismissProgressDialog();
+                ActivityHelper.dismissProgressDialog();
                 try {
 
                     int code = result.getInt("code");
@@ -1712,7 +1488,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                     }
                     if (!TextUtils.isEmpty(message)) {
                         showToast(message);
-                        //Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
                     }
 
                 } catch (JSONException e) {
@@ -1722,7 +1497,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                 ActivityHelper.dismissProgressDialog();
+                ActivityHelper.dismissProgressDialog();
             }
         }).execute();
 
@@ -1765,7 +1540,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     }
 
 
-
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
@@ -1791,17 +1565,17 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     /**
      * getSensorDetails
      */
-    SensorResModel sensorResModel=new SensorResModel();
+    SensorResModel sensorResModel = new SensorResModel();
 
     private void getSensorDetails() {
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
 //        String url = ChatApplication.url + Constants.getMultiSensorInfo ;
-        String url = ChatApplication.url + Constants.GET_TEMP_SENSOR_INFO ;
+        String url = ChatApplication.url + Constants.GET_TEMP_SENSOR_INFO;
 
         JSONObject object = new JSONObject();
         try {
-            object.put("temp_sensor_id",temp_sensor_id);
+            object.put("temp_sensor_id", temp_sensor_id);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -1817,7 +1591,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
                 ActivityHelper.dismissProgressDialog();
                 startSocketConnection();
-                ChatApplication.logDisplay("result is "+result);
+                ChatApplication.logDisplay("result is " + result);
                 ActivityHelper.dismissProgressDialog();
                 sensorResModel = Common.jsonToPojo(result.toString(), SensorResModel.class);
                 if (sensorResModel.getCode() == 200) {
@@ -1833,25 +1607,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                 throwable.printStackTrace();
             }
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    private void setTempUnreadCount(String count) {
-
-//        if (!TextUtils.isEmpty(count) && Integer.parseInt(count) > 0) {
-//            sensorLog.setVisibility(View.VISIBLE);
-//            sensorLog.setText(count); //getIsUnread
-//
-//            if (Integer.parseInt(count) > 99) {
-//                sensorLog.setText("99+");
-//                sensorLog.getLayoutParams().width = Common.dpToPx(getApplicationContext(), 20);
-//                sensorLog.getLayoutParams().height = Common.dpToPx(getApplicationContext(), 20);
-//            } else {
-//                sensorLog.getLayoutParams().width = Common.dpToPx(getApplicationContext(), 20);
-//                sensorLog.getLayoutParams().height = Common.dpToPx(getApplicationContext(), 20);
-//            }
-//        } else {
-//            sensorLog.setVisibility(View.GONE);
-//        }
     }
 
     /**
@@ -1873,16 +1628,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             sensorName.setSelection(sensorName.getText().toString().length());
             mSensorName = tempLists[0].getTempSensorName();
 
-//            notiSwitchOnOff.setChecked(Integer.parseInt(String.valueOf(tempLists[0].getIsPushEnable())) == 1);
-//            notiSwitchOnOff.setVisibility(View.VISIBLE);
-
-//            int perc = 0;
-//            if (!TextUtils.isEmpty(tempLists[0].getTempSensorPerc())) {
-//                perc = (int) Double.parseDouble((tempLists[0].getTempSensorPerc()));
-//            }
-
-//            batteryPercentage.setText(perc + "%");
-//            imgBattery.setImageResource(Common.getBatteryIcon(tempLists[0].getTempSensorPerc()));
 
             String tmpC = "-- ", tmpF = "-- ";
             if (TextUtils.isEmpty(tempLists[0].getTempInC()) || tempLists[0].getTempInC().equalsIgnoreCase("null"))
@@ -1899,28 +1644,27 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             if (tempLists[0].getIsInC().equals("1") && !isCFDone) {
                 isCFSelected = 1;
                 setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_yellow, R.drawable.txt_background_white, Color.parseColor("#FFFFFF"), Color.parseColor("#111111"));
-                tempCFValue.setText(tmpC +" ");
+                tempCFValue.setText(tmpC + " ");
             } else {
                 isCFSelected = 0;
                 setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_white, R.drawable.txt_background_yellow, Color.parseColor("#111111"), Color.parseColor("#FFFFFF"));
-                tempCFValue.setText(tmpF +" ");
-                //isCF = false;
+                tempCFValue.setText(tmpF + " ");
             }
 
-            if(!TextUtils.isEmpty(sensorResModel.getDate().getTempLists()[0].getHumidity()) &&
-                    sensorResModel.getDate().getTempLists()[0].getHumidity()!=null){
+            if (!TextUtils.isEmpty(sensorResModel.getDate().getTempLists()[0].getHumidity()) &&
+                    sensorResModel.getDate().getTempLists()[0].getHumidity() != null) {
 
-                txtHumity.setText(sensorResModel.getDate().getTempLists()[0].getHumidity()+" %");
-            }else {
+                txtHumity.setText(sensorResModel.getDate().getTempLists()[0].getHumidity() + " %");
+            } else {
                 txtHumity.setText("--");
             }
             //humibity
 
-            if (sensorResModel.getDate().getTempLists()[0].getHumidityNotificationList()!=null) {
+            if (sensorResModel.getDate().getTempLists()[0].getHumidityNotificationList() != null) {
                 txtEmpty_temp.setVisibility(View.GONE);
                 sensor_list_temp.setVisibility(View.VISIBLE);
                 txtTempAlertCount_temp.setVisibility(View.VISIBLE);
-                txtTempAlertCount_temp.setText("("+sensorResModel.getDate().getTempLists()[0].getHumidityNotificationList().size() + " Added)");
+                txtTempAlertCount_temp.setText("(" + sensorResModel.getDate().getTempLists()[0].getHumidityNotificationList().size() + " Added)");
 
                 notificationHumidityList = sensorResModel.getDate().getTempLists()[0].getHumidityNotificationList();
                 if (isCFDone) {
@@ -1992,7 +1736,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                 txtTempCount_temp.setText("Humidity Alert");
                 sensor_list_temp.setVisibility(View.GONE);
                 txtEmpty_temp.setVisibility(View.GONE);
-                // txt_empty_notification.setVisibility(View.VISIBLE);
             }
 
             //for temp
@@ -2000,8 +1743,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                 txtEmpty.setVisibility(View.GONE);
                 sensor_list.setVisibility(View.VISIBLE);
                 txtTempAlertCount.setVisibility(View.VISIBLE);
-                txtTempAlertCount.setText("("+sensorResModel.getDate().getTempLists()[0].getTempNotificationList().size() + " Added)");
-                //    txt_empty_notification.setVisibility(View.GONE);
+                txtTempAlertCount.setText("(" + sensorResModel.getDate().getTempLists()[0].getTempNotificationList().size() + " Added)");
 
                 notificationList = sensorResModel.getDate().getTempLists()[0].getTempNotificationList();
                 if (isCFDone) {
@@ -2037,13 +1779,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                 sensor_list.setAdapter(tempSensorInfoAdapter);
                 tempSensorInfoAdapter.notifyDataSetChanged();
 
-//                if (notificationList.length > 0) {
-//                    txtTempCount.setText("Alert " + notificationList.length + " Added");
-//                } else {
-//                    txtTempCount.setText("Alert 0 Added");
-//                }
-
-
                 final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) sensor_list.getLayoutManager();
 
                 sensor_list.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -2066,85 +1801,19 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                         super.onScrolled(recyclerView, dx, dy);
                     }
                 });
-
-                /*final int speedScroll = 150;
-                if(isScrollToEndPosition){
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(notificationList!=null){
-                                sensor_list.smoothScrollToPosition(lastVisibleItem);
-                            }
-                        }
-                    },speedScroll);
-                }*/
                 if (isScrollToEndPosition) {
                     if (notificationList != null) { //auto alert list view scroll if user scroll end of list
                         sensor_list.smoothScrollToPosition(lastVisibleItem);
                     }
                 }
 
-
             } else {
                 txtTempAlertCount.setVisibility(View.INVISIBLE);
                 txtTempCount.setText("Temperature Alert");
                 sensor_list.setVisibility(View.GONE);
                 txtEmpty.setVisibility(View.GONE);
-                // txt_empty_notification.setVisibility(View.VISIBLE);
             }
-
-//            if(TextUtils.isEmpty(""+sensorResModel.getDate().getTempLists()[0].getGas_value()) || TextUtils.isEmpty(""+sensorResModel.getDate().getMultiSensorList()[0].getGas_threshold_value())){
-//                txtGasSensor.setText("--");
-//            }else {
-//                if (sensorResModel.getDate().getMultiSensorList()[0].getGas_value() >= sensorResModel.getDate().getMultiSensorList()[0].getGas_threshold_value()) {
-//                    txtGasSensor.setText("High");
-//                    txtGasSensor.setTextColor(getResources().getColor(R.color.automation_red));
-//                } else if (sensorResModel.getDate().getMultiSensorList()[0].getGas_value() <= sensorResModel.getDate().getMultiSensorList()[0].getGas_threshold_value()) {
-//                    txtGasSensor.setText("Normal");
-//                    txtGasSensor.setTextColor(getResources().getColor(R.color.username5));
-//                }
-//            }
-//            if (sensorResModel.getDate().getMultiSensorList()[0].getUnreadLogs() != null) {
-
-
-//                if (sensorResModel.getDate().getMultiSensorList()[0].getUnreadLogs().size() > 0) {
-//
-//                    int countTemp=sensorResModel.getDate().getMultiSensorList()[0].getUnreadLogs().size();
-//                    if(countTemp>99){
-//                        txtAlertCount.setText("99+");
-//                    }else {
-//                        txtAlertCount.setText("" + countTemp);
-//                    }
-//
-//                } else {
-//                    txtAlertCount.setText("0");
-//                }
-
-//                if (sensorResModel.getDate().getMultiSensorList()[0].getUnreadLogs().size() > 0) {
-//                    recyclerAlert.setVisibility(View.VISIBLE);
-                    txtAlertCount.setVisibility(View.VISIBLE);
-//                    int countTemp=sensorResModel.getDate().getMultiSensorList()[0].getUnreadLogs().size();
-//                    if(countTemp>99){
-//                        txtAlertCount.setText("99+");
-//                    }else {
-//                        txtAlertCount.setText("" + countTemp);
-//                    }
-//                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MultiSensorActivity.this);
-//                    recyclerAlert.setLayoutManager(linearLayoutManager);
-//                    TempMultiSensorAlertAdapter doorAlertAdapter = new TempMultiSensorAlertAdapter(MultiSensorActivity.this, sensorResModel.getDate().getTempLists()[0].getNotificationSettingList(),sensorResModel.getDate().getMultiSensorList()[0].getMultiSensorId());
-//                    recyclerAlert.setAdapter(doorAlertAdapter);
-//                    recyclerAlert.setHasFixedSize(true);
-//                } else {
-//                    txtAlertCount.setVisibility(View.GONE);
-//                    recyclerAlert.setVisibility(View.GONE);
-//                    txt_empty_notification.setVisibility(View.GONE);
-//                }
-
-//            } else {
-//                txtAlertCount.setVisibility(View.GONE);
-//                recyclerAlert.setVisibility(View.GONE);
-//                txt_empty_notification.setVisibility(View.GONE);
-//            }
+            txtAlertCount.setVisibility(View.VISIBLE);
         } else {
             txtTempCount.setText("Temperature Alert");
         }
@@ -2160,7 +1829,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
                 @Override
                 public void onConfirmDialogYesClick() {
-                    deleteTempSensorNotification(null,notification);
+                    deleteTempSensorNotification(null, notification);
                 }
 
                 @Override
@@ -2175,103 +1844,19 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onSwitchHumityChanged(SensorResModel.DATA.TempList.HumidityNotificationList notification, SwitchCompat swithcCompact, int position, boolean isActive) {
 
-        showAlertDialog(notification.getMultiSensorNotificationId(), swithcCompact, isActive, true, position,2);
-    }
-
-
-    private int mScrollState = AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
-    private int lastVisibleItem, totalItemCount;
-    private boolean isLoading = false;
-    private int visibleThreshold = 0;
-    private boolean isScrollToEndPosition = false;
-
-
-    public void unreadApiCall(final boolean b) {
-//
-//        if(recyclerAlert.getVisibility()==View.VISIBLE){
-//
-//        }else {
-//            checkIntent(b);
-//            return;
-//        }
-//
-//        if(sensorResModel.getDate()==null){
-//            return;
-//        }
-//        if(sensorResModel.getDate().getMultiSensorList()[0].getUnreadLogs()==null){
-//            return;
-//        }
-//        if(sensorResModel.getDate().getMultiSensorList()[0].getUnreadLogs().size()==0){
-//            return;
-//        }
-
-        String webUrl = ChatApplication.url + Constants.UPDATE_UNREAD_LOGS;
-
-        JSONObject jsonObject = new JSONObject();
-        try
-
-        {
-
-            JSONArray jsonArray = new JSONArray();
-
-//            for (RoomVO roomVO : unReadLogs) {
-//
-            JSONObject object = new JSONObject();
-//
-            object.put("sensor_type","multisensor");
-//
-//                if (roomVO.getRoomName().equalsIgnoreCase("All")) {
-            // object.put("module_id", ""+sensorResModel.getDate().getTempLists()[0].getTempSensorMoudleId());
-            object.put("module_id", ""+sensorResModel.getDate().getMultiSensorList()[0].getMultiSensorModuleId());
-            object.put("room_id", ""+sensorResModel.getDate().getMultiSensorList()[0].getRoomId());
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-//                } else {
-//                    object.put("module_id", roomVO.getModule_id());
-//                    object.put("room_id", roomVO.getRoomId());
-//                }
-//
-            jsonArray.put(object);
-//            }
-
-            jsonObject.put("update_logs", jsonArray);
-
-        } catch (
-                JSONException e)
-
-        {
-            e.printStackTrace();
-        }
-
-        new GetJsonTask(this, webUrl, "POST", jsonObject.toString(), new
-
-                ICallBack() {
-                    @Override
-                    public void onSuccess(JSONObject result) {
-
-                        checkIntent(b);
-
-                    }
-
-                    @Override
-                    public void onFailure(Throwable throwable, String error) {
-                        checkIntent(b);
-                    }
-                }).
-
-                executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
+        showAlertDialog(notification.getMultiSensorNotificationId(), swithcCompact, isActive, true, position, 2);
     }
 
     private void checkIntent(boolean b) {
         if (b) {
             Intent intent = new Intent(MultiSensorActivity.this, DeviceLogActivity.class);
-            intent.putExtra("ROOM_ID", ""+sensorResModel.getDate().getTempLists()[0].getRoomId());
-            intent.putExtra("Mood_Id", ""+sensorResModel.getDate().getTempLists()[0].getTempSensorMoudleId());
+            intent.putExtra("ROOM_ID", "" + sensorResModel.getDate().getTempLists()[0].getRoomId());
+            intent.putExtra("Mood_Id", "" + sensorResModel.getDate().getTempLists()[0].getTempSensorMoudleId());
             intent.putExtra("activity_type", "tempsensor");
             intent.putExtra("IS_SENSOR", true);
             intent.putExtra("tabSelect", "show");
-            intent.putExtra("isCheckActivity","tempsensor");
-            intent.putExtra("isRoomName",""+sensorName.getText().toString());
+            intent.putExtra("isCheckActivity", "tempsensor");
+            intent.putExtra("isRoomName", "" + sensorName.getText().toString());
             startActivity(intent);
         } else {
             MultiSensorActivity.this.finish();
@@ -2281,7 +1866,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onBackPressed() {
-//        unreadApiCall(false);
         super.onBackPressed();
     }
 }
