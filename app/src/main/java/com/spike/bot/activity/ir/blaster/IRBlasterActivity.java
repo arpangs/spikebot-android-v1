@@ -45,6 +45,7 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
     List<IRBlasterInfoRes.Data.IrBlasterList.RemoteList> irRemoteLists;
     List<IRBlasterInfoRes.Data.IrBlasterList.RemoteList.RemoteCommandList> irRemoteCommandLists;
     IRBlasterInfoRes.Data.IrBlasterList.RemoteList.RemoteCurrentStatusDetails irRemoteCurrentStatusLists;
+    private Menu menu;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -148,9 +149,6 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
         }).execute();
 
     }
-
-
-    private Menu menu;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

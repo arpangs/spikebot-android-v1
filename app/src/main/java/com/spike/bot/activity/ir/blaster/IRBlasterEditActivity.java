@@ -63,6 +63,22 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
     private EditText mIrRemoteName;
 
     private List<String> speedList;
+    List<RemoteSchListRes.Data.RemoteScheduleList> remoteScheduleList;
+
+    private Dialog mDialog;
+    private EditText mDiaSchName;
+    private Spinner mModeSpinnerStart,mModeSpinnerEnd;
+    private EditText mDStartTime,mDStartTemp;
+    private EditText mDEndTime,mDEndTemp;
+    private Button mBtnSave;
+    private ImageView iv_close;
+    private ImageView img_start_clear,img_end_clear;
+
+    String repeatDayString = "";
+    TextView text_schedule_1, text_schedule_2, text_schedule_3, text_schedule_4, text_schedule_5, text_schedule_6, text_schedule_7;
+
+    private RemoteSchListRes.Data.RemoteScheduleList tmpRemoteList;
+    private boolean isEdit = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,7 +116,6 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
 
     }
 
-    List<RemoteSchListRes.Data.RemoteScheduleList> remoteScheduleList;
     private void getSchDetails(){
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
@@ -275,7 +290,6 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
         }
 
 
-        //
         if(TextUtils.isEmpty(getEditText(mDStartTime)) && TextUtils.isEmpty(getEditText(mDEndTime)) ){
             showToast("Enter start or end time");
             return;
@@ -310,7 +324,6 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
             showToast("Enter Start Time");
             return;
         }
-
 
 
         String onTime = "", offTime = "";
@@ -429,18 +442,6 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
         }).execute();
 
     }
-
-    private Dialog mDialog;
-    private EditText mDiaSchName;
-    private Spinner mModeSpinnerStart,mModeSpinnerEnd;
-    private EditText mDStartTime,mDStartTemp;
-    private EditText mDEndTime,mDEndTemp;
-    private Button mBtnSave;
-    private ImageView iv_close;
-    private ImageView img_start_clear,img_end_clear;
-
-    String repeatDayString = "";
-    TextView text_schedule_1, text_schedule_2, text_schedule_3, text_schedule_4, text_schedule_5, text_schedule_6, text_schedule_7;
 
     private void addSch(boolean isEdit){
         if(mDialog == null){
@@ -715,8 +716,6 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
         }).execute();
     }
 
-    private RemoteSchListRes.Data.RemoteScheduleList tmpRemoteList;
-    private boolean isEdit = false;
     @Override
     public void onClickEdit(RemoteSchListRes.Data.RemoteScheduleList remoteList) {
         tmpRemoteList = null;

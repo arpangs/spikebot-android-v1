@@ -41,12 +41,12 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
 
     private LinearLayout linear_progress, ll_sensor_list;
     private RecyclerView mIRListView;
-    private String mIrDeviceId, mRemoteName,mIrDeviceType, mRoomId, mIRBlasterModuleId, mIrBlasterId,mRoomName, mBlasterName;
-    List<IRRemoteListRes.Data.BrandList> brandLists=new ArrayList<>();
+    private String mIrDeviceId, mRemoteName, mIrDeviceType, mRoomId, mIRBlasterModuleId, mIrBlasterId, mRoomName, mBlasterName;
+    List<IRRemoteListRes.Data.BrandList> brandLists = new ArrayList<>();
 
     private IRRemoteBrandListAdapter irRemoteBrandListAdapter;
     private EditText mSearchBrand;
-    public static DataSearch arrayList=new DataSearch();
+    public static DataSearch arrayList = new DataSearch();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -123,7 +123,6 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
                 tmpBrandLists.add(brandList);
             }
         }
-
         updateAdapter(tmpBrandLists);
 
     }
@@ -137,7 +136,6 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
         showProgress();
         ActivityHelper.showProgressDialog(IRRemoteBrandListActivity.this, "Please Wait...", false);
 
-        //  String url = ChatApplication.url + Constants.GET_IR_DEVICE_DETAILS + "/"+ mIrDeviceId;
         String url = ChatApplication.url + Constants.getIRDeviceTypeBrands + "/" + mIrDeviceId;
         new GetJsonTask(this, url, "GET", "", new ICallBack() {
             @Override
@@ -154,7 +152,7 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
 
                     if (code == 200) {
 
-                        ChatApplication.logDisplay( "remote res : " + result.toString());
+                        ChatApplication.logDisplay("remote res : " + result.toString());
                         IRRemoteListRes irRemoteListRes = Common.jsonToPojo(result.toString(), IRRemoteListRes.class);
                         brandLists = irRemoteListRes.getData().getBrandList();
                         updateAdapter(brandLists);
@@ -239,15 +237,15 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
                 try {
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    ChatApplication.logDisplay("ir result is "+result.toString());
+                    ChatApplication.logDisplay("ir result is " + result.toString());
                     if (code == 200) {
 
-                        if(arrayList!=null){
-                            arrayList=null;
+                        if (arrayList != null) {
+                            arrayList = null;
                         }
-                        arrayList= Common.jsonToPojo(result.getString("data").toString(), DataSearch.class);
+                        arrayList = Common.jsonToPojo(result.getString("data").toString(), DataSearch.class);
 
-                        ChatApplication.logDisplay("ir result is "+arrayList.getDeviceBrandRemoteList().size());
+                        ChatApplication.logDisplay("ir result is " + arrayList.getDeviceBrandRemoteList().size());
 
                         if (arrayList.getDeviceBrandRemoteList() != null &&
                                 arrayList.getDeviceBrandRemoteList().size() > 0) {
@@ -263,9 +261,8 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
                             intent.putExtra("IR_DEVICE_ID", mIrDeviceId);
                             intent.putExtra("BRAND_ID", "" + brandList.getBrandId());
                             intent.putExtra("IR_BLASTER_MODULE_ID", "" + mIRBlasterModuleId);
-//                            intent.putExtra("arrayList", arrayList.getDeviceBrandRemoteList());
                             startActivityForResult(intent, Constants.REMOTE_REQUEST_CODE);
-                        }else {
+                        } else {
                             Toast.makeText(getApplicationContext(), "No remote available", Toast.LENGTH_SHORT).show();
                         }
 
