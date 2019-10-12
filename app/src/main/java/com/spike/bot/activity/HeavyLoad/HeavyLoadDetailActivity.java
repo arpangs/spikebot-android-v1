@@ -66,12 +66,17 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
     public TextView txtCurrentValue;
     public Spinner spinnerYear, spinnerMonth;
     public boolean isApiStatus=false;
-    ArrayList<HeavyModel> arrayList = new ArrayList<>();
     ArrayList arrayListYearList = new ArrayList<>();
     DataHeavyModel heavyModel = new DataHeavyModel();
 
     public CountDownTimer countDownTimerSocket = null;
     private Socket mSocket;
+
+    ArrayList<Entry> entries = new ArrayList<>();
+    final ArrayList<String> arrayDay = new ArrayList<>();
+    final ArrayList<String> arrayDayTemp = new ArrayList<>();
+    IAxisValueFormatter formatter;
+    int currentDay = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -328,12 +333,6 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
 
                         heavyModel = (DataHeavyModel) Common.fromJson(object.toString(), new TypeToken<DataHeavyModel>() {}.getType());
 
-//                        if( heavyModel.getRealPower().getPower()!=null){
-//                            txtCurrentValue.setText(""+ heavyModel.getRealPower().getPower()+" W");
-//                        }else {
-//                            txtCurrentValue.setText("0"+" W");
-//                        }
-
                         chartDataset(false);
 
                     }
@@ -426,7 +425,6 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
                         arrayDayTemp.clear();
                         currentDay=0;
                         barChart.invalidate();
-//                        barChart.clearValues();
                         barChart.clear();
                         barChart.notifyDataSetChanged();
                         barChart.resetZoom();
@@ -448,12 +446,6 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
             }
         }).execute();
     }
-
-    ArrayList<Entry> entries = new ArrayList<>();
-    final ArrayList<String> arrayDay = new ArrayList<>();
-    final ArrayList<String> arrayDayTemp = new ArrayList<>();
-    IAxisValueFormatter formatter;
-    int currentDay = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void chartDataset(boolean isFlag) {
@@ -572,9 +564,6 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
             }
 
             xAxis.setGranularity(1f); // minimum axis-step (interval) is 1
-//            xAxis.setAxisMinimum(1);
-//            xAxis.setSpaceMin(1);
-//            xAxis.setSpaceMax(1);
             xAxis.setValueFormatter(formatter);
 
             //***
@@ -601,9 +590,6 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
 
 
             if (spinnerMonth.getSelectedItem().equals("All")) {
-//               xAxis.setSpaceMax(1f);
-//               xAxis.setSpaceMin(0);
-//               barChart.setVisibleXRange(6,6);
 
                 barChart.setScaleMinima(5f,0);
                 barChart.setScaleX(5f);
