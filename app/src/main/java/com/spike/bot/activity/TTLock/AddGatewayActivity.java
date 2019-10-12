@@ -2,8 +2,6 @@ package com.spike.bot.activity.TTLock;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.bluetooth.BluetoothAdapter;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,7 +24,6 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.Retrofit.GetDataService;
 import com.spike.bot.Retrofit.RetrofitAPIManager;
-import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.GatewayObj;
 import com.ttlock.bl.sdk.api.ExtendedBluetoothDevice;
@@ -43,7 +40,6 @@ import org.json.JSONObject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by Sagar on 31/8/19.
@@ -53,14 +49,13 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
 
     Toolbar toolbar;
     TextView wifiName;
-    EditText password,etGatewayname;
-    Button btnNext,btnSubmit;
-    LinearLayout linearWifiBridge,linearBridge;
+    EditText password, etGatewayname;
+    Button btnNext, btnSubmit;
+    LinearLayout linearWifiBridge, linearBridge;
 
-    String wifiUserName="",wifiPassword="",gatewayName="";
-    boolean isFlagClick=false;
+    String wifiUserName = "", wifiPassword = "", gatewayName = "";
+    boolean isFlagClick = false;
 
-//    private ChooseNetDialog dialog;
     private ConfigureGatewayInfo configureGatewayInfo;
     private ExtendedBluetoothDevice device;
 
@@ -76,20 +71,20 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void setViewId() {
-        toolbar=findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setTitle("Add Bridge");
 
-        btnNext=findViewById(R.id.btnNext);
-        etGatewayname=findViewById(R.id.etGatewayname);
-        password=findViewById(R.id.password);
-        wifiName=findViewById(R.id.wifiName);
-        btnSubmit=findViewById(R.id.btnSubmit);
-        linearBridge=findViewById(R.id.linearBridge);
-        linearWifiBridge=findViewById(R.id.linearWifiBridge);
+        btnNext = findViewById(R.id.btnNext);
+        etGatewayname = findViewById(R.id.etGatewayname);
+        password = findViewById(R.id.password);
+        wifiName = findViewById(R.id.wifiName);
+        btnSubmit = findViewById(R.id.btnSubmit);
+        linearBridge = findViewById(R.id.linearBridge);
+        linearWifiBridge = findViewById(R.id.linearWifiBridge);
 
         btnNext.setOnClickListener(this);
         btnSubmit.setOnClickListener(this);
@@ -100,7 +95,7 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    private void startScan(){
+    private void startScan() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 11);
             return;
@@ -111,7 +106,7 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(grantResults.length == 0 ){
+        if (grantResults.length == 0) {
             return;
         }
 
@@ -120,7 +115,7 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     initView();
                 } else {
-                    if (permissions[0].equals(Manifest.permission.ACCESS_COARSE_LOCATION)){
+                    if (permissions[0].equals(Manifest.permission.ACCESS_COARSE_LOCATION)) {
 
                     }
                 }
@@ -130,6 +125,7 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
                 break;
         }
     }
+
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
@@ -138,28 +134,26 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onClick(View v) {
-        if(v==btnNext){
-            if(password.getText().toString().length()==0){
-                ChatApplication.showToast(this,"Please enter password");
-            }else if(etGatewayname.getText().toString().length()==0){
-                ChatApplication.showToast(this,"Please enter Bridge name");
-            }else {
-//                callAddGateway();
-                wifiUserName=wifiName.getText().toString();
-                wifiPassword=password.getText().toString();
-                gatewayName=etGatewayname.getText().toString();
+        if (v == btnNext) {
+            if (password.getText().toString().length() == 0) {
+                ChatApplication.showToast(this, "Please enter password");
+            } else if (etGatewayname.getText().toString().length() == 0) {
+                ChatApplication.showToast(this, "Please enter Bridge name");
+            } else {
+                wifiUserName = wifiName.getText().toString();
+                wifiPassword = password.getText().toString();
+                gatewayName = etGatewayname.getText().toString();
                 ChatApplication.keyBoardHideForce(AddGatewayActivity.this);
-                isFlagClick=true;
-//                uid=jsonObject.optString("uid");
-                boolean isBtEnable =  TTLockClient.getDefault().isBLEEnabled(AddGatewayActivity.this);
-                if(!isBtEnable){
+                isFlagClick = true;
+                boolean isBtEnable = TTLockClient.getDefault().isBLEEnabled(AddGatewayActivity.this);
+                if (!isBtEnable) {
                     TTLockClient.getDefault().requestBleEnable(AddGatewayActivity.this);
                 }
 
                 setView(true);
             }
-        }else if(v==btnSubmit){
-             callServerGateway();
+        } else if (v == btnSubmit) {
+            callServerGateway();
         }
     }
 
@@ -167,27 +161,6 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
         if (NetworkUtil.isWifiConnected(this)) {
             wifiName.setText(NetworkUtil.getWifiSSid(this));
         }
-    }
-
-    private void uploadGatewayDetail( int gatewayId) {
-        GetDataService apiService = RetrofitAPIManager.provideClientApi();
-        Call<String> call = apiService.uploadGatewayDetail(Constants.client_id,Constants.access_token , gatewayId, "Andy", "1", "1", wifiName.getText().toString(), System.currentTimeMillis());
-        LogUtil.d("call server isSuccess api");
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, retrofit2.Response<String> response) {
-                String json = response.body();
-                if (!TextUtils.isEmpty(json)) {
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                ChatApplication.showToast(AddGatewayActivity.this,t.getMessage());
-                LogUtil.d("t.getMessage():" + t.getMessage());
-            }
-        });
     }
 
     private void isInitSuccess(String macaddress) {
@@ -201,10 +174,8 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
                 String json = response.body();
                 if (!TextUtils.isEmpty(json)) {
                     GatewayObj gatewayObj = GsonUtil.toObject(json, GatewayObj.class);
-                    if (gatewayObj.errcode == 0){
-
+                    if (gatewayObj.errcode == 0) {
                         callUploadToserver(gatewayObj.getGatewayId());
-//
                     }
                 }
             }
@@ -212,8 +183,6 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 ActivityHelper.dismissProgressDialog();
-
-//                makeToast(t.getMessage());
                 LogUtil.d("t.getMessage():" + t.getMessage());
             }
         });
@@ -222,39 +191,31 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
     private void callUploadToserver(int gatewayId) {
         GetDataService apiService = RetrofitAPIManager.provideClientApi();
 
-        Call<String> call = apiService.bridgeUploadtoServer(ChatApplication.url+"/addLockBridge",""+gatewayId, gatewayName);
+        Call<String> call = apiService.bridgeUploadtoServer(ChatApplication.url + "/addLockBridge", "" + gatewayId, gatewayName);
         LogUtil.d("call server api callUploadToserver");
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, retrofit2.Response<String> response) {
-//                ActivityHelper.dismissProgressDialog();
-                String json = response.body();
-                try {
-                    JSONObject jsonObject=new JSONObject(json);
-                    if(response.code()==200){
-//                        ChatApplication.showToast(AddGatewayActivity.this,""+jsonObject.optString("message"));
-                        callAddBridge(gatewayId);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if (response.code() == 200) {
+                    callAddBridge(gatewayId);
                 }
-
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 ActivityHelper.dismissProgressDialog();
-
-//                makeToast(t.getMessage());
                 LogUtil.d("t.getMessage():" + t.getMessage());
             }
         });
     }
 
+
+    /**
+     * Add bridge
+     */
     private void callAddBridge(int gatewayId) {
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
         String webUrl = ChatApplication.url + Constants.addLockBridge;
 
         JSONObject jsonNotification = new JSONObject();
@@ -272,11 +233,11 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
                 try {
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    if(code==200){
-                        ChatApplication.showToast(AddGatewayActivity.this,""+message);
+                    if (code == 200) {
+                        ChatApplication.showToast(AddGatewayActivity.this, "" + message);
                         ActivityHelper.dismissProgressDialog();
                         AddGatewayActivity.this.finish();
-                    }else {
+                    } else {
                         deleteGateway(gatewayId);
                     }
 
@@ -294,6 +255,9 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
 
     }
 
+    /**
+     * Delete gateway
+     */
     private void deleteGateway(int gatewayId) {
 
 
@@ -318,7 +282,7 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
 
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    if(code==200){
+                    if (code == 200) {
                         callAddBridge(gatewayId);
                     }
 
@@ -334,51 +298,6 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
         }).execute();
     }
 
-
-//    String uid="";
-    private void callAddGateway() {
-
-        //{"uid":1769341}
-        ActivityHelper.showProgressDialog(this, "Please wait...", false);
-        GetDataService apiService = RetrofitAPIManager.provideClientApi();
-        Call<String> call = apiService.addGateway(Constants.client_id, Constants.access_token,System.currentTimeMillis());
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                ActivityHelper.dismissProgressDialog();
-                    try {
-                        String json=response.body().toString();
-                        JSONObject jsonObject=new JSONObject(json);
-                        if(jsonObject.has("errcode")){
-                            ChatApplication.showToast(AddGatewayActivity.this,""+jsonObject.getString("errmsg"));
-                        }else {
-                            wifiUserName=wifiName.getText().toString();
-                            wifiPassword=password.getText().toString();
-                            gatewayName=etGatewayname.getText().toString();
-                            ChatApplication.keyBoardHideForce(AddGatewayActivity.this);
-                            isFlagClick=true;
-//                            uid=jsonObject.optString("uid");
-                            boolean isBtEnable =  TTLockClient.getDefault().isBLEEnabled(AddGatewayActivity.this);
-                            if(!isBtEnable){
-                                TTLockClient.getDefault().requestBleEnable(AddGatewayActivity.this);
-                            }
-
-                            setView(true);
-                        }
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-            }
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay("tt lock reponse is error");
-            }
-        });
-
-    }
-//
     private void callServerGateway() {
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
         GatewayAPI gatewayAPI = new GatewayAPI(AddGatewayActivity.this, new GatewayCallback() {
@@ -387,7 +306,7 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
                 AddGatewayActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
                         ActivityHelper.dismissProgressDialog();
-                        ChatApplication.showToast(AddGatewayActivity.this,"Please try again.");
+                        ChatApplication.showToast(AddGatewayActivity.this, "Please try again.");
                     }
                 });
 
@@ -403,17 +322,17 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
         gatewayAPI.startConnectLink(Constants.lockUserId, Constants.lockPassword, wifiUserName, wifiPassword);
     }
 
-    public void setView(boolean isClick){
-        linearWifiBridge.setVisibility(isClick ? View.GONE: View.VISIBLE);
-        linearBridge.setVisibility(isClick ? View.VISIBLE: View.GONE);
+    public void setView(boolean isClick) {
+        linearWifiBridge.setVisibility(isClick ? View.GONE : View.VISIBLE);
+        linearBridge.setVisibility(isClick ? View.VISIBLE : View.GONE);
     }
 
     @Override
     public void onBackPressed() {
-        if(isFlagClick){
-            isFlagClick=false;
+        if (isFlagClick) {
+            isFlagClick = false;
             setView(false);
-        }else {
+        } else {
             super.onBackPressed();
         }
 
