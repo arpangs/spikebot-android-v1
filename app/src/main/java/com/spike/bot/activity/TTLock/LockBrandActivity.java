@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.spike.bot.R;
-import com.spike.bot.activity.Main2Activity;
 
 import java.util.ArrayList;
 
@@ -32,8 +31,8 @@ public class LockBrandActivity extends AppCompatActivity {
     SmartLockBrandAdapter smartLockBrandAdapter;
     SmartLockOptionBrandAdapter smartLockOptionBrandAdapter;
 
-    ArrayList<String> stringArrayList=new ArrayList<>();
-    public boolean isFlagClick=false;
+    ArrayList<String> stringArrayList = new ArrayList<>();
+    public boolean isFlagClick = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,8 +43,8 @@ public class LockBrandActivity extends AppCompatActivity {
     }
 
     private void setviewId() {
-        toolbar=findViewById(R.id.toolbar);
-        fab=findViewById(R.id.fab);
+        toolbar = findViewById(R.id.toolbar);
+        fab = findViewById(R.id.fab);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -53,7 +52,7 @@ public class LockBrandActivity extends AppCompatActivity {
         toolbar.setTitle("Select Your Brand");
 
         fab.setVisibility(View.GONE);
-        recyclerViewLock=findViewById(R.id.recyclerSmartDevice);
+        recyclerViewLock = findViewById(R.id.recyclerSmartDevice);
 
         setAdapter();
 
@@ -63,14 +62,14 @@ public class LockBrandActivity extends AppCompatActivity {
 
     private void setAdapter() {
         recyclerViewLock.setLayoutManager(new LinearLayoutManager(this));
-        smartLockBrandAdapter=new SmartLockBrandAdapter(this);
+        smartLockBrandAdapter = new SmartLockBrandAdapter(this);
         recyclerViewLock.setAdapter(smartLockBrandAdapter);
         smartLockBrandAdapter.notifyDataSetChanged();
     }
 
     private void setAdapter1() {
         recyclerViewLock.setLayoutManager(new LinearLayoutManager(this));
-        smartLockOptionBrandAdapter=new SmartLockOptionBrandAdapter(this,stringArrayList);
+        smartLockOptionBrandAdapter = new SmartLockOptionBrandAdapter(this, stringArrayList);
         recyclerViewLock.setAdapter(smartLockOptionBrandAdapter);
         smartLockOptionBrandAdapter.notifyDataSetChanged();
     }
@@ -81,18 +80,18 @@ public class LockBrandActivity extends AppCompatActivity {
         return true;
     }
 
-    public class SmartLockBrandAdapter extends RecyclerView.Adapter<SmartLockBrandAdapter.SensorViewHolder>{
+    public class SmartLockBrandAdapter extends RecyclerView.Adapter<SmartLockBrandAdapter.SensorViewHolder> {
 
         private Context mContext;
-        public int type=0;
+        public int type = 0;
 
         public SmartLockBrandAdapter(Context context) {
-            this.mContext=context;
+            this.mContext = context;
         }
 
         @Override
         public SensorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_brand_list,parent,false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_brand_list, parent, false);
             return new SensorViewHolder(view);
         }
 
@@ -105,7 +104,7 @@ public class LockBrandActivity extends AppCompatActivity {
             holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    isFlagClick=true;
+                    isFlagClick = true;
                     setAdapter1();
                 }
             });
@@ -122,43 +121,43 @@ public class LockBrandActivity extends AppCompatActivity {
             return position;
         }
 
-        public class SensorViewHolder extends RecyclerView.ViewHolder{
+        public class SensorViewHolder extends RecyclerView.ViewHolder {
 
-            public View  view;
+            public View view;
             public ImageView imgBrand;
             public TextView txtBrandName;
 
             public SensorViewHolder(View view) {
                 super(view);
-                this.view=view;
-                txtBrandName =  itemView.findViewById(R.id.txtBrandName);
-                imgBrand =  itemView.findViewById(R.id.imgBrand);
+                this.view = view;
+                txtBrandName = itemView.findViewById(R.id.txtBrandName);
+                imgBrand = itemView.findViewById(R.id.imgBrand);
             }
         }
     }
 
 
-    public class SmartLockOptionBrandAdapter extends RecyclerView.Adapter<SmartLockOptionBrandAdapter.SensorViewHolder>{
+    public class SmartLockOptionBrandAdapter extends RecyclerView.Adapter<SmartLockOptionBrandAdapter.SensorViewHolder> {
 
         private Context mContext;
-        public int type=0;
+        public int type = 0;
 
         public SmartLockOptionBrandAdapter(Context context, ArrayList<String> stringArrayList) {
-            this.mContext=context;
+            this.mContext = context;
         }
 
         @Override
         public SensorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_brand_list,parent,false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_brand_list, parent, false);
             return new SensorViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(final SensorViewHolder holder, final int position) {
             //SmartLockBrandAdapter
-            if(position==0){
+            if (position == 0) {
                 holder.imgBrand.setImageResource(R.drawable.smart_lock_icon_bridge_small_icon);
-            }else {
+            } else {
                 holder.imgBrand.setImageResource(R.drawable.smart_lock_icon_brand);
             }
 
@@ -167,10 +166,10 @@ public class LockBrandActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Intent intent;
-                    if(position==0){
-                        intent=new Intent(mContext,GatewayTypeActivity.class);
-                    }else {
-                        intent=new Intent(mContext,TTLockListActivity.class);
+                    if (position == 0) {
+                        intent = new Intent(mContext, GatewayTypeActivity.class);
+                    } else {
+                        intent = new Intent(mContext, TTLockListActivity.class);
                     }
 
                     startActivity(intent);
@@ -188,27 +187,27 @@ public class LockBrandActivity extends AppCompatActivity {
             return position;
         }
 
-        public class SensorViewHolder extends RecyclerView.ViewHolder{
+        public class SensorViewHolder extends RecyclerView.ViewHolder {
 
-            public View  view;
+            public View view;
             public ImageView imgBrand;
             public TextView txtBrandName;
 
             public SensorViewHolder(View view) {
                 super(view);
-                this.view=view;
-                txtBrandName =  itemView.findViewById(R.id.txtBrandName);
-                imgBrand =  itemView.findViewById(R.id.imgBrand);
+                this.view = view;
+                txtBrandName = itemView.findViewById(R.id.txtBrandName);
+                imgBrand = itemView.findViewById(R.id.imgBrand);
             }
         }
     }
 
     @Override
     public void onBackPressed() {
-        if(isFlagClick){
-            isFlagClick=false;
+        if (isFlagClick) {
+            isFlagClick = false;
             setAdapter();
-        }else {
+        } else {
             super.onBackPressed();
         }
     }
