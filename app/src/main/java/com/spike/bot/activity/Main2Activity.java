@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -49,7 +50,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.github.mikephil.charting.utils.Utils;
 import com.spike.bot.ChatApplication;
+import com.spike.bot.FragmentManager.BaseFragment;
+import com.spike.bot.FragmentManager.FragNavController;
+import com.spike.bot.FragmentManager.FragmentHistory;
 import com.spike.bot.R;
 import com.spike.bot.ack.SocketManager;
 import com.spike.bot.adapter.CloudAdapter;
@@ -90,13 +95,13 @@ import io.socket.emitter.Emitter;
 
 public class Main2Activity extends AppCompatActivity implements View.OnClickListener,
         ConnectivityReceiver.ConnectivityReceiverListener, CloudAdapter.CloudClickListener,
-        MainFragment.OnHeadlineSelectedListener, ResponseErrorCode, SocketListener, LoginPIEvent , BottomNavigationView.OnNavigationItemSelectedListener {
+        MainFragment.OnHeadlineSelectedListener, ResponseErrorCode, SocketListener, LoginPIEvent ,BottomNavigationView.OnNavigationItemSelectedListener{
 
     private String ERROR_STRING = "No Internet found.\n" + "Check your connection or try again.";
     public static boolean flagPicheck = false, flagLogin = false,isResumeConnect=false,isCloudConnected=false;
     private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
 
-    public  BottomNavigationView tabLayout;
+    public BottomNavigationView tabLayout;
     public ImageView mToolBarSettings,deepsImage, toolbarImage, mImageCloud;
     public TextView toolbarTitle,txt_connection, txt_add_acoount;
     public LinearLayout linear_main, linear_progress,linearTab;
@@ -124,7 +129,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     public Dialog dialogUser;
 
     List<User> userList = new ArrayList<User>();
-
 
     @SuppressLint("InvalidWakeLockTag")
     @Override
@@ -284,21 +288,36 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     }
 
-
+    Fragment fragment=null;
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        Fragment fragment=null;
         switch (item.getItemId()) {
             case R.id.navigationDashboard:
-                fragment = new MainFragment();
+                if(mainFragment1==null){
+                    mainFragment1 = new MainFragment();
+                    fragment=mainFragment1;
+                }else {
+                    fragment=mainFragment1;
+                }
+
                 break;
 
             case R.id.navigationMood:
-                fragment=new MoodFragment();
+                if(moodFragment==null){
+                    moodFragment = new MoodFragment();
+                    fragment=moodFragment;
+                }else {
+                    fragment=moodFragment;
+                }
                 break;
 
             case R.id.navigationSchedule:
-                fragment=new ScheduleFragment();
+                if(scheduleFragment==null){
+                    scheduleFragment = new ScheduleFragment();
+                    fragment=scheduleFragment;
+                }else {
+                    fragment=scheduleFragment;
+                }
                 break;
         }
 
@@ -505,7 +524,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     //load fragment
     public boolean loadFragment(Fragment fragment) {
         if (fragment != null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.container, fragment).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
             return true;
         }
         return false;
@@ -1050,7 +1069,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         mainFragment1.isResumeConnect=true;
         mainFragment1.showDialog = 1;
         getUserDialogClick(true);
-        tabLayout.setSelectedItemId(R.id.navigationDashboard);
+//        tabLayout.setSelectedItemId(R.id.navigationDashboard);
         deviceListRefreshView.deviceRefreshView(1);
     }
 
@@ -1258,5 +1277,4 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             }
         }, 2000);
     }
-
 }

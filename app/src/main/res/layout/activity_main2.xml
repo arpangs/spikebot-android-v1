@@ -193,6 +193,7 @@
                     app:itemIconSize="@dimen/_21sdp"
                     app:menu="@menu/menu_tab"/>
 
+
             </LinearLayout>
 
             <!-- progress view ,login view, searching view-->
