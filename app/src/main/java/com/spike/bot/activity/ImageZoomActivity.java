@@ -20,13 +20,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.Target;
-import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
 import com.kp.core.DateHelper;
 import com.kp.core.GetJsonTask;
@@ -35,13 +30,9 @@ import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.BuildConfig;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.customview.TouchImageView;
-import com.spike.bot.model.CameraVO;
-import com.spike.bot.model.NotificationList;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -49,14 +40,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 
 /**
  * Created by Sagar on 25/12/18.
  * Gmail : jethvasagar2@gmail.com
  */
-public class ImageZoomActivity extends AppCompatActivity{
+public class ImageZoomActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     ProgressBar progressBar;
@@ -64,21 +54,21 @@ public class ImageZoomActivity extends AppCompatActivity{
     FloatingActionButton fabShare;
     public Button btnReport;
     public Bitmap bitmapShare;
-    public String imgName="",imgUrl="",imgDate="";
+    public String imgName = "", imgUrl = "", imgDate = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_zoom);
-        toolbar=(Toolbar)findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        imgUrl=getIntent().getStringExtra("imgUrl");
-        imgName=getIntent().getStringExtra("imgName");
-        imgDate=getIntent().getStringExtra("imgDate");
+        imgUrl = getIntent().getStringExtra("imgUrl");
+        imgName = getIntent().getStringExtra("imgName");
+        imgDate = getIntent().getStringExtra("imgDate");
 
         setUi();
     }
@@ -91,18 +81,18 @@ public class ImageZoomActivity extends AppCompatActivity{
 
     private void setUi() {
 
-        imageViewZoom=findViewById(R.id.img_slider_item_zoom);
-        progressBar=findViewById(R.id.progressBar);
-        fabShare=findViewById(R.id.fabShare);
-        btnReport=findViewById(R.id.btnReport);
+        imageViewZoom = findViewById(R.id.img_slider_item_zoom);
+        progressBar = findViewById(R.id.progressBar);
+        fabShare = findViewById(R.id.fabShare);
+        btnReport = findViewById(R.id.btnReport);
 
 
         Glide.with(this)
                 .load("")
                 .asBitmap()
-                . load(imgUrl)
+                .load(imgUrl)
                 .dontAnimate()
-                .override(200,200)
+                .override(200, 200)
                 .skipMemoryCache(true)
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
@@ -110,54 +100,30 @@ public class ImageZoomActivity extends AppCompatActivity{
                         imageViewZoom.setImageBitmap(resource);
                         progressBar.setVisibility(View.GONE);
                         imageViewZoom.setZoom(2.3f);
-                        bitmapShare=resource;
+                        bitmapShare = resource;
 
                     }
                 });
 
-
-        //Get Image  override(500,400)
-//        Glide.with(this)
-//                .load(imgUrl)
-//                .dontAnimate()
-//                .override(200,200)
-//                .skipMemoryCache(true)
-//                .listener(new RequestListener<String, GlideDrawable>() {
-//                    @Override
-//                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-//                        return false;
-//                    }
-//
-//                    @Override
-//                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target,
-//                                                   boolean isFromMemoryCache, boolean isFirstResource) {
-//                        progressBar.setVisibility(View.GONE);
-//                        imageViewZoom.setZoom(2.3f);
-//                        return false;
-//                    }
-//                })
-//                .into(imageViewZoom);
-
-
         Date today = null;//2018-01-12 19:40:07
         try {
-            today = DateHelper.parseDateSimple(imgDate,DateHelper.DATE_YYYY_MM_DD_HH_MM_SS);
+            today = DateHelper.parseDateSimple(imgDate, DateHelper.DATE_YYYY_MM_DD_HH_MM_SS);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        String strDateOfTime=DateHelper.getDayString(today);
-        String []strDateOfTimeTemp=strDateOfTime.split(" ");
+        String strDateOfTime = DateHelper.getDayString(today);
+        String[] strDateOfTimeTemp = strDateOfTime.split(" ");
 
-        String dateTime="";
-        if(strDateOfTimeTemp.length>2){
-             dateTime = strDateOfTimeTemp[0] + System.getProperty("line.separator") + strDateOfTimeTemp[1]+ " "+strDateOfTimeTemp[2];
-        }else {
-            dateTime = strDateOfTimeTemp[0]+" "+strDateOfTimeTemp[1];
+        String dateTime = "";
+        if (strDateOfTimeTemp.length > 2) {
+            dateTime = strDateOfTimeTemp[0] + System.getProperty("line.separator") + strDateOfTimeTemp[1] + " " + strDateOfTimeTemp[2];
+        } else {
+            dateTime = strDateOfTimeTemp[0] + " " + strDateOfTimeTemp[1];
         }
 
-        toolbar.setTitle(""+imgName);
-        toolbar.setSubtitle(""+dateTime);
+        toolbar.setTitle("" + imgName);
+        toolbar.setSubtitle("" + dateTime);
         toolbar.setSubtitleTextColor(getResources().getColor(R.color.automation_white));
 
         fabShare.setOnClickListener(new View.OnClickListener() {
@@ -171,11 +137,12 @@ public class ImageZoomActivity extends AppCompatActivity{
         btnReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ConfirmDialog newFragment = new ConfirmDialog("Yes","No" ,"Confirm", "Are you sure you want to report false image ?" ,new ConfirmDialog.IDialogCallback() {
+                ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to report false image ?", new ConfirmDialog.IDialogCallback() {
                     @Override
                     public void onConfirmDialogYesClick() {
                         callReport();
                     }
+
                     @Override
                     public void onConfirmDialogNoClick() {
                     }
@@ -193,22 +160,22 @@ public class ImageZoomActivity extends AppCompatActivity{
             return;
         }
 
-        String imageName="";
+        String imageName = "";
 
         String[] separated = imgUrl.split("/");
 
-        if(separated!=null && separated.length>0){
-            imageName=separated[separated.length-1];
+        if (separated != null && separated.length > 0) {
+            imageName = separated[separated.length - 1];
         }
 
-        JSONObject object=new JSONObject();
+        JSONObject object = new JSONObject();
         try {
             /*" {
  "image_name":"out_frame_007__BA-QA-_-1560797169248_DbZww2wfE.png",
  "image_url":"https://spikebot.s3.amazonaws.com/backup/1562238755935_7-4TuHSwb-vip@gmail.com/python_images/20180128/out_frame_007__BA-QA-_-1560797169248_DbZww2wfE.png"
 }"*/
-            object.put("image_name",""+imageName);
-            object.put("image_url",imgUrl);
+            object.put("image_name", "" + imageName);
+            object.put("image_url", imgUrl);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -221,11 +188,7 @@ public class ImageZoomActivity extends AppCompatActivity{
                 try {
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    ChatApplication.showToast(ImageZoomActivity.this,""+message);
-//                    if(code==200) {
-//
-//                    }
-
+                    ChatApplication.showToast(ImageZoomActivity.this, "" + message);
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -242,7 +205,7 @@ public class ImageZoomActivity extends AppCompatActivity{
     }
 
     private void shareImage() {
-        ChatApplication.logDisplay("url is "+imgUrl);
+        ChatApplication.logDisplay("url is " + imgUrl);
         if (CameraGridActivity.checkPermission(this)) {
 
             Uri bmpUri = getLocalBitmapUri(imageViewZoom);
@@ -271,7 +234,7 @@ public class ImageZoomActivity extends AppCompatActivity{
         // Extract Bitmap from ImageView drawable
         Drawable drawable = imageView.getDrawable();
         Bitmap bmp = null;
-        if (drawable instanceof BitmapDrawable){
+        if (drawable instanceof BitmapDrawable) {
             bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
         } else {
             return null;
@@ -282,15 +245,15 @@ public class ImageZoomActivity extends AppCompatActivity{
             // Use methods on Context to access package-specific directories on external storage.
             // This way, you don't need to request external read/write permission.
             // See https://youtu.be/5xVh-7ywKpE?t=25m25s
-            File file =  new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+            File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
             FileOutputStream out = new FileOutputStream(file);
             bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
             out.close();
             // **Warning:** This will fail for API >= 24, use a FileProvider as shown below instead.
 
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
-                bmpUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider",file);
-            }else {
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                bmpUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", file);
+            } else {
                 bmpUri = Uri.fromFile(file);
             }
 

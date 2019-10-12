@@ -1,11 +1,9 @@
 package com.spike.bot.activity;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -22,10 +20,9 @@ import android.widget.FrameLayout;
 
 import com.spike.bot.R;
 
-
 import java.util.ArrayList;
 
-public class VideoVLC2Activity extends AppCompatActivity /*implements IVLCVout.OnNewVideoLayoutListener,ScaleGestureDetector.OnScaleGestureListener */{
+public class VideoVLC2Activity extends AppCompatActivity {
     private static final boolean USE_SURFACE_VIEW = true;
     private static final boolean ENABLE_SUBTITLES = true;
     private static final String TAG = "JavaActivity";
@@ -57,7 +54,30 @@ public class VideoVLC2Activity extends AppCompatActivity /*implements IVLCVout.O
     private int mVideoSarDen = 0;
 
     Toolbar toolbar;
-    //  String strUrls[]={"rtsp://192.168.175.101/video/play2.sdp","rtsp://192.168.75.111/Streaming/Channels/1","rtsp://202.131.110.102/Streaming/Channels/1","rtsp://192.168.175.105:10554/udp/av0_0"};
+
+    private enum Mode {
+        NONE,
+        DRAG,
+        ZOOM
+    }
+
+    // private static final String TAG = "ZoomLayout";
+    private static final float MIN_ZOOM = 1.0f;
+    private static final float MAX_ZOOM = 4.0f;
+
+    private Mode mode = Mode.NONE;
+    private float scale = 1.0f;
+    private float lastScaleFactor = 0f;
+
+    // Where the finger first  touches the screen
+    private float startX = 0f;
+    private float startY = 0f;
+
+    // How much to translate the canvas
+    private float dx = 0f;
+    private float dy = 0f;
+    private float prevDx = 0f;
+    private float prevDy = 0f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +122,6 @@ public class VideoVLC2Activity extends AppCompatActivity /*implements IVLCVout.O
     protected void onDestroy() {
         super.onDestroy();
         mMediaPlayer.release();
-       // mLibVLC.release();
     }
 
     @Override
@@ -119,21 +138,6 @@ public class VideoVLC2Activity extends AppCompatActivity /*implements IVLCVout.O
     @Override
     protected void onStart() {
         super.onStart();
-
-       /* final IVLCVout vlcVout = mMediaPlayer.getVLCVout();
-        if (mVideoSurface != null) {
-            vlcVout.setVideoView(mVideoSurface);
-            if (mSubtitlesSurface != null)
-                vlcVout.setSubtitlesView(mSubtitlesSurface);
-        } else
-            vlcVout.setVideoView(mVideoTexture);
-        vlcVout.attachViews(this);
-
-        Media media = new Media(mLibVLC, Uri.parse(SAMPLE_URL));
-        mMediaPlayer.setMedia(media);
-        media.release();
-        mMediaPlayer.play();*/
-
         if (mOnLayoutChangeListener == null) {
             mOnLayoutChangeListener = new View.OnLayoutChangeListener() {
                 private final Runnable mRunnable = new Runnable() {
@@ -164,69 +168,9 @@ public class VideoVLC2Activity extends AppCompatActivity /*implements IVLCVout.O
             mVideoSurfaceFrame.removeOnLayoutChangeListener(mOnLayoutChangeListener);
             mOnLayoutChangeListener = null;
         }
-
         mMediaPlayer.stop();
-
-     //   mMediaPlayer.getVLCVout().detachViews();
     }
 
-    private void changeMediaPlayerLayout(int displayW, int displayH) {
-        /* Change the video placement using the MediaPlayer API */
-        switch (CURRENT_SIZE) {
-            case SURFACE_BEST_FIT:
-            //    mMediaPlayer.setAspectRatio(null);
-             //   mMediaPlayer.setScale(0);
-                break;
-            case SURFACE_FIT_SCREEN:
-            case SURFACE_FILL: {
-             //   Media.VideoTrack vtrack = mMediaPlayer.getCurrentVideoTrack();
-              /*  if (vtrack == null)
-                    return;
-                final boolean videoSwapped = vtrack.orientation == Media.VideoTrack.Orientation.LeftBottom
-                        || vtrack.orientation == Media.VideoTrack.Orientation.RightTop;
-                if (CURRENT_SIZE == SURFACE_FIT_SCREEN) {
-                    int videoW = vtrack.width;
-                    int videoH = vtrack.height;
-
-                    if (videoSwapped) {
-                        int swap = videoW;
-                        videoW = videoH;
-                        videoH = swap;
-                    }
-                    if (vtrack.sarNum != vtrack.sarDen)
-                        videoW = videoW * vtrack.sarNum / vtrack.sarDen;
-
-                    float ar = videoW / (float) videoH;
-                    float dar = displayW / (float) displayH;
-
-                    float scale;
-                    if (dar >= ar)
-                        scale = displayW / (float) videoW; *//* horizontal *//*
-                    else
-                        scale = displayH / (float) videoH; *//* vertical *//*
-                    mMediaPlayer.setScale(scale);
-                    mMediaPlayer.setAspectRatio(null);
-                } else {
-                    mMediaPlayer.setScale(0);
-                    mMediaPlayer.setAspectRatio(!videoSwapped ? "" + displayW + ":" + displayH
-                            : "" + displayH + ":" + displayW);
-                }*/
-                break;
-            }
-            case SURFACE_16_9:
-              //  mMediaPlayer.setAspectRatio("16:9");
-              //  mMediaPlayer.setScale(0);
-                break;
-            case SURFACE_4_3:
-              //  mMediaPlayer.setAspectRatio("4:3");
-              //  mMediaPlayer.setScale(0);
-                break;
-            case SURFACE_ORIGINAL:
-               // mMediaPlayer.setAspectRatio(null);
-              //  mMediaPlayer.setScale(1);
-                break;
-        }
-    }
 
     private void updateVideoSurfaces() {
         int sw = getWindow().getDecorView().getWidth();
@@ -236,9 +180,6 @@ public class VideoVLC2Activity extends AppCompatActivity /*implements IVLCVout.O
         if (sw * sh == 0) {
             return;
         }
-
-       // mMediaPlayer.getVLCVout().setWindowSize(sw, sh);
-
         ViewGroup.LayoutParams lp = mVideoView.getLayoutParams();
         if (mVideoWidth * mVideoHeight == 0) {
             /* Case of OpenGL vouts: handles the placement of the video using MediaPlayer API */
@@ -249,16 +190,8 @@ public class VideoVLC2Activity extends AppCompatActivity /*implements IVLCVout.O
             lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
             lp.height = ViewGroup.LayoutParams.MATCH_PARENT;
             mVideoSurfaceFrame.setLayoutParams(lp);
-            changeMediaPlayerLayout(sw, sh);
             return;
         }
-
-        if (lp.width == lp.height && lp.width == ViewGroup.LayoutParams.MATCH_PARENT) {
-            /* We handle the placement of the video using Android View LayoutParams */
-       //     mMediaPlayer.setAspectRatio(null);
-       //     mMediaPlayer.setScale(0);
-        }
-
         double dw = sw, dh = sh;
         final boolean isPortrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
 
@@ -335,17 +268,6 @@ public class VideoVLC2Activity extends AppCompatActivity /*implements IVLCVout.O
             mSubtitlesSurface.invalidate();
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-    /*@Override
-    public void onNewVideoLayout(IVLCVout vlcVout, int width, int height, int visibleWidth, int visibleHeight, int sarNum, int sarDen) {
-        mVideoWidth = width;
-        mVideoHeight = height;
-        mVideoVisibleWidth = visibleWidth;
-        mVideoVisibleHeight = visibleHeight;
-        mVideoSarNum = sarNum;
-        mVideoSarDen = sarDen;
-        updateVideoSurfaces();
-    }*/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -359,7 +281,6 @@ public class VideoVLC2Activity extends AppCompatActivity /*implements IVLCVout.O
         }
         return super.onOptionsItemSelected(item);
     }
-//////////////////////////////
 
     private void init(Context context) {
         final ScaleGestureDetector scaleDetector /*= new ScaleGestureDetector(context, this);*/;
@@ -392,8 +313,6 @@ public class VideoVLC2Activity extends AppCompatActivity /*implements IVLCVout.O
                         prevDy = dy;
                         break;
                 }
-                //scaleDetector.onTouchEvent(motionEvent);
-
                 if ((mode == Mode.DRAG && scale >= MIN_ZOOM) || mode == Mode.ZOOM) {
                     mVideoSurfaceFrame.getParent().requestDisallowInterceptTouchEvent(true);
                     float maxDx = child().getWidth() * (scale - 1);  // adjusted for zero pivot
@@ -410,31 +329,6 @@ public class VideoVLC2Activity extends AppCompatActivity /*implements IVLCVout.O
     private View child() {
         return mVideoSurfaceFrame.getChildAt(0);
     }
-
-    private enum Mode {
-        NONE,
-        DRAG,
-        ZOOM
-    }
-
-    // private static final String TAG = "ZoomLayout";
-    private static final float MIN_ZOOM = 1.0f;
-    private static final float MAX_ZOOM = 4.0f;
-
-    private Mode mode = Mode.NONE;
-    private float scale = 1.0f;
-    private float lastScaleFactor = 0f;
-
-    // Where the finger first  touches the screen
-    private float startX = 0f;
-    private float startY = 0f;
-
-    // How much to translate the canvas
-    private float dx = 0f;
-    private float dy = 0f;
-    private float prevDx = 0f;
-    private float prevDy = 0f;
-
 
 }
 

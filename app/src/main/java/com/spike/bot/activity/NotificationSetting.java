@@ -37,7 +37,6 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
     private NotificationListRes mNotificationListRes;
     private List<NotificationListRes.Data> notificationDataList;
 
-    //private SwitchCompat sHome,sTemp,sDoor;
     private RecyclerView mListNotification;
     private NotificationSettingAdapter notificationSettingAdapter;
 
@@ -52,10 +51,6 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-       /* sHome = (SwitchCompat) findViewById(R.id.switch_home);
-        sTemp = (SwitchCompat) findViewById(R.id.switch_temp);
-        sDoor = (SwitchCompat) findViewById(R.id.switch_door);*/
 
         mListNotification = (RecyclerView)findViewById(R.id.mListNotification);
         mListNotification.setLayoutManager(new GridLayoutManager(this,1));
@@ -85,6 +80,7 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
         return super.onOptionsItemSelected(item);
     }
 
+    /** Save the notification list*/
     private void saveNotiSettingList(){
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
@@ -150,7 +146,7 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
 
     }
 
-
+    /** Get All notification list*/
     private void getNotificationList(){
 
         if (!ActivityHelper.isConnectingToInternet(this)) {

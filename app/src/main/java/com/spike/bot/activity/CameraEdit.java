@@ -6,7 +6,6 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +16,10 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.kp.core.ActivityHelper;
+import com.kp.core.GetJsonTask;
+import com.kp.core.ICallBack;
+import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
@@ -24,11 +27,6 @@ import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.CameraVO;
-import com.spike.bot.model.RoomVO;
-import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
-import com.kp.core.dialog.ConfirmDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,9 +42,9 @@ import io.socket.client.Socket;
  */
 
 
-public class CameraEdit extends AppCompatActivity{
+public class CameraEdit extends AppCompatActivity {
 
-    public boolean isEditable=false;
+    public boolean isEditable = false;
     private ArrayList<CameraVO> cameraVOArrayList;
     private CameraVO cameraSelcet;
     ArrayList<String> cameraStr;
@@ -62,6 +60,9 @@ public class CameraEdit extends AppCompatActivity{
     private TextInputEditText edt_user_password;
 
     private Button btnDelete;
+    String webUrl = "";
+    private Socket mSocket;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,8 +75,7 @@ public class CameraEdit extends AppCompatActivity{
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-       // room = (RoomVO )getIntent().getSerializableExtra("room");
-        isEditable = getIntent().getBooleanExtra("isEditable",false);
+        isEditable = getIntent().getBooleanExtra("isEditable", false);
         cameraVOArrayList = (ArrayList<CameraVO>) getIntent().getExtras().getSerializable("cameraList");
         cameraSelcet = (CameraVO) getIntent().getExtras().getSerializable("cameraSelcet");
 
@@ -98,30 +98,27 @@ public class CameraEdit extends AppCompatActivity{
         cameraId = new ArrayList<>();
         cameraId.clear();
 
-//        if(isEditable){
-            sp_camera_list.setEnabled(false);
-        sp_drop_down.setEnabled(false);
-            sp_camera_list.setClickable(false);
-            sp_drop_down.setClickable(false);
-//        }
 
-        if(!cameraVOArrayList.isEmpty()){
-            for(CameraVO cameraVO :cameraVOArrayList){
+        sp_camera_list.setEnabled(false);
+        sp_drop_down.setEnabled(false);
+        sp_camera_list.setClickable(false);
+        sp_drop_down.setClickable(false);
+
+
+        if (!cameraVOArrayList.isEmpty()) {
+            for (CameraVO cameraVO : cameraVOArrayList) {
                 cameraStr.add(cameraVO.getCamera_name());
                 cameraId.add(cameraVO.getCamera_id());
             }
         }
 
-        TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(this,cameraStr,1,false);
+        TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(this, cameraStr, 1, false);
         sp_camera_list.setAdapter(customAdapter);
 
-        int spinner_position = sp_camera_list.getSelectedItemPosition();
-
-//        initUI(cameraStr.get(spinner_position));
         initUI(cameraSelcet.getCamera_name());
 
-        for(int i=0; i<cameraId.size(); i++){
-            if(cameraId.get(i).equalsIgnoreCase(cameraSelcet.getCamera_id())){
+        for (int i = 0; i < cameraId.size(); i++) {
+            if (cameraId.get(i).equalsIgnoreCase(cameraSelcet.getCamera_id())) {
                 sp_camera_list.setSelection(i);
                 break;
             }
@@ -130,7 +127,7 @@ public class CameraEdit extends AppCompatActivity{
         sp_camera_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-              //  initUI(cameraStr.get(position));
+                //  initUI(cameraStr.get(position));
                 getCameraInfo(cameraId.get(position));
             }
 
@@ -159,10 +156,10 @@ public class CameraEdit extends AppCompatActivity{
      * getCameraInfo by camera_id
      */
 
-    private void getCameraInfo(String camera_id){
+    private void getCameraInfo(String camera_id) {
 
-        if(!ActivityHelper.isConnectingToInternet(this)){
-            Toast.makeText(getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -173,18 +170,18 @@ public class CameraEdit extends AppCompatActivity{
         }
         webUrl = app.url;
 
-        String url = webUrl +Constants.GET_CAMERA_INFO;
+        String url = webUrl + Constants.GET_CAMERA_INFO;
 
         JSONObject object = new JSONObject();
         try {
-            object.put("camera_id",camera_id);
+            object.put("camera_id", camera_id);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        ActivityHelper.showProgressDialog(CameraEdit.this,"Please wait...",false);
+        ActivityHelper.showProgressDialog(CameraEdit.this, "Please wait...", false);
 
-        new GetJsonTask(this,url ,"POST",object.toString(), new ICallBack() {
+        new GetJsonTask(this, url, "POST", object.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
@@ -193,7 +190,7 @@ public class CameraEdit extends AppCompatActivity{
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
-                    if(code == 200){
+                    if (code == 200) {
                         JSONArray array = result.getJSONArray("data");
 
                         JSONObject deviceObj = array.getJSONObject(0);
@@ -209,7 +206,7 @@ public class CameraEdit extends AppCompatActivity{
 
                         String userName = deviceObj.getString("user_name");
                         String password = deviceObj.getString("password");
-                        int is_active  = deviceObj.getInt("is_active");
+                        int is_active = deviceObj.getInt("is_active");
 
                         CameraVO cameraVO = new CameraVO();
                         cameraVO.setCamera_id(camera_id);
@@ -226,18 +223,18 @@ public class CameraEdit extends AppCompatActivity{
                         initUI(cameraVO);
                     }
 
-                    if(code!=200){
-                        Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                    if (code != 200) {
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     }
 
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                }
-                finally {
+                } finally {
                     ActivityHelper.dismissProgressDialog();
                 }
             }
+
             @Override
             public void onFailure(Throwable throwable, String error) {
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -247,10 +244,10 @@ public class CameraEdit extends AppCompatActivity{
 
     }
 
-    private void initUI(String cameraName){
+    private void initUI(String cameraName) {
 
-        for(CameraVO cameraVO : cameraVOArrayList){
-            if(cameraVO.getCamera_name().equalsIgnoreCase(cameraName)){
+        for (CameraVO cameraVO : cameraVOArrayList) {
+            if (cameraVO.getCamera_name().equalsIgnoreCase(cameraName)) {
 
                 edt_camera_name.setText(cameraVO.getCamera_name());
                 edt_camera_ip.setText(cameraVO.getCamera_ip());
@@ -263,7 +260,7 @@ public class CameraEdit extends AppCompatActivity{
 
     }
 
-    private void initUI(CameraVO cameraVO){
+    private void initUI(CameraVO cameraVO) {
 
         edt_camera_name.setText(cameraVO.getCamera_name());
         edt_camera_ip.setText(cameraVO.getCamera_ip());
@@ -277,14 +274,15 @@ public class CameraEdit extends AppCompatActivity{
      * Delete selected camera
      */
 
-    private void showDialog(){
-        ConfirmDialog newFragment = new ConfirmDialog("Yes","No" ,"Confirm", "Are you sure ?",new ConfirmDialog.IDialogCallback() {
+    private void showDialog() {
+        ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure ?", new ConfirmDialog.IDialogCallback() {
             @Override
             public void onConfirmDialogYesClick() {
 
                 int spinner_position = sp_camera_list.getSelectedItemPosition();
                 deleteCamera(cameraId.get(spinner_position).toString());
             }
+
             @Override
             public void onConfirmDialogNoClick() {
             }
@@ -294,13 +292,13 @@ public class CameraEdit extends AppCompatActivity{
     }
 
     /**
-     *  DeleteCamera
+     * DeleteCamera
      */
 
-    private void deleteCamera(String camera_id){
+    private void deleteCamera(String camera_id) {
 
-        if(!ActivityHelper.isConnectingToInternet(this)){
-            Toast.makeText(getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -311,23 +309,23 @@ public class CameraEdit extends AppCompatActivity{
         }
         webUrl = app.url;
 
-        String url = webUrl+Constants.DELETE_CAMERA;
+        String url = webUrl + Constants.DELETE_CAMERA;
 
         JSONObject object = new JSONObject();
 
         try {
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            object.put("camera_id",camera_id);
+            object.put("camera_id", camera_id);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        ActivityHelper.showProgressDialog(CameraEdit.this,"Please wait...",false);
+        ActivityHelper.showProgressDialog(CameraEdit.this, "Please wait...", false);
 
-        new GetJsonTask(this,url ,"POST",object.toString(), new ICallBack() {
+        new GetJsonTask(this, url, "POST", object.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
@@ -335,30 +333,29 @@ public class CameraEdit extends AppCompatActivity{
 
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    if(code==200){
+                    if (code == 200) {
                         ChatApplication.isMainFragmentNeedResume = true;
-                        if(!TextUtils.isEmpty(message)){
-                            Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                        if (!TextUtils.isEmpty(message)) {
+                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                         }
                         finish();
                         //if deletre success return initUI with 0 Index position
-                       if(cameraVOArrayList.size()>0){
-                         //  initUI(cameraVOArrayList.get(0).getCamera_id());
-                       }else{
-                         //  finish();
-                       }
-                    }
-                    else{
-                        Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                        if (cameraVOArrayList.size() > 0) {
+                            //  initUI(cameraVOArrayList.get(0).getCamera_id());
+                        } else {
+                            //  finish();
+                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                }
-                finally {
+                } finally {
                     ActivityHelper.dismissProgressDialog();
                 }
             }
+
             @Override
             public void onFailure(Throwable throwable, String error) {
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -383,6 +380,7 @@ public class CameraEdit extends AppCompatActivity{
 
         return super.onCreateOptionsMenu(menu);
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -391,8 +389,7 @@ public class CameraEdit extends AppCompatActivity{
         if (id == R.id.action_add) {
 
             return true;
-        }
-        else if (id == R.id.action_save) {
+        } else if (id == R.id.action_save) {
             updateCamera();
             return true;
         }
@@ -400,73 +397,49 @@ public class CameraEdit extends AppCompatActivity{
         return super.onOptionsItemSelected(item);
     }
 
-    String webUrl = "";
-    private Socket mSocket;
+    private void updateCamera() {
 
-    /**
-     *
-     * @param ipAddress
-     * @return
-     */
-
-    private boolean isValidateIP(String ipAddress){
-        return Patterns.IP_ADDRESS.matcher(ipAddress).matches();
-    }
-
-    private void updateCamera(){
-
-        if(!ActivityHelper.isConnectingToInternet(this)){
-            Toast.makeText(getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if(TextUtils.isEmpty(edt_camera_name.getText().toString().trim())){
+        if (TextUtils.isEmpty(edt_camera_name.getText().toString().trim())) {
             edt_camera_name.setError("Enter Camera name");
             edt_camera_name.requestFocus();
-           // Toast.makeText(getApplicationContext(),"Enter Camera name",Toast.LENGTH_SHORT).show();
             return;
         }
-        if(TextUtils.isEmpty(edt_camera_ip.getText().toString().trim())){
+        if (TextUtils.isEmpty(edt_camera_ip.getText().toString().trim())) {
             edt_camera_ip.setError("Enter Camera IP");
             edt_camera_ip.requestFocus();
-           // Toast.makeText(getApplicationContext(),"Enter Camera IP",Toast.LENGTH_SHORT).show();
             return;
         }
-        if(TextUtils.isEmpty(edt_video_path.getText().toString().trim())){
+        if (TextUtils.isEmpty(edt_video_path.getText().toString().trim())) {
             edt_video_path.setError("Enter Camera Video Path");
             edt_video_path.requestFocus();
-          //  Toast.makeText(getApplicationContext(),"Enter Camera Video Path",Toast.LENGTH_SHORT).show();
             return;
         }
-        if(TextUtils.isEmpty(edt_user_name.getText().toString().trim())){
+        if (TextUtils.isEmpty(edt_user_name.getText().toString().trim())) {
             edt_user_name.setError("Enter User Name");
             edt_user_name.requestFocus();
-          //  Toast.makeText(getApplicationContext(),"Enter User Name",Toast.LENGTH_SHORT).show();
             return;
         }
-        if(TextUtils.isEmpty(edt_user_password.getText().toString().trim())){
+        if (TextUtils.isEmpty(edt_user_password.getText().toString().trim())) {
             edt_user_password.setError("Enter Password name");
             edt_user_password.requestFocus();
-            //Toast.makeText(getApplicationContext(),"Enter Password name",Toast.LENGTH_SHORT).show();
             return;
         }
-       /* if(!ActivityHelper.isValidUrl(edt_camera_ip.getText().toString())){
-            edt_camera_ip.setError("Invalid Camera IP Address");
-            edt_camera_ip.requestFocus();
-          //  Toast.makeText(getApplicationContext(),"Invalid Camera IP Address",Toast.LENGTH_SHORT).show();
-            return;
-        }*/
 
         JSONObject obj = new JSONObject();
         try {
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
             int spinner_position = sp_camera_list.getSelectedItemPosition();
 
             obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put("camera_id",cameraId.get(spinner_position));
+            obj.put("camera_id", cameraId.get(spinner_position));
             obj.put("camera_name", edt_camera_name.getText().toString().trim());
             obj.put("camera_ip", edt_camera_ip.getText().toString().trim());
             obj.put("camera_icon", "camera");
@@ -485,11 +458,11 @@ public class CameraEdit extends AppCompatActivity{
         }
         webUrl = app.url;
 
-        String url = webUrl +  Constants.SAVE_EDIT_CAMERA;
+        String url = webUrl + Constants.SAVE_EDIT_CAMERA;
 
-        ActivityHelper.showProgressDialog(CameraEdit.this,"Please wait...",false);
+        ActivityHelper.showProgressDialog(CameraEdit.this, "Please wait...", false);
 
-        new GetJsonTask(this,url ,"POST",obj.toString(), new ICallBack() {
+        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
@@ -497,24 +470,23 @@ public class CameraEdit extends AppCompatActivity{
 
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    if(code==200){
+                    if (code == 200) {
                         ChatApplication.isMainFragmentNeedResume = true;
-                        if(!TextUtils.isEmpty(message)){
-                            Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                        if (!TextUtils.isEmpty(message)) {
+                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                         }
                         finish();
-                    }
-                    else{
-                        Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                }
-                finally {
+                } finally {
                     ActivityHelper.dismissProgressDialog();
                 }
             }
+
             @Override
             public void onFailure(Throwable throwable, String error) {
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();

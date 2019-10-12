@@ -27,7 +27,7 @@ public class TempActivity extends AppCompatActivity implements View.OnClickListe
     EditText edIpEnd;
     Spinner spCouldIp;
     Button btnSubmit;
-    public ArrayList<String> arrayList=new ArrayList<>();
+    public ArrayList<String> arrayList = new ArrayList<>();
 
 
     @Override
@@ -39,14 +39,14 @@ public class TempActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void init() {
-        if(!TextUtils.isEmpty(Common.getPrefValue(this, "couldIp"))){
+        if (!TextUtils.isEmpty(Common.getPrefValue(this, "couldIp"))) {
             callIntent();
             return;
         }
 
-        btnSubmit=findViewById(R.id.btnSubmit);
-        edIpEnd=findViewById(R.id.edIpEnd);
-        spCouldIp=findViewById(R.id.spCouldIp);
+        btnSubmit = findViewById(R.id.btnSubmit);
+        edIpEnd = findViewById(R.id.edIpEnd);
+        spCouldIp = findViewById(R.id.spCouldIp);
         btnSubmit.setOnClickListener(this);
 
         arrayList.add("http://18.237.74.22:8079");
@@ -61,11 +61,11 @@ public class TempActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        if(v==btnSubmit){
-            ChatApplication.logDisplay("spCouldIp is "+spCouldIp.getSelectedItem().toString());
-            if(edIpEnd.getText().length()==0){
-                ChatApplication.showToast(this,"Please enter ip end");
-            }else {
+        if (v == btnSubmit) {
+            ChatApplication.logDisplay("spCouldIp is " + spCouldIp.getSelectedItem().toString());
+            if (edIpEnd.getText().length() == 0) {
+                ChatApplication.showToast(this, "Please enter ip end");
+            } else {
                 setValue();
             }
         }
@@ -79,13 +79,13 @@ public class TempActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void callIntent() {
-        Constants.CLOUD_SERVER_URL=Common.getPrefValue(this,"couldIp");
-        Constants.IP_END=Common.getPrefValue(this, "startIp");
+        Constants.CLOUD_SERVER_URL = Common.getPrefValue(this, "couldIp");
+        Constants.IP_END = Common.getPrefValue(this, "startIp");
 
-        ChatApplication.logDisplay("CLOUD_SERVER_URL is "+Constants.CLOUD_SERVER_URL);
-        ChatApplication.logDisplay("CLOUD_SERVER_URL is IP_END "+Constants.IP_END);
+        ChatApplication.logDisplay("CLOUD_SERVER_URL is " + Constants.CLOUD_SERVER_URL);
+        ChatApplication.logDisplay("CLOUD_SERVER_URL is IP_END " + Constants.IP_END);
 
-        Intent intent=new Intent(this,Main2Activity.class);
+        Intent intent = new Intent(this, Main2Activity.class);
         startActivity(intent);
         this.finish();
     }

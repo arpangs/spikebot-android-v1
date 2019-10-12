@@ -40,10 +40,10 @@ import java.util.List;
  */
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public EditText et_username,et_password;
-    public Button btn_login,btnSignUp;
+    public EditText et_username, et_password;
+    public Button btn_login, btnSignUp;
     public AppCompatTextView btn_SKIP;
-    public String imei="",token="",isFlag="";
+    public String imei = "", token = "", isFlag = "";
 
     private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
 
@@ -53,9 +53,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        isFlag=getIntent().getStringExtra("isFlag");
-        if(TextUtils.isEmpty(isFlag)){
-            isFlag="";
+        isFlag = getIntent().getStringExtra("isFlag");
+        if (TextUtils.isEmpty(isFlag)) {
+            isFlag = "";
         }
         setUiId();
     }
@@ -63,11 +63,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void setUiId() {
         getUUId();
 
-        et_username=findViewById(R.id.et_username);
-        et_password=findViewById(R.id.et_password);
-        btn_SKIP=findViewById(R.id.btn_SKIP);
-        btn_login=findViewById(R.id.btn_login);
-        btnSignUp=findViewById(R.id.btnSignUp);
+        et_username = findViewById(R.id.et_username);
+        et_password = findViewById(R.id.et_password);
+        btn_SKIP = findViewById(R.id.btn_SKIP);
+        btn_login = findViewById(R.id.btn_login);
+        btnSignUp = findViewById(R.id.btnSignUp);
 
         btn_login.setOnClickListener(this);
         btn_SKIP.setOnClickListener(this);
@@ -81,19 +81,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     protected void onResume() {
-        if(TextUtils.isEmpty(Common.getPrefValue(LoginActivity.this, Constants.lock_exe)) &&
-                Common.getPrefValue(LoginActivity.this, Constants.lock_exe).length()==0 || TextUtils.isEmpty(Common.getPrefValue(LoginActivity.this, Constants.lock_token))){
-            Constants.lockDate=0;
-        }else {
-            Constants.lockDate= Integer.parseInt(Common.getPrefValue(LoginActivity.this, Constants.lock_exe));
-            Constants.access_token= Common.getPrefValue(LoginActivity.this, Constants.lock_token);
+        if (TextUtils.isEmpty(Common.getPrefValue(LoginActivity.this, Constants.lock_exe)) &&
+                Common.getPrefValue(LoginActivity.this, Constants.lock_exe).length() == 0 || TextUtils.isEmpty(Common.getPrefValue(LoginActivity.this, Constants.lock_token))) {
+            Constants.lockDate = 0;
+        } else {
+            Constants.lockDate = Integer.parseInt(Common.getPrefValue(LoginActivity.this, Constants.lock_exe));
+            Constants.access_token = Common.getPrefValue(LoginActivity.this, Constants.lock_token);
         }
         if (isFlag.equalsIgnoreCase("true")) {
             btn_SKIP.setVisibility(View.VISIBLE);
-        }else if( Constants.checkLoginAccountCount(this)){
+        } else if (Constants.checkLoginAccountCount(this)) {
             ChatApplication.currentuserId = Constants.getuser(this).getUser_id();
             startHomeIntent();
-        }else {
+        } else {
             btn_SKIP.setVisibility(View.INVISIBLE);
         }
         super.onResume();
@@ -102,7 +102,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void getUUId() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE},PERMISSIONS_REQUEST_READ_PHONE_STATE);
+                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, PERMISSIONS_REQUEST_READ_PHONE_STATE);
                 return;
             } else {
                 imei = ActivityHelper.getIMEI(this);
@@ -118,11 +118,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        if(v==btn_SKIP){
-            ChatApplication.isLocalFragmentResume=false;
-            ChatApplication.isMainFragmentNeedResume=false;
+        if (v == btn_SKIP) {
+            ChatApplication.isLocalFragmentResume = false;
+            ChatApplication.isMainFragmentNeedResume = false;
             this.finish();
-        }else if(v==btn_login){
+        } else if (v == btn_login) {
             if (TextUtils.isEmpty(imei)) {
                 getUUId();
             }
@@ -136,7 +136,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 loginCloud(et_username.getText().toString(), et_password.getText().toString());
             }
 
-        }else if(v==btnSignUp){
+        } else if (v == btnSignUp) {
             Intent intent = new Intent(this, SignUp.class);
             startActivity(intent);
         }
@@ -190,8 +190,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     String message = result.getString("message");
                     if (code == 200) {
 
-//                        ActivityHelper.hideKeyboard(LoginActivity.this);
-
                         JSONObject data = result.getJSONObject("data");
                         String cloudIp = data.getString("ip");
                         String local_ip = data.getString("local_ip");
@@ -232,7 +230,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         ChatApplication.logDisplay("jsonText text is " + jsonText);
                         List<User> userList = new ArrayList<User>();
                         if (!TextUtils.isEmpty(jsonText) && !jsonText.equals("[]") && !jsonText.equals("null")) {
-                            Type type = new TypeToken<List<User>>() {}.getType();
+                            Type type = new TypeToken<List<User>>() {
+                            }.getType();
                             userList = gson.fromJson(jsonText, type);
 
                             if (userList != null && userList.size() != 0) {
@@ -264,7 +263,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             Common.savePrefValue(getApplicationContext(), Common.USER_JSON, jsonCurProduct);
                         }
 
-                        ChatApplication.isCallDeviceList=true;
+                        ChatApplication.isCallDeviceList = true;
                         startHomeIntent();
 
                         ActivityHelper.dismissProgressDialog();
@@ -290,7 +289,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void startHomeIntent() {
-        Intent intent=new Intent(this,Main2Activity.class);
+        Intent intent = new Intent(this, Main2Activity.class);
         startActivity(intent);
         this.finish();
 

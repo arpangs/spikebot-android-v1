@@ -37,8 +37,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class ProfileActivity extends AppCompatActivity {
-    String  TAG = "ProfileActivity";
-    boolean isFlagUser=false;
+    String TAG = "ProfileActivity";
+    boolean isFlagUser = false;
     Activity activity;
     TabLayout tabLayout;
     private ViewPager mViewPager;
@@ -46,7 +46,7 @@ public class ProfileActivity extends AppCompatActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     ArrayList<Fragment> fragmentList = new ArrayList<>();
     ArrayList<String> strList = new ArrayList<>();
-    MenuItem menuAdd,menuAddSave;
+    MenuItem menuAdd, menuAddSave;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,20 +60,19 @@ public class ProfileActivity extends AppCompatActivity {
         activity = this;
 
         mViewPager = (ViewPager) findViewById(R.id.container);
-        // mViewPager.setAdapter(mSectionsPagerAdapter);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
-        txtVersionCode =findViewById(R.id.txtVersionCode);
+        txtVersionCode = findViewById(R.id.txtVersionCode);
         tabLayout.setupWithViewPager(mViewPager);
 
-        if(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("1")){
-            isFlagUser=true;
+        if (Common.getPrefValue(this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("1")) {
+            isFlagUser = true;
         }
 
         fragmentList.add(UserProfileFragment.newInstance());
-        if(isFlagUser){
+        if (isFlagUser) {
             fragmentList.add(UserChildListFragment.newInstance());
-        }else {
+        } else {
             fragmentList.add(UserProfileFragment.newInstance());
         }
 
@@ -83,7 +82,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         // Set up the ViewPager with the sections adapter.
-        //mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
 
@@ -98,15 +96,12 @@ public class ProfileActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
 
                 //lock second
-                if(isFlagUser){
-                    if(position==1){
-                        // tabLayout.getTabAt(0).select();
+                if (isFlagUser) {
+                    if (position == 1) {
                         menuAdd.setVisible(true);
-                    }else {
+                    } else {
                         menuAdd.setVisible(false);
                     }
-                }else {
-                    // tabLayout.getTabAt(0).select();
                 }
 
             }
@@ -120,12 +115,13 @@ public class ProfileActivity extends AppCompatActivity {
         try {
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             String version = pInfo.versionName;
-            txtVersionCode.setText("Version code : "+version);
+            txtVersionCode.setText("Version code : " + version);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
 
     }
+
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
@@ -146,12 +142,9 @@ public class ProfileActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_add) {
-            Intent intent=new Intent(this,UserChildActivity.class);
-            intent.putExtra("modeType","add");
-            startActivityForResult(intent,1001);
-//            Intent intent=new Intent(this,UserChildActivity.class);
-
-        //    startActivity(intent);
+            Intent intent = new Intent(this, UserChildActivity.class);
+            intent.putExtra("modeType", "add");
+            startActivityForResult(intent, 1001);
             return true;
         }
 
@@ -171,9 +164,9 @@ public class ProfileActivity extends AppCompatActivity {
             if (position == 0) {
                 fragment = new UserProfileFragment();
             } else if (position == 1) {
-                if(isFlagUser){
+                if (isFlagUser) {
                     fragment = new UserChildListFragment();
-                }else {
+                } else {
                     fragment = new UserProfileFragment();
                 }
 
@@ -198,7 +191,7 @@ public class ProfileActivity extends AppCompatActivity {
         ActivityHelper.showProgressDialog(this, "Please Wait...", false);
         String url = ChatApplication.url + Constants.getRoomCameraList;
 
-        ChatApplication.logDisplay("url is "+url);
+        ChatApplication.logDisplay("url is " + url);
         new GetJsonTask2(this, url, "GET", "", new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -206,18 +199,18 @@ public class ProfileActivity extends AppCompatActivity {
                 try {
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    if(code==200){
+                    if (code == 200) {
                         UserChildListFragment.cameraList.clear();
                         UserChildListFragment.roomList.clear();
 
                         JSONObject dataObject = result.getJSONObject("data");
                         JSONArray roomArray = dataObject.getJSONArray("roomList");
 
-                        for(int i=0; i<roomArray.length(); i++){
+                        for (int i = 0; i < roomArray.length(); i++) {
 
-                            JSONObject object=roomArray.getJSONObject(i);
+                            JSONObject object = roomArray.getJSONObject(i);
 
-                            RoomVO roomVO=new RoomVO();
+                            RoomVO roomVO = new RoomVO();
                             roomVO.setRoomId(object.optString("room_id"));
                             roomVO.setRoomName(object.optString("room_name"));
 
@@ -227,11 +220,11 @@ public class ProfileActivity extends AppCompatActivity {
                         JSONArray cameraArray = dataObject.getJSONArray("cameradeviceList");
                         if (cameraArray.length() > 0) {
 
-                            for(int i=0; i<cameraArray.length(); i++){
+                            for (int i = 0; i < cameraArray.length(); i++) {
 
-                                JSONObject object=cameraArray.getJSONObject(i);
+                                JSONObject object = cameraArray.getJSONObject(i);
 
-                                CameraVO roomVO=new CameraVO();
+                                CameraVO roomVO = new CameraVO();
                                 roomVO.setCamera_id(object.optString("camera_id"));
                                 roomVO.setCamera_name(object.optString("camera_name"));
                                 UserChildListFragment.cameraList.add(roomVO);
@@ -258,13 +251,11 @@ public class ProfileActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        ChatApplication.logDisplay("activity is "+requestCode+" "+requestCode);
-        if(requestCode==1001 && resultCode == RESULT_OK){
+        ChatApplication.logDisplay("activity is " + requestCode + " " + requestCode);
+        if (requestCode == 1001 && resultCode == RESULT_OK) {
             for (Fragment fragment : getSupportFragmentManager().getFragments()) {
                 fragment.onActivityResult(requestCode, resultCode, data);
             }
-//            Fragment fragment = getSupportFragmentManager().getFragments().get(1);
-//            fragment.onActivityResult(requestCode, resultCode, data);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

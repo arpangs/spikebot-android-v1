@@ -15,6 +15,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.kp.core.ActivityHelper;
+import com.kp.core.GetJsonTask;
+import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.panel.ExistPanelRoomAdapter;
@@ -26,17 +29,12 @@ import com.spike.bot.model.DevicePanelVO;
 import com.spike.bot.model.DeviceVO;
 import com.spike.bot.model.PanelVO;
 import com.spike.bot.model.RoomVO;
-import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import io.socket.client.Socket;
@@ -54,17 +52,21 @@ public class AddExistingPanel extends AppCompatActivity {
     ExistPanelRoomAdapter existPanelRoomAdapter;
 
     private ArrayList<RoomVO> roomList = new ArrayList<>();
-    private LinearLayout  linear_progress;
+    private LinearLayout linear_progress;
     private EditText et_panel_name_existing;
     private String roomId;
-    private boolean isDeviceAdd,isSync;
+    private boolean isDeviceAdd, isSync;
     private LinearLayout ll_panel_view;
-    private String panelId,panel_name;
+    private String panelId, panel_name;
     private String roomName;
 
     private PanelVO panelVO;
     private EditText txt_un_room;
-    private LinearLayout ll_panel_list,ll_un_view;
+    private LinearLayout ll_panel_list, ll_un_view;
+
+    String webUrl = "";
+    private String userId = "0";
+    private String token_id = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -77,30 +79,32 @@ public class AddExistingPanel extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        try{
+        try {
             roomId = getIntent().getExtras().getString("roomId");
             isDeviceAdd = getIntent().getExtras().getBoolean("isDeviceAdd");
             isSync = getIntent().getExtras().getBoolean("isSync");
             panelId = getIntent().getExtras().getString("panel_id");
             panel_name = getIntent().getExtras().getString("panel_name");
             roomName = getIntent().getExtras().getString("roomName");
-            panelVO =  (PanelVO) getIntent().getExtras().getSerializable("panelV0");
+            panelVO = (PanelVO) getIntent().getExtras().getSerializable("panelV0");
 
-        }catch (Exception ex){ ex.printStackTrace(); }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
-        ll_panel_view = (LinearLayout)findViewById(R.id.ll_panel_view);
+        ll_panel_view = (LinearLayout) findViewById(R.id.ll_panel_view);
         ll_un_view = (LinearLayout) findViewById(R.id.ll_un_view);
-        txt_un_room = (EditText)findViewById(R.id.txt_un_room);
+        txt_un_room = (EditText) findViewById(R.id.txt_un_room);
         ll_un_view.setVisibility(View.GONE);
 
-        if(isDeviceAdd){
+        if (isDeviceAdd) {
             getSupportActionBar().setTitle("Add Custom Device");
             ll_panel_view.setVisibility(View.GONE);
-        }else if(isSync){
+        } else if (isSync) {
             getSupportActionBar().setTitle("Add Unassigned Panel");
             txt_un_room.setText(roomName);
             ll_un_view.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             getSupportActionBar().setTitle("Add Panel");
             ll_panel_view.setVisibility(View.VISIBLE);
         }
@@ -108,7 +112,7 @@ public class AddExistingPanel extends AppCompatActivity {
         linear_progress = (LinearLayout) findViewById(R.id.linear_progress);
         ll_panel_list = (LinearLayout) findViewById(R.id.ll_panel_list);
 
-        et_panel_name_existing = (EditText)findViewById(R.id.et_panel_name_existing);
+        et_panel_name_existing = (EditText) findViewById(R.id.et_panel_name_existing);
         et_panel_name_existing.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
 
         list_panel = (RecyclerView) findViewById(R.id.list_panel);
@@ -117,7 +121,7 @@ public class AddExistingPanel extends AppCompatActivity {
 
         txt_un_room.setFocusable(false);
 
-        existPanelRoomAdapter = new ExistPanelRoomAdapter(roomList,isSync);
+        existPanelRoomAdapter = new ExistPanelRoomAdapter(roomList, isSync);
         list_panel.setAdapter(existPanelRoomAdapter);
 
         ActivityHelper.hideKeyboard(this);
@@ -125,42 +129,41 @@ public class AddExistingPanel extends AppCompatActivity {
 
     }
 
-    private void showProgress(){
+    private void showProgress() {
         list_panel.setVisibility(View.GONE);
         linear_progress.setVisibility(View.VISIBLE);
     }
-    private void hideProgress(){
+
+    private void hideProgress() {
 
         list_panel.setVisibility(View.VISIBLE);
         linear_progress.setVisibility(View.GONE);
     }
 
 
-    /*
-    * get method fro call getOriginalDevices api
-    * */
+    /**
+     * get method for call getOriginalDevices api
+     */
     private void getDeviceList() {
 
         roomList.clear();
         roomList = new ArrayList<>();
 
         String url = "";
-        if(isSync){
-            url = webUrl + Constants.GET_ORIGINAL_DEVICES + "/"+0; //add new unassigned
-        }else{
-            url = webUrl + Constants.GET_ORIGINAL_DEVICES + "/"+1; //Add from existing
+        if (isSync) {
+            url = webUrl + Constants.GET_ORIGINAL_DEVICES + "/" + 0; //add new unassigned
+        } else {
+            url = webUrl + Constants.GET_ORIGINAL_DEVICES + "/" + 1; //Add from existing
         }
 
         ChatApplication.logDisplay("web url : " + url);
-       /* if (!token_id.equalsIgnoreCase("")) {
-            url = url + "/" + token_id;
-        }*/
+
         showProgress();
 
         new GetJsonTask(getApplicationContext(), url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                ChatApplication.logDisplay( "getDeviceList onSuccess " + result.toString());
+                ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
                 try {
                     roomList = new ArrayList<>();
 
@@ -170,15 +173,15 @@ public class AddExistingPanel extends AppCompatActivity {
                     roomList = JsonHelper.parseExistPanelArray(roomArray);
 
                     //selected device list by panelID
-                    if(panelVO!=null && panelVO.getDeviceList()!=null){
-                        List<DeviceVO> deviceVOList =  panelVO.getDeviceList();
-                        for(DeviceVO deviceVO : deviceVOList){
+                    if (panelVO != null && panelVO.getDeviceList() != null) {
+                        List<DeviceVO> deviceVOList = panelVO.getDeviceList();
+                        for (DeviceVO deviceVO : deviceVOList) {
 
-                            for(RoomVO roomVO : roomList){
+                            for (RoomVO roomVO : roomList) {
                                 ArrayList<DevicePanelVO> panelList = roomVO.getDevicePanelList();
-                                for(DevicePanelVO devicePanelVO : panelList){
+                                for (DevicePanelVO devicePanelVO : panelList) {
 
-                                    if(Integer.parseInt(deviceVO.getDeviceId())==devicePanelVO.getDeviceId() && deviceVO.getModuleId().equalsIgnoreCase(devicePanelVO.getModuleId())){
+                                    if (Integer.parseInt(deviceVO.getDeviceId()) == devicePanelVO.getDeviceId() && deviceVO.getModuleId().equalsIgnoreCase(devicePanelVO.getModuleId())) {
                                         roomVO.setExpanded(true);
                                         devicePanelVO.setSelected(true);
                                     }
@@ -186,18 +189,15 @@ public class AddExistingPanel extends AppCompatActivity {
                             }
                         }
                     }
-
-                    //sortList(roomList);
-
                     existPanelRoomAdapter = new ExistPanelRoomAdapter(roomList, isSync);
                     list_panel.setAdapter(existPanelRoomAdapter);
                     existPanelRoomAdapter.notifyDataSetChanged();
 
-                    if(roomList.size()==0){
+                    if (roomList.size() == 0) {
                         list_panel.setVisibility(View.GONE);
                         ll_panel_list.setVisibility(View.VISIBLE);
                         menu.findItem(R.id.action_save).setEnabled(false);
-                    }else{
+                    } else {
                         menu.findItem(R.id.action_save).setEnabled(true);
                     }
 
@@ -212,47 +212,20 @@ public class AddExistingPanel extends AppCompatActivity {
             @Override
             public void onFailure(Throwable throwable, String error) {
                 hideProgress();
-                if(roomList.size()==0){
+                if (roomList.size() == 0) {
                     list_panel.setVisibility(View.GONE);
                     ll_panel_list.setVisibility(View.VISIBLE);
-                    if(menu!=null){
+                    if (menu != null) {
                         menu.findItem(R.id.action_save).setEnabled(false);
                     }
-
                 }
-
-               // Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
 
     }
 
-    private void sortList(final List<RoomVO> roomVOs){
 
-        Collections.sort(roomVOs, new Comparator<RoomVO>() {
-            @Override
-            public int compare(RoomVO o1, RoomVO o2) {
-                return Boolean.compare(o2.isExpanded(),o1.isExpanded());
-            }
-        });
-    }
-
-
-    //sort room/panel name alphabetic order
-    private static void sortDeviceByName(ArrayList<RoomVO> list){
-        Collections.sort(list, new Comparator<RoomVO>() {
-            @Override
-            public int compare(RoomVO o1, RoomVO o2) {
-                return o1.getRoomName().compareToIgnoreCase(o2.getRoomName());
-            }
-        });
-    }
-
-    String webUrl = "";
-    private String userId = "0";
-    private String token_id = "";
-
-    public void startSocketConnection(){
+    public void startSocketConnection() {
 
         ChatApplication app = ChatApplication.getInstance();
         if (mSocket != null && mSocket.connected()) {
@@ -262,7 +235,7 @@ public class AddExistingPanel extends AppCompatActivity {
         }
         webUrl = app.url;
 
-        if (Common.isConnected()){
+        if (Common.isConnected()) {
             getDeviceList();
         }
 
@@ -301,14 +274,14 @@ public class AddExistingPanel extends AppCompatActivity {
     }
 
     //save
-    private void saveExistPanel(){
+    private void saveExistPanel() {
 
-        if(!ActivityHelper.isConnectingToInternet(this)){
-            Toast.makeText(getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-        if(!isDeviceAdd){
-            if(TextUtils.isEmpty(et_panel_name_existing.getText().toString())){
+        if (!isDeviceAdd) {
+            if (TextUtils.isEmpty(et_panel_name_existing.getText().toString())) {
                 Toast.makeText(getApplicationContext(), R.string.enter_panel_name, Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -320,13 +293,13 @@ public class AddExistingPanel extends AppCompatActivity {
 
         boolean isSelected = false;
         ArrayList<DevicePanelVO> selectedDevice = new ArrayList<>();
-        if(roomList.size()>0){
+        if (roomList.size() > 0) {
 
-            for(RoomVO room : roomList){
+            for (RoomVO room : roomList) {
                 ArrayList<DevicePanelVO> deviceList = room.getDevicePanelList();
-                for(DevicePanelVO devie : deviceList){
+                for (DevicePanelVO devie : deviceList) {
 
-                    if(devie.isSelected()){
+                    if (devie.isSelected()) {
                         isSelected = true;
                         selectedDevice.add(devie);
                     }
@@ -334,117 +307,110 @@ public class AddExistingPanel extends AppCompatActivity {
             }
         }
 
-        if(!isSelected){
+        if (!isSelected) {
             Toast.makeText(getApplicationContext(),
-                    isDeviceAdd ? "Please select Device" :"Please select Panel", Toast.LENGTH_SHORT).show();
+                    isDeviceAdd ? "Please select Device" : "Please select Panel", Toast.LENGTH_SHORT).show();
             return;
-        }else{
+        } else {
 
             String url = "";
-            if(!isDeviceAdd){
-                url =  webUrl + Constants.ADD_CUSTOM_PANEL;
-            }else{
-                url =  webUrl + Constants.ADD_CUSTOME_DEVICE;
+            if (!isDeviceAdd) {
+                url = webUrl + Constants.ADD_CUSTOM_PANEL;
+            } else {
+                url = webUrl + Constants.ADD_CUSTOME_DEVICE;
             }
 
             ChatApplication.logDisplay("URL CALL : " + url + " isDeviceAdd : " + isDeviceAdd);
+            JSONObject panelObj = new JSONObject();
+            try {
+                panelObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+                panelObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
-           // if(!url.contains("http://52.66.176.47")){
+                panelObj.put("room_id", roomId);
+                panelObj.put("room_name", roomName);
+                panelObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
-              //  ActivityHelper.showProgressDialog(this,"Please wait.",false);
-
-                JSONObject panelObj = new JSONObject();
-                try {
-                    panelObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-                    panelObj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
-
-                    panelObj.put("room_id",roomId);
-                    panelObj.put("room_name",roomName);
-                    panelObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-
-                    if(isDeviceAdd){
-                        panelObj.put("panel_id",panelId);
-                        panelObj.put("panel_name",panel_name);
-                    }else{
-                        panelObj.put("panel_name",et_panel_name_existing.getText().toString());
-                    }
-
-                    JSONArray jsonArrayDevice = new JSONArray();
-                    JSONArray array = new JSONArray();
-
-                    for(DevicePanelVO dPanel : selectedDevice){
-                        JSONObject ob1 = new JSONObject();
-                        ob1.put("module_id",dPanel.getModuleId());
-                        ob1.put("module_id",dPanel.getModuleId());
-                        ob1.put("device_id",""+dPanel.getDeviceId());
-                        ob1.put("room_device_id",dPanel.getRoomDeviceId());
-
-                        ob1.put("device_icon",dPanel.getDevice_icon());
-                        ob1.put("device_name",dPanel.getDeviceName());
-                        ob1.put("device_status",dPanel.getDeviceStatus());
-                        ob1.put("device_type",Integer.parseInt(dPanel.getDeviceType()));
-                        ob1.put("device_specific_value",dPanel.getDeviceSpecificValue());
-                        ob1.put("room_panel_id",dPanel.getRoom_panel_id());
-
-                        ob1.put("original_room_device_id",dPanel.getOriginal_room_device_id());
-
-                        jsonArrayDevice.put(ob1);
-
-                        try{
-                           array.put(dPanel.getRoomDeviceId()); //remove last comma of String index @String str = "abc,xyz,"
-                        }catch (Exception ex){
-                            ex.printStackTrace();
-                        }
-                    }
-
-                    panelObj.put("room_devices",array);
-
-                    panelObj.put("deviceList",jsonArrayDevice);
-
-                   ChatApplication.logDisplay("JSONObject : " + panelObj.toString());
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if (isDeviceAdd) {
+                    panelObj.put("panel_id", panelId);
+                    panelObj.put("panel_name", panel_name);
+                } else {
+                    panelObj.put("panel_name", et_panel_name_existing.getText().toString());
                 }
 
-                ActivityHelper.showProgressDialog(AddExistingPanel.this,"Please wait...",false);
+                JSONArray jsonArrayDevice = new JSONArray();
+                JSONArray array = new JSONArray();
 
+                for (DevicePanelVO dPanel : selectedDevice) {
+                    JSONObject ob1 = new JSONObject();
+                    ob1.put("module_id", dPanel.getModuleId());
+                    ob1.put("module_id", dPanel.getModuleId());
+                    ob1.put("device_id", "" + dPanel.getDeviceId());
+                    ob1.put("room_device_id", dPanel.getRoomDeviceId());
 
-                new GetJsonTask(this,url ,"POST",panelObj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
-                    @Override
-                    public void onSuccess(JSONObject result) {
-                        ActivityHelper.dismissProgressDialog();
-                       ChatApplication.logDisplay( "saveMood onSuccess " + result.toString());
-                        try {
+                    ob1.put("device_icon", dPanel.getDevice_icon());
+                    ob1.put("device_name", dPanel.getDeviceName());
+                    ob1.put("device_status", dPanel.getDeviceStatus());
+                    ob1.put("device_type", Integer.parseInt(dPanel.getDeviceType()));
+                    ob1.put("device_specific_value", dPanel.getDeviceSpecificValue());
+                    ob1.put("room_panel_id", dPanel.getRoom_panel_id());
 
-                            int code = result.getInt("code");
-                            String message = result.getString("message");
-                            if(code==200){
-                                ChatApplication.isMainFragmentNeedResume = true;
-                                ChatApplication.isEditActivityNeedResume = true;
-                                if(!TextUtils.isEmpty(message)){
-                                    Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
-                                }
-                                finish();
-                            }
-                            else{
-                                Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
-                            }
+                    ob1.put("original_room_device_id", dPanel.getOriginal_room_device_id());
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        finally {
-                            ActivityHelper.dismissProgressDialog();
-                        }
+                    jsonArrayDevice.put(ob1);
+
+                    try {
+                        array.put(dPanel.getRoomDeviceId()); //remove last comma of String index @String str = "abc,xyz,"
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
-                    @Override
-                    public void onFailure(Throwable throwable, String error) {
-                        Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                }
+
+                panelObj.put("room_devices", array);
+
+                panelObj.put("deviceList", jsonArrayDevice);
+
+                ChatApplication.logDisplay("JSONObject : " + panelObj.toString());
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            ActivityHelper.showProgressDialog(AddExistingPanel.this, "Please wait...", false);
+
+
+            new GetJsonTask(this, url, "POST", panelObj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+                @Override
+                public void onSuccess(JSONObject result) {
+                    ActivityHelper.dismissProgressDialog();
+                    ChatApplication.logDisplay("saveMood onSuccess " + result.toString());
+                    try {
+
+                        int code = result.getInt("code");
+                        String message = result.getString("message");
+                        if (code == 200) {
+                            ChatApplication.isMainFragmentNeedResume = true;
+                            ChatApplication.isEditActivityNeedResume = true;
+                            if (!TextUtils.isEmpty(message)) {
+                                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                            }
+                            finish();
+                        } else {
+                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } finally {
                         ActivityHelper.dismissProgressDialog();
                     }
-                }).execute();
-           // }
+                }
+
+                @Override
+                public void onFailure(Throwable throwable, String error) {
+                    Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                    ActivityHelper.dismissProgressDialog();
+                }
+            }).execute();
         }
 
     }

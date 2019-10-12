@@ -16,10 +16,11 @@ public class ScheduleListActivity extends AppCompatActivity {
     Activity activity;
     FrameLayout container;
 
-    String moodId3 = "",roomId = "";
-    int  selection = 0;
-    String roomName = "",isActivityType="",isRoomMainFm="";
+    String moodId3 = "", roomId = "";
+    int selection = 0;
+    String roomName = "", isActivityType = "", isRoomMainFm = "";
     boolean isMoodAdapter = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,8 +44,8 @@ public class ScheduleListActivity extends AppCompatActivity {
         isMoodAdapter = getIntent().getExtras().getBoolean("isMoodAdapter");
         isActivityType = getIntent().getExtras().getString("isActivityType");
         isRoomMainFm = getIntent().getExtras().getString("isRoomMainFm");
-        if(TextUtils.isEmpty(isRoomMainFm)){
-            isRoomMainFm="";
+        if (TextUtils.isEmpty(isRoomMainFm)) {
+            isRoomMainFm = "";
         }
 
         // create a FragmentManager
@@ -54,13 +55,14 @@ public class ScheduleListActivity extends AppCompatActivity {
 // replace the FrameLayout with new Fragment
 
         //set room name title on sch list
-        if(!TextUtils.isEmpty(moodId3) && !TextUtils.isEmpty(roomName)){
+        if (!TextUtils.isEmpty(moodId3) && !TextUtils.isEmpty(roomName)) {
             toolbar.setTitle(roomName);
         }
 
-        fragmentTransaction.replace(R.id.container,ScheduleFragment.newInstance(true,moodId,moodId2,moodId3,selection,roomId,isMoodAdapter,isActivityType,isRoomMainFm));
+        fragmentTransaction.replace(R.id.container, ScheduleFragment.newInstance(true, moodId, moodId2, moodId3, selection, roomId, isMoodAdapter, isActivityType, isRoomMainFm));
         fragmentTransaction.commit(); // save the changes
     }
+
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
@@ -75,10 +77,10 @@ public class ScheduleListActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if(!TextUtils.isEmpty(moodId3)){
+        if (!TextUtils.isEmpty(moodId3)) {
             menu.findItem(R.id.action_add).setVisible(false);
             menu.findItem(R.id.action_save).setVisible(false);
-        }else{
+        } else {
             menu.findItem(R.id.action_save).setVisible(false);
             menu.findItem(R.id.action_add).setVisible(false);
         }

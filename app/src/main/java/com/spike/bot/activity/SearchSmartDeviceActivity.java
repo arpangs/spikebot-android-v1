@@ -34,7 +34,7 @@ import java.util.ArrayList;
  */
 public class SearchSmartDeviceActivity extends AppCompatActivity implements View.OnClickListener, LIsterSmartDevice {
 
-    public boolean isFilterType=false;
+    public boolean isFilterType = false;
     Toolbar toolbar;
     RecyclerView recyclerDevice;
     Button btnUnAssing, btnAssign;
@@ -102,15 +102,12 @@ public class SearchSmartDeviceActivity extends AppCompatActivity implements View
 
     @Override
     public void onClick(View v) {
-//        if(v==btnRetry){
-//            callgetHueRouterDetails();
-//        }
         if (v == btnAssign) {
-            isFilterType=false;
-            updateButton(btnAssign,btnUnAssing);
-        }else if(v==btnUnAssing){
-            isFilterType=true;
-            updateButton(btnAssign,btnUnAssing);
+            isFilterType = false;
+            updateButton(btnAssign, btnUnAssing);
+        } else if (v == btnUnAssing) {
+            isFilterType = true;
+            updateButton(btnAssign, btnUnAssing);
         }
     }
 
@@ -172,11 +169,6 @@ public class SearchSmartDeviceActivity extends AppCompatActivity implements View
 
                         dataVIsible(false);
                         callHueLightsList(bridge_id, host_ip);
-
-                    } else {
-//                        toolbar.setTitle("Smart Device List");
-//                        dataVIsible(true);
-//                        callcreateHueUSer();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

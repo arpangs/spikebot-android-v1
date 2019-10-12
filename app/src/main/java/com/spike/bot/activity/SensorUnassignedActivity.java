@@ -16,6 +16,9 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.kp.core.ActivityHelper;
+import com.kp.core.GetJsonTask;
+import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
@@ -25,12 +28,7 @@ import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.fragments.MainFragment;
-import com.spike.bot.model.RepeaterModel;
-import com.spike.bot.model.RoomVO;
 import com.spike.bot.model.SensorUnassignedRes;
-import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,22 +42,22 @@ import java.util.List;
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class SensorUnassignedActivity extends AppCompatActivity{
+public class SensorUnassignedActivity extends AppCompatActivity {
 
     private Spinner spinner_room;
     View viewLine;
     private RecyclerView list_sensor;
-    private LinearLayout ll_sensor_list_empy,linear_progress;
+    private LinearLayout ll_sensor_list_empy, linear_progress;
 
     ArrayAdapter spinnerArrayAdapter;
     private SensorUnassignedAdapter sensorUnassignedAdapter;
     private UnAssignRepeatarAdapter unAssignRepeatarAdapter;
     private int isDoorSensor;
-    public String roomName="",roomId="";
+    public String roomName = "", roomId = "";
 
-    ArrayList<SensorUnassignedRes.Data.UnassigendSensorList> arrayListRepeter=new ArrayList<>();
+    ArrayList<SensorUnassignedRes.Data.UnassigendSensorList> arrayListRepeter = new ArrayList<>();
 
-    List<SensorUnassignedRes.Data.RoomList> roomList=new ArrayList<>();
+    List<SensorUnassignedRes.Data.RoomList> roomList = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,54 +72,54 @@ public class SensorUnassignedActivity extends AppCompatActivity{
 
         spinner_room = (Spinner) findViewById(R.id.spinner_room);
         list_sensor = (RecyclerView) findViewById(R.id.list_sensor);
-        viewLine =  findViewById(R.id.viewLine);
-        list_sensor.setLayoutManager(new GridLayoutManager(this,1));
+        viewLine = findViewById(R.id.viewLine);
+        list_sensor.setLayoutManager(new GridLayoutManager(this, 1));
 
         ll_sensor_list_empy = (LinearLayout) findViewById(R.id.ll_sensor_list);
         linear_progress = (LinearLayout) findViewById(R.id.linear_progress);
 
-        isDoorSensor = getIntent().getIntExtra("isDoorSensor",0);
+        isDoorSensor = getIntent().getIntExtra("isDoorSensor", 0);
         roomName = getIntent().getStringExtra("roomName");
         roomId = getIntent().getStringExtra("roomId");
 
-        if(TextUtils.isEmpty(roomName)){
-            roomName="";
+        if (TextUtils.isEmpty(roomName)) {
+            roomName = "";
         }
 
-        if(isDoorSensor == MainFragment.SENSOR_TYPE_DOOR){
+        if (isDoorSensor == MainFragment.SENSOR_TYPE_DOOR) {
             spinner_room.setVisibility(View.GONE);
             viewLine.setVisibility(View.GONE);
             isDoorSensor = 0;
-        }else if(isDoorSensor == MainFragment.SENSOR_TYPE_TEMP){
+        } else if (isDoorSensor == MainFragment.SENSOR_TYPE_TEMP) {
             isDoorSensor = 1;
-        }else if(isDoorSensor == MainFragment.SENSOR_TYPE_IR){
+        } else if (isDoorSensor == MainFragment.SENSOR_TYPE_IR) {
             isDoorSensor = 2;
             getSupportActionBar().setTitle("Unassigned IR List");
-        }else if(isDoorSensor == MainFragment.Curtain){
+        } else if (isDoorSensor == MainFragment.Curtain) {
             isDoorSensor = 6;
             getSupportActionBar().setTitle("Curtain List");
-        }else if(isDoorSensor == MainFragment.SENSOR_REPEATAR){
+        } else if (isDoorSensor == MainFragment.SENSOR_REPEATAR) {
             spinner_room.setVisibility(View.GONE);
             viewLine.setVisibility(View.GONE);
             isDoorSensor = 10;
             getSupportActionBar().setTitle("Unassigned List");
-        }else {
+        } else {
             isDoorSensor = 5;
             getSupportActionBar().setTitle("Multi Sensor");
         }
 
         //10 is repeatar unaasign
-        if(isDoorSensor == MainFragment.SENSOR_REPEATAR){
+        if (isDoorSensor == MainFragment.SENSOR_REPEATAR) {
             callReptorList();
-        }else {
+        } else {
             getSensorUnAssignedDetails(isDoorSensor);
         }
 
     }
 
-    private void callReptorList(){
+    private void callReptorList() {
 
-        String url = ChatApplication.url + Constants.getUnassignedRepeaterList ;
+        String url = ChatApplication.url + Constants.getUnassignedRepeaterList;
 
         linear_progress.setVisibility(View.VISIBLE);
 
@@ -131,39 +129,37 @@ public class SensorUnassignedActivity extends AppCompatActivity{
                 //   ActivityHelper.dismissProgressDialog();
                 linear_progress.setVisibility(View.GONE);
 
-                if(result.optInt("code")==200){
+                if (result.optInt("code") == 200) {
                     list_sensor.setVisibility(View.VISIBLE);
                     ll_sensor_list_empy.setVisibility(View.GONE);
 
                     try {
                         arrayListRepeter.clear();
-                        JSONObject object=new JSONObject(result.toString());
+                        JSONObject object = new JSONObject(result.toString());
 
-                        JSONArray array=object.optJSONArray("data");
+                        JSONArray array = object.optJSONArray("data");
 
                         // "repeator_module_id": "B04A1D1A004B1200",
                         //      "repeator_name": "repeater name g",
                         //      "is_active": 1
-                        for(int i=0; i<array.length(); i++){
-                            JSONObject object1=array.optJSONObject(i);
-                            SensorUnassignedRes.Data.UnassigendSensorList repeaterModel=new SensorUnassignedRes.Data.UnassigendSensorList();
+                        for (int i = 0; i < array.length(); i++) {
+                            JSONObject object1 = array.optJSONObject(i);
+                            SensorUnassignedRes.Data.UnassigendSensorList repeaterModel = new SensorUnassignedRes.Data.UnassigendSensorList();
                             repeaterModel.setSensorName(object1.optString("repeator_name"));
                             repeaterModel.setSensorId(object1.optString("repeator_module_id"));
-//                            repeaterModel.set(object1.optString("is_active"));
-
                             arrayListRepeter.add(repeaterModel);
                         }
 
-                        if(arrayListRepeter.size()>0){
-                            unAssignRepeatarAdapter = new UnAssignRepeatarAdapter(SensorUnassignedActivity.this,arrayListRepeter);
+                        if (arrayListRepeter.size() > 0) {
+                            unAssignRepeatarAdapter = new UnAssignRepeatarAdapter(SensorUnassignedActivity.this, arrayListRepeter);
                             list_sensor.setAdapter(unAssignRepeatarAdapter);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
-                }else{
-                    Toast.makeText(getApplicationContext(),result.optString("message"),Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), result.optString("message"), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -178,13 +174,13 @@ public class SensorUnassignedActivity extends AppCompatActivity{
     }
 
 
-    private void getSensorUnAssignedDetails(int sensor_type){
+    private void getSensorUnAssignedDetails(int sensor_type) {
 
-        String url="";
-        if(sensor_type==6){
-             url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/curtain"; //0 door - 1 temp
-        }else {
-            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/"+sensor_type; //0 door - 1 temp
+        String url = "";
+        if (sensor_type == 6) {
+            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/curtain"; //0 door - 1 temp
+        } else {
+            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/" + sensor_type; //0 door - 1 temp
         }
 
         linear_progress.setVisibility(View.VISIBLE);
@@ -192,50 +188,38 @@ public class SensorUnassignedActivity extends AppCompatActivity{
         new GetJsonTask(getApplicationContext(), url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                //   ActivityHelper.dismissProgressDialog();
                 linear_progress.setVisibility(View.GONE);
 
-                SensorUnassignedRes sensorUnassignedRes = Common.jsonToPojo(result.toString(),SensorUnassignedRes.class);
+                SensorUnassignedRes sensorUnassignedRes = Common.jsonToPojo(result.toString(), SensorUnassignedRes.class);
 
-                if(sensorUnassignedRes.getCode() == 200){
+                if (sensorUnassignedRes.getCode() == 200) {
 
-                    if(sensorUnassignedRes.getData().getUnassigendSensorList().size()==0){
+                    if (sensorUnassignedRes.getData().getUnassigendSensorList().size() == 0) {
 
                         list_sensor.setVisibility(View.GONE);
                         ll_sensor_list_empy.setVisibility(View.VISIBLE);
 
-                    }else{
-
-                        //ArrayList<RoomVO> rooListSpinnerEmpty = new ArrayList<>();
+                    } else {
                         ArrayList<String> rooListSpinnerEmpty = new ArrayList<>();
 
-                        roomList= sensorUnassignedRes.getData().getRoomList();
-
-                      /*  RoomVO room = new RoomVO();
-                        room.setRoomId("select");
-                        room.setRoomName("-- Select --");
-                        rooListSpinnerEmpty.add(0,room);*/
-
+                        roomList = sensorUnassignedRes.getData().getRoomList();
                         rooListSpinnerEmpty.add("Select Room Name");
-                        int position=0;
-                        for(SensorUnassignedRes.Data.RoomList roomList1 : roomList){
-//                            RoomVO roomT = new RoomVO();
-//                            roomT.setRoomId(roomList1.getRoomId());
-//                            roomT.setRoomName(roomList1.getRoomName());
-                            if(roomList1.getRoomId().equalsIgnoreCase(roomId)){
-                                position=position;
-                            }else {
+                        int position = 0;
+                        for (SensorUnassignedRes.Data.RoomList roomList1 : roomList) {
+                            if (roomList1.getRoomId().equalsIgnoreCase(roomId)) {
+                                position = position;
+                            } else {
                                 position++;
                             }
                             rooListSpinnerEmpty.add(roomList1.getRoomName());
                         }
 
-                        spinnerArrayAdapter = new ArrayAdapter(SensorUnassignedActivity.this,android.R.layout.simple_spinner_dropdown_item,rooListSpinnerEmpty);
+                        spinnerArrayAdapter = new ArrayAdapter(SensorUnassignedActivity.this, android.R.layout.simple_spinner_dropdown_item, rooListSpinnerEmpty);
                         spinner_room.setAdapter(spinnerArrayAdapter);
 
-                        for(int i=0; i<roomList.size(); i++){
-                            if(roomList.get(i).getRoomId().equalsIgnoreCase(roomId)){
-                                spinner_room.setSelection(i+1);
+                        for (int i = 0; i < roomList.size(); i++) {
+                            if (roomList.get(i).getRoomId().equalsIgnoreCase(roomId)) {
+                                spinner_room.setSelection(i + 1);
                                 break;
                             }
                         }
@@ -247,8 +231,8 @@ public class SensorUnassignedActivity extends AppCompatActivity{
                         list_sensor.setAdapter(sensorUnassignedAdapter);
                     }
 
-                }else{
-                    Toast.makeText(getApplicationContext(),sensorUnassignedRes.getMessage(),Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), sensorUnassignedRes.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -274,14 +258,13 @@ public class SensorUnassignedActivity extends AppCompatActivity{
         int id = item.getItemId();
         if (id == R.id.action_save) {
 
-            if(isDoorSensor == 0){
+            if (isDoorSensor == 0) {
                 saveSensorUnassinged();
-            } else if(isDoorSensor==10){
+            } else if (isDoorSensor == 10) {
                 saveRepeatar();
-            }else if(isDoorSensor==6){
+            } else if (isDoorSensor == 6) {
                 saveCurtain();
-            }
-            else {
+            } else {
                 if (spinner_room.getSelectedItemPosition() == 0) {
                     Toast.makeText(getApplicationContext(), "Please select room", Toast.LENGTH_LONG).show();
                 } else {
@@ -290,7 +273,7 @@ public class SensorUnassignedActivity extends AppCompatActivity{
             }
 
             return true;
-        }else if(id == android.R.id.home){
+        } else if (id == android.R.id.home) {
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
@@ -301,36 +284,30 @@ public class SensorUnassignedActivity extends AppCompatActivity{
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-
-       /* if(spinner_room.getSelectedItemPosition() == 0) {
-            Toast.makeText(getApplicationContext(),"Select Sensor Room Name.",Toast.LENGTH_SHORT).show();
-            return;
-        }*/
-
-        if(sensorUnassignedAdapter==null){
+        if (sensorUnassignedAdapter == null) {
             return;
         }
 
         SensorUnassignedRes.Data.UnassigendSensorList unassigendSensorList = sensorUnassignedAdapter.getSelectedSensor();
-        if(unassigendSensorList == null){
+        if (unassigendSensorList == null) {
 
             String message = "";
-            if(isDoorSensor == 6 ){
+            if (isDoorSensor == 6) {
                 message = "Select at least one curtain";
             }
 
-            Toast.makeText(getApplicationContext(),message ,Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        int position=spinner_room.getSelectedItemPosition() - 1;
+        int position = spinner_room.getSelectedItemPosition() - 1;
 
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("curtain_module_id",unassigendSensorList.getModuleId());
-            jsonObject.put("curtain_name",unassigendSensorList.getSensorName());
-            jsonObject.put("room_id",roomList.get(position).getRoomId());
-            jsonObject.put("room_name",roomList.get(position).getRoomName());
+            jsonObject.put("curtain_module_id", unassigendSensorList.getModuleId());
+            jsonObject.put("curtain_name", unassigendSensorList.getSensorName());
+            jsonObject.put("room_id", roomList.get(position).getRoomId());
+            jsonObject.put("room_name", roomList.get(position).getRoomName());
             jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -351,9 +328,9 @@ public class SensorUnassignedActivity extends AppCompatActivity{
 
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 
-                    if(code == 200){
+                    if (code == 200) {
                         ChatApplication.isMainFragmentNeedResume = true;
                         ChatApplication.isEditActivityNeedResume = true;
                         finish();
@@ -378,17 +355,16 @@ public class SensorUnassignedActivity extends AppCompatActivity{
             return;
         }
 
-        if(unAssignRepeatarAdapter==null){
+        if (unAssignRepeatarAdapter == null) {
             return;
         }
 
         SensorUnassignedRes.Data.UnassigendSensorList unassigendSensorList = unAssignRepeatarAdapter.getSelectedSensor();
-        if(unassigendSensorList == null){
+        if (unassigendSensorList == null) {
             String message = "Select at least one Repeater";
-            Toast.makeText(getApplicationContext(),message ,Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
             return;
         }
-
 
 
         JSONObject jsonObject = new JSONObject();
@@ -398,10 +374,10 @@ public class SensorUnassignedActivity extends AppCompatActivity{
             //	"user_id":"1566980189559_18CfbqxQo",
             //	"phone_id":"1234567",
             //	"phone_type":"Android"
-            jsonObject.put("repeator_module_id",unassigendSensorList.getSensorId());
-            jsonObject.put("repeator_name",unassigendSensorList.getSensorName());
+            jsonObject.put("repeator_module_id", unassigendSensorList.getSensorId());
+            jsonObject.put("repeator_name", unassigendSensorList.getSensorName());
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
         } catch (JSONException e) {
@@ -421,8 +397,8 @@ public class SensorUnassignedActivity extends AppCompatActivity{
 
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
-                    if(code == 200){
+                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                    if (code == 200) {
                         finish();
                     }
 
@@ -439,51 +415,45 @@ public class SensorUnassignedActivity extends AppCompatActivity{
 
     }
 
-    private void saveSensorUnassinged(){
+    private void saveSensorUnassinged() {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-
-       /* if(spinner_room.getSelectedItemPosition() == 0) {
-            Toast.makeText(getApplicationContext(),"Select Sensor Room Name.",Toast.LENGTH_SHORT).show();
-            return;
-        }*/
-
-        if(sensorUnassignedAdapter==null){
+        if (sensorUnassignedAdapter == null) {
             return;
         }
 
         SensorUnassignedRes.Data.UnassigendSensorList unassigendSensorList = sensorUnassignedAdapter.getSelectedSensor();
-        if(unassigendSensorList == null){
+        if (unassigendSensorList == null) {
 
             String message = "";
-            if(isDoorSensor == 0 || isDoorSensor == 1 || isDoorSensor==10|| isDoorSensor==5){
+            if (isDoorSensor == 0 || isDoorSensor == 1 || isDoorSensor == 10 || isDoorSensor == 5) {
                 message = "Select at least one Sensor";
-            }else if(isDoorSensor == 2){
+            } else if (isDoorSensor == 2) {
                 message = "Select at least one blaster";
             }
 
-            Toast.makeText(getApplicationContext(),message ,Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if(isDoorSensor == 0){
-            Intent intent=new Intent(this, AddDeviceConfirmActivity.class);
-            intent.putExtra("isViewType","syncDoor");
-            intent.putExtra("door_sensor_module_id",""+unassigendSensorList.getModuleId());
-            intent.putExtra("door_sensor_name",""+unassigendSensorList.getSensorName());
-            intent.putExtra("door_type",""+unassigendSensorList.getLock_subtype());
-            if(unassigendSensorList.getLock_subtype().equals("2")){
-                intent.putExtra("lock_id",""+unassigendSensorList.getLock_id());
-                intent.putExtra("lock_data",""+unassigendSensorList.getLock_data());
+        if (isDoorSensor == 0) {
+            Intent intent = new Intent(this, AddDeviceConfirmActivity.class);
+            intent.putExtra("isViewType", "syncDoor");
+            intent.putExtra("door_sensor_module_id", "" + unassigendSensorList.getModuleId());
+            intent.putExtra("door_sensor_name", "" + unassigendSensorList.getSensorName());
+            intent.putExtra("door_type", "" + unassigendSensorList.getLock_subtype());
+            if (unassigendSensorList.getLock_subtype().equals("2")) {
+                intent.putExtra("lock_id", "" + unassigendSensorList.getLock_id());
+                intent.putExtra("lock_data", "" + unassigendSensorList.getLock_data());
             }
             startActivity(intent);
 
             return;
         }
-      // "sensor_id": "1559654114379_MnqPvjkOE",
+        // "sensor_id": "1559654114379_MnqPvjkOE",
         //                "module_id": "328E131A004B1200",
         //                "sensor_type": "multisensor",
         //                "sensor_name": "mmlti_test",
@@ -493,33 +463,33 @@ public class SensorUnassignedActivity extends AppCompatActivity{
         //				"phone_id":"1234567",
         //				"phone_type":"Android"
 
-        int position=spinner_room.getSelectedItemPosition() - 1;
+        int position = spinner_room.getSelectedItemPosition() - 1;
 
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("room_id",roomList.get(position).getRoomId());
-            jsonObject.put("room_name",roomList.get(position).getRoomName());
-            jsonObject.put("sensor_id",unassigendSensorList.getSensorId());
-            jsonObject.put("module_id",unassigendSensorList.getModuleId());
+            jsonObject.put("room_id", roomList.get(position).getRoomId());
+            jsonObject.put("room_name", roomList.get(position).getRoomName());
+            jsonObject.put("sensor_id", unassigendSensorList.getSensorId());
+            jsonObject.put("module_id", unassigendSensorList.getModuleId());
 
             String sensor_t = "";
-            if(unassigendSensorList.getSensorIcon().equalsIgnoreCase("doorsensor")){
+            if (unassigendSensorList.getSensorIcon().equalsIgnoreCase("doorsensor")) {
                 sensor_t = "door";
-            }else if(unassigendSensorList.getSensorIcon().equalsIgnoreCase("tempsensor")){
+            } else if (unassigendSensorList.getSensorIcon().equalsIgnoreCase("tempsensor")) {
                 sensor_t = "temp";
-            }else if(unassigendSensorList.getSensorIcon().equalsIgnoreCase("irblaster")){
+            } else if (unassigendSensorList.getSensorIcon().equalsIgnoreCase("irblaster")) {
                 sensor_t = "irblaster";
-            }else if(unassigendSensorList.getSensorIcon().equalsIgnoreCase("multisensor")){
+            } else if (unassigendSensorList.getSensorIcon().equalsIgnoreCase("multisensor")) {
                 sensor_t = "multisensor";
-            }else if(unassigendSensorList.getSensorIcon().equalsIgnoreCase("gassensor")){
+            } else if (unassigendSensorList.getSensorIcon().equalsIgnoreCase("gassensor")) {
                 sensor_t = "gas";
             }
 
-            jsonObject.put("sensor_type",sensor_t);
-            jsonObject.put("sensor_name",unassigendSensorList.getSensorName());
+            jsonObject.put("sensor_type", sensor_t);
+            jsonObject.put("sensor_name", unassigendSensorList.getSensorName());
 
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
         } catch (JSONException e) {
@@ -539,9 +509,9 @@ public class SensorUnassignedActivity extends AppCompatActivity{
 
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 
-                    if(code == 200){
+                    if (code == 200) {
                         ChatApplication.isMainFragmentNeedResume = true;
                         ChatApplication.isEditActivityNeedResume = true;
                         finish();
