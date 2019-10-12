@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.spike.bot.R;
 import com.spike.bot.core.Common;
-import com.spike.bot.listener.AutoModeClickListener;
 import com.spike.bot.model.AutoModeVO;
 
 import java.util.ArrayList;
