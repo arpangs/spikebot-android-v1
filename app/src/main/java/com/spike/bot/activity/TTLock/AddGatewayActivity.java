@@ -2,6 +2,8 @@ package com.spike.bot.activity.TTLock;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,6 +26,7 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.Retrofit.GetDataService;
 import com.spike.bot.Retrofit.RetrofitAPIManager;
+import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.GatewayObj;
 import com.ttlock.bl.sdk.api.ExtendedBluetoothDevice;
@@ -40,6 +43,7 @@ import org.json.JSONObject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Sagar on 31/8/19.
@@ -175,7 +179,9 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
                 if (!TextUtils.isEmpty(json)) {
                     GatewayObj gatewayObj = GsonUtil.toObject(json, GatewayObj.class);
                     if (gatewayObj.errcode == 0) {
+
                         callUploadToserver(gatewayObj.getGatewayId());
+//
                     }
                 }
             }
@@ -199,6 +205,7 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
                 if (response.code() == 200) {
                     callAddBridge(gatewayId);
                 }
+
             }
 
             @Override
@@ -209,13 +216,10 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
         });
     }
 
-
-    /**
-     * Add bridge
-     */
     private void callAddBridge(int gatewayId) {
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+
         String webUrl = ChatApplication.url + Constants.addLockBridge;
 
         JSONObject jsonNotification = new JSONObject();
@@ -255,9 +259,6 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
 
     }
 
-    /**
-     * Delete gateway
-     */
     private void deleteGateway(int gatewayId) {
 
 
@@ -281,7 +282,6 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
                 try {
 
                     int code = result.getInt("code");
-                    String message = result.getString("message");
                     if (code == 200) {
                         callAddBridge(gatewayId);
                     }
