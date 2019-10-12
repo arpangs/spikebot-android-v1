@@ -62,9 +62,6 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         isViewType=getIntent().getStringExtra("isViewType");
         if(isViewType.equalsIgnoreCase("ttLock")){
             lockObjs=(ArrayList<LockObj>)getIntent().getSerializableExtra("lockObjs");
-//            ttbridgeId=getIntent().getStringExtra("gatewayId");
-//            ttlockId=getIntent().getStringExtra("lockId");
-//            lockName=getIntent().getStringExtra("lockName");
         }else if(isViewType.equalsIgnoreCase("syncDoor")){
             door_sensor_module_id=getIntent().getStringExtra("door_sensor_module_id");
             door_name=getIntent().getStringExtra("door_sensor_name");
@@ -95,7 +92,6 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(false);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-//        toolbar.setTitle("Select Type");
         btnAddToroom.setOnClickListener(this);
         btnExtingBridge.setOnClickListener(this);
     }
@@ -109,11 +105,7 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
     @Override
     public void onClick(View v) {
         if(v==btnAddToroom){
-//            if(isViewType.equalsIgnoreCase("ttLock")){
-//                addCustomRoom();
-//            }else {
                 addCustomRoom();
-//            }
         }else if(v==btnExtingBridge){
             if(isViewType.equalsIgnoreCase("ttLock") || isViewType.equalsIgnoreCase("syncDoor")){
                 Intent intent = new Intent(this, AddTTlockToRoomActivity.class);
@@ -125,9 +117,6 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
                     intent.putExtra("lock_id",""+lock_id);
                     intent.putExtra("lock_data",""+lock_data);
                 }
-//                intent.putExtra("lockName", lockName);
-//                intent.putExtra("lockId", ttlockId);
-//                intent.putExtra("gatewayId", ttbridgeId);
                 startActivity(intent);
             }else {
                 Intent intent = new Intent(this, AddSMartDevicetoRoomActivity.class);
@@ -192,7 +181,6 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
 
         if (TextUtils.isEmpty(roomName.getText().toString().trim())) {
             roomName.setError("Enter Room name");
-            // Toast.makeText(getContext(),"Enter Room name",Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -206,8 +194,6 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        ChatApplication.logDisplay("ob : " + object.toString());
 
         String url = ChatApplication.url + Constants.ADD_CUSTOME_ROOM;
 
@@ -226,7 +212,6 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
                         JSONObject jsonObject=new JSONObject(result.toString());
 
                         if(isViewType.equalsIgnoreCase("ttLock")){
-//                            addTTlockToRoom(jsonObject.optString("data"));
 
                            intentNext(roomName.getText().toString(),jsonObject.optString("data"));
                         }else if(isViewType.equalsIgnoreCase("syncDoor")){
