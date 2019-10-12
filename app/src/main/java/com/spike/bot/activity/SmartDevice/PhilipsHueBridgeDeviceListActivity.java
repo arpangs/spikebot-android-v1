@@ -28,9 +28,6 @@ import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.ir.blaster.IRBlasterAddActivity;
-import com.spike.bot.activity.ir.blaster.IRRemoteAdd;
-import com.spike.bot.adapter.SmartDeviceAdapter.BridgeListAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -122,7 +119,6 @@ public class PhilipsHueBridgeDeviceListActivity extends AppCompatActivity {
                     case R.id.actionPlug:
                         break;
                     case R.id.actionBuld:
-//                        Intent intent = new Intent(PhilipsHueBridgeDeviceListActivity.this, PhilipsBulbNewListActivity.class);
                         Intent intent = new Intent(PhilipsHueBridgeDeviceListActivity.this, SearchDeviceActivity.class);
                         intent.putExtra("searchModel", arrayListDeviceListTemp);
                         intent.putExtra("bridge_id", bridge_id);
@@ -292,77 +288,75 @@ public class PhilipsHueBridgeDeviceListActivity extends AppCompatActivity {
     }
 
 
-    private void showDelete(final SmartBrandDeviceModel showDeleteshowDelete){
-        ConfirmDialog newFragment = new ConfirmDialog("Yes","No" ,"Confirm", "Are you sure want to delete?",new ConfirmDialog.IDialogCallback() {
+    private void showDelete(final SmartBrandDeviceModel showDeleteshowDelete) {
+        ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure want to delete?", new ConfirmDialog.IDialogCallback() {
             @Override
             public void onConfirmDialogYesClick() {
-                deleteDevcie(showDeleteshowDelete);
+                deleteDevice(showDeleteshowDelete);
             }
+
             @Override
             public void onConfirmDialogNoClick() {
-
-//                      Toast.makeText(activity, " Saved Successfully. " ,Toast.LENGTH_SHORT).show();
             }
 
         });
         newFragment.show(getFragmentManager(), "dialog");
     }
 
-    public void deleteDevcie(final SmartBrandDeviceModel showDeleteshowDelete){
+    public void deleteDevice(final SmartBrandDeviceModel showDeleteshowDelete) {
 
-        if(!ActivityHelper.isConnectingToInternet(this)){
-            Toast.makeText(this.getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            Toast.makeText(this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-        ActivityHelper.showProgressDialog(this,"Please wait.",false);
+        ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
         JSONObject obj = new JSONObject();
         try {
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             obj.put("user_id", Common.getPrefValue(this.getApplicationContext(), Constants.USER_ID));
-            obj.put("original_room_device_id",showDeleteshowDelete.getOn());
+            obj.put("original_room_device_id", showDeleteshowDelete.getOn());
         } catch (JSONException e) {
             e.printStackTrace();
         }
         String url = ChatApplication.url + Constants.deletePhilipsHue;
 
-        ChatApplication.logDisplay("save switch "+obj.toString());
+        ChatApplication.logDisplay("save switch " + obj.toString());
 
-        new GetJsonTask(this,url ,"POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    if(code==200){
-                        if(!TextUtils.isEmpty(message)){
-                            Toast.makeText(getApplicationContext().getApplicationContext(),  message , Toast.LENGTH_SHORT).show();
+                    if (code == 200) {
+                        if (!TextUtils.isEmpty(message)) {
+                            Toast.makeText(getApplicationContext().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                         }
                         ActivityHelper.dismissProgressDialog();
 
                         arrayListDeviceListTemp.remove(showDeleteshowDelete);
                         bridgeListAdapter.notifyDataSetChanged();
 
-                        if(arrayListDeviceListTemp.size()==0){
+                        if (arrayListDeviceListTemp.size() == 0) {
                             txtNodataFound.setVisibility(View.VISIBLE);
                             recyclerSmartDevice.setVisibility(View.GONE);
                         }
 
-                    } else{
-                        Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     }
-                    // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
-                finally {
+                } finally {
                     ActivityHelper.dismissProgressDialog();
 
                 }
             }
+
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
