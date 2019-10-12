@@ -34,7 +34,7 @@ public class BrandListActivity extends AppCompatActivity {
     public RecyclerView recyclerSmartDevice;
 
     public SmartBrandAdapter smartBrandAdapter;
-    public ArrayList<SmartBrandModel> arrayList=new ArrayList<>();
+    public ArrayList<SmartBrandModel> arrayList = new ArrayList<>();
 
 
     @Override
@@ -46,9 +46,9 @@ public class BrandListActivity extends AppCompatActivity {
     }
 
     private void setId() {
-        toolbar=findViewById(R.id.toolbar);
-        fab=findViewById(R.id.fab);
-        recyclerSmartDevice=findViewById(R.id.recyclerSmartDevice);
+        toolbar = findViewById(R.id.toolbar);
+        fab = findViewById(R.id.fab);
+        recyclerSmartDevice = findViewById(R.id.recyclerSmartDevice);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -64,6 +64,7 @@ public class BrandListActivity extends AppCompatActivity {
         return true;
     }
 
+    /** Get smart device list */
     public void getSmartDevice() {
         if (!ActivityHelper.isConnectingToInternet(BrandListActivity.this)) {
             Toast.makeText(BrandListActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -90,30 +91,26 @@ public class BrandListActivity extends AppCompatActivity {
                         //    }
                         //  ]
                         //}
-                        ChatApplication.logDisplay("object is "+object);
+                        ChatApplication.logDisplay("object is " + object);
 
-//                        JSONObject jsonObject=object.optJSONObject("smart_device_brand_list");
-                        JSONArray jsonArray=object.optJSONArray("smart_device_brand_list");
-                        for(int i=0; i<jsonArray.length(); i++){
-                            JSONObject jsonObject=jsonArray.optJSONObject(i);
-                            SmartBrandModel smartBrandModel=new SmartBrandModel();
+                        JSONArray jsonArray = object.optJSONArray("smart_device_brand_list");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jsonObject = jsonArray.optJSONObject(i);
+                            SmartBrandModel smartBrandModel = new SmartBrandModel();
                             smartBrandModel.setId(jsonObject.optString("id"));
                             smartBrandModel.setSmart_device_brand_name(jsonObject.optString("smart_device_brand_name"));
                             smartBrandModel.setIcon_image(jsonObject.optString("icon_image"));
                             arrayList.add(smartBrandModel);
                         }
 
-                        if(arrayList.size()>0){
-                            LinearLayoutManager linearLayoutManager=new LinearLayoutManager(BrandListActivity.this);
+                        if (arrayList.size() > 0) {
+                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(BrandListActivity.this);
                             recyclerSmartDevice.setLayoutManager(linearLayoutManager);
-                            smartBrandAdapter=new SmartBrandAdapter(BrandListActivity.this,arrayList,1);
+                            smartBrandAdapter = new SmartBrandAdapter(BrandListActivity.this, arrayList, 1);
                             recyclerSmartDevice.setAdapter(smartBrandAdapter);
                         }
 
-
                     }
-
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {

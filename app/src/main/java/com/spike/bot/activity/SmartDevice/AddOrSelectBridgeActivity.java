@@ -21,27 +21,26 @@ public class AddOrSelectBridgeActivity extends AppCompatActivity implements View
 
     Toolbar toolbar;
     AppCompatTextView txtSelectBridge;
-    String brandId="";
+    String brandId = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_bridge);
 
-        brandId=getIntent().getStringExtra("brandId");
+        brandId = getIntent().getStringExtra("brandId");
         setUiId();
     }
 
     private void setUiId() {
-        toolbar=findViewById(R.id.toolbar);
-        txtSelectBridge=findViewById(R.id.txtSelectBridge);
+        toolbar = findViewById(R.id.toolbar);
+        txtSelectBridge = findViewById(R.id.txtSelectBridge);
         txtSelectBridge.setOnClickListener(this);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-//        toolbar.setTitle("Select Bridge");
     }
 
     @Override
@@ -52,10 +51,10 @@ public class AddOrSelectBridgeActivity extends AppCompatActivity implements View
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.actionAdd:
-                Intent intent=new Intent(this, SearchHueBridgeActivity.class);
-                intent.putExtra("brandId",""+brandId);
+                Intent intent = new Intent(this, SearchHueBridgeActivity.class);
+                intent.putExtra("brandId", "" + brandId);
                 startActivity(intent);
                 break;
             case android.R.id.home:
@@ -74,9 +73,9 @@ public class AddOrSelectBridgeActivity extends AppCompatActivity implements View
 
     @Override
     public void onClick(View v) {
-        if(v==txtSelectBridge){
-            Intent intent=new Intent(this, PhilipsHueBridgeListActivity.class);
-            intent.putExtra("brandId",brandId);
+        if (v == txtSelectBridge) {
+            Intent intent = new Intent(this, PhilipsHueBridgeListActivity.class);
+            intent.putExtra("brandId", brandId);
             startActivity(intent);
         }
 

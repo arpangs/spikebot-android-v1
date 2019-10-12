@@ -22,7 +22,6 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.SmartBrandDeviceModel;
-import com.spike.bot.model.SmartBrandModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,12 +37,12 @@ public class PhilipsBulbNewListActivity extends AppCompatActivity {
 
     public Toolbar toolbar;
     FloatingActionButton fab;
-    public String host_ip="",getBridge_name="",bridge_id="";
+    public String host_ip = "", getBridge_name = "", bridge_id = "";
     public RecyclerView recyclerSmartDevice;
     public TextView txtNodataFound;
 
-    public ArrayList<SmartBrandDeviceModel> arrayList=new ArrayList<>();
-    public ArrayList<SmartBrandDeviceModel> arrayListDeviceListTemp=new ArrayList<>();
+    public ArrayList<SmartBrandDeviceModel> arrayList = new ArrayList<>();
+    public ArrayList<SmartBrandDeviceModel> arrayListDeviceListTemp = new ArrayList<>();
 
 
     @Override
@@ -51,20 +50,20 @@ public class PhilipsBulbNewListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_smart_device_list);
 
-        arrayList=(ArrayList<SmartBrandDeviceModel>)getIntent().getSerializableExtra("searchModel");
-        host_ip=getIntent().getStringExtra("host_ip");
-        getBridge_name=getIntent().getStringExtra("getBridge_name");
-        bridge_id=getIntent().getStringExtra("bridge_id");
+        arrayList = (ArrayList<SmartBrandDeviceModel>) getIntent().getSerializableExtra("searchModel");
+        host_ip = getIntent().getStringExtra("host_ip");
+        getBridge_name = getIntent().getStringExtra("getBridge_name");
+        bridge_id = getIntent().getStringExtra("bridge_id");
         setId();
     }
 
     private void setId() {
-        Constants.activityPhilipsHueBridgeDeviceListActivity=this;
-        toolbar=findViewById(R.id.toolbar);
-        recyclerSmartDevice=findViewById(R.id.recyclerSmartDevice);
-        txtNodataFound=findViewById(R.id.txtNodataFound);
+        Constants.activityPhilipsHueBridgeDeviceListActivity = this;
+        toolbar = findViewById(R.id.toolbar);
+        recyclerSmartDevice = findViewById(R.id.recyclerSmartDevice);
+        txtNodataFound = findViewById(R.id.txtNodataFound);
         setSupportActionBar(toolbar);
-        fab=findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
         fab.setVisibility(View.GONE);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -86,10 +85,10 @@ public class PhilipsBulbNewListActivity extends AppCompatActivity {
         }
         ActivityHelper.showProgressDialog(PhilipsBulbNewListActivity.this, "Please wait... ", false);
 
-        JSONObject object=new JSONObject();
+        JSONObject object = new JSONObject();
         try {
-            object.put("bridge_id",bridge_id);
-            object.put("host_ip",host_ip);
+            object.put("bridge_id", bridge_id);
+            object.put("host_ip", host_ip);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -103,18 +102,18 @@ public class PhilipsBulbNewListActivity extends AppCompatActivity {
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
-                        JSONObject jsonObject=new JSONObject(result.toString());
-                        ChatApplication.logDisplay("data is "+result);
+                        JSONObject jsonObject = new JSONObject(result.toString());
+                        ChatApplication.logDisplay("data is " + result);
                         //{"code":200,"message":"Success","data":{"hue_bridge_list":[]}}
-                        JSONObject object=jsonObject.optJSONObject("data");
-                        JSONArray jsonArray=object.optJSONArray("philips_hue_light_list");
+                        JSONObject object = jsonObject.optJSONObject("data");
+                        JSONArray jsonArray = object.optJSONArray("philips_hue_light_list");
 
 
-                        for(int i=0; i<jsonArray.length(); i++){
-                            SmartBrandDeviceModel smartBrandModel=new SmartBrandDeviceModel();
-                            JSONObject jsonObject1=jsonArray.optJSONObject(i);
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            SmartBrandDeviceModel smartBrandModel = new SmartBrandDeviceModel();
+                            JSONObject jsonObject1 = jsonArray.optJSONObject(i);
 
-                            JSONObject jsonstatus=jsonObject1.optJSONObject("state");
+                            JSONObject jsonstatus = jsonObject1.optJSONObject("state");
                             smartBrandModel.setOn(jsonstatus.optString("on"));
                             smartBrandModel.setBri(jsonstatus.optString("bri"));
 
@@ -125,15 +124,15 @@ public class PhilipsBulbNewListActivity extends AppCompatActivity {
                             arrayListDeviceListTemp.add(smartBrandModel);
                         }
 
-                        if(arrayListDeviceListTemp.size()>0){
+                        if (arrayListDeviceListTemp.size() > 0) {
                             setAdpater();
-                        }else {
+                        } else {
                             txtNodataFound.setVisibility(View.VISIBLE);
                             recyclerSmartDevice.setVisibility(View.GONE);
                         }
 
-                    }else {
-                        ChatApplication.showToast(PhilipsBulbNewListActivity.this,"No data found.");
+                    } else {
+                        ChatApplication.showToast(PhilipsBulbNewListActivity.this, "No data found.");
                     }
 
                 } catch (Exception e) {
@@ -149,82 +148,59 @@ public class PhilipsBulbNewListActivity extends AppCompatActivity {
         }).execute();
     }
 
-
-    public static <T> ArrayList<T> removeDuplicates(ArrayList<T> list)
-    {
-
-        // Create a new ArrayList
-        ArrayList<T> newList = new ArrayList<T>();
-
-        // Traverse through the first list
-        for (T element : list) {
-
-            // If this element is not present in newList
-            // then add it
-            if (!newList.contains(element)) {
-
-                newList.add(element);
-            }
-        }
-
-        // return the new list
-        return newList;
-    }
-
-
     private void setAdpater() {
-        ArrayList<SmartBrandDeviceModel> arrayAdapter=new ArrayList<>();
-        ArrayList<String> stringArrayList=new ArrayList<>();
-        for(int i=0; i<arrayList.size(); i++){
+        ArrayList<SmartBrandDeviceModel> arrayAdapter = new ArrayList<>();
+        ArrayList<String> stringArrayList = new ArrayList<>();
+        for (int i = 0; i < arrayList.size(); i++) {
             stringArrayList.add(arrayList.get(i).getUniqueid());
         }
-        for(int i=0; i<arrayListDeviceListTemp.size(); i++){
+        for (int i = 0; i < arrayListDeviceListTemp.size(); i++) {
             stringArrayList.add(arrayListDeviceListTemp.get(i).getUniqueid());
         }
 
         arrayAdapter.addAll(arrayListDeviceListTemp);
 
-        if(arrayList.size()>0){
-            for(int i=0; i<arrayListDeviceListTemp.size(); i++){
-                for(int j=0; j<stringArrayList.size(); j++){
-                    if(stringArrayList.get(j).equalsIgnoreCase(arrayListDeviceListTemp.get(i).getUniqueid())){
+        if (arrayList.size() > 0) {
+            for (int i = 0; i < arrayListDeviceListTemp.size(); i++) {
+                for (int j = 0; j < stringArrayList.size(); j++) {
+                    if (stringArrayList.get(j).equalsIgnoreCase(arrayListDeviceListTemp.get(i).getUniqueid())) {
                         arrayAdapter.remove(arrayListDeviceListTemp.get(i));
                     }
                 }
             }
         }
 
-        if(arrayAdapter!=null && arrayAdapter.size()>0){
+        if (arrayAdapter != null && arrayAdapter.size() > 0) {
             txtNodataFound.setVisibility(View.GONE);
             recyclerSmartDevice.setVisibility(View.VISIBLE);
-            LinearLayoutManager layoutManager=new LinearLayoutManager(this);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
             recyclerSmartDevice.setLayoutManager(layoutManager);
 
-            DeviceListAdapter bridgeListAdapter=new DeviceListAdapter(this,arrayAdapter,1);
+            DeviceListAdapter bridgeListAdapter = new DeviceListAdapter(this, arrayAdapter, 1);
             recyclerSmartDevice.setAdapter(bridgeListAdapter);
-        }else {
+        } else {
             txtNodataFound.setVisibility(View.VISIBLE);
             recyclerSmartDevice.setVisibility(View.GONE);
-            ChatApplication.showToast(this,"No data find.");
+            ChatApplication.showToast(this, "No data find.");
         }
 
     }
 
-    public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.SensorViewHolder>{
+    public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.SensorViewHolder> {
 
         private Context mContext;
-        public int type=0;
-        ArrayList<SmartBrandDeviceModel> arrayListLog=new ArrayList<>();
+        public int type = 0;
+        ArrayList<SmartBrandDeviceModel> arrayListLog = new ArrayList<>();
 
         public DeviceListAdapter(Context context, ArrayList<SmartBrandDeviceModel> arrayList, int type) {
-            this.mContext=context;
-            this.type=type;
-            this.arrayListLog=arrayList;
+            this.mContext = context;
+            this.type = type;
+            this.arrayListLog = arrayList;
         }
 
         @Override
         public DeviceListAdapter.SensorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_add_device_bridge,parent,false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_add_device_bridge, parent, false);
             return new DeviceListAdapter.SensorViewHolder(view);
         }
 
@@ -252,26 +228,26 @@ public class PhilipsBulbNewListActivity extends AppCompatActivity {
             return position;
         }
 
-        public class SensorViewHolder extends RecyclerView.ViewHolder{
+        public class SensorViewHolder extends RecyclerView.ViewHolder {
 
-            public View  view;
+            public View view;
             public TextView txtBridgeName;
 
             public SensorViewHolder(View view) {
                 super(view);
-                this.view=view;
-                txtBridgeName =  itemView.findViewById(R.id.txtBridgeName);
+                this.view = view;
+                txtBridgeName = itemView.findViewById(R.id.txtBridgeName);
             }
         }
     }
 
     private void callIntentConfi(SmartBrandDeviceModel smartBrandDeviceModel) {
-        Intent intent=new Intent(this,AddDeviceConfirmActivity.class);
-        intent.putExtra("isViewType","smartDevice");
-        intent.putExtra("searchModel",smartBrandDeviceModel);
-        intent.putExtra("bridge_id",bridge_id);
-        intent.putExtra("getBridge_name",getBridge_name);
-        intent.putExtra("host_ip",host_ip);
+        Intent intent = new Intent(this, AddDeviceConfirmActivity.class);
+        intent.putExtra("isViewType", "smartDevice");
+        intent.putExtra("searchModel", smartBrandDeviceModel);
+        intent.putExtra("bridge_id", bridge_id);
+        intent.putExtra("getBridge_name", getBridge_name);
+        intent.putExtra("host_ip", host_ip);
         startActivity(intent);
     }
 
