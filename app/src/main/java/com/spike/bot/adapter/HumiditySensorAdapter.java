@@ -21,7 +21,6 @@ import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.customview.OnSwipeTouchListener;
 import com.spike.bot.listener.OnHumitySensorContextMenu;
-import com.spike.bot.listener.OnNotificationSensorContextMenu;
 import com.spike.bot.model.SensorResModel;
 
 import java.util.ArrayList;
@@ -30,15 +29,15 @@ import java.util.ArrayList;
  * Created by Sagar on 5/6/19.
  * Gmail : vipul patel
  */
-public class HumiditySensorAdapter extends RecyclerView.Adapter<HumiditySensorAdapter.SensorViewHolder>{
+public class HumiditySensorAdapter extends RecyclerView.Adapter<HumiditySensorAdapter.SensorViewHolder> {
 
-    //    SensorResModel.DATA.TempList.NotificationList[] notificationList;
-    ArrayList<SensorResModel.DATA.TempList.HumidityNotificationList> notificationList=new ArrayList<>();
+    ArrayList<SensorResModel.DATA.TempList.HumidityNotificationList> notificationList = new ArrayList<>();
+    SensorResModel.DATA.TempList.HumidityNotificationList notification;
     private boolean isCF;
     private OnHumitySensorContextMenu onNotificationContextMenu;
     private Context mContext;
 
-    public HumiditySensorAdapter(ArrayList<SensorResModel.DATA.TempList.HumidityNotificationList> arrayList, boolean cfType, OnHumitySensorContextMenu onNotificationContextMenu){
+    public HumiditySensorAdapter(ArrayList<SensorResModel.DATA.TempList.HumidityNotificationList> arrayList, boolean cfType, OnHumitySensorContextMenu onNotificationContextMenu) {
         this.notificationList = arrayList;
         this.isCF = cfType;
         this.onNotificationContextMenu = onNotificationContextMenu;
@@ -46,94 +45,66 @@ public class HumiditySensorAdapter extends RecyclerView.Adapter<HumiditySensorAd
 
     @Override
     public SensorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_temp_sensor_info,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_temp_sensor_info, parent, false);
         mContext = view.getContext();
         return new SensorViewHolder(view);
-    }
-
-    public boolean isCF() {
-        return isCF;
-    }
-
-    public void setCF(boolean CF) {
-        isCF = CF;
     }
 
     @Override
     public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
-        if(position==0){
+        if (position == 0) {
             holder.viewLine.setVisibility(View.GONE);
-        }else {
+        } else {
             holder.viewLine.setVisibility(View.VISIBLE);
         }
         //\u2109 \u2103 (℉ & ℃)
-        final SensorResModel.DATA.TempList.HumidityNotificationList notification= notificationList.get(position);
+        notification = notificationList.get(position);
 
-//        String minVal = "";
-//        String maxVal = "";
-//
-//
-//        if(notification.isCFActive()){
-//
-//            if(!TextUtils.isEmpty(notification.getMinHumidity()) && !notification.getMinValueC().equalsIgnoreCase("null") && !TextUtils.isEmpty(notification.getMaxValueC()) && !notification.getMaxValueC().equalsIgnoreCase("null")){
-//                minVal = Common.parseCelsius(notification.getMinValueC());
-//                maxVal = Common.parseCelsius(notification.getMaxValueC());
-//            }
-//        }else {
-//            if(!TextUtils.isEmpty(notification.getMinValueF()) && !notification.getMinValueF().equalsIgnoreCase("null") && !TextUtils.isEmpty(notification.getMaxValueF()) && !notification.getMaxValueF().equalsIgnoreCase("null")){
-//                minVal = Common.parseFahrenheit(notification.getMinValueF());
-//                maxVal = Common.parseFahrenheit(notification.getMaxValueF());
-//            }
-//        }
+        holder.txtMin.setText("" + notification.getMinHumidity() + " %");
+        holder.txtMax.setText("" + notification.getMaxHumidity() + " %");
 
+        holder.switchCompat.setChecked(notification.getIsActive() == 0 ? false : true);
 
-        holder.txtMin.setText(""+notification.getMinHumidity()+" %");
-        holder.txtMax.setText(""+notification.getMaxHumidity()+" %");
-
-//        if(notification.getIsActive()>0){
-            holder.switchCompat.setChecked(notification.getIsActive()==0 ? false:true);
-//        }
-
-        if(!TextUtils.isEmpty(notification.getDays()) && !notification.getDays().equalsIgnoreCase("null")){
+        if (!TextUtils.isEmpty(notification.getDays()) && !notification.getDays().equalsIgnoreCase("null")) {
             holder.txtDays.setText(Html.fromHtml(Common.htmlDaysFormat(notification.getDays())));
         }
 
         if (Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
-            if(Common.getPrefValue(mContext, Constants.USER_ID).equalsIgnoreCase(notification.getUserId())){
+            if (Common.getPrefValue(mContext, Constants.USER_ID).equalsIgnoreCase(notification.getUserId())) {
                 holder.imgOptions.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 holder.imgOptions.setVisibility(View.INVISIBLE);
             }
         }
         holder.imgOptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                displayContextMenu(v,notification,position);
+                displayContextMenu(v, notification, position);
             }
         });
 
 
-        holder.switchCompat.setOnTouchListener(new OnSwipeTouchListener(mContext){
+        holder.switchCompat.setOnTouchListener(new OnSwipeTouchListener(mContext) {
             @Override
             public void onClick() {
                 super.onClick();
                 holder.switchCompat.setChecked(holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchHumityChanged(notification,holder.switchCompat,position,!holder.switchCompat.isChecked());
+                onNotificationContextMenu.onSwitchHumityChanged(notification, holder.switchCompat, position, !holder.switchCompat.isChecked());
             }
 
             @Override
             public void onSwipeLeft() {
                 super.onSwipeLeft();
                 holder.switchCompat.setChecked(holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchHumityChanged(notification,holder.switchCompat,position,!holder.switchCompat.isChecked());
+                onNotificationContextMenu.onSwitchHumityChanged(notification, holder.switchCompat, position, !holder.switchCompat.isChecked());
             }
 
             @Override
             public void onSwipeRight() {
                 super.onSwipeRight();
                 holder.switchCompat.setChecked(holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchHumityChanged(notification,holder.switchCompat,position,!holder.switchCompat.isChecked());
+                onNotificationContextMenu.onSwitchHumityChanged(notification, holder.switchCompat, position, !holder.switchCompat.isChecked());
             }
 
         });
@@ -142,7 +113,7 @@ public class HumiditySensorAdapter extends RecyclerView.Adapter<HumiditySensorAd
     }
 
     /**
-     *  @param v
+     * @param v
      * @param notification
      * @param position
      */
@@ -159,12 +130,12 @@ public class HumiditySensorAdapter extends RecyclerView.Adapter<HumiditySensorAd
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.action_edit_dots:
-                        onNotificationContextMenu.onEditHumityOpetion(notification,position,true);
+                        onNotificationContextMenu.onEditHumityOpetion(notification, position, true);
                         break;
                     case R.id.action_delete_dots:
-                        onNotificationContextMenu.onEditHumityOpetion(notification,position,false);
+                        onNotificationContextMenu.onEditHumityOpetion(notification, position, false);
                         break;
                 }
                 return true;
@@ -179,13 +150,12 @@ public class HumiditySensorAdapter extends RecyclerView.Adapter<HumiditySensorAd
         return notificationList.size();
     }
 
-    public class SensorViewHolder extends RecyclerView.ViewHolder{
+    public class SensorViewHolder extends RecyclerView.ViewHolder {
 
-        private AppCompatTextView txtMin,txtMax,txtDays;
+        private AppCompatTextView txtMin, txtMax, txtDays;
         private SwitchCompat switchCompat;
         private AppCompatImageView imgOptions;
         public View viewLine;
-        // private LinearLayout ll_switch;
 
         public SensorViewHolder(View itemView) {
             super(itemView);
@@ -197,13 +167,6 @@ public class HumiditySensorAdapter extends RecyclerView.Adapter<HumiditySensorAd
             switchCompat = (SwitchCompat) itemView.findViewById(R.id.switch_onoff);
             imgOptions = (AppCompatImageView) itemView.findViewById(R.id.img_options);
             viewLine = (View) itemView.findViewById(R.id.viewLine);
-
-            //   ll_switch = (LinearLayout) itemView.findViewById(R.id.ll_switch);
         }
-    }
-
-    public interface OnNotificationContextMenu{
-        void onEditOpetion(SensorResModel.DATA.TempList.NotificationList notification, int position, boolean isEdit);
-        void onSwitchChanged(SensorResModel.DATA.TempList.NotificationList notification,SwitchCompat swithcCompact, int position, boolean isActive);
     }
 }

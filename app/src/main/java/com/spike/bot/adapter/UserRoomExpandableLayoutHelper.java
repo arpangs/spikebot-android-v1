@@ -9,7 +9,6 @@ import com.spike.bot.customview.recycle.ItemClickMoodListener;
 import com.spike.bot.customview.recycle.MoodStateChangeListener;
 import com.spike.bot.listener.NotifityData;
 import com.spike.bot.model.DeviceVO;
-import com.spike.bot.model.MoodVO;
 import com.spike.bot.model.PanelVO;
 import com.spike.bot.model.RoomVO;
 
@@ -26,6 +25,10 @@ public class UserRoomExpandableLayoutHelper implements MoodStateChangeListener, 
     //data list
     private LinkedHashMap<RoomVO, ArrayList<PanelVO>> mSectionDataMap = new LinkedHashMap<RoomVO, ArrayList<PanelVO>>();
     private ArrayList<Object> mDataArrayList = new ArrayList<Object>();
+    ArrayList<PanelVO> panelList;
+    ArrayList<DeviceVO> deviceList;
+    boolean isModeStatusOpen = false;
+    public static RoomVO section;
 
     //section map
     //TODO : look for a way to avoid this
@@ -43,7 +46,7 @@ public class UserRoomExpandableLayoutHelper implements MoodStateChangeListener, 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, gridSpanCount);
         recyclerView.setLayoutManager(gridLayoutManager);
         mSectionedExpandableGridAdapter = new UserSubRoomAdapter(context, mDataArrayList,
-                gridLayoutManager, itemClickListener, this,this);
+                gridLayoutManager, itemClickListener, this, this);
         recyclerView.setAdapter(mSectionedExpandableGridAdapter);
 
         mRecyclerView = recyclerView;
@@ -56,54 +59,31 @@ public class UserRoomExpandableLayoutHelper implements MoodStateChangeListener, 
         mSectionedExpandableGridAdapter.notifyDataSetChanged();
     }
 
-    public void setClickable(boolean isClick){
+    public void setClickable(boolean isClick) {
         mSectionedExpandableGridAdapter.setClickabl(isClick);
     }
 
-    //reload the row item in recycle
-    public void reloadDeviceList(Object obj){
-        int position = mDataArrayList.indexOf(obj);
-
-        if(position!=-1) {
-            mDataArrayList.set(position,obj);
-            mSectionedExpandableGridAdapter.notifyItemChanged(position);
-        }
-
-
-    }
-    /*
-    public void addSection(MoodVO section, ArrayList<DeviceVO> items) {
-        mSectionMap.put(section.getRoomName(), section);
-        mSectionDataMap.put(section, items);
-    }*/
-    public void addSectionList(ArrayList<RoomVO> roomList){
+    public void addSectionList(ArrayList<RoomVO> roomList) {
         mDataArrayList.clear();
         mSectionDataMap.clear();
-        for(int i=0;i<roomList.size();i++){
+        for (int i = 0; i < roomList.size(); i++) {
             addSection(roomList.get(i));
         }
     }
+
     public void addSection(RoomVO section) {
-        if (this.section!=null && this.section.equals(section)){
-
-        }
-
-        for(RoomVO moodVO : ListUtils.arrayListMood){
-            if(moodVO.isExpanded && section.getRoomId().equalsIgnoreCase(moodVO.getRoomId())){
+        for (RoomVO moodVO : ListUtils.arrayListMood) {
+            if (moodVO.isExpanded && section.getRoomId().equalsIgnoreCase(moodVO.getRoomId())) {
                 section.isExpanded = true;
                 section.setExpanded(true);
             }
         }
 
-        ArrayList<PanelVO> panelVOList = section.getPanelList();
-
-        boolean isModeStatusOpen = false;
-
-        for(PanelVO panelVO : panelVOList){
-            ArrayList<DeviceVO> deviceList = panelVO.getDeviceList();
-
-            for(DeviceVO deviceVO : deviceList){
-                if(deviceVO.getDeviceStatus() == 1){
+        panelList = section.getPanelList();
+        for (PanelVO panelVO : panelList) {
+            deviceList = panelVO.getDeviceList();
+            for (DeviceVO deviceVO : deviceList) {
+                if (deviceVO.getDeviceStatus() == 1) {
                     isModeStatusOpen = true;
                 }
             }
@@ -113,20 +93,15 @@ public class UserRoomExpandableLayoutHelper implements MoodStateChangeListener, 
 
         mSectionDataMap.put(section, section.getPanelList());
     }
-    private void generateDataList () {
+
+    private void generateDataList() {
         mDataArrayList.clear();
         for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
             RoomVO key;
-
-            //  mDataArrayList.add((key = entry.getKey()));
             mDataArrayList.add((key = entry.getKey()));
-            if (key.isExpanded ) {
-                //key.isExpanded = true;
-                //mDataArrayList.add(new PanelVO("Panel1"));
-                //mDataArrayList.addAll(entry.getValue());
-                ArrayList<PanelVO> panelList = entry.getValue();
-
-                for(int i=0;i<panelList.size();i++){
+            if (key.isExpanded) {
+                panelList = entry.getValue();
+                for (int i = 0; i < panelList.size(); i++) {
                     //add panel
                     mDataArrayList.add(panelList.get(i));
                     //add all device switch
@@ -135,26 +110,23 @@ public class UserRoomExpandableLayoutHelper implements MoodStateChangeListener, 
             }
         }
     }
-    public static RoomVO section;
+
     @Override
     public void onSectionStateChanged(RoomVO section, boolean isOpen) {
         this.section = section;
         section.isExpanded = isOpen;
 
-        if(!isOpen){
-
-            if(ListUtils.arrayListMood.size()>0){
-
-                for(int i=0;i<ListUtils.arrayListMood.size();i++){
-                    if(section.getRoomId().equalsIgnoreCase(ListUtils.arrayListMood.get(i).getRoomId())){
+        if (!isOpen) {
+            if (ListUtils.arrayListMood.size() > 0) {
+                for (int i = 0; i < ListUtils.arrayListMood.size(); i++) {
+                    if (section.getRoomId().equalsIgnoreCase(ListUtils.arrayListMood.get(i).getRoomId())) {
                         section.isExpanded = false;
                         section.setExpanded(false);
-                        ListUtils.arrayListMood.set(i,section);
+                        ListUtils.arrayListMood.set(i, section);
                     }
                 }
             }
-
-        }else{
+        } else {
             ListUtils.arrayListMood.add(section);
         }
 

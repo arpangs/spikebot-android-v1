@@ -21,36 +21,33 @@ public class RoomListArrayAdapter extends ArrayAdapter<RoomVO> {
     List<RoomVO> list;
     LayoutInflater inflater;
     String mRoomName;
+    RoomVO roomVO;
+    ImageView imageView;
+    TextView textView;
 
-    public RoomListArrayAdapter(Activity context, int groupid, int id, List<RoomVO> list,String mRoomName){
-        super(context,id,list);
-        this.list=list;
-        inflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.groupid=groupid;
+    public RoomListArrayAdapter(Activity context, int groupid, int id, List<RoomVO> list, String mRoomName) {
+        super(context, id, list);
+        this.list = list;
+        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.groupid = groupid;
         this.mRoomName = mRoomName;
-        roomName = mRoomName;
     }
 
-    public View getView(int position, View convertView, ViewGroup parent ){
+    public View getView(int position, View convertView, ViewGroup parent) {
 
-        View itemView = inflater.inflate(groupid,parent,false);
+        View itemView = inflater.inflate(groupid, parent, false);
 
-        RoomVO roomVO = list.get(position);
-
-        ImageView imageView = (ImageView)itemView.findViewById(R.id.txt_spinner_image);
-        if(getRoomName().equalsIgnoreCase(roomVO.getRoomName())){
+        roomVO = list.get(position);
+        imageView = (ImageView) itemView.findViewById(R.id.txt_spinner_image);
+        if (getRoomName().equalsIgnoreCase(roomVO.getRoomName())) {
             imageView.setVisibility(View.GONE);
-        }else{
+        } else {
             imageView.setVisibility(View.GONE);
         }
-
-        TextView textView=(TextView)itemView.findViewById(R.id.txt_spinner_title);
+        textView = (TextView) itemView.findViewById(R.id.txt_spinner_title);
         textView.setText(list.get(position).getRoomName());
-
-
         return itemView;
     }
-    public String roomName = "";
 
     public String getRoomName() {
         return mRoomName;
@@ -60,15 +57,8 @@ public class RoomListArrayAdapter extends ArrayAdapter<RoomVO> {
         this.mRoomName = mRoomName;
     }
 
-    public View getDropDownView(int position, View convertView, ViewGroup parent){
-        /*TextView txt = new TextView(parent.getContext());
-        txt.setGravity(Gravity.CENTER);
-        txt.setPadding(16, 16, 16, 16);
-        txt.setTextSize(16);
-        txt.setText("Title");
-        txt.setTextColor(Color.parseColor("#000000"));
-        return  txt;*/
-        return getView(position,convertView,parent);
+    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+        return getView(position, convertView, parent);
 
     }
 

@@ -20,6 +20,7 @@ import java.util.List;
 public class NotificationSettingAdapter extends RecyclerView.Adapter<NotificationSettingAdapter.NotificationHolder>{
 
     private List<NotificationListRes.Data> notificationList;
+    private NotificationListRes.Data data;
     private SwitchChanges switchChanges;
 
     public NotificationSettingAdapter(List<NotificationListRes.Data> notificationList,SwitchChanges switchChanges){
@@ -37,7 +38,7 @@ public class NotificationSettingAdapter extends RecyclerView.Adapter<Notificatio
     @Override
     public void onBindViewHolder(NotificationHolder holder, final int position) {
 
-        final NotificationListRes.Data data = notificationList.get(position);
+        data = notificationList.get(position);
         holder.notification_title.setText(data.getTitle());
 
         holder.switch_temp.setChecked((data.getValue() == 1));

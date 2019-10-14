@@ -11,7 +11,6 @@ import android.widget.TextView;
 import com.kp.core.ActivityHelper;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.model.User;
 
 import java.util.List;
@@ -21,13 +20,14 @@ import java.util.List;
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class CloudAdapter extends RecyclerView.Adapter<CloudAdapter.CloudViewHolder>{
+public class CloudAdapter extends RecyclerView.Adapter<CloudAdapter.CloudViewHolder> {
 
     public List<User> userList;
     private Context mcontext;
     private CloudClickListener cloudClickListener;
+    User user;
 
-    public CloudAdapter(Context context,List<User> users,CloudClickListener cloudClickListener){
+    public CloudAdapter(Context context, List<User> users, CloudClickListener cloudClickListener) {
         this.userList = users;
         this.mcontext = context;
         this.cloudClickListener = cloudClickListener;
@@ -41,32 +41,21 @@ public class CloudAdapter extends RecyclerView.Adapter<CloudAdapter.CloudViewHol
     @Override
     public void onBindViewHolder(CloudViewHolder holder, final int position) {
 
-        final User user = userList.get(position);
-//        holder.txt_title.setText(user.getFirstname()+" "+user.getLastname());
+        user = userList.get(position);
         holder.txt_title.setText(user.getFirstname());
-
-//        if(user.isActive()){
-//            holder.image_cloud.setImageResource(R.drawable.icn_check);
-//        }else{
-//            holder.image_cloud.setImageResource(R.drawable.icn_round);
-//        }
-
-        if(ChatApplication.currentuserId.equalsIgnoreCase(user.getUser_id())){
+        if (ChatApplication.currentuserId.equalsIgnoreCase(user.getUser_id())) {
             holder.image_cloud.setImageResource(R.drawable.icn_check);
-        }else{
+        } else {
             holder.image_cloud.setImageResource(R.drawable.icn_round);
         }
-
-
-        //holder.radioButton.setChecked(user.isActive());
 
         holder.txt_title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (ActivityHelper.isConnectingToInternet(mcontext)) {
                     user.setIsActive(true);
-                    for(User user1 : userList){
-                        if(!user1.getUser_id().equalsIgnoreCase(user.getUser_id())){
+                    for (User user1 : userList) {
+                        if (!user1.getUser_id().equalsIgnoreCase(user.getUser_id())) {
                             user1.setIsActive(false);
                         }
                     }
@@ -81,8 +70,8 @@ public class CloudAdapter extends RecyclerView.Adapter<CloudAdapter.CloudViewHol
             @Override
             public void onClick(View v) {
                 user.setIsActive(true);
-                for(User user1 : userList){
-                    if(!user1.getUser_id().equalsIgnoreCase(user.getUser_id())){
+                for (User user1 : userList) {
+                    if (!user1.getUser_id().equalsIgnoreCase(user.getUser_id())) {
                         user1.setIsActive(false);
                     }
                 }
@@ -97,16 +86,14 @@ public class CloudAdapter extends RecyclerView.Adapter<CloudAdapter.CloudViewHol
         return userList.size();
     }
 
-    static class CloudViewHolder extends RecyclerView.ViewHolder{
+    static class CloudViewHolder extends RecyclerView.ViewHolder {
 
         private TextView txt_title;
-        // private RadioButton radioButton;
         private ImageView image_cloud;
 
         CloudViewHolder(View itemView) {
             super(itemView);
-            txt_title = (TextView)itemView.findViewById(R.id.txt_row_clou_name);
-            //  radioButton = (RadioButton)itemView.findViewById(R.id.radio_cloud);
+            txt_title = (TextView) itemView.findViewById(R.id.txt_row_clou_name);
             image_cloud = (ImageView) itemView.findViewById(R.id.image_cloud);
         }
     }
@@ -115,7 +102,7 @@ public class CloudAdapter extends RecyclerView.Adapter<CloudAdapter.CloudViewHol
      * interface for get click event in multiple users session
      * {@link com.spike.bot.activity.Main2Activity#click(User)}
      */
-    public interface CloudClickListener{
+    public interface CloudClickListener {
         void userSelectclick(User user);
     }
 }

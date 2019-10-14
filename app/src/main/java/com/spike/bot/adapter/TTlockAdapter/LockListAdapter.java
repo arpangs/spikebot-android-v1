@@ -20,7 +20,7 @@ import java.util.LinkedList;
  *
  * @author theodre
  */
-public class LockListAdapter extends  RecyclerView.Adapter<LockListAdapter.DeviceViewHolder>{
+public class LockListAdapter extends RecyclerView.Adapter<LockListAdapter.DeviceViewHolder> {
 
     private LinkedList<ExtendedBluetoothDevice> mDataList = new LinkedList<>();
 
@@ -30,35 +30,37 @@ public class LockListAdapter extends  RecyclerView.Adapter<LockListAdapter.Devic
     private LinkedList<ExtendedBluetoothDevice> mNormalStatusList = new LinkedList<>();
     private long lastSyncTimeStamp = 0;
     private onLockItemClick mListener;
+    boolean isContained = false;
+
     public interface onLockItemClick {
         void onClick(ExtendedBluetoothDevice device);
     }
 
-    public void setOnLockItemClick(onLockItemClick click){
+    public void setOnLockItemClick(onLockItemClick click) {
         this.mListener = click;
     }
 
-    public LockListAdapter(Activity context){
+    public LockListAdapter(Activity context) {
         mContext = context;
     }
 
-    public synchronized void updateData(ExtendedBluetoothDevice device){
-        if(device != null) {
-            if(device.isSettingMode()){
-                addOrSortLock(device,mAddStatusList);
-                removeOtherStatusLock(device,mNormalStatusList);
-            }else {
-                addOrSortLock(device,mNormalStatusList);
-                removeOtherStatusLock(device,mAddStatusList);
+    public synchronized void updateData(ExtendedBluetoothDevice device) {
+        if (device != null) {
+            if (device.isSettingMode()) {
+                addOrSortLock(device, mAddStatusList);
+                removeOtherStatusLock(device, mNormalStatusList);
+            } else {
+                addOrSortLock(device, mNormalStatusList);
+                removeOtherStatusLock(device, mAddStatusList);
             }
 
             long currentTime = System.currentTimeMillis();
-            if((currentTime - lastSyncTimeStamp) >= 800 ){
-                if(!mDataList.isEmpty()){
+            if ((currentTime - lastSyncTimeStamp) >= 800) {
+                if (!mDataList.isEmpty()) {
                     mDataList.clear();
                 }
 
-                mDataList.addAll(0,mAddStatusList);
+                mDataList.addAll(0, mAddStatusList);
                 mDataList.addAll(mNormalStatusList);
                 notifyDataSetChanged();
                 lastSyncTimeStamp = currentTime;
@@ -70,45 +72,43 @@ public class LockListAdapter extends  RecyclerView.Adapter<LockListAdapter.Devic
     /**
      * you can sort the lock that be discovered by signal value.
      */
-    private void addOrSortLock(ExtendedBluetoothDevice scanDevice, LinkedList<ExtendedBluetoothDevice> lockList){
-        boolean isContained = false;
+    private void addOrSortLock(ExtendedBluetoothDevice scanDevice, LinkedList<ExtendedBluetoothDevice> lockList) {
         int length = lockList.size();
         ExtendedBluetoothDevice mTopOneDevice;
         scanDevice.setDate(System.currentTimeMillis());
-        if(length > 0){
+        if (length > 0) {
 
             mTopOneDevice = lockList.get(0);
 
-            for(int i = 0;i < length;i++) {
+            for (int i = 0; i < length; i++) {
 
                 ExtendedBluetoothDevice currentDevice = lockList.get(i);
-
-                if(scanDevice.getAddress().equals(currentDevice.getAddress()) ){
+                if (scanDevice.getAddress().equals(currentDevice.getAddress())) {
                     isContained = true;
-                    if(i != 0 && scanDevice.getRssi() > mTopOneDevice.getRssi()){
+                    if (i != 0 && scanDevice.getRssi() > mTopOneDevice.getRssi()) {
                         lockList.remove(i);
-                        lockList.add(0,scanDevice);
-                    }else {
+                        lockList.add(0, scanDevice);
+                    } else {
                         currentDevice.setDate(System.currentTimeMillis());
-                        lockList.set(i,currentDevice);
+                        lockList.set(i, currentDevice);
                     }
-                }else {
-                    if(System.currentTimeMillis() - currentDevice.getDate() >= TIMEOUT) {
+                } else {
+                    if (System.currentTimeMillis() - currentDevice.getDate() >= TIMEOUT) {
                         lockList.remove(i);
                         length = lockList.size();
                     }
                 }
             }
 
-            if(!isContained){
-                if(scanDevice.getRssi() > mTopOneDevice.getRssi()){
-                    lockList.add(0,scanDevice);
-                }else {
+            if (!isContained) {
+                if (scanDevice.getRssi() > mTopOneDevice.getRssi()) {
+                    lockList.add(0, scanDevice);
+                } else {
                     lockList.add(scanDevice);
                 }
             }
 
-        }else {
+        } else {
             lockList.add(scanDevice);
         }
 
@@ -116,20 +116,21 @@ public class LockListAdapter extends  RecyclerView.Adapter<LockListAdapter.Devic
 
     /**
      * the lock mode will be changed,so should update the list when lock mode changed.
+     *
      * @param scanDevice the lock that be discovered.
      */
-    private void removeOtherStatusLock(ExtendedBluetoothDevice scanDevice, LinkedList<ExtendedBluetoothDevice> lockList){
-        if(!lockList.isEmpty()){
+    private void removeOtherStatusLock(ExtendedBluetoothDevice scanDevice, LinkedList<ExtendedBluetoothDevice> lockList) {
+        if (!lockList.isEmpty()) {
             int length = lockList.size();
-            for(int i = 0; i < length ; i++){
+            for (int i = 0; i < length; i++) {
                 ExtendedBluetoothDevice device = lockList.get(i);
-                if(device.getAddress().equals(scanDevice.getAddress())){
+                if (device.getAddress().equals(scanDevice.getAddress())) {
                     lockList.remove(i);
-                    length --;
-                }else {
-                    if(System.currentTimeMillis() - device.getDate() >= TIMEOUT) {
+                    length--;
+                } else {
+                    if (System.currentTimeMillis() - device.getDate() >= TIMEOUT) {
                         lockList.remove(i);
-                        length --;
+                        length--;
                     }
                 }
             }
@@ -149,22 +150,22 @@ public class LockListAdapter extends  RecyclerView.Adapter<LockListAdapter.Devic
         _holder.tv_lock_name.setText(item.getName());
         _holder.iv_setting_mode.setVisibility(item.isSettingMode() ? View.VISIBLE : View.GONE);
 
-        if(item.isSettingMode()){
+        if (item.isSettingMode()) {
             ChatApplication.logDisplay("item click mode ");
             _holder.tv_lock_name.setOnClickListener(view -> {
-                if(!item.isSettingMode()){
+                if (!item.isSettingMode()) {
                     return;
                 }
-                if(mListener != null){
+                if (mListener != null) {
                     mListener.onClick(item);
                 }
 
             });
             _holder.iv_setting_mode.setOnClickListener(view -> {
-                if(!item.isSettingMode()){
+                if (!item.isSettingMode()) {
                     return;
                 }
-                if(mListener != null){
+                if (mListener != null) {
                     mListener.onClick(item);
                 }
 
@@ -183,11 +184,11 @@ public class LockListAdapter extends  RecyclerView.Adapter<LockListAdapter.Devic
         ImageView iv_setting_mode;
         TextView tv_lock_name;
 
-        public DeviceViewHolder(View itemView){
+        public DeviceViewHolder(View itemView) {
             super(itemView);
-            this.view=itemView;
-            tv_lock_name=itemView.findViewById(R.id.tv_lock_name);
-            iv_setting_mode=itemView.findViewById(R.id.iv_setting_mode);
+            this.view = itemView;
+            tv_lock_name = itemView.findViewById(R.id.tv_lock_name);
+            iv_setting_mode = itemView.findViewById(R.id.iv_setting_mode);
 
         }
 

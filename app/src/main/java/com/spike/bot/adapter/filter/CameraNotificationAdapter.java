@@ -43,18 +43,21 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
     private Context mContext;
     ArrayList<CameraAlertList> arrayListLog = new ArrayList<>();
     ArrayList<CameraVO> getCameraList = new ArrayList<>();
+    ArrayList<CameraViewModel> arrayList;
+    List<String> myList;
+
     public GridLayoutManager gridLayoutManager;
     public UpdateCameraAlert updateCameraAlert;
 
 
     public CameraNotificationAdapter(Context context, GridLayoutManager gridLayoutManager
-            , ArrayList<CameraAlertList> arrayListLog, ArrayList<CameraVO> getCameraList,UpdateCameraAlert updateCameraAlert) {
+            , ArrayList<CameraAlertList> arrayListLog, ArrayList<CameraVO> getCameraList, UpdateCameraAlert updateCameraAlert) {
         this.onNotificationContextMenu = onNotificationContextMenu;
         this.mContext = context;
         this.arrayListLog = arrayListLog;
         this.getCameraList = getCameraList;
         this.gridLayoutManager = gridLayoutManager;
-        this.updateCameraAlert=updateCameraAlert;
+        this.updateCameraAlert = updateCameraAlert;
 
     }
 
@@ -69,28 +72,27 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
     public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
         try {
-            holder.txtStartTime.setText("" + DateHelper.formateDate(DateHelper.parseTimeSimple( arrayListLog.get(position).getStartTime(),
-                    DateHelper.DATE_FROMATE_HH_MM_TEMP),DateHelper.DATE_FROMATE_H_M_AMPM));
+            holder.txtStartTime.setText("" + DateHelper.formateDate(DateHelper.parseTimeSimple(arrayListLog.get(position).getStartTime(),
+                    DateHelper.DATE_FROMATE_HH_MM_TEMP), DateHelper.DATE_FROMATE_H_M_AMPM));
 
 
-            holder.txtEndTime.setText("" +DateHelper.formateDate(DateHelper.parseTimeSimple( arrayListLog.get(position).getEndTime(),
-                    DateHelper.DATE_FROMATE_HH_MM_TEMP),DateHelper.DATE_FROMATE_H_M_AMPM));
+            holder.txtEndTime.setText("" + DateHelper.formateDate(DateHelper.parseTimeSimple(arrayListLog.get(position).getEndTime(),
+                    DateHelper.DATE_FROMATE_HH_MM_TEMP), DateHelper.DATE_FROMATE_H_M_AMPM));
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        if(position==0){
+        if (position == 0) {
             holder.viewLine.setVisibility(View.GONE);
-        }else {
+        } else {
             holder.viewLine.setVisibility(View.VISIBLE);
         }
 
 
-        if(arrayListLog.get(position).getCameraIds()!=null){
-            List<String> myList = new ArrayList<String>(Arrays.asList(arrayListLog.get(position).getCameraIds().split(",")));
-
+        if (arrayListLog.get(position).getCameraIds() != null) {
+            myList = new ArrayList<String>(Arrays.asList(arrayListLog.get(position).getCameraIds().split(",")));
             if (myList.size() > 0) {
-                ArrayList<CameraViewModel> arrayList=new ArrayList<>();
+                arrayList = new ArrayList<>();
                 for (int j = 0; j < myList.size(); j++) {
                     for (int i = 0; i < getCameraList.size(); i++) {
                         if (getCameraList.get(i).getCamera_id().equalsIgnoreCase(myList.get(j))) {
@@ -104,8 +106,8 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
                     }
                 }
 
-                if(arrayListLog.get(position).getCameraViewModels()!=null){
-                    if(arrayListLog.get(position).getCameraViewModels().size()>0){
+                if (arrayListLog.get(position).getCameraViewModels() != null) {
+                    if (arrayListLog.get(position).getCameraViewModels().size() > 0) {
                         GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, Constants.SWITCH_NUMBER);
                         holder.recyclerCamera.setLayoutManager(gridLayoutManager);
                         CameraNotiListAdapter cameraNotiListAdapter = new CameraNotiListAdapter(mContext, arrayListLog.get(position).getCameraViewModels());
@@ -121,9 +123,9 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
                     holder.recyclerCamera.setVisibility(View.GONE);
                 }
 
-                if(arrayListLog.get(position).getIsActive()==1){
+                if (arrayListLog.get(position).getIsActive() == 1) {
                     holder.switchAlert.setChecked(true);
-                }else {
+                } else {
                     holder.switchAlert.setChecked(false);
                 }
 
@@ -146,9 +148,9 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
         });
 
         if (Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
-            if(Common.getPrefValue(mContext, Constants.USER_ID).equalsIgnoreCase(arrayListLog.get(position).getUser_id())){
+            if (Common.getPrefValue(mContext, Constants.USER_ID).equalsIgnoreCase(arrayListLog.get(position).getUser_id())) {
                 holder.imgMore.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 holder.imgMore.setVisibility(View.INVISIBLE);
             }
         }
@@ -170,12 +172,12 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()){
+                        switch (item.getItemId()) {
                             case R.id.action_edit_dots:
-                                updateCameraAlert.updatecameraALert("update",arrayListLog.get(position), holder.switchAlert, position);
+                                updateCameraAlert.updatecameraALert("update", arrayListLog.get(position), holder.switchAlert, position);
                                 break;
                             case R.id.action_delete_dots:
-                                updateCameraAlert.updatecameraALert("delete",arrayListLog.get(position), holder.switchAlert, position);
+                                updateCameraAlert.updatecameraALert("delete", arrayListLog.get(position), holder.switchAlert, position);
                                 break;
 
                         }
@@ -187,35 +189,31 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
             }
         });
 
-        holder.switchAlert.setOnTouchListener(new OnSwipeTouchListener(mContext){
+        holder.switchAlert.setOnTouchListener(new OnSwipeTouchListener(mContext) {
             @Override
             public void onClick() {
                 super.onClick();
                 holder.switchAlert.setChecked(holder.switchAlert.isChecked());
-                updateCameraAlert.updatecameraALert("switch",arrayListLog.get(position),holder.switchAlert,position);
-               // onNotificationContextMenu.onSwitchChanged(notification,holder.switchAlert,position,!holder.switchAlert.isChecked());
+                updateCameraAlert.updatecameraALert("switch", arrayListLog.get(position), holder.switchAlert, position);
             }
 
             @Override
             public void onSwipeLeft() {
                 super.onSwipeLeft();
                 holder.switchAlert.setChecked(holder.switchAlert.isChecked());
-                updateCameraAlert.updatecameraALert("switch",arrayListLog.get(position),holder.switchAlert, position);
-               // onNotificationContextMenu.onSwitchChanged(notification,holder.switchAlert,position,!holder.switchAlert.isChecked());
+                updateCameraAlert.updatecameraALert("switch", arrayListLog.get(position), holder.switchAlert, position);
             }
 
             @Override
             public void onSwipeRight() {
                 super.onSwipeRight();
                 holder.switchAlert.setChecked(holder.switchAlert.isChecked());
-                updateCameraAlert.updatecameraALert("switch",arrayListLog.get(position),holder.switchAlert, position);
-              //  onNotificationContextMenu.onSwitchChanged(notification,holder.switchCompat,position,!holder.switchCompat.isChecked());
+                updateCameraAlert.updatecameraALert("switch", arrayListLog.get(position), holder.switchAlert, position);
             }
 
         });
 
     }
-
 
 
     @Override
@@ -234,8 +232,6 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
         public AppCompatImageView imgArrow, imgMore;
         public AppCompatTextView txtStartTime, txtEndTime;
         public SwitchCompat switchAlert;
-        public SwitchCompat switchCompat;
-        public AppCompatImageView imgOptions;
         public LinearLayout linearCamera;
         public RecyclerView recyclerCamera;
         public View viewLine;

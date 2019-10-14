@@ -22,23 +22,26 @@ import java.util.ArrayList;
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class FilterRootAdapter extends RecyclerView.Adapter<FilterRootAdapter.FilterHolder> implements FilterSubAdapter.SubFilterEvent{
+public class FilterRootAdapter extends RecyclerView.Adapter<FilterRootAdapter.FilterHolder> implements FilterSubAdapter.SubFilterEvent {
 
     ArrayList<Filter> filters;
+    ArrayList<Filter.SubFilter> subFilterArrayList;
+
     private Context context;
     FilterMarkAll filterMarkAll;
 
+    boolean isChecked = false;
 
-    public FilterRootAdapter(ArrayList<Filter> filters1,FilterMarkAll filterMarkAll){
+    public FilterRootAdapter(ArrayList<Filter> filters1, FilterMarkAll filterMarkAll) {
         this.filters = filters1;
         this.filterMarkAll = filterMarkAll;
     }
 
     @Override
     public FilterHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view  = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_filter_root,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_filter_root, parent, false);
         context = view.getContext();
-        return  new FilterHolder(view);
+        return new FilterHolder(view);
     }
 
     @Override
@@ -46,9 +49,9 @@ public class FilterRootAdapter extends RecyclerView.Adapter<FilterRootAdapter.Fi
 
         final Filter filter = filters.get(position);
 
-        if(filter.isChecked()){
+        if (filter.isChecked()) {
             holder.rootCheck.setChecked(true);
-        }else{
+        } else {
             holder.rootCheck.setChecked(false);
         }
 
@@ -58,67 +61,52 @@ public class FilterRootAdapter extends RecyclerView.Adapter<FilterRootAdapter.Fi
         holder.root_ll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(filter.isExpanded()){
+                if (filter.isExpanded()) {
                     holder.subList.setVisibility(View.VISIBLE);
-                }else{
+                } else {
                     holder.subList.setVisibility(View.GONE);
                 }
                 filter.setExpanded(!filter.isExpanded());
                 filter.setChecked(filter.isChecked());
-                notifyItemChanged(position,filter);
+                notifyItemChanged(position, filter);
             }
         });
 
         holder.rootCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-              //  Log.d("Filter","chechj 2: " + filter.isChecked());
-
-                if(filter.isChecked() || filter.isExpanded()){
+                if (filter.isChecked() || filter.isExpanded()) {
                     holder.subList.setVisibility(View.VISIBLE);
 
-                }else{
+                } else {
 
                     holder.subList.setVisibility(View.GONE);
-                    for(Filter.SubFilter subFilter : filter.getSubFilters()){
+                    for (Filter.SubFilter subFilter : filter.getSubFilters()) {
                         subFilter.setChecked(true);
                     }
                 }
-                if(filter.isChecked()){
-                    for(Filter.SubFilter subFilter : filter.getSubFilters()){
+                if (filter.isChecked()) {
+                    for (Filter.SubFilter subFilter : filter.getSubFilters()) {
                         subFilter.setChecked(false);
                     }
-                }else{
-                    for(Filter.SubFilter subFilter : filter.getSubFilters()){
+                } else {
+                    for (Filter.SubFilter subFilter : filter.getSubFilters()) {
                         subFilter.setChecked(true);
                     }
                 }
-                if(!filter.isExpanded()){
+                if (!filter.isExpanded()) {
                     filter.setExpanded(true);
-                }else{
+                } else {
                     filter.setExpanded(filter.isExpanded());
                 }
                 filter.setChecked(!filter.isChecked());
-                notifyItemChanged(position,filter);
+                notifyItemChanged(position, filter);
 
                 filterMarkAll.filterAllMark(filters);
             }
         });
-
-//        if(filter.isExpanded()){
-//            holder.root_arrow.setImageResource(R.drawable.arrow_up2);
-//            holder.subList.setVisibility(View.VISIBLE);
-//        }else{
-//           // holder.rootCheck.setChecked(false);
-//            holder.root_arrow.setImageResource(R.drawable.arrow_down2);
-            holder.subList.setVisibility(View.GONE);
-            holder.root_arrow.setVisibility(View.GONE);
-//        }
-
-      /*  FilterSubAdapter filterSubAdapter = new FilterSubAdapter(position,this,filter.getSubFilters());
-        holder.subList.setAdapter(filterSubAdapter);*/
-
+        holder.subList.setVisibility(View.GONE);
+        holder.root_arrow.setVisibility(View.GONE);
     }
 
     @Override
@@ -130,21 +118,20 @@ public class FilterRootAdapter extends RecyclerView.Adapter<FilterRootAdapter.Fi
     public void eventClick(int pos) {
         for (int i = 0; i < filters.size(); i++) {
             Filter filter = filters.get(i);
-            if(i == pos){
-                ArrayList<Filter.SubFilter> subFilterArrayList = filter.getSubFilters();
-                boolean isChecked = false;
-                for(Filter.SubFilter subFilter : subFilterArrayList){
-                    if(subFilter.isChecked()){
+            if (i == pos) {
+                subFilterArrayList = filter.getSubFilters();
+                for (Filter.SubFilter subFilter : subFilterArrayList) {
+                    if (subFilter.isChecked()) {
                         isChecked = true;
                     }
                 }
                 filter.setChecked(isChecked);
-                notifyItemChanged(pos,filter);
+                notifyItemChanged(pos, filter);
             }
         }
     }
 
-    class FilterHolder extends RecyclerView.ViewHolder{
+    class FilterHolder extends RecyclerView.ViewHolder {
 
         private CheckBox rootCheck;
         private TextView rootTitle;
@@ -161,7 +148,7 @@ public class FilterRootAdapter extends RecyclerView.Adapter<FilterRootAdapter.Fi
             root_ll = (LinearLayout) itemView.findViewById(R.id.root_ll);
             root_arrow = (ImageView) itemView.findViewById(R.id.root_arrow);
             subList = (RecyclerView) itemView.findViewById(R.id.list_sub_filter);
-            subList.setLayoutManager(new GridLayoutManager(context,1));
+            subList.setLayoutManager(new GridLayoutManager(context, 1));
         }
     }
 

@@ -31,13 +31,14 @@ import static com.spike.bot.R.drawable.yellow_border_fill_rectangle;
  * Created by Sagar on 8/8/18.
  * Gmail : jethvasagar2@gmail.com
  */
-public class IRBlasterScheduleAdapter extends RecyclerView.Adapter<IRBlasterScheduleAdapter.IRBlasterSch>{
+public class IRBlasterScheduleAdapter extends RecyclerView.Adapter<IRBlasterScheduleAdapter.IRBlasterSch> {
 
     private List<RemoteSchListRes.Data.RemoteScheduleList> remoteScheduleList;
     private Context mContext;
     private RemoteSchClickEvent remoteSchClickEvent;
+    String lastAMPMStart = "", lastAMPMEnd = "";
 
-    public IRBlasterScheduleAdapter(List<RemoteSchListRes.Data.RemoteScheduleList> remoteScheduleList,RemoteSchClickEvent remoteSchClickEvent){
+    public IRBlasterScheduleAdapter(List<RemoteSchListRes.Data.RemoteScheduleList> remoteScheduleList, RemoteSchClickEvent remoteSchClickEvent) {
         this.remoteScheduleList = remoteScheduleList;
         this.remoteSchClickEvent = remoteSchClickEvent;
     }
@@ -45,7 +46,7 @@ public class IRBlasterScheduleAdapter extends RecyclerView.Adapter<IRBlasterSche
     @Override
     public IRBlasterSch onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.row_remote_schedule,parent,false);
+                .inflate(R.layout.row_remote_schedule, parent, false);
         mContext = view.getContext();
         return new IRBlasterSch(view);
     }
@@ -59,56 +60,57 @@ public class IRBlasterScheduleAdapter extends RecyclerView.Adapter<IRBlasterSche
 
         try {
 
-            if(remote.getStartTemperature() > 0){
-                holder.ir_tv_on_time.setText(remote.getStartTemperature() +""+Common.getC()+" "+remote.getStartMode()+" "+DateHelper.formateDate(DateHelper.parseTimeSimple(remote.getStartTime(),
-                        DateHelper.DATE_FROMATE_HH_MM),DateHelper.DATE_FROMATE_H_M_AMPM));
+            if (remote.getStartTemperature() > 0) {
+                holder.ir_tv_on_time.setText(remote.getStartTemperature() + "" + Common.getC() + " " + remote.getStartMode() + " " + DateHelper.formateDate(DateHelper.parseTimeSimple(remote.getStartTime(),
+                        DateHelper.DATE_FROMATE_HH_MM), DateHelper.DATE_FROMATE_H_M_AMPM));
             }
-            if(remote.getEndTemperature() > 0){
-                holder.ir_tv_off_time.setText(remote.getEndTemperature() +""+Common.getC()+" "+remote.getEndMode()+""+" "+DateHelper.formateDate(DateHelper.parseTimeSimple(remote.getEndTime(),
-                        DateHelper.DATE_FROMATE_HH_MM),DateHelper.DATE_FROMATE_H_M_AMPM));
+            if (remote.getEndTemperature() > 0) {
+                holder.ir_tv_off_time.setText(remote.getEndTemperature() + "" + Common.getC() + " " + remote.getEndMode() + "" + " " + DateHelper.formateDate(DateHelper.parseTimeSimple(remote.getEndTime(),
+                        DateHelper.DATE_FROMATE_HH_MM), DateHelper.DATE_FROMATE_H_M_AMPM));
             }
 
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        if(remote.getIsActive()==1){
+        if (remote.getIsActive() == 1) {
             holder.ir_onoff_view.setBackgroundResource(R.drawable.blue_border_fill_rectangle);
             holder.ir_tv_on_time.setTextColor(mContext.getResources().getColor(R.color.automation_white));
             holder.ir_tv_on.setTextColor(mContext.getResources().getColor(R.color.automation_white));
             holder.ir_tv_off_time.setTextColor(mContext.getResources().getColor(R.color.automation_white));
             holder.ir_tv_off.setTextColor(mContext.getResources().getColor(R.color.automation_white));
 
-            String lastAMPMStart = "",lastAMPMEnd = "";
-            try{
+            try {
                 lastAMPMStart = holder.ir_tv_on_time.getText().toString().trim().substring(
-                        holder.ir_tv_on_time.length()-2,holder.ir_tv_on_time.length());
+                        holder.ir_tv_on_time.length() - 2, holder.ir_tv_on_time.length());
 
                 lastAMPMEnd = holder.ir_tv_off_time.getText().toString().trim().substring(
-                        holder.ir_tv_off_time.length()-2,holder.ir_tv_off_time.length());
+                        holder.ir_tv_off_time.length() - 2, holder.ir_tv_off_time.length());
 
 
-                if(lastAMPMStart.equalsIgnoreCase("AM") || lastAMPMStart.equalsIgnoreCase("am")){
+                if (lastAMPMStart.equalsIgnoreCase("AM") || lastAMPMStart.equalsIgnoreCase("am")) {
                     holder.ir_on_view.setBackgroundResource(blue_border_yellow_top);
                 }
 
-                if((lastAMPMStart.equalsIgnoreCase("AM") || lastAMPMStart.equalsIgnoreCase("am") ) &&
-                        remote.getStartTime().equalsIgnoreCase("")){
+                if ((lastAMPMStart.equalsIgnoreCase("AM") || lastAMPMStart.equalsIgnoreCase("am")) &&
+                        remote.getStartTime().equalsIgnoreCase("")) {
                     holder.ir_on_view.setBackgroundResource(yellow_border_fill_rectangle);
                 }
 
-                if(lastAMPMEnd.equalsIgnoreCase("AM") || lastAMPMEnd.equalsIgnoreCase("am")){
+                if (lastAMPMEnd.equalsIgnoreCase("AM") || lastAMPMEnd.equalsIgnoreCase("am")) {
                     holder.ir_off_view.setBackgroundResource(blue_border_yellow_bottom);
                 }
 
-                if((lastAMPMEnd.equalsIgnoreCase("AM") || lastAMPMEnd.equalsIgnoreCase("am") ) &&
-                        remote.getEndTime().equalsIgnoreCase("")){
+                if ((lastAMPMEnd.equalsIgnoreCase("AM") || lastAMPMEnd.equalsIgnoreCase("am")) &&
+                        remote.getEndTime().equalsIgnoreCase("")) {
                     holder.ir_off_view.setBackgroundResource(yellow_border_fill_rectangle);
                 }
 
-            }catch (Exception ex){ ex.printStackTrace(); }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
 
-        }else{
+        } else {
             holder.ir_on_view.setBackgroundResource(0);
             holder.ir_off_view.setBackgroundResource(0);
 
@@ -118,7 +120,7 @@ public class IRBlasterScheduleAdapter extends RecyclerView.Adapter<IRBlasterSche
         holder.ir_iv_schedule_dots.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                displayOptionMenu(v,remote,remoteSchClickEvent);
+                displayOptionMenu(v, remote, remoteSchClickEvent);
             }
         });
 
@@ -137,21 +139,10 @@ public class IRBlasterScheduleAdapter extends RecyclerView.Adapter<IRBlasterSche
         return remoteScheduleList.size();
     }
 
-    class IRBlasterSch extends RecyclerView.ViewHolder{
+    class IRBlasterSch extends RecyclerView.ViewHolder {
 
-        private LinearLayout ir_onoff_view;
-        private LinearLayout ir_on_view;
-        private LinearLayout ir_off_view;
-
-        private TextView ir_tv_on_time;
-        private TextView ir_tv_off_time;
-
-        private TextView ir_tv_on;
-        private TextView ir_tv_off;
-
-        private TextView ir_tv_name;
-        private TextView ir_tv_schedule_days;
-
+        private LinearLayout ir_onoff_view,ir_on_view,ir_off_view;
+        private TextView ir_tv_on_time,ir_tv_off_time,ir_tv_on,ir_tv_off,ir_tv_name,ir_tv_schedule_days;
         private ImageView ir_iv_schedule_dots;
 
         IRBlasterSch(View itemView) {
@@ -174,21 +165,25 @@ public class IRBlasterScheduleAdapter extends RecyclerView.Adapter<IRBlasterSche
 
         }
     }
-    public interface RemoteSchClickEvent{
+
+    public interface RemoteSchClickEvent {
         void onClickActive(RemoteSchListRes.Data.RemoteScheduleList remoteList);
+
         void onClickEdit(RemoteSchListRes.Data.RemoteScheduleList remoteList);
+
         void onClickDelete(RemoteSchListRes.Data.RemoteScheduleList remoteList);
     }
 
 
     /**
      * Edit, Delete context option menu
+     *
      * @param v
      * @param remoteList
      * @param remoteSchClickEvent
      */
     private void displayOptionMenu(View v, final RemoteSchListRes.Data.RemoteScheduleList remoteList,
-                                   final RemoteSchClickEvent remoteSchClickEvent){
+                                   final RemoteSchClickEvent remoteSchClickEvent) {
 
         PopupMenu popup = new PopupMenu(mContext, v);
         @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(mContext, R.style.PopupMenu);

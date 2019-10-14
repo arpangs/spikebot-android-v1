@@ -7,13 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.spike.bot.R;
-import com.spike.bot.core.Common;
-import com.spike.bot.listener.SelectCamera;
-import com.spike.bot.model.CameraVO;
 import com.spike.bot.model.RoomVO;
 
 import java.util.ArrayList;
@@ -22,21 +18,21 @@ import java.util.ArrayList;
  * Created by Sagar on 6/3/19.
  * Gmail : jethvasagar2@gmail.com
  */
-public class RoomeListAdapter extends RecyclerView.Adapter<RoomeListAdapter.SensorViewHolder>{
+public class RoomeListAdapter extends RecyclerView.Adapter<RoomeListAdapter.SensorViewHolder> {
 
     private TempSensorInfoAdapter.OnNotificationContextMenu onNotificationContextMenu;
     private Context mContext;
-    ArrayList<RoomVO> arrayListLog=new ArrayList<>();
+    ArrayList<RoomVO> arrayListLog = new ArrayList<>();
 
 
-    public RoomeListAdapter(Context context, ArrayList<RoomVO> arrayListLog1){
-        this.mContext=context;
-        this.arrayListLog=arrayListLog1;
+    public RoomeListAdapter(Context context, ArrayList<RoomVO> arrayListLog1) {
+        this.mContext = context;
+        this.arrayListLog = arrayListLog1;
     }
 
     @Override
     public SensorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_room_list,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_room_list, parent, false);
         return new SensorViewHolder(view);
     }
 
@@ -45,9 +41,9 @@ public class RoomeListAdapter extends RecyclerView.Adapter<RoomeListAdapter.Sens
 
         holder.txtRoomName.setText(arrayListLog.get(position).getRoomName());
 
-        if(arrayListLog.get(position).isDisable()){
-           holder.checkbox.setChecked(true);
-        }else {
+        if (arrayListLog.get(position).isDisable()) {
+            holder.checkbox.setChecked(true);
+        } else {
             holder.checkbox.setChecked(false);
         }
 
@@ -81,15 +77,15 @@ public class RoomeListAdapter extends RecyclerView.Adapter<RoomeListAdapter.Sens
         return position;
     }
 
-    public class SensorViewHolder extends RecyclerView.ViewHolder{
+    public class SensorViewHolder extends RecyclerView.ViewHolder {
 
         public TextView txtRoomName;
         public CheckBox checkbox;
 
         public SensorViewHolder(View view) {
             super(view);
-            checkbox =  itemView.findViewById(R.id.checkbox);
-            txtRoomName =  itemView.findViewById(R.id.txtRoomName);
+            checkbox = itemView.findViewById(R.id.checkbox);
+            txtRoomName = itemView.findViewById(R.id.txtRoomName);
         }
     }
 
