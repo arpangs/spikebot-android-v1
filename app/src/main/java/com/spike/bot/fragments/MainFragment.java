@@ -799,6 +799,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 
     public void errorViewClick(){
         mFab.setVisibility(View.GONE);
+        txt_empty_schedule.setVisibility(View.GONE);
         linear_retry.setVisibility(View.VISIBLE);
         ((Main2Activity)getActivity()).mToolBarSettings.setClickable(false);
         ((Main2Activity)getActivity()).linearTab.setVisibility(View.GONE);
