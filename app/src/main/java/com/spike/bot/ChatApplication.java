@@ -216,18 +216,19 @@ public class ChatApplication extends Application  {
 // Install the application crash handler
         ApplicationCrashHandler.installHandler();
 
-        mDeviceStore = new BluetoothLeDeviceStore();
-        mBluetoothUtils = new BluetoothUtils(getContext());
-        mScanner = new BluetoothLeScanner(mLeScanCallback, mBluetoothUtils);
-
-        final boolean isBluetoothOn = mBluetoothUtils.isBluetoothOn();
-        final boolean isBluetoothLePresent = mBluetoothUtils.isBluetoothLeSupported();
-        mDeviceStore.clear();
-
-        mBluetoothUtils.askUserToEnableBluetoothIfNeeded();
-        if (isBluetoothOn && isBluetoothLePresent) {
-            mScanner.scanLeDevice(-1, true);
-        }
+        //beacon
+//        mDeviceStore = new BluetoothLeDeviceStore();
+//        mBluetoothUtils = new BluetoothUtils(getContext());
+//        mScanner = new BluetoothLeScanner(mLeScanCallback, mBluetoothUtils);
+//
+//        final boolean isBluetoothOn = mBluetoothUtils.isBluetoothOn();
+//        final boolean isBluetoothLePresent = mBluetoothUtils.isBluetoothLeSupported();
+//        mDeviceStore.clear();
+//
+//        mBluetoothUtils.askUserToEnableBluetoothIfNeeded();
+//        if (isBluetoothOn && isBluetoothLePresent) {
+//            mScanner.scanLeDevice(-1, true);
+//        }
 
     }
 
