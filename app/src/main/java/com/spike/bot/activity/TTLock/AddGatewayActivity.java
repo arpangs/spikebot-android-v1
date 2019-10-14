@@ -60,18 +60,11 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
     String wifiUserName = "", wifiPassword = "", gatewayName = "";
     boolean isFlagClick = false;
 
-    private ConfigureGatewayInfo configureGatewayInfo;
-    private ExtendedBluetoothDevice device;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_gateway);
-
-        device = getIntent().getParcelableExtra(ExtendedBluetoothDevice.class.getName());
-        configureGatewayInfo = new ConfigureGatewayInfo();
         setViewId();
-
     }
 
     private void setViewId() {
@@ -161,12 +154,15 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
+    /* set wifi name */
     private void initView() {
         if (NetworkUtil.isWifiConnected(this)) {
             wifiName.setText(NetworkUtil.getWifiSSid(this));
         }
     }
 
+    /*
+    * lock init*/
     private void isInitSuccess(String macaddress) {
         GetDataService apiService = RetrofitAPIManager.provideClientApi();
         Call<String> call = apiService.gatewayIsInitSuccess(Constants.client_id, Constants.access_token, macaddress, System.currentTimeMillis());
@@ -194,6 +190,8 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
         });
     }
 
+    /*upload data to tt server
+    * */
     private void callUploadToserver(int gatewayId) {
         GetDataService apiService = RetrofitAPIManager.provideClientApi();
 
@@ -216,6 +214,8 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
         });
     }
 
+    /*call bridge list
+    * */
     private void callAddBridge(int gatewayId) {
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
@@ -298,6 +298,8 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
         }).execute();
     }
 
+    /* add bridge in spikebot
+    * */
     private void callServerGateway() {
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
         GatewayAPI gatewayAPI = new GatewayAPI(AddGatewayActivity.this, new GatewayCallback() {

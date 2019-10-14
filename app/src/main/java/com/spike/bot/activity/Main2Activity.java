@@ -82,6 +82,7 @@ import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -152,19 +153,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         //get push notification token
         token = FirebaseInstanceId.getInstance().getToken();
         Common.savePrefValue(getApplicationContext(), Constants.DEVICE_PUSH_TOKEN, token);
-
-        mViewPager = findViewById(R.id.container);
-        tabLayout =  findViewById(R.id.tabs);
-        mImageCloud =  findViewById(R.id.toolbar_cloud);
-        toolbarImage =  findViewById(R.id.toolbarImage);
-        deepsImage =  findViewById(R.id.deepsImage);
-        txt_connection =  findViewById(R.id.txt_connection);
-        linear_main =  findViewById(R.id.linear_main);
-        linear_progress =  findViewById(R.id.linear_progress);
-        toolbarTitle = findViewById(R.id.toolbarTitle);
-        mToolBarSettings =  findViewById(R.id.toolbar_setting);
-        linearCloud =  findViewById(R.id.linear_progress_cloud);
-        linearTab = findViewById(R.id.linearTab);
+        setViewId();
 
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
         this.wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, "");
@@ -202,6 +191,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             return;
         }
 
+        setViewId();
+
         //update user fname and lname after updaing the profile activity
         String userFname = Common.getPrefValue(ChatApplication.getInstance(), "first_name");
         String userLname = Common.getPrefValue(ChatApplication.getInstance(), "last_name");
@@ -227,6 +218,22 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             hideAlertDialog();
             showAlertDialog(ERROR_STRING);
         }
+    }
+
+    private void setViewId() {
+        mViewPager = findViewById(R.id.container);
+        tabLayout =  findViewById(R.id.tabs);
+        mImageCloud =  findViewById(R.id.toolbar_cloud);
+        toolbarImage =  findViewById(R.id.toolbarImage);
+        deepsImage =  findViewById(R.id.deepsImage);
+        txt_connection =  findViewById(R.id.txt_connection);
+        linear_main =  findViewById(R.id.linear_main);
+        linear_progress =  findViewById(R.id.linear_progress);
+        toolbarTitle = findViewById(R.id.toolbarTitle);
+        mToolBarSettings =  findViewById(R.id.toolbar_setting);
+        linearCloud =  findViewById(R.id.linear_progress_cloud);
+        linearTab = findViewById(R.id.linearTab);
+        tabLayout.setOnNavigationItemSelectedListener(this);
     }
 
     @Override
@@ -464,6 +471,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         if (ActivityHelper.isConnectingToInternet(Main2Activity.this)) {
             mToolBarSettings.setVisibility(View.VISIBLE);
             if (isConnected) {
+                tabLayout.setSelectedItemId(R.id.navigationDashboard);
+                ChatApplication.logDisplay("device refreshing main");
                 ChatApplication.isCallDeviceList = true;
                 deviceListRefreshView.deviceRefreshView(1);
             } else {
@@ -939,6 +948,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                                         }
 
                                         ChatApplication.isCallDeviceList = true;
+                                        ChatApplication.currentuserId=tempList.get(0).getUser_id();
                                         setWifiLocalflow(tempList.get(0).getLocal_ip(),tempList.get(0).getCloudIP(),tempList.get(0).getMac_address(),0);
 
                                     } catch (Exception ex) {
@@ -1066,7 +1076,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         mainFragment1.isResumeConnect=true;
         mainFragment1.showDialog = 1;
         getUserDialogClick(true);
-//        tabLayout.setSelectedItemId(R.id.navigationDashboard);
+        tabLayout.setSelectedItemId(R.id.navigationDashboard);
+        setUserName();
         deviceListRefreshView.deviceRefreshView(1);
     }
 
@@ -1113,7 +1124,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     linear_progress.setVisibility(View.GONE);
                     mToolBarSettings.setVisibility(View.GONE);
                     toolbarTitle.setVisibility(View.GONE);
-                    tabLayout.setVisibility(View.GONE);
                 } else {
 
                     if (flagPicheck && !value) {
@@ -1122,7 +1132,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                         linear_progress.setVisibility(View.GONE);
                         mToolBarSettings.setVisibility(View.INVISIBLE);
                         toolbarTitle.setVisibility(View.VISIBLE);
-                        tabLayout.setVisibility(View.GONE);
                     } else {
 
                         if (value) {
@@ -1131,14 +1140,12 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                             linear_progress.setVisibility(View.GONE);
                             mToolBarSettings.setVisibility(View.GONE);
                             toolbarTitle.setVisibility(View.GONE);
-                            tabLayout.setVisibility(View.GONE);
                         } else {
                             hideAlertDialog();
                             linear_main.setVisibility(View.VISIBLE);
                             mViewPager.setVisibility(View.VISIBLE);
                             mToolBarSettings.setVisibility(View.VISIBLE);
                             toolbarTitle.setVisibility(View.VISIBLE);
-                            tabLayout.setVisibility(View.VISIBLE);
                         }
                     }
                 }

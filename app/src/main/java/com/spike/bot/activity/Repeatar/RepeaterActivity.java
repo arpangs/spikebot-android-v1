@@ -182,6 +182,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
         }
     };
 
+    /*searching device wait for 7 sec*/
     CountDownTimer countDownTimer = new CountDownTimer(7000, 4000) {
         public void onTick(long millisUntilFinished) {
         }
@@ -313,9 +314,9 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
         TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(this, roomNameList, 1, false);
         sp_room_list.setAdapter(customAdapter);
 
-        Button btn_cancel = (Button) dialog.findViewById(R.id.btn_door_cancel);
-        Button btn_save = (Button) dialog.findViewById(R.id.btn_door_save);
-        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
+        Button btn_cancel =  dialog.findViewById(R.id.btn_door_cancel);
+        Button btn_save =  dialog.findViewById(R.id.btn_door_save);
+        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
 
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -403,7 +404,6 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
                     } else {
                         Toast.makeText(RepeaterActivity.this.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     }
-                    // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {

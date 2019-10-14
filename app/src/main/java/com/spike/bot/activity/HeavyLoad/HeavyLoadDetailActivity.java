@@ -62,21 +62,23 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
     public ImageView imgHL,imageShowNext;
     public FrameLayout frameChart;
     public TextView txtGraphType,txtYAxis,txtGraphTital,txtNodataFound;
-    public String room_device_id = "",getRoomName="",getModuleId="",device_id="";
     public TextView txtCurrentValue;
     public Spinner spinnerYear, spinnerMonth;
-    public boolean isApiStatus=false;
-    ArrayList arrayListYearList = new ArrayList<>();
-    DataHeavyModel heavyModel = new DataHeavyModel();
 
+    DataHeavyModel heavyModel = new DataHeavyModel();
     public CountDownTimer countDownTimerSocket = null;
     private Socket mSocket;
+    IAxisValueFormatter formatter;
 
+    public boolean isApiStatus=false;
+    public int currentDay = 0;
+    public String room_device_id = "",getRoomName="",getModuleId="",device_id="";
+
+    ArrayList arrayListYearList = new ArrayList<>();
     ArrayList<Entry> entries = new ArrayList<>();
     final ArrayList<String> arrayDay = new ArrayList<>();
     final ArrayList<String> arrayDayTemp = new ArrayList<>();
-    IAxisValueFormatter formatter;
-    int currentDay = 0;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -151,6 +153,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
 
         ChatApplication.logDisplay("json is "+object.toString());
 
+        /*every 10 sec after emit data for status of heavyload data*/
         countDownTimerSocket = new CountDownTimer(10000, 1000) {
             public void onTick(long millisUntilFinished) {
             }public void onFinish() {
@@ -176,14 +179,12 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
     private void setSPinner() {
         Calendar c = Calendar.getInstance();
         int month = c.get(Calendar.MONTH) + 1;
-        int year = c.get(Calendar.YEAR);
 
         ArrayAdapter adapterMonth = new ArrayAdapter<String>(this,R.layout.item_spinner_selected_month, Constants.getMonthList());
         spinnerMonth.setAdapter(adapterMonth);
         spinnerMonth.setSelection(month);
 
-        ArrayAdapter adapterYear = new ArrayAdapter<String>(this,
-                R.layout.item_spinner_selected_month, arrayListYearList);
+        ArrayAdapter adapterYear = new ArrayAdapter<String>(this, R.layout.item_spinner_selected_month, arrayListYearList);
         spinnerYear.setAdapter(adapterYear);
 
         spinnerYear.setSelection(1);
@@ -221,8 +222,15 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
     }
 
     private void setYearlist() {
-        arrayListYearList.add("2018");
-        arrayListYearList.add("2019");
+//        arrayListYearList.add("2018");
+//        arrayListYearList.add("2019");
+
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+
+        for(int i=2018; i<=year; i++){
+            arrayListYearList.add(""+i);
+        }
     }
 
     @Override
@@ -314,8 +322,6 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
             e.printStackTrace();
         }
 
-
-
         String url = ChatApplication.url + Constants.getHeavyLoadDetails;
         ChatApplication.logDisplay("json filter is first " + jsonObject.toString()+" "+url);
         new GetJsonTask(HeavyLoadDetailActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
@@ -348,12 +354,13 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
                 isApiStatus=false;
-                Toast.makeText(HeavyLoadDetailActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                ChatApplication.showToast(HeavyLoadDetailActivity.this, getResources().getString(R.string.something_wrong));
             }
         }).execute();
     }
 
 
+    /*filter api */
     public void filter() {
         if (!ActivityHelper.isConnectingToInternet(HeavyLoadDetailActivity.this)) {
             Toast.makeText(HeavyLoadDetailActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -442,11 +449,13 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Toast.makeText(HeavyLoadDetailActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                ChatApplication.showToast(HeavyLoadDetailActivity.this, getResources().getString(R.string.something_wrong));
             }
         }).execute();
     }
 
+    /*chart data set
+    * */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void chartDataset(boolean isFlag) {
         if (heavyModel != null && heavyModel.getGraphData() != null && heavyModel.getGraphData().size() > 0) {
@@ -616,9 +625,6 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
                 txtGraphType.setText("Month : "+spinnerMonth.getSelectedItem());
                 txtGraphTital.setText("Monthly Graph : "+totalWv);
             }
-
-
-
 
         }else {
             frameChart.setVisibility(View.GONE);

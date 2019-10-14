@@ -104,6 +104,7 @@ public class AddSMartDevicetoRoomActivity extends AppCompatActivity implements V
 
     }
 
+    /*getting bridge list*/
     public void getHueBridgeLightList() {
         if (!ActivityHelper.isConnectingToInternet(AddSMartDevicetoRoomActivity.this)) {
             Toast.makeText(AddSMartDevicetoRoomActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -223,6 +224,7 @@ public class AddSMartDevicetoRoomActivity extends AppCompatActivity implements V
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    /* set room list*/
     private void setViewRoom() {
 
         for (int i = 0; i < roomList.size(); i++) {
@@ -264,6 +266,7 @@ public class AddSMartDevicetoRoomActivity extends AppCompatActivity implements V
         });
     }
 
+    /*set panel list*/
     private void setPanelList(final int positionRoom) {
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, stringPanellist);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -296,6 +299,7 @@ public class AddSMartDevicetoRoomActivity extends AppCompatActivity implements V
         });
     }
 
+    /* getting device*/
     private void setDeviceList(final int positionRoom, final int positionpanel) {
 
         device_id = "";

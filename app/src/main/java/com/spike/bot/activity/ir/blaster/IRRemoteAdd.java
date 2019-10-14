@@ -39,17 +39,15 @@ import java.util.List;
  */
 public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListener, IRBlasterAddListAdapter.IRDeviceClikListener {
 
-    private LinearLayout linear_progress, ll_sensor_list;
+    private LinearLayout linear_progress;
     private RecyclerView mIRListView;
+    private Spinner mSpinnerBlaster;
+    private TextView mRoomText, txtNoBlaster;
     private IRBlasterAddListAdapter irBlasterAddAdapter;
-
+    private List<IRDeviceDetailsRes.Data.IrList> irLists;
     private List<IRDeviceDetailsRes.Data.Devicelist> mIRDeviceList;
     private String roomName = "", roomId = "";
-
-    private Spinner mSpinnerBlaster, mSpinnerRoom;
-    private TextView mRoomText, txtNoBlaster;
     boolean flagisBlaster = false;
-    private List<IRDeviceDetailsRes.Data.IrList> irLists;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,18 +70,13 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
     }
 
     private void bindView() {
-
-        linear_progress = (LinearLayout) findViewById(R.id.linear_progress);
-        ll_sensor_list = (LinearLayout) findViewById(R.id.ll_sensor_list);
-
-        mSpinnerBlaster = (Spinner) findViewById(R.id.remote_add_blaster_spinner);
-        mSpinnerRoom = (Spinner) findViewById(R.id.remote_add_room_spinner);
-
-        mRoomText = (TextView) findViewById(R.id.remote_add_room_txt);
-        txtNoBlaster = (TextView) findViewById(R.id.txtNoBlaster);
+        linear_progress =  findViewById(R.id.linear_progress);
+        mSpinnerBlaster = findViewById(R.id.remote_add_blaster_spinner);
+        mRoomText =  findViewById(R.id.remote_add_room_txt);
+        txtNoBlaster =  findViewById(R.id.txtNoBlaster);
         mRoomText.setText("" + roomName);
 
-        mIRListView = (RecyclerView) findViewById(R.id.list_ir_sensor_add);
+        mIRListView =  findViewById(R.id.list_ir_sensor_add);
         mIRListView.setLayoutManager(new GridLayoutManager(this, 3));
     }
 
@@ -126,10 +119,7 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
                         }
 
                         irLists = irDeviceDetailsRes.getData().getIrList();
-                        List<IRDeviceDetailsRes.Data.RoomList> roomLists = irDeviceDetailsRes.getData().getRoomList();
-
                         //If not IR Blaster then add default String add in Spinner
-
                         if (irLists.size() == 0) {
                             IRDeviceDetailsRes.Data.IrList irEmpty = new IRDeviceDetailsRes.Data.IrList();
                             irEmpty.setRoomName("");
@@ -220,7 +210,6 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
     }
 
     private void showProgress() {
-
         linear_progress.setVisibility(View.VISIBLE);
         mIRListView.setVisibility(View.GONE);
     }

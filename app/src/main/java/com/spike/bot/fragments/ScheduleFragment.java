@@ -1425,7 +1425,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                         String userPassword = "";
                         mCallback.onArticleSelected("" + userFirstName);
 
-                        MainFragment.saveCurrentId(getActivity(), userId, gateway_ip);
+//                        MainFragment.saveCurrentId(getActivity(), userId, gateway_ip);
                         if (userObject.has("user_password")) {
                             userPassword = userObject.getString("user_password");
                         }

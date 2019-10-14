@@ -83,14 +83,6 @@ public class BrandListActivity extends AppCompatActivity {
                     String message = result.getString("message");
                     if (code == 200) {
                         JSONObject object = result.optJSONObject("data");
-                        //{
-                        //  "smart_device_brand_list": [
-                        //    {
-                        //      "id": 1,
-                        //      "smart_device_brand_name": "Philips Hue"
-                        //    }
-                        //  ]
-                        //}
                         ChatApplication.logDisplay("object is " + object);
 
                         JSONArray jsonArray = object.optJSONArray("smart_device_brand_list");

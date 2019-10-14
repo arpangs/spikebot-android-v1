@@ -45,11 +45,10 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
 
     Toolbar toolbar;
     Button btnExtingBridge, btnAddToroom;
-
-    ArrayList<LockObj> lockObjs = new ArrayList<>();
+    String isViewType = "", host_ip = "", getBridge_name = "", bridge_id = "", door_sensor_module_id = "", door_name = "", door_type = "", lock_data = "", lock_id = "";
 
     SmartBrandDeviceModel smartBrandDeviceModel;
-    String isViewType = "", host_ip = "", getBridge_name = "", bridge_id = "", door_sensor_module_id = "", door_name = "", door_type = "", lock_data = "", lock_id = "";
+    ArrayList<LockObj> lockObjs = new ArrayList<>();
     ArrayList<String> roomNameList = new ArrayList<>();
 
 
@@ -143,9 +142,9 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         filterArray[0] = new InputFilter.LengthFilter(25);
         room_name.setFilters(filterArray);
 
-        Button btnSave = (Button) dialog.findViewById(R.id.btn_save);
-        Button btn_cancel = (Button) dialog.findViewById(R.id.btn_cancel);
-        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
+        Button btnSave =  dialog.findViewById(R.id.btn_save);
+        Button btn_cancel =  dialog.findViewById(R.id.btn_cancel);
+        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -212,7 +211,6 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
                         JSONObject jsonObject = new JSONObject(result.toString());
 
                         if (isViewType.equalsIgnoreCase("ttLock")) {
-
                             intentNext(roomName.getText().toString(), jsonObject.optString("data"));
                         } else if (isViewType.equalsIgnoreCase("syncDoor")) {
                             roomNameList.add(roomName.getText().toString());
@@ -242,15 +240,14 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         dialog.setContentView(R.layout.dialog_add_sensordoor);
         dialog.setCanceledOnTouchOutside(false);
 
-        final EditText edt_door_name = (EditText) dialog.findViewById(R.id.txt_door_sensor_name);
-        final TextView edt_door_module_id = (TextView) dialog.findViewById(R.id.txt_module_id);
-        final Spinner sp_room_list = (Spinner) dialog.findViewById(R.id.sp_room_list);
+        final EditText edt_door_name =dialog.findViewById(R.id.txt_door_sensor_name);
+        final TextView edt_door_module_id = dialog.findViewById(R.id.txt_module_id);
+        final Spinner sp_room_list =  dialog.findViewById(R.id.sp_room_list);
 
-        TextView dialogTitle = (TextView) dialog.findViewById(R.id.tv_title);
-        TextView txt_sensor_name = (TextView) dialog.findViewById(R.id.txt_sensor_name);
+        TextView dialogTitle = dialog.findViewById(R.id.tv_title);
+        TextView txt_sensor_name = dialog.findViewById(R.id.txt_sensor_name);
 
         if (!TextUtils.isEmpty(door_type)) {
-
             if (door_type.equals("1")) {
                 dialogTitle.setText("Add Door Sensor");
                 txt_sensor_name.setText("Door Name");
@@ -271,9 +268,9 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(this, roomNameList, 1, false);
         sp_room_list.setAdapter(customAdapter);
 
-        Button btn_cancel = (Button) dialog.findViewById(R.id.btn_door_cancel);
-        Button btn_save = (Button) dialog.findViewById(R.id.btn_door_save);
-        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
+        Button btn_cancel =  dialog.findViewById(R.id.btn_door_cancel);
+        Button btn_save =  dialog.findViewById(R.id.btn_door_save);
+        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
 
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -291,6 +288,7 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // door_type= 1 sensor- door , 2 = lock
                 if (!TextUtils.isEmpty(door_type)) {
                     if (door_type.equals("1")) {
                         saveSensor(dialog, edt_door_name, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list, room_id);
@@ -518,6 +516,7 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
+
             }
         }).execute();
     }

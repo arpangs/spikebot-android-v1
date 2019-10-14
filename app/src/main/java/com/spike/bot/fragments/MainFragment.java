@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
@@ -171,7 +172,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
     private NestedScrollView main_scroll;
     private FloatingActionButton mFab;
     private CardView mFabMenuLayout;
-    private TextView txt_empty_text,fab_menu1, fab_menu2, fab_menu3, fab_menu4, fab_menu5, fab_menu6, fab_menu7, fabZigbeeRemote, fabSmartDevice, fabLock, fabrepeater,fab_beacon;
+    private TextView txt_empty_text,fab_menu1, fab_menu2, fab_menu6, fab_menu7, fabZigbeeRemote, fabSmartDevice, fabLock, fabrepeater,fab_beacon;
 
 
     private ArrayList<RoomVO> roomList = new ArrayList<>();
@@ -251,17 +252,17 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Fabric.with(getActivity(), new Crashlytics());
+        Fabric.with(activity, new Crashlytics());
         view = inflater.inflate(R.layout.fragment_main, container, false);
 
         //for callback network change
-        ((Main2Activity)getActivity()).setCallBack(this);
+        ((Main2Activity)activity).setCallBack(this);
 
-        toolbar =  getActivity().findViewById(R.id.toolbar);
+        toolbar =  activity.findViewById(R.id.toolbar);
         swipeRefreshLayout =  view.findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(this);
         mMessagesView =  view.findViewById(R.id.messages);
-        mMessagesView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mMessagesView.setLayoutManager(new LinearLayoutManager(activity));
         main_scroll =  view.findViewById(R.id.main_scroll);
         relativeMainfragment = view.findViewById(R.id.relativeMainfragment);
         txt_empty_text =  view.findViewById(R.id.txt_empty_text);
@@ -270,9 +271,6 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         mFabMenuLayout =  view.findViewById(R.id.fabLayout1);
         fab_menu1 = view.findViewById(R.id.fab_menu1);
         fab_menu2 = view.findViewById(R.id.fab_menu2);
-        fab_menu3 = view.findViewById(R.id.fab_menu3);
-        fab_menu4 = view.findViewById(R.id.fab_menu4);
-        fab_menu5 = view.findViewById(R.id.fab_menu5);
         fab_menu6 = view.findViewById(R.id.fab_menu6);
         fab_menu7 = view.findViewById(R.id.fab_menu7);
         fabSmartDevice = view.findViewById(R.id.fabSmartDevice);
@@ -307,7 +305,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             @Override
             public void onClick(View v) {
                 closeFABMenu();
-                Intent intent = new Intent(getActivity(), BrandListActivity.class);
+                Intent intent = new Intent(activity, BrandListActivity.class);
                 startActivity(intent);
 
             }
@@ -354,7 +352,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             @Override
             public void onClick(View v) {
                 closeFABMenu();
-                startActivity(new Intent(getActivity(), IRBlasterAddActivity.class));
+                startActivity(new Intent(activity, IRBlasterAddActivity.class));
             }
         });
 
@@ -370,7 +368,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             @Override
             public void onClick(View v) {
                 closeFABMenu();
-                startActivity(new Intent(getActivity(), SmartRemoteActivity.class));
+                startActivity(new Intent(activity, SmartRemoteActivity.class));
             }
         });
 
@@ -378,7 +376,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             @Override
             public void onClick(View v) {
                 closeFABMenu();
-                startActivity(new Intent(getActivity(), LockBrandActivity.class));
+                startActivity(new Intent(activity, LockBrandActivity.class));
             }
         });
 
@@ -386,7 +384,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             @Override
             public void onClick(View v) {
                 closeFABMenu();
-                startActivity(new Intent(getActivity(), RepeaterActivity.class));
+                startActivity(new Intent(activity, RepeaterActivity.class));
             }
         });
 
@@ -395,7 +393,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             @Override
             public void onClick(View v) {
                 closeFABMenu();
-                startActivity(new Intent(getActivity(), BeaconActivity.class));
+                startActivity(new Intent(activity, BeaconActivity.class));
             }
         });
 
@@ -427,7 +425,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         txt_empty_text.setText("Add Room");
 
         ChatApplication.logDisplay("array is "+roomList.size());
-        ((Main2Activity)getActivity()).setCallBack(this);
+        ((Main2Activity)activity).setCallBack(this);
         if (ChatApplication.isLocalFragmentResume) {
             ChatApplication.isLocalFragmentResume = false;
             getDeviceList(2);
@@ -458,7 +456,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
     @Override
     public void onPoisitionClick(final int position) {
 
-        getActivity().runOnUiThread(new Runnable() {
+        activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 closeFABMenu();
@@ -507,7 +505,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         } else if (action.equalsIgnoreCase("heavyloadSocketoff")) {
 
         } else if (action.equalsIgnoreCase("showGridCamera")) {
-            Intent intent = new Intent(getActivity(), CameraGridActivity.class);
+            Intent intent = new Intent(activity, CameraGridActivity.class);
             intent.putExtra("cameraList", cameraList);
             startActivity(intent);
 
@@ -520,13 +518,13 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                 roomPanelOnOff(null, roomVO, roomVO.getRoomId(), "", roomVO.getOld_room_status(), 1);
             }
         } else if (action.equalsIgnoreCase("editclick_false")) {
-            Intent intent = new Intent(getActivity(), RoomEditActivity_v2.class);
+            Intent intent = new Intent(activity, RoomEditActivity_v2.class);
             intent.putExtra("room", roomVO);
             startActivity(intent);
 
         } else if (action.equalsIgnoreCase("cameraopen")) {
 
-            Intent intent = new Intent(getActivity(), CameraPlayBack.class);
+            Intent intent = new Intent(activity, CameraPlayBack.class);
             if (roomVO != null) {
                 intent.putExtra("room", roomVO);
             } else {
@@ -536,7 +534,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             startActivity(intent);
 
         } else if (action.equalsIgnoreCase("editclick_true")) {
-            Intent intent = new Intent(getActivity(), CameraEdit.class);
+            Intent intent = new Intent(activity, CameraEdit.class);
             intent.putExtra("cameraList", cameraList);
             intent.putExtra("isEditable", false);
             startActivity(intent);
@@ -551,17 +549,17 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                 public void onConfirmDialogNoClick() {
                 }
             });
-            newFragment.show(getActivity().getFragmentManager(), "dialog");
+            newFragment.show(activity.getFragmentManager(), "dialog");
 
         } else if (action.equalsIgnoreCase("icnLog")) {
-            Intent intent = new Intent(getActivity(), DeviceLogActivity.class);
+            Intent intent = new Intent(activity, DeviceLogActivity.class);
             intent.putExtra("ROOM_ID", roomVO.getRoomId());
             intent.putExtra("activity_type", roomVO.getType());
             intent.putExtra("isCheckActivity", "room");
             intent.putExtra("isRoomName", "" + roomVO.getRoomName());
             startActivity(intent);
         } else if (action.equalsIgnoreCase("icnSch")) {
-            Intent intent = new Intent(getActivity(), ScheduleListActivity.class);
+            Intent intent = new Intent(activity, ScheduleListActivity.class);
             intent.putExtra("moodId3", roomVO.getRoomId());
             intent.putExtra("roomId", roomVO.getRoomId());
             intent.putExtra("roomName", roomVO.getRoomName());
@@ -571,17 +569,17 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             intent.putExtra("isRoomMainFm", "room");
             startActivity(intent);
         } else if (action.equalsIgnoreCase("icnSensorLog")) {
-            Intent intent = new Intent(getActivity(), DeviceLogRoomActivity.class);
+            Intent intent = new Intent(activity, DeviceLogRoomActivity.class);
             intent.putExtra("ROOM_ID", roomVO.getRoomId());
             intent.putExtra("IS_SENSOR", "" + true);
             intent.putExtra("room_name", "" + roomVO.getRoomName());
             intent.putExtra("isNotification", "roomSensorUnreadLogs");
             startActivity(intent);
         } else if (action.equalsIgnoreCase("cameraDevice")) {
-            Intent intent = new Intent(getActivity(), CameraDeviceLogActivity.class);
+            Intent intent = new Intent(activity, CameraDeviceLogActivity.class);
             startActivity(intent);
         } else if (action.equalsIgnoreCase("cameraNotification")) {
-            Intent intent = new Intent(getActivity(), CameraNotificationActivity.class);
+            Intent intent = new Intent(activity, CameraNotificationActivity.class);
             startActivity(intent);
         }
     }
@@ -607,14 +605,14 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         } else if (action.equalsIgnoreCase("philipsClick")) {
             deviceOnOff(item, position);
         } else if (action.equalsIgnoreCase("curtain")) {
-            Intent intent = new Intent(getActivity(), CurtainActivity.class);
+            Intent intent = new Intent(activity, CurtainActivity.class);
             intent.putExtra("curtain_id", item.getDeviceId());
             intent.putExtra("module_id", item.getModuleId());
             intent.putExtra("curtain_name", item.getDeviceName());
             intent.putExtra("curtain_status", ""+item.getDeviceStatus());
             startActivity(intent);
         } else if (action.equalsIgnoreCase("scheduleclick")) {
-            Intent intent = new Intent(getActivity(), ScheduleActivity.class);
+            Intent intent = new Intent(activity, ScheduleActivity.class);
             intent.putExtra("item", item);
             intent.putExtra("schedule", true);
             startActivity(intent);
@@ -624,7 +622,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             if (!TextUtils.isEmpty(item.getDeviceSpecificValue())) {
                 getDeviceSpecificValue = Integer.parseInt(item.getDeviceSpecificValue());
             }
-            FanDialog fanDialog = new FanDialog(getActivity(), item.getRoomDeviceId(), getDeviceSpecificValue, new ICallback() {
+            FanDialog fanDialog = new FanDialog(activity, item.getRoomDeviceId(), getDeviceSpecificValue, new ICallback() {
                 @Override
                 public void onSuccess(String str) {
                     if (str.contains("yes")) {
@@ -652,7 +650,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             tmpPosition = position;
 
             if (item.getSensor_type().equalsIgnoreCase("tempsensor") && item.getIsActive() == 1) {
-                Intent intent = new Intent(getActivity(), MultiSensorActivity.class);
+                Intent intent = new Intent(activity, MultiSensorActivity.class);
                 intent.putExtra("temp_sensor_id", item.getSensor_id());
                 intent.putExtra("temp_room_name", item.getRoomName());
                 intent.putExtra("temp_room_id", item.getRoomId());
@@ -664,7 +662,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                 if (item.getIsActive() == -1) {
                     return;
                 }
-                Intent intent = new Intent(getActivity(), GasSensorActivity.class);
+                Intent intent = new Intent(activity, GasSensorActivity.class);
                 intent.putExtra("sensor_id", item.getSensor_id());
                 intent.putExtra("room_name", item.getRoomName());
                 intent.putExtra("room_id", item.getRoomId());
@@ -676,7 +674,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                     return;
                 }
 
-                Intent intent = new Intent(getActivity(), MultiSensorActivity.class);
+                Intent intent = new Intent(activity, MultiSensorActivity.class);
                 intent.putExtra("temp_sensor_id", item.getSensor_id());
                 intent.putExtra("temp_room_name", item.getRoomName());
                 intent.putExtra("temp_room_id", item.getRoomId());
@@ -685,7 +683,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                 startActivity(intent);
             } else if (item.getSensor_type().equalsIgnoreCase("door")) {
                 ChatApplication.logDisplay("door call is intent " + mSocket.connected());
-                Intent intent = new Intent(getActivity(), DoorSensorInfoActivity.class);
+                Intent intent = new Intent(activity, DoorSensorInfoActivity.class);
                 intent.putExtra("door_sensor_id", item.getSensor_id());
                 intent.putExtra("door_room_name", item.getRoomName());
                 intent.putExtra("door_room_id", item.getRoomId());
@@ -695,7 +693,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                 startActivity(intent);
             }
         } else if (action.equalsIgnoreCase("heavyloadlongClick")) {
-            Intent intent = new Intent(getActivity(), HeavyLoadDetailActivity.class);
+            Intent intent = new Intent(activity, HeavyLoadDetailActivity.class);
             intent.putExtra("getRoomDeviceId", item.getRoomDeviceId());
             intent.putExtra("getRoomName", item.getRoomName());
             intent.putExtra("getModuleId", item.getModuleId());
@@ -705,12 +703,12 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         } else if (action.equalsIgnoreCase("philipslongClick")) {
             //on-off remote
             if (item.getDeviceStatus() == 1) {
-                Intent intent = new Intent(getActivity(), SmartColorPickerActivity.class);
+                Intent intent = new Intent(activity, SmartColorPickerActivity.class);
                 intent.putExtra("roomDeviceId", item.getRoomDeviceId());
                 intent.putExtra("getOriginal_room_device_id", item.getOriginal_room_device_id());
                 startActivity(intent);
             } else {
-                ChatApplication.showToast(getActivity(), "Please device on");
+                ChatApplication.showToast(activity, "Please device on");
             }
 
 
@@ -721,7 +719,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             callDoorRemotly(item);
         } else if (action.equalsIgnoreCase("isIRSensorLongClick")) {
 
-            Intent intent = new Intent(getActivity(), IRBlasterRemote.class);
+            Intent intent = new Intent(activity, IRBlasterRemote.class);
             Bundle bundle = new Bundle();
             bundle.putSerializable("REMOTE_IS_ACTIVE", item.getDeviceStatus());
             bundle.putSerializable("REMOTE_ID", item.getSensor_id());
@@ -732,7 +730,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             intent.putExtras(bundle);
             startActivity(intent);
         } else if (action.equalsIgnoreCase("doorLongClick")) {
-            Intent intent = new Intent(getActivity(), DoorSensorInfoActivity.class);
+            Intent intent = new Intent(activity, DoorSensorInfoActivity.class);
             intent.putExtra("door_sensor_id", item.getSensor_id());
             intent.putExtra("door_room_name", item.getRoomName());
             intent.putExtra("door_room_id", item.getRoomId());
@@ -750,13 +748,13 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
     @Override
     public void itemClicked(CameraVO item, String action) {
         if (action.equalsIgnoreCase("editcamera")) {
-            Intent intent = new Intent(getActivity(), CameraEdit.class);
+            Intent intent = new Intent(activity, CameraEdit.class);
             intent.putExtra("cameraList", cameraList);
             intent.putExtra("cameraSelcet", item);
             intent.putExtra("isEditable", false);
             startActivity(intent);
         } else if (action.equalsIgnoreCase("cameraLog")) {
-            Intent intent = new Intent(getActivity(), CameraDeviceLogActivity.class);
+            Intent intent = new Intent(activity, CameraDeviceLogActivity.class);
             intent.putExtra("cameraId", "" + item.getCamera_id());
             startActivity(intent);
         } else {
@@ -786,14 +784,15 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         }else {
             getDeviceList(1);
         }
+        ChatApplication.logDisplay("device refreshing mainfragment");
     }
 
     // view refresh
     private void refreshAllView() {
         mFab.setVisibility(View.VISIBLE);
         linear_retry.setVisibility(View.GONE);
-        ((Main2Activity)getActivity()).mToolBarSettings.setClickable(true);
-        ((Main2Activity)getActivity()).linearTab.setVisibility(View.VISIBLE);
+        ((Main2Activity)activity).mToolBarSettings.setClickable(true);
+        ((Main2Activity)activity).tabShow(true);
         ChatApplication.isCallDeviceList=true;
         getDeviceList(1);
     }
@@ -802,8 +801,8 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         mFab.setVisibility(View.GONE);
         txt_empty_schedule.setVisibility(View.GONE);
         linear_retry.setVisibility(View.VISIBLE);
-        ((Main2Activity)getActivity()).mToolBarSettings.setClickable(false);
-        ((Main2Activity)getActivity()).linearTab.setVisibility(View.GONE);
+        ((Main2Activity)activity).mToolBarSettings.setClickable(false);
+        ((Main2Activity)activity).tabShow(false);
 
     }
 
@@ -984,9 +983,9 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                         UnassignedListRes unassignedListRes = Common.jsonToPojo(result.toString(), UnassignedListRes.class);
                         roomListUn = unassignedListRes.getData().getRoomList();
                         if (roomListUn.size() > 0) {
-                            startActivity(new Intent(getActivity(), AddUnassignedPanel.class));
+                            startActivity(new Intent(activity, AddUnassignedPanel.class));
                         } else {
-                            ChatApplication.showToast(getActivity(), "No Unassigned Module");
+                            ChatApplication.showToast(activity, "No Unassigned Module");
                         }
 
                     } else {
@@ -1019,8 +1018,8 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
      */
     private void addCameraCall(String camera_name, String camera_ip, String video_path, String user_name, String password, final Dialog dialog) {
 
-        if (!ActivityHelper.isConnectingToInternet(getActivity())) {
-            Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+        if (!ActivityHelper.isConnectingToInternet(activity)) {
+            Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -1029,7 +1028,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
+            obj.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
             obj.put("camera_name", camera_name);
             obj.put("camera_ip", camera_ip);
             obj.put("video_path", video_path);
@@ -1042,7 +1041,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 
         String url = ChatApplication.url + Constants.ADD_CAMERA;
 
-        new GetJsonTask(getActivity(), url, "POST", obj.toString(), new ICallBack() {
+        new GetJsonTask(activity, url, "POST", obj.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
                 dismissProgressDialog();
@@ -1054,7 +1053,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                     Toast.makeText(activity.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     if (code == 200) {
                         dialog.dismiss();
-                        ChatApplication.showToast(getActivity(), message);
+                        ChatApplication.showToast(activity, message);
                         getDeviceList(6);
                     }
                 } catch (Exception e) {
@@ -1066,7 +1065,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             public void onFailure(Throwable throwable, String error) {
                 dismissProgressDialog();
                 ChatApplication.logDisplay("onFailure " + error);
-                Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
 
@@ -1078,7 +1077,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         try {
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
+            obj.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
 
             if (deviceVO.getDeviceType().equalsIgnoreCase("3")) {
                 obj.put("status", deviceVO.getDeviceStatus());
@@ -1126,7 +1125,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
      * @param deviceVO
      */
     private void updateDeviceOfflineMode(final DeviceVO deviceVO) {
-        getActivity().runOnUiThread(new Runnable() {
+        activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 sectionedExpandableLayoutHelper.updateItem(deviceVO.getModuleId(),
@@ -1137,7 +1136,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 
     private void updateRoomOfflineMode(final RoomVO roomVO) {
 
-        getActivity().runOnUiThread(new Runnable() {
+        activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 sectionedExpandableLayoutHelper.updateRoom(roomVO.getRoomId(), String.valueOf(roomVO.getOld_room_status()));
@@ -1152,7 +1151,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
      */
     private void updatePanelDeviceOfflineMode(final PanelVO panelVO) {
 
-        getActivity().runOnUiThread(new Runnable() {
+        activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 sectionedExpandableLayoutHelper.updatePanel(panelVO.getPanelId(), String.valueOf(panelVO.getOldStatus()), panelVO.getRoom_panel_id());
@@ -1171,7 +1170,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 
         ChatApplication.logDisplay("Device roomPanelOnOff obj " + obj.toString());
 
-        new GetJsonTask(getActivity(), url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        new GetJsonTask(activity, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 ChatApplication.logDisplay("roomPanelOnOff onSuccess " + result.toString());
@@ -1181,7 +1180,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                     if (code == 200) {
                         sectionedExpandableLayoutHelper.notifyDataSetChanged();
                     } else {
-                        ChatApplication.showToast(getActivity(), message);
+                        ChatApplication.showToast(activity, message);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -1204,7 +1203,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         try {
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
+            obj.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
             obj.put("room_id", roomId);
             obj.put("panel_id", panelId);
             obj.put("device_status", panel_status);
@@ -1247,7 +1246,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 
         String url = ChatApplication.url + Constants.CHANGE_ROOM_PANELMOOD_STATUS_NEW;
 
-        new GetJsonTask(getActivity(), url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        new GetJsonTask(activity, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 ChatApplication.logDisplay("roomPanelOnOff onSuccess " + result.toString());
@@ -1257,7 +1256,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                     if (code == 200) {
                         sectionedExpandableLayoutHelper.notifyDataSetChanged();
                     } else {
-                        ChatApplication.showToast(getActivity(), message);
+                        ChatApplication.showToast(activity, message);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -1284,8 +1283,8 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
      */
 
     private void deleteRoom(RoomVO roomVO) {
-        if (!ActivityHelper.isConnectingToInternet(getActivity())) {
-            ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
+        if (!ActivityHelper.isConnectingToInternet(activity)) {
+            ChatApplication.showToast(activity, getResources().getString(R.string.disconnect));
             return;
         }
         JSONObject object = new JSONObject();
@@ -1294,14 +1293,14 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             object.put("room_name", roomVO.getRoomName());
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
+            object.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         ChatApplication.logDisplay("ob : " + object.toString());
         String url = webUrl + Constants.DELETE_ROOM;
-        new GetJsonTask(getActivity(), url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        new GetJsonTask(activity, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 dismissProgressDialog();
@@ -1310,10 +1309,10 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
-                        ChatApplication.showToast(getActivity(), message);
+                        ChatApplication.showToast(activity, message);
                         getDeviceList(8);
                     } else {
-                        ChatApplication.showToast(getActivity(), message);
+                        ChatApplication.showToast(activity, message);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1324,7 +1323,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             public void onFailure(Throwable throwable, String error) {
                 dismissProgressDialog();
                 ChatApplication.logDisplay("getconfigureData onFailure " + error);
-                ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
+                ChatApplication.showToast(activity, getResources().getString(R.string.disconnect));
             }
         }).execute();
     }
@@ -1337,7 +1336,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             JSONObject object = new JSONObject();
             try {
                 object.put("lock_id", item.getLock_id());
-                object.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
+                object.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
                 object.put("door_sensor_status", item.getDoor_sensor_status().equals("1") ? 0 : 1);
                 object.put("lock_status", item.getDoor_sensor_status().equals("1") ? 0 : 1);
             } catch (JSONException e) {
@@ -1350,7 +1349,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
     }
 
     private void callDoorRemotly(DeviceVO item) {
-        showProgressDialog(getActivity(), "Please Wait...", false);
+        showProgressDialog(activity, "Please Wait...", false);
         GetDataService apiService = RetrofitAPIManager.provideClientApi();
 
         Call<ResponseBody> call;
@@ -1385,7 +1384,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
     private void sendRemoteCommand(final DeviceVO item, String philipslongClick) {
 
         if (!ActivityHelper.isConnectingToInternet(getContext())) {
-            ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
+            ChatApplication.showToast(activity, getResources().getString(R.string.disconnect));
             return;
         }
         String mRemoteCommandReq = "";
@@ -1417,7 +1416,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                         ChatApplication.isMoodFragmentNeedResume = true;
                         SendRemoteCommandRes tmpIrBlasterCurrentStatusList = Common.jsonToPojo(result.toString(), SendRemoteCommandRes.class);
                     } else {
-                        ChatApplication.showToast(getActivity(), item.getSensor_name() + " " + getActivity().getString(R.string.ir_error));
+                        ChatApplication.showToast(activity, item.getSensor_name() + " " + activity.getString(R.string.ir_error));
                     }
 
                 } catch (JSONException e) {
@@ -1430,17 +1429,17 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             public void onFailure(Throwable throwable, String error) {
                 dismissProgressDialog();
                 ChatApplication.logDisplay("result is ir error " + error.toString());
-                ChatApplication.showToast(getActivity(), item.getSensor_name() + " " + getActivity().getString(R.string.ir_error));
+                ChatApplication.showToast(activity, item.getSensor_name() + " " + activity.getString(R.string.ir_error));
             }
         }).execute();
     }
 
     private void callCameraToken(final CameraVO item, final String action) {
-        showProgressDialog(getActivity(), " Please Wait...", false);
+        showProgressDialog(activity, " Please Wait...", false);
         String url = ChatApplication.url + Constants.getCameraToken + item.getCamera_id();
 
         ChatApplication.logDisplay("url is " + url);
-        new GetJsonTask(getActivity(), url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
+        new GetJsonTask(activity, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 int code = 0;
@@ -1470,7 +1469,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                         }
                         ChatApplication.logDisplay("isCloudConnect : " +camera_vpn_port+" "+url);
                         //start camera rtsp player
-                        Intent intent = new Intent(getActivity(), CameraPlayer.class);
+                        Intent intent = new Intent(activity, CameraPlayer.class);
                         intent.putExtra("videoUrl", url);
                         intent.putExtra("name", camera_name);
                         intent.putExtra("isCloudConnect", Main2Activity.isCloudConnected);
@@ -1505,7 +1504,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                     - Open Popup and Fill below data: module_id, device_id*/
             addRoom = false;
             dismissProgressDialog();
-            ChatApplication.showToast(getActivity(), "No New Device detected!");
+            ChatApplication.showToast(activity, "No New Device detected!");
         }
 
     };
@@ -1608,8 +1607,8 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 
     private void saveCameraKey(EditText roomName, final Dialog dialog) {
 
-        if (!ActivityHelper.isConnectingToInternet(getActivity())) {
-            ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
+        if (!ActivityHelper.isConnectingToInternet(activity)) {
+            ChatApplication.showToast(activity, getResources().getString(R.string.disconnect));
             return;
         }
 
@@ -1625,11 +1624,11 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             e.printStackTrace();
         }
 
-        showProgressDialog(getActivity(), "Searching Device attached ", false);
+        showProgressDialog(activity, "Searching Device attached ", false);
 
         String url = webUrl + Constants.validatecamerakey;
 
-        new GetJsonTask(getActivity(), url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        new GetJsonTask(activity, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 dismissProgressDialog();
@@ -1642,15 +1641,15 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                     if (code == 200) {
                         dialog.dismiss();
                         Common.savePrefValue(ChatApplication.getInstance(), Common.camera_key, "1");
-                        ChatApplication.showToast(getActivity(), message);
+                        ChatApplication.showToast(activity, message);
                         Toast.makeText(activity.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                         addCamera();
                     } else if (code == 301) {
-                        ChatApplication.showToast(getActivity(), message);
+                        ChatApplication.showToast(activity, message);
                     } else {
-                        ChatApplication.showToast(getActivity(), message);
+                        ChatApplication.showToast(activity, message);
                     }
-                    // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(activity.getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1659,7 +1658,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             @Override
             public void onFailure(Throwable throwable, String error) {
                 dismissProgressDialog();
-                ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
+                ChatApplication.showToast(activity, getResources().getString(R.string.disconnect));
             }
         }).execute();
     }
@@ -1672,8 +1671,8 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
      */
     private void saveCustomRoom(EditText roomName, final Dialog dialog) {
 
-        if (!ActivityHelper.isConnectingToInternet(getActivity())) {
-            ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
+        if (!ActivityHelper.isConnectingToInternet(activity)) {
+            ChatApplication.showToast(activity, getResources().getString(R.string.disconnect));
             return;
         }
 
@@ -1687,17 +1686,17 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             object.put("room_name", roomName.getText().toString());
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
+            object.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         ChatApplication.logDisplay("ob : " + object.toString());
-        showProgressDialog(getActivity(), "Searching Device attached ", false);
+        showProgressDialog(activity, "Searching Device attached ", false);
 
         String url = webUrl + Constants.ADD_CUSTOME_ROOM;
 
-        new GetJsonTask(getActivity(), url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        new GetJsonTask(activity, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 dismissProgressDialog();
@@ -1709,12 +1708,12 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 
                     if (code == 200) {
                         dialog.dismiss();
-                        ChatApplication.showToast(getActivity(), message);
+                        ChatApplication.showToast(activity, message);
                         getDeviceList(9);
                     } else if (code == 301) {
-                        ChatApplication.showToast(getActivity(), message);
+                        ChatApplication.showToast(activity, message);
                     } else {
-                        ChatApplication.showToast(getActivity(), message);
+                        ChatApplication.showToast(activity, message);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1729,7 +1728,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             public void onFailure(Throwable throwable, String error) {
                 dismissProgressDialog();
                 ChatApplication.logDisplay("getconfigureData onFailure " + error);
-                ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
+                ChatApplication.showToast(activity, getResources().getString(R.string.disconnect));
             }
         }).execute();
     }
@@ -1740,33 +1739,12 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         void onLogout(boolean isLogout);
     }
 
-    public static void saveCurrentId(Context context, String userId, String gatewayIp) {
-        Gson gson = new Gson();
-        String jsonText = Common.getPrefValue(context, Common.USER_JSON);
-        Type type = new TypeToken<List<User>>() {}.getType();
-        List<User> userList = gson.fromJson(jsonText, type);
-
-        for (int i = 0; i < userList.size(); i++) {
-            if (userList.get(i).getUser_id().equals(userId)) {
-                userList.get(i).setIsActive(true);
-                userList.get(i).setGateway_ip(gatewayIp);
-                mCallback.onArticleSelected("" + userList.get(i).getFirstname());
-            } else {
-                userList.get(i).setIsActive(false);
-            }
-        }
-        if (userList.size() > 0) {
-            String jsonCurProduct = gson.toJson(userList);
-            Common.savePrefValue(context, Common.USER_JSON, jsonCurProduct);
-        }
-    }
-
     public void getMacAddress(String locaIp) {
         countFlow = 0;
         String url = ChatApplication.http + locaIp + Constants.getLocalMacAddress;
 
         ChatApplication.logDisplay("url is " + url);
-        new GetJsonTaskMacAddress(getActivity(), url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
+        new GetJsonTaskMacAddress(activity, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 countFlow = 1;
@@ -1780,7 +1758,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                     JSONObject jsonObject = object.optJSONObject("data");
 
                     if (jsonObject != null && countFlow != 2) {
-                        if (jsonObject.optString("mac_address").equalsIgnoreCase(Constants.getMacAddress(getActivity()))) {
+                        if (jsonObject.optString("mac_address").equalsIgnoreCase(Constants.getMacAddress(activity))) {
                             callColud(true);
                         } else {
                             callColud(false);
@@ -1796,7 +1774,6 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             public void onFailure(Throwable throwable, String error) {
 //                dismissProgressDialog();
                 countDownTimer.cancel();
-                ChatApplication.logDisplay("reponse is mac error " + error.toString());
                 if (countFlow != 2) {
                     countFlow = 1;
                     callColud(false);
@@ -1833,23 +1810,24 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
     }
 
     private void callColud(boolean isflag) {
-        ChatApplication.logDisplay("show is call " + isflag);
+        ChatApplication.logDisplay("show is call 11  " + activity);
         if (isflag) {
             //local
-            ((Main2Activity) getActivity()).webUrl = ChatApplication.http + Constants.getuserIp(getActivity()) + ":80";
-            ChatApplication.url = ChatApplication.http + Constants.getuserIp(getActivity());
+            ((Main2Activity) activity).webUrl = ChatApplication.http + Constants.getuserIp(activity) + ":80";
+            ChatApplication.url = ChatApplication.http + Constants.getuserIp(activity);
            Constants.startUrlset();
-            ((Main2Activity) getActivity()).callSocket();
-            ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
+            ((Main2Activity) activity).callSocket();
+            ((Main2Activity) activity).invalidateToolbarCloudImage();
 
             getDeviceLocal(0);
         } else {
-            String colud = Constants.getuserCloudIP(getActivity());
+            ChatApplication.logDisplay("get fragment "+activity);
+            String colud = Constants.getuserCloudIP(activity);
             ChatApplication.url = colud;
             Constants.startUrlset();
-            ((Main2Activity) getActivity()).webUrl = colud;
-            ((Main2Activity) getActivity()).callSocket();
-            ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
+            ((Main2Activity) activity).webUrl = colud;
+            ((Main2Activity) activity).callSocket();
+            ((Main2Activity) activity).invalidateToolbarCloudImage();
 
             getDeviceCloud(0);
         }
@@ -1866,14 +1844,14 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 
         if (isShow == 0) {
             if (ChatApplication.url.startsWith(Constants.startUrl)) {
-                if (m_progressDialog.isShowing()) {
+                if (m_progressDialog!=null && m_progressDialog.isShowing()) {
                    m_progressDialog.setMessage("Connecting to cloud...");
                 }else {
-//                    showProgressDialog(getActivity(), "Connecting to cloud...", true);
+                    showProgressDialog(activity, "Connecting to cloud...", true);
                 }
             } else {
                 if(!m_progressDialog.isShowing()){
-                    showProgressDialog(getActivity(), "Please Wait...", true);
+                    showProgressDialog(activity, "Please Wait...", true);
                 }
             }
         }
@@ -1894,12 +1872,12 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         try {
             jsonObject.put("room_type", 0);
             jsonObject.put("is_sensor_panel", 1);
-            jsonObject.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
+            jsonObject.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
 
-            if (TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE))) {
+            if (TextUtils.isEmpty(Common.getPrefValue(activity, Constants.USER_ADMIN_TYPE))) {
                 jsonObject.put("admin", 1);
             } else {
-                jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE)));
+                jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(activity, Constants.USER_ADMIN_TYPE)));
             }
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -1914,7 +1892,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                 dismissProgressDialog();
                 ChatApplication.isCallDeviceList = false;
                 if (ChatApplication.isPushFound) {
-                    getBadgeClear(getActivity());
+                    getBadgeClear(activity);
                 }
                 isItemClickView=true;
                 mMessagesView.setClickable(true);
@@ -1924,7 +1902,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                 ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
 
                 try {
-                    ((Main2Activity)getActivity()).tabShow(true);
+                    ((Main2Activity)activity).tabShow(true);
                     Main2Activity.isCloudConnected=true;
                     webUrl = ChatApplication.url;
                     startSocketConnection();
@@ -1936,7 +1914,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                         Constants.socketIp = ChatApplication.url;
                         hideAdapter(true);
                         JSONObject dataObject = result.getJSONObject("data");
-                        ((Main2Activity) getActivity()).getUserDialogClick(true);
+                        ((Main2Activity) activity).getUserDialogClick(true);
 
                         if(gsonType==null){
                             gsonType=new Gson();
@@ -1948,8 +1926,8 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                         if (userListArray.length() == 0) {
                             Common.savePrefValue(ChatApplication.getInstance(), "first_name", "");
                             Common.savePrefValue(ChatApplication.getInstance(), "last_name", "");
-                            if (!TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ID))) {
-                                ((Main2Activity) getActivity()).logoutCloudUser();
+                            if (!TextUtils.isEmpty(Common.getPrefValue(activity, Constants.USER_ID))) {
+                                ((Main2Activity) activity).logoutCloudUser();
                             }
 
                             return;
@@ -1965,7 +1943,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                         String gateway_ip = userObject.optString("gateway_ip");
 
                         if (is_active.equalsIgnoreCase("0")) {
-                            ((Main2Activity) getActivity()).logoutCloudUser();
+                            ((Main2Activity) activity).logoutCloudUser();
                             return;
                         }
 
@@ -1993,8 +1971,8 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                                 if (user.isActive()) {
                                     if (user.getUser_id().equalsIgnoreCase(userId) && !user.getPassword().equalsIgnoreCase(userPassword)) {
 //                                        showLogoutAlert();
-                                        ChatApplication.showToast(getActivity(), "Password has been changed!");
-                                        ((Main2Activity) getActivity()).logoutCloudUser();
+                                        ChatApplication.showToast(activity, "Password has been changed!");
+                                        ((Main2Activity) activity).logoutCloudUser();
                                     }
 
                                 }
@@ -2060,11 +2038,11 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                             sectionedExpandableLayoutHelper.addSectionList(roomList);
                         }
                         sectionedExpandableLayoutHelper.notifyDataSetChanged();
-                        ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
+                        ((Main2Activity) activity).invalidateToolbarCloudImage();
 
                         //JSONArray userList = dataObject.getJSONArray("userList");
 
-                        ((Main2Activity)getActivity()).changestatus();
+                        ((Main2Activity)activity).changestatus();
                         if (roomArray.length() == 0) {
                             mMessagesView.setVisibility(View.GONE);
                             txt_empty_schedule.setVisibility(View.VISIBLE);
@@ -2107,16 +2085,19 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                 if (reCode == 503 || reCode == 404) {
                     responseErrorCode.onErrorCode(reCode);
                 }
-                ((Main2Activity)getActivity()).tabShow(false);
-                ChatApplication.logDisplay("reCode getDeviceList onFailure " + reCode);
-                sectionedExpandableLayoutHelper = new SectionedExpandableLayoutHelper(activity, mMessagesView, MainFragment.this, MainFragment.this, MainFragment.this, Constants.SWITCH_NUMBER);
-                sectionedExpandableLayoutHelper.setCameraClick(MainFragment.this);
-                sectionedExpandableLayoutHelper.setClickable(true);
-                sectionedExpandableLayoutHelper.notifyDataSetChanged();
+                ChatApplication.logDisplay("show is call could error" + error+" "+reCode);
+                if(!TextUtils.isEmpty(error)){
+                    ((Main2Activity)activity).tabShow(false);
+                    ChatApplication.logDisplay("reCode getDeviceList onFailure " + reCode);
+                    sectionedExpandableLayoutHelper = new SectionedExpandableLayoutHelper(activity, mMessagesView, MainFragment.this, MainFragment.this, MainFragment.this, Constants.SWITCH_NUMBER);
+                    sectionedExpandableLayoutHelper.setCameraClick(MainFragment.this);
+                    sectionedExpandableLayoutHelper.setClickable(true);
+                    sectionedExpandableLayoutHelper.notifyDataSetChanged();
 
-                ChatApplication.isCallDeviceList=true;
-                errorViewClick();
-//                ChatApplication.showToast(getActivity(), "Please try again");
+                    ChatApplication.isCallDeviceList=true;
+                    errorViewClick();
+                }
+
             }
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -2134,7 +2115,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 //            if (m_progressDialog == null) {
                 if(m_progressDialog!=null){
                     if(!m_progressDialog.isShowing()){
-                        showProgressDialog(getActivity(), "Please Wait...", true);
+                        showProgressDialog(activity, "Please Wait...", true);
                     }
                 }
 //            }
@@ -2156,12 +2137,12 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         try {
             jsonObject.put("room_type", 0);
             jsonObject.put("is_sensor_panel", 1);
-            jsonObject.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
+            jsonObject.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
 
-            if (TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE))) {
+            if (TextUtils.isEmpty(Common.getPrefValue(activity, Constants.USER_ADMIN_TYPE))) {
                 jsonObject.put("admin", 1);
             } else {
-                jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE)));
+                jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(activity, Constants.USER_ADMIN_TYPE)));
             }
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -2176,7 +2157,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                 dismissProgressDialog();
                 ChatApplication.isCallDeviceList = false;
                 if (ChatApplication.isPushFound) {
-                    getBadgeClear(getActivity());
+                    getBadgeClear(activity);
                 }
                 mMessagesView.setClickable(true);
                 responseErrorCode.onSuccess();
@@ -2186,7 +2167,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 
                 try {
                     Main2Activity.isCloudConnected=false;
-                    ((Main2Activity)getActivity()).tabShow(true);
+                    ((Main2Activity)activity).tabShow(true);
                     isItemClickView=true;
                     webUrl = ChatApplication.url;
                     startSocketConnection();
@@ -2197,13 +2178,14 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                         if(gsonType==null){
                             gsonType=new Gson();
                         }
+                        ((Main2Activity)activity).tabShow(true);
                         Constants.socketType = 0;
                         Constants.socketIp = ChatApplication.url;
                         hideAdapter(true);
                         mMessagesView.setVisibility(View.VISIBLE);
                         txt_empty_schedule.setVisibility(View.GONE);
                         JSONObject dataObject = result.optJSONObject("data");
-                        ((Main2Activity) getActivity()).getUserDialogClick(true);
+                        ((Main2Activity) activity).getUserDialogClick(true);
                         roomList = new ArrayList<>();
                         JSONArray userListArray = dataObject.getJSONArray("userList");
 
@@ -2212,8 +2194,8 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                             Common.savePrefValue(ChatApplication.getInstance(), "first_name", "");
                             Common.savePrefValue(ChatApplication.getInstance(), "last_name", "");
 
-                            if (!TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ID))) {
-                                ((Main2Activity) getActivity()).logoutCloudUser();
+                            if (!TextUtils.isEmpty(Common.getPrefValue(activity, Constants.USER_ID))) {
+                                ((Main2Activity) activity).logoutCloudUser();
                             }
                             return;
                         }
@@ -2227,7 +2209,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                         String gateway_ip = userObject.optString("gateway_ip");
 
                         if (is_active.equalsIgnoreCase("0")) {
-                            ((Main2Activity) getActivity()).logoutCloudUser();
+                            ((Main2Activity) activity).logoutCloudUser();
                             return;
                         }
 
@@ -2256,8 +2238,8 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                                 if (user.isActive()) {
                                     if (user.getUser_id().equalsIgnoreCase(userId) && !user.getPassword().equalsIgnoreCase(userPassword)) {
 //                                        showLogoutAlert();
-                                        ChatApplication.showToast(getActivity(), "Password has been changed!");
-                                        ((Main2Activity) getActivity()).logoutCloudUser();
+                                        ChatApplication.showToast(activity, "Password has been changed!");
+                                        ((Main2Activity) activity).logoutCloudUser();
                                     }
 
                                 }
@@ -2282,7 +2264,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                         Common.savePrefValue(getContext(), Constants.USER_PASSWORD, userPassword);
 
 
-                        // getActivity().setTitle("" + userFirstName + " " + userLastName);
+                        // activity.setTitle("" + userFirstName + " " + userLastName);
                         /**
                          * <h1>for set ToolBar title in MainActivity2</h1>
                          * {@link Main2Activity#toolbarTitle}
@@ -2328,9 +2310,9 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                             sectionedExpandableLayoutHelper.addSectionList(roomList);
                         }
                         sectionedExpandableLayoutHelper.notifyDataSetChanged();
-                        ((Main2Activity) getActivity()).invalidateToolbarCloudImage();
+                        ((Main2Activity) activity).invalidateToolbarCloudImage();
 
-                        ((Main2Activity)getActivity()).changestatus();
+                        ((Main2Activity)activity).changestatus();
                         if (roomArray.length() == 0) {
                             mMessagesView.setVisibility(View.GONE);
                             txt_empty_schedule.setVisibility(View.VISIBLE);
@@ -2386,7 +2368,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                     if (mSocket != null) {
                         mSocket.disconnect();
                     }
-                    ((Main2Activity)getActivity()).tabShow(false);
+                    ((Main2Activity)activity).tabShow(false);
                     callColud(false);
                 }
             }
@@ -2401,12 +2383,12 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 
     /// all webservice call below. check local & cloud
     public void getDeviceList(final int checkmessgae) {
-        if (getActivity() == null) {
+        if (activity == null) {
             return;
         }
 
-        if (!Constants.checkLoginAccountCount(getActivity())) {
-            ((Main2Activity) getActivity()).showLogin();
+        if (!Constants.checkLoginAccountCount(activity)) {
+            ((Main2Activity) activity).showLogin();
             return;
         }
 
@@ -2419,13 +2401,13 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         if(linear_retry.getVisibility()==View.VISIBLE){
             mFab.setVisibility(View.VISIBLE);
             linear_retry.setVisibility(View.GONE);
-            ((Main2Activity)getActivity()).mToolBarSettings.setClickable(true);
-            ((Main2Activity)getActivity()).linearTab.setVisibility(View.VISIBLE);
+            ((Main2Activity)activity).mToolBarSettings.setClickable(true);
+            ((Main2Activity)activity).tabShow(true);
             ChatApplication.isCallDeviceList=true;
         }
 
         if (showDialog == 1 || checkmessgae == 1 || checkmessgae == 6 || checkmessgae == 7 || checkmessgae == 8 || checkmessgae == 10) {
-            showProgressDialog(getActivity(), " Please Wait...", true);
+            showProgressDialog(activity, " Please Wait...", true);
         }
         ChatApplication.logDisplay("show progress is " + showDialog);
 
@@ -2439,6 +2421,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             sectionedExpandableLayoutHelper.notifyDataSetChanged();
         }
         Constants.startUrlset();
+        ChatApplication.logDisplay("show is call 1111  " + activity);
         if (ChatApplication.isCallDeviceList) {
             ChatApplication app = ChatApplication.getInstance();
             app.closeSocket(webUrl);
@@ -2446,11 +2429,12 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                 mSocket.disconnect();
                 mSocket = null;
             }
+            ((Main2Activity)activity).tabShow(false);
             hideAdapter(false);
             sectionedExpandableLayoutHelper.clearData();
-            if (Common.isNetworkConnected(getActivity())) {
-                ((Main2Activity)getActivity()).tabShow(false);
-                getMacAddress(Constants.getuserIp(getActivity()));
+            if (Common.isNetworkConnected(activity)) {
+                ((Main2Activity)activity).tabShow(false);
+                getMacAddress(Constants.getuserIp(activity));
             } else {
                 callColud(false);
             }
@@ -2465,27 +2449,27 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
     }
 
     public void setUserTypeValue() {
-        if (!TextUtils.isEmpty(Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE))) {
-            if (Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
+        if (!TextUtils.isEmpty(Common.getPrefValue(activity, Constants.USER_ADMIN_TYPE))) {
+            if (Common.getPrefValue(activity, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
                 mFab.setVisibility(View.GONE);
-                ((Main2Activity) getActivity()).toolbarImage.setVisibility(View.VISIBLE);
-                ((Main2Activity) getActivity()).toolbarTitle.setClickable(true);
-                ((Main2Activity) getActivity()).toolbarImage.setClickable(true);
+                ((Main2Activity) activity).toolbarImage.setVisibility(View.VISIBLE);
+                ((Main2Activity) activity).toolbarTitle.setClickable(true);
+                ((Main2Activity) activity).toolbarImage.setClickable(true);
 
-                ((Main2Activity) getActivity()).toolbarTitle.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+                ((Main2Activity) activity).toolbarTitle.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
             } else {
                 mFab.setVisibility(View.VISIBLE);
-                ((Main2Activity) getActivity()).toolbarTitle.setClickable(true);
-                ((Main2Activity) getActivity()).toolbarImage.setClickable(true);
-                ((Main2Activity) getActivity()).toolbarImage.setVisibility(View.VISIBLE);
-                ((Main2Activity) getActivity()).toolbarTitle.setTextColor(getResources().getColor(R.color.sky_blue));
+                ((Main2Activity) activity).toolbarTitle.setClickable(true);
+                ((Main2Activity) activity).toolbarImage.setClickable(true);
+                ((Main2Activity) activity).toolbarImage.setVisibility(View.VISIBLE);
+                ((Main2Activity) activity).toolbarTitle.setTextColor(getResources().getColor(R.color.sky_blue));
             }
         }
     }
 
     ProgressDialog m_progressDialog;
     public void showProgressDialog(Context context, String message, boolean iscancle){
-        m_progressDialog=new ProgressDialog(getActivity());
+        m_progressDialog=new ProgressDialog(activity);
         m_progressDialog.setMessage(message);
         m_progressDialog.setCanceledOnTouchOutside(true);
         m_progressDialog.show();
@@ -2542,10 +2526,10 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
     private Emitter.Listener onConnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            if (getActivity() == null) {
+            if (activity == null) {
                 return;
             }
-            getActivity().runOnUiThread(new Runnable() {
+            activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if (!isSocketConnected) {
@@ -2570,14 +2554,14 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
     private Emitter.Listener onDisconnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            if (getActivity() == null) {
+            if (activity == null) {
                 return;
             }
-            getActivity().runOnUiThread(new Runnable() {
+            activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     isSocketConnected = false;
-                    //Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
                     // openErrorDialog();
 
 //                    ChatApplication app = ChatApplication.getInstance();
@@ -2598,10 +2582,10 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
     private Emitter.Listener reloadDeviceStatusApp = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-            if (getActivity() == null) {
+            if (activity == null) {
                 return;
             }
-            getActivity().runOnUiThread(new Runnable() {
+            activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if (args != null) {
@@ -2631,10 +2615,10 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
     private Emitter.Listener panelStatus = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-            if (getActivity() == null) {
+            if (activity == null) {
                 return;
             }
-            getActivity().runOnUiThread(new Runnable() {
+            activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if (args != null) {
@@ -2661,10 +2645,10 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
     private Emitter.Listener roomStatus = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-            if (getActivity() == null) {
+            if (activity == null) {
                 return;
             }
-            getActivity().runOnUiThread(new Runnable() {
+            activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if (args != null) {
@@ -2733,7 +2717,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                             String room_unread = object.getString("room_unread");
                             String user_id = object.getString("user_id");
 
-                            if (user_id.equalsIgnoreCase(Common.getPrefValue(getActivity(), Constants.USER_ID))) {
+                            if (user_id.equalsIgnoreCase(Common.getPrefValue(activity, Constants.USER_ID))) {
                                 sectionedExpandableLayoutHelper.updateBadgeCount(sensor_type, sensor_unread, module_id, room_id, room_unread);
                             }
 
@@ -2750,10 +2734,10 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         @Override
         public void call(final Object... args) {
 
-            if (getActivity() == null) {
+            if (activity == null) {
                 return;
             }
-            getActivity().runOnUiThread(new Runnable() {
+            activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if (args != null) {
@@ -2784,10 +2768,10 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
     private Emitter.Listener updateChildUser = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-            if (getActivity() == null) {
+            if (activity == null) {
                 return;
             }
-            getActivity().runOnUiThread(new Runnable() {
+            activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if (args != null) {
@@ -2798,7 +2782,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                             String message = object.optString("message");
                             String user_id = object.optString("user_id");
                             ChatApplication.logDisplay("update socket is " + object.toString());
-                            if (Common.getPrefValue(getActivity(), Constants.USER_ID).equalsIgnoreCase(user_id)) {
+                            if (Common.getPrefValue(activity, Constants.USER_ID).equalsIgnoreCase(user_id)) {
                                 showDialog = 1;
                                 getDeviceList(showDialog);
                             }

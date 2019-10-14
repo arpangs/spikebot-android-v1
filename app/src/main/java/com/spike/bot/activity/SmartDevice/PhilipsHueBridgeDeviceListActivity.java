@@ -208,7 +208,6 @@ public class PhilipsHueBridgeDeviceListActivity extends AppCompatActivity {
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                } finally {
                 }
             }
 

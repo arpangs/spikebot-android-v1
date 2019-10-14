@@ -997,7 +997,7 @@ public class MoodFragment extends Fragment implements View.OnClickListener,ItemC
                         ChatApplication.currentuserId = userId;
                         mCallback.onArticleSelected("" + userFirstName);
 
-                        MainFragment.saveCurrentId(getActivity(), userId, userId);
+//                        MainFragment.saveCurrentId(getActivity(), userId, userId);
                         if (userObject.has("user_password")) {
                         }
                     }

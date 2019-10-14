@@ -27,7 +27,6 @@ public class SearchDeviceActivity extends AppCompatActivity implements View.OnCl
     public TextView txtTitleBridge, txtInfo;
     public Button btnNext;
     public int isFlag = 0;
-
     public String host_ip = "", getBridge_name = "", bridge_id = "";
 
     public ArrayList<SmartBrandDeviceModel> arrayList = new ArrayList<>();

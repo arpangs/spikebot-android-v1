@@ -78,6 +78,7 @@ public class PhilipsBulbNewListActivity extends AppCompatActivity {
         return true;
     }
 
+    /* getting hue light list*/
     public void getHueLightsList() {
         if (!ActivityHelper.isConnectingToInternet(PhilipsBulbNewListActivity.this)) {
             Toast.makeText(PhilipsBulbNewListActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -149,6 +150,7 @@ public class PhilipsBulbNewListActivity extends AppCompatActivity {
     }
 
     private void setAdpater() {
+        // check same light not adding
         ArrayList<SmartBrandDeviceModel> arrayAdapter = new ArrayList<>();
         ArrayList<String> stringArrayList = new ArrayList<>();
         for (int i = 0; i < arrayList.size(); i++) {

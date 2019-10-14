@@ -75,7 +75,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingTop="30dp"
-                    android:paddingBottom="10dp"
                     android:paddingLeft="20dp"
                     android:paddingRight="20dp"
                     android:orientation="vertical">
@@ -168,6 +167,7 @@
                         android:layout_marginRight="10dp"
                         android:layout_marginLeft="10dp"
                         android:textSize="@dimen/_15sdp"
+                        android:layout_marginBottom="@dimen/_30sdp"
                         android:background="@drawable/login_btn"
                         android:textColor="@color/automation_white"
                         android:text="Sign up"

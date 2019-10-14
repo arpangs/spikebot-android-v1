@@ -21,7 +21,6 @@ import java.util.ArrayList;
 public class SearchHueBridgeActivity extends AppCompatActivity implements View.OnClickListener {
 
     public Toolbar toolbar;
-    public boolean isBridgeAdd = false;
     public RecyclerView recyclerSmartDevice;
     public AppCompatButton btnNext;
     public ArrayList<SmartBrandModel> arrayList = new ArrayList<>();

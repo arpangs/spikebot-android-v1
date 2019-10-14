@@ -26,6 +26,7 @@ import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.User;
+import com.spike.bot.receiver.ConnectivityReceiver;
 import com.spike.bot.receiver.StickyService;
 
 import org.json.JSONObject;
@@ -205,6 +206,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         String mac_address = data.getString("mac_address");
                         Constants.adminType = Integer.parseInt(admin);
 
+                        ChatApplication.currentuserId=user_id;
                         Common.savePrefValue(LoginActivity.this, Constants.PREF_CLOUDLOGIN, "true");
                         Common.savePrefValue(LoginActivity.this, Constants.PREF_IP, cloudIp);
                         Common.savePrefValue(LoginActivity.this, Constants.USER_ID, user_id);
@@ -283,13 +285,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Toast.makeText(LoginActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+               ChatApplication.showToast(LoginActivity.this,getResources().getString(R.string.something_wrong));
             }
         }).execute();
     }
 
     private void startHomeIntent() {
+        ConnectivityReceiver.counter=0;
         Intent intent = new Intent(this, Main2Activity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         this.finish();
 

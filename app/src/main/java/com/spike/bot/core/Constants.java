@@ -52,9 +52,9 @@ public class Constants {
     //device type =3 - philip
     // device type = 2 = Ac
 
-//    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
+    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
 //    public static  String CLOUD_SERVER_URL = "http://api.spikebot.io"; //222
-    public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //wifi / 123
+//    public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //wifi / 123
 
 // *-   public static  String CLOUD_SERVER_URL = "http://52.201.70.116:8079"; // unuser
 //    public static  String CLOUD_SERVER_URL = "http://54.201.70.116:8079"; // unuser
@@ -396,6 +396,26 @@ public class Constants {
         }
 
         return user;
+    }
+
+    public static String getUserId(Context context){
+        String getuserIp="";
+        String jsonText = Common.getPrefValue(context, Common.USER_JSON);
+        if (!TextUtils.isEmpty(jsonText)) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<User>>() {}.getType();
+            List<User> userList = gson.fromJson(jsonText, type);
+            if(userList.size()>0){
+                for(int i=0; i<userList.size(); i++){
+                    if(userList.get(i).getIsActive()){
+                        getuserIp=userList.get(i).getUser_id();
+                        break;
+                    }
+                }
+            }
+        }
+
+        return getuserIp;
     }
 
     public static String getuserCloudIP(Context context){

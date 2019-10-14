@@ -58,38 +58,24 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
     private IRBlasterScheduleAdapter irBlasterScheduleAdapter;
     private IRBlasterInfoRes.Data.IrBlasterList.RemoteList remoteList;
 
-    private String mRemoteId,mRemoteName,mRoomId;
-    private TextView mIrAdd;
-    private EditText mIrRemoteName;
+    private String mRemoteId,mRemoteName,mRoomId,repeatDayString="";
+    private EditText mIrRemoteName,mDiaSchName,mDStartTime,mDStartTemp,mDEndTime,mDEndTemp;
+    private Dialog mDialog;
+    private Spinner mModeSpinnerStart,mModeSpinnerEnd;
+    private Button mBtnSave;
+    private ImageView img_start_clear,img_end_clear,iv_close;
+    TextView mIrAdd,text_schedule_1, text_schedule_2, text_schedule_3, text_schedule_4, text_schedule_5, text_schedule_6, text_schedule_7;
 
+    private boolean isEdit = false;
     private List<String> speedList;
     List<RemoteSchListRes.Data.RemoteScheduleList> remoteScheduleList;
-
-    private Dialog mDialog;
-    private EditText mDiaSchName;
-    private Spinner mModeSpinnerStart,mModeSpinnerEnd;
-    private EditText mDStartTime,mDStartTemp;
-    private EditText mDEndTime,mDEndTemp;
-    private Button mBtnSave;
-    private ImageView iv_close;
-    private ImageView img_start_clear,img_end_clear;
-
-    String repeatDayString = "";
-    TextView text_schedule_1, text_schedule_2, text_schedule_3, text_schedule_4, text_schedule_5, text_schedule_6, text_schedule_7;
-
     private RemoteSchListRes.Data.RemoteScheduleList tmpRemoteList;
-    private boolean isEdit = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_irblaster_edit);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         syncIntent();
         bindView();
@@ -105,9 +91,13 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
     }
 
     private void bindView(){
-        mIrRemoteName = (EditText) findViewById(R.id.ir_remote_name);
-        mIrAdd = (TextView) findViewById(R.id.ir_add_sch);
-        schList = (RecyclerView) findViewById(R.id.remote_sch_list);
+        Toolbar toolbar =  findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        mIrRemoteName =  findViewById(R.id.ir_remote_name);
+        mIrAdd = findViewById(R.id.ir_add_sch);
+        schList =  findViewById(R.id.remote_sch_list);
         schList.setLayoutManager(new GridLayoutManager(this,1));
 
         mIrAdd.setOnClickListener(this);
@@ -116,6 +106,8 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
 
     }
 
+    /*get detetails
+    * */
     private void getSchDetails(){
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
@@ -154,6 +146,7 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(IRBlasterEditActivity.this, getResources().getString(R.string.something_wrong));
             }
         }).execute();
     }
@@ -451,21 +444,21 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
             mDialog.setContentView(R.layout.dialog_add_remote_sch);
         }
 
-        mDiaSchName = (EditText) mDialog.findViewById(R.id.tv_sch_name);
-        mModeSpinnerStart = (Spinner) mDialog.findViewById(R.id.dg_mode_start);
-        mModeSpinnerEnd = (Spinner) mDialog.findViewById(R.id.dg_mode_end);
+        mDiaSchName =  mDialog.findViewById(R.id.tv_sch_name);
+        mModeSpinnerStart =  mDialog.findViewById(R.id.dg_mode_start);
+        mModeSpinnerEnd =  mDialog.findViewById(R.id.dg_mode_end);
 
-        mDStartTime = (EditText) mDialog.findViewById(R.id.tv_sch_start_time);
-        mDStartTemp = (EditText) mDialog.findViewById(R.id.tv_sch_start_temp);
+        mDStartTime =  mDialog.findViewById(R.id.tv_sch_start_time);
+        mDStartTemp =  mDialog.findViewById(R.id.tv_sch_start_temp);
 
-        mDEndTime = (EditText) mDialog.findViewById(R.id.tv_sch_end_time);
-        mDEndTemp = (EditText) mDialog.findViewById(R.id.tv_sch_end_temp);
+        mDEndTime =  mDialog.findViewById(R.id.tv_sch_end_time);
+        mDEndTemp =  mDialog.findViewById(R.id.tv_sch_end_temp);
 
-        mBtnSave = (Button)mDialog.findViewById(R.id.btn_save);
-        iv_close = (ImageView) mDialog.findViewById(R.id.iv_close);
+        mBtnSave = mDialog.findViewById(R.id.btn_save);
+        iv_close = mDialog.findViewById(R.id.iv_close);
 
-        img_start_clear = (ImageView) mDialog.findViewById(R.id.img_start_clear);
-        img_end_clear = (ImageView) mDialog.findViewById(R.id.img_end_clear);
+        img_start_clear = mDialog.findViewById(R.id.img_start_clear);
+        img_end_clear = mDialog.findViewById(R.id.img_end_clear);
 
         img_start_clear.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -486,19 +479,18 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
 
         speedList.add(0,"MODE");
 
-        CustomSpinnerAdapter customAdapter =
-                new CustomSpinnerAdapter(this,R.layout.row_spinner_dropdown_item,R.id.spinner_item,speedList);
+        CustomSpinnerAdapter customAdapter = new CustomSpinnerAdapter(this,R.layout.row_spinner_dropdown_item,R.id.spinner_item,speedList);
         mModeSpinnerStart.setAdapter(customAdapter);
 
         mModeSpinnerEnd.setAdapter(customAdapter);
 
-        text_schedule_1 = (TextView) mDialog.findViewById(R.id.text_day_1);
-        text_schedule_2 = (TextView) mDialog.findViewById(R.id.text_day_2);
-        text_schedule_3 = (TextView) mDialog.findViewById(R.id.text_day_3);
-        text_schedule_4 = (TextView) mDialog.findViewById(R.id.text_day_4);
-        text_schedule_5 = (TextView) mDialog.findViewById(R.id.text_day_5);
-        text_schedule_6 = (TextView) mDialog.findViewById(R.id.text_day_6);
-        text_schedule_7 = (TextView) mDialog.findViewById(R.id.text_day_7);
+        text_schedule_1 =  mDialog.findViewById(R.id.text_day_1);
+        text_schedule_2 =  mDialog.findViewById(R.id.text_day_2);
+        text_schedule_3 =  mDialog.findViewById(R.id.text_day_3);
+        text_schedule_4 =  mDialog.findViewById(R.id.text_day_4);
+        text_schedule_5 =  mDialog.findViewById(R.id.text_day_5);
+        text_schedule_6 =  mDialog.findViewById(R.id.text_day_6);
+        text_schedule_7 =  mDialog.findViewById(R.id.text_day_7);
 
        // text_schedule_1.setOnClickListener(this);
         text_schedule_1.setOnClickListener(new View.OnClickListener() {

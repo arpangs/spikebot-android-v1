@@ -174,6 +174,7 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    /*getting wifi list */
 
     public void getWifiList(final String wifiIP) {
         if (!ActivityHelper.isConnectingToInternet(WifiBlasterActivity.this)) {
@@ -248,6 +249,7 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onBackPressed() {
         if (Constants.isWifiConnect) {
+            // switch network
             showConfigAlert("Please change your wifi connection after move to another screen.");
         } else {
             super.onBackPressed();

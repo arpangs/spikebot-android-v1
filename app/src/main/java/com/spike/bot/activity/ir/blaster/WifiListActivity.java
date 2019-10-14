@@ -51,12 +51,11 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
 
     public Toolbar toolbar;
     public RecyclerView recyclerWifi;
-
     public String wifiIP = "", moduleId = "", roomId = "", roomName = "";
     public boolean isNetworkChange = false;
-    ArrayList<WifiModel.WiFiList> arrayList = new ArrayList<>();
 
     /*Socket*/
+    ArrayList<WifiModel.WiFiList> arrayList = new ArrayList<>();
     ArrayList<String> roomIdList = new ArrayList<>();
     ArrayList<String> roomNameList = new ArrayList<>();
 
@@ -71,7 +70,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
         roomId = getIntent().getStringExtra("roomId");
         roomName = getIntent().getStringExtra("roomName");
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar =  findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -305,6 +304,8 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
 
     }
 
+    /*blaster wifi connection request
+    * */
     private void callWifiPasswordCheck(String s, WifiModel.WiFiList wiFiList, String edWifiIP, final Dialog dialog) {
         if (!ActivityHelper.isConnectingToInternet(WifiListActivity.this)) {
             Toast.makeText(WifiListActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -357,6 +358,8 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
         }).execute();
     }
 
+    /*for blaster wifi off & last wifi connectiong wait ..
+    * */
     private void setSaveView() {
         new CountDownTimer(2500, 1000) {
             public void onTick(long millisUntilFinished) {

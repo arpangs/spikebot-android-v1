@@ -20,6 +20,7 @@ import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.HeavyLoad.HeavyLoadDetailActivity;
 import com.spike.bot.adapter.irblaster.IRBlasterInfoAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
@@ -40,28 +41,19 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
     private LinearLayout linear_progress;
     private RecyclerView mIRListView;
     private Button btn_delete_remote;
-    private String mIRBlasterId,mIRBlasterModuleId,mRoomId,TAG = "IRBlaster";
+    private String mIRBlasterId,mIRBlasterModuleId,mRoomId;
 
     List<IRBlasterInfoRes.Data.IrBlasterList.RemoteList> irRemoteLists;
     List<IRBlasterInfoRes.Data.IrBlasterList.RemoteList.RemoteCommandList> irRemoteCommandLists;
     IRBlasterInfoRes.Data.IrBlasterList.RemoteList.RemoteCurrentStatusDetails irRemoteCurrentStatusLists;
-    private Menu menu;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ir_blaster);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
         getIntentData();
-
         bindView();
-
     }
 
     @Override
@@ -71,18 +63,20 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
     }
 
     private void bindView(){
+        Toolbar toolbar =  findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        btn_delete_remote = (Button) findViewById(R.id.btn_delete_remote);
-        linear_progress = (LinearLayout) findViewById(R.id.linear_progress);
-        mIRListView = (RecyclerView) findViewById(R.id.list_ir_sensor);
+        btn_delete_remote =  findViewById(R.id.btn_delete_remote);
+        linear_progress = findViewById(R.id.linear_progress);
+        mIRListView = findViewById(R.id.list_ir_sensor);
         mIRListView.setLayoutManager(new GridLayoutManager(this,1));
-
         btn_delete_remote.setOnClickListener(this);
 
     }
 
     private void getIntentData(){
-
         mIRBlasterId = getIntent().getStringExtra("SENSOR_ID");
         mRoomId = getIntent().getStringExtra("ROOM_ID");
         mIRBlasterModuleId = getIntent().getStringExtra("IR_BLASTER_ID");
@@ -128,8 +122,7 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
                         irRemoteCommandLists = irRemoteLists.get(0).getRemoteCommandList();
                         irRemoteCurrentStatusLists = irRemoteLists.get(0).getRemoteCurrentStatusDetails();
 
-                        IRBlasterInfoAdapter irBlasterInfoAdapter = new IRBlasterInfoAdapter(irRemoteLists,
-                                IRBlasterActivity.this);
+                        IRBlasterInfoAdapter irBlasterInfoAdapter = new IRBlasterInfoAdapter(irRemoteLists, IRBlasterActivity.this);
                         mIRListView.setAdapter(irBlasterInfoAdapter);
 
                     }else{
@@ -153,7 +146,7 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        this.menu = menu;
+        //Menu menu = menu;
 
         return true;
     }
@@ -338,6 +331,7 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(IRBlasterActivity.this, getResources().getString(R.string.something_wrong));
             }
         }).execute();
     }

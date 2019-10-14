@@ -38,6 +38,7 @@ import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.HeavyLoad.HeavyLoadDetailActivity;
 import com.spike.bot.activity.SensorUnassignedActivity;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.adapter.irblaster.IRBlasterAddAdapter;
@@ -66,13 +67,14 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
     private Socket mSocket;
     private RecyclerView mBlasterList;
     private LinearLayout mEmptyView;
+    public FloatingActionButton floatingActionButton;
+    public static int SENSOR_TYPE_IR = 3;
+
     private IRBlasterAddAdapter irBlasterAddAdapter;
     private List<IRBlasterAddRes.Data.IrList> irList;
-    public FloatingActionButton floatingActionButton;
 
     ArrayList<String> roomIdList = new ArrayList<>();
     ArrayList<String> roomNameList = new ArrayList<>();
-    public static int SENSOR_TYPE_IR = 3;
     List<IRBlasterAddRes.Data.RoomList> roomLists;
     private Dialog mDialog;
     EditText mBlasterName;
@@ -82,14 +84,6 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ir_blaster_add);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toolbar.setTitle("IR Blaster List");
 
         bindView();
 
@@ -106,11 +100,17 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
 
     @SuppressLint("RestrictedApi")
     private void bindView(){
-        mBlasterList = (RecyclerView) findViewById(R.id.list_blaster);
-        floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
+        Toolbar toolbar =  findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbar.setTitle("IR Blaster List");
+        mBlasterList =  findViewById(R.id.list_blaster);
+        floatingActionButton =  findViewById(R.id.fab);
         mBlasterList.setLayoutManager(new GridLayoutManager(this,1));
 
-        mEmptyView = (LinearLayout) findViewById(R.id.txt_empty_blaster);
+        mEmptyView =  findViewById(R.id.txt_empty_blaster);
         floatingActionButton.setVisibility(View.GONE);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -249,12 +249,12 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             irDialog.setCanceledOnTouchOutside(false);
         }
 
-        final EditText edt_door_name = (EditText) irDialog.findViewById(R.id.txt_door_sensor_name);
-        final TextView edt_door_module_id = (TextView) irDialog.findViewById(R.id.txt_module_id);
-        final Spinner sp_room_list = (Spinner) irDialog.findViewById(R.id.sp_room_list);
+        final EditText edt_door_name =  irDialog.findViewById(R.id.txt_door_sensor_name);
+        final TextView edt_door_module_id =  irDialog.findViewById(R.id.txt_module_id);
+        final Spinner sp_room_list =  irDialog.findViewById(R.id.sp_room_list);
 
-        TextView dialogTitle = (TextView) irDialog.findViewById(R.id.tv_title);
-        TextView txt_sensor_name = (TextView) irDialog.findViewById(R.id.txt_sensor_name);
+        TextView dialogTitle = irDialog.findViewById(R.id.tv_title);
+        TextView txt_sensor_name = irDialog.findViewById(R.id.txt_sensor_name);
 
         dialogTitle.setText("Add IR Blaster");
         txt_sensor_name.setText("IR Name");
@@ -265,23 +265,9 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(getApplicationContext(),roomNameList,1,false);
         sp_room_list.setAdapter(customAdapter);
 
-        int spinner_position = sp_room_list.getSelectedItemPosition();
-
-        sp_room_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        Button btn_cancel = (Button) irDialog.findViewById(R.id.btn_door_cancel);
-        Button btn_save = (Button) irDialog.findViewById(R.id.btn_door_save);
-        ImageView iv_close = (ImageView) irDialog.findViewById(R.id.iv_close);
+        Button btn_cancel =  irDialog.findViewById(R.id.btn_door_cancel);
+        Button btn_save =  irDialog.findViewById(R.id.btn_door_save);
+        ImageView iv_close =  irDialog.findViewById(R.id.iv_close);
 
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -299,8 +285,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveIRBlaster(irDialog,edt_door_name,edt_door_name.getText().toString(),edt_door_module_id.getText().toString(),
-                        sp_room_list );
+                saveIRBlaster(irDialog,edt_door_name,edt_door_name.getText().toString(),edt_door_module_id.getText().toString(), sp_room_list );
             }
         });
 
@@ -400,13 +385,13 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         dialog.setCanceledOnTouchOutside(false);
         dialog.setContentView(R.layout.dialog_panel_option);
 
-        TextView txtDialogTitle = (TextView) dialog.findViewById(R.id.txt_dialog_title);
+        TextView txtDialogTitle =  dialog.findViewById(R.id.txt_dialog_title);
         txtDialogTitle.setText("Select Sensor Type");
 
-        Button btn_sync = (Button)dialog.findViewById(R.id.btn_panel_sync);
-        Button btn_unaasign = (Button)dialog.findViewById(R.id.btn_panel_unasigned);
-        Button btn_cancel = (Button) dialog.findViewById(R.id.btn_panel_cancel);
-        Button btn_from_existing = (Button) dialog.findViewById(R.id.add_from_existing);
+        Button btn_sync = dialog.findViewById(R.id.btn_panel_sync);
+        Button btn_unaasign = dialog.findViewById(R.id.btn_panel_unasigned);
+        Button btn_cancel =  dialog.findViewById(R.id.btn_panel_cancel);
+        Button btn_from_existing =  dialog.findViewById(R.id.add_from_existing);
         btn_from_existing.setVisibility(View.GONE);
 
         btn_sync.setOnClickListener(new View.OnClickListener() {
@@ -541,7 +526,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             @Override
             public void onFailure(Throwable throwable, String error) {
                 throwable.printStackTrace();
-                Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong));
             }
         }).execute();
 
@@ -572,6 +557,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         });
         newFragment.show(getFragmentManager(), "dialog");
     }
+
     private void deleteBlaster(String irBlasterId){
 
         if(!ActivityHelper.isConnectingToInternet(getApplicationContext())){
@@ -614,7 +600,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             @Override
             public void onFailure(Throwable throwable, String error) {
                 throwable.printStackTrace();
-                Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong));
             }
         }).execute();
 
@@ -642,16 +628,16 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
     private void showBlasterEditDialog(final IRBlasterAddRes.Data.IrList ir){
 
         mDialog = getDialogContext();
-        mBlasterName = (EditText) mDialog.findViewById(R.id.edt_blaster_name);
-        final Spinner mRoomSpinner = (Spinner)mDialog.findViewById(R.id.blaster_room_spinner);
+        mBlasterName =  mDialog.findViewById(R.id.edt_blaster_name);
+        final Spinner mRoomSpinner = mDialog.findViewById(R.id.blaster_room_spinner);
 
         InputFilter[] filterArray = new InputFilter[1];
         filterArray[0] = new InputFilter.LengthFilter(25); //Remote Name max length to set only 25
         mBlasterName.setFilters(filterArray);
 
-        Button btnCancel = (Button) mDialog.findViewById(R.id.btn_cancel);
-        Button btnSave = (Button) mDialog.findViewById(R.id.btn_save);
-        ImageView btnClose = (ImageView) mDialog.findViewById(R.id.iv_close);
+        Button btnCancel =  mDialog.findViewById(R.id.btn_cancel);
+        Button btnSave = mDialog.findViewById(R.id.btn_save);
+        ImageView btnClose =  mDialog.findViewById(R.id.iv_close);
 
 
         mBlasterName.setText(ir.getIrBlasterName());
@@ -770,7 +756,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             public void onFailure(Throwable throwable, String error) {
                 throwable.printStackTrace();
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.showToast(getApplicationContext(),IRBlasterAddActivity.this.getResources().getString( R.string.disconnect));
+                ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong));
             }
         }).execute();
 

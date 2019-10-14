@@ -50,25 +50,22 @@ import java.util.List;
  */
 public class IRRemoteConfigActivity extends AppCompatActivity implements View.OnClickListener {
 
+    public static DataSearch arrayList;
     private TextView remote_room_txt, mTestButtons, mRespondNo, mRespondYes, mPowerValue, mTxtBlasterName, txtModelNumber;
-    private ImageView mImgLeft, mImgRight;
-    private ImageView mImgPower;
+    private ImageView mImgLeft, mImgRight,mImgPower;
     private LinearLayout mRespondView;
+    private Spinner  mSpinnerMode;
+    private EditText mRemoteDefaultTemp,mEdtRemoteName;
 
     private String mIRDeviceId, mIrDeviceType, mRoomId, mBrandId, mIRBlasterModuleId, mIRBrandType, mIRBLasterId, mRoomName,
-            mBlasterName, mBrandType, brand_name = "", model_number = "", onOffValue = "",
-            remote_codeset_id = "", mCodeSet;
+    mBlasterName, mBrandType, brand_name = "", model_number = "", onOffValue = "",
+    remote_codeset_id = "", mCodeSet;
 
-    private Spinner mSpinnerBlaster, mSpinnerMode;
-    private EditText mRemoteDefaultTemp;
     private boolean isRequestTypeOn = false;
     private int mTotalState = 1, mCurrentState = 1, RESPOND_CONST = 1; //1 on command : 2 off command
-    public static DataSearch arrayList;
-    EditText mEdtRemoteName;
     private Dialog mDialog;
 
     public static class Power {
-
         public static String ON = "On";
         public static String OFF = "Off";
     }
@@ -80,12 +77,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         setContentView(R.layout.activity_ir_remote_config);
 
         arrayList = IRRemoteBrandListActivity.arrayList;
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Remote Config");
 
         isRequestTypeOn = true;
         RESPOND_CONST = 1;
@@ -95,6 +87,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
     }
 
     private void syncIntent() {
+
         mBrandType = getIntent().getStringExtra("BRAND_NAME");
         mBlasterName = getIntent().getStringExtra("BLASTER_NAME");
         mRoomName = getIntent().getStringExtra("ROOM_NAME");
@@ -119,17 +112,21 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
     }
 
     private void bindView() {
+        Toolbar toolbar =  findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("Remote Config");
+        mTestButtons =  findViewById(R.id.remote_total_step);
+        mImgLeft =  findViewById(R.id.remote_left_slider);
+        mImgRight =  findViewById(R.id.remote_right_slider);
+        mImgPower =  findViewById(R.id.remote_power_onoff);
+        mPowerValue =  findViewById(R.id.remote_power_value);
 
-        mTestButtons = (TextView) findViewById(R.id.remote_total_step);
-        mImgLeft = (ImageView) findViewById(R.id.remote_left_slider);
-        mImgRight = (ImageView) findViewById(R.id.remote_right_slider);
-        mImgPower = (ImageView) findViewById(R.id.remote_power_onoff);
-        mPowerValue = (TextView) findViewById(R.id.remote_power_value);
-
-        mRespondView = (LinearLayout) findViewById(R.id.remote_respond_view);
-        mRespondNo = (TextView) findViewById(R.id.remote_respond_no);
-        mRespondYes = (TextView) findViewById(R.id.remote_respond_yes);
-        txtModelNumber = (TextView) findViewById(R.id.txtModelNumber);
+        mRespondView =  findViewById(R.id.remote_respond_view);
+        mRespondNo =  findViewById(R.id.remote_respond_no);
+        mRespondYes =  findViewById(R.id.remote_respond_yes);
+        txtModelNumber =  findViewById(R.id.txtModelNumber);
 
         mImgLeft.setOnClickListener(this);
         mImgRight.setOnClickListener(this);
@@ -275,11 +272,10 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         filterArray[0] = new InputFilter.LengthFilter(25); //Remote Name max length to set only 25
         mEdtRemoteName.setFilters(filterArray);
 
-        ImageView iv_close = (ImageView) mDialog.findViewById(R.id.iv_close);
+        ImageView iv_close =  mDialog.findViewById(R.id.iv_close);
         Button mBtnCancel = mDialog.findViewById(R.id.btn_cancel);
         Button mBtnSave = mDialog.findViewById(R.id.btn_save);
 
-        mSpinnerBlaster = (Spinner) mDialog.findViewById(R.id.remote_blaster_spinner);
         remote_room_txt = (TextView) mDialog.findViewById(R.id.remote_room_txt);
         mSpinnerMode = (Spinner) mDialog.findViewById(R.id.remote_mode_spinner);
 
@@ -317,11 +313,6 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         mBtnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                ChatApplication.logDisplay(" mNumber is " + model_number);
-                ChatApplication.logDisplay(" mNumber is " + brand_name);
-                ChatApplication.logDisplay(" mNumber is " + onOffValue);
-                ChatApplication.logDisplay(" mNumber is " + remote_codeset_id);
 
                 if (TextUtils.isEmpty(mEdtRemoteName.getText().toString().trim())) {
                     mEdtRemoteName.requestFocus();

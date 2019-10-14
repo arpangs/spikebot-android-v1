@@ -67,7 +67,7 @@ public class GetJsonTaskMacAddress extends AsyncTask<String, Void, String> {
 			JSONObject json = new JSONObject(result);
 			activity.onSuccess(json);
 		} catch (Throwable e) {
-			activity.onFailure(e, error);
+			activity.onFailure(e, ""+error);
 		}
 	}
 	/*

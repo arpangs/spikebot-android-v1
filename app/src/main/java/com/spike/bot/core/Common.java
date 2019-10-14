@@ -497,7 +497,7 @@ public class Common {
 
     public static String USER_JSON = "user_pref_json";
     public static String USER_PIDETAIL = "user_pi_details";
-    public static String camera_key = "camera_key";
+    public static String camera_key = "camera_key"; //key : spike123
 
     /**
      * hideSoftKeyBoard

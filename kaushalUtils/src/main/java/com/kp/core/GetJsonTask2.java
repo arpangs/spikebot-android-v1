@@ -3,6 +3,7 @@ package com.kp.core;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.conn.HttpHostConnectException;
@@ -101,6 +102,9 @@ public class GetJsonTask2 extends AsyncTask<String, Void, String> {
 			JSONObject json = new JSONObject(result);
 			activity.onSuccess(json);
 		} catch (Throwable e) {
+			if(!TextUtils.isEmpty(result) && result.startsWith("Maintenance is")){
+				error=result;
+			}
 			activity.onFailure(e, error,500);
 		}
 	}

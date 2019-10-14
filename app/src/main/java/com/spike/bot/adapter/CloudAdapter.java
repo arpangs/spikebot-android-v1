@@ -12,6 +12,7 @@ import com.kp.core.ActivityHelper;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Main2Activity;
+import com.spike.bot.core.Constants;
 import com.spike.bot.model.User;
 
 import java.util.List;
@@ -26,11 +27,14 @@ public class CloudAdapter extends RecyclerView.Adapter<CloudAdapter.CloudViewHol
     public List<User> userList;
     private Context mcontext;
     private CloudClickListener cloudClickListener;
+    String userid="";
 
     public CloudAdapter(Context context,List<User> users,CloudClickListener cloudClickListener){
         this.userList = users;
         this.mcontext = context;
         this.cloudClickListener = cloudClickListener;
+
+        userid= Constants.getUserId(context);
     }
 
     @Override
@@ -51,7 +55,7 @@ public class CloudAdapter extends RecyclerView.Adapter<CloudAdapter.CloudViewHol
 //            holder.image_cloud.setImageResource(R.drawable.icn_round);
 //        }
 
-        if(ChatApplication.currentuserId.equalsIgnoreCase(user.getUser_id())){
+        if(userid.equalsIgnoreCase(user.getUser_id())){
             holder.image_cloud.setImageResource(R.drawable.icn_check);
         }else{
             holder.image_cloud.setImageResource(R.drawable.icn_round);

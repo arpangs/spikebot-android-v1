@@ -39,26 +39,18 @@ import java.util.List;
  */
 public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRemoteBrandListAdapter.IRRemoteListClickEvent {
 
-    private LinearLayout linear_progress, ll_sensor_list;
+    public static DataSearch arrayList = new DataSearch();
+    private LinearLayout linear_progress;
     private RecyclerView mIRListView;
+    private EditText mSearchBrand;
     private String mIrDeviceId, mRemoteName, mIrDeviceType, mRoomId, mIRBlasterModuleId, mIrBlasterId, mRoomName, mBlasterName;
     List<IRRemoteListRes.Data.BrandList> brandLists = new ArrayList<>();
-
     private IRRemoteBrandListAdapter irRemoteBrandListAdapter;
-    private EditText mSearchBrand;
-    public static DataSearch arrayList = new DataSearch();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ir_remote_brand_list);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
 
         mRemoteName = getIntent().getStringExtra("REMOTE_NAME");
         mRoomName = getIntent().getStringExtra("BLASTER_NAME");
@@ -70,20 +62,19 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
         mIRBlasterModuleId = getIntent().getStringExtra("IR_BLASTER_MODULE_ID");
 
         getSupportActionBar().setTitle("Select " + mRemoteName);
-
         bindView();
-
         getIRDetailsList();
     }
 
     private void bindView() {
+        Toolbar toolbar =  findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        mSearchBrand = (EditText) findViewById(R.id.search_brand);
-
-        linear_progress = (LinearLayout) findViewById(R.id.linear_progress);
-        ll_sensor_list = (LinearLayout) findViewById(R.id.ll_sensor_list);
-
-        mIRListView = (RecyclerView) findViewById(R.id.list_ir_remote);
+        mSearchBrand =  findViewById(R.id.search_brand);
+        linear_progress =  findViewById(R.id.linear_progress);
+        mIRListView = findViewById(R.id.list_ir_remote);
         mIRListView.setLayoutManager(new GridLayoutManager(this, 1));
 
         searchBrand();
