@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.spike.bot.R;
@@ -39,7 +38,6 @@ public class UserSubRoomAdapter extends RecyclerView.Adapter<UserSubRoomAdapter.
 
     //context
     private final Context mContext;
-    public static boolean flagIs=false;
 
     //listeners
     private final ItemClickMoodListener mItemClickListener;
@@ -50,26 +48,25 @@ public class UserSubRoomAdapter extends RecyclerView.Adapter<UserSubRoomAdapter.
     private static final int VIEW_TYPE_SECTION = R.layout.row_user_child_room;
     private static final int VIEW_TYPE_PANEL = R.layout.row_mood_panel;
     private static final int VIEW_TYPE_ITEM = R.layout.row_room_switch_item_mood; //TODO : change this
+    RoomVO section;
+    PanelVO panel1;
+    DeviceVO item;
 
     public UserSubRoomAdapter(Context context, ArrayList<Object> dataArrayList,
-                                     final GridLayoutManager gridLayoutManager,
-                                     ItemClickMoodListener itemClickListener,
-                                     MoodStateChangeListener sectionStateChangeListener,
-                                     NotifityData notifityData) {
+                              final GridLayoutManager gridLayoutManager,
+                              ItemClickMoodListener itemClickListener,
+                              MoodStateChangeListener sectionStateChangeListener,
+                              NotifityData notifityData) {
         mContext = context;
         mItemClickListener = itemClickListener;
         mSectionStateChangeListener = sectionStateChangeListener;
         mDataArrayList = dataArrayList;
-        this.notifityData=notifityData;
+        this.notifityData = notifityData;
 
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                //return isSection(position)?gridLayoutManager.getSpanCount():1;
-                //    Log.d("","getSpanSize position     " + position);
-                //     Log.d("","getSpanSize getSpanCount " + gridLayoutManager.getSpanCount());
-                return isSection(position) || isPanel(position) ? gridLayoutManager.getSpanCount():1 ;
-                //return isSection(position)?gridLayoutManager.getSpanCount():1;
+                return isSection(position) || isPanel(position) ? gridLayoutManager.getSpanCount() : 1;
             }
         });
     }
@@ -77,28 +74,29 @@ public class UserSubRoomAdapter extends RecyclerView.Adapter<UserSubRoomAdapter.
     private boolean isSection(int position) {
         return mDataArrayList.get(position) instanceof RoomVO;
     }
+
     private boolean isPanel(int position) {
         return mDataArrayList.get(position) instanceof PanelVO;
     }
 
     public boolean isClickable = true;
-    public void setClickabl(boolean isClickable){
+
+    public void setClickabl(boolean isClickable) {
         this.isClickable = isClickable;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View mView = LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false);
-        return new ViewHolder(mView,viewType);
-        // return new ViewHolder(LayoutInflater.from(mContext).inflate(viewType, parent, false), viewType);
+        return new ViewHolder(mView, viewType);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         switch (holder.viewType) {
-            case VIEW_TYPE_SECTION :
+            case VIEW_TYPE_SECTION:
 
-                final RoomVO section = (RoomVO) mDataArrayList.get(position);
+                section = (RoomVO) mDataArrayList.get(position);
 
                 holder.view_line_top.setVisibility(GONE);
                 holder.iv_icon.setVisibility(GONE);
@@ -106,53 +104,37 @@ public class UserSubRoomAdapter extends RecyclerView.Adapter<UserSubRoomAdapter.
                 holder.icnSchedule.setVisibility(GONE);
                 holder.sectionTextView.setText(section.getRoomName());
 
-                if(section.isExpanded()){
+                if (section.isExpanded()) {
                     holder.sectionTextView.setSingleLine(false);
-                }else{
+                } else {
                     holder.sectionTextView.setSingleLine(true);
                 }
-
-
-//                holder.iv_icon.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        if(!isClickable)
-//                            return;
-//                        section.setOld_room_status(section.getRoom_status());
-//                        section.setRoom_status(section.getRoom_status()==0?1:0);
-//                        notifyItemChanged(position);
-//                        //   Log.d("panelMood","pid : " + section.getPanel_id());
-//                        mItemClickListener.itemClicked(section,"onoffclick");
-//                    }
-//                });
 
                 holder.ll_top_section.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(!isClickable)
+                        if (!isClickable)
                             return;
-                        mItemClickListener.itemClicked(section,"expandclick");
+                        mItemClickListener.itemClicked(section, "expandclick");
                         mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded);
                     }
                 });
 
 
-
                 holder.iv_mood_delete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(!isClickable)
+                        if (!isClickable)
                             return;
-                        mItemClickListener.itemClicked(section,"deleteclick");
-                        //section.setRoom_status(section.getRoom_status()==1?0:1);
+                        mItemClickListener.itemClicked(section, "deleteclick");
                     }
                 });
                 holder.iv_mood_edit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(!isClickable)
+                        if (!isClickable)
                             return;
-                        mItemClickListener.itemClicked(section,"editclick");
+                        mItemClickListener.itemClicked(section, "editclick");
                     }
                 });
 
@@ -165,47 +147,36 @@ public class UserSubRoomAdapter extends RecyclerView.Adapter<UserSubRoomAdapter.
                 });
 
                 holder.sectionToggleButton.setChecked(section.isExpanded);
-
-//                if(section.isExpanded){
-//                    holder.iv_mood_delete.setVisibility(View.VISIBLE);
-//                    holder.iv_mood_edit.setVisibility(View.VISIBLE);
-//                }
-//                else{
-//                    //  holder.text_section_edit.setVisibility(View.GONE);
-//                    holder.iv_mood_delete.setVisibility(View.GONE);
-//                    holder.iv_mood_edit.setVisibility(View.GONE);
-//                }
-
                 //image log
                 holder.imgLog.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mItemClickListener.itemClicked(section,"imgLog");
+                        mItemClickListener.itemClicked(section, "imgLog");
                     }
                 });
 
                 holder.icnSchedule.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mItemClickListener.itemClicked(section,"imgSch");
+                        mItemClickListener.itemClicked(section, "imgSch");
                     }
                 });
 
-                holder.txtTotalDevices.setText(""+section.getDevice_count() + " devices");
+                holder.txtTotalDevices.setText("" + section.getDevice_count() + " devices");
 
-                if(section.isExpanded){
+                if (section.isExpanded) {
                     holder.ll_top_section.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side));
-                }else {
+                } else {
                     holder.ll_top_section.setBackground(mContext.getDrawable(R.drawable.background_shadow));
                 }
 
                 break;
-            case VIEW_TYPE_PANEL :
+            case VIEW_TYPE_PANEL:
 
-                final PanelVO panel1 = (PanelVO) mDataArrayList.get(position);
-                if(position==0){
+                panel1 = (PanelVO) mDataArrayList.get(position);
+                if (position == 0) {
                     holder.txtLine.setVisibility(GONE);
-                }else{
+                } else {
                     holder.txtLine.setVisibility(View.VISIBLE);
                 }
 
@@ -216,113 +187,46 @@ public class UserSubRoomAdapter extends RecyclerView.Adapter<UserSubRoomAdapter.
                 holder.iv_mood_panel_schedule_click.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(!isClickable)
+                        if (!isClickable)
                             return;
-                        mItemClickListener.itemClicked(panel1,"scheduleclick");
-                        //mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded);
+                        mItemClickListener.itemClicked(panel1, "scheduleclick");
                     }
                 });
-                //holder.iv_mood_panel_schedule_click.setImageResource(R.drawable.timeschedule);
                 holder.iv_mood_panel_schedule_click.setImageResource(R.drawable.ic_scheduler_new);
-               /* if(panel1.getPanel_status()==1 ){ //|| position%2 ==1
-                }*/
-
                 break;
-            case VIEW_TYPE_ITEM :
-                final DeviceVO item = (DeviceVO) mDataArrayList.get(position);
+            case VIEW_TYPE_ITEM:
+                item = (DeviceVO) mDataArrayList.get(position);
 
                 holder.itemTextView.setText(item.getDeviceName());
 
-                if(item.getDeviceType().equalsIgnoreCase("2")){
-                    if(item.getIsActive() == 0){
-                        holder.iv_icon.setImageResource(Common.getIconInActive(item.getDeviceStatus(),item.getDevice_icon()));
-                    }else{
-                        holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(),item.getDevice_icon()));
+                if (item.getDeviceType().equalsIgnoreCase("2")) {
+                    if (item.getIsActive() == 0) {
+                        holder.iv_icon.setImageResource(Common.getIconInActive(item.getDeviceStatus(), item.getDevice_icon()));
+                    } else {
+                        holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(), item.getDevice_icon()));
                     }
-                }else{
-                    holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(),item.getDevice_icon()));
+                } else {
+                    holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(), item.getDevice_icon()));
                 }
 
                 holder.iv_icon_text.setVisibility(View.VISIBLE);
                 holder.ll_room_item.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(!isClickable || item.getDevice_icon().equalsIgnoreCase("Remote_AC"))
+                        if (!isClickable || item.getDevice_icon().equalsIgnoreCase("Remote_AC"))
                             return;
-                        Log.d("itemPanelClick","get : " + item.getPanel_name());
+                        Log.d("itemPanelClick", "get : " + item.getPanel_name());
 
-                        mItemClickListener.itemClicked(item,"textclick");
+                        mItemClickListener.itemClicked(item, "textclick");
                     }
                 });
 
-//                holder.iv_icon.setId(position);
-//                holder.iv_icon.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//
-//                        if(!isClickable)
-//                            return;
-//
-//                        Log.d("System out","mood postion is "+position);
-//
-//                        if(item.getDevice_icon().equalsIgnoreCase("Remote_AC")){ //click on remote device id
-//                            // mItemClickListener.itemClicked(item,"isIRSensorClick");
-//                            item.setPower(item.getPower().equalsIgnoreCase("ON")? "OFF":"ON" );
-//                            item.setDeviceType("0");
-//                            item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1:0 );
-////                            notifyItemChanged(v.getId(),item);
-//                            // notifyItemChanged(position);
-//                            mItemClickListener.itemClicked(item,"isIRSensorOnClick");
-//                            notifityData.notifyData();
-//                        }else{
-//
-//                            item.setOldStatus(item.getDeviceStatus());
-//                            item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1:0 );
-//                            //notifyItemChanged(v.getId(),item);
-////                            notifyItemChanged(position);
-//
-//                            mItemClickListener.itemClicked(item,"itemOnOffclick");
-//                            notifityData.notifyData();
-//                        }
-//                        Log.d("System out","postion is "+position);
-//                    }
-//                });
-
-//                holder.iv_icon.setOnLongClickListener(new View.OnLongClickListener() {
-//                    @Override
-//                    public boolean onLongClick(View v) {
-//                        if(item.getDevice_icon().equalsIgnoreCase("Remote_AC")){ //click on remote device id
-//                            mItemClickListener.itemClicked(item,"isIRSensorClick");
-//                        }
-//                        return false;
-//                    }
-//                });
-
-//                if(item.getDeviceType().equalsIgnoreCase("1")){
-//                    if(Integer.parseInt(item.getDeviceId()) == 1 && Integer.parseInt(item.getDeviceType()) == 1){
-//                        holder.iv_icon.setOnLongClickListener(new View.OnLongClickListener() {
-//                            @Override
-//                            public boolean onLongClick(View view) {
-//                                if(item.getIs_locked()==1){
-//                                    Toast.makeText(mContext,mContext.getResources().getString(R.string.fan_error),Toast.LENGTH_LONG).show();
-//                                }else {
-//                                    mItemClickListener.itemClicked(item, "longclick");
-//                                }
-//                                return true;
-//                            }
-//                        });
-//                    }else{
-//                        holder.iv_icon.setOnLongClickListener(null);
-//                    }
-//                }
-
-                if(item.getDevice_icon().equalsIgnoreCase("Remote_AC")){
+                if (item.getDevice_icon().equalsIgnoreCase("Remote_AC")) {
                     holder.iv_icon_text.setVisibility(View.GONE);
                 } else {
                     holder.iv_icon_text.setVisibility(View.VISIBLE);
                 }
 
-                // holder.itemTextView.setText(item.getDevice_nameTemp());
                 break;
         }
     }
@@ -334,11 +238,11 @@ public class UserSubRoomAdapter extends RecyclerView.Adapter<UserSubRoomAdapter.
 
     @Override
     public int getItemViewType(int position) {
-        if (isSection(position)){
+        if (isSection(position)) {
             return VIEW_TYPE_SECTION;
-        }else if(isPanel(position)){
+        } else if (isPanel(position)) {
             return VIEW_TYPE_PANEL;
-        }else {
+        } else {
             return VIEW_TYPE_ITEM;
         }
     }
@@ -346,29 +250,14 @@ public class UserSubRoomAdapter extends RecyclerView.Adapter<UserSubRoomAdapter.
     protected static class ViewHolder extends RecyclerView.ViewHolder {
 
         //common
-        View view;
+        View view, vi_test, ll_top_section;
         int viewType;
-        ImageView iv_mood_panel_schedule_click;
-        ImageView view_line_top;
+        ImageView iv_mood_panel_schedule_click, view_line_top, iv_mood_edit, iv_mood_delete, imgLog, icnSchedule, iv_icon, iv_icon_text;
         //for section
-        TextView sectionTextView,txtLine,headingTemp;
+        TextView sectionTextView, txtLine, text_section_on_off, text_section_edit, txtTotalDevices, itemTextView;
         ToggleButton sectionToggleButton;
-        TextView text_section_on_off;
-        TextView text_section_edit;
-        ImageView iv_mood_edit;
-        ImageView iv_mood_delete;
-        View ll_top_section;
-        ImageView imgLog,icnSchedule;
-        TextView txtTotalDevices;
-
-        //for item
-        TextView itemTextView;
-        ImageView iv_icon;
         LinearLayout ll_room_item;
-        ImageView iv_icon_text;
         RelativeLayout view_rel;
-
-        View vi_test;
 
         public ViewHolder(View view, int viewType) {
             super(view);
@@ -377,8 +266,8 @@ public class UserSubRoomAdapter extends RecyclerView.Adapter<UserSubRoomAdapter.
             if (viewType == VIEW_TYPE_ITEM) {
                 itemTextView = (TextView) view.findViewById(R.id.text_item);
                 iv_icon = (ImageView) view.findViewById(R.id.iv_icon);
-                iv_icon_text = (ImageView) view.findViewById(R.id.iv_icon_text );
-                ll_room_item = (LinearLayout) view.findViewById(R.id.ll_room_item );
+                iv_icon_text = (ImageView) view.findViewById(R.id.iv_icon_text);
+                ll_room_item = (LinearLayout) view.findViewById(R.id.ll_room_item);
                 view_rel = (RelativeLayout) view.findViewById(R.id.view_rel);
                 vi_test = view.findViewById(R.id.vi_test);
 

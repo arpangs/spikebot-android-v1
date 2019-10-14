@@ -15,9 +15,7 @@ import com.bumptech.glide.Glide;
 import com.kp.core.DateHelper;
 import com.spike.bot.R;
 import com.spike.bot.activity.ImageZoomActivity;
-import com.spike.bot.core.Common;
 import com.spike.bot.model.CameraPushLog;
-import com.spike.bot.model.CameraViewModel;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -27,45 +25,44 @@ import java.util.Date;
  * Created by Sagar on 27/11/18.
  * Gmail : jethvasagar2@gmail.com
  */
-public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.SensorViewHolder>{
+public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.SensorViewHolder> {
 
     private TempSensorInfoAdapter.OnNotificationContextMenu onNotificationContextMenu;
     private Context mContext;
-    ArrayList<CameraPushLog> arrayListLog=new ArrayList<>();
+    ArrayList<CameraPushLog> arrayListLog = new ArrayList<>();
+    String strDateOfTime, dateTime = "";
+    String[] strDateOfTimeTemp;
 
-
-    public AlertAdapter(Context context, ArrayList<CameraPushLog> arrayListLog1){
-        this.mContext=context;
-        this.arrayListLog=arrayListLog1;
+    public AlertAdapter(Context context, ArrayList<CameraPushLog> arrayListLog1) {
+        this.mContext = context;
+        this.arrayListLog = arrayListLog1;
     }
 
     @Override
     public SensorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.row_alert_adapter,parent,false);
+                .inflate(R.layout.row_alert_adapter, parent, false);
         return new SensorViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
-        if(!TextUtils.isEmpty(arrayListLog.get(position).getActivityTime())){
+        if (!TextUtils.isEmpty(arrayListLog.get(position).getActivityTime())) {
             Date today = null;//2018-01-12 19:40:07
             try {
-                today = DateHelper.parseDateSimple(arrayListLog.get(position).getActivityTime(),DateHelper.DATE_YYYY_MM_DD_HH_MM_SS);
+                today = DateHelper.parseDateSimple(arrayListLog.get(position).getActivityTime(), DateHelper.DATE_YYYY_MM_DD_HH_MM_SS);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
 
-            String strDateOfTime=DateHelper.getDayString(today);
-            String []strDateOfTimeTemp=strDateOfTime.split(" ");
+            strDateOfTime = DateHelper.getDayString(today);
+            strDateOfTimeTemp = strDateOfTime.split(" ");
 
-            String dateTime="";
-            if(strDateOfTimeTemp.length>2){
-                //dateTime = strDateOfTimeTemp[1]+ " "+strDateOfTimeTemp[2]+ System.getProperty("line.separator") +strDateOfTimeTemp[0];
-                dateTime = strDateOfTimeTemp[1]+ " "+strDateOfTimeTemp[2]+ System.getProperty("line.separator") +strDateOfTimeTemp[0];
-            }else {
-                dateTime = strDateOfTimeTemp[0]+" "+strDateOfTimeTemp[1];
+            if (strDateOfTimeTemp.length > 2) {
+                dateTime = strDateOfTimeTemp[1] + " " + strDateOfTimeTemp[2] + System.getProperty("line.separator") + strDateOfTimeTemp[0];
+            } else {
+                dateTime = strDateOfTimeTemp[0] + " " + strDateOfTimeTemp[1];
             }
 
             holder.tv_device_log_date.setText(dateTime);
@@ -84,18 +81,15 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.SensorViewHo
         holder.linearAlert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(mContext,ImageZoomActivity.class);
-                intent.putExtra("imgUrl",""+arrayListLog.get(position).getImageUrl());
-                intent.putExtra("imgName",""+arrayListLog.get(position).getActivityDescription());
-                intent.putExtra("imgDate",""+arrayListLog.get(position).getActivityTime());
+                Intent intent = new Intent(mContext, ImageZoomActivity.class);
+                intent.putExtra("imgUrl", "" + arrayListLog.get(position).getImageUrl());
+                intent.putExtra("imgName", "" + arrayListLog.get(position).getActivityDescription());
+                intent.putExtra("imgDate", "" + arrayListLog.get(position).getActivityTime());
                 mContext.startActivity(intent);
             }
         });
 
-
-
     }
-
 
     @Override
     public int getItemCount() {
@@ -108,9 +102,9 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.SensorViewHo
         return position;
     }
 
-    public class SensorViewHolder extends RecyclerView.ViewHolder{
+    public class SensorViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView tv_device_log_date,tv_device_log_type,tv_device_description;
+        public TextView tv_device_log_date, tv_device_log_type, tv_device_description;
         public ImageView txtImage;
         LinearLayout linearAlert;
 

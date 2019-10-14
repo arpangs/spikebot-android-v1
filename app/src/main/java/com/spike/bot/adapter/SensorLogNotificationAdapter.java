@@ -7,9 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.kp.core.DateHelper;
 import com.spike.bot.R;
 import com.spike.bot.model.SensorLogNotificationRes;
-import com.kp.core.DateHelper;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -20,11 +20,13 @@ import java.util.List;
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class SensorLogNotificationAdapter extends RecyclerView.Adapter<SensorLogNotificationAdapter.LogViewHolder>{
+public class SensorLogNotificationAdapter extends RecyclerView.Adapter<SensorLogNotificationAdapter.LogViewHolder> {
 
     List<SensorLogNotificationRes.Data.NotificationList> notificationLists;
+    SensorLogNotificationRes.Data.NotificationList notificationList;
+    int redColor;
 
-    public SensorLogNotificationAdapter(List<SensorLogNotificationRes.Data.NotificationList> notificationList){
+    public SensorLogNotificationAdapter(List<SensorLogNotificationRes.Data.NotificationList> notificationList) {
         this.notificationLists = notificationList;
     }
 
@@ -32,27 +34,25 @@ public class SensorLogNotificationAdapter extends RecyclerView.Adapter<SensorLog
     @Override
     public LogViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.row_sensor_log_notification,parent,false);
+                .inflate(R.layout.row_sensor_log_notification, parent, false);
         return new LogViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(LogViewHolder holder, int position) {
 
-        SensorLogNotificationRes.Data.NotificationList notificationList = notificationLists.get(position);
-
-        if(notificationList.getActivityAction().equalsIgnoreCase("End Of Record")){
+        notificationList = notificationLists.get(position);
+        if (notificationList.getActivityAction().equalsIgnoreCase("End Of Record")) {
             holder.txt_empty_view.setVisibility(View.VISIBLE);
             holder.tv_sensor_action.setVisibility(View.GONE);
             holder.tv_sensor_desc.setVisibility(View.GONE);
             holder.tv_sensor_date.setVisibility(View.GONE);
 
-        }else{
+        } else {
 
-            int redColor;
-            if(notificationList.getIsUnread()>0){
+            if (notificationList.getIsUnread() > 0) {
                 redColor = Color.RED;
-            }else{
+            } else {
                 redColor = Color.parseColor("#111111");
             }
 
@@ -70,12 +70,12 @@ public class SensorLogNotificationAdapter extends RecyclerView.Adapter<SensorLog
 
             Date today = null;//2018-01-12 19:40:07
             try {
-                today = DateHelper.parseDateSimple(notificationList.getActivityTime(),DateHelper.DATE_YYYY_MM_DD_HH_MM_SS);
+                today = DateHelper.parseDateSimple(notificationList.getActivityTime(), DateHelper.DATE_YYYY_MM_DD_HH_MM_SS);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
 
-            holder.tv_sensor_date.setText(""+DateHelper.getDayString(today));
+            holder.tv_sensor_date.setText("" + DateHelper.getDayString(today));
 
             holder.tv_sensor_desc.setText(notificationList.getActivityDescription());
         }
@@ -88,9 +88,9 @@ public class SensorLogNotificationAdapter extends RecyclerView.Adapter<SensorLog
         return notificationLists.size();
     }
 
-    public class LogViewHolder extends RecyclerView.ViewHolder{
+    public class LogViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView tv_sensor_action,tv_sensor_date,tv_sensor_desc,txt_empty_view;
+        private TextView tv_sensor_action, tv_sensor_date, tv_sensor_desc, txt_empty_view;
 
         public LogViewHolder(View itemView) {
             super(itemView);

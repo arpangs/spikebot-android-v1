@@ -8,5 +8,6 @@ import com.spike.bot.model.ScheduleVO;
 
 public interface ScheduleClickListener {
     void itemClicked(ScheduleVO scheduleVO, String action);
-    void itemClicked(ScheduleVO scheduleVO, String action,boolean isMood);
+
+    void itemClicked(ScheduleVO scheduleVO, String action, boolean isMood);
 }

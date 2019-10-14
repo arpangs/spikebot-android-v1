@@ -7,6 +7,5 @@ import com.spike.bot.model.DeviceBrandRemoteList;
  * Gmail : jethvasagar2@gmail.com
  */
 public interface SearchClick {
-
-    public void searchItemClick(DeviceBrandRemoteList deviceBrandRemoteList);
+    void searchItemClick(DeviceBrandRemoteList deviceBrandRemoteList);
 }

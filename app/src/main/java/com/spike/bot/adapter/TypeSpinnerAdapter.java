@@ -21,16 +21,15 @@ public class TypeSpinnerAdapter extends BaseAdapter {
 
     Context context;
     ArrayList<String> flags;
-    // String[] countryNames;
     LayoutInflater inflter;
     private int iconType;
     private boolean isIcon = true;
+    String upperString;
 
-    public TypeSpinnerAdapter(Context applicationContext,ArrayList<String> flags,int type,boolean isIcon) {
+    public TypeSpinnerAdapter(Context applicationContext, ArrayList<String> flags, int type, boolean isIcon) {
         this.context = applicationContext;
         this.flags = flags;
         this.iconType = type;
-        //this.countryNames = countryNames;
         this.isIcon = isIcon;
         inflter = (LayoutInflater.from(applicationContext));
     }
@@ -56,21 +55,21 @@ public class TypeSpinnerAdapter extends BaseAdapter {
         ImageView icon = (ImageView) view.findViewById(R.id.imageView);
         TextView names = (TextView) view.findViewById(R.id.textView);
 
-        try{
-            String upperString = flags.get(i).substring(0,1).toUpperCase() + flags.get(i).substring(1);
+        try {
+            upperString = flags.get(i).substring(0, 1).toUpperCase() + flags.get(i).substring(1);
             names.setText(upperString);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             names.setText(flags.get(i));
         }
 
-        if(!names.getText().toString().equalsIgnoreCase("--")){
-            icon.setImageResource(Common.getIcon(iconType,flags.get(i)));
+        if (!names.getText().toString().equalsIgnoreCase("--")) {
+            icon.setImageResource(Common.getIcon(iconType, flags.get(i)));
         }
 
-        if(isIcon){
+        if (isIcon) {
             icon.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             icon.setVisibility(View.GONE);
         }
         return view;

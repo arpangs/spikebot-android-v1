@@ -30,7 +30,7 @@ import java.util.Iterator;
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.EditViewHolder> implements ItemClickRoomEditListener{
+public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.EditViewHolder> implements ItemClickRoomEditListener {
 
     private ArrayList<PanelVO> panelVOs;
     private ItemClickRoomEditListener mItemClickListener;
@@ -38,7 +38,11 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
 
     private Context context;
     private Activity activity;
-    public RoomEditAdapterV2(ArrayList<PanelVO> panelVOs, ItemClickRoomEditListener itemClickRoomEditListener,Activity activity){
+    PanelVO item1;
+    String key;
+    boolean isSFlag = false;
+
+    public RoomEditAdapterV2(ArrayList<PanelVO> panelVOs, ItemClickRoomEditListener itemClickRoomEditListener, Activity activity) {
         this.panelVOs = panelVOs;
         this.mItemClickListener = itemClickRoomEditListener;
         this.activity = activity;
@@ -46,7 +50,7 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
 
     @Override
     public EditViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_room_edit_panel_v2,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_room_edit_panel_v2, parent, false);
         this.context = view.getContext();
         return new EditViewHolder(view);
     }
@@ -54,23 +58,22 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
     @Override
     public void onBindViewHolder(final EditViewHolder holder, final int position) {
         holder.setIsRecyclable(false);
-        final PanelVO item1 = (PanelVO) panelVOs.get(position);
+        item1 = (PanelVO) panelVOs.get(position);
 
         holder.iv_room_panel_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean isSFlag=false;
-                if(item1.getDeviceList().size()>0){
-                    if(item1.getDeviceList().get(0).getDeviceType().equals("2")){
-                        isSFlag=true;
-                    }else {
-                        isSFlag=false;
+                if (item1.getDeviceList().size() > 0) {
+                    if (item1.getDeviceList().get(0).getDeviceType().equals("2")) {
+                        isSFlag = true;
+                    } else {
+                        isSFlag = false;
                     }
                 }
-                if(isSFlag){
-                    mItemClickListener.itemClicked(item1,"sensorPanel",view);
-                }else {
-                    mItemClickListener.itemClicked(item1,"edit",view);
+                if (isSFlag) {
+                    mItemClickListener.itemClicked(item1, "sensorPanel", view);
+                } else {
+                    mItemClickListener.itemClicked(item1, "edit", view);
                 }
 
             }
@@ -79,52 +82,46 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
         holder.iv_room_panel_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mItemClickListener.itemClicked(item1,"delete",view);
+                mItemClickListener.itemClicked(item1, "delete", view);
             }
         });
         holder.iv_room_panel_info.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mItemClickListener.itemClicked(item1,"info",view);
+                mItemClickListener.itemClicked(item1, "info", view);
             }
         });
 
         //Hide sensor edit option if found panel is sensor
-        if(item1.isSensorPanel()){
-           boolean isSFlag=false;
-            if(item1.getDeviceList().size()>0){
-                if(item1.getDeviceList().get(0).getDeviceType().equals("2")){
-//                    isSFlag=true;
-                    isSFlag=false;
-                }else {
-                    isSFlag=false;
+        if (item1.isSensorPanel()) {
+            if (item1.getDeviceList().size() > 0) {
+                if (item1.getDeviceList().get(0).getDeviceType().equals("2")) {
+                    isSFlag = false;
+                } else {
+                    isSFlag = false;
                 }
             }
-            if(isSFlag){
+            if (isSFlag) {
                 holder.iv_room_panel_add.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 holder.iv_room_panel_add.setVisibility(View.GONE);
             }
-        }else {
-            ChatApplication.logDisplay("panel type "+item1.getPanel_type());
-            if(item1.getPanel_type()==5){
+        } else {
+            ChatApplication.logDisplay("panel type " + item1.getPanel_type());
+            if (item1.getPanel_type() == 5) {
                 holder.iv_room_panel_add.setVisibility(View.GONE);
-            }else {
+            } else {
                 holder.iv_room_panel_add.setVisibility(View.VISIBLE);
             }
         }
 
         holder.et_panel.setTag(item1.getPanelId());
-
-        holder.et_panel.setText( item1.getPanelName() );
-       // holder.sectionTextView.setText(item1.getPanelName()); //todo comment here
-
-        txtValueMap.put(item1.getPanelId(),holder.et_panel.getText().toString());
+        holder.et_panel.setText(item1.getPanelName());
+        txtValueMap.put(item1.getPanelId(), holder.et_panel.getText().toString());
 
         holder.et_panel.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                //activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN|WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
             }
 
             @Override
@@ -135,26 +132,21 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
             @Override
             public void afterTextChanged(Editable s) {
 
-                if(panelVOs.get(position) != null){
+                if (panelVOs.get(position) != null) {
 
-                    txtValueMap.put(item1.getPanelId(),holder.et_panel.getText().toString());
-                    final PanelVO item1 = (PanelVO) panelVOs.get(position);
+                    txtValueMap.put(item1.getPanelId(), holder.et_panel.getText().toString());
+                    item1 = (PanelVO) panelVOs.get(position);
 
                     Iterator myVeryOwnIterator = txtValueMap.keySet().iterator();
-                    while(myVeryOwnIterator.hasNext()) {
-
-                        String key = (String)myVeryOwnIterator.next();
-                        String value = (String) txtValueMap.get(key);
-
-                        if(key.equalsIgnoreCase(item1.getPanelId())){
-
+                    while (myVeryOwnIterator.hasNext()) {
+                        key = (String) myVeryOwnIterator.next();
+                        if (key.equalsIgnoreCase(item1.getPanelId())) {
                             item1.setPanelName(holder.et_panel.getText().toString());
                         }
                     }
-
                 }
 
-                if(holder.et_panel.getText().length() == 0){
+                if (holder.et_panel.getText().length() == 0) {
                     holder.et_panel.setError("Enter Panel Name");
                     holder.et_panel.requestFocus();
                     return;
@@ -162,11 +154,10 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
             }
         });
 
-        holder.roomEditAdapterDeviceV2 = new RoomEditAdapterDeviceV2(panelVOs.get(position).getDeviceList(),this);
+        holder.roomEditAdapterDeviceV2 = new RoomEditAdapterDeviceV2(panelVOs.get(position).getDeviceList(), this);
         holder.list_edit_device.setAdapter(holder.roomEditAdapterDeviceV2);
 
     }
-    private int isChanges = 0;
 
     @Override
     public int getItemCount() {
@@ -175,55 +166,53 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
 
     @Override
     public void itemClicked(RoomVO item, String action, View view) {
-        mItemClickListener.itemClicked(item,action,view);
+        mItemClickListener.itemClicked(item, action, view);
     }
 
     @Override
     public void itemClicked(PanelVO panelVO, String action, View view) {
-        mItemClickListener.itemClicked(panelVO,action,view);
+        mItemClickListener.itemClicked(panelVO, action, view);
     }
 
     @Override
     public void itemClicked(DeviceVO section, String action, View view) {
-        mItemClickListener.itemClicked(section,action,view);
+        mItemClickListener.itemClicked(section, action, view);
     }
 
-    public class EditViewHolder extends RecyclerView.ViewHolder{
+    public class EditViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView iv_room_panel_add,iv_room_panel_delete,iv_room_panel_info ;
+        ImageView iv_room_panel_add, iv_room_panel_delete, iv_room_panel_info;
         EditText et_panel;
         View view_panel_line;
-        ImageView img_room_delete;
         RecyclerView list_edit_device;
         RoomEditAdapterDeviceV2 roomEditAdapterDeviceV2;
 
         public EditViewHolder(View view) {
             super(view);
 
-            view_panel_line = (View) view.findViewById(R.id.view_panel_line );
-          //  sectionTextView = (TextView) view.findViewById(R.id.text_section);
+            view_panel_line = (View) view.findViewById(R.id.view_panel_line);
             iv_room_panel_add = (ImageView) view.findViewById(R.id.iv_room_panel_add);
-            iv_room_panel_delete = (ImageView) view.findViewById(R.id.iv_room_panel_delete );
-            iv_room_panel_info = (ImageView) view.findViewById(R.id.iv_room_panel_info  );
+            iv_room_panel_delete = (ImageView) view.findViewById(R.id.iv_room_panel_delete);
+            iv_room_panel_info = (ImageView) view.findViewById(R.id.iv_room_panel_info);
             et_panel = (EditText) view.findViewById(R.id.et_panel);
             et_panel.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
             list_edit_device = (RecyclerView) view.findViewById(R.id.list_edit_device);
-            list_edit_device.setLayoutManager(new GridLayoutManager(context,Constants.SWITCH_NUMBER));
+            list_edit_device.setLayoutManager(new GridLayoutManager(context, Constants.SWITCH_NUMBER));
         }
     }
 
-    public void getPanelEditValue(){
+    public void getPanelEditValue() {
 
-        if(txtValueMap !=null){
+        if (txtValueMap != null) {
             Iterator myVeryOwnIterator = txtValueMap.keySet().iterator();
-            while(myVeryOwnIterator.hasNext()) {
-                String key=(String)myVeryOwnIterator.next();
-                String value=(String) txtValueMap.get(key);
-                for(int i=0;i<panelVOs.size();i++){
-                    if(panelVOs.get(i) != null){
-                        if(((PanelVO) panelVOs.get(i)).getPanelId().equalsIgnoreCase(key)){
+            while (myVeryOwnIterator.hasNext()) {
+                String key = (String) myVeryOwnIterator.next();
+                String value = (String) txtValueMap.get(key);
+                for (int i = 0; i < panelVOs.size(); i++) {
+                    if (panelVOs.get(i) != null) {
+                        if (((PanelVO) panelVOs.get(i)).getPanelId().equalsIgnoreCase(key)) {
                             ((PanelVO) panelVOs.get(i)).setPanelName(value);
-                            notifyItemChanged(i,panelVOs.get(i));
+                            notifyItemChanged(i, panelVOs.get(i));
                         }
                     }
                 }
@@ -231,10 +220,12 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
         }
 
     }
-    public HashMap<String,String> getTextValues(){
+
+    public HashMap<String, String> getTextValues() {
         return txtValueMap;
     }
-    public ArrayList<PanelVO> getDataArrayList(){
+
+    public ArrayList<PanelVO> getDataArrayList() {
         return panelVOs;
     }
 }

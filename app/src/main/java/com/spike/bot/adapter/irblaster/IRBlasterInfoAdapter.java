@@ -23,13 +23,14 @@ import java.util.List;
  * Created by Sagar on 31/7/18.
  * Gmail : jethvasagar2@gmail.com
  */
-public class IRBlasterInfoAdapter extends RecyclerView.Adapter<IRBlasterInfoAdapter.IRBlasterViewHolder>{
+public class IRBlasterInfoAdapter extends RecyclerView.Adapter<IRBlasterInfoAdapter.IRBlasterViewHolder> {
 
     private Context mContext;
     private IRBlasterInfoClick irBlasterInfoClick;
     private List<IRBlasterInfoRes.Data.IrBlasterList.RemoteList> irBlasterLists;
+    IRBlasterInfoRes.Data.IrBlasterList.RemoteList.RemoteCurrentStatusDetails irBlaster;
 
-    public IRBlasterInfoAdapter(List<IRBlasterInfoRes.Data.IrBlasterList.RemoteList> irBlasterLists, IRBlasterInfoClick irBlasterInfoClick){
+    public IRBlasterInfoAdapter(List<IRBlasterInfoRes.Data.IrBlasterList.RemoteList> irBlasterLists, IRBlasterInfoClick irBlasterInfoClick) {
         this.irBlasterLists = irBlasterLists;
         this.irBlasterInfoClick = irBlasterInfoClick;
     }
@@ -37,7 +38,7 @@ public class IRBlasterInfoAdapter extends RecyclerView.Adapter<IRBlasterInfoAdap
     @Override
     public IRBlasterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.row_ir_blaster_info,parent,false);
+                .inflate(R.layout.row_ir_blaster_info, parent, false);
         mContext = view.getContext();
         return new IRBlasterViewHolder(view);
     }
@@ -45,7 +46,7 @@ public class IRBlasterInfoAdapter extends RecyclerView.Adapter<IRBlasterInfoAdap
     @Override
     public void onBindViewHolder(IRBlasterViewHolder holder, final int position) {
 
-        final IRBlasterInfoRes.Data.IrBlasterList.RemoteList.RemoteCurrentStatusDetails irBlaster = irBlasterLists.get(position).getRemoteCurrentStatusDetails();
+        irBlaster = irBlasterLists.get(position).getRemoteCurrentStatusDetails();
 
         holder.IRBlasterName.setText(irBlaster.getRemoteName());
 
@@ -59,7 +60,7 @@ public class IRBlasterInfoAdapter extends RecyclerView.Adapter<IRBlasterInfoAdap
         holder.IRMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                displayOptionMenu(v,irBlasterLists.get(position),irBlasterInfoClick);
+                displayOptionMenu(v, irBlasterLists.get(position), irBlasterInfoClick);
             }
         });
 
@@ -70,38 +71,38 @@ public class IRBlasterInfoAdapter extends RecyclerView.Adapter<IRBlasterInfoAdap
         return irBlasterLists.size();
     }
 
-    class IRBlasterViewHolder extends RecyclerView.ViewHolder{
+    class IRBlasterViewHolder extends RecyclerView.ViewHolder {
 
         private TextView IRBlasterName;
-        private ImageView IRBlaserImage;
-        private LinearLayout ir_blaster_root;
         private ImageView IRMenu;
+        private LinearLayout ir_blaster_root;
 
         IRBlasterViewHolder(View itemView) {
             super(itemView);
 
             ir_blaster_root = itemView.findViewById(R.id.ir_blaster_root);
-
             IRBlasterName = itemView.findViewById(R.id.ir_blaster_name);
-            IRBlaserImage = itemView.findViewById(R.id.ir_blaster_img);
             IRMenu = itemView.findViewById(R.id.ir_menu_option);
         }
     }
 
-    public interface IRBlasterInfoClick{
+    public interface IRBlasterInfoClick {
         void onIRBlasterClick(IRBlasterInfoRes.Data.IrBlasterList.RemoteList irBlasterList);
+
         void onIRBlasterEdit(IRBlasterInfoRes.Data.IrBlasterList.RemoteList irBlasterList);
+
         void onIRBlasterDelete(IRBlasterInfoRes.Data.IrBlasterList.RemoteList irBlasterList);
     }
 
     /**
      * Edit, Delete context option menu
+     *
      * @param v
      * @param remoteList
      * @param irBlasterInfoClick
      */
     private void displayOptionMenu(View v, final IRBlasterInfoRes.Data.IrBlasterList.RemoteList remoteList,
-                                   final IRBlasterInfoClick irBlasterInfoClick){
+                                   final IRBlasterInfoClick irBlasterInfoClick) {
 
         PopupMenu popup = new PopupMenu(mContext, v);
         @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(mContext, R.style.PopupMenu);
