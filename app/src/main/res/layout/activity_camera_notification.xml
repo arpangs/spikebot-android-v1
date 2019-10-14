@@ -225,7 +225,7 @@
                                     <ImageView
                                         android:id="@+id/view_rel_badge"
                                         android:layout_width="0dp"
-                                        android:layout_height="35dp"
+                                        android:layout_height="@dimen/_33sdp"
                                         android:layout_gravity="top"
                                         android:layout_weight="0.10"
                                         android:layout_marginRight="@dimen/_7sdp"

@@ -810,6 +810,9 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             Toast.makeText(CameraNotificationActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
+
+        ActivityHelper.showProgressDialog(this, "Please Wait...", false);
+
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("camera_id", "");

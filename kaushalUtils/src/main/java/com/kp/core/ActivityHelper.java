@@ -218,7 +218,7 @@ public class ActivityHelper {
         in.close();
         result = response.toString();
 
-        con.disconnect();
+//        con.disconnect();
         return result;
     }
 
@@ -257,7 +257,7 @@ public class ActivityHelper {
         }
         in.close();
         result = response.toString();
-        con.disconnect();
+//        con.disconnect();
         return result;
     }
 
@@ -297,7 +297,7 @@ public class ActivityHelper {
         }
         in.close();
         result = response.toString();
-        con.disconnect();
+//        con.disconnect();
 
         return result;
 

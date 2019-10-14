@@ -438,6 +438,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         }else if(!ChatApplication.isCallDeviceList && roomList.size()>0){
             sectionedExpandableLayoutHelper.addSectionList(roomList);
             sectionedExpandableLayoutHelper.notifyDataSetChanged();
+            getDeviceList(15);
         }else{
             getDeviceList(15);
         }
