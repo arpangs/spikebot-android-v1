@@ -16,9 +16,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.SmartDevice.AddOrSelectBridgeActivity;
 import com.spike.bot.activity.SmartDevice.PhilipsHueBridgeListActivity;
-import com.spike.bot.activity.SmartDevice.SmartDecviceListActivity;
 import com.spike.bot.model.SmartBrandModel;
 
 import java.util.ArrayList;
@@ -27,21 +25,21 @@ import java.util.ArrayList;
  * Created by Sagar on 31/7/19.
  * Gmail : vipul patel
  */
-public class SmartBrandAdapter extends RecyclerView.Adapter<SmartBrandAdapter.SensorViewHolder>{
+public class SmartBrandAdapter extends RecyclerView.Adapter<SmartBrandAdapter.SensorViewHolder> {
 
     private Context mContext;
-    public int type=0;
-    ArrayList<SmartBrandModel> arrayListLog=new ArrayList<>();
+    public int type = 0;
+    ArrayList<SmartBrandModel> arrayListLog = new ArrayList<>();
 
     public SmartBrandAdapter(Context context, ArrayList<SmartBrandModel> arrayList, int type) {
-        this.mContext=context;
-        this.type=type;
-        this.arrayListLog=arrayList;
+        this.mContext = context;
+        this.type = type;
+        this.arrayListLog = arrayList;
     }
 
     @Override
     public SensorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_brand_list,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_brand_list, parent, false);
         return new SensorViewHolder(view);
     }
 
@@ -50,8 +48,8 @@ public class SmartBrandAdapter extends RecyclerView.Adapter<SmartBrandAdapter.Se
 
         holder.txtBrandName.setText(arrayListLog.get(position).getSmart_device_brand_name());
 
-        ChatApplication.logDisplay("img is "+ChatApplication.url  +arrayListLog.get(position).getIcon_image());
-        Glide.with(mContext).load(ChatApplication.url  +arrayListLog.get(position).getIcon_image()).asBitmap().centerCrop().into(new BitmapImageViewTarget(holder.imgBrand) {
+        ChatApplication.logDisplay("img is " + ChatApplication.url + arrayListLog.get(position).getIcon_image());
+        Glide.with(mContext).load(ChatApplication.url + arrayListLog.get(position).getIcon_image()).asBitmap().centerCrop().into(new BitmapImageViewTarget(holder.imgBrand) {
             @Override
             protected void setResource(Bitmap resource) {
                 RoundedBitmapDrawable circularBitmapDrawable =
@@ -63,21 +61,9 @@ public class SmartBrandAdapter extends RecyclerView.Adapter<SmartBrandAdapter.Se
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if(type==1){
-//                    Intent intent=new Intent(mContext, SmartDecviceListActivity.class);
-//                    intent.putExtra("brandId",""+arrayListLog.get(position).getId());
-//                    mContext.startActivity(intent);
-//                }else {
-//                    Intent intent=new Intent(mContext, AddOrSelectBridgeActivity.class);
-//                    intent.putExtra("brandId",""+arrayListLog.get(position).getId());
-//                    mContext.startActivity(intent);
-                    Intent intent=new Intent(mContext, PhilipsHueBridgeListActivity.class);
-                    intent.putExtra("brandId",""+arrayListLog.get(position).getId());
-                    mContext.startActivity(intent);
-
-
-//                }
-
+                Intent intent = new Intent(mContext, PhilipsHueBridgeListActivity.class);
+                intent.putExtra("brandId", "" + arrayListLog.get(position).getId());
+                mContext.startActivity(intent);
             }
         });
     }
@@ -94,17 +80,17 @@ public class SmartBrandAdapter extends RecyclerView.Adapter<SmartBrandAdapter.Se
         return position;
     }
 
-    public class SensorViewHolder extends RecyclerView.ViewHolder{
+    public class SensorViewHolder extends RecyclerView.ViewHolder {
 
-        public View  view;
+        public View view;
         public ImageView imgBrand;
         public TextView txtBrandName;
 
         public SensorViewHolder(View view) {
             super(view);
-            this.view=view;
-            txtBrandName =  itemView.findViewById(R.id.txtBrandName);
-            imgBrand =  itemView.findViewById(R.id.imgBrand);
+            this.view = view;
+            txtBrandName = itemView.findViewById(R.id.txtBrandName);
+            imgBrand = itemView.findViewById(R.id.imgBrand);
         }
     }
 }

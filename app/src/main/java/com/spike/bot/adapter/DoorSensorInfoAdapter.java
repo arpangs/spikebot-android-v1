@@ -15,12 +15,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
+import com.kp.core.DateHelper;
 import com.spike.bot.R;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.customview.OnSwipeTouchListener;
 import com.spike.bot.model.DoorSensorResModel;
-import com.kp.core.DateHelper;
 
 import java.text.ParseException;
 
@@ -29,14 +29,16 @@ import java.text.ParseException;
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class DoorSensorInfoAdapter extends RecyclerView.Adapter<DoorSensorInfoAdapter.SensorViewHolder>{
+public class DoorSensorInfoAdapter extends RecyclerView.Adapter<DoorSensorInfoAdapter.SensorViewHolder> {
 
     DoorSensorResModel.DATA.DoorList.NotificationList[] notificationList;
     private boolean isCF;
     private OnNotificationContextMenu onNotificationContextMenu;
     private Context mContext;
 
-    public DoorSensorInfoAdapter(DoorSensorResModel.DATA.DoorList.NotificationList[] notificationList, boolean cfType, OnNotificationContextMenu onNotificationContextMenu){
+    String startTime, endTime, conDateStart, conDateEnd;
+
+    public DoorSensorInfoAdapter(DoorSensorResModel.DATA.DoorList.NotificationList[] notificationList, boolean cfType, OnNotificationContextMenu onNotificationContextMenu) {
         this.notificationList = notificationList;
         this.isCF = cfType;
         this.onNotificationContextMenu = onNotificationContextMenu;
@@ -44,7 +46,7 @@ public class DoorSensorInfoAdapter extends RecyclerView.Adapter<DoorSensorInfoAd
 
     @Override
     public SensorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_door_sensor_info,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_door_sensor_info, parent, false);
         mContext = view.getContext();
         return new SensorViewHolder(view);
     }
@@ -52,28 +54,28 @@ public class DoorSensorInfoAdapter extends RecyclerView.Adapter<DoorSensorInfoAd
     @Override
     public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
-       if(position==0){
-           holder.viewLine.setVisibility(View.GONE);
-       }else {
-           holder.viewLine.setVisibility(View.VISIBLE);
-       }
+        if (position == 0) {
+            holder.viewLine.setVisibility(View.GONE);
+        } else {
+            holder.viewLine.setVisibility(View.VISIBLE);
+        }
         final DoorSensorResModel.DATA.DoorList.NotificationList notification = notificationList[position];
 
-        String startTime = notification.getmStartDateTime();
-        String endTime   = notification.getmEndDateTime();
+        startTime = notification.getmStartDateTime();
+        endTime = notification.getmEndDateTime();
 
         if (Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
-            if( Common.getPrefValue(mContext, Constants.USER_ID).equalsIgnoreCase(notification.getUser_id())){
+            if (Common.getPrefValue(mContext, Constants.USER_ID).equalsIgnoreCase(notification.getUser_id())) {
                 holder.imgOptions.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 holder.imgOptions.setVisibility(View.INVISIBLE);
             }
         }
 
         try {
 
-            String conDateStart = DateHelper.formateDate(DateHelper.parseTimeSimple(startTime,DateHelper.DATE_FROMATE_HH_MM),DateHelper.DATE_FROMATE_H_M_AMPM);
-            String conDateEnd = DateHelper.formateDate(DateHelper.parseTimeSimple(endTime,DateHelper.DATE_FROMATE_HH_MM),DateHelper.DATE_FROMATE_H_M_AMPM);
+            conDateStart = DateHelper.formateDate(DateHelper.parseTimeSimple(startTime, DateHelper.DATE_FROMATE_HH_MM), DateHelper.DATE_FROMATE_H_M_AMPM);
+            conDateEnd = DateHelper.formateDate(DateHelper.parseTimeSimple(endTime, DateHelper.DATE_FROMATE_HH_MM), DateHelper.DATE_FROMATE_H_M_AMPM);
 
             holder.txtMin.setText(conDateStart);
             holder.txtMax.setText(conDateEnd);
@@ -85,59 +87,44 @@ public class DoorSensorInfoAdapter extends RecyclerView.Adapter<DoorSensorInfoAd
             e.printStackTrace();
         }
 
-       // holder.txtMin.setText(startTime);
-       // holder.txtMax.setText(endTime);
-
-        if(!TextUtils.isEmpty(notification.getmIsActive()) && !notification.getmIsActive().equalsIgnoreCase("null")){
+        if (!TextUtils.isEmpty(notification.getmIsActive()) && !notification.getmIsActive().equalsIgnoreCase("null")) {
             holder.switchCompat.setChecked(Integer.parseInt(notification.getmIsActive()) > 0);
         }
 
         holder.imgOptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                displayContextMenu(v,notification,position);
+                displayContextMenu(v, notification, position);
             }
         });
 
-       // holder.switchCompat.setOnCheckedChangeListener(null);
-
-        /*holder.switchCompat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.switchCompat.setChecked(!holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchChanged(notification,holder.switchCompat,position,!holder.switchCompat.isChecked());
-            }
-        });*/
-
-        holder.switchCompat.setOnTouchListener(new OnSwipeTouchListener(mContext){
+        holder.switchCompat.setOnTouchListener(new OnSwipeTouchListener(mContext) {
             @Override
             public void onClick() {
                 super.onClick();
                 holder.switchCompat.setChecked(holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchChanged(notification,holder.switchCompat,position,!holder.switchCompat.isChecked());
+                onNotificationContextMenu.onSwitchChanged(notification, holder.switchCompat, position, !holder.switchCompat.isChecked());
             }
 
             @Override
             public void onSwipeLeft() {
                 super.onSwipeLeft();
                 holder.switchCompat.setChecked(holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchChanged(notification,holder.switchCompat,position,!holder.switchCompat.isChecked());
+                onNotificationContextMenu.onSwitchChanged(notification, holder.switchCompat, position, !holder.switchCompat.isChecked());
             }
 
             @Override
             public void onSwipeRight() {
                 super.onSwipeRight();
                 holder.switchCompat.setChecked(holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchChanged(notification,holder.switchCompat,position,!holder.switchCompat.isChecked());
+                onNotificationContextMenu.onSwitchChanged(notification, holder.switchCompat, position, !holder.switchCompat.isChecked());
             }
 
         });
 
-
     }
 
     /**
-     *
      * @param v
      * @param notification
      * @param position
@@ -155,12 +142,12 @@ public class DoorSensorInfoAdapter extends RecyclerView.Adapter<DoorSensorInfoAd
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.action_edit_dots:
-                        onNotificationContextMenu.onEditOpetion(notification,position,true);
+                        onNotificationContextMenu.onEditOpetion(notification, position, true);
                         break;
                     case R.id.action_delete_dots:
-                        onNotificationContextMenu.onEditOpetion(notification,position,false);
+                        onNotificationContextMenu.onEditOpetion(notification, position, false);
                         break;
                 }
                 return true;
@@ -175,9 +162,9 @@ public class DoorSensorInfoAdapter extends RecyclerView.Adapter<DoorSensorInfoAd
         return notificationList.length;
     }
 
-    public class SensorViewHolder extends RecyclerView.ViewHolder{
+    public class SensorViewHolder extends RecyclerView.ViewHolder {
 
-        private AppCompatTextView txtMin,txtMax;
+        private AppCompatTextView txtMin, txtMax;
         private SwitchCompat switchCompat;
         private AppCompatImageView imgOptions;
         public View viewLine;
@@ -194,8 +181,9 @@ public class DoorSensorInfoAdapter extends RecyclerView.Adapter<DoorSensorInfoAd
         }
     }
 
-    public interface OnNotificationContextMenu{
+    public interface OnNotificationContextMenu {
         void onEditOpetion(DoorSensorResModel.DATA.DoorList.NotificationList notification, int position, boolean isEdit);
+
         void onSwitchChanged(DoorSensorResModel.DATA.DoorList.NotificationList notification, SwitchCompat swithcCompact, int position, boolean isActive);
     }
 }

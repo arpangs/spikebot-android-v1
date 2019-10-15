@@ -29,6 +29,9 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
     Activity mContext;
     List<DeviceLog> deviceLogs;
     public boolean isEOR = false;
+    String dateTime="",strDateOfTime;
+    String[] strDateOfTimeTemp,actionList;
+    DeviceLog deviceLog;
 
     public void setEOR(boolean isEOR){
         this.isEOR = isEOR;
@@ -39,7 +42,6 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
 
         this.mContext   = context;
         this.deviceLogs = deviceLogList;
-       // Log.d("", "AutoModeAdapter AutoModeAdapter "  );
     }
     @Override
     public int getItemViewType(int position) {
@@ -50,13 +52,11 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
         View view = LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false);
         return new ViewHolder(view , viewType);
     }
-    String url;
+
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int listPosition) {
-      //  Log.d("", "AutoModeAdapter onBindViewHolder " +listPosition  );
 
-        DeviceLog deviceLog = deviceLogs.get(listPosition);
-
+        deviceLog = deviceLogs.get(listPosition);
         try {
 
             if(listPosition==0){
@@ -84,12 +84,9 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
             if(!TextUtils.isEmpty(deviceLog.getActivity_time())){
                 Date today = DateHelper.parseDateSimple(deviceLog.getActivity_time(),DateHelper.DATE_YYYY_MM_DD_HH_MM_SS);//2018-01-12 19:40:07
 
-                String strDateOfTime=DateHelper.getDayString(today);
-                String []strDateOfTimeTemp=strDateOfTime.split(" ");
-
-                String dateTime="";
+                strDateOfTime =DateHelper.getDayString(today);
+                strDateOfTimeTemp  =strDateOfTime.split(" ");
                 if(strDateOfTimeTemp.length>2){
-                        // dateTime = strDateOfTimeTemp[0] + System.getProperty("line.separator") + strDateOfTimeTemp[1]+ " "+strDateOfTimeTemp[2];
                          dateTime = strDateOfTimeTemp[1]+ " "+strDateOfTimeTemp[2]+ System.getProperty("line.separator") + strDateOfTimeTemp[0] ;
                 }else {
                         dateTime = strDateOfTimeTemp[0]+" "+strDateOfTimeTemp[1];
@@ -117,7 +114,7 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
             }
             holder.tv_device_log_type.setText(deviceLog.getActivity_action() + " - " + deviceLog.getActivity_type());
 
-            String[] actionList = deviceLog.getActivity_description().split("\\|");
+            actionList = deviceLog.getActivity_description().split("\\|");
 
             if(actionList[0]!=null){
                 holder.tv_device_description.setVisibility(View.VISIBLE);
@@ -143,32 +140,6 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
         } catch (ParseException e) {
             e.printStackTrace();
         }
-       // setAnimation(holder.itemView, listPosition);
-       // setScaleAnimation(holder.itemView);
-    }
-    private int lastPosition = -1;
-    /**
-     * Here is the key method to apply the animation
-     */
-    private void setAnimation(View viewToAnimate, int position) {
-        // If the bound view wasn't previously displayed on screen, it's animated
-        if (position > lastPosition) {
-            Animation animation = AnimationUtils.loadAnimation(mContext, android.R.anim.slide_in_left);
-            viewToAnimate.startAnimation(animation);
-            lastPosition = position;
-        }
-    }
-    private final static int FADE_DURATION = 1000; //FADE_DURATION in milliseconds
-
-    private void setFadeAnimation(View view) {
-        AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
-        anim.setDuration(FADE_DURATION);
-        view.startAnimation(anim);
-    }
-    private void setScaleAnimation(View view) {
-        ScaleAnimation anim = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        anim.setDuration(FADE_DURATION);
-        view.startAnimation(anim);
     }
 
     @Override
@@ -188,11 +159,9 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
     }
     protected static class ViewHolder extends RecyclerView.ViewHolder {
         //common
-        View view;
+        View view,view_header;
         int viewType;
-        View view_header;
-        TextView tv_device_log_type, tv_device_log_date,tv_device_description,tv_device_description2,tv_device_description3;
-        TextView txt_empty_view,tvUserName;
+        TextView tv_device_log_type, tv_device_log_date,tv_device_description,tv_device_description2,tv_device_description3,txt_empty_view,tvUserName;
 
         public ViewHolder(View view, int viewType) {
             super(view);

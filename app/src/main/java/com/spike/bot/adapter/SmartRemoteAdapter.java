@@ -25,7 +25,6 @@ import com.spike.bot.R;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
-import com.spike.bot.listener.SelectCamera;
 import com.spike.bot.model.SmartRemoteModel;
 
 import org.json.JSONException;
@@ -37,22 +36,22 @@ import java.util.ArrayList;
  * Created by Sagar on 2/4/19.
  * Gmail : jethvasagar2@gmail.com
  */
-public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.SensorViewHolder>{
+public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.SensorViewHolder> {
 
     private TempSensorInfoAdapter.OnNotificationContextMenu onNotificationContextMenu;
     private Activity mContext;
-    ArrayList<SmartRemoteModel> arrayListLog=new ArrayList<>();
-    public SelectCamera selectCamera;
+    ArrayList<SmartRemoteModel> arrayListLog = new ArrayList<>();
 
+    String url = ChatApplication.url + Constants.addSmartRemote;
 
-    public SmartRemoteAdapter(Activity context, ArrayList<SmartRemoteModel> arrayListLog1){
-        this.mContext=context;
-        this.arrayListLog=arrayListLog1;
+    public SmartRemoteAdapter(Activity context, ArrayList<SmartRemoteModel> arrayListLog1) {
+        this.mContext = context;
+        this.arrayListLog = arrayListLog1;
     }
 
     @Override
     public SensorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_smart_remote,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_smart_remote, parent, false);
         return new SensorViewHolder(view);
     }
 
@@ -75,27 +74,19 @@ public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.
             @Override
             public void onClick(final View v) {
 
-                ConfirmDialog newFragment = new ConfirmDialog("Yes","No" ,"Confirm", "Are you sure you want to Delete ?" ,new ConfirmDialog.IDialogCallback() {
+                ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
                     @Override
                     public void onConfirmDialogYesClick() {
-                        deleteRemote(arrayListLog.get(v.getId()).getSmart_remote_module_id(),v.getId(),arrayListLog.get(v.getId()).getSmart_remote_name());
+                        deleteRemote(arrayListLog.get(v.getId()).getSmart_remote_module_id(), v.getId(), arrayListLog.get(v.getId()).getSmart_remote_name());
 
                     }
+
                     @Override
                     public void onConfirmDialogNoClick() {
 
                     }
                 });
                 newFragment.show(mContext.getFragmentManager(), "dialog");
-            }
-        });
-
-        holder.ll_sensor_view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Intent intent=new Intent(mContext,SubSmartRemoteActivity.class);
-//                mContext.startActivity(intent);
-
             }
         });
     }
@@ -110,19 +101,18 @@ public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.
         dialog.setCanceledOnTouchOutside(true);
 
 
-        final AppCompatEditText editKeyValue =  dialog.findViewById(R.id.editKeyValue);
-        Button btnSubmit =  dialog.findViewById(R.id.btnSubmit);
-        Button btnCancel =  dialog.findViewById(R.id.btnCancel);
-        TextView txtTitalMood =  dialog.findViewById(R.id.txtTitalMood);
-        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
+        final AppCompatEditText editKeyValue = dialog.findViewById(R.id.editKeyValue);
+        Button btnSubmit = dialog.findViewById(R.id.btnSubmit);
+        Button btnCancel = dialog.findViewById(R.id.btnCancel);
+        TextView txtTitalMood = dialog.findViewById(R.id.txtTitalMood);
+        ImageView iv_close = dialog.findViewById(R.id.iv_close);
 
         btnCancel.setVisibility(View.GONE);
 
         txtTitalMood.setText("Please enter Smart Remote name");
-        editKeyValue.setFilters(new InputFilter[]{ChatApplication.filter,new InputFilter.LengthFilter(30)});
+        editKeyValue.setFilters(new InputFilter[]{ChatApplication.filter, new InputFilter.LengthFilter(30)});
 
-        editKeyValue.setInputType(InputType.TYPE_CLASS_TEXT |
-                InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        editKeyValue.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
 
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,11 +132,11 @@ public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(editKeyValue.getText().toString().length()==0){
-                    ChatApplication.showToast(mContext,"Please enter smart remote name");
-                }else {
+                if (editKeyValue.getText().toString().length() == 0) {
+                    ChatApplication.showToast(mContext, "Please enter smart remote name");
+                } else {
                     ChatApplication.keyBoardHideForce(mContext);
-                    saveSensor(dialog,arrayListLog.get(b),editKeyValue.getText().toString(),b);
+                    saveSensor(dialog, arrayListLog.get(b), editKeyValue.getText().toString(), b);
                 }
             }
         });
@@ -155,51 +145,50 @@ public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.
         }
     }
 
-    public void saveSensor(final Dialog dialog, SmartRemoteModel smartRemoteModel, final String name, final int position){
+    public void saveSensor(final Dialog dialog, SmartRemoteModel smartRemoteModel, final String name, final int position) {
 
-        if(!ActivityHelper.isConnectingToInternet(mContext)){
-            Toast.makeText(mContext.getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
+        if (!ActivityHelper.isConnectingToInternet(mContext)) {
+            Toast.makeText(mContext.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        ActivityHelper.showProgressDialog(mContext,"Please wait.",false);
+        ActivityHelper.showProgressDialog(mContext, "Please wait.", false);
 
         JSONObject obj = new JSONObject();
         try {
             obj.put("smart_remote_module_id", smartRemoteModel.getSmart_remote_module_id());
-            obj.put("user_id", Common.getPrefValue(mContext, Constants.USER_ID) );
-            obj.put("smart_remote_name",name);
+            obj.put("user_id", Common.getPrefValue(mContext, Constants.USER_ID));
+            obj.put("smart_remote_name", name);
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        String url = ChatApplication.url + Constants.addSmartRemote;
 
-        new GetJsonTask(mContext,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        new GetJsonTask(mContext, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    if(code==200){
+                    if (code == 200) {
                         dialog.dismiss();
                         arrayListLog.get(position).setSmart_remote_name(name);
                         notifyDataSetChanged();
-                    }else{
-                        ChatApplication.showToast(mContext,message);
+                    } else {
+                        ChatApplication.showToast(mContext, message);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
-                finally {
+                } finally {
                     ActivityHelper.dismissProgressDialog();
 
                 }
             }
+
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
@@ -207,36 +196,37 @@ public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.
         }).execute();
     }
 
-    public void  deleteRemote(String module_id, final int id, String smart_remote_name){
+    /** Delete individual remote */
+    public void deleteRemote(String module_id, final int id, String smart_remote_name) {
 
-        if(!ActivityHelper.isConnectingToInternet(mContext)){
-            Toast.makeText(mContext, R.string.disconnect , Toast.LENGTH_SHORT).show();
+        if (!ActivityHelper.isConnectingToInternet(mContext)) {
+            Toast.makeText(mContext, R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-        ActivityHelper.showProgressDialog(mContext,"Please wait...",false);
+        ActivityHelper.showProgressDialog(mContext, "Please wait...", false);
 
         JSONObject obj = new JSONObject();
         try {
             obj.put("smart_remote_module_id", module_id);
-            obj.put("user_id", Common.getPrefValue(mContext, Constants.USER_ID) );
-            obj.put("smart_remote_name",smart_remote_name);
-            obj.put("is_update",1);
+            obj.put("user_id", Common.getPrefValue(mContext, Constants.USER_ID));
+            obj.put("smart_remote_name", smart_remote_name);
+            obj.put("is_update", 1);
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        String url =  ChatApplication.url + Constants.deleteSmartRemote;
-        new GetJsonTask(mContext,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        String url = ChatApplication.url + Constants.deleteSmartRemote;
+        new GetJsonTask(mContext, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
 
                 try {
                     int code = result.getInt("code");
-                    if(code==200){
+                    if (code == 200) {
                         arrayListLog.remove(id);
                         notifyDataSetChanged();
                     }
@@ -245,6 +235,7 @@ public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.
                 }
 
             }
+
             @Override
             public void onFailure(Throwable throwable, String error) {
                 Toast.makeText(mContext, R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -264,18 +255,18 @@ public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.
         return position;
     }
 
-    public class SensorViewHolder extends RecyclerView.ViewHolder{
+    public class SensorViewHolder extends RecyclerView.ViewHolder {
 
         public TextView txtNameRemote;
-        public ImageView imgDeleteRemote,imgEditRemote;
+        public ImageView imgDeleteRemote, imgEditRemote;
         public LinearLayout ll_sensor_view;
 
         public SensorViewHolder(View view) {
             super(view);
-            txtNameRemote =  itemView.findViewById(R.id.txtNameRemote);
-            imgEditRemote =  itemView.findViewById(R.id.imgEditRemote);
-            imgDeleteRemote =  itemView.findViewById(R.id.imgDeleteRemote);
-            ll_sensor_view =  itemView.findViewById(R.id.ll_sensor_view);
+            txtNameRemote = itemView.findViewById(R.id.txtNameRemote);
+            imgEditRemote = itemView.findViewById(R.id.imgEditRemote);
+            imgDeleteRemote = itemView.findViewById(R.id.imgDeleteRemote);
+            ll_sensor_view = itemView.findViewById(R.id.ll_sensor_view);
         }
     }
 }

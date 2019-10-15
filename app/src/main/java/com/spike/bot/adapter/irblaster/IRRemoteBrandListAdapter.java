@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.spike.bot.R;
 import com.spike.bot.model.IRRemoteListRes;
 
-import java.nio.file.DirectoryStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,31 +19,26 @@ import java.util.List;
  * Created by Sagar on 2/8/18.
  * Gmail : jethvasagar2@gmail.com
  */
-public class IRRemoteBrandListAdapter extends RecyclerView.Adapter<IRRemoteBrandListAdapter.RemoteBrand> implements Filterable{
+public class IRRemoteBrandListAdapter extends RecyclerView.Adapter<IRRemoteBrandListAdapter.RemoteBrand> implements Filterable {
 
     List<IRRemoteListRes.Data.BrandList> brandLists;
-
-    private List<String> filteredData = null;
-    private List<String> originalData;
-    private LayoutInflater mInflater;
+    ArrayList<String> nlist;
+    private List<String> filteredData = null,originalData,list;
+    String filterableString, filterString;
 
     private IRRemoteListClickEvent irRemoteListClickEvent;
 
     private ItemFilter mFilter = new ItemFilter();
 
-    public IRRemoteBrandListAdapter(List<IRRemoteListRes.Data.BrandList> brandLists,IRRemoteListClickEvent irRemoteListClickEvent){
+    public IRRemoteBrandListAdapter(List<IRRemoteListRes.Data.BrandList> brandLists, IRRemoteListClickEvent irRemoteListClickEvent) {
         this.brandLists = brandLists;
         this.irRemoteListClickEvent = irRemoteListClickEvent;
-
-      /*  for(IRRemoteListRes.Data.BrandList brands : brandLists){
-            originalData.add(brands.getBrandType());
-        }*/
     }
 
     @Override
     public RemoteBrand onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.row_ir_brand_list,parent,false);
+                .inflate(R.layout.row_ir_brand_list, parent, false);
         return new RemoteBrand(view);
     }
 
@@ -65,7 +59,7 @@ public class IRRemoteBrandListAdapter extends RecyclerView.Adapter<IRRemoteBrand
         return brandLists.size();
     }
 
-    class RemoteBrand extends RecyclerView.ViewHolder{
+    class RemoteBrand extends RecyclerView.ViewHolder {
 
         private RelativeLayout ir_brand_view;
         private TextView ir_brand_name;
@@ -85,16 +79,12 @@ public class IRRemoteBrandListAdapter extends RecyclerView.Adapter<IRRemoteBrand
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
 
-            String filterString = constraint.toString().toLowerCase();
-
+            filterString = constraint.toString().toLowerCase();
             FilterResults results = new FilterResults();
-
-            final List<String> list = originalData;
+            list = originalData;
 
             int count = list.size();
-            final ArrayList<String> nlist = new ArrayList<String>(count);
-
-            String filterableString ;
+            nlist = new ArrayList<String>(count);
 
             for (int i = 0; i < count; i++) {
                 filterableString = list.get(i);
@@ -117,7 +107,7 @@ public class IRRemoteBrandListAdapter extends RecyclerView.Adapter<IRRemoteBrand
         }
     }
 
-    public interface IRRemoteListClickEvent{
+    public interface IRRemoteListClickEvent {
         void onClickRemoteList(IRRemoteListRes.Data.BrandList brandList);
     }
 }

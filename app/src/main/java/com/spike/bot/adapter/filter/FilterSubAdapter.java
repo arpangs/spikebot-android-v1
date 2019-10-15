@@ -18,13 +18,16 @@ import java.util.ArrayList;
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class FilterSubAdapter extends RecyclerView.Adapter<FilterSubAdapter.SubFilterHolder>{
+public class FilterSubAdapter extends RecyclerView.Adapter<FilterSubAdapter.SubFilterHolder> {
 
     ArrayList<Filter.SubFilter> subFilters;
     SubFilterEvent subFilterEvent;
-    int pos;
+    Filter.SubFilter subFilter;
 
-    public FilterSubAdapter(int position, SubFilterEvent isFilter, ArrayList<Filter.SubFilter> subFilterArrayList){
+    int pos;
+    boolean isCheck;
+
+    public FilterSubAdapter(int position, SubFilterEvent isFilter, ArrayList<Filter.SubFilter> subFilterArrayList) {
         this.subFilters = subFilterArrayList;
         this.subFilterEvent = isFilter;
         this.pos = position;
@@ -32,40 +35,38 @@ public class FilterSubAdapter extends RecyclerView.Adapter<FilterSubAdapter.SubF
 
     @Override
     public SubFilterHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.row_filter_sublist,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_filter_sublist, parent, false);
         return new SubFilterHolder(view);
     }
 
     @Override
     public void onBindViewHolder(SubFilterHolder holder, final int position) {
 
-        final Filter.SubFilter subFilter = subFilters.get(position);
+        subFilter = subFilters.get(position);
         holder.subTitle.setText(subFilter.getName());
 
-
-        if(subFilter.isChecked()){
+        if (subFilter.isChecked()) {
             holder.subCheckbox.setChecked(true);
-        }else{
+        } else {
             holder.subCheckbox.setChecked(false);
         }
         holder.subroot_ll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean isCheck = !subFilter.isChecked();
+                isCheck = !subFilter.isChecked();
                 subFilter.setChecked(isCheck);
                 subFilterEvent.eventClick(pos);
-                notifyItemChanged(position,subFilter);
+                notifyItemChanged(position, subFilter);
             }
         });
 
         holder.subCheckbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean isCheck = !subFilter.isChecked();
+                isCheck = !subFilter.isChecked();
                 subFilter.setChecked(isCheck);
                 subFilterEvent.eventClick(pos);
-                notifyItemChanged(position,subFilter);
+                notifyItemChanged(position, subFilter);
             }
         });
     }
@@ -75,7 +76,7 @@ public class FilterSubAdapter extends RecyclerView.Adapter<FilterSubAdapter.SubF
         return subFilters.size();
     }
 
-    class SubFilterHolder extends RecyclerView.ViewHolder{
+    class SubFilterHolder extends RecyclerView.ViewHolder {
 
         private CheckBox subCheckbox;
         private TextView subTitle;
@@ -90,7 +91,7 @@ public class FilterSubAdapter extends RecyclerView.Adapter<FilterSubAdapter.SubF
         }
     }
 
-    public interface SubFilterEvent{
+    public interface SubFilterEvent {
         void eventClick(int pos);
     }
 

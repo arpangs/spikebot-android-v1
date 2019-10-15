@@ -27,127 +27,96 @@ import com.spike.bot.model.SensorResModel;
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class TempSensorInfoAdapter extends RecyclerView.Adapter<TempSensorInfoAdapter.SensorViewHolder>{
+public class TempSensorInfoAdapter extends RecyclerView.Adapter<TempSensorInfoAdapter.SensorViewHolder> {
 
     SensorResModel.DATA.TempList.NotificationList[] notificationList;
-    private boolean isCF;
     private OnNotificationContextMenu onNotificationContextMenu;
     private Context mContext;
+    SensorResModel.DATA.TempList.NotificationList notification;
+    String minVal = "", maxVal = "";
 
-    public TempSensorInfoAdapter(SensorResModel.DATA.TempList.NotificationList[] notificationList, boolean cfType, OnNotificationContextMenu onNotificationContextMenu){
+    public TempSensorInfoAdapter(SensorResModel.DATA.TempList.NotificationList[] notificationList, boolean cfType, OnNotificationContextMenu onNotificationContextMenu) {
         this.notificationList = notificationList;
-        this.isCF = cfType;
         this.onNotificationContextMenu = onNotificationContextMenu;
     }
 
     @Override
     public SensorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_temp_sensor_info,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_temp_sensor_info, parent, false);
         mContext = view.getContext();
         return new SensorViewHolder(view);
     }
 
-    public boolean isCF() {
-        return isCF;
-    }
-
-    public void setCF(boolean CF) {
-        isCF = CF;
-    }
 
     @Override
     public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
-        if(position==0){
+        if (position == 0) {
             holder.viewLine.setVisibility(View.GONE);
-        }else {
+        } else {
             holder.viewLine.setVisibility(View.VISIBLE);
         }
         //\u2109 \u2103 (℉ & ℃)
-        final SensorResModel.DATA.TempList.NotificationList notification = notificationList[position];
+        notification = notificationList[position];
 
-        String minVal = "";
-        String maxVal = "";
+        if (notification.isCFActive()) {
 
-
-        if(notification.isCFActive()){
-
-            if(!TextUtils.isEmpty(notification.getMinValueC()) && !notification.getMinValueC().equalsIgnoreCase("null") && !TextUtils.isEmpty(notification.getMaxValueC()) && !notification.getMaxValueC().equalsIgnoreCase("null")){
+            if (!TextUtils.isEmpty(notification.getMinValueC()) && !notification.getMinValueC().equalsIgnoreCase("null") && !TextUtils.isEmpty(notification.getMaxValueC()) && !notification.getMaxValueC().equalsIgnoreCase("null")) {
                 minVal = Common.parseCelsius(notification.getMinValueC());
                 maxVal = Common.parseCelsius(notification.getMaxValueC());
             }
-        }else {
-            if(!TextUtils.isEmpty(notification.getMinValueF()) && !notification.getMinValueF().equalsIgnoreCase("null") && !TextUtils.isEmpty(notification.getMaxValueF()) && !notification.getMaxValueF().equalsIgnoreCase("null")){
+        } else {
+            if (!TextUtils.isEmpty(notification.getMinValueF()) && !notification.getMinValueF().equalsIgnoreCase("null") && !TextUtils.isEmpty(notification.getMaxValueF()) && !notification.getMaxValueF().equalsIgnoreCase("null")) {
                 minVal = Common.parseFahrenheit(notification.getMinValueF());
                 maxVal = Common.parseFahrenheit(notification.getMaxValueF());
             }
         }
 
-
         holder.txtMin.setText(minVal);
         holder.txtMax.setText(maxVal);
 
-        if(!TextUtils.isEmpty(notification.getIsActive()) && !notification.getIsActive().equalsIgnoreCase("null")){
+        if (!TextUtils.isEmpty(notification.getIsActive()) && !notification.getIsActive().equalsIgnoreCase("null")) {
             holder.switchCompat.setChecked(Integer.parseInt(notification.getIsActive()) > 0);
         }
 
-        if(!TextUtils.isEmpty(notification.getDays()) && !notification.getDays().equalsIgnoreCase("null")){
+        if (!TextUtils.isEmpty(notification.getDays()) && !notification.getDays().equalsIgnoreCase("null")) {
             holder.txtDays.setText(Html.fromHtml(Common.htmlDaysFormat(notification.getDays())));
         }
 
         if (Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
-            if(Common.getPrefValue(mContext, Constants.USER_ID).equalsIgnoreCase(notification.getUser_id())){
+            if (Common.getPrefValue(mContext, Constants.USER_ID).equalsIgnoreCase(notification.getUser_id())) {
                 holder.imgOptions.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 holder.imgOptions.setVisibility(View.INVISIBLE);
             }
         }
         holder.imgOptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                displayContextMenu(v,notification,position);
+                displayContextMenu(v, notification, position);
             }
         });
 
-        //holder.switchCompat.setEnabled(false);
-
-       /* holder.switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                holder.switchCompat.setChecked(!holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchChanged(notification,holder.switchCompat,position,!holder.switchCompat.isChecked());
-            }
-        });*/
-
-       /* holder.switchCompat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.switchCompat.setChecked(!holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchChanged(notification,holder.switchCompat,position,!holder.switchCompat.isChecked());
-            }
-        });*/
-
-
-        holder.switchCompat.setOnTouchListener(new OnSwipeTouchListener(mContext){
+        holder.switchCompat.setOnTouchListener(new OnSwipeTouchListener(mContext) {
             @Override
             public void onClick() {
                 super.onClick();
                 holder.switchCompat.setChecked(holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchChanged(notification,holder.switchCompat,position,!holder.switchCompat.isChecked());
+                onNotificationContextMenu.onSwitchChanged(notification, holder.switchCompat, position, !holder.switchCompat.isChecked());
             }
 
             @Override
             public void onSwipeLeft() {
                 super.onSwipeLeft();
                 holder.switchCompat.setChecked(holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchChanged(notification,holder.switchCompat,position,!holder.switchCompat.isChecked());
+                onNotificationContextMenu.onSwitchChanged(notification, holder.switchCompat, position, !holder.switchCompat.isChecked());
             }
 
             @Override
             public void onSwipeRight() {
                 super.onSwipeRight();
                 holder.switchCompat.setChecked(holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchChanged(notification,holder.switchCompat,position,!holder.switchCompat.isChecked());
+                onNotificationContextMenu.onSwitchChanged(notification, holder.switchCompat, position, !holder.switchCompat.isChecked());
             }
 
         });
@@ -156,7 +125,6 @@ public class TempSensorInfoAdapter extends RecyclerView.Adapter<TempSensorInfoAd
     }
 
     /**
-     *
      * @param v
      * @param notification
      * @param position
@@ -174,12 +142,12 @@ public class TempSensorInfoAdapter extends RecyclerView.Adapter<TempSensorInfoAd
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.action_edit_dots:
-                        onNotificationContextMenu.onEditOpetion(notification,position,true);
+                        onNotificationContextMenu.onEditOpetion(notification, position, true);
                         break;
                     case R.id.action_delete_dots:
-                        onNotificationContextMenu.onEditOpetion(notification,position,false);
+                        onNotificationContextMenu.onEditOpetion(notification, position, false);
                         break;
                 }
                 return true;
@@ -194,13 +162,12 @@ public class TempSensorInfoAdapter extends RecyclerView.Adapter<TempSensorInfoAd
         return notificationList.length;
     }
 
-    public class SensorViewHolder extends RecyclerView.ViewHolder{
+    public class SensorViewHolder extends RecyclerView.ViewHolder {
 
-        private AppCompatTextView txtMin,txtMax,txtDays;
+        private AppCompatTextView txtMin, txtMax, txtDays;
         private SwitchCompat switchCompat;
         private AppCompatImageView imgOptions;
         public View viewLine;
-       // private LinearLayout ll_switch;
 
         public SensorViewHolder(View itemView) {
             super(itemView);
@@ -212,28 +179,12 @@ public class TempSensorInfoAdapter extends RecyclerView.Adapter<TempSensorInfoAd
             switchCompat = (SwitchCompat) itemView.findViewById(R.id.switch_onoff);
             imgOptions = (AppCompatImageView) itemView.findViewById(R.id.img_options);
             viewLine = (View) itemView.findViewById(R.id.viewLine);
-
-         //   ll_switch = (LinearLayout) itemView.findViewById(R.id.ll_switch);
         }
     }
 
-    public interface OnNotificationContextMenu{
+    public interface OnNotificationContextMenu {
         void onEditOpetion(SensorResModel.DATA.TempList.NotificationList notification, int position, boolean isEdit);
-        void onSwitchChanged(SensorResModel.DATA.TempList.NotificationList notification,SwitchCompat swithcCompact, int position, boolean isActive);
+
+        void onSwitchChanged(SensorResModel.DATA.TempList.NotificationList notification, SwitchCompat swithcCompact, int position, boolean isActive);
     }
-   /* for (int i = 0; i < notificationList.length; i++) {
-        SensorResModel.DATA.TempList.NotificationList notificationListModel = notificationList[i];
-
-        if(isCFDone){
-            notificationListModel.setCFActive(false);
-        }else{
-            if (isCF) {
-                notificationListModel.setCFActive(false);
-            } else {
-                notificationListModel.setCFActive(false);
-            }
-        }
-
-        tempSensorInfoAdapter.notifyItemChanged(i,notificationListModel);
-    }*/
 }

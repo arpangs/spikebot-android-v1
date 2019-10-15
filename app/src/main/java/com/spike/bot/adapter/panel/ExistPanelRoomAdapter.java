@@ -22,21 +22,21 @@ import java.util.ArrayList;
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class ExistPanelRoomAdapter extends RecyclerView.Adapter<ExistPanelRoomAdapter.ExistPanelHolder>{
+public class ExistPanelRoomAdapter extends RecyclerView.Adapter<ExistPanelRoomAdapter.ExistPanelHolder> {
 
     private ArrayList<RoomVO> roomVOList;
     private Context context;
     private boolean isSync;
+    String header = "";
 
-    public ExistPanelRoomAdapter(ArrayList<RoomVO> roomVOList, boolean isSync){
+    public ExistPanelRoomAdapter(ArrayList<RoomVO> roomVOList, boolean isSync) {
         this.roomVOList = roomVOList;
         this.isSync = isSync;
     }
 
     @Override
     public ExistPanelHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.row_add_panel, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_add_panel, parent, false);
 
         return new ExistPanelHolder(itemView);
     }
@@ -45,28 +45,27 @@ public class ExistPanelRoomAdapter extends RecyclerView.Adapter<ExistPanelRoomAd
     public void onBindViewHolder(final ExistPanelHolder holder, final int position) {
         final RoomVO roomVO = roomVOList.get(position);
 
-        if(isSync){
+        if (isSync) {
             holder.img_check_panel.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             holder.img_check_panel.setVisibility(View.GONE);
         }
 
-        String header = "";
-        if(TextUtils.isEmpty(roomVO.getPanel_name())){
-                header = roomVO.getRoomName();
-        }else{
-            if(isSync){
+        if (TextUtils.isEmpty(roomVO.getPanel_name())) {
+            header = roomVO.getRoomName();
+        } else {
+            if (isSync) {
                 header = roomVO.getRoomName() + " \n" + roomVO.getPanel_name();
-            }else{
+            } else {
                 header = roomVO.getRoomName() + " - " + roomVO.getPanel_name();
             }
         }
         holder.txt_room_panel_name.setText(header);
 
-        if(isSync && roomVO.isSelectAllDevices()){
+        if (isSync && roomVO.isSelectAllDevices()) {
             holder.img_check_panel.setImageResource(R.drawable.icn_check);
-        }else{
-            if(isSync){
+        } else {
+            if (isSync) {
                 holder.img_check_panel.setImageResource(R.drawable.icn_uncheck);
             }
         }
@@ -75,9 +74,9 @@ public class ExistPanelRoomAdapter extends RecyclerView.Adapter<ExistPanelRoomAd
             @Override
             public void onClick(View v) {
 
-                if(roomVO.isSelectAllDevices()){
+                if (roomVO.isSelectAllDevices()) {
                     holder.img_check_panel.setImageResource(R.drawable.icn_uncheck);
-                }else{
+                } else {
                     holder.img_check_panel.setImageResource(R.drawable.icn_check);
                 }
 
@@ -85,7 +84,7 @@ public class ExistPanelRoomAdapter extends RecyclerView.Adapter<ExistPanelRoomAd
 
                 for (int i = 0; i < roomVOList.size(); i++) {
                     RoomVO roomVO1 = roomVOList.get(i);
-                    if (i==position) {
+                    if (i == position) {
                         ArrayList<DevicePanelVO> devicePanelVOs = roomVO1.getDevicePanelList();
                         for (DevicePanelVO devicePanelVO : devicePanelVOs) {
                             devicePanelVO.setSelected(!devicePanelVO.isSelected());
@@ -102,7 +101,7 @@ public class ExistPanelRoomAdapter extends RecyclerView.Adapter<ExistPanelRoomAd
             }
         });
 
-        ExistPanelGridAdapter existPanelGridAdapter = new ExistPanelGridAdapter(roomVO.getDevicePanelList(),isSync);
+        ExistPanelGridAdapter existPanelGridAdapter = new ExistPanelGridAdapter(roomVO.getDevicePanelList(), isSync);
         holder.devicesList.setAdapter(existPanelGridAdapter);
     }
 
@@ -111,7 +110,7 @@ public class ExistPanelRoomAdapter extends RecyclerView.Adapter<ExistPanelRoomAd
         return roomVOList.size();
     }
 
-    class ExistPanelHolder extends RecyclerView.ViewHolder{
+    class ExistPanelHolder extends RecyclerView.ViewHolder {
 
         TextView txt_room_panel_name;
         private ImageView img_check_panel;
@@ -120,7 +119,7 @@ public class ExistPanelRoomAdapter extends RecyclerView.Adapter<ExistPanelRoomAd
         ExistPanelHolder(View itemView) {
             super(itemView);
             txt_room_panel_name = (TextView) itemView.findViewById(R.id.txt_room_panel_name);
-            devicesList = (RecyclerView)itemView.findViewById(R.id.list_panel_devices);
+            devicesList = (RecyclerView) itemView.findViewById(R.id.list_panel_devices);
             img_check_panel = (ImageView) itemView.findViewById(R.id.img_check_panel);
             devicesList.setLayoutManager(new GridLayoutManager(context, Constants.SWITCH_NUMBER_EXIST_PANEL));
         }

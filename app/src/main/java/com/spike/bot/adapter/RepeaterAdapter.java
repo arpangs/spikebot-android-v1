@@ -121,6 +121,6 @@ public class RepeaterAdapter extends RecyclerView.Adapter<RepeaterAdapter.Sensor
     }
 
     public interface MoreOption{
-        public void moreOption(RepeaterModel repeaterModel,int postion,int type);
+        void moreOption(RepeaterModel repeaterModel,int postion,int type);
     }
 }

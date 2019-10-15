@@ -22,13 +22,9 @@ import java.util.Map;
 public class DeviceListLayoutHelper implements SectionStateChangeListener {
 
     //data list
-    ArrayList<Object> mDataArrayList  = new ArrayList<Object>();
+    ArrayList<Object> mDataArrayList = new ArrayList<Object>();
     private LinkedHashMap<RoomVO, ArrayList<PanelVO>> mSectionDataMap = new LinkedHashMap<RoomVO, ArrayList<PanelVO>>();
-    //section map
-    //TODO : look for a way to avoid this
-  //  private HashMap<String, MoodVO> mSectionMap = new HashMap<String, MoodVO>();
-  //  private HashMap<String, MoodVO> mSectionMap = new HashMap<String, MoodVO>();
-
+    ArrayList<PanelVO> panelList;
     //adapter
     private DeviceListExpandableGridAdapter mSectionedExpandableGridAdapter;
 
@@ -36,41 +32,42 @@ public class DeviceListLayoutHelper implements SectionStateChangeListener {
     //recycler view
     RecyclerView mRecyclerView;
     SelectDevicesListener selectDevicesListener;
+    String room_device_id = "", roomIds = "";
+    MoodVO section;
 
-
-    public DeviceListLayoutHelper(Context ctx, RecyclerView recyclerView, ItemClickListener itemClickListener, int gridSpanCount,boolean isMoodAdapter,SelectDevicesListener selectDevicesListener) {
+    public DeviceListLayoutHelper(Context ctx, RecyclerView recyclerView, ItemClickListener itemClickListener, int gridSpanCount, boolean isMoodAdapter, SelectDevicesListener selectDevicesListener) {
 
         //setting the recycler view
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, gridSpanCount);
         recyclerView.setLayoutManager(gridLayoutManager);
         mSectionedExpandableGridAdapter = new DeviceListExpandableGridAdapter(context, mDataArrayList,
-                gridLayoutManager, itemClickListener, this,isMoodAdapter,selectDevicesListener);
+                gridLayoutManager, itemClickListener, this, isMoodAdapter, selectDevicesListener);
         recyclerView.setAdapter(mSectionedExpandableGridAdapter);
         this.context = ctx;
         mRecyclerView = recyclerView;
         this.selectDevicesListener = selectDevicesListener;
     }
-    public String getSelectedItemIds(){
-        String roomIds = "";
-        if(mSectionedExpandableGridAdapter.getSelectedItemIds().length()>0){
-            roomIds=mSectionedExpandableGridAdapter.getSelectedItemIds();
+
+    public String getSelectedItemIds() {
+        if (mSectionedExpandableGridAdapter.getSelectedItemIds().length() > 0) {
+            roomIds = mSectionedExpandableGridAdapter.getSelectedItemIds();
         }
         return roomIds;
     }
-    public ArrayList<DeviceVO> getSelectedItemList(){
+
+    public ArrayList<DeviceVO> getSelectedItemList() {
         ArrayList<DeviceVO> roomIds = mSectionedExpandableGridAdapter.getSelectedItemList();
         return roomIds;
     }
 
-
-    String room_device_id="";
-    public void setSelection(String room_device_id){
+    public void setSelection(String room_device_id) {
         this.room_device_id = room_device_id;
 
         mSectionedExpandableGridAdapter.setSelection(room_device_id);
         mSectionedExpandableGridAdapter.notifyDataSetChanged();
     }
-    public void setSelectionAll(){
+
+    public void setSelectionAll() {
         mSectionedExpandableGridAdapter.setSelectionAllDevices();
         mSectionedExpandableGridAdapter.notifyDataSetChanged();
     }
@@ -81,32 +78,31 @@ public class DeviceListLayoutHelper implements SectionStateChangeListener {
         generateDataList();
         mSectionedExpandableGridAdapter.notifyDataSetChanged();
     }
-    public void addSectionList(ArrayList<RoomVO> roomList){
+
+    public void addSectionList(ArrayList<RoomVO> roomList) {
         mDataArrayList.clear();
         mSectionDataMap.clear();
-        for(int i=0;i<roomList.size();i++){
+        for (int i = 0; i < roomList.size(); i++) {
             addSection(roomList.get(i));
         }
     }
+
     public void addSection(RoomVO section) {
-        if (this.section!=null && this.section.equals(section)){
+        if (this.section != null && this.section.equals(section)) {
             section.isExpanded = true;
         }
         mSectionDataMap.put(section, section.getPanelList());
         generateDataList();
     }
-    private void generateDataList () {
+
+    private void generateDataList() {
         mDataArrayList.clear();
         for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
             RoomVO key;
-            //  mDataArrayList.add((key = entry.getKey()));
             mDataArrayList.add((key = entry.getKey()));
             if (key.isExpanded) {
-                //mDataArrayList.add(new PanelVO("Panel1"));
-                //mDataArrayList.addAll(entry.getValue());
-                ArrayList<PanelVO> panelList = entry.getValue();
-
-                for(int i=0;i<panelList.size();i++){
+                panelList = entry.getValue();
+                for (int i = 0; i < panelList.size(); i++) {
                     //add panel
                     mDataArrayList.add(panelList.get(i));
                     //add all device switch
@@ -116,10 +112,9 @@ public class DeviceListLayoutHelper implements SectionStateChangeListener {
         }
         mSectionedExpandableGridAdapter.setSelection(room_device_id);
     }
-    MoodVO section;
+
     @Override
     public void onSectionStateChanged(RoomVO section, boolean isOpen) {
-       // Log.d("","reloadDeviceList  onSectionStateChanged  onSectionStateChanged =  " + isOpen + "  computing "+ !mRecyclerView.isComputingLayout());
         if (!mRecyclerView.isComputingLayout()) {
             section.isExpanded = isOpen;
             notifyDataSetChanged();
