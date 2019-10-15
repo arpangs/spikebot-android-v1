@@ -508,12 +508,13 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_room_edit, menu);
         MenuItem menulog = menu.findItem(R.id.action_log).setVisible(false);
+        MenuItem action_add = menu.findItem(R.id.action_add).setVisible(false);
 
-        Drawable drawable = menu.findItem(R.id.action_log).getIcon();
-
-        drawable = DrawableCompat.wrap(drawable);
-        DrawableCompat.setTint(drawable, ContextCompat.getColor(this, R.color.automation_white));
-        menulog.setIcon(drawable);
+//        Drawable drawable = menu.findItem(R.id.action_log).getIcon();
+//
+//        drawable = DrawableCompat.wrap(drawable);
+//        DrawableCompat.setTint(drawable, ContextCompat.getColor(this, R.color.automation_white));
+//        menulog.setIcon(drawable);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -579,7 +580,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                         showToast(message);
                     }
                     if (code == 200) {
-                        finish();
+//                        finish();
                     }
 
                 } catch (JSONException e) {

@@ -486,7 +486,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onFailure(Throwable throwable, String error) {
                 throwable.printStackTrace();
-                ChatApplication.showToast(IRBlasterRemote.this, getResources().getString(R.string.something_wrong));
+                ChatApplication.showToast(IRBlasterRemote.this, getResources().getString(R.string.something_wrong1));
             }
         }).execute();
     }
@@ -623,7 +623,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.showToast(IRBlasterRemote.this, getResources().getString(R.string.something_wrong));
+                ChatApplication.showToast(IRBlasterRemote.this, getResources().getString(R.string.something_wrong1));
             }
         }).execute();
     }

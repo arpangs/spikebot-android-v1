@@ -354,7 +354,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
                 isApiStatus=false;
-                ChatApplication.showToast(HeavyLoadDetailActivity.this, getResources().getString(R.string.something_wrong));
+                ChatApplication.showToast(HeavyLoadDetailActivity.this, getResources().getString(R.string.something_wrong1));
             }
         }).execute();
     }
@@ -449,7 +449,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.showToast(HeavyLoadDetailActivity.this, getResources().getString(R.string.something_wrong));
+                ChatApplication.showToast(HeavyLoadDetailActivity.this, getResources().getString(R.string.something_wrong1));
             }
         }).execute();
     }

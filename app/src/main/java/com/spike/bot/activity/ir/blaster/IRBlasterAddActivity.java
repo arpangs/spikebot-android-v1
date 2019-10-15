@@ -526,7 +526,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             @Override
             public void onFailure(Throwable throwable, String error) {
                 throwable.printStackTrace();
-                ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong));
+                ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong1));
             }
         }).execute();
 
@@ -600,7 +600,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             @Override
             public void onFailure(Throwable throwable, String error) {
                 throwable.printStackTrace();
-                ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong));
+                ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong1));
             }
         }).execute();
 
@@ -756,7 +756,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             public void onFailure(Throwable throwable, String error) {
                 throwable.printStackTrace();
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong));
+                ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong1));
             }
         }).execute();
 

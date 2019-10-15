@@ -331,7 +331,7 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.showToast(IRBlasterActivity.this, getResources().getString(R.string.something_wrong));
+                ChatApplication.showToast(IRBlasterActivity.this, getResources().getString(R.string.something_wrong1));
             }
         }).execute();
     }

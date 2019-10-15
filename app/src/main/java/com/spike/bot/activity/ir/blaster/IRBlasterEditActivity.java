@@ -146,7 +146,7 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.showToast(IRBlasterEditActivity.this, getResources().getString(R.string.something_wrong));
+                ChatApplication.showToast(IRBlasterEditActivity.this, getResources().getString(R.string.something_wrong1));
             }
         }).execute();
     }

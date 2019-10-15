@@ -285,7 +285,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-               ChatApplication.showToast(LoginActivity.this,getResources().getString(R.string.something_wrong));
+               ChatApplication.showToast(LoginActivity.this,getResources().getString(R.string.something_wrong1));
             }
         }).execute();
     }
