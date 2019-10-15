@@ -368,7 +368,7 @@ public class AddExistingPanel extends AppCompatActivity {
 
                 panelObj.put("deviceList", jsonArrayDevice);
 
-
+                ChatApplication.logDisplay("JSONObject : " + panelObj.toString());
 
             } catch (JSONException e) {
                 e.printStackTrace();
