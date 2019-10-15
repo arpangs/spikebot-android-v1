@@ -78,7 +78,6 @@ public class AddExistingPanel extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-
         try {
             roomId = getIntent().getExtras().getString("roomId");
             isDeviceAdd = getIntent().getExtras().getBoolean("isDeviceAdd");
@@ -369,7 +368,7 @@ public class AddExistingPanel extends AppCompatActivity {
 
                 panelObj.put("deviceList", jsonArrayDevice);
 
-                ChatApplication.logDisplay("JSONObject : " + panelObj.toString());
+
 
             } catch (JSONException e) {
                 e.printStackTrace();
