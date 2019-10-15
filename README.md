@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # socket.io-android-chat
 
 This is a simple chat demo for socket.io and Android. You can connect to [https://socket-io-chat.now.sh](https://socket-io-chat.now.sh) using this app.
@@ -21,6 +22,8 @@ https://github.com/socketio/socket.io/issues/2823
 MIT
 
 =======
+=======
+>>>>>>> 08d0608be825532b72907d0b17c2907f776c5002
 **Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
 
 When you're done, you can delete the content in this README and update the file with details for others getting started with your repository.
@@ -65,5 +68,9 @@ Use these steps to clone from SourceTree, our client for using the repository co
 3. When you see the **Clone New** dialog in SourceTree, update the destination path and name if you’d like to and then click **Clone**.
 4. Open the directory you just created to see your repository’s files.
 
+<<<<<<< HEAD
 Now that you're more familiar with your Bitbucket repository, go ahead and add a new file locally. You can [push your change back to Bitbucket with SourceTree](https://confluence.atlassian.com/x/iqyBMg), or you can [add, commit,](https://confluence.atlassian.com/x/8QhODQ) and [push from the command line](https://confluence.atlassian.com/x/NQ0zDQ).
 >>>>>>> 18ff10c67d48c1fd7d1b6eb2fd5847c3d5e23bf4
+=======
+Now that you're more familiar with your Bitbucket repository, go ahead and add a new file locally. You can [push your change back to Bitbucket with SourceTree](https://confluence.atlassian.com/x/iqyBMg), or you can [add, commit,](https://confluence.atlassian.com/x/8QhODQ) and [push from the command line](https://confluence.atlassian.com/x/NQ0zDQ).
+>>>>>>> 08d0608be825532b72907d0b17c2907f776c5002
