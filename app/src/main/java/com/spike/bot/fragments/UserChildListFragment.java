@@ -140,7 +140,7 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
                     }
 
                     int code = result.getInt("code");
-                    String message = result.getString("message");
+
                     if(code==200){
 
 //                        roomList.clear();

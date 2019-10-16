@@ -79,14 +79,14 @@ public class AddRoomDialog extends Dialog implements
 
         ChatApplication.isOpenDialog = true;
 
-        ll_room = (LinearLayout) findViewById(R.id.ll_room);
-        tv_title = (TextView) findViewById(R.id.tv_title);
-        et_room_name = (EditText) findViewById(R.id.et_room_name);
-        et_panel_name = (EditText) findViewById(R.id.et_panel_name);
-        et_module_id = (EditText) findViewById(R.id.et_module_id);
-        sp_no_of_devices = (Spinner) findViewById(R.id.sp_no_of_devices);
-        btn_save = (Button) findViewById(R.id.btn_save);
-        iv_close = (ImageView) findViewById(R.id.iv_close);
+        ll_room = findViewById(R.id.ll_room);
+        tv_title = findViewById(R.id.tv_title);
+        et_room_name =  findViewById(R.id.et_room_name);
+        et_panel_name =  findViewById(R.id.et_panel_name);
+        et_module_id =  findViewById(R.id.et_module_id);
+        sp_no_of_devices =  findViewById(R.id.sp_no_of_devices);
+        btn_save =  findViewById(R.id.btn_save);
+        iv_close = findViewById(R.id.iv_close);
         et_module_id.setText(module_id);
 
         sp_no_of_devices.setSelection(Integer.parseInt(device_id)-1);
@@ -142,11 +142,11 @@ public class AddRoomDialog extends Dialog implements
             if(!isRoom){
                 obj.put("room_id",room_id);
             }
-            obj.put("room_name",et_room_name.getText().toString());
+//            obj.put("room_name",et_room_name.getText().toString());
             obj.put("panel_name",et_panel_name.getText().toString());
             obj.put("module_id",et_module_id.getText().toString());
-            obj.put("device_id",sp_no_of_devices.getSelectedItem().toString());
-            obj.put("module_type",module_type);
+//            obj.put("device_id",sp_no_of_devices.getSelectedItem().toString());
+//            obj.put("module_type",module_type);
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
@@ -166,7 +166,10 @@ public class AddRoomDialog extends Dialog implements
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            url = ChatApplication.url + Constants.CONFIGURE_NEW_PANEL;
+//            url = ChatApplication.url + Constants.CONFIGURE_NEW_PANEL;
+            url = ChatApplication.url + Constants.deviceadd;
+
+            ChatApplication.logDisplay("url is "+url+" "+obj);
         }
         new GetJsonTask(activity,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override

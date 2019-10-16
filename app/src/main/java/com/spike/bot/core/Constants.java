@@ -52,9 +52,9 @@ public class Constants {
     //device type =3 - philip
     // device type = 2 = Ac
 
-    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
+//    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
 //    public static  String CLOUD_SERVER_URL = "http://api.spikebot.io"; //222
-//    public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //wifi / 123
+    public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //wifi / 123
 
 // *-   public static  String CLOUD_SERVER_URL = "http://52.201.70.116:8079"; // unuser
 //    public static  String CLOUD_SERVER_URL = "http://54.201.70.116:8079"; // unuser
@@ -116,7 +116,7 @@ public class Constants {
     public static final String AddChildUser = "/AddChildUser";  //r
     public static final String updateChildUser = "/updateChildUser";  //r
     public static final String ADD_CUSTOME_ROOM = "/addCustomRoom";
-    public static final String SAVE_ROOM_AND_PANEL_NAME = "/saveRoomAndPanelName";
+    public static final String SAVE_ROOM_AND_PANEL_NAME = "/rooms/edit";
 //    public static final String CONFIGURE_NEWROOM = "/configureNewRoom";
     public static final String GET_EDIT_ROOM_INFO = "/getEditRoomInfo";
     public static final String CONFIGURE_DEVICE_REQUEST = "/configureDeviceRequest";
@@ -169,7 +169,8 @@ public class Constants {
     public static final String addLockBridge = "/addLockBridge";
     public static final String deleteTTLockBridge = "/deleteTTLockBridge";
     public static final String updateTTLockActiveStatus = "/updateTTLockActiveStatus";
-    public static final String curtainadd = "/curtain/add";
+    public static final String curtainadd = "device/add";
+    public static final String deviceadd = "/device/add";
     public static final String curtainupdate = "/curtain/update";
     public static final String curtaindelete = "/curtain/delete";
     public static final String curtainupdatestatus= "/curtain/update-status";
@@ -190,7 +191,7 @@ public class Constants {
     public static final String reassignRepeater = "/reassignRepeater";
     public static final String getUnassignedRepeaterList = "/getUnassignedRepeaterList";
     public static final String curtainconfigure= "/curtain/configure";
-    public static final String deviceconfigure= "device/configure/";
+    public static final String deviceconfigure= "/device/configure/";
 
 
 

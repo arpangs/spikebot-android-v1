@@ -58,6 +58,7 @@ import com.spike.bot.R;
 import com.spike.bot.Retrofit.GetDataService;
 import com.spike.bot.Retrofit.RetrofitAPIManager;
 import com.spike.bot.ack.AckWithTimeOut;
+import com.spike.bot.activity.AddDevice.AddDeviceTypeListActivity;
 import com.spike.bot.activity.AddUnassignedPanel;
 import com.spike.bot.activity.CameraDeviceLogActivity;
 import com.spike.bot.activity.CameraEdit;
@@ -314,13 +315,16 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isItemClickView){
-                    if (!isFABOpen) {
-                        showFABMenu();
-                    } else {
-                        closeFABMenu();
-                    }
-                }
+//                if(isItemClickView){
+//                    if (!isFABOpen) {
+//                        showFABMenu();
+//                    } else {
+//                        closeFABMenu();
+//                    }
+//                }
+
+                Intent intent=new Intent(activity, AddDeviceTypeListActivity.class);
+                startActivity(intent);
 
 
             }
