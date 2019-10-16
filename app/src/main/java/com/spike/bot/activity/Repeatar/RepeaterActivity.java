@@ -64,6 +64,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
 
     RepeaterAdapter repeaterAdapter;
     ArrayList<RepeaterModel> arrayList = new ArrayList<>();
+    ArrayList<String> roomNameList = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -126,7 +127,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
         ChatApplication app = (ChatApplication) getApplication();
         mSocket = app.getSocket();
         if (mSocket != null) {
-            mSocket.on("configureRepeator", configureRepeator);
+            mSocket.on("configureDevice", configureDevice);
         }
     }
 
@@ -134,13 +135,11 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
     public void onDestroy() {
         super.onDestroy();
         if (mSocket != null) {
-            mSocket.off("configureRepeator", configureRepeator);
+            mSocket.off("configureDevice", configureDevice);
         }
     }
 
-    ArrayList<String> roomNameList = new ArrayList<>();
-
-    private Emitter.Listener configureRepeator = new Emitter.Listener() {
+    private Emitter.Listener configureDevice = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             runOnUiThread(new Runnable() {
@@ -203,6 +202,8 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
     }
 
 
+    /*
+    * sync request */
     private void getconfigureRepeatorRequest() {
         if (!ActivityHelper.isConnectingToInternet(RepeaterActivity.this)) {
             Toast.makeText(RepeaterActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -212,7 +213,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
         ActivityHelper.showProgressDialog(RepeaterActivity.this, "Searching Device attached ", false);
         startTimer();
 
-        String url = ChatApplication.url + Constants.configureRepeatorRequest;
+        String url = ChatApplication.url + Constants.deviceconfigure;
 
         new GetJsonTask(RepeaterActivity.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override

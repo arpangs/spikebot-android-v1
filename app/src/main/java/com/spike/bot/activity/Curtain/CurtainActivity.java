@@ -261,8 +261,6 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
         String url = ChatApplication.url + Constants.curtaindelete;
 
-        ChatApplication.logDisplay("updateCurtain " + url);
-
         JSONObject object = new JSONObject();
         try {
             object.put("curtain_module_id", module_id);

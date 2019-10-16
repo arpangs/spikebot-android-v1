@@ -188,7 +188,7 @@
             app:cardCornerRadius="2dp"
             app:cardElevation="5dp"
             app:elevation="5dp"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <LinearLayout
                 android:paddingTop="@dimen/_4sdp"
