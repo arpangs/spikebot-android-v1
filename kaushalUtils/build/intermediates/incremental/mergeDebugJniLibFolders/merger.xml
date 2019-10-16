@@ -1,6 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<<<<<<< HEAD
 <merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/media/prakash/de3fc8fc-34cc-4210-a823-111caa1b6607/Vipul Project/Spike bot project/New login flow/Spike_Bot back-end change/SPIKE BOT_v3_backend_change/kaushalUtils/src/main/jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/media/prakash/de3fc8fc-34cc-4210-a823-111caa1b6607/Vipul Project/Spike bot project/New login flow/Spike_Bot back-end change/SPIKE BOT_v3_backend_change/kaushalUtils/src/debug/jniLibs"/></dataSet></merger>
-=======
-<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="D:\Akhil\Spike_bot back-end change\SPIKE BOT_v3_UI_user_child_new_login\spike_bot-back-end-change\kaushalUtils\src\main\jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="D:\Akhil\Spike_bot back-end change\SPIKE BOT_v3_UI_user_child_new_login\spike_bot-back-end-change\kaushalUtils\src\debug\jniLibs"/></dataSet></merger>
->>>>>>> f63c6841bbbceb45de87f9efd67cfd2137f6d7fe

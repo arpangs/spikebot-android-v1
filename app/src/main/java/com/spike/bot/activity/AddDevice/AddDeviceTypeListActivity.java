@@ -114,7 +114,13 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
             holder.txtUserName.setText(arrayList.get(position));
 
-            setIntent(position);
+            holder.txtUserName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    setIntent(position);
+                }
+            });
+
 
         }
 
