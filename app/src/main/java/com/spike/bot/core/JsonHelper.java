@@ -34,8 +34,8 @@ public class JsonHelper {
 
         for(int i=0;i<roomArray.length();i++){
             try {
-                JSONObject objRoom = roomArray.getJSONObject(i);
-                JSONObject roomObj = objRoom.getJSONObject("roomList");
+                JSONObject roomObj = roomArray.getJSONObject(i);
+//                JSONObject roomObj = objRoom.getJSONObject("roomList");
 
                 //roomDeviceId
                 JSONArray jsonArrayRoomList = null;

@@ -111,7 +111,7 @@ public class Constants {
     public static final String wifilogin = "/wifilogin";
 
     //room
-    public static final String GET_DEVICES_LIST = "/getDevicesList";  //r
+    public static final String GET_DEVICES_LIST = "/device/list";  //r
     public static final String getChildUsers = "/getChildUsers";  //r
     public static final String DeleteChildUser = "/DeleteChildUser";  //r
     public static final String getRoomCameraList = "/getRoomCameraList";  //r
