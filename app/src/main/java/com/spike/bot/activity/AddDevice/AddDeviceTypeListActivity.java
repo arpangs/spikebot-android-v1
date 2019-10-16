@@ -1,31 +1,46 @@
 package com.spike.bot.activity.AddDevice;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.kp.core.ActivityHelper;
+import com.kp.core.GetJsonTask;
+import com.kp.core.ICallBack;
+import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.AddUnassignedPanel;
+import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.adapter.AddCameraAdapter;
 import com.spike.bot.adapter.TempSensorInfoAdapter;
+import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
+import com.spike.bot.core.Constants;
+import com.spike.bot.fragments.MainFragment;
 import com.spike.bot.listener.SelectCamera;
 import com.spike.bot.model.CameraVO;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -39,6 +54,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
     RecyclerView recyclerSmartDevice;
     DeviceListAdapter deviceListAdapter;
     ArrayList<String> arrayList=new ArrayList<>();
+    ProgressDialog m_progressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -88,7 +104,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         if(position==0){
             startActivity(new Intent(this, AddUnassignedPanel.class));
         }else if(position==1){
-            startActivity(new Intent(this, AddUnassignedPanel.class));
+            addCustomRoom();
         }
     }
 
@@ -114,16 +130,18 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
             holder.txtUserName.setText(arrayList.get(position));
 
-            setIntent(position);
-
+            holder.txtUserName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    setIntent(position);
+                }
+            });
         }
-
 
         @Override
         public int getItemCount() {
             return arrayListLog.size();
         }
-
 
         @Override
         public int getItemViewType(int position) {
@@ -140,7 +158,6 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             }
         }
     }
-
 
     public void addCustomRoom() {
 
@@ -176,12 +193,104 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                saveCustomRoom(room_name, dialog);
+                saveCustomRoom(room_name, dialog);
             }
         });
 
         if (!dialog.isShowing()) {
             dialog.show();
+        }
+    }
+
+    /**
+     * Call api for save custom room
+     *
+     * @param roomName mRoomName
+     * @param dialog   mDialog instance
+     */
+    private void saveCustomRoom(EditText roomName, final Dialog dialog) {
+
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            ChatApplication.showToast(AddDeviceTypeListActivity.this, getResources().getString(R.string.disconnect));
+            return;
+        }
+
+        if (TextUtils.isEmpty(roomName.getText().toString().trim())) {
+            roomName.setError("Enter Room name");
+            return;
+        }
+
+        JSONObject object = new JSONObject();
+        try {
+            object.put("room_name", roomName.getText().toString());
+            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ChatApplication.logDisplay("ob : " + object.toString());
+        showProgressDialog(this, "Searching Device attached ", false);
+
+
+        String url = ChatApplication.url + Constants.ADD_CUSTOME_ROOM;
+        new GetJsonTask(this, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                dismissProgressDialog();
+                ChatApplication.logDisplay("getconfigureData onSuccess " + result.toString());
+                try {
+                    //{"code":200,"message":"success"}
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+
+                    if (code == 200) {
+                        dialog.dismiss();
+                        ChatApplication.showToast(AddDeviceTypeListActivity.this, message);
+                        ChatApplication.isMainFragmentNeedResume = true;
+                        finish();
+                    } else if (code == 301) {
+                        ChatApplication.showToast(AddDeviceTypeListActivity.this, message);
+                    } else {
+                        ChatApplication.showToast(AddDeviceTypeListActivity.this, message);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    {
+                        dismissProgressDialog();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                dismissProgressDialog();
+                ChatApplication.logDisplay("getconfigureData onFailure " + error);
+                ChatApplication.showToast(AddDeviceTypeListActivity.this, getResources().getString(R.string.disconnect));
+            }
+        }).execute();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    public void showProgressDialog(Context context, String message, boolean iscancle){
+        m_progressDialog=new ProgressDialog(this);
+        m_progressDialog.setMessage(message);
+        m_progressDialog.setCanceledOnTouchOutside(true);
+        m_progressDialog.show();
+    }
+
+    public void dismissProgressDialog(){
+        if(m_progressDialog!=null){
+            ChatApplication.logDisplay("m_progressDialog is null not");
+            m_progressDialog.cancel();
+            m_progressDialog.dismiss();
         }
     }
 
