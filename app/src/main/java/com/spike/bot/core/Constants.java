@@ -52,9 +52,9 @@ public class Constants {
     //device type =3 - philip
     // device type = 2 = Ac
 
-    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
+    //    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
 //    public static  String CLOUD_SERVER_URL = "http://api.spikebot.io"; //222
-//    public static  String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //wifi / 123
+    public static String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //wifi / 123
 
 // *-   public static  String CLOUD_SERVER_URL = "http://52.201.70.116:8079"; // unuser
 //    public static  String CLOUD_SERVER_URL = "http://54.201.70.116:8079"; // unuser
@@ -63,11 +63,11 @@ public class Constants {
 //    public static  String  IP_END = "117"; // jhanvi / 123
 //    public static  String  IP_END = "118"; // bhumi / 123
 
-    public  static  String  IP_END = "222";
+    public static String IP_END = "222";
     public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";
     public static final String CAMERA_PATH = "/static/storage/volume/pi/";
 
-    public static String startUrl="http://home.d";
+    public static String startUrl = "http://home.d";
 
     public static final int ACK_TIME_OUT = 5000;
     public static final int REMOTE_REQUEST_CODE = 10;
@@ -115,9 +115,9 @@ public class Constants {
     public static final String getRoomCameraList = "/getRoomCameraList";  //r
     public static final String AddChildUser = "/AddChildUser";  //r
     public static final String updateChildUser = "/updateChildUser";  //r
-    public static final String ADD_CUSTOME_ROOM = "/addCustomRoom";
+    public static final String ADD_CUSTOME_ROOM = "/rooms/add";
     public static final String SAVE_ROOM_AND_PANEL_NAME = "/saveRoomAndPanelName";
-//    public static final String CONFIGURE_NEWROOM = "/configureNewRoom";
+    //    public static final String CONFIGURE_NEWROOM = "/configureNewRoom";
     public static final String GET_EDIT_ROOM_INFO = "/getEditRoomInfo";
     public static final String CONFIGURE_DEVICE_REQUEST = "/configureDeviceRequest";
     public static final String configuresmartRemoteRequest = "/configuresmartRemoteRequest";
@@ -172,7 +172,7 @@ public class Constants {
     public static final String curtainadd = "/curtain/add";
     public static final String curtainupdate = "/curtain/update";
     public static final String curtaindelete = "/curtain/delete";
-    public static final String curtainupdatestatus= "/curtain/update-status";
+    public static final String curtainupdatestatus = "/curtain/update-status";
 
     public static final String SENSOR_ROOM_DETAILS = "/sensorRoomDetails";
     public static final String SENSOR_NOTIFICATION = "/sensorNotification";
@@ -189,9 +189,8 @@ public class Constants {
     public static final String deleteRepeator = "/deleteRepeator";
     public static final String reassignRepeater = "/reassignRepeater";
     public static final String getUnassignedRepeaterList = "/getUnassignedRepeaterList";
-    public static final String curtainconfigure= "/curtain/configure";
-    public static final String deviceconfigure= "device/configure/";
-
+    public static final String curtainconfigure = "/curtain/configure";
+    public static final String deviceconfigure = "device/configure/";
 
 
     //temp sensor
@@ -314,8 +313,8 @@ public class Constants {
     //lock
     public static final String client_id = "439063e312444f1f85050a52efcecd2e";
     public static final String client_secret = "0ef1c49b70c02ae6314bde603d4e9b05";
-//    public static  String access_token = "fac1734b6209dd5b3ea602c9cc7a15ae";
-    public static  String access_token = "a74549ab15d07ecd988e26f50985aee7";
+    //    public static  String access_token = "fac1734b6209dd5b3ea602c9cc7a15ae";
+    public static String access_token = "a74549ab15d07ecd988e26f50985aee7";
     public static final String refresh_token = "5ca1a4bc670b16b571b1488a631e57fc";
     public static final String lock_user_id_vip = "1769341";
     public static final String lock_open_vip = "1930389027";
@@ -337,17 +336,18 @@ public class Constants {
     public static Activity activityAddDeviceConfirmActivity;
     public static Activity activitySearchHueBridgeActivity;
 
-    public static String getUserName(Context context){
-        String name="";
+    public static String getUserName(Context context) {
+        String name = "";
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {}.getType();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
             List<User> userList = gson.fromJson(jsonText, type);
-            if(userList.size()>0){
-                for(int i=0; i<userList.size(); i++){
-                    if(userList.get(i).getIsActive()){
-                        name=userList.get(i).getFirstname();
+            if (userList.size() > 0) {
+                for (int i = 0; i < userList.size(); i++) {
+                    if (userList.get(i).getIsActive()) {
+                        name = userList.get(i).getFirstname();
                         break;
                     }
                 }
@@ -357,17 +357,18 @@ public class Constants {
         return name;
     }
 
-    public static String getuserIp(Context context){
-        String getuserIp="";
+    public static String getuserIp(Context context) {
+        String getuserIp = "";
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {}.getType();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
             List<User> userList = gson.fromJson(jsonText, type);
-            if(userList.size()>0){
-                for(int i=0; i<userList.size(); i++){
-                    if(userList.get(i).getIsActive()){
-                        getuserIp=userList.get(i).getLocal_ip();
+            if (userList.size() > 0) {
+                for (int i = 0; i < userList.size(); i++) {
+                    if (userList.get(i).getIsActive()) {
+                        getuserIp = userList.get(i).getLocal_ip();
 //                        getuserIp="192.168.175.222";
                         break;
                     }
@@ -378,17 +379,18 @@ public class Constants {
         return getuserIp;
     }
 
-    public static User getuser(Context context){
-        User user=new User();
+    public static User getuser(Context context) {
+        User user = new User();
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {}.getType();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
             List<User> userList = gson.fromJson(jsonText, type);
-            if(userList.size()>0){
-                for(int i=0; i<userList.size(); i++){
-                    if(userList.get(i).getIsActive()){
-                        user=userList.get(i);
+            if (userList.size() > 0) {
+                for (int i = 0; i < userList.size(); i++) {
+                    if (userList.get(i).getIsActive()) {
+                        user = userList.get(i);
                         break;
                     }
                 }
@@ -398,17 +400,18 @@ public class Constants {
         return user;
     }
 
-    public static String getUserId(Context context){
-        String getuserIp="";
+    public static String getUserId(Context context) {
+        String getuserIp = "";
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {}.getType();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
             List<User> userList = gson.fromJson(jsonText, type);
-            if(userList.size()>0){
-                for(int i=0; i<userList.size(); i++){
-                    if(userList.get(i).getIsActive()){
-                        getuserIp=userList.get(i).getUser_id();
+            if (userList.size() > 0) {
+                for (int i = 0; i < userList.size(); i++) {
+                    if (userList.get(i).getIsActive()) {
+                        getuserIp = userList.get(i).getUser_id();
                         break;
                     }
                 }
@@ -418,17 +421,18 @@ public class Constants {
         return getuserIp;
     }
 
-    public static String getuserCloudIP(Context context){
-        String getuserIp="";
+    public static String getuserCloudIP(Context context) {
+        String getuserIp = "";
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {}.getType();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
             List<User> userList = gson.fromJson(jsonText, type);
-            if(userList.size()>0){
-                for(int i=0; i<userList.size(); i++){
-                    if(userList.get(i).getIsActive()){
-                        getuserIp=userList.get(i).getCloudIP();
+            if (userList.size() > 0) {
+                for (int i = 0; i < userList.size(); i++) {
+                    if (userList.get(i).getIsActive()) {
+                        getuserIp = userList.get(i).getCloudIP();
                         break;
                     }
                 }
@@ -438,38 +442,18 @@ public class Constants {
         return getuserIp;
     }
 
-    public static String getGateway(Context context){
-        String getuserIp="";
+    public static String getGateway(Context context) {
+        String getuserIp = "";
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {}.getType();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
             List<User> userList = gson.fromJson(jsonText, type);
-            if(userList.size()>0){
-                for(int i=0; i<userList.size(); i++){
-                    if(userList.get(i).getIsActive()){
-                        getuserIp=userList.get(i).getGateway_ip();
-                        break;
-                    }
-                }
-            }
-        }
-
-        return getuserIp;
-    }
-
-
-    public static String getCouldIp(Context context){
-        String getuserIp="";
-        String jsonText = Common.getPrefValue(context, Common.USER_JSON);
-        if (!TextUtils.isEmpty(jsonText)) {
-            Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {}.getType();
-            List<User> userList = gson.fromJson(jsonText, type);
-            if(userList.size()>0){
-                for(int i=0; i<userList.size(); i++){
-                    if(userList.get(i).getIsActive()){
-                        getuserIp=userList.get(i).getCloudIP();
+            if (userList.size() > 0) {
+                for (int i = 0; i < userList.size(); i++) {
+                    if (userList.get(i).getIsActive()) {
+                        getuserIp = userList.get(i).getGateway_ip();
                         break;
                     }
                 }
@@ -480,18 +464,40 @@ public class Constants {
     }
 
 
-
-    public static String getMacAddress(Context context){
-        String getuserIp="";
+    public static String getCouldIp(Context context) {
+        String getuserIp = "";
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {}.getType();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
             List<User> userList = gson.fromJson(jsonText, type);
-            if(userList.size()>0){
-                for(int i=0; i<userList.size(); i++){
-                    if(userList.get(i).getIsActive()){
-                        getuserIp=userList.get(i).getMac_address();
+            if (userList.size() > 0) {
+                for (int i = 0; i < userList.size(); i++) {
+                    if (userList.get(i).getIsActive()) {
+                        getuserIp = userList.get(i).getCloudIP();
+                        break;
+                    }
+                }
+            }
+        }
+
+        return getuserIp;
+    }
+
+
+    public static String getMacAddress(Context context) {
+        String getuserIp = "";
+        String jsonText = Common.getPrefValue(context, Common.USER_JSON);
+        if (!TextUtils.isEmpty(jsonText)) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
+            List<User> userList = gson.fromJson(jsonText, type);
+            if (userList.size() > 0) {
+                for (int i = 0; i < userList.size(); i++) {
+                    if (userList.get(i).getIsActive()) {
+                        getuserIp = userList.get(i).getMac_address();
                         break;
                     }
                 }
@@ -519,20 +525,21 @@ public class Constants {
         };
     }
 
-    public static boolean checkLoginAccountCount(Context context){
-        boolean isFlag=false;
+    public static boolean checkLoginAccountCount(Context context) {
+        boolean isFlag = false;
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {}.getType();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
             List<User> userList = gson.fromJson(jsonText, type);
-            if(userList.size()>0){
-                isFlag=true;
-            }else {
-                isFlag=false;
+            if (userList.size() > 0) {
+                isFlag = true;
+            } else {
+                isFlag = false;
             }
-        }else {
-            isFlag=false;
+        } else {
+            isFlag = false;
         }
 
         return isFlag;
@@ -569,15 +576,15 @@ public class Constants {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static int getCurrentMonth(){
+    public static int getCurrentMonth() {
         Calendar c = Calendar.getInstance();
-        int month = c.get(Calendar.MONTH)+1;
+        int month = c.get(Calendar.MONTH) + 1;
         int year = c.get(Calendar.YEAR);
-        month =getMonthOfDay(month,year);
+        month = getMonthOfDay(month, year);
         return month;
     }
 
-    public static ArrayList<String> getMonthList(){
+    public static ArrayList<String> getMonthList() {
         ArrayList<String> xAxis = new ArrayList<>();
 //        xAxis.add("JAN");
 //        xAxis.add("FEB");
@@ -604,7 +611,7 @@ public class Constants {
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static int getMonthOfDay(int month,int year){
+    public static int getMonthOfDay(int month, int year) {
         //January - 31 days 1
         //February - 28 days 2
         //March - 31 days 3
@@ -618,34 +625,35 @@ public class Constants {
         //November - 30 days 11
         //December - 31 days 12
 
-            Calendar calendar = Calendar.getInstance();
-            int date = 1;
-            calendar.set(year, month, date);
-           int  days = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        Calendar calendar = Calendar.getInstance();
+        int date = 1;
+        calendar.set(year, month, date);
+        int days = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 
         return days;
     }
 
-    public static String getMillsTimeFormat(long date){
+    public static String getMillsTimeFormat(long date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
         return dateFormat.format(date);
     }
 
     public static String getpasswordLock() {
-       return DigitUtil.getMD5("vg99092vg");
+        return DigitUtil.getMD5("vg99092vg");
     }
 
-    public static void startUrlset(){
-        if(!ChatApplication.url.startsWith("http")){
-            ChatApplication.url="http://"+ChatApplication.url;
+    public static void startUrlset() {
+        if (!ChatApplication.url.startsWith("http")) {
+            ChatApplication.url = "http://" + ChatApplication.url;
         }
 
     }
-    public static int twoDateDiff(String enddate){
+
+    public static int twoDateDiff(String enddate) {
         SimpleDateFormat myFormat = new SimpleDateFormat("dd-MM-yyyy");
 //        String dateBeforeString = "31 01 2014";
 //        String dateAfterString = "02 02 2014";
-        int daysBetween=0;
+        int daysBetween = 0;
         try {
             Date c = Calendar.getInstance().getTime();
             SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
@@ -654,12 +662,12 @@ public class Constants {
             Date dateBefore = myFormat.parse(startdate);
             Date dateAfter = myFormat.parse(enddate);
             long difference = dateAfter.getTime() - dateBefore.getTime();
-            daysBetween= (int) (difference / (1000*60*60*24));
+            daysBetween = (int) (difference / (1000 * 60 * 60 * 24));
             /* You can also convert the milliseconds to days using this method
              * float daysBetween =
              *         TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS)
              */
-            System.out.println("Number of Days between dates: "+daysBetween);
+            System.out.println("Number of Days between dates: " + daysBetween);
         } catch (Exception e) {
             e.printStackTrace();
         }
