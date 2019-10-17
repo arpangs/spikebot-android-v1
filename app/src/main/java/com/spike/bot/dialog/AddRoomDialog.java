@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -14,17 +15,20 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.spike.bot.ChatApplication;
-import com.spike.bot.core.APIConst;
-import com.spike.bot.core.Common;
-import com.spike.bot.core.Constants;
-import com.spike.bot.R;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
+import com.spike.bot.ChatApplication;
+import com.spike.bot.R;
+import com.spike.bot.adapter.TypeSpinnerAdapter;
+import com.spike.bot.core.APIConst;
+import com.spike.bot.core.Common;
+import com.spike.bot.core.Constants;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by kaushal on 27/12/17.
@@ -37,12 +41,14 @@ public class AddRoomDialog extends Dialog implements
     public Dialog d;
     public Button btn_save;
     public ImageView iv_close;
-    EditText et_room_name,et_panel_name,et_module_id;
-    Spinner sp_no_of_devices;
+    EditText  et_panel_name,et_module_id;
+    Spinner sp_no_of_devices,spinnerroomlist;
     TextView tv_title;
     LinearLayout ll_room;
+    ArrayList<String> roomidlist;
+    ArrayList<String> roomnamelist;
 
-    public String module_id="", device_id="",room_id="",room_name ="",module_type ="";
+    public String module_id="", device_id="",room_id="",module_type ="";
     boolean isRoom=false;
     ICallback iCallback;
     public AddRoomDialog(Activity a) {
@@ -51,20 +57,13 @@ public class AddRoomDialog extends Dialog implements
         this.activity = a;
     }
 
-    public AddRoomDialog(Activity activity,String room_id,String room_name, String module_id, String device_id,String module_type, ICallback iCallback) {
+    public AddRoomDialog(Activity activity,ArrayList<String> roomidlist1,ArrayList<String> roomnamelist1, String module_id, String device_id,String module_type, ICallback iCallback) {
         super(activity);
         this.activity = activity;
         this.module_id = module_id;
         this.device_id=device_id;
-        this.room_id= room_id;
-        this.room_name = room_name;
-        this.module_type = module_type;
-        if(room_id.equalsIgnoreCase("")){
-            isRoom = true;
-        }
-        else{
-            isRoom = false;
-        }
+        this.roomidlist= roomidlist1;
+        this.roomnamelist = roomnamelist1;
         this.iCallback=iCallback;
     }
 
@@ -81,37 +80,44 @@ public class AddRoomDialog extends Dialog implements
 
         ll_room = findViewById(R.id.ll_room);
         tv_title = findViewById(R.id.tv_title);
-        et_room_name =  findViewById(R.id.et_room_name);
         et_panel_name =  findViewById(R.id.et_panel_name);
         et_module_id =  findViewById(R.id.et_module_id);
         sp_no_of_devices =  findViewById(R.id.sp_no_of_devices);
+        spinnerroomlist = findViewById(R.id.sp_no_of_rooms);
         btn_save =  findViewById(R.id.btn_save);
         iv_close = findViewById(R.id.iv_close);
         et_module_id.setText(module_id);
+
+
+        TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(getContext(),roomnamelist,1,false);
+        spinnerroomlist.setAdapter(customAdapter);
 
         sp_no_of_devices.setSelection(Integer.parseInt(device_id)-1);
         sp_no_of_devices.setEnabled(false);
 
         btn_save.setOnClickListener(this);
         iv_close.setOnClickListener(this);
-        if(!isRoom){
-         et_room_name.setText(room_name);
             tv_title.setText("Add Panel");
-            ll_room.setVisibility(View.GONE);
-        }
-        else {
-            tv_title.setText("Add Room");
             ll_room.setVisibility(View.VISIBLE);
-        }
+
+
+        spinnerroomlist.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                room_id = roomidlist.get(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
     }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_save:
-                if(TextUtils.isEmpty(et_room_name.getText().toString())){
-                    Toast.makeText(activity,  "Enter Room name" ,Toast.LENGTH_SHORT).show();
-                    return;
-                }
+
                 if(TextUtils.isEmpty(et_panel_name.getText().toString())){
                     Toast.makeText(activity,  "Enter Panel name" ,Toast.LENGTH_SHORT ).show();
                     return;
@@ -139,9 +145,8 @@ public class AddRoomDialog extends Dialog implements
 
         JSONObject obj = new JSONObject();
         try {
-            if(!isRoom){
-                obj.put("room_id",room_id);
-            }
+
+            obj.put("room_id",room_id);
 //            obj.put("room_name",et_room_name.getText().toString());
             obj.put("panel_name",et_panel_name.getText().toString());
             obj.put("module_id",et_module_id.getText().toString());

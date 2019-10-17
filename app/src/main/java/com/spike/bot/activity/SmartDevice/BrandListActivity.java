@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kp.core.ActivityHelper;
@@ -35,7 +36,7 @@ public class BrandListActivity extends AppCompatActivity {
 
     public SmartBrandAdapter smartBrandAdapter;
     public ArrayList<SmartBrandModel> arrayList = new ArrayList<>();
-
+    TextView txtnodatafound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,7 @@ public class BrandListActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         fab = findViewById(R.id.fab);
         recyclerSmartDevice = findViewById(R.id.recyclerSmartDevice);
+        txtnodatafound = findViewById(R.id.txtNodataFound);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -96,11 +98,16 @@ public class BrandListActivity extends AppCompatActivity {
                         }
 
                         if (arrayList.size() > 0) {
+                            txtnodatafound.setVisibility(View.GONE);
                             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(BrandListActivity.this);
                             recyclerSmartDevice.setLayoutManager(linearLayoutManager);
                             smartBrandAdapter = new SmartBrandAdapter(BrandListActivity.this, arrayList, 1);
                             recyclerSmartDevice.setAdapter(smartBrandAdapter);
+                        } else{
+                            txtnodatafound.setVisibility(View.VISIBLE);
+                            txtnodatafound.setText("No device found");
                         }
+
 
                     }
                 } catch (Exception e) {

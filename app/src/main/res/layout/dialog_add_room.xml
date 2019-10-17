@@ -59,19 +59,27 @@
             android:paddingLeft="8dp">
 
             <TextView
-                android:id="@+id/tv_room_name"
+                android:id="@+id/tv_room_"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.35"
                 android:gravity="center_vertical"
-                android:text="Room Name" />
+                android:text="Room List" />
 
-            <EditText
+          <!--  <EditText
                 android:id="@+id/et_room_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.65"
-                android:hint="" />
+                android:hint="" />-->
+
+            <Spinner
+                android:id="@+id/sp_no_of_rooms"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.65"
+                android:gravity="right"
+                android:textAlignment="gravity" />
 
         </LinearLayout>
 

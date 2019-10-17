@@ -129,8 +129,8 @@ public class Constants {
     public static final String getSmartRemoteList = "/getSmartRemoteList";
     public static final String assignNumberToMood = "/assignNumberToMood";
     public static final String deleteSmartRemote = "/deleteSmartRemote";
-    public static final String DELETE_ROOM = "/deleteRoom";
-    public static final String DELETE_ROOM_PANEL = "/deletePanel";
+    public static final String DELETE_ROOM = "/rooms/delete";
+    public static final String DELETE_ROOM_PANEL = "/panel/delete";
     public static final String GET_MOOD_DETAILS = "/getMoodDetails";
     public static final String validatecamerakey = "/validatecamerakey";
     public static final String addHueLight = "/addHueLight";
@@ -196,7 +196,7 @@ public class Constants {
     public static final String reassignRepeater = "/reassignRepeater";
     public static final String getUnassignedRepeaterList = "/getUnassignedRepeaterList";
     public static final String curtainconfigure = "/curtain/configure";
-    public static final String deviceconfigure = "device/configure/";
+    public static final String deviceconfigure = "/device/configure/";
 
 
     //temp sensor

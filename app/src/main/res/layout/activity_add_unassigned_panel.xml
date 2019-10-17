@@ -6,9 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:background="@drawable/new_screen_resolution"
     android:descendantFocusability="beforeDescendants"
     android:focusableInTouchMode="true"
-    tools:context="com.spike.bot.activity.AddUnassignedPanel">
+    tools:context="com.spike.bot.activity.AddDevice.AddUnassignedPanel">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

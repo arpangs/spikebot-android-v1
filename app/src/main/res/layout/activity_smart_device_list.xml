@@ -60,18 +60,16 @@
                 android:layout_height="match_parent"
                 android:visibility="visible"
                 android:layout_margin="@dimen/_5sdp"/>
-
-            <TextView
-                android:id="@+id/txtNodataFound"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone"
-                android:gravity="center"
-                android:textSize="@dimen/_15sdp"
-                android:textColor="@color/automation_black"
-                android:text="No bridge found."/>
-
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtNodataFound"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:gravity="center"
+            android:textSize="@dimen/_15sdp"
+            android:textColor="@color/automation_black" />
     </FrameLayout>
 
 </LinearLayout>

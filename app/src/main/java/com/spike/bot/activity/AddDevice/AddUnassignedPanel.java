@@ -1,4 +1,4 @@
-package com.spike.bot.activity;
+package com.spike.bot.activity.AddDevice;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -116,7 +116,8 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
-                    if (code == 200) {
+                    if (code == 200)
+                    {
 
                         UnassignedListRes unassignedListRes = Common.jsonToPojo(result.toString(), UnassignedListRes.class);
                         roomList = unassignedListRes.getData().getRoomList();

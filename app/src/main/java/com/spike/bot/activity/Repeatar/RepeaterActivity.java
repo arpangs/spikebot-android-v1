@@ -213,7 +213,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
         ActivityHelper.showProgressDialog(RepeaterActivity.this, "Searching Device attached ", false);
         startTimer();
 
-        String url = ChatApplication.url + Constants.deviceconfigure;
+        String url = ChatApplication.url + Constants.deviceconfigure+"repeater";
 
         new GetJsonTask(RepeaterActivity.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
@@ -337,6 +337,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
             public void onClick(View v) {
                 saveRepeater(dialog, edt_door_name, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list, isTempSensorRequest);
                 dialog.dismiss();
+                ChatApplication.closeKeyboard(RepeaterActivity.this);
             }
         });
 
@@ -348,7 +349,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
 
 
     /**
-     * Save individual epeater */
+     * Save individual repeater */
     private void saveRepeater(final Dialog dialog, EditText textInputEditText, String door_name,
                               String door_module_id, Spinner sp_room_list, final boolean isTempSensorRequest) {
 

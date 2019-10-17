@@ -376,7 +376,7 @@
             android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <activity android:name="com.spike.bot.activity.AddExistingPanel"
+        <activity android:name="com.spike.bot.activity.AddDevice.AddExistingPanel"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme.NoActionBar">
@@ -485,7 +485,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <activity android:name=".activity.AddUnassignedPanel"
+        <activity android:name=".activity.AddDevice.AddUnassignedPanel"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>

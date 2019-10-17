@@ -2,7 +2,6 @@ package com.spike.bot.dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -20,7 +19,6 @@ import android.widget.Toast;
 
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
-import com.spike.bot.activity.AddExistingPanel;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;

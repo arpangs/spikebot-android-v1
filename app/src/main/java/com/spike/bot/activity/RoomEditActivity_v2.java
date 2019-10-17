@@ -40,6 +40,7 @@ import android.widget.Toast;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.AddDevice.AddExistingPanel;
 import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
 import com.spike.bot.activity.ir.blaster.IRRemoteAdd;
 import com.spike.bot.activity.ir.blaster.IRRemoteBrandListActivity;
@@ -69,7 +70,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -390,8 +390,8 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                         ActivityHelper.dismissProgressDialog();
 
                         if(TextUtils.isEmpty(object.getString("message"))){
-                            if(typeSync==0){
-                                addRoomDialog = new AddRoomDialog(RoomEditActivity_v2.this,room.getRoomId(),room.getRoomName(), object.getString("module_id"), ""+5,"", new ICallback() {
+                            /*if(typeSync==0){
+                                addRoomDialog = new AddRoomDialog(RoomEditActivity_v2.this,room.getRoomId(),room.getRoomName(), object.getString("module_id"), ""+5,"",roomIdList, new ICallback() {
                                     @Override
                                     public void onSuccess(String str) {
                                         if(str.equalsIgnoreCase("yes")){
@@ -408,7 +408,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                                 }
                             }else {
                                 showGasSensor(object.getString("module_id"),true,false);
-                            }
+                            }*/
                         }else{
                             showConfigAlert(object.getString("message"));
                         }
@@ -672,7 +672,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                ChatApplication.showToast(RoomEditActivity_v2.this,getResources().getString(R.string.something_wrong1));
             }
         }).execute();
 
@@ -875,6 +875,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
+
             }
         }).execute();
     }

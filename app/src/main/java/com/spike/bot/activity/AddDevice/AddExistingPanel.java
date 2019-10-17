@@ -1,4 +1,4 @@
-package com.spike.bot.activity;
+package com.spike.bot.activity.AddDevice;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
