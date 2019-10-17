@@ -63,7 +63,7 @@ public class JsonHelper {
                 room.setRoomName(roomObj.optString("room_name"));
                 room.setRoom_order(roomObj.optInt("room_order"));
                 room.setRoomId(roomObj.optString("room_id"));
-                room.setRoom_status(roomObj.optInt("room_status"));
+                room.setRoom_status(roomObj.optString("room_status").equals("y") ? 0:1);
                 room.setSensor_panel(roomObj.optString("sensor_panel"));
                 if(roomObj.has("device_count")){
                     room.setDevice_count(roomObj.optString("device_count"));
@@ -231,10 +231,7 @@ public class JsonHelper {
                 objPanel = panelArray.getJSONObject(j);
 
                 PanelVO panelVO = new PanelVO();
-                if(hasObject(objPanel,"panel_status")){
-                    panelVO.setPanel_status(objPanel.optInt("panel_status"));
-                }
-
+                panelVO.setPanel_status(objPanel.optString("panel_status").equals("y")?0:1);
                 panelVO.setPanelId(hasObject(objPanel,"panel_id") ? objPanel.optString("panel_id") : "");
                 panelVO.setPanelName(hasObject(objPanel,"panel_name") ? objPanel.optString("panel_name") : "");
                 panelVO.setModule_id(hasObject(objPanel,"module_id") ? objPanel.optString("module_id") : "");

@@ -300,6 +300,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
             public void onSuccess(JSONObject result) {
                 try {
 
+                    ChatApplication.logDisplay("mood list is "+result);
                     getDeviceList();
 
                     moodList.clear();
@@ -380,6 +381,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
             @Override
             public void onSuccess(JSONObject result) {
                 try {
+                    ChatApplication.logDisplay("mood list is room "+result);
                     JSONObject dataObject = result.getJSONObject("data");
                     JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
                     roomList = JsonHelper.parseRoomArray(roomArray, true);

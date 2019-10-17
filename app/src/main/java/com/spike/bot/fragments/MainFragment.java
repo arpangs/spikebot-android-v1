@@ -1198,9 +1198,9 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             e.printStackTrace();
         }
 
-        if (mSocket != null && mSocket.connected()) {
-            ChatApplication.logDisplay("roomPanelOnOff");
+        ChatApplication.logDisplay("roomPanelOnOff "+obj);
 
+        if (mSocket != null && mSocket.connected()) {
             mSocket.emit("changeRoomPanelMoodStatusAck", obj, new AckWithTimeOut(Constants.ACK_TIME_OUT) {
                 @Override
                 public void call(Object... args) {
