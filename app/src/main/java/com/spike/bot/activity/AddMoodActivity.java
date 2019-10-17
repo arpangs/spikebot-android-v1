@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -63,7 +64,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
     Spinner spinner_mood_icon; //for mood selection
 
     boolean editMode = false, isMap = false, isMoodAdapter = false;
-    String room_device_id = "", panel_id, panel_name;
+    String room_device_id = "", panel_id, panel_name,select_mood_id="";
 
     RoomVO moodVO = new RoomVO();
     public Dialog dialog = null;
@@ -226,14 +227,20 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                 }
 
                 for (int k = 0; k < roomList.get(i).getPanelList().get(j).getDeviceList().size(); k++) {
-                    if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).isSensor()) {
-                        if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_type().equalsIgnoreCase("temp")) {
+                    if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).isSensor() &&
+                            roomList.get(i).getPanelList().get(j).isActivePanel()) {
+                        if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_type().equalsIgnoreCase("temp_sensor")) {
                             roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
                         } else if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("door_sensor")) {
                             roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
-                        } else if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getTo_use().equalsIgnoreCase("0")) {
+                        }else if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("door_sensor")) {
+                            roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
+                        } else if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("gas_sensor")) {
                             roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
                         }
+//                        else if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getTo_use().equalsIgnoreCase("0")) {
+//                            roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
+//                        }
                     }
                 }
             }
@@ -418,7 +425,6 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
             moodObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             moodObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             moodObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            RoomVO room = (RoomVO) spinner_mood_icon.getSelectedItem();
 
             if (editMode) {
                 moodObj.put("room_id", moodVO.getRoomId());
@@ -429,11 +435,11 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 //                moodObj.put("panel_id", "");
             }
 
-            ArrayList<String> deviceIdList = new ArrayList<>();
 
+            ArrayList<String> deviceIdList = new ArrayList<>();
             for (DeviceVO dPanel : deviceVOArrayList) {
                 //  {
-                //	"room_name": "mood1",
+                //	"mood_name_id": 3,
                 //	"user_id": "1568463607921_AyMe7ek9e",
                 //	"panel_device_ids": ["1571149643833_GeqT4vQuUG","1571149643852_R0NbfvM_Yx"]
                 //}
@@ -443,9 +449,10 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
             JSONArray array = new JSONArray(deviceIdList);
             moodObj.put("panel_device_ids", array);
+            moodObj.put("mood_name_id", select_mood_id);
 
             ChatApplication.logDisplay("hash code is " + moodObj);
-            moodObj.put("room_name", room.getRoomName());
+
 
 
         } catch (JSONException e) {
@@ -549,6 +556,18 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
             }
         });
 
+        spinner_mood_icon.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                select_mood_id=moodIconList.get(position).getRoomId();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
     }
 
     private void sortList(final List<RoomVO> roomVOs) {
@@ -602,7 +621,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         ArrayList<String> arrayList = new ArrayList<>();
         ArrayList<DeviceVO> listTemp = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
-            arrayList.add(list.get(i).getRoomDeviceId());
+            arrayList.add(list.get(i).getPanel_device_id());
         }
 
         HashSet<String> hashSet = new HashSet<String>();
@@ -613,7 +632,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
         for (int j = 0; j < list.size(); j++) {
             for (int i = 0; i < arrayList.size(); i++) {
-                if (arrayList.get(i).length() > 1 && list.get(j).getRoomDeviceId().equalsIgnoreCase(arrayList.get(i))) {
+                if (arrayList.get(i).length() > 1 && list.get(j).getPanel_device_id().equalsIgnoreCase(arrayList.get(i))) {
                     arrayList.set(i, arrayList.get(i) + "i");
                     listTemp.add(list.get(i));
                 }

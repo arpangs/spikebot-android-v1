@@ -361,17 +361,17 @@ public class JsonHelper {
                 d1.setRoom_panel_id(hasObject(deviceObj,"room_panel_id") ? deviceObj.optString("room_panel_id") : "");
                 d1.setRoomId(roomId);
                 d1.setPanel_id(panel_id);
-                d1.setDeviceName(deviceObj.optString("curtain_name"));
-                d1.setModuleId(deviceObj.optString("curtain_module_id"));
+                d1.setDeviceName(deviceObj.optString("device_name"));
+                d1.setModuleId(deviceObj.optString("module_id"));
                 d1.setSensor(false);
                 d1.setRoomDeviceId(deviceObj.optString("room_id"));
-                d1.setDeviceId(deviceObj.optString("curtain_id"));
-                d1.setDeviceStatus(deviceObj.optInt("curtain_status"));
-                d1.setDevice_icon(deviceObj.optString("curtain_icon"));
+                d1.setDeviceId(deviceObj.optString("device_id"));
+                d1.setDeviceStatus(deviceObj.optInt("device_status"));
+                d1.setDeviceType(deviceObj.optString("device_icon"));
+                d1.setDevice_icon(deviceObj.optString("device_icon"));
                 d1.setIsActive(deviceObj.has("is_active")? deviceObj.optInt("is_active"):0);
                 d1.setAuto_on_off_value(deviceObj.has("auto_on_off_value")? deviceObj.optInt("auto_on_off_value"):0);
-                d1.setDeviceType("");
-                d1.setOriginal_room_device_id(deviceObj.has("curtain_id") ? deviceObj.optString("curtain_id") : "");
+                d1.setOriginal_room_device_id(deviceObj.has("device_id") ? deviceObj.optString("device_id") : "");
                 d1.setRoomName(roomName);
                 d1.setPanel_name(panel_name);
                 d1.setIs_original(deviceObj.optInt("is_original"));
@@ -583,6 +583,7 @@ public class JsonHelper {
                 }
 
                 DeviceVO d1 = new DeviceVO();
+                d1.setPanel_device_id(deviceObj.optString("panel_device_id"));
                 d1.setSpeed(hasObject(deviceObj,"mode") ? deviceObj.optString("mode") : "");
                 d1.setIs_door_active(is_door_active);
                 d1.setIs_lock_active(is_lock_active);
@@ -681,6 +682,7 @@ public class JsonHelper {
                 String power =  deviceObj.has("power")? deviceObj.optString("power"):"";
 
                 DeviceVO d1 = new DeviceVO();
+                d1.setPanel_device_id(deviceObj.optString("panel_device_id"));
                 d1.setRoom_panel_id(hasObject(deviceObj,"room_panel_id") ? deviceObj.optString("room_panel_id") : "");
                 d1.setRoomId(roomId);
                 d1.setPanel_id(panel_id);

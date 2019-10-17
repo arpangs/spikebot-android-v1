@@ -38,13 +38,13 @@ public class RoomListArrayAdapter extends ArrayAdapter<RoomVO> {
         View itemView = inflater.inflate(groupid, parent, false);
 
         roomVO = list.get(position);
-        imageView = (ImageView) itemView.findViewById(R.id.txt_spinner_image);
+        imageView =  itemView.findViewById(R.id.txt_spinner_image);
         if (getRoomName().equalsIgnoreCase(roomVO.getRoomName())) {
             imageView.setVisibility(View.GONE);
         } else {
             imageView.setVisibility(View.GONE);
         }
-        textView = (TextView) itemView.findViewById(R.id.txt_spinner_title);
+        textView =  itemView.findViewById(R.id.txt_spinner_title);
         textView.setText(list.get(position).getRoomName());
         return itemView;
     }

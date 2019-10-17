@@ -804,7 +804,6 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                         }
 
-                        ChatApplication.logDisplay("temp is "+item.getSensor_icon());
                     }
 
                 }
