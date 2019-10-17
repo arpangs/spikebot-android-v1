@@ -91,6 +91,16 @@ public class DeviceVO implements Serializable,Cloneable {
     private String remote_device_id;
     private String room_panel_id;
 
+    public String getPanel_device_id() {
+        return panel_device_id;
+    }
+
+    public void setPanel_device_id(String panel_device_id) {
+        this.panel_device_id = panel_device_id;
+    }
+
+    private String panel_device_id;
+
     public int getLock_id() {
         return lock_id;
     }

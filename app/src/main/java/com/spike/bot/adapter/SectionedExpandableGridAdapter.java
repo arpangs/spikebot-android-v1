@@ -589,7 +589,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                         itemDeviceName = item.getSensor_name();
 
-                    }else if(item.getSensor_type().equalsIgnoreCase("door")){
+                    }else if(item.getSensor_type().equalsIgnoreCase("door_sensor")){
 
                         //onlydoor, subtype=1
                         //only lock, subtype=2
@@ -677,7 +677,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             holder.iv_icon_badge.setVisibility(View.GONE);
                         }
 
-                    }else if(item.getSensor_type().equals("gassensor")){
+                    }else if(item.getSensor_type().equals("gas_sensor")){
                         holder.txt_temp_in_cf.setVisibility(View.INVISIBLE);
                         holder.iv_icon.setVisibility(View.VISIBLE);
                         itemIcon = Common.getIcon(1, item.getSensor_icon()); //AC off icon
@@ -790,22 +790,21 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             status = 1;
                         }
 
+                        // } else if (item.getIsActive() == 1) {
                         if (item.getIsActive() == -1) {
-                            if (item.getSensor_type() != null && item.getSensor_type().equalsIgnoreCase("tempsensor")) {
+                            if (item.getSensor_type() != null && item.getSensor_type().equalsIgnoreCase("temp_sensor")) {
                                 itemIcon = Common.getIconInActive(status, item.getSensor_type());
                             } else if (item.getSensor_type() != null && item.getSensor_type().equalsIgnoreCase("multisensor")) {
                                 itemIcon = Common.getIconInActive(status, item.getSensor_type());
                             } else {
                                 itemIcon = Common.getIconInActive(status, item.getDeviceType()); //unavailable means temp or dead sensor is on dead mode
                             }
-                        } else if (item.getIsActive() == 1) {
-                            //If not active remote AC then display cross image above on AC icon
-                            if(item.getSensor_type().equalsIgnoreCase("multisensor")){
-                                itemIcon = R.drawable.icon_multi_sensor;
-                            }else {
-                                itemIcon = Common.getIcon(status, item.getSensor_icon());
-                            }
+                        } else{
+                            itemIcon = Common.getIcon(status, item.getSensor_icon());
+
                         }
+
+                        ChatApplication.logDisplay("temp is "+item.getSensor_icon());
                     }
 
                 }
