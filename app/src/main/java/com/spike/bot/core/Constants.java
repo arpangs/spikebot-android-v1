@@ -111,13 +111,13 @@ public class Constants {
     public static final String wifilogin = "/wifilogin";
 
     //room
-    public static final String GET_DEVICES_LIST = "/device/list";  //r
-    public static final String getMoodName = "/mood/names/list";  //r
-    public static final String getChildUsers = "/getChildUsers";  //r
-    public static final String DeleteChildUser = "/DeleteChildUser";  //r
-    public static final String getRoomCameraList = "/getRoomCameraList";  //r
-    public static final String AddChildUser = "/AddChildUser";  //r
-    public static final String updateChildUser = "/updateChildUser";  //r
+    public static final String GET_DEVICES_LIST = "/device/list";
+    public static final String getMoodName = "/mood/names/list";
+    public static final String getChildUsers = "/getChildUsers";
+    public static final String DeleteChildUser = "/DeleteChildUser";
+    public static final String getRoomCameraList = "/getRoomCameraList";
+    public static final String AddChildUser = "/AddChildUser";
+    public static final String updateChildUser = "/updateChildUser";
     public static final String ADD_CUSTOME_ROOM = "/rooms/add";
  //   public static final String SAVE_ROOM_AND_PANEL_NAME = "/saveRoomAndPanelName";
     //    public static final String CONFIGURE_NEWROOM = "/configureNewRoom";

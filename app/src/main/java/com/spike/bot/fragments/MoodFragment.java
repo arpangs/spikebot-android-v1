@@ -615,20 +615,18 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
         if(!token_id.equalsIgnoreCase("")){
             url = url +"/" + token_id;
         }
+
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
-            jsonObject.put(APIConst.PHONE_ID_KEY,APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            jsonObject.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
+            jsonObject.put("room_type", "mood");
+            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        if(moodList == null){
-            moodList = new ArrayList<>();
-        }
-
-        ChatApplication.logDisplay("jsonObject is mood " + jsonObject.toString());
+        ChatApplication.logDisplay("url is "+url+" "+jsonObject);
         new GetJsonTask2(getActivity(),url ,"POST",jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -650,10 +648,6 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
                         txt_empty_schedule.setVisibility(View.VISIBLE);
                     }
 
-                    if(isRefreshonScroll){
-                        isRefreshonScroll=false;
-                        getDeviceListUserData(15);
-                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -841,63 +835,6 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
 
         }).execute();
     }
-
-    /// all webservice call below.
-    public  void getDeviceListUserData(final int checkmessgae) {
-
-        if (getActivity() == null) {
-            return;
-        }
-
-        if (checkmessgae == 1 || checkmessgae == 6 || checkmessgae == 7 || checkmessgae == 8 || checkmessgae == 9 || checkmessgae == 10) {
-            ActivityHelper.showProgressDialog(getActivity(), "Please Wait...", false);
-        }
-
-        String url = ChatApplication.url + Constants.GET_DEVICES_LIST;
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-//            jsonObject.put("room_type", 0);
-//            jsonObject.put("is_sensor_panel", 1);
-            jsonObject.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
-//            jsonObject.put("admin",1);
-            jsonObject.put(APIConst.PHONE_ID_KEY,APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        new GetJsonTask2(activity, url, "POST", jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                try {
-                    int code = result.getInt("code");
-                    if (code == 200) {
-                        JSONObject dataObject = result.getJSONObject("data");
-                        JSONArray userListArray = dataObject.getJSONArray("userList");
-
-                        JSONObject userObject = userListArray.getJSONObject(0);
-                        String userId = userObject.getString("user_id");
-                        String userFirstName = userObject.getString("first_name");
-                        String userLastName = userObject.getString("last_name");
-                        String camera_key = userObject.optString("camera_key");
-                        Common.savePrefValue(ChatApplication.getInstance(), Common.camera_key, camera_key);
-                        ChatApplication.currentuserId = userId;
-                        mCallback.onArticleSelected("" + userFirstName);
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error, int reCode) {
-            }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-
 
     private Emitter.Listener updateChildUser = new Emitter.Listener() {
         @Override

@@ -1857,6 +1857,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 //            jsonObject.put("room_type", 0);
 //            jsonObject.put("is_sensor_panel", 1);
             jsonObject.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
+            jsonObject.put("room_type", "room");
 
 //            if (TextUtils.isEmpty(Common.getPrefValue(activity, Constants.USER_ADMIN_TYPE))) {
 //                jsonObject.put("admin", 1);
@@ -2122,6 +2123,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 //            jsonObject.put("room_type", 0);
 //            jsonObject.put("is_sensor_panel", 1);
             jsonObject.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
+            jsonObject.put("room_type", "room");
 
 //            if (TextUtils.isEmpty(Common.getPrefValue(activity, Constants.USER_ADMIN_TYPE))) {
 //                jsonObject.put("admin", 1);
