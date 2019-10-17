@@ -145,10 +145,7 @@ public class Common {
                     case "night":
                         resource = R.drawable.smily_yello;
                         break;
-                    case "tempsensor":
-                        resource = R.drawable.on_temperature;
-                        break;
-                    case "temp":
+                    case "temp_sensor":
                         resource = R.drawable.on_temperature;
                         break;
                     case "doorsensor":
@@ -179,8 +176,7 @@ public class Common {
                     case "lockOnly":
                         resource = R.drawable.unlock_only;
                         break;
-
-                        case "gassensor":
+                        case "gas_sensor":
                         resource = R.drawable.fire_and_gas;
                         break;
 
@@ -224,10 +220,7 @@ public class Common {
                     case "work":
                         resource = R.drawable.smily_gray;
                         break;
-                    case "tempsensor":
-                        resource = R.drawable.off_temperature;
-                        break;
-                    case "temp":
+                    case "temp_sensor":
                         resource = R.drawable.off_temperature;
                         break;
                     case "doorsensor":
@@ -261,7 +254,7 @@ public class Common {
                         resource = R.drawable.lock_only;
                         break;
 
-                    case "gassensor":
+                    case "gas_sensor":
                         resource = R.drawable.fire_and_gas_gray;
                         break;
 

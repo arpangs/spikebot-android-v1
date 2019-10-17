@@ -112,6 +112,7 @@ public class Constants {
 
     //room
     public static final String GET_DEVICES_LIST = "/device/list";  //r
+    public static final String getMoodName = "/mood/names/list";  //r
     public static final String getChildUsers = "/getChildUsers";  //r
     public static final String DeleteChildUser = "/DeleteChildUser";  //r
     public static final String getRoomCameraList = "/getRoomCameraList";  //r
@@ -266,7 +267,7 @@ public class Constants {
     public static final String CHECK_INDIVIDUAL_SWITCH_DETAILS = "/checkIndividualSwitchDetails";
 
     //mood
-    public static final String ADD_NEW_MOOD_NEW = "/addMood";
+    public static final String ADD_NEW_MOOD_NEW = "/mood/add";
     public static final String SAVEEDITMOOD = "/updateMood";  //saveEditMood
     public static final String DELETE_MOOD = "/deleteMood";
     public static final String GET_MOOD_DEVICE_DETAILS = "/getMoodDeviceDetails";

@@ -27,6 +27,16 @@ public class DeviceVO implements Serializable,Cloneable {
     private String deviceTimeDifference;
     private String deviceSync;
     private String deviceType;
+
+    public String getDevice_identifier() {
+        return device_identifier;
+    }
+
+    public void setDevice_identifier(String device_identifier) {
+        this.device_identifier = device_identifier;
+    }
+
+    private String device_identifier="";
     private int isActive;
     private int isAlive;
     private String isLocked;
@@ -80,6 +90,16 @@ public class DeviceVO implements Serializable,Cloneable {
     private String remote_status;
     private String remote_device_id;
     private String room_panel_id;
+
+    public String getPanel_device_id() {
+        return panel_device_id;
+    }
+
+    public void setPanel_device_id(String panel_device_id) {
+        this.panel_device_id = panel_device_id;
+    }
+
+    private String panel_device_id;
 
     public int getLock_id() {
         return lock_id;

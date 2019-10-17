@@ -85,7 +85,7 @@
             android:layout_marginTop="16dp"
             android:gravity="center"
             android:padding="4dp"
-            android:text="Please try again."
+            android:text="Home controller is down."
             android:textAppearance="@android:style/TextAppearance.Large" />
 
         <Button

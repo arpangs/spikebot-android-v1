@@ -27,11 +27,6 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
     //data list
     private LinkedHashMap<RoomVO, ArrayList<PanelVO>> mSectionDataMap = new LinkedHashMap<RoomVO, ArrayList<PanelVO>>();
     private ArrayList<Object> mDataArrayList = new ArrayList<Object>();
-
-    //section map
-    //TODO : look for a way to avoid this
-  //  private HashMap<String, MoodVO> mSectionMap = new HashMap<String, MoodVO>();
-
     //adapter
     private MoodExpandableGridAdapter mSectionedExpandableGridAdapter;
 
@@ -43,8 +38,7 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
         //setting the recycler view
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, gridSpanCount);
         recyclerView.setLayoutManager(gridLayoutManager);
-        mSectionedExpandableGridAdapter = new MoodExpandableGridAdapter(context, mDataArrayList,
-                gridLayoutManager, itemClickListener, this,this);
+        mSectionedExpandableGridAdapter = new MoodExpandableGridAdapter(context, mDataArrayList, gridLayoutManager, itemClickListener, this,this);
         recyclerView.setAdapter(mSectionedExpandableGridAdapter);
 
         mRecyclerView = recyclerView;
@@ -68,22 +62,13 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
         item.setDeviceId(deviceId);
 
         for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
-            RoomVO key = entry.getKey() ;
-
-            boolean isModeStatusOpen = false;
 
             ArrayList<PanelVO> panelsList = entry.getValue();
 
             for(PanelVO panel : panelsList){
-
                 ArrayList<DeviceVO> devicesList = panel.getDeviceList();
-
-                //if(devicesList.contains(item)){
-                //    Log.d("","devicesList.contains " + key + "    size =  " + devicesList.size() );
                     for(int i=0;i<devicesList.size();i++) {
-
                         devicesList.get(i).setIs_locked(is_locked);
-
                         if(devicesList.get(i).getDeviceType().equalsIgnoreCase("2")){
                             ChatApplication.logDisplay("mood is tt"+devicesList.get(i).getDeviceId()+" "+deviceId);
                             ChatApplication.logDisplay("mood is "+devicesList.get(i).getModuleId()+" "+moduleId);
@@ -104,14 +89,10 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
                                 devicesList.get(i).setDeviceStatus(Integer.parseInt(deviceStatus));
 
                                 reloadDeviceList(devicesList.get(i));
-
-                                // break;
                             }
                         }
                     }
-              //  }
             }
-          //  mSectionDataMap.put(key, panelsList);
         }
         mSectionedExpandableGridAdapter.notifyDataSetChanged();
 
@@ -125,9 +106,6 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
         item.setPanel_status(Integer.parseInt(deviceStatus));
 
         for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
-
-            RoomVO key = entry.getKey() ;
-
             ArrayList<PanelVO> panelsList = entry.getValue();
             if(panelsList.contains(item)){
 
@@ -146,7 +124,6 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
     public void updateMood(String mood_id,String mood_status) {
         MoodVO item = new MoodVO();
         item.setMood_id(mood_id);
-      //  item.setRoom_status(Integer.parseInt(deviceStatus));
 
         for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
             RoomVO key = entry.getKey() ;
@@ -169,11 +146,7 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
 
 
     }
-    /*
-    public void addSection(MoodVO section, ArrayList<DeviceVO> items) {
-        mSectionMap.put(section.getRoomName(), section);
-        mSectionDataMap.put(section, items);
-    }*/
+
     public void addSectionList(ArrayList<RoomVO> roomList){
         mDataArrayList.clear();
         mSectionDataMap.clear();
@@ -216,14 +189,9 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
         for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
             RoomVO key;
 
-          //  mDataArrayList.add((key = entry.getKey()));
             mDataArrayList.add((key = entry.getKey()));
             if (key.isExpanded ) {
-                //key.isExpanded = true;
-                //mDataArrayList.add(new PanelVO("Panel1"));
-                //mDataArrayList.addAll(entry.getValue());
                 ArrayList<PanelVO> panelList = entry.getValue();
-
                 for(int i=0;i<panelList.size();i++){
                     //add panel
                     mDataArrayList.add(panelList.get(i));
@@ -238,11 +206,8 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
     public void onSectionStateChanged(RoomVO section, boolean isOpen) {
         this.section = section;
         section.isExpanded = isOpen;
-
         if(!isOpen){
-
             if(ListUtils.arrayListMood.size()>0){
-
                 for(int i=0;i<ListUtils.arrayListMood.size();i++){
                     if(section.getRoomId().equalsIgnoreCase(ListUtils.arrayListMood.get(i).getRoomId())){
                         section.isExpanded = false;

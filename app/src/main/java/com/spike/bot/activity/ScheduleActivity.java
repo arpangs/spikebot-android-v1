@@ -80,64 +80,28 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
     EditText et_schedule_name;
     CustomEditText et_schedule_on_time, et_schedule_off_time;
     Spinner sp_schedule_list;
-    RadioGroup rg_schedule_type;
-    RadioGroup rg_schedule_select;
-    RadioButton rb_schedule_type_room, rb_schedule_type_mood;
-    RadioButton rb_schedule_select_schedule, rb_schedule_select_auto;
+    RadioGroup rg_schedule_type,rg_schedule_select;
+    RadioButton rb_schedule_type_room, rb_schedule_type_mood,rb_schedule_select_schedule, rb_schedule_select_auto;
 
-    TextView text_schedule_1, text_schedule_2, text_schedule_3, text_schedule_4, text_schedule_5, text_schedule_6, text_schedule_7;
+    TextView text_schedule_1, text_schedule_2, text_schedule_3, text_schedule_4, text_schedule_5, text_schedule_6, text_schedule_7,txt_empty_sch;
     ImageView iv_schedule_on_time_clear, iv_schedule_off_time_clear;
-    Button btnMoodSchedule, btnRoomSchedule;
-
-    private TextView txt_empty_sch;
-
-    Button btn_add_schedule, btn_cancel_schedule;
+    Button btnMoodSchedule, btnRoomSchedule,btn_add_schedule, btn_cancel_schedule;
     ImageView imgArrow, imgArraoTime;
-    LinearLayout ll_schedule, ll_spinner_hide;
-
-    LinearLayout ll_on_time, ll_off_time, ll_week_title, ll_week_days;
-    LinearLayout ll_on_time_auto, ll_on_time_bottom;
-    LinearLayout ll_off_time_auto, ll_off_time_bottom;
-    LinearLayout ll_spinner_mood;
-
-    private LinearLayout empty_ll_view;
-
+    LinearLayout ll_schedule, ll_spinner_hide,ll_on_time, ll_off_time, ll_week_title, ll_week_days,ll_on_time_auto, ll_on_time_bottom,ll_off_time_auto, ll_off_time_bottom,ll_spinner_mood,empty_ll_view;
     private Spinner sp_mood_selection;
-
-    CustomEditText et_on_time_hours, et_on_time_min;
-    CustomEditText et_off_time_hours, et_off_time_min;
-
-    TextView et_on_time_bottom_header, et_off_time_bottom_header;
-    TextView et_on_time_bottom_header_at, et_on_time_bottom_header_at_time, et_on_time_bottom_header_at_ampm;
-    TextView et_off_time_bottom_header_at, et_off_time_bottom_header_at_time, et_off_time_bottom_header_at_ampm;
-
-
+    CustomEditText et_on_time_hours, et_on_time_min,et_off_time_hours, et_off_time_min;
+    TextView et_on_time_bottom_header, et_off_time_bottom_header,et_on_time_bottom_header_at, et_on_time_bottom_header_at_time, et_on_time_bottom_header_at_ampm,
+            et_off_time_bottom_header_at, et_off_time_bottom_header_at_time, et_off_time_bottom_header_at_ampm,tv_schedule_list;
     RecyclerView rv_auto_mode, rv_schedule;
-    TextView tv_schedule_list;
-    ScheduleAdapter scheduleAdapter;
-    ArrayList<AutoModeVO> autoModeArrayList;
-    ArrayList<ScheduleVO> scheduleArrayList;
-    int position = 0;
-    ScheduleVO scheduleVO = new ScheduleVO();
-    boolean isEdit = false, isEditOpen = false, isSelectMode = false;
-    boolean isScheduleClick = false, isMoodSelected = false;
-    String webUrl = "";
+
     JSONObject deviceObj = new JSONObject();
-    int selection = 0;
+    ScheduleVO scheduleVO = new ScheduleVO();
+    int position = 0,selection=0,nextFalse=0;
+    boolean isEdit = false, isEditOpen = false, isSelectMode = false,isScheduleClick = false, isMoodSelected = false, isMap = false, isMoodAdapter;
+    String webUrl = "",moodId = "", roomId = "", startCheckDate = "", endCheckDate = "",on_time_date = "",off_time_date = "", isActivityType = "",on_at_time = "", off_at_time = "";
 
-    String moodId = "", roomId = "", startCheckDate = "", endCheckDate = "";
-    private boolean isMap = false, isMoodAdapter;
-
-    public String on_time_date = "";
-    public String off_time_date = "", isActivityType = "";
-
-    public String on_at_time = "", off_at_time = "";
-
-    private final String TAG = "ScheduleActivity";
     ArrayList<RoomVO> roomList = new ArrayList<>();
     ArrayList<RoomVO> roomListAdd = new ArrayList<>();
-
-    public int nextFalse = 0;
     ArrayList<MoodVO> moodList = new ArrayList<>();
     ArrayList<RoomVO> moodListSpinner = new ArrayList<>();
     ArrayList<RoomVO> moodListAdd = new ArrayList<>();
@@ -145,7 +109,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
     DeviceListLayoutHelper deviceListLayoutHelper;
 
-    private static String STAG = "isRemoteSch";
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -158,7 +121,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -198,98 +161,78 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         webUrl = app.url;
 
 
-        ll_on_time = (LinearLayout) findViewById(R.id.ll_on_time);
-        ll_off_time = (LinearLayout) findViewById(R.id.ll_off_time);
-        ll_week_title = (LinearLayout) findViewById(R.id.ll_week_title);
-        ll_week_days = (LinearLayout) findViewById(R.id.ll_week_days);
-
-        ll_on_time_auto = (LinearLayout) findViewById(R.id.ll_on_time_auto);
-        ll_on_time_bottom = (LinearLayout) findViewById(R.id.ll_on_time_bottom);
-
-        ll_off_time_auto = (LinearLayout) findViewById(R.id.ll_off_time_auto);
-        ll_off_time_bottom = (LinearLayout) findViewById(R.id.ll_off_time_bottom);
-        imgArrow = (ImageView) findViewById(R.id.imgArrow);
-        imgArraoTime = (ImageView) findViewById(R.id.imgArraoTime);
-
-        empty_ll_view = (LinearLayout) findViewById(R.id.empty_ll_view);
+        ll_on_time = findViewById(R.id.ll_on_time);
+        ll_off_time = findViewById(R.id.ll_off_time);
+        ll_week_title = findViewById(R.id.ll_week_title);
+        ll_week_days = findViewById(R.id.ll_week_days);
+        ll_on_time_auto = findViewById(R.id.ll_on_time_auto);
+        ll_on_time_bottom = findViewById(R.id.ll_on_time_bottom);
+        ll_off_time_auto = findViewById(R.id.ll_off_time_auto);
+        ll_off_time_bottom = findViewById(R.id.ll_off_time_bottom);
+        imgArrow =  findViewById(R.id.imgArrow);
+        imgArraoTime =  findViewById(R.id.imgArraoTime);
+        empty_ll_view =  findViewById(R.id.empty_ll_view);
         empty_ll_view.setVisibility(View.GONE);
-
-        ll_spinner_mood = (LinearLayout) findViewById(R.id.ll_spinner_mood);
-        sp_mood_selection = (Spinner) findViewById(R.id.sp_mood_selection);
-        //auto
-
-        et_on_time_hours = (CustomEditText) findViewById(R.id.et_on_time_hours);
-        et_on_time_min = (CustomEditText) findViewById(R.id.et_on_time_min);
-
-        et_off_time_hours = (CustomEditText) findViewById(R.id.et_off_time_hours);
-        et_off_time_min = (CustomEditText) findViewById(R.id.et_off_time_min);
-
-        txt_empty_sch = (TextView) findViewById(R.id.txt_empty_sch);
-        btnRoomSchedule = (Button) findViewById(R.id.btnRoomSchedule);
-        btnMoodSchedule = (Button) findViewById(R.id.btnMoodSchedule);
+        ll_spinner_mood =  findViewById(R.id.ll_spinner_mood);
+        sp_mood_selection =  findViewById(R.id.sp_mood_selection);
+        et_on_time_hours = findViewById(R.id.et_on_time_hours);
+        et_on_time_min = findViewById(R.id.et_on_time_min);
+        et_off_time_hours = findViewById(R.id.et_off_time_hours);
+        et_off_time_min = findViewById(R.id.et_off_time_min);
+        txt_empty_sch =  findViewById(R.id.txt_empty_sch);
+        btnRoomSchedule =  findViewById(R.id.btnRoomSchedule);
+        btnMoodSchedule =  findViewById(R.id.btnMoodSchedule);
         //headr on time
-        et_on_time_bottom_header = (TextView) findViewById(R.id.et_on_time_bottom_header);
-        et_on_time_bottom_header_at = (TextView) findViewById(R.id.et_on_time_bottom_header_at);
-        et_on_time_bottom_header_at_time = (TextView) findViewById(R.id.et_on_time_bottom_header_at_time);
-        et_on_time_bottom_header_at_ampm = (TextView) findViewById(R.id.et_on_time_bottom_header_at_ampm);
+        et_on_time_bottom_header =  findViewById(R.id.et_on_time_bottom_header);
+        et_on_time_bottom_header_at =  findViewById(R.id.et_on_time_bottom_header_at);
+        et_on_time_bottom_header_at_time =  findViewById(R.id.et_on_time_bottom_header_at_time);
+        et_on_time_bottom_header_at_ampm =  findViewById(R.id.et_on_time_bottom_header_at_ampm);
 
         //header off time
-        et_off_time_bottom_header = (TextView) findViewById(R.id.et_off_time_bottom_header);
+        et_off_time_bottom_header =  findViewById(R.id.et_off_time_bottom_header);
 
-        et_off_time_bottom_header_at = (TextView) findViewById(R.id.et_off_time_bottom_header_at);
-        et_off_time_bottom_header_at_time = (TextView) findViewById(R.id.et_off_time_bottom_header_at_time);
-        et_off_time_bottom_header_at_ampm = (TextView) findViewById(R.id.et_off_time_bottom_header_at_ampm);
+        et_off_time_bottom_header_at =  findViewById(R.id.et_off_time_bottom_header_at);
+        et_off_time_bottom_header_at_time =  findViewById(R.id.et_off_time_bottom_header_at_time);
+        et_off_time_bottom_header_at_ampm =  findViewById(R.id.et_off_time_bottom_header_at_ampm);
 
+        //auto end
+        sp_schedule_list = findViewById(R.id.sp_schedule_list);
+        rg_schedule_type = findViewById(R.id.rg_schedule_type);
+        rg_schedule_select = findViewById(R.id.rg_schedule_select);
+        rb_schedule_type_room =  findViewById(R.id.rb_schedule_type_room);
+        rb_schedule_type_mood =  findViewById(R.id.rb_schedule_type_mood);
+        rb_schedule_select_schedule =  findViewById(R.id.rb_schedule_select_schedule);
+        rb_schedule_select_auto =  findViewById(R.id.rb_schedule_select_timer);
+        tv_schedule_list =  findViewById(R.id.tv_schedule_list);
+        rv_auto_mode =  findViewById(R.id.rv_auto_mode);
+        et_schedule_name =  findViewById(R.id.et_schedule_name);
+        et_schedule_name.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
 
+        et_schedule_on_time = findViewById(R.id.et_schedule_on_time);
+        et_schedule_off_time = findViewById(R.id.et_schedule_off_time);
+
+        iv_schedule_on_time_clear =  findViewById(R.id.iv_schedule_on_time_clear);
+        iv_schedule_off_time_clear =  findViewById(R.id.iv_schedule_off_time_clear);
+
+        text_schedule_1 =  findViewById(R.id.text_schedule_1);
+        text_schedule_2 =  findViewById(R.id.text_schedule_2);
+        text_schedule_3 =  findViewById(R.id.text_schedule_3);
+        text_schedule_4 =  findViewById(R.id.text_schedule_4);
+        text_schedule_5 =  findViewById(R.id.text_schedule_5);
+        text_schedule_6 =  findViewById(R.id.text_schedule_6);
+        text_schedule_7 =  findViewById(R.id.text_schedule_7);
+        rv_schedule = findViewById(R.id.rv_schedule);
+        btn_add_schedule =  findViewById(R.id.btn_add_schedule);
+        btn_cancel_schedule =  findViewById(R.id.btn_cancel_schedule);
+        ll_spinner_hide =  findViewById(R.id.ll_spinner_hide);
+        ll_schedule =  findViewById(R.id.ll_schedule);
+
+        btn_add_schedule.setOnClickListener(this);
+        btn_cancel_schedule.setOnClickListener(this);
         et_on_time_hours.setOnClickListener(this);
         et_on_time_min.setOnClickListener(this);
         btnMoodSchedule.setOnClickListener(this);
         btnRoomSchedule.setOnClickListener(this);
-
-        //auto end
-        sp_schedule_list = (Spinner) findViewById(R.id.sp_schedule_list);
-
-        rg_schedule_type = (RadioGroup) findViewById(R.id.rg_schedule_type);
-        rg_schedule_select = (RadioGroup) findViewById(R.id.rg_schedule_select);
-
-        rb_schedule_type_room = (RadioButton) findViewById(R.id.rb_schedule_type_room);
-        rb_schedule_type_mood = (RadioButton) findViewById(R.id.rb_schedule_type_mood);
-
-        rb_schedule_select_schedule = (RadioButton) findViewById(R.id.rb_schedule_select_schedule);
-        rb_schedule_select_auto = (RadioButton) findViewById(R.id.rb_schedule_select_timer);
-
-        tv_schedule_list = (TextView) findViewById(R.id.tv_schedule_list);
-
-        rv_auto_mode = (RecyclerView) findViewById(R.id.rv_auto_mode);
-
-        et_schedule_name = (EditText) findViewById(R.id.et_schedule_name);
-        et_schedule_name.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-
-
-        et_schedule_on_time = (CustomEditText) findViewById(R.id.et_schedule_on_time);
-        et_schedule_off_time = (CustomEditText) findViewById(R.id.et_schedule_off_time);
-
-        iv_schedule_on_time_clear = (ImageView) findViewById(R.id.iv_schedule_on_time_clear);
-        iv_schedule_off_time_clear = (ImageView) findViewById(R.id.iv_schedule_off_time_clear);
-
-        text_schedule_1 = (TextView) findViewById(R.id.text_schedule_1);
-        text_schedule_2 = (TextView) findViewById(R.id.text_schedule_2);
-        text_schedule_3 = (TextView) findViewById(R.id.text_schedule_3);
-        text_schedule_4 = (TextView) findViewById(R.id.text_schedule_4);
-        text_schedule_5 = (TextView) findViewById(R.id.text_schedule_5);
-        text_schedule_6 = (TextView) findViewById(R.id.text_schedule_6);
-        text_schedule_7 = (TextView) findViewById(R.id.text_schedule_7);
-
-        rv_schedule = (RecyclerView) findViewById(R.id.rv_schedule);
-        btn_add_schedule = (Button) findViewById(R.id.btn_add_schedule);
-        btn_cancel_schedule = (Button) findViewById(R.id.btn_cancel_schedule);
-
-        ll_spinner_hide = (LinearLayout) findViewById(R.id.ll_spinner_hide);
-
-        ll_schedule = (LinearLayout) findViewById(R.id.ll_schedule);
-        btn_add_schedule.setOnClickListener(this);
-        btn_cancel_schedule.setOnClickListener(this);
-
         text_schedule_1.setOnClickListener(this);
         text_schedule_2.setOnClickListener(this);
         text_schedule_3.setOnClickListener(this);
@@ -427,8 +370,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     if (position != 0) {
                         for (int i = 1; i < moodList.size(); i++) {
                             MoodVO moodVo = moodList.get(i);
-                            //  MoodVO moodVo = moodList.get(position);
-                            //moodVo
                             RoomVO roomVO = new RoomVO();
                             roomVO.setRoomId(moodVo.getMood_id());
                             roomVO.setRoomName(moodVo.getMood_name());
@@ -451,7 +392,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
 
         if (isEdit) {
-
             if (scheduleVO != null) {
 
                 if (scheduleVO.getSchedule_type() == 0) {
@@ -1349,7 +1289,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             ActivityHelper.hideKeyboard(this);
             et_schedule_off_time.setText("");
         } else if ((id == R.id.text_schedule_1) || (id == R.id.text_schedule_2) || (id == R.id.text_schedule_3) || (id == R.id.text_schedule_4) || (id == R.id.text_schedule_5) || (id == R.id.text_schedule_6) || (id == R.id.text_schedule_7)) {
-            Common.setOnOffBackground(this, (TextView) findViewById(id));
+            Common.setOnOffBackground(this,  findViewById(id));
 
         } else if (id == R.id.btnRoomSchedule) {
             setBackGroundColorButton(true);
@@ -2528,13 +2468,13 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         dialog.setCanceledOnTouchOutside(false);
         dialog.setContentView(R.layout.dialog_virtual_devices);
 
-        TextView txtRoom = (TextView) dialog.findViewById(R.id.vtxt_room);
-        TextView txtPanel = (TextView) dialog.findViewById(R.id.vtvt_panel);
+        TextView txtRoom =  dialog.findViewById(R.id.vtxt_room);
+        TextView txtPanel =  dialog.findViewById(R.id.vtvt_panel);
 
         txtRoom.setText(roomName);
         txtPanel.setText(panelName);
 
-        Button btnOK = (Button) dialog.findViewById(R.id.vbtn_ok);
+        Button btnOK =  dialog.findViewById(R.id.vbtn_ok);
 
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -54,7 +54,6 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
 
     //context
     private final Context mContext;
-    public static boolean flagIs=false;
 
     //listeners
     private final ItemClickMoodListener mItemClickListener;
@@ -80,11 +79,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                //return isSection(position)?gridLayoutManager.getSpanCount():1;
-            //    Log.d("","getSpanSize position     " + position);
-           //     Log.d("","getSpanSize getSpanCount " + gridLayoutManager.getSpanCount());
                 return isSection(position) || isPanel(position) ? gridLayoutManager.getSpanCount():1 ;
-                //return isSection(position)?gridLayoutManager.getSpanCount():1;
             }
         });
     }
@@ -105,22 +100,13 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View mView = LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false);
         return new ViewHolder(mView,viewType);
-       // return new ViewHolder(LayoutInflater.from(mContext).inflate(viewType, parent, false), viewType);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         switch (holder.viewType) {
             case VIEW_TYPE_SECTION :
-                /*if(position==0){
-                    holder.view_line_top.setVisibility(GONE);
-                }else{
-                    holder.view_line_top.setVisibility(View.VISIBLE);
-                }*/
-
                 final RoomVO section = (RoomVO) mDataArrayList.get(position);
-
-//                holder.sectionTextView.setText(section.getRoomName());
                 String styledText = "<u><font color='#0098C0'>"+section.getRoomName()+"</font></u>";
                 holder.sectionTextView.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
 
@@ -136,6 +122,19 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     holder.iv_icon.setImageResource(R.drawable.room_off);
                 }
 
+
+
+                holder.sectionToggleButton.setChecked(section.isExpanded);
+
+                if(section.isExpanded){
+                    holder.iv_mood_delete.setVisibility(View.VISIBLE);
+                    holder.iv_mood_edit.setVisibility(View.VISIBLE);
+                }
+                else{
+                    holder.iv_mood_delete.setVisibility(View.GONE);
+                    holder.iv_mood_edit.setVisibility(View.GONE);
+                }
+
                 holder.iv_icon.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -144,7 +143,6 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                         section.setOld_room_status(section.getRoom_status());
                         section.setRoom_status(section.getRoom_status()==0?1:0);
                         notifyItemChanged(position);
-                     //   Log.d("panelMood","pid : " + section.getPanel_id());
                         mItemClickListener.itemClicked(section,"onoffclick");
                     }
                 });
@@ -167,7 +165,6 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                         if(!isClickable)
                             return;
                         mItemClickListener.itemClicked(section,"deleteclick");
-                        //section.setRoom_status(section.getRoom_status()==1?0:1);
                     }
                 });
                 holder.iv_mood_edit.setOnClickListener(new View.OnClickListener() {
@@ -187,20 +184,6 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     }
                 });
 
-                holder.sectionToggleButton.setChecked(section.isExpanded);
-
-                if(section.isExpanded){
-                  //  holder.text_section_edit.setViisIRSensorOnClicksibility(View.VISIBLE);
-                    holder.iv_mood_delete.setVisibility(View.VISIBLE);
-                    holder.iv_mood_edit.setVisibility(View.VISIBLE);
-                }
-                else{
-                  //  holder.text_section_edit.setVisibility(View.GONE);
-                    holder.iv_mood_delete.setVisibility(View.GONE);
-                    holder.iv_mood_edit.setVisibility(View.GONE);
-                }
-
-                //image log
                 holder.imgLog.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -227,40 +210,10 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     if(section.getSmart_remote_number().length()==0){
                         holder.txtRemote.setVisibility(GONE);
                         holder.imgRemote.setVisibility(View.VISIBLE);
-//                        holder.imgRemote.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                dialogRemoteshow(false,section);
-//                            }
-//                        });
-//
-//                        holder.frameRemote.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                dialogRemoteshow(false,section);
-//                            }
-//                        });
-
                     }else {
-
                         holder.txtRemote.setVisibility(View.VISIBLE);
                         holder.imgRemote.setVisibility(View.VISIBLE);
                         holder.txtRemote.setText(section.getSmart_remote_number());
-
-//                        holder.txtRemote.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                dialogRemoteshow(true,section);
-//                            }
-//                        });
-//
-//                        holder.frameRemote.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                dialogRemoteshow(true,section);
-//                            }
-//                        });
-
                     }
 
                     holder.imgRemote.setOnClickListener(new View.OnClickListener() {
@@ -291,9 +244,6 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                 }
 
 
-
-
-
                 break;
             case VIEW_TYPE_PANEL :
 
@@ -303,23 +253,8 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                 }else{
                     holder.txtLine.setVisibility(View.VISIBLE);
                 }
-
                 holder.itemTextView.setText(panel1.getPanelName());
-
                 holder.iv_mood_panel_schedule_click.setVisibility(GONE);
-
-//                holder.iv_mood_panel_schedule_click.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        if(!isClickable)
-//                            return;
-//                        mItemClickListener.itemClicked(panel1,"scheduleclick");
-//                        //mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded);
-//                    }
-//                });
-//                holder.iv_mood_panel_schedule_click.setImageResource(R.drawable.ic_scheduler_new);
-
-
                 break;
             case VIEW_TYPE_ITEM :
                 final DeviceVO item = (DeviceVO) mDataArrayList.get(position);
@@ -334,17 +269,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                         holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(),item.getDevice_icon()));
                     }
                 }else{
-//                    if(item.getDeviceType().equalsIgnoreCase("-1")){
-//                        if(item.getDeviceStatus()==0){
-//                            holder.iv_icon.setImageResource(R.drawable.off);
-//                        }else {
-//                            holder.iv_icon.setImageResource(R.drawable.on);
-//                        }
-//                    }else {
-//
-                        holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(),item.getDevice_icon()));
-//                    }
-
+                    holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(),item.getDevice_icon()));
                 }
 
                     holder.iv_icon_text.setVisibility(View.VISIBLE);
@@ -353,8 +278,6 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                         public void onClick(View view) {
                             if(!isClickable || item.getDevice_icon().equalsIgnoreCase("Remote_AC"))
                                 return;
-                            Log.d("itemPanelClick","get : " + item.getPanel_name());
-
                             mItemClickListener.itemClicked(item,"textclick");
                         }
                     });
@@ -363,36 +286,17 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                 holder.iv_icon.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
                         if(!isClickable)
                             return;
-
-                        /*remote click event set */
-//                        item.setOldStatus(item.getDeviceStatus());
-//                        item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1:0 );
-//                        notifyItemChanged(position,item);
-
                         //If Device icon Equal to Remote AC then open remote instead of call onOff Device item
-
-                        Log.d("System out","mood postion is "+position);
-
                         if(item.getDevice_icon().equalsIgnoreCase("Remote_AC")){ //click on remote device id
-                         /*   item.setPower(item.getPower().equalsIgnoreCase("ON")? "OFF":"ON" );
-                            item.setDeviceType("0");
-                            item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1:0 );*/
                             mItemClickListener.itemClicked(item,"isIRSensorOnClick");
-//                            notifityData.notifyData();
                         }else{
-
                             item.setOldStatus(item.getDeviceStatus());
                             item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1:0 );
-                            //notifyItemChanged(v.getId(),item);
-//                            notifyItemChanged(position);
-
                             mItemClickListener.itemClicked(item,"itemOnOffclick");
                             notifityData.notifyData();
                         }
-                        Log.d("System out","postion is "+position);
                     }
                 });
 
@@ -416,7 +320,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                             @Override
                             public boolean onLongClick(View view) {
                                 if(item.getIs_locked()==1){
-                                    Toast.makeText(mContext,mContext.getResources().getString(R.string.fan_error),Toast.LENGTH_LONG).show();
+                                    ChatApplication.showToast(mContext,mContext.getResources().getString(R.string.fan_error));
                                 }else {
                                     mItemClickListener.itemClicked(item, "longclick");
                                 }
@@ -442,27 +346,13 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     }else {
                         holder.imgLongClick.setVisibility(View.GONE);
                     }
-
                 }
-
-
-//                if (item.getDevice_icon().equalsIgnoreCase("heavyload") && item.getDeviceType().equalsIgnoreCase("-1")) {
-//                    holder.imgLongClick.setVisibility(View.VISIBLE);
-//                }else if(!TextUtils.isEmpty(item.getDeviceId()) && Integer.parseInt(item.getDeviceId()) == 1 && Integer.parseInt(item.getDeviceType()) == 1){
-//                    holder.imgLongClick.setVisibility(View.VISIBLE);
-//                } else if (item.getSensor_type().equalsIgnoreCase("remote")) {
-//                    holder.imgLongClick.setVisibility(View.VISIBLE);
-//                }else {
-//                    holder.imgLongClick.setVisibility(View.GONE);
-//                }
 
                 if(item.getDevice_icon().equalsIgnoreCase("Remote_AC")){
                     holder.iv_icon_text.setVisibility(View.GONE);
                 } else {
                     holder.iv_icon_text.setVisibility(View.VISIBLE);
                 }
-
-               // holder.itemTextView.setText(item.getDevice_nameTemp());
                 break;
         }
     }
@@ -496,11 +386,6 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                 dialog.dismiss();
             }
         });
-
-//        if(isFlag){
-//            editKeyValue.setText(section.getSmart_remote_number());
-//            editKeyValue.setSelection(editKeyValue.getText().length());
-//        }
 
         if(section.getSmart_remote_number()!=null){
             editKeyValue.setText(section.getSmart_remote_number());
@@ -547,15 +432,6 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
             obj.put("mood_id", module_id);
             obj.put("user_id", Common.getPrefValue(mContext, Constants.USER_ID) );
             obj.put("smart_remote_number",""+value);
-//            if(b){
-//                obj.put("is_update",1);
-//            }else {
-//                obj.put("is_update",0);
-//            }
-//
-//            if(TextUtils.isEmpty(value)){
-//                obj.put("is_update","");
-//            }
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
 
@@ -595,7 +471,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
             }
             @Override
             public void onFailure(Throwable throwable, String error) {
-                //    Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                ActivityHelper.dismissProgressDialog();
             }
         }).execute();
     }
@@ -619,64 +495,50 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
     protected static class ViewHolder extends RecyclerView.ViewHolder {
 
         //common
-        View view;
+        View view,ll_top_section,vi_test;
         int viewType;
-        ImageView iv_mood_panel_schedule_click;
-        ImageView view_line_top,imgRemote;
-        //for section
-        TextView sectionTextView,txtLine,headingTemp;
-        ToggleButton sectionToggleButton;
-        TextView text_section_on_off,txtRemote;
-        TextView text_section_edit;
-        ImageView iv_mood_edit;
-        ImageView iv_mood_delete;
-        View ll_top_section;
-        ImageView imgLog,icnSchedule;
-        TextView txtTotalDevices;
+        ImageView iv_mood_panel_schedule_click,view_line_top,imgRemote,imgLog,icnSchedule,iv_mood_delete,iv_mood_edit,iv_icon_text,imgLongClick,iv_icon;
 
-                //for item
-        TextView itemTextView;
-        ImageView iv_icon;
+        //for section
+        TextView sectionTextView,txtLine,text_section_on_off,txtRemote,text_section_edit,txtTotalDevices,itemTextView;
+        ToggleButton sectionToggleButton;
         LinearLayout ll_room_item;
-        ImageView iv_icon_text,imgLongClick;
         RelativeLayout view_rel;
         FrameLayout frameRemote;
-
-        View vi_test;
 
         public ViewHolder(View view, int viewType) {
             super(view);
             this.viewType = viewType;
             this.view = view;
             if (viewType == VIEW_TYPE_ITEM) {
-                itemTextView = (TextView) view.findViewById(R.id.text_item);
-                iv_icon = (ImageView) view.findViewById(R.id.iv_icon);
-                iv_icon_text = (ImageView) view.findViewById(R.id.iv_icon_text );
-                ll_room_item = (LinearLayout) view.findViewById(R.id.ll_room_item );
-                view_rel = (RelativeLayout) view.findViewById(R.id.view_rel);
+                itemTextView =  view.findViewById(R.id.text_item);
+                iv_icon =  view.findViewById(R.id.iv_icon);
+                iv_icon_text =  view.findViewById(R.id.iv_icon_text );
+                ll_room_item =  view.findViewById(R.id.ll_room_item );
+                view_rel =  view.findViewById(R.id.view_rel);
                 vi_test = view.findViewById(R.id.vi_test);
                 imgLongClick = view.findViewById(R.id.imgLongClick);
 
             } else if (viewType == VIEW_TYPE_PANEL) {
-                itemTextView = (TextView) view.findViewById(R.id.heading);
-                txtLine = (TextView) view.findViewById(R.id.txtLine);
+                itemTextView =  view.findViewById(R.id.heading);
+                txtLine =  view.findViewById(R.id.txtLine);
                 sectionTextView = itemTextView;
-                iv_mood_panel_schedule_click = (ImageView) view.findViewById(R.id.iv_mood_panel_schedule_click);
+                iv_mood_panel_schedule_click =  view.findViewById(R.id.iv_mood_panel_schedule_click);
             } else {
-                view_line_top = (ImageView) view.findViewById(R.id.view_line_top);
-                sectionTextView = (TextView) view.findViewById(R.id.text_section);
-                iv_icon = (ImageView) view.findViewById(R.id.iv_icon);
+                view_line_top =  view.findViewById(R.id.view_line_top);
+                sectionTextView =  view.findViewById(R.id.text_section);
+                iv_icon =  view.findViewById(R.id.iv_icon);
 
-                text_section_on_off = (TextView) view.findViewById(R.id.text_section_on_off);
-                text_section_edit = (TextView) view.findViewById(R.id.text_section_edit);
-                iv_mood_edit = (ImageView) view.findViewById(R.id.iv_mood_edit);
-                iv_mood_delete = (ImageView) view.findViewById(R.id.iv_mood_delete);
-                sectionToggleButton = (ToggleButton) view.findViewById(R.id.toggle_button_section);
+                text_section_on_off =  view.findViewById(R.id.text_section_on_off);
+                text_section_edit =  view.findViewById(R.id.text_section_edit);
+                iv_mood_edit =  view.findViewById(R.id.iv_mood_edit);
+                iv_mood_delete =  view.findViewById(R.id.iv_mood_delete);
+                sectionToggleButton =  view.findViewById(R.id.toggle_button_section);
                 ll_top_section = view.findViewById(R.id.ll_top_section);
 
-                imgLog = (ImageView) view.findViewById(R.id.img_icn_log);
-                icnSchedule = (ImageView) view.findViewById(R.id.icn_schedule_v2);
-                txtTotalDevices = (TextView) view.findViewById(R.id.txt_total_devices);
+                imgLog =  view.findViewById(R.id.img_icn_log);
+                icnSchedule =  view.findViewById(R.id.icn_schedule_v2);
+                txtTotalDevices =  view.findViewById(R.id.txt_total_devices);
                 txtRemote = view.findViewById(R.id.txtRemote);
                 imgRemote = view.findViewById(R.id.imgRemote);
                 frameRemote = view.findViewById(R.id.frameRemote);

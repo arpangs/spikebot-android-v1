@@ -60,5 +60,6 @@
     <string name="words_enter_gateway_password">enter WIFI password</string>
     <string name="words_enter_account_password">enter account password</string>
     <string name="words_ok">OK</string>
+    <string name="fan">fan</string>
 
 </resources>

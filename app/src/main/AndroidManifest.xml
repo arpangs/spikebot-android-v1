@@ -366,11 +366,6 @@
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:name="com.spike.bot.activity.UserRoomListActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity
             android:name="com.spike.bot.activity.ScheduleListActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"
