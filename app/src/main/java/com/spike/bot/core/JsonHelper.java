@@ -309,43 +309,46 @@ public class JsonHelper {
                 }
 
                 if(objPanel.has("sensorList")){
-                    panelVO.setSensorPanel(true);
-
                     JSONArray sensorArray = objPanel.getJSONArray("sensorList");
-                    ArrayList<DeviceVO> deviceList = new ArrayList<DeviceVO>();
-                    deviceList = JsonHelper.parseSensorArray(roomVO,panelVO,sensorArray,roomName,panel_name,roomId, isParseOriginal,panel_id);
-                    panelVO.setDeviceList(deviceList);
-                    boolean isRemote=false;
-                    for (int i=0; i<deviceList.size(); i++){
-                        if(deviceList.get(i).getDeviceType().equals("2")){
-                            isRemote=true;
-                            break;
+                    if(sensorArray!=null && sensorArray.length()>0) {
+                        panelVO.setSensorPanel(true);
+
+
+                        ArrayList<DeviceVO> deviceList = new ArrayList<DeviceVO>();
+                        deviceList = JsonHelper.parseSensorArray(roomVO, panelVO, sensorArray, roomName, panel_name, roomId, isParseOriginal, panel_id);
+                        panelVO.setDeviceList(deviceList);
+                        boolean isRemote = false;
+                        for (int i = 0; i < deviceList.size(); i++) {
+                            if (deviceList.get(i).getDeviceType().equals("2")) {
+                                isRemote = true;
+                                break;
+                            }
                         }
-                    }
-                    panelVO.setRemoteAvabile(isRemote);
-                    if(isDevicePanel){
-                        isDevicePanel = true;
+                        panelVO.setRemoteAvabile(isRemote);
+                        if (isDevicePanel) {
+                            isDevicePanel = true;
+                        }
                     }
                 }
 
 
                 if(objPanel.has("curtainList")){
-                    panelVO.setSensorPanel(false);
                     JSONArray deviceArray = objPanel.getJSONArray("curtainList");
-                    ArrayList<DeviceVO> deviceList = new ArrayList<DeviceVO>();
-                    deviceList = JsonHelper.curtainList(deviceArray,roomName,panel_name,roomId,isParseOriginal,panel_id);
-                    panelVO.setDeviceList(deviceList);
-                    panelVO.setRemoteAvabile(false);
-                    panelVO.setPanel_type(5);
-                    if(isDevicePanel){
-                        isDevicePanel = true;
+                    if(deviceArray!=null && deviceArray.length()>0){
+                        panelVO.setSensorPanel(false);
+
+                        ArrayList<DeviceVO> deviceList = new ArrayList<DeviceVO>();
+                        deviceList = JsonHelper.curtainList(deviceArray,roomName,panel_name,roomId,isParseOriginal,panel_id);
+                        panelVO.setDeviceList(deviceList);
+                        panelVO.setRemoteAvabile(false);
+                        panelVO.setPanel_type(5);
+                        if(isDevicePanel){
+                            isDevicePanel = true;
+                        }
                     }
+
                 }
 
-
-//                if(roomVO.getRoomName().equalsIgnoreCase("Iot")){
-//                    Log.d("isDevicePanel","Found : " + isDevicePanel + " Panel name : " + panelVO.getPanelName());
-//                }
                 roomVO.setDevicePanel(isDevicePanel);
 
                 if(!TextUtils.isEmpty(panel_id)){
@@ -837,6 +840,7 @@ public class JsonHelper {
                 int is_locked =  deviceObj.has("is_locked")? deviceObj.optInt("is_locked"):0;
                 String mode =  deviceObj.has("mode")? deviceObj.optString("mode"):"";
                 String power =  deviceObj.has("power")? deviceObj.optString("power"):"";
+                String device_identifier =  deviceObj.optString("device_identifier");
 
                 String room_name =  deviceObj.has("room_name")? deviceObj.optString("room_name"):"";
                 String panel_name =  deviceObj.has("panel_name")? deviceObj.optString("panel_name"):"";
@@ -885,6 +889,7 @@ public class JsonHelper {
                 d1.setPower(""+power);
                 d1.setDevice_nameTemp(""+device_nameTemp);
                 d1.setIs_locked(is_locked);
+                d1.setDevice_identifier(device_identifier);
                 if(!TextUtils.isEmpty(room_name)){
                     d1.setRoomName(room_name);
                 }else{

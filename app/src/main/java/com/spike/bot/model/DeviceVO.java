@@ -27,6 +27,16 @@ public class DeviceVO implements Serializable,Cloneable {
     private String deviceTimeDifference;
     private String deviceSync;
     private String deviceType;
+
+    public String getDevice_identifier() {
+        return device_identifier;
+    }
+
+    public void setDevice_identifier(String device_identifier) {
+        this.device_identifier = device_identifier;
+    }
+
+    private String device_identifier="";
     private int isActive;
     private int isAlive;
     private String isLocked;
