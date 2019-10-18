@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -101,6 +102,7 @@ public class AddRoomDialog extends Dialog implements
             ll_room.setVisibility(View.VISIBLE);
 
 
+
         spinnerroomlist.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -128,6 +130,7 @@ public class AddRoomDialog extends Dialog implements
             case R.id.iv_close:
                 iCallback.onSuccess("no");
                 dismiss();
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
                 break;
 
             default:

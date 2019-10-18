@@ -362,7 +362,7 @@
         <activity
             android:name=".activity.AddDevice.AddDeviceTypeListActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"
+            android:windowSoftInputMode="stateHidden|adjustPan"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
@@ -383,8 +383,7 @@
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name="com.spike.bot.activity.VideoViewPLayer"
-            android:theme="@style/AppTheme.NoActionBar"
-            />
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity android:name="com.spike.bot.activity.CameraEdit"
             android:theme="@style/AppTheme.NoActionBar"/>

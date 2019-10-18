@@ -1,5 +1,6 @@
 package com.spike.bot.activity.AddDevice;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -19,12 +20,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
@@ -37,6 +39,7 @@ import com.spike.bot.activity.SmartDevice.BrandListActivity;
 import com.spike.bot.activity.SmartRemoteActivity;
 import com.spike.bot.activity.TTLock.LockBrandActivity;
 import com.spike.bot.activity.ir.blaster.IRBlasterAddActivity;
+import com.spike.bot.activity.ir.blaster.IRRemoteAdd;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
@@ -114,7 +117,8 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         arrayList.add("Switch Board");
         arrayList.add("Smart Device");
         arrayList.add("IR Blaster");
-        arrayList.add("Remote");
+        arrayList.add("IR Remote");
+        arrayList.add("Smart Remote");
         arrayList.add("Door Lock");
         arrayList.add("Door Sensor");
         arrayList.add("Gas / Smoke Sensor");
@@ -137,18 +141,23 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         } else if (position == 4) {
             startActivity(new Intent(this, IRBlasterAddActivity.class));
         } else if (position == 5) {
-            startActivity(new Intent(this, SmartRemoteActivity.class));
+            Intent intent = new Intent(AddDeviceTypeListActivity.this, IRRemoteAdd.class);
+            //         intent.putExtra("roomName", "" + room.getRoomName());
+            //          intent.putExtra("roomId", "" + room.getRoomId());
+            startActivity(intent);
         } else if (position == 6) {
-            startActivity(new Intent(this, LockBrandActivity.class));
+            startActivity(new Intent(this, SmartRemoteActivity.class));
         } else if (position == 7) {
-            showOptionDialog(SENSOR_TYPE_DOOR);
+            startActivity(new Intent(this, LockBrandActivity.class));
         } else if (position == 8) {
-            showOptionDialog(SENSOR_GAS);
+            showOptionDialog(SENSOR_TYPE_DOOR);
         } else if (position == 9) {
-            showOptionDialog(SENSOR_TYPE_TEMP);
+            showOptionDialog(SENSOR_GAS);
         } else if (position == 10) {
-            startActivity(new Intent(this, RepeaterActivity.class));
+            showOptionDialog(SENSOR_TYPE_TEMP);
         } else if (position == 11) {
+            startActivity(new Intent(this, RepeaterActivity.class));
+        } else if (position == 12) {
             if (Common.getPrefValue(this, Common.camera_key).equalsIgnoreCase("0")) {
                 addKeyCamera();
             } else {
@@ -199,7 +208,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
             holder.txtUserName.setText(arrayList.get(position));
 
-            if (position == 0 || position == 3 || position == 4 || position == 5 || position == 6 || position == 10) {
+            if (position == 0 || position == 3 || position == 4 || position == 6 || position == 7 || position == 11) {
                 holder.imgAdd.setVisibility(View.INVISIBLE);
             } else {
                 holder.imgAdd.setVisibility(View.VISIBLE);
@@ -239,7 +248,6 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         }
     }
 
-
     /**
      * Call api for add custom room
      */
@@ -264,6 +272,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             }
         });
 
@@ -271,6 +280,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             }
         });
 
@@ -391,6 +401,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             }
         });
 
@@ -447,6 +458,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             }
         });
 
@@ -631,6 +643,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             }
         });
 
@@ -638,6 +651,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             }
         });
 
@@ -735,6 +749,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             }
         });
 
@@ -742,6 +757,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             }
         });
 
@@ -827,7 +843,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    ChatApplication.showToast(AddDeviceTypeListActivity.this,message);
+                    ChatApplication.showToast(AddDeviceTypeListActivity.this, message);
                     if (code == 200) {
                         dialog.dismiss();
                         ChatApplication.showToast(AddDeviceTypeListActivity.this, message);
@@ -937,6 +953,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             }
         });
 
@@ -944,6 +961,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             }
         });
         btn_save.setOnClickListener(new View.OnClickListener() {
@@ -994,8 +1012,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
         String url = ChatApplication.url + Constants.deviceadd;
 
-        ChatApplication.logDisplay("door sensor" + url + obj
-        );
+        ChatApplication.logDisplay("door sensor" + url + obj);
 
         new GetJsonTask(AddDeviceTypeListActivity.this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override

@@ -79,16 +79,18 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
             }
         });
 
+        holder.iv_room_panel_delete.setId(position);
         holder.iv_room_panel_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mItemClickListener.itemClicked(item1, "delete", view);
+                mItemClickListener.itemClicked(panelVOs.get(holder.iv_room_panel_delete.getId()), "delete", view);
             }
         });
+        holder.iv_room_panel_info.setId(position);
         holder.iv_room_panel_info.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mItemClickListener.itemClicked(item1, "info", view);
+                mItemClickListener.itemClicked(panelVOs.get(holder.iv_room_panel_info.getId()), "info", view);
             }
         });
 
