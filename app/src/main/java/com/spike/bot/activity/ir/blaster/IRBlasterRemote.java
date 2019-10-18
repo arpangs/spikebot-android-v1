@@ -60,7 +60,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
     private ImageView mImageAuto, mToolbarBack, imgRemoteStatus, mImageEdit, mImageDelete;
     private TextView mTemp, mImageAutoText,mRemoteName, txtRemoteState, txtAcState;
 
-    private String mRemoteId, moodName = "", mRoomDeviceId;
+    private String mRemoteId, moodName = "", mRoomDeviceId,module_id="";
     private boolean isPowerOn = false;
     private int mSpeedCurrentPos, isRemoteActive, tempMinus, tempPlus, tempCurrent;
 
@@ -103,6 +103,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         mRemoteId = getIntent().getStringExtra("REMOTE_ID");
         isRemoteActive = getIntent().getIntExtra("REMOTE_IS_ACTIVE", 0);
         mRoomDeviceId = getIntent().getStringExtra("ROOM_DEVICE_ID");
+        module_id = getIntent().getStringExtra("IR_MODULE_ID");
     }
 
     private void bindView() {
@@ -585,7 +586,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
         JSONObject object = new JSONObject();
         try {
-            object.put("remote_id", mRemoteCurrentStatusList.getRemoteId());
+            object.put("module_id", module_id);
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));

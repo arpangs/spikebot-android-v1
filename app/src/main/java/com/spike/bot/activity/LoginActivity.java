@@ -41,12 +41,11 @@ import java.util.List;
  */
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
     public EditText et_username, et_password;
     public Button btn_login, btnSignUp;
     public AppCompatTextView btn_SKIP;
     public String imei = "", token = "", isFlag = "";
-
-    private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
 
 
     @Override
@@ -100,6 +99,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onResume();
     }
 
+    /* get uuid for login api*/
     private void getUUId() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -126,6 +126,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } else if (v == btn_login) {
             if (TextUtils.isEmpty(imei)) {
                 getUUId();
+                return;
             }
             if (TextUtils.isEmpty(et_username.getText().toString())) {
                 et_username.requestFocus();
@@ -134,7 +135,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 et_password.requestFocus();
                 et_password.setError("Enter Password");
             } else {
-                loginCloud(et_username.getText().toString(), et_password.getText().toString());
+                Common.hideSoftKeyboard(LoginActivity.this);
+                loginCloud();
             }
 
         } else if (v == btnSignUp) {
@@ -143,17 +145,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    public void loginCloud(String username, String password) {
+    public void loginCloud() {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            Toast.makeText(LoginActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            ChatApplication.showToast(LoginActivity.this,getResources().getString(R.string.disconnect));
             return;
         }
-
-        if (TextUtils.isEmpty(imei)) {
-            getUUId();
-        }
-
 
         if (TextUtils.isEmpty(token)) {
             token = FirebaseInstanceId.getInstance().getToken();
@@ -229,11 +226,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         User user = new User(user_id, first_name, last_name, cloudIp, false, user_password, admin, local_ip, mac_address);
                         Gson gson = new Gson();
                         String jsonText = Common.getPrefValue(getApplicationContext(), Common.USER_JSON);
-                        ChatApplication.logDisplay("jsonText text is " + jsonText);
                         List<User> userList = new ArrayList<User>();
                         if (!TextUtils.isEmpty(jsonText) && !jsonText.equals("[]") && !jsonText.equals("null")) {
-                            Type type = new TypeToken<List<User>>() {
-                            }.getType();
+                            Type type = new TypeToken<List<User>>() {}.getType();
                             userList = gson.fromJson(jsonText, type);
 
                             if (userList != null && userList.size() != 0) {
@@ -271,7 +266,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         ActivityHelper.dismissProgressDialog();
 
                     } else {
-                        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+                        ChatApplication.showToast(LoginActivity.this, message);
                     }
                 } catch (Exception e) {
                     ActivityHelper.dismissProgressDialog();
@@ -290,6 +285,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }).execute();
     }
 
+    /* start home screen */
     private void startHomeIntent() {
         ConnectivityReceiver.counter=0;
         Intent intent = new Intent(this, Main2Activity.class);

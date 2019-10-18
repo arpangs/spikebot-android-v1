@@ -77,23 +77,18 @@ public class DeviceEditDialog extends Dialog implements  View.OnClickListener {
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.dialog_device_edit);
 
-        ll_auto_mode_type = (LinearLayout) findViewById(R.id.ll_auto_mode_type);
+        ll_auto_mode_type =  findViewById(R.id.ll_auto_mode_type);
         ll_auto_mode_type.setVisibility(View.GONE);
-
-        tv_title = (TextView) findViewById(R.id.tv_title);
-
-        et_switch_name = (EditText) findViewById(R.id.et_switch_name );
-        sp_device_type = (Spinner ) findViewById(R.id.sp_device_type );
-
-        rg_auto_mode_type = (RadioGroup) findViewById(R.id.rg_auto_mode_type );
-
-        rb_auto_mode_type_normal = (RadioButton) findViewById(R.id.rb_auto_mode_type_normal );
-        rb_auto_mode_type_dimmer = (RadioButton ) findViewById(R.id.rb_auto_mode_type_dimmer );
-
+        tv_title =  findViewById(R.id.tv_title);
+        et_switch_name =  findViewById(R.id.et_switch_name );
+        sp_device_type =   findViewById(R.id.sp_device_type );
+        rg_auto_mode_type =  findViewById(R.id.rg_auto_mode_type );
+        rb_auto_mode_type_normal =  findViewById(R.id.rb_auto_mode_type_normal );
+        rb_auto_mode_type_dimmer =   findViewById(R.id.rb_auto_mode_type_dimmer );
         btn_Delete =  findViewById(R.id.btn_Delete);
-        btn_save = (Button) findViewById(R.id.btn_save);
-        iv_close = (ImageView) findViewById(R.id.iv_close);
-        spinner_arrow = (ImageView) findViewById(R.id.spinner_arrow);
+        btn_save =  findViewById(R.id.btn_save);
+        iv_close =  findViewById(R.id.iv_close);
+        spinner_arrow =  findViewById(R.id.spinner_arrow);
 
         et_switch_name.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
 
@@ -356,78 +351,37 @@ public class DeviceEditDialog extends Dialog implements  View.OnClickListener {
     public void getSwitchDetails(){
 
         try {
-            JSONObject obj = jsonObject.getJSONObject("data");
-            JSONArray deviceArray = obj.getJSONArray("device_details");
-            deviceObj = deviceArray.getJSONObject(0);
-            JSONArray device_iconsArray = obj.getJSONArray("device_icons");
+            //{
+            //    "code": 200,
+            //    "message": "Success",
+            //    "data": [
+            //        {
+            //            "icon_id": 1,
+            //            "icon_name": "ac",
+            //            "icon_image": "/static/images/transparent/ac.png",
+            //            "icon_type": 0,
+            //            "is_active": 1
+            //        },
+//            JSONObject obj = jsonObject.optJSONObject("data");
+//            JSONArray deviceArray = obj.getJSONArray("device_details");
+//            deviceObj = deviceArray.getJSONObject(0);
+            JSONArray device_iconsArray = jsonObject.optJSONArray("data");
 
             setSpinnerValue(device_iconsArray);
 
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         finally {
             setDeviceValue();
             ActivityHelper.dismissProgressDialog();
         }
-        /*
-
-        Log.d(TAG, "getSwitchDetails getSwitchDetails");
-        if(!ActivityHelper.isConnectingToInternet(activity)){
-            Toast.makeText(activity.getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        ActivityHelper.showProgressDialog(activity,"Please wait.",false);
-        String url = ChatApplication.url + Constants.CHECK_INDIVIDUAL_SWITCH_DETAILS;
-        JSONObject obj = new JSONObject();
-        try {
-            *//*obj.put("module_id","1C7FC712004B1200");
-            obj.put("device_id","4");*//*
-            obj.put("module_id",deviceVO.getModuleId());
-            obj.put("device_id",deviceVO.getDeviceId()+"");
-            obj.put("room_device_id",deviceVO.getRoomDeviceId()+"");
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        new GetJsonTask(activity,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                Log.d(TAG, "getSwitchDetails onSuccess " + result.toString());
-
-                try {
-                    JSONObject obj = result.getJSONObject("data");
-                    JSONArray deviceArray = obj.getJSONArray("device_details");
-                    deviceObj = deviceArray.getJSONObject(0);
-                    JSONArray device_iconsArray = obj.getJSONArray("device_icons");
-
-                    setSpinnerValue(device_iconsArray);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                finally {
-                    setDeviceValue();
-                    ActivityHelper.dismissProgressDialog();
-                }
-
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                Log.d("", "getSwitchDetails onFailure " + error );
-                ActivityHelper.dismissProgressDialog();
-            }
-        }).execute();*/
     }
 
     private void setDeviceValue() {
 
-        try {
-            et_switch_name.setText(deviceObj.getString("device_name"));
-            int index = flags.indexOf(deviceObj.getString("device_icon"));
+            et_switch_name.setText(deviceObj.optString("device_name"));
+            int index = flags.indexOf(deviceObj.optString("device_icon"));
             sp_device_type.setSelection(index);
             int device_type = deviceObj.optInt("device_type");
             int device_id = deviceObj.optInt("device_id");
@@ -448,10 +402,6 @@ public class DeviceEditDialog extends Dialog implements  View.OnClickListener {
                 rg_auto_mode_type.setVisibility(View.GONE);
             }
 
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
     ArrayList<String> flags = new ArrayList<>();
 
@@ -460,11 +410,13 @@ public class DeviceEditDialog extends Dialog implements  View.OnClickListener {
         flags = new ArrayList<String>();
         flags.clear();
         for(int i=0;i<device_iconsArray.length();i++){
-            try {
-                flags.add(device_iconsArray.getJSONObject(i).getString("device_icon_name"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+                //   "icon_id": 1,
+                //            "icon_name": "ac",
+                //            "icon_image": "/static/images/transparent/ac.png",
+                //            "icon_type": 0,
+                //            "is_active": 1
+                flags.add(device_iconsArray.optJSONObject(i).optString("icon_name"));
+
         }
         //int flags[] = {R.drawable.bulb_on, R.drawable.fan_on, R.drawable.tv_on, R.drawable.cfl_on, R.drawable.microwave_oven_on};
         TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(activity,flags,0,true);

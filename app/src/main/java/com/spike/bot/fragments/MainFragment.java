@@ -633,7 +633,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             tmpDeviceV0 = item;
             tmpPosition = position;
 
-            if (item.getSensor_type().equalsIgnoreCase("tempsensor") && item.getIsActive() == 1) {
+            if (item.getSensor_type().equalsIgnoreCase("temp_sensor") && item.getIsActive() == 1) {
                 Intent intent = new Intent(activity, MultiSensorActivity.class);
                 intent.putExtra("temp_sensor_id", item.getSensor_id());
                 intent.putExtra("temp_room_name", item.getRoomName());
@@ -642,7 +642,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                 intent.putExtra("temp_module_id", item.getModuleId());
                 startActivity(intent);
 
-            } else if (item.getSensor_type().equalsIgnoreCase("gassensor")) {
+            } else if (item.getSensor_type().equalsIgnoreCase("gas_sensor")) {
                 if (item.getIsActive() == -1) {
                     return;
                 }
@@ -665,7 +665,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                 intent.putExtra("temp_unread_count", item.getIs_unread());
                 intent.putExtra("temp_module_id", item.getModuleId());
                 startActivity(intent);
-            } else if (item.getSensor_type().equalsIgnoreCase("door")) {
+            } else if (item.getSensor_type().equalsIgnoreCase("door_sensor")) {
                 ChatApplication.logDisplay("door call is intent " + mSocket.connected());
                 Intent intent = new Intent(activity, DoorSensorInfoActivity.class);
                 intent.putExtra("door_sensor_id", item.getSensor_id());
@@ -708,7 +708,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             bundle.putSerializable("REMOTE_IS_ACTIVE", item.getDeviceStatus());
             bundle.putSerializable("REMOTE_ID", item.getSensor_id());
             bundle.putSerializable("IR_BLASTER_ID", item.getSensor_id());
-            // intent.putExtra("IR_BLASTER_ID",item.getIr_blaster_id());
+             intent.putExtra("IR_MODULE_ID",item.getModuleId());
             intent.putExtra("IR_BLASTER_ID", item.getSensor_id());
             intent.putExtra("ROOM_DEVICE_ID", item.getRoomDeviceId());
             intent.putExtras(bundle);
@@ -775,7 +775,6 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
     private void refreshAllView() {
         mFab.setVisibility(View.VISIBLE);
         linear_retry.setVisibility(View.GONE);
-        ((Main2Activity)activity).mToolBarSettings.setClickable(true);
         ((Main2Activity)activity).tabShow(true);
         ChatApplication.isCallDeviceList=true;
         getDeviceList(1);
@@ -785,7 +784,6 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         mFab.setVisibility(View.GONE);
         txt_empty_schedule.setVisibility(View.GONE);
         linear_retry.setVisibility(View.VISIBLE);
-        ((Main2Activity)activity).mToolBarSettings.setClickable(false);
         ((Main2Activity)activity).tabShow(false);
 
     }
@@ -964,13 +962,13 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
 
                     if (code == 200) {
 
-                        UnassignedListRes unassignedListRes = Common.jsonToPojo(result.toString(), UnassignedListRes.class);
-                        roomListUn = unassignedListRes.getData().getRoomList();
-                        if (roomListUn.size() > 0) {
-                            startActivity(new Intent(activity, AddUnassignedPanel.class));
-                        } else {
-                            ChatApplication.showToast(activity, "No Unassigned Module");
-                        }
+//                        UnassignedListRes unassignedListRes = Common.jsonToPojo(result.toString(), UnassignedListRes.class);
+//                        roomListUn = unassignedListRes.getData().getRoomList();
+//                        if (roomListUn.size() > 0) {
+//                            startActivity(new Intent(activity, AddUnassignedPanel.class));
+//                        } else {
+//                            ChatApplication.showToast(activity, "No Unassigned Module");
+//                        }
 
                     } else {
                         if (!TextUtils.isEmpty(message)) {
@@ -1799,7 +1797,7 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
             //local
             ((Main2Activity) activity).webUrl = ChatApplication.http + Constants.getuserIp(activity) + ":80";
             ChatApplication.url = ChatApplication.http + Constants.getuserIp(activity);
-           Constants.startUrlset();
+            Constants.startUrlset();
             ((Main2Activity) activity).callSocket();
             ((Main2Activity) activity).invalidateToolbarCloudImage();
 
@@ -1854,16 +1852,8 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         String url = ChatApplication.url + Constants.GET_DEVICES_LIST;
         JSONObject jsonObject = new JSONObject();
         try {
-//            jsonObject.put("room_type", 0);
-//            jsonObject.put("is_sensor_panel", 1);
             jsonObject.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
             jsonObject.put("room_type", "room");
-
-//            if (TextUtils.isEmpty(Common.getPrefValue(activity, Constants.USER_ADMIN_TYPE))) {
-//                jsonObject.put("admin", 1);
-//            } else {
-//                jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(activity, Constants.USER_ADMIN_TYPE)));
-//            }
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
@@ -2388,7 +2378,6 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
         if(linear_retry.getVisibility()==View.VISIBLE){
             mFab.setVisibility(View.VISIBLE);
             linear_retry.setVisibility(View.GONE);
-            ((Main2Activity)activity).mToolBarSettings.setClickable(true);
             ((Main2Activity)activity).tabShow(true);
             ChatApplication.isCallDeviceList=true;
         }
@@ -2426,8 +2415,8 @@ public class MainFragment extends Fragment implements ItemClickListener, Section
                 callColud(false);
             }
         } else {
+            ((Main2Activity) activity).invalidateToolbarCloudImage();
             if (ChatApplication.url.startsWith(Constants.startUrl)) {
-//                getDeviceCould(1);
                 getDeviceCloud(1);
             } else {
                 getDeviceLocal(1);

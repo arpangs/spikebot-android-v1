@@ -25,6 +25,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
@@ -37,10 +38,12 @@ import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.UnassignedListRes;
+import com.spike.bot.model.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,13 +67,15 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
     private ImageView mImageClose;
     private ArrayList<String> roomStrList = new ArrayList<>();
     private ArrayList<String> roomIdList = new ArrayList<>();
+    List<UnassignedListRes.Data.RoomdeviceList> roomdeviceList;
+    ArrayList<UnassignedListRes.Data.RoomList> roomListArray=new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_unassigned_panel);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar =  findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -79,21 +84,20 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
         toolbar.setTitle("Unassigned List");
 
         bindViews();
-        getUnAssignedList();
+
+        getRoomList();
 
     }
 
     private void bindViews() {
-        mListPanels = (RecyclerView) findViewById(R.id.list_un_panel);
+        mListPanels =  findViewById(R.id.list_un_panel);
         mListPanels.setLayoutManager(new GridLayoutManager(this, 1));
-        mEmptyView = (LinearLayout) findViewById(R.id.txt_empty_list);
+        mEmptyView =  findViewById(R.id.txt_empty_list);
         mEmptyView.setVisibility(View.GONE);
 
     }
 
-    List<UnassignedListRes.Data.RoomdeviceList> roomdeviceList;
-
-    private void getUnAssignedList() {
+    private void getRoomList() {
 
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
@@ -105,25 +109,95 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
 
         ActivityHelper.showProgressDialog(this, "Loading...", false);
 
-        String url = ChatApplication.url + Constants.GET_ALL_UNASSIGNED_DEVICES;
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("room_type", "room");
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
-        new GetJsonTask(this, url, "GET", "", new ICallBack() {
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String url = ChatApplication.url + Constants.roomslist;
+
+        ChatApplication.logDisplay("un assign is "+url+" "+jsonObject);
+
+        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() {
+            @Override
+            public void onSuccess(JSONObject result) {
+//                ActivityHelper.dismissProgressDialog();
+                try {
+                    ChatApplication.logDisplay("un assign is "+result);
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        Type type = new TypeToken<ArrayList<UnassignedListRes.Data.RoomList>>() {}.getType();
+                        roomListArray = (ArrayList<UnassignedListRes.Data.RoomList>) Constants.fromJson(result.optString("data").toString(), type);
+
+                        getUnAssignedList();
+                    } else {
+                        if (!TextUtils.isEmpty(message)) {
+                            showToast(message);
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        }).execute();
+    }
+
+
+
+    private void getUnAssignedList() {
+
+
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            showToast("" + R.string.disconnect);
+            return;
+        }
+
+        roomdeviceList = new ArrayList<>();
+
+//        ActivityHelper.showProgressDialog(this, "Loading...", false);
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String url = ChatApplication.url + Constants.GET_DEVICES_LIST+"/n";
+
+        ChatApplication.logDisplay("un assign is "+url+" "+jsonObject);
+
+        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-
+                    ChatApplication.logDisplay("un assign is "+result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
+                    if (code == 200) {
 
-                    if (code == 200)
-                    {
-
-                        UnassignedListRes unassignedListRes = Common.jsonToPojo(result.toString(), UnassignedListRes.class);
-                        roomList = unassignedListRes.getData().getRoomList();
-                        roomdeviceList = unassignedListRes.getData().getRoomdeviceList();
-                        addUnassignedPanelAdapter = new AddUnassignedPanelAdapter(roomdeviceList, AddUnassignedPanel.this);
-                        mListPanels.setAdapter(addUnassignedPanelAdapter);
+//                        roomListArray = Common.jsonToPojo(result.toString(), UnassignedListRes.class);
+//                        roomList = unassignedListRes.getData().getRoomList();
+//                        roomdeviceList = unassignedListRes.getData().getRoomdeviceList();
+//                        addUnassignedPanelAdapter = new AddUnassignedPanelAdapter(roomdeviceList, AddUnassignedPanel.this);
+//                        mListPanels.setAdapter(addUnassignedPanelAdapter);
 
                     } else {
                         if (!TextUtils.isEmpty(message)) {

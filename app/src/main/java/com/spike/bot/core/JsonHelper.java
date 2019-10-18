@@ -366,7 +366,8 @@ public class JsonHelper {
                 d1.setDeviceStatus(deviceObj.optInt("device_status"));
                 d1.setDeviceType(deviceObj.optString("device_icon"));
                 d1.setDevice_icon(deviceObj.optString("device_icon"));
-                d1.setIsActive(deviceObj.has("is_active")? deviceObj.optInt("is_active"):0);
+                /*is_active means y(1) means active & n(-1) means inactive */
+                d1.setIsActive(deviceObj.optString("is_active").equals("y")?1:-1);
                 d1.setAuto_on_off_value(deviceObj.has("auto_on_off_value")? deviceObj.optInt("auto_on_off_value"):0);
                 d1.setOriginal_room_device_id(deviceObj.has("device_id") ? deviceObj.optString("device_id") : "");
                 d1.setRoomName(roomName);
@@ -386,7 +387,6 @@ public class JsonHelper {
 
         ArrayList<DeviceVO> deviceList = new ArrayList<DeviceVO>();
 
-        int countInActive = 0;
         boolean flagRemote=false;
 
         for(int j=0 ; j < sensorArray.length() ; j++){
@@ -394,12 +394,6 @@ public class JsonHelper {
             try {
 
                 JSONObject deviceObj = sensorArray.getJSONObject(j);
-
-                int is_active = hasObject(deviceObj,"is_active") ? deviceObj.optInt("is_active") : 0;
-                if(is_active == 0){
-                    Log.d("isPanelActive","Active : " + is_active);
-                    countInActive ++;
-                }
 
                 String module_id = "";
                 String sensor_id = "";
@@ -457,7 +451,9 @@ public class JsonHelper {
                 d1.setSensor_icon(deviceObj.optString("sensor_icon"));
                 d1.setDoor_sensor_status(hasObject(deviceObj,"door_sensor_status") ? deviceObj.optString("door_sensor_status") : "");
                 d1.setSensor_type(deviceObj.optString("sensor_type"));
-                d1.setIsActive(is_active);
+
+                /*is_active means y(1) means active & n(-1) means inactive */
+                d1.setIsActive(deviceObj.optString("is_active").equals("y")?1:-1);
 
                 d1.setIs_unread(hasObject(deviceObj,"is_unread") ? deviceObj.optString("is_unread") : "");
                 d1.setCreated_date(hasObject(deviceObj,"created_date") ? deviceObj.optString("created_date") : "");
@@ -523,7 +519,6 @@ public class JsonHelper {
 
                 String sensor_type = deviceObj.optString("device_type");
 
-                int is_active = hasObject(deviceObj,"is_active") ? deviceObj.optInt("is_active") : 0;
 
                 int door_subtype=0;
                 if(TextUtils.isEmpty(deviceObj.optString("device_type")) || deviceObj.optString("device_type").equals("null")){
@@ -563,10 +558,6 @@ public class JsonHelper {
                     is_lock_active = hasObject(deviceObj,"is_lock_active") ? deviceObj.optInt("is_lock_active") : 0;
                 }
 
-
-                if(is_active == 0){
-                    countInActive ++;
-                }
 
                 String module_id = "";
                 String sensor_id = "";
@@ -628,7 +619,8 @@ public class JsonHelper {
                 d1.setSensor_icon(deviceObj.optString("device_icon"));
                 d1.setDoor_sensor_status(hasObject(deviceObj,"device_sub_status") ? deviceObj.optString("device_sub_status") : "");
                 d1.setSensor_type(sensor_type);
-                d1.setIsActive(is_active);
+                /*is_active means y(1) means active & n(-1) means inactive */
+                d1.setIsActive(deviceObj.optString("is_active").equals("y")?1:-1);
 
                 d1.setIs_unread(hasObject(deviceObj,"is_unread") ? deviceObj.optString("is_unread") : "");
                 d1.setCreated_date(hasObject(deviceObj,"created_date") ? deviceObj.optString("created_date") : "");
@@ -692,7 +684,8 @@ public class JsonHelper {
                 d1.setDeviceStatus(deviceObj.optInt("device_status"));
                 d1.setDevice_icon(deviceObj.optString("device_icon"));
                 d1.setDeviceSpecificValue(deviceObj.has("device_specific_value")?deviceObj.optString("device_specific_value"):"");
-                d1.setIsActive(deviceObj.has("is_active")? deviceObj.optInt("is_active"):0);
+                /*is_active means y(1) means active & n(-1) means inactive */
+                d1.setIsActive(deviceObj.optString("is_active").equals("y")?1:-1);
                 d1.setIsAlive(deviceObj.has("is_alive")? deviceObj.optInt("is_alive"):0);
                 d1.setAuto_on_off_value(deviceObj.has("auto_on_off_value")? deviceObj.optInt("auto_on_off_value"):0);
                 d1.setSchedule_value(deviceObj.has("schedule_value")? deviceObj.optInt("schedule_value"):0);
