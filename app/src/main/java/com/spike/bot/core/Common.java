@@ -279,6 +279,96 @@ public class Common {
         return resource;
     }
 
+
+    public static int getIconForEditRoom(int status, String type) {
+        int resource = R.drawable.bulb_on;
+        switch (status) {
+            case 0:
+                switch (type) {
+                    case "bulb":
+                        resource = R.drawable.bulb_off;
+                        break;
+                    case "ac":
+                        resource = R.drawable.ac_off;
+                        break;
+                    case "fan":
+                        resource = R.drawable.fan_off;
+                        break;
+                    case "fridge":
+                        resource = R.drawable.fridge_off;
+                        break;
+                    case "tv":
+                        resource = R.drawable.tv_off;
+                        break;
+                    case "oven":
+                        resource = R.drawable.microwave_oven_off;
+                        break;
+                    case "cfl":
+                        resource = R.drawable.cfl_off;
+                        break;
+                    case "generic":
+                        resource = R.drawable.genericelectricdevice_off;
+                        break;
+                    case "camera":
+                        resource = R.drawable.camera_off;
+                        break;
+                    case "work":
+                        resource = R.drawable.smily_gray;
+                        break;
+                    case "tempsensor":
+                        resource = R.drawable.off_temperature;
+                        break;
+                    case "doorsensor":
+                        resource = R.drawable.off_door;
+                        break;
+                    case "unavailable":
+                        resource = R.drawable.icn_dead_temp;
+                        break;
+                    case "irblaster":
+                        resource = R.drawable.ic_ir_blaster;
+                        break;
+                    case "Remote_AC":
+                        resource = R.drawable.remote_ac_off;
+                        break;
+                    case "multisensor":
+                        resource = R.drawable.icon_multi_sensor;
+                        break;
+                    case "heavyload":
+                        resource = R.drawable.off;
+                        break;
+
+                    case "Smart Bulb":
+                        resource = R.drawable.philips_hue_off;
+                        break;
+
+                    case "lockWithDoor":
+                        resource = R.drawable.door_locked;
+                        break;
+
+                    case "lockOnly":
+                        resource = R.drawable.lock_only;
+                        break;
+                    case "curtain":
+                        resource = R.drawable.curtain_closed;
+                        break;
+
+                    default:
+                        resource = R.drawable.bulb_off;
+                        break;
+                }
+                break;
+
+//            case 3:
+//                switch (type) {
+//
+//                }
+//
+//                break;
+
+        }
+        return resource;
+    }
+
     /**
      * get In Active Temp/Door/Remote Icon
      *

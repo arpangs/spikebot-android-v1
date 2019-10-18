@@ -212,8 +212,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         }).execute();
     }
 
-    public boolean isValidate = false;
-
     /**
      *
      * @param phone

@@ -47,28 +47,85 @@ public class UnassignedListRes {
 
     public static class Data {
 
-        @SerializedName("room_list")
+
+        @SerializedName("module_id")
         @Expose
-        private List<RoomList> roomList = null;
-        @SerializedName("roomdeviceList")
+        private String moduleId;
+        @SerializedName("module_identifier")
         @Expose
-        private List<RoomdeviceList> roomdeviceList = null;
+        private String moduleIdentifier;
+        @SerializedName("module_type")
+        @Expose
+        private String moduleType;
+        @SerializedName("is_active")
+        @Expose
+        private String isActive;
+        @SerializedName("last_response_time")
+        @Expose
+        private String lastResponseTime;
+        @SerializedName("is_configured")
+        @Expose
+        private String isConfigured;
+        @SerializedName("meta")
+        @Expose
+        private String meta;
 
-        public List<RoomList> getRoomList() {
-            return roomList;
+        public String getModuleId() {
+            return moduleId;
         }
 
-        public void setRoomList(List<RoomList> roomList) {
-            this.roomList = roomList;
+        public void setModuleId(String moduleId) {
+            this.moduleId = moduleId;
         }
 
-        public List<RoomdeviceList> getRoomdeviceList() {
-            return roomdeviceList;
+        public String getModuleIdentifier() {
+            return moduleIdentifier;
         }
 
-        public void setRoomdeviceList(List<RoomdeviceList> roomdeviceList) {
-            this.roomdeviceList = roomdeviceList;
+        public void setModuleIdentifier(String moduleIdentifier) {
+            this.moduleIdentifier = moduleIdentifier;
         }
+
+        public String getModuleType() {
+            return moduleType;
+        }
+
+        public void setModuleType(String moduleType) {
+            this.moduleType = moduleType;
+        }
+
+        public String getIsActive() {
+            return isActive;
+        }
+
+        public void setIsActive(String isActive) {
+            this.isActive = isActive;
+        }
+
+        public String getLastResponseTime() {
+            return lastResponseTime;
+        }
+
+        public void setLastResponseTime(String lastResponseTime) {
+            this.lastResponseTime = lastResponseTime;
+        }
+
+        public String getIsConfigured() {
+            return isConfigured;
+        }
+
+        public void setIsConfigured(String isConfigured) {
+            this.isConfigured = isConfigured;
+        }
+
+        public String getMeta() {
+            return meta;
+        }
+
+        public void setMeta(String meta) {
+            this.meta = meta;
+        }
+
 
         public static class RoomdeviceList {
 

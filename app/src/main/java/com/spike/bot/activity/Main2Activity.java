@@ -98,29 +98,29 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     private String ERROR_STRING = "No Internet found.\n" + "Check your connection or try again.";
     public static boolean flagPicheck = false, flagLogin = false,isResumeConnect=false,isCloudConnected=false;
-    private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
 
+    public Toolbar toolbar;
     public BottomNavigationView tabLayout;
     public ImageView mToolBarSettings,deepsImage, toolbarImage, mImageCloud;
     public TextView toolbarTitle,txt_connection, txt_add_acoount;
     public LinearLayout linear_main, linear_progress,linearTab;
     public FrameLayout linearCloud;
-    public Toolbar toolbar;
+    private RecyclerView recyclerView;
 
     //refresh view like change network
     DeviceListRefreshView deviceListRefreshView;
-
     // PopupWindow popupWindow;
     private CloudAdapter cloudAdapter;
-    private RecyclerView recyclerView;
+
     PowerManager.WakeLock wakeLock;
     public MainFragment mainFragment1;
     public MoodFragment moodFragment;
     public ScheduleFragment scheduleFragment;
-
     private FrameLayout mViewPager;
     private Socket mSocket;
-    public String imei="",userId="0",webUrl = "",token="";
+
+    public int tabCount=0;
+    public String userId="0",webUrl = "",token="";
     public boolean  isSocketConnected = true,isTimerStart=false,isTimerEnd=false,doubleBackToExitPressedOnce=false,isWifiConnect = false, isNetwork = false;
 
     Gson gson;
@@ -162,11 +162,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
         MainFragment.clearNotification(Main2Activity.this);
 
-        toolbarImage.setOnClickListener(this);
-        toolbarTitle.setOnClickListener(this);
-        mImageCloud.setOnClickListener(this);
-        mToolBarSettings.setOnClickListener(this);
-
         //first fragment load
         loadFragment(new MainFragment());
         tabLayout.setOnNavigationItemSelectedListener(this);
@@ -186,26 +181,9 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onResume() {
         super.onResume();
-        if (!Constants.checkLoginAccountCount(this)) {
-            getUUId();
-            showLogin();
-            return;
-        }
 
         setViewId();
 
-        //update user fname and lname after updaing the profile activity
-        String userFname = Common.getPrefValue(ChatApplication.getInstance(), "first_name");
-        String userLname = Common.getPrefValue(ChatApplication.getInstance(), "last_name");
-        if (ChatApplication.isRefreshUserData) {
-            if (!TextUtils.isEmpty(userFname) && !TextUtils.isEmpty(userLname)) {
-                if (toolbarTitle != null) {
-                    setUserName();
-                }
-            }
-        }
-        toolbarTitle = findViewById(R.id.toolbarTitle);
-        toolbarTitle.setOnClickListener(this);
         ChatApplication.getInstance().setConnectivityListener(this);
         if (Common.isConnected() && isResumeConnect) {
             hideAlertDialog();
@@ -234,7 +212,15 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         mToolBarSettings =  findViewById(R.id.toolbar_setting);
         linearCloud =  findViewById(R.id.linear_progress_cloud);
         linearTab = findViewById(R.id.linearTab);
+
         tabLayout.setOnNavigationItemSelectedListener(this);
+        toolbarImage.setOnClickListener(this);
+        toolbarTitle.setOnClickListener(this);
+        mImageCloud.setOnClickListener(this);
+        mToolBarSettings.setOnClickListener(this);
+
+        //update user fname and lname after updaing the profile activity
+        setUserName();
     }
 
     @Override
@@ -253,8 +239,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onDestroy() {
         super.onDestroy();
-        ChatApplication.logDisplay("onterminal is call onDestroy ");
-
         if (mSocket != null) {
             mSocket.off("deleteChildUser", deleteChildUser);
         }
@@ -298,6 +282,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.navigationDashboard:
+                tabCount=0;
                 if(mainFragment1==null){
                     mainFragment1 = new MainFragment();
                     fragment=mainFragment1;
@@ -308,6 +293,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 break;
 
             case R.id.navigationMood:
+                tabCount=1;
                 if(moodFragment==null){
                     moodFragment = new MoodFragment();
                     fragment=moodFragment;
@@ -317,6 +303,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 break;
 
             case R.id.navigationSchedule:
+                tabCount=2;
                 if(scheduleFragment==null){
                     scheduleFragment = new ScheduleFragment();
                     fragment=scheduleFragment;
@@ -375,8 +362,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     public void onLogout() {
         logoutCloudUser();
     }
-
-
 
     /**
      * click on switch account user {@link CloudAdapter#
@@ -456,8 +441,10 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     @Override
     public void startSession() { }
 
+    /*network change interface call like switch network*/
     @Override
     public void onNetworkConnectionChanged(final boolean isConnected) {
+        /*waiting for same time connct network timeing issue faceing  */
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -472,10 +459,15 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         if (ActivityHelper.isConnectingToInternet(Main2Activity.this)) {
             mToolBarSettings.setVisibility(View.VISIBLE);
             if (isConnected) {
-                tabLayout.setSelectedItemId(R.id.navigationDashboard);
-                ChatApplication.logDisplay("device refreshing main");
-                ChatApplication.isCallDeviceList = true;
-                deviceListRefreshView.deviceRefreshView(1);
+                if(tabCount!=0){
+                    tabLayout.setSelectedItemId(R.id.navigationDashboard);
+                }else {
+                    ChatApplication.isCallDeviceList = true;
+                    deviceListRefreshView.deviceRefreshView(1);
+                }
+
+                ChatApplication.logDisplay("device refreshing main "+tabCount);
+
             } else {
                 linear_progress.setVisibility(View.GONE);
                 isResumeConnect = true;
@@ -520,7 +512,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onProgress() {
-//        showConnectingCloudDialog(LOCAL_MESSAGE);
     }
 
     @Override
@@ -531,12 +522,10 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     //load fragment
     public boolean loadFragment(Fragment fragment) {
         if (fragment != null) {
-
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
             ft.replace(R.id.container, fragment);
             ft.commitAllowingStateLoss();
-
             return true;
         }
         return false;
@@ -547,22 +536,10 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         toolbarTitle.setText(Constants.getUserName(this));
     }
 
-    private void getUUId() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, PERMISSIONS_REQUEST_READ_PHONE_STATE);
-                return;
-            } else {
-                imei = ActivityHelper.getIMEI(this);
-            }
-        } else {
-            imei = ActivityHelper.getIMEI(this);
-        }
-
-    }
-
+    /*tab hide & show*/
     public void tabShow(boolean b){
         linearTab.setVisibility(b==true ? View.VISIBLE :View.GONE);
+//        mToolBarSettings.setClickable(b);
     }
 
 
@@ -587,6 +564,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     }
 
+    /* port & url set */
     private void listServiceTemp(final String msg, String ip, final int port, final boolean isFound, boolean isShow) {
         String openIp="";
         if(ip.startsWith(Constants.startUrlhttp)){
@@ -599,6 +577,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         webUrl = openIp;
     }
 
+    /*user type set like admin & child user fun*/
     public void setUserTypeValue() {
         if (!TextUtils.isEmpty(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE))) {
             if (Common.getPrefValue(this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
@@ -727,26 +706,47 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.action_device_log:
-                        Intent intent = new Intent(Main2Activity.this, DeviceLogActivity.class);
-                        intent.putExtra("isCheckActivity", "AllType");
-                        startActivity(intent);
+                        if(linearTab.getVisibility()==View.VISIBLE){
+                            Intent intent = new Intent(Main2Activity.this, DeviceLogActivity.class);
+                            intent.putExtra("isCheckActivity", "AllType");
+                            startActivity(intent);
+                        }else {
+                            ChatApplication.showToast(Main2Activity.this,getResources().getString(R.string.something_wrong1));
+                        }
+
                         break;
                     case R.id.action_sensor_log:
-                        Intent intent1 = new Intent(Main2Activity.this, DeviceLogActivity.class);
-                        intent1.putExtra("IS_SENSOR", true);
-                        startActivity(intent1);
+                        if(linearTab.getVisibility()==View.VISIBLE){
+                            Intent intent1 = new Intent(Main2Activity.this, DeviceLogActivity.class);
+                            intent1.putExtra("IS_SENSOR", true);
+                            startActivity(intent1);
+                        }else {
+                            ChatApplication.showToast(Main2Activity.this,getResources().getString(R.string.something_wrong1));
+                        }
+
                         break;
                     case R.id.action_notification_settings:
-                        Intent intentNotification = new Intent(Main2Activity.this, NotificationSetting.class);
-                        startActivity(intentNotification);
+                        if(linearTab.getVisibility()==View.VISIBLE){
+                            Intent intentNotification = new Intent(Main2Activity.this, NotificationSetting.class);
+                            startActivity(intentNotification);
+                        }else {
+                            ChatApplication.showToast(Main2Activity.this,getResources().getString(R.string.something_wrong1));
+                        }
+
                         break;
                     case R.id.action_profile:
-                        Intent intentProfile = new Intent(Main2Activity.this, ProfileActivity.class);
-                        startActivity(intentProfile);
+                        if(linearTab.getVisibility()==View.VISIBLE){
+                            Intent intentProfile = new Intent(Main2Activity.this, ProfileActivity.class);
+                            startActivity(intentProfile);
+                        }else {
+                            ChatApplication.showToast(Main2Activity.this,getResources().getString(R.string.something_wrong1));
+                        }
+
                         break;
                     case R.id.action_logout:
-                        //paster here
-                        logoutCloudUser();
+                        if(linearTab.getVisibility()==View.VISIBLE) {
+                            logoutCloudUser();
+                        }
                         break;
                     default:
                         break;
@@ -757,6 +757,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         popup.show();
     }
 
+    /* child user remove from local DB*/
     public void childRemoveSQLite() {
 
         ActivityHelper.showProgressDialog(Main2Activity.this, "Please wait...", false);
@@ -860,6 +861,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     }
 
+    /* logout user than back user showing another wise login screen move to*/
     public void logoutCloudUser() {
 
         //clear pref and open login screen
@@ -993,30 +995,19 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    /*login screen */
     private void loginIntent() {
         Intent intent=new Intent(this,LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         this.finish();
     }
-
+    /* call back set when dashboard screen refresh*/
     public void setCallBack(DeviceListRefreshView callBack){
         this.deviceListRefreshView=callBack;
     }
 
-
-    private CountDownTimer countDownTimer = new CountDownTimer(10000, 1000) {
-        @Override
-        public void onTick(long millisUntilFinished) {
-            isTimerStart = true;
-        }
-
-        @Override
-        public void onFinish() {
-            isTimerEnd = true;
-        }
-    };
-
+    /* click lister*/
     public void getUserDialogClick(boolean isClick) {
         if (isClick) {
             toolbarImage.setClickable(true);
@@ -1031,6 +1022,12 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    /* most impoer method work like
+    * > user switch
+    * > nertwork change
+    * > user logout
+    *
+    *  */
     public void setWifiLocalflow(String localIp, String cloudIp, String mac_address,int isCount) {
 
         ChatApplication.logDisplay("count is ss "+isCount);
@@ -1082,6 +1079,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         mainFragment1.isResumeConnect=true;
         mainFragment1.showDialog = 1;
         getUserDialogClick(true);
+        /* user switch to first tab*/
         tabLayout.setSelectedItemId(R.id.navigationDashboard);
         setUserName();
         deviceListRefreshView.deviceRefreshView(1);
@@ -1103,58 +1101,42 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
 
     public void showAlertDialog(String erroString) {
-
         deviceListRefreshView.deviceRefreshView(0);
-//        hideConnectingCloudDialog();
-//        txt_error_value.setText(erroString);
-//        if (linear_retry.getVisibility() == View.GONE) {
-//            mViewPager.setVisibility(View.GONE);
-//            linear_retry.setVisibility(View.VISIBLE);
-//        }
-
     }
 
     public void hideAlertDialog() {
         linear_main.setVisibility(View.VISIBLE);
     }
 
+    /* login dialog all most  */
     public void loginDialog(final boolean value, final boolean isCancelButtonVisible) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 ActivityHelper.dismissProgressDialog();
 
-                if (TextUtils.isEmpty(Common.getPrefValue(Main2Activity.this, Constants.USER_ID))) {
-                    hideAlertDialog();
-                    mViewPager.setVisibility(View.GONE);
-                    linear_progress.setVisibility(View.GONE);
-                    mToolBarSettings.setVisibility(View.GONE);
-                    toolbarTitle.setVisibility(View.GONE);
-                } else {
-
-                    if (flagPicheck && !value) {
-                        hideAlertDialog();
-                        mViewPager.setVisibility(View.VISIBLE);
-                        linear_progress.setVisibility(View.GONE);
-                        mToolBarSettings.setVisibility(View.INVISIBLE);
-                        toolbarTitle.setVisibility(View.VISIBLE);
-                    } else {
-
-                        if (value) {
-                            hideAlertDialog();
-                            mViewPager.setVisibility(View.GONE);
-                            linear_progress.setVisibility(View.GONE);
-                            mToolBarSettings.setVisibility(View.GONE);
-                            toolbarTitle.setVisibility(View.GONE);
-                        } else {
-                            hideAlertDialog();
-                            linear_main.setVisibility(View.VISIBLE);
-                            mViewPager.setVisibility(View.VISIBLE);
-                            mToolBarSettings.setVisibility(View.VISIBLE);
-                            toolbarTitle.setVisibility(View.VISIBLE);
-                        }
-                    }
-                }
+//                    if (flagPicheck && !value) {
+//                        hideAlertDialog();
+//                        mViewPager.setVisibility(View.VISIBLE);
+//                        linear_progress.setVisibility(View.GONE);
+//                        mToolBarSettings.setVisibility(View.INVISIBLE);
+//                        toolbarTitle.setVisibility(View.VISIBLE);
+//                    } else {
+//
+//                        if (value) {
+//                            hideAlertDialog();
+//                            mViewPager.setVisibility(View.GONE);
+//                            linear_progress.setVisibility(View.GONE);
+//                            mToolBarSettings.setVisibility(View.GONE);
+//                            toolbarTitle.setVisibility(View.GONE);
+//                        } else {
+//                            hideAlertDialog();
+//                            linear_main.setVisibility(View.VISIBLE);
+//                            mViewPager.setVisibility(View.VISIBLE);
+//                            mToolBarSettings.setVisibility(View.VISIBLE);
+//                            toolbarTitle.setVisibility(View.VISIBLE);
+//                        }
+//                    }
             }
         });
     }
@@ -1162,44 +1144,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
 
     //Socket
-
-
-    private Emitter.Listener onConnect = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    if (mSocket != null) {
-                        if (!isSocketConnected) {
-
-                            if (countDownTimer != null) {
-                                countDownTimer.cancel();
-                                isTimerStart = false;
-                            }
-
-                            hideAlertDialog();
-                            isSocketConnected = true;
-                            ChatApplication.isScheduleNeedResume = true;
-
-                        }
-                        mSocket.emit("socketconnection", "android == startconnect  " + mSocket.id());
-
-                        if(!ChatApplication.url.startsWith("http")){
-                            ChatApplication.url="http://"+ChatApplication.url;
-                        }
-
-                        ChatApplication.logDisplay("chat app is connnectmain"+ChatApplication.url);
-                        //linear_login
-                    }
-                    mViewPager.setVisibility(View.VISIBLE);
-                }
-            });
-        }
-    };
-
     private Emitter.Listener deleteChildUser = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -1223,46 +1167,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                             e.printStackTrace();
                         }
 
-                    }
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener onDisconnect = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (mSocket != null) {
-                    }
-                    isSocketConnected = false;
-
-                }
-            });
-        }
-    };
-
-
-    private Emitter.Listener onConnectError = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    // hideConnectingCloudDialog();
-                    if (mSocket != null) {
-                    }
-                    //Toast.makeText(getActivity().getApplicationContext(), R.string.error_connect, Toast.LENGTH_SHORT).show();
-
-                    if (!isTimerStart)
-                        countDownTimer.start();
-
-                    //todo code here for open error dialog
-                    if (isTimerEnd) {
-
-                        //     openErrorDialog(ERROR_STRING);
                     }
                 }
             });

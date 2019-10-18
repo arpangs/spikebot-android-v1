@@ -112,6 +112,7 @@ public class Constants {
 
     //room
     public static final String GET_DEVICES_LIST = "/device/list";
+    public static final String roomslist = "/rooms/list";
     public static final String getMoodName = "/mood/names/list";
     public static final String getChildUsers = "/getChildUsers";
     public static final String DeleteChildUser = "/DeleteChildUser";
@@ -218,7 +219,7 @@ public class Constants {
     public static final String changeMultiSensorNotificationStatus = "/changeMultiSensorNotificationStatus";
     public static final String UPDATE_TEMP_SENSOR = "/updateTempSensor";
     public static final String updateMultiSensor = "/updateMultiSensor";
-    public static final String DELETE_TEMP_SENSOR = "/deleteTempSensor";
+    public static final String DELETE_TEMP_SENSOR = "/device/delete";
     public static final String deleteMultiSensor = "/deleteMultiSensor";
     public static final String getCameraLogs = "/getCameraLogs";
     public static final String reportFalseImage = "/reportFalseImage";
@@ -262,9 +263,8 @@ public class Constants {
     public static final String CHANGE_DEVICE_STATUS = "/changeDeviceStatus";
     public static final String ADD_CUSTOME_DEVICE = "/addCustomDevice";
     public static final String CHANGE_FAN_SPEED = "/changeFanSpeed";
-    public static final String DELETE_INDIVIDUAL_DEVICE = "/deleteIndividualDevice";
     public static final String GET_FAN_SPEED = "/getFanSpeed";
-    public static final String CHECK_INDIVIDUAL_SWITCH_DETAILS = "/checkIndividualSwitchDetails";
+    public static final String CHECK_INDIVIDUAL_SWITCH_DETAILS = "/device/icon/list";
 
     //mood
     public static final String ADD_NEW_MOOD_NEW = "/mood/add";
@@ -348,8 +348,7 @@ public class Constants {
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {
-            }.getType();
+            Type type = new TypeToken<List<User>>() {}.getType();
             List<User> userList = gson.fromJson(jsonText, type);
             if (userList.size() > 0) {
                 for (int i = 0; i < userList.size(); i++) {
@@ -680,6 +679,10 @@ public class Constants {
         }
 
         return daysBetween;
+    }
+
+    public static Object fromJson(String jsonString, Type type) {
+        return new Gson().fromJson(jsonString, type);
     }
 
     public static InetAddress getLocalIpAddress(Context context) {

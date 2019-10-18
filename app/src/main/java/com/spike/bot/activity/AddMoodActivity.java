@@ -47,6 +47,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -182,7 +183,17 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
         if (moodVO != null) {
 
-            List<String> deviceVOList = moodVO.getRoomDeviceIdList();
+//            List<String> deviceVOList = moodVO.getRoomDeviceIdList();
+            List<String> deviceVOList = new ArrayList<>();
+
+
+            for(int i=0; i<moodVO.getPanelList().size(); i++){
+                for(int j=0; j<moodVO.getPanelList().get(i).getDeviceList().size(); j++){
+                    ChatApplication.logDisplay("panel id "+moodVO.getPanelList().get(i).getDeviceList().get(j).getPanel_device_id());
+                    deviceVOList.add(moodVO.getPanelList().get(i).getDeviceList().get(j).getDeviceId());
+                }
+            }
+
 
             for (RoomVO roomVO : roomList) {
 
@@ -193,20 +204,19 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
                     for (DeviceVO deviceVO : deviceList) {
 
-                        ChatApplication.logDisplay("Name : " + deviceVO.getDeviceName() + " id : " + deviceVO.getRoomDeviceId());
+                        for (String deviceVORoot : deviceVOList) {
 
-                        for (String deviceVORoot : deviceVOList) { ////select original devices
-
+                            ChatApplication.logDisplay("panel id is "+deviceVO.getDeviceId());
                             if (deviceVO.getSensor_type() != null && deviceVO.getSensor_type().equalsIgnoreCase("remote")) { //if device type sensor than compare sensor id instead of room device id
 
-                                if (deviceVO.getSensor_id().equalsIgnoreCase(deviceVORoot) || deviceVO.getRoomDeviceId().equalsIgnoreCase(deviceVORoot)) {
+                                if (deviceVO.getDeviceId().equalsIgnoreCase(deviceVORoot)) {
 
                                     roomVO.setExpanded(true);
                                     deviceVO.setSelected(true);
                                 }
                             } else {
 
-                                if (deviceVO.getRoomDeviceId().equalsIgnoreCase(deviceVORoot)) {
+                                if (deviceVO.getDeviceId().equalsIgnoreCase(deviceVORoot)) {
                                     roomVO.setExpanded(true);
                                     deviceVO.setSelected(true);
                                 }
@@ -446,7 +456,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                 //	"panel_device_ids": ["1571149643833_GeqT4vQuUG","1571149643852_R0NbfvM_Yx"]
                 //}
 
-                deviceIdList.add(dPanel.getDeviceId());
+                deviceIdList.add(dPanel.getPanel_device_id());
             }
 
             JSONArray array = new JSONArray(deviceIdList);

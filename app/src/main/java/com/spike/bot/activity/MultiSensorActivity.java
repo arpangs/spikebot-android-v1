@@ -1290,7 +1290,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             //	"phone_id":"1234567",
             //	"phone_type":"Android"
             //	 }
-            jsonNotification.put("temp_sensor_id", temp_sensor_id);
+            jsonNotification.put("module_id", temp_module_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));

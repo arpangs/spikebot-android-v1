@@ -250,7 +250,7 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
 
     private void deleteGas() {
 
-        String url = ChatApplication.url + Constants.deleteGasSensor;
+        String url = ChatApplication.url + Constants.DELETE_TEMP_SENSOR;
 
         JSONObject object = new JSONObject();
         try {
@@ -258,7 +258,7 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
             //  "user_id":"",
             //  "phone_id":"",
             //  "phone_type":""
-            object.put("gas_sensor_id", sensor_id);
+            object.put("module_id", module_id);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
