@@ -64,7 +64,7 @@ public class TypeSpinnerAdapter extends BaseAdapter {
         }
 
         if (!names.getText().toString().equalsIgnoreCase("--")) {
-            icon.setImageResource(Common.getIcon(iconType, flags.get(i)));
+            icon.setImageResource(Common.getIconForEditRoom(iconType, flags.get(i)));
         }
 
         if (isIcon) {

@@ -58,10 +58,6 @@ public class Constants {
 //    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
 //    public static  String CLOUD_SERVER_URL = "http://api.spikebot.io"; //222
 
-// *-   public static  String CLOUD_SERVER_URL = "http://52.201.70.116:8079"; // unuser
-//    public static  String CLOUD_SERVER_URL = "http://54.201.70.116:8079"; // unuser
-//    public static  String CLOUD_SERVER_URL = ""; //117 testing
-//    public static  String IP_END = "111";  // vipul/123
 //    public static  String  IP_END = "117"; // jhanvi / 123
 //    public static  String  IP_END = "118"; // bhumi / 123
 
@@ -74,7 +70,6 @@ public class Constants {
     public static final int ACK_TIME_OUT = 5000;
     public static final int REMOTE_REQUEST_CODE = 10;
 
-    public static final float CAMERA_NUMBER = (float) 4.5;
     public static final int SWITCH_NUMBER = 4;
     public static final int SWITCH_NUMBER_EXIST_PANEL = 5;
     public static final String PREF_CLOUDLOGIN = "cloudLogin";
@@ -88,18 +83,13 @@ public class Constants {
     public static final String lock_token = "lock_token";
     public static int lockDate = 0;
     public static String socketIp = "";
-    public static int socketType = 0;
     public static int adminType = 1;
     public static int room_type = 0;
 
     public static final String DEVICE_PUSH_TOKEN = "device_push_token";
 
-    public static final boolean isTesting = false;
 
     public static final String SIMPLE_DATE_FORMAT_1 = "MMM dd, yyyy";
-    public static final String SIMPLE_DATE_FORMAT_2 = "MMM dd, yyyy hh:mm";
-    public static final String SIMPLE_DATE_FORMAT_3 = "MMM dd, yyyy HH:mm a";
-    public static final String SIMPLE_DATE_FORMAT_4 = "MMM dd, yyyy hh:mm aa";  //MMM dd, yyyy hh:mm aa
     public static final String LOG_DATE_FORMAT_1 = "yyyy-MM-dd HH:mm:ss";
     public static final String LOG_DATE_FORMAT_2 = "dd-MMM yyyy h:mm a";
 
@@ -108,7 +98,6 @@ public class Constants {
     public static final String APP_LOGIN = "/applogin";
     public static final String APP_LOGOUT = "/applogout";
     public static final String SIGNUP_API = "/signupdetails";
-    public static final String wifilogin = "/wifilogin";
 
     //room
     public static final String GET_DEVICES_LIST = "/device/list";
@@ -268,7 +257,7 @@ public class Constants {
 
     //mood
     public static final String ADD_NEW_MOOD_NEW = "/mood/add";
-    public static final String SAVEEDITMOOD = "/updateMood";  //saveEditMood
+    public static final String SAVEEDITMOOD = "/mood/edit";  //saveEditMood
     public static final String DELETE_MOOD = "/deleteMood";
     public static final String GET_MOOD_DEVICE_DETAILS = "/getMoodDeviceDetails";
 
@@ -314,19 +303,13 @@ public class Constants {
 
     /*----------------------------------------------------------------------*/
 
-    public static final String DEVICE_TOKEN = "sTZka4A72j";
     public static final String ANDROID = "android";
 
     //lock
     public static final String client_id = "439063e312444f1f85050a52efcecd2e";
     public static final String client_secret = "0ef1c49b70c02ae6314bde603d4e9b05";
-    //    public static  String access_token = "fac1734b6209dd5b3ea602c9cc7a15ae";
     public static String access_token = "a74549ab15d07ecd988e26f50985aee7";
-    public static final String refresh_token = "5ca1a4bc670b16b571b1488a631e57fc";
-    public static final String lock_user_id_vip = "1769341";
-    public static final String lock_open_vip = "1930389027";
     public static final String locK_base_uri = "http://open.ttlock.com.cn";
-    public static final String locK_add = "/v3/lock/initialize";
     public static final String lockUserName = "ttchatcrash@gmail.com";
     public static final String lockPassword = "ttchat$123";
     public static final String startUrlhttp = "http:";
@@ -368,8 +351,7 @@ public class Constants {
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {
-            }.getType();
+            Type type = new TypeToken<List<User>>() {}.getType();
             List<User> userList = gson.fromJson(jsonText, type);
             if (userList.size() > 0) {
                 for (int i = 0; i < userList.size(); i++) {
@@ -390,8 +372,7 @@ public class Constants {
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {
-            }.getType();
+            Type type = new TypeToken<List<User>>() {}.getType();
             List<User> userList = gson.fromJson(jsonText, type);
             if (userList.size() > 0) {
                 for (int i = 0; i < userList.size(); i++) {
@@ -432,8 +413,7 @@ public class Constants {
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {
-            }.getType();
+            Type type = new TypeToken<List<User>>() {}.getType();
             List<User> userList = gson.fromJson(jsonText, type);
             if (userList.size() > 0) {
                 for (int i = 0; i < userList.size(); i++) {
@@ -447,50 +427,6 @@ public class Constants {
 
         return getuserIp;
     }
-
-    public static String getGateway(Context context) {
-        String getuserIp = "";
-        String jsonText = Common.getPrefValue(context, Common.USER_JSON);
-        if (!TextUtils.isEmpty(jsonText)) {
-            Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {
-            }.getType();
-            List<User> userList = gson.fromJson(jsonText, type);
-            if (userList.size() > 0) {
-                for (int i = 0; i < userList.size(); i++) {
-                    if (userList.get(i).getIsActive()) {
-                        getuserIp = userList.get(i).getGateway_ip();
-                        break;
-                    }
-                }
-            }
-        }
-
-        return getuserIp;
-    }
-
-
-    public static String getCouldIp(Context context) {
-        String getuserIp = "";
-        String jsonText = Common.getPrefValue(context, Common.USER_JSON);
-        if (!TextUtils.isEmpty(jsonText)) {
-            Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {
-            }.getType();
-            List<User> userList = gson.fromJson(jsonText, type);
-            if (userList.size() > 0) {
-                for (int i = 0; i < userList.size(); i++) {
-                    if (userList.get(i).getIsActive()) {
-                        getuserIp = userList.get(i).getCloudIP();
-                        break;
-                    }
-                }
-            }
-        }
-
-        return getuserIp;
-    }
-
 
     public static String getMacAddress(Context context) {
         String getuserIp = "";
@@ -552,35 +488,6 @@ public class Constants {
     }
 
 
-    public static Bitmap takescreenshot(View v) {
-        v.setDrawingCacheEnabled(true);
-        v.buildDrawingCache(true);
-        Bitmap b = Bitmap.createBitmap(v.getDrawingCache());
-        v.setDrawingCacheEnabled(false);
-        return b;
-    }
-
-    public static Bitmap takescreenshotOfRootView(View view, RecyclerView recyclerView) {
-
-//        view.measure(View.MeasureSpec.makeMeasureSpec(view.getWidth(), View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(view.getHeight(), View.MeasureSpec.EXACTLY));
-//        view.layout((int) view.getX(), (int) view.getY(), (int) view.getX() + view.getMeasuredWidth(), (int) view.getY() + view.getMeasuredHeight());
-//
-//        view.setDrawingCacheEnabled(true);
-//        view.buildDrawingCache(true);
-//        Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
-//        view.setDrawingCacheEnabled(false);
-
-        // create bitmap screen capture
-        View v1 = view;
-        v1.setDrawingCacheEnabled(true);
-        Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
-//        v1.setDrawingCacheEnabled(false);
-
-
-        return bitmap;
-
-    }
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static int getCurrentMonth() {
         Calendar c = Calendar.getInstance();
@@ -592,13 +499,6 @@ public class Constants {
 
     public static ArrayList<String> getMonthList() {
         ArrayList<String> xAxis = new ArrayList<>();
-//        xAxis.add("JAN");
-//        xAxis.add("FEB");
-//        xAxis.add("MAR");
-//        xAxis.add("APR");
-//        xAxis.add("MAY");
-//        xAxis.add("JUN");
-
         xAxis.add("All");
         xAxis.add("Jan");
         xAxis.add("Feb");
@@ -639,46 +539,11 @@ public class Constants {
         return days;
     }
 
-    public static String getMillsTimeFormat(long date) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
-        return dateFormat.format(date);
-    }
-
-    public static String getpasswordLock() {
-        return DigitUtil.getMD5("vg99092vg");
-    }
-
     public static void startUrlset() {
         if (!ChatApplication.url.startsWith("http")) {
             ChatApplication.url = "http://" + ChatApplication.url;
         }
 
-    }
-
-    public static int twoDateDiff(String enddate) {
-        SimpleDateFormat myFormat = new SimpleDateFormat("dd-MM-yyyy");
-//        String dateBeforeString = "31 01 2014";
-//        String dateAfterString = "02 02 2014";
-        int daysBetween = 0;
-        try {
-            Date c = Calendar.getInstance().getTime();
-            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
-            String startdate = df.format(c);
-
-            Date dateBefore = myFormat.parse(startdate);
-            Date dateAfter = myFormat.parse(enddate);
-            long difference = dateAfter.getTime() - dateBefore.getTime();
-            daysBetween = (int) (difference / (1000 * 60 * 60 * 24));
-            /* You can also convert the milliseconds to days using this method
-             * float daysBetween =
-             *         TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS)
-             */
-            System.out.println("Number of Days between dates: " + daysBetween);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return daysBetween;
     }
 
     public static Object fromJson(String jsonString, Type type) {
@@ -700,6 +565,18 @@ public class Constants {
         }
         return address;
     }
+
+    public static Bitmap takescreenshotOfRootView(View view, RecyclerView recyclerView) {
+        // create bitmap screen capture
+        View v1 = view;
+        v1.setDrawingCacheEnabled(true);
+        Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+
+
+        return bitmap;
+
+    }
+
 
 
 }

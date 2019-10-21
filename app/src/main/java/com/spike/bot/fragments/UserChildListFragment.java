@@ -107,14 +107,6 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
         recyclerUserList = view.findViewById(R.id.recyclerUserList);
         LinearLayoutManager linearLayoutManager=new LinearLayoutManager(getActivity());
         recyclerUserList.setLayoutManager(linearLayoutManager);
-
-//        getActivity().runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                sectionedExpandableLayoutHelper = new UserRoomExpandableLayoutHelper(getActivity(), recyclerUserList, UserChildListFragment.this, Constants.SWITCH_NUMBER);
-//            }
-//        });
-
         getUserCHildList();
     }
 
@@ -142,14 +134,6 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
                     int code = result.getInt("code");
 
                     if(code==200){
-
-//                        roomList.clear();
-//                        JSONObject dataObject = result.getJSONObject("data");
-//                        JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
-//                        roomList.addAll(JsonHelper.parseRoomArray(roomArray,false));
-
-//                        sectionedExpandableLayoutHelper.addSectionList(roomList);
-//                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
 
                         JSONObject object=new JSONObject(result.toString());
 

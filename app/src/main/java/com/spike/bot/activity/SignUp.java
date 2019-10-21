@@ -9,10 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.InputFilter;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,11 +25,8 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
-import com.spike.bot.fragments.MainFragment;
-import com.spike.bot.model.PiDetailsModel;
 import com.spike.bot.model.User;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 

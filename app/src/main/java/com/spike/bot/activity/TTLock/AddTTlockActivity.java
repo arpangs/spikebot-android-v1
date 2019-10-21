@@ -36,7 +36,6 @@ import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.adapter.TTlockAdapter.LockListAdapter;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
-import com.spike.bot.core.Log;
 import com.spike.bot.model.AccountInfo;
 import com.spike.bot.model.LockInitResultObj;
 import com.spike.bot.model.LockObj;
@@ -181,7 +180,6 @@ public class AddTTlockActivity extends AppCompatActivity implements View.OnClick
 
                     String json = response.body();
                     accountInfo = GsonUtil.toObject(json, AccountInfo.class);
-                    Log.d("System out", "accountInfo is " + accountInfo);
 
                 /*{access_token='fac1734b6209dd5b3ea602c9cc7a15ae',
                 refresh_token='5ca1a4bc670b16b571b1488a631e57fc', uid=1769341, openid=1930389027, scope='user,key,room', token_type='Bearer', expires_in=5432678}*/

@@ -159,11 +159,9 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                     ChatApplication.showToast(AddMoodActivity.this, "Select atleast one Switch ");
                     return true;
                 }
-                if (editMode) {
-                    saveMood();
-                } else {
-                    saveMood();
-                }
+
+                saveMood();
+
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -438,24 +436,9 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
             moodObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             moodObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
-            if (editMode) {
-                moodObj.put("room_id", moodVO.getRoomId());
-                moodObj.put("panel_id", panel_id);
-                moodObj.put("panel_name", panel_name);
-            } else {
-//                moodObj.put("room_id", "");
-//                moodObj.put("panel_id", "");
-            }
-
 
             ArrayList<String> deviceIdList = new ArrayList<>();
             for (DeviceVO dPanel : deviceVOArrayList) {
-                //  {
-                //	"mood_name_id": 3,
-                //	"user_id": "1568463607921_AyMe7ek9e",
-                //	"panel_device_ids": ["1571149643833_GeqT4vQuUG","1571149643852_R0NbfvM_Yx"]
-                //}
-
                 deviceIdList.add(dPanel.getPanel_device_id());
             }
 
@@ -463,7 +446,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
             moodObj.put("panel_device_ids", array);
             moodObj.put("mood_name_id", select_mood_id);
 
-            ChatApplication.logDisplay("hash code is " + moodObj);
+            ChatApplication.logDisplay("hash code is "+url+"  " + moodObj);
 
 
 

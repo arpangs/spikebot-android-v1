@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.text.TextUtils;
+import android.util.Log;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.conn.HttpHostConnectException;
@@ -47,21 +48,21 @@ public class GetJsonTask2 extends AsyncTask<String, Void, String> {
 	@Override
 	protected String doInBackground(String... urls) {
 		try {
-			StringBuilder params=new StringBuilder("");
-			String result="";
-			String url1 =url ;
+			StringBuilder params = new StringBuilder("");
+			String result = "";
+			String url1 = url;
 
 			URL obj = new URL(url1);
 
-			HttpURLConnection con =httpConnection(obj,method);
-			if(method.equalsIgnoreCase("POST")){
+			HttpURLConnection con = httpConnection(obj, method);
+			if (method.equalsIgnoreCase("POST")) {
 				con.setDoOutput(true);
 				OutputStreamWriter outputStreamWriter = new OutputStreamWriter(con.getOutputStream());
 				outputStreamWriter.write(json);
 				outputStreamWriter.flush();
 			}
 
-			BufferedReader in ;//= new BufferedReader(new InputStreamReader(con.getInputStream()));
+			BufferedReader in;//= new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String inputLine;
 			StringBuffer response = new StringBuffer();
 
@@ -80,16 +81,7 @@ public class GetJsonTask2 extends AsyncTask<String, Void, String> {
 			in.close();
 			result = response.toString();
 			return result;
-
-		} catch (HttpHostConnectException e) {
-			error = "Can't connect to server, Problem with server or your internet connection.";
-		} catch (SocketException e) {
-			error = "Connection problem, check your internet connection";
-		} catch (ClientProtocolException e) {
-			error = "Protocol Error occured.";
-		} catch (IOException e) {
-			error = "IO Error occured.";
-		} catch (Exception e) {
+		}catch (Exception e) {
 			error = "Error occured.";
 		}
 		return null;
@@ -104,7 +96,12 @@ public class GetJsonTask2 extends AsyncTask<String, Void, String> {
 		} catch (Throwable e) {
 			if(!TextUtils.isEmpty(result) && result.startsWith("Maintenance is")){
 				error=result;
+			}else if(!TextUtils.isEmpty(result) && result.startsWith("<!DOCT")){
+				error=result;
 			}
+
+
+			Log.d("System out","result is "+result);
 			activity.onFailure(e, error,500);
 		}
 	}

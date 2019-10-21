@@ -7,7 +7,7 @@
     tools:ignore="MergeRootFrame">
 
     <fragment
-        class="com.spike.bot.fragments.MainFragment"
+        class="com.spike.bot.fragments.DashBoardFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/new_screen_resolution"
     android:orientation="vertical"
-    tools:context="com.spike.bot.fragments.MainFragment">
+    tools:context="com.spike.bot.fragments.DashBoardFragment">
 
     <TextView
         android:id="@+id/tv_header"
@@ -63,7 +63,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/new_screen_resolution"
-            tools:context="com.spike.bot.fragments.MainFragment">
+            tools:context="com.spike.bot.fragments.DashBoardFragment">
 
             <RelativeLayout
                 android:layout_width="match_parent"

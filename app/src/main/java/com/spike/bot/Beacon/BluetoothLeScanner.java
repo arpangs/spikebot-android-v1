@@ -3,8 +3,6 @@ package com.spike.bot.Beacon;
 import android.bluetooth.BluetoothAdapter;
 import android.os.Handler;
 
-import com.spike.bot.core.Log;
-
 public class BluetoothLeScanner {
     private final Handler mHandler;
     private final BluetoothAdapter.LeScanCallback mLeScanCallback;
@@ -26,13 +24,11 @@ public class BluetoothLeScanner {
             if (mScanning) {
                 return;
             }
-            Log.d("TAG", "~ Starting Scan");
             // Stops scanning after a pre-defined scan period.
             if (duration > 0) {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d("TAG", "~ Stopping Scan (timeout)");
                         mScanning = false;
                         mBluetoothUtils.getBluetoothAdapter().stopLeScan(mLeScanCallback);
                     }
@@ -41,7 +37,6 @@ public class BluetoothLeScanner {
             mScanning = true;
             mBluetoothUtils.getBluetoothAdapter().startLeScan(mLeScanCallback);
         } else {
-            Log.d("TAG", "~ Stopping Scan");
             mScanning = false;
             mBluetoothUtils.getBluetoothAdapter().stopLeScan(mLeScanCallback);
         }

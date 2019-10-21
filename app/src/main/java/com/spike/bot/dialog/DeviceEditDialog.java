@@ -289,63 +289,6 @@ public class DeviceEditDialog extends Dialog implements  View.OnClickListener {
         }).execute();
     }
 
-    public void deletePhilips(){
-
-        if(!ActivityHelper.isConnectingToInternet(activity)){
-            Toast.makeText(activity.getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
-            return;
-        }
-        ActivityHelper.showProgressDialog(activity,"Please wait.",false);
-
-        JSONObject obj = new JSONObject();
-        try {
-
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
-            obj.put("user_id", Common.getPrefValue(activity.getApplicationContext(), Constants.USER_ID));
-            obj.put("device_details",deviceObj);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        String url = ChatApplication.url + Constants.deletePhilipsHue;
-
-        ChatApplication.logDisplay("save switch "+obj.toString());
-
-        new GetJsonTask(activity,url ,"POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                try {
-                    //{"code":200,"message":"success"}
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    if(code==200){
-                        if(!TextUtils.isEmpty(message)){
-                            Toast.makeText(activity.getApplicationContext().getApplicationContext(),  message , Toast.LENGTH_SHORT).show();
-                        }
-                        ActivityHelper.dismissProgressDialog();
-                        dismiss();
-                        iCallback.onSuccess("yes");
-                    }
-                    else{
-                        Toast.makeText(activity.getApplicationContext(), message , Toast.LENGTH_SHORT).show();
-                    }
-                    // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                finally {
-                    ActivityHelper.dismissProgressDialog();
-
-                }
-            }
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
-                Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
-            }
-        }).execute();
-    }
-
     JSONObject deviceObj;
 
     public void getSwitchDetails(){

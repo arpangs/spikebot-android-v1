@@ -45,6 +45,9 @@ import java.util.Scanner;
 
 public class Common {
 
+    public static String USER_JSON = "user_pref_json";
+    public static String camera_key = "camera_key"; //key : spike123
+
     /**
      * @param context
      * @return
@@ -69,8 +72,6 @@ public class Common {
      * @return
      */
     public static boolean isNetworkConnected(Context context) {
-//        ConnectivityManager cm = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-//        return cm.getActiveNetworkInfo() != null;
         ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
@@ -81,12 +82,9 @@ public class Common {
     }
 
     public static boolean isConnected() {
-        ConnectivityManager
-                cm = (ConnectivityManager) ChatApplication.getInstance().getApplicationContext()
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) ChatApplication.getInstance().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null
-                && activeNetwork.isConnectedOrConnecting();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
     public static String TAG = "isReachableURL";
@@ -357,14 +355,6 @@ public class Common {
                         break;
                 }
                 break;
-
-//            case 3:
-//                switch (type) {
-//
-//                }
-//
-//                break;
-
         }
         return resource;
     }
@@ -413,7 +403,6 @@ public class Common {
      * @param textview
      */
     public static void setOnOffBackground(Context mContext, TextView textview) {
-        // textview.setTag("test");
         Boolean flag = false;
         Log.d("", "setOnOffBackground tag = " + textview.getTag());
         if (textview.getTag() == null) {
@@ -423,8 +412,6 @@ public class Common {
         }
         flag = !flag;
 
-        Log.d("", "setOnOffBackground = " + flag);
-        //flag = Boolean.parseBoolean(textview.getTag(0).toString());
         setBackground(mContext, textview, flag);
         textview.setTag(flag);
     }
@@ -435,8 +422,6 @@ public class Common {
      * @param flag
      */
     public static void setBackground(Context mContext, TextView textview, Boolean flag) {
-        Log.d("", "setOnOffBackground = " + flag);
-        //flag = Boolean.parseBoolean(textview.getTag(0).toString());
         if (flag) {
             textview.setBackground(mContext.getResources().getDrawable(R.drawable.rounded_blue_circle_fill));
             textview.setTextColor(mContext.getResources().getColor(R.color.automation_white));
@@ -455,54 +440,6 @@ public class Common {
     public static String getDaysString(String schedule_device_day) {
         String deviceString = "";
         String start = "<font color=\"#FFBC38\"><b>";//FFBC38 008BE0
-        String end = "</b></font>";
-        if (schedule_device_day.contains("0")) {
-            deviceString = deviceString + start + "S " + end;
-        } else {
-            deviceString = deviceString + "S ";
-        }
-
-        if (schedule_device_day.contains("1")) {
-            deviceString = deviceString + start + "&nbsp;M " + end;
-        } else {
-            deviceString = deviceString + "&nbsp;M ";
-        }
-
-        if (schedule_device_day.contains("2")) {
-            deviceString = deviceString + start + "&nbsp;T " + end;
-        } else {
-            deviceString = deviceString + "&nbsp;T ";
-        }
-
-        if (schedule_device_day.contains("3")) {
-            deviceString = deviceString + start + "&nbsp;W " + end;
-        } else {
-            deviceString = deviceString + "&nbsp;W ";
-        }
-
-        if (schedule_device_day.contains("4")) {
-            deviceString = deviceString + start + "&nbsp;T " + end;
-        } else {
-            deviceString = deviceString + "&nbsp;T ";
-        }
-
-        if (schedule_device_day.contains("5")) {
-            deviceString = deviceString + start + "&nbsp;F " + end;
-        } else {
-            deviceString = deviceString + "&nbsp;F ";
-        }
-
-        if (schedule_device_day.contains("6")) {
-            deviceString = deviceString + start + "&nbsp;S " + end;
-        } else {
-            deviceString = deviceString + "&nbsp;S ";
-        }
-        return deviceString;
-    }
-
-    public static String getDaysStringGray(String schedule_device_day) {
-        String deviceString = "";
-        String start = "<font color=\"#808080\"><b>";//FFBC38 008BE0
         String end = "</b></font>";
         if (schedule_device_day.contains("0")) {
             deviceString = deviceString + start + "S " + end;
@@ -570,17 +507,12 @@ public class Common {
      * @return
      */
     public static String getPrefValue(Context context, String key) {
-
-        //To retrieve
         SharedPreferences settings = context.getSharedPreferences("App", Context.MODE_PRIVATE);
         String value = settings.getString(key, ""); //0 is the default value
-
         return value;
     }
 
-    public static String USER_JSON = "user_pref_json";
-    public static String USER_PIDETAIL = "user_pi_details";
-    public static String camera_key = "camera_key"; //key : spike123
+
 
     /**
      * hideSoftKeyBoard
@@ -588,13 +520,8 @@ public class Common {
      * @param activity
      */
     public static void hideSoftKeyboard(Activity activity) {
-        InputMethodManager inputMethodManager =
-                (InputMethodManager) activity.getSystemService(
-                        Activity.INPUT_METHOD_SERVICE);
-//        inputMethodManager.hideSoftInputFromWindow(
-//                activity.getCurrentFocus().getWindowToken(), 0);
-        inputMethodManager.hideSoftInputFromWindow(
-                new View(activity).getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(new View(activity).getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     /**
@@ -742,9 +669,7 @@ public class Common {
      */
 
     public static int dpToPx(Context context, int dp) {
-        float density = context.getResources()
-                .getDisplayMetrics()
-                .density;
+        float density = context.getResources().getDisplayMetrics().density;
         return Math.round((float) dp * density);
     }
 

@@ -1,66 +1,45 @@
 package com.spike.bot.activity;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.github.mikephil.charting.utils.Utils;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.ack.SocketManager;
 import com.spike.bot.adapter.CloudAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.fcm.MyFirebaseMessagingService;
-import com.spike.bot.fragments.MainFragment;
+import com.spike.bot.fragments.DashBoardFragment;
 import com.spike.bot.fragments.MoodFragment;
 import com.spike.bot.fragments.ScheduleFragment;
 import com.spike.bot.listener.DeviceListRefreshView;
@@ -80,12 +59,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 
 import io.fabric.sdk.android.Fabric;
@@ -94,7 +69,7 @@ import io.socket.emitter.Emitter;
 
 public class Main2Activity extends AppCompatActivity implements View.OnClickListener,
         ConnectivityReceiver.ConnectivityReceiverListener, CloudAdapter.CloudClickListener,
-        MainFragment.OnHeadlineSelectedListener, ResponseErrorCode, SocketListener, LoginPIEvent ,BottomNavigationView.OnNavigationItemSelectedListener{
+        DashBoardFragment.OnHeadlineSelectedListener, ResponseErrorCode, SocketListener, LoginPIEvent ,BottomNavigationView.OnNavigationItemSelectedListener{
 
     private String ERROR_STRING = "No Internet found.\n" + "Check your connection or try again.";
     public static boolean flagPicheck = false, flagLogin = false,isResumeConnect=false,isCloudConnected=false;
@@ -113,7 +88,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     private CloudAdapter cloudAdapter;
 
     PowerManager.WakeLock wakeLock;
-    public MainFragment mainFragment1;
+    public DashBoardFragment dashBoardFragment1;
     public MoodFragment moodFragment;
     public ScheduleFragment scheduleFragment;
     private FrameLayout mViewPager;
@@ -160,10 +135,10 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         this.wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, "");
         wakeLock.acquire();
 
-        MainFragment.clearNotification(Main2Activity.this);
+        DashBoardFragment.clearNotification(Main2Activity.this);
 
         //first fragment load
-        loadFragment(new MainFragment());
+        loadFragment(new DashBoardFragment());
         tabLayout.setOnNavigationItemSelectedListener(this);
 
         // check login or not
@@ -227,10 +202,10 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     protected void onPause() {
         super.onPause();
         if (ChatApplication.isPushFound) {
-            MainFragment.getBadgeClear(Main2Activity.this);
+            DashBoardFragment.getBadgeClear(Main2Activity.this);
         }
         ChatApplication.isCallDeviceList = false;
-        MainFragment.isRefredCheck = true;
+        DashBoardFragment.isRefredCheck = true;
         ChatApplication.isMainFragmentNeedResume = true;
 
     }
@@ -269,9 +244,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             if (!ActivityHelper.isConnectingToInternet(Main2Activity.this)) {
                 ChatApplication.showToast(Main2Activity.this, getResources().getString(R.string.disconnect));
             } else {
-                if(MainFragment.isItemClickView){
                     openSettingPopup(toolbar);
-                }
             }
         }
 
@@ -283,11 +256,11 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         switch (item.getItemId()) {
             case R.id.navigationDashboard:
                 tabCount=0;
-                if(mainFragment1==null){
-                    mainFragment1 = new MainFragment();
-                    fragment=mainFragment1;
+                if(dashBoardFragment1 ==null){
+                    dashBoardFragment1 = new DashBoardFragment();
+                    fragment= dashBoardFragment1;
                 }else {
-                    fragment=mainFragment1;
+                    fragment= dashBoardFragment1;
                 }
 
                 break;
@@ -1076,8 +1049,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         ChatApplication.isRefreshHome = false;
         invalidateToolbarCloudImage();
 
-        mainFragment1.isResumeConnect=true;
-        mainFragment1.showDialog = 1;
+        dashBoardFragment1.isResumeConnect=true;
+        dashBoardFragment1.showDialog = 1;
         getUserDialogClick(true);
         /* user switch to first tab*/
         tabLayout.setSelectedItemId(R.id.navigationDashboard);

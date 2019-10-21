@@ -62,20 +62,17 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
     NodePlayerView player;
     NodePlayer nodePlayer;
     ZoomLayout zoomlayout;
-    boolean isMute=false;
-    private boolean isCloudConnect;
-    //LinearLayout ll_player;
-
     RelativeLayout relativeLayout;
-    String mMediaUrl;
     ProgressDialog progressDialog;
+    String mMediaUrl;
+    boolean isMute=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_player);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar =  findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -84,25 +81,19 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
         //rtmp://home.deepfoods.net:11111/live/livestream3
         mMediaUrl = getIntent().getExtras().getString("videoUrl");
         String name = getIntent().getExtras().getString("name");
-        boolean isCloudConnect = getIntent().getExtras().getBoolean("isCloudConnect");
         setTitle(name);
-
-        //   ll_player = (LinearLayout)findViewById(R.id.ll_player);
 
         progressDialog=new ProgressDialog(this);
         progressDialog.setMessage("Please wait...");
         progressDialog.show();
-        player = (NodePlayerView)findViewById(R.id.player);
+        player = findViewById(R.id.player);
         player.setUIViewContentMode(NodePlayerView.UIViewContentMode.ScaleAspectFit);
         player.setRenderType(NodePlayerView.RenderType.TEXTUREVIEW);
 
-        relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout);
+        relativeLayout = findViewById(R.id.relativeLayout);
 
         nodePlayer = new NodePlayer(this);
 
-
-        //String url = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
-        //String url = "rtmp://13.127.153.122:1936/live/livestream1";
        //  nodePlayer.setInputUrl("rtsp://192.168.175.68:554/user=admin&password=spike123&channel=1&stream=0.sdp?real_stream--rtp-caching=100");
         nodePlayer.setInputUrl(mMediaUrl);
         nodePlayer.setAudioEnable(true);
@@ -122,7 +113,7 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
         });
 
 
-        zoomlayout=(ZoomLayout)findViewById(R.id.zoomLayout);
+        zoomlayout=findViewById(R.id.zoomLayout);
         zoomlayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -131,8 +122,14 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        //ll_player.setOnTouchListener(new TouchHandler());
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        nodePlayer.start();
+    }
+
+
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
@@ -142,23 +139,7 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         int id = v.getId();
     }
-    Bitmap b = null;
-    public void saveScreenShot(){
-        //  View v1 = getWindow().getDecorView().getRootView();
-        b = ScreenshotUtils.getScreenShot(player.getRenderView()); //player.getRenderView());
 
-        // player.getRenderView().setDrawingCacheEnabled(false);
-
-        //If bitmap is not null
-        if (b != null) {
-        }
-
-        //  showScreenShotImage(b);//show bitmap over imageview
-        File saveFile = ScreenshotUtils.getMainDirectoryName(this);//get the path to save screenshot
-        File file = ScreenshotUtils.store(b, "screenshot" + new Date().getTime() + ".jpg", saveFile);//save the screenshot to selected path
-        //shareScreenshot(file);//finally share screenshot
-
-    }
     private boolean checkPermission() {
         List arrayList = new ArrayList();
         for (String str : this.permissions) {
@@ -190,21 +171,13 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onPause() {
         super.onPause();
-        //if(nodePlayer.isLive() || nodePlayer.isPlaying()) {
         nodePlayer.stop();
-        //}
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        nodePlayer.start();
-    }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-//        player.setUIViewContentMode(NodePlayerView.UIViewContentMode.ScaleAspectFit);
-//        nodePlayer
     }
 
     @Override
@@ -231,8 +204,6 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_screenshot) {
             if (checkPermission()) {
-
-                //saveScreenShot();
                 saveScreenShot2();
             }
             return true;
@@ -251,58 +222,9 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
         loadView(player);
     }
 
-
-
-    public Bitmap takeScreenShot(int x, int y, int w, int h, GL10 gl) {
-            int b[]=new int[w*(y+h)];
-            int bt[]=new int[w*h];
-            IntBuffer ib=IntBuffer.wrap(b);
-            ib.position(0);
-            gl.glReadPixels(x, 0, w, y+h, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, ib);
-
-            for(int i=0, k=0; i<h; i++, k++)
-            {//remember, that OpenGL bitmap is incompatible with Android bitmap
-                //and so, some correction need.
-                for(int j=0; j<w; j++)
-                {
-                    int pix=b[i*w+j];
-                    int pb=(pix>>16)&0xff;
-                    int pr=(pix<<16)&0x00ff0000;
-                    int pix1=(pix&0xff00ff00) | pr | pb;
-                    bt[(h-k-1)*w+j]=pix1;
-                }
-            }
-
-
-            Bitmap sb=Bitmap.createBitmap(bt, w, h, Bitmap.Config.ARGB_8888);
-            return sb;
-
-    }
-
     public void loadView(View cardView){
-
         try {
-//            cardView.setDrawingCacheEnabled(true);
-//            Bitmap bitmap = Constants.takescreenshotOfRootView(this.getWindow().getDecorView().getRootView(),null);
-//            // Bitmap bitmap =  player.getDrawingCache();
-//            cardView.setDrawingCacheEnabled(false);
-//
-//            String mPath = Environment.getExternalStorageDirectory().toString() + "/"+ System.currentTimeMillis()+"camera.jpg";
-//
-//            File imageFile = new File(mPath);
-//            FileOutputStream outputStream = new FileOutputStream(imageFile);
-//            int quality = 100;
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
-//            outputStream.flush();
-//            outputStream.close();
-
-
             cardView.setDrawingCacheEnabled(true);
-
-
-//            View screenView = player.getmSurface().lockHardwareCanvas();
-//            screenView.setDrawingCacheEnabled(true);
-//            screenView.setDrawingCacheEnabled(false);
 
             //Define a bitmap with the same size as the view
             Bitmap returnedBitmap = Bitmap.createBitmap(player.getRenderView().getWidth(), player.getRenderView().getHeight(),Bitmap.Config.ARGB_8888);
@@ -311,16 +233,12 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
             //Get the view's background
             Drawable bgDrawable =player.getRootView().getRootView().getBackground();
             if (bgDrawable!=null)
-                //has background drawable, then draw it on the canvas
                 bgDrawable.draw(canvas);
             else
-                //does not have background drawable, then draw white background on the canvas
                 canvas.drawColor(Color.WHITE);
-            // draw the view on the canvas
             player.getRenderView().draw(canvas);
 
             Bitmap bitmap = Constants.takescreenshotOfRootView(player.getRenderView().getRootView(),null);
-            // Bitmap bitmap =  player.getDrawingCache();
             cardView.setDrawingCacheEnabled(false);
 
             String mPath = Environment.getExternalStorageDirectory().toString() + "/"+ System.currentTimeMillis()+"camera.jpg";
@@ -338,129 +256,4 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
     }
-
-    /**
-     *
-     * @param v
-     * @return
-     */
-    public Bitmap loadBitmapFromView(View v) {
-        DisplayMetrics dm = getResources().getDisplayMetrics();
-        v.measure(View.MeasureSpec.makeMeasureSpec(dm.widthPixels, View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(dm.heightPixels, View.MeasureSpec.EXACTLY));
-        v.layout(0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
-        Bitmap returnedBitmap = Bitmap.createBitmap(v.getMeasuredWidth(),
-                v.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(returnedBitmap);
-        v.draw(c);
-
-        return returnedBitmap;
-    }
-
-    /**
-     * SavePixels
-     * @param x
-     * @param y
-     * @param w
-     * @param h
-     * @return
-     */
-    public static Bitmap SavePixels(int x, int y, int w, int h) {
-        EGL10 egl = (EGL10) EGLContext.getEGL();
-        GL10 gl = (GL10) egl.eglGetCurrentContext().getGL();
-        int b[] = new int[w * (y + h)];
-        int bt[] = new int[w * h];
-        IntBuffer ib = IntBuffer.wrap(b);
-        ib.position(0);
-        gl.glReadPixels(x, 0, w, y + h, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, ib);
-        for (int i = 0, k = 0; i < h; i++, k++) {
-            for (int j = 0; j < w; j++) {
-                int pix = b[i * w + j];
-                int pb = (pix >> 16) & 0xff;
-                int pr = (pix << 16) & 0x00ff0000;
-                int pix1 = (pix & 0xff00ff00) | pr | pb;
-                bt[(h - k - 1) * w + j] = pix1;
-            }
-        }
-
-        return Bitmap.createBitmap(bt, w, h, Bitmap.Config.ARGB_8888);
-    }
-
-
-    /**
-     *
-     * @param width
-     * @param height
-     * @return
-     */
-
-    public static Bitmap saveOpenGL(int width,int height){
-
-        EGL10 egl = (EGL10) EGLContext.getEGL();
-        GL10 gl = (GL10) egl.eglGetCurrentContext().getGL();
-
-        int screenshotSize = width * height;
-        ByteBuffer bb = ByteBuffer.allocateDirect(screenshotSize * 4);
-        bb.order(ByteOrder.nativeOrder());
-        gl.glReadPixels(0, 0, width, height, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, bb);
-        int pixelsBuffer[] = new int[screenshotSize];
-        bb.asIntBuffer().get(pixelsBuffer);
-
-        for (int i = 0; i < screenshotSize; ++i) {
-            pixelsBuffer[i] = ((pixelsBuffer[i] & 0xff00ff00)) | ((pixelsBuffer[i] & 0x000000ff) << 16) | ((pixelsBuffer[i] & 0x00ff0000) >> 16);
-        }
-
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        bitmap.setPixels(pixelsBuffer, screenshotSize-width, -width, 0, 0, width, height);
-        return bitmap;
-    }
-
-
-    /**
-     *
-     * @param CamView
-     */
-    public void TakeScreenshot(View CamView){    //THIS METHOD TAKES A SCREENSHOT AND SAVES IT AS .jpg
-        Random num = new Random();
-        int nu=num.nextInt(1000); //PRODUCING A RANDOM NUMBER FOR FILE NAME
-        CamView.setDrawingCacheEnabled(true); //CamView OR THE NAME OF YOUR LAYOUR
-        CamView.buildDrawingCache(true);
-        Bitmap bmp = Bitmap.createBitmap(CamView.getDrawingCache());
-        CamView.setDrawingCacheEnabled(false); // clear drawing cache
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-        byte[] bitmapdata = bos.toByteArray();
-        ByteArrayInputStream fis = new ByteArrayInputStream(bitmapdata);
-
-        String picId=String.valueOf(nu);
-        String myfile="Ghost"+picId+".jpeg";
-
-        File dir_image = new  File(Environment.getExternalStorageDirectory()+//<---
-                File.separator+"Ultimate Entity Detector");          //<---
-        dir_image.mkdirs();                                                  //<---
-        //^IN THESE 3 LINES YOU SET THE FOLDER PATH/NAME . HERE I CHOOSE TO SAVE
-        //THE FILE IN THE SD CARD IN THE FOLDER "Ultimate Entity Detector"
-
-        try {
-            File tmpFile = new File(dir_image,myfile);
-            FileOutputStream fos = new FileOutputStream(tmpFile);
-
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = fis.read(buf)) > 0) {
-                fos.write(buf, 0, len);
-            }
-            fis.close();
-            fos.close();
-            Toast.makeText(getApplicationContext(),
-                    "The file is saved at :SD/Ultimate Entity Detector", Toast.LENGTH_LONG).show();
-
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 }

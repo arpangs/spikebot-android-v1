@@ -13,9 +13,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -23,10 +20,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.kp.core.GetJsonTaskRemote;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
@@ -56,7 +51,6 @@ import com.kp.core.ICallBack;
 import com.kp.core.ICallBack2;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.model.SendRemoteCommandReq;
-import com.spike.bot.model.User;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -78,7 +72,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
     FloatingActionButton mFab;
     private Socket mSocket;
 
-    MainFragment.OnHeadlineSelectedListener mCallback;
+    DashBoardFragment.OnHeadlineSelectedListener mCallback;
     MoodExpandableLayoutHelper sectionedExpandableLayoutHelper;
     ResponseErrorCode responseErrorCode;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -112,7 +106,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
         }
         try {
             responseErrorCode = (ResponseErrorCode) activity;
-            mCallback = (MainFragment.OnHeadlineSelectedListener) activity;
+            mCallback = (DashBoardFragment.OnHeadlineSelectedListener) activity;
         } catch (ClassCastException e) {
            e.printStackTrace();
         }
@@ -423,12 +417,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             });
             fanDialog.show();
         } else if(action.equalsIgnoreCase("textclick")){
-
-            String fName = Common.getPrefValue(ChatApplication.getInstance(),"first_name");
-            String lName = Common.getPrefValue(ChatApplication.getInstance(),"last_name");
-
             getDeviceDetails(item.getOriginal_room_device_id());
-
 
         //    ActivityHelper.showDialog(getActivity(),getString(R.string.app_name),item.getRoomName() + " (" + item.getPanel_name() + ")" ,ActivityHelper.NO_ACTION);
         }else if(action.equalsIgnoreCase("isIRSensorClick")){

@@ -27,7 +27,7 @@ import com.spike.bot.adapter.UnAssignRepeatarAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
-import com.spike.bot.fragments.MainFragment;
+import com.spike.bot.fragments.DashBoardFragment;
 import com.spike.bot.model.SensorUnassignedRes;
 
 import org.json.JSONArray;
@@ -86,19 +86,19 @@ public class SensorUnassignedActivity extends AppCompatActivity {
             roomName = "";
         }
 
-        if (isDoorSensor == MainFragment.SENSOR_TYPE_DOOR) {
+        if (isDoorSensor == DashBoardFragment.SENSOR_TYPE_DOOR) {
             spinner_room.setVisibility(View.GONE);
             viewLine.setVisibility(View.GONE);
             isDoorSensor = 0;
-        } else if (isDoorSensor == MainFragment.SENSOR_TYPE_TEMP) {
+        } else if (isDoorSensor == DashBoardFragment.SENSOR_TYPE_TEMP) {
             isDoorSensor = 1;
-        } else if (isDoorSensor == MainFragment.SENSOR_TYPE_IR) {
+        } else if (isDoorSensor == DashBoardFragment.SENSOR_TYPE_IR) {
             isDoorSensor = 2;
             getSupportActionBar().setTitle("Unassigned IR List");
-        } else if (isDoorSensor == MainFragment.Curtain) {
+        } else if (isDoorSensor == DashBoardFragment.Curtain) {
             isDoorSensor = 6;
             getSupportActionBar().setTitle("Curtain List");
-        } else if (isDoorSensor == MainFragment.SENSOR_REPEATAR) {
+        } else if (isDoorSensor == DashBoardFragment.SENSOR_REPEATAR) {
             spinner_room.setVisibility(View.GONE);
             viewLine.setVisibility(View.GONE);
             isDoorSensor = 10;
@@ -109,7 +109,7 @@ public class SensorUnassignedActivity extends AppCompatActivity {
         }
 
         //10 is repeatar unaasign
-        if (isDoorSensor == MainFragment.SENSOR_REPEATAR) {
+        if (isDoorSensor == DashBoardFragment.SENSOR_REPEATAR) {
             callReptorList();
         } else {
             getSensorUnAssignedDetails(isDoorSensor);

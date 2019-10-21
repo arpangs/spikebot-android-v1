@@ -39,31 +39,16 @@ public class TimePickerFragment12 extends DialogFragment implements OnTimeSetLis
 		
 		this.callback = callback;
 	}
-	/*public TimePickerFragment(Activity activity, String selectedDate,boolean is24Hour,ICallback callback) {
 
-		this.activity = activity;
-		this.selectedDate = new Date();
-		this.is24Hour = is24Hour;
-		try {
-			this.selectedDate = ActivityHelper.parseTimeSimple(selectedDate, AppConstants.DATE_FROMATE_HH_MM_AMPM);
-		} catch (ParseException e) {
-		}
-
-		this.callback = callback;
-	}*/
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		// Use the current date as the default date in the picker
-		
+
 		final Calendar c = Calendar.getInstance();
 		c.setTime(selectedDate);
 		int hour = c.get(Calendar.HOUR_OF_DAY);
 		int minute = c.get(Calendar.MINUTE);
 		int am = c.get(Calendar.AM_PM);
 
-//		CustomLogHandler.printInfolog("selectedDate ", " TimePickerFragment selectedDate " + selectedDate.toLocaleString());
-		Log.d("selectedDate ", minute + " minute == hour " + hour );
-		// Create a new instance of DatePickerDialog and return it
 		return new TimePickerDialog(getActivity(), this, hour, minute,is24Hour);
 	}
 	@Override

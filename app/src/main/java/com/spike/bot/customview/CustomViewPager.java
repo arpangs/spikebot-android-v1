@@ -10,21 +10,7 @@ import android.widget.Scroller;
 import java.lang.reflect.Field;
 
 public class CustomViewPager extends ViewPager {
-    /*public CustomViewPager(Context context) {
-        super(context);
-    }
 
-    public CustomViewPager(Context context, AttributeSet attrs)
-    {
-        super(context,attrs);
-    }
-
-   
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
-        // Never allow swiping to switch between pages
-        return false;
-    }*/
     public CustomViewPager(Context context) {
         super(context);
         setMyScroller();

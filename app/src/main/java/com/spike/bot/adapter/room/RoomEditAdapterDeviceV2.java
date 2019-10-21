@@ -22,12 +22,12 @@ import java.util.ArrayList;
 
 public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapterDeviceV2.EditDeviceHolder> {
 
+    DeviceVO item;
     ArrayList<DeviceVO> deviceVOs;
     private ItemClickRoomEditListener mItemClickListener;
-
     String itemDeviceName = "", clickAction = "1";
     int itemIcon = 0;
-    DeviceVO item;
+
 
     public RoomEditAdapterDeviceV2(ArrayList<DeviceVO> deviceVOs1, ItemClickRoomEditListener itemClickRoomEditListener) {
         this.deviceVOs = deviceVOs1;
@@ -78,26 +78,30 @@ public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapte
         holder.itemTextView.setText(itemDeviceName);
         holder.iv_icon.setImageResource(itemIcon); //all icon grey
         final String finalClickAction = clickAction;
+
+        holder.view.setId(position);
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mItemClickListener.itemClicked(item, finalClickAction, view);
+                mItemClickListener.itemClicked(deviceVOs.get(holder.view.getId()), finalClickAction, view);
             }
         });
 
         holder.iv_icon_text.setVisibility(View.GONE);
 
+        holder.iv_icon.setId(position);
         holder.iv_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mItemClickListener.itemClicked(item, finalClickAction, view);
+                mItemClickListener.itemClicked(deviceVOs.get(holder.iv_icon.getId()), finalClickAction, view);
             }
         });
 
-        holder.ll_room_item.setOnClickListener(new View.OnClickListener() {
+        holder.itemTextView.setId(position);
+        holder.itemTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mItemClickListener.itemClicked(item, finalClickAction, view);
+                mItemClickListener.itemClicked(deviceVOs.get(holder.itemTextView.getId()), finalClickAction, view);
             }
         });
     }
@@ -117,10 +121,10 @@ public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapte
         public EditDeviceHolder(View view) {
             super(view);
             this.view = view;
-            itemTextView = (TextView) view.findViewById(R.id.text_item);
-            iv_icon = (ImageView) view.findViewById(R.id.iv_icon);
-            iv_icon_text = (ImageView) view.findViewById(R.id.iv_icon_text);
-            ll_room_item = (LinearLayout) view.findViewById(R.id.ll_room_item);
+            itemTextView =  view.findViewById(R.id.text_item);
+            iv_icon =  view.findViewById(R.id.iv_icon);
+            iv_icon_text =  view.findViewById(R.id.iv_icon_text);
+            ll_room_item = view.findViewById(R.id.ll_room_item);
 
         }
     }

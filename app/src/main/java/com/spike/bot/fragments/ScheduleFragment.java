@@ -62,11 +62,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -97,7 +94,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     boolean isCallVisibleHint=false;
     Menu mainMenu;
 
-    MainFragment.OnHeadlineSelectedListener mCallback;
+    DashBoardFragment.OnHeadlineSelectedListener mCallback;
     private Socket mSocket;
     private FloatingActionButton mFab;
     private CardView mFabMenuLayout;
@@ -109,7 +106,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     // This does not mean the Activity is fully initialized.
     ResponseErrorCode responseErrorCode;
 
-    private static MainFragment instance = null;
+    private static DashBoardFragment instance = null;
     private Activity activity;
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -152,7 +149,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             } else {
                 try {
                     responseErrorCode = (ResponseErrorCode) activity;
-                    mCallback = (MainFragment.OnHeadlineSelectedListener) activity;
+                    mCallback = (DashBoardFragment.OnHeadlineSelectedListener) activity;
                 } catch (ClassCastException e) {
                     e.printStackTrace();
                 }
@@ -175,7 +172,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     }
 
 
-    public static MainFragment getInstance() {
+    public static DashBoardFragment getInstance() {
         return instance;
     }
 
@@ -1425,7 +1422,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                         String userPassword = "";
                         mCallback.onArticleSelected("" + userFirstName);
 
-//                        MainFragment.saveCurrentId(getActivity(), userId, gateway_ip);
+//                        DashBoardFragment.saveCurrentId(getActivity(), userId, gateway_ip);
                         if (userObject.has("user_password")) {
                             userPassword = userObject.getString("user_password");
                         }
