@@ -52,15 +52,10 @@ import com.spike.bot.dialog.ICallback;
 import com.spike.bot.model.DeviceVO;
 import com.spike.bot.model.PanelVO;
 import com.spike.bot.model.RoomVO;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
-
-import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
 
 /**
  * Created by Sagar on 13/4/18.
@@ -79,7 +74,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
     RoomEditAdapterV2 roomEditGridAdapter;
     DeviceEditDialog deviceEditDialog;
     RoomVO room;
-    boolean addRoom = false;
     String action = "";
 
     @Override
@@ -489,7 +483,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
     }
 
     /**
-     * @param deviceVO
+     * @param deviceVO , device icon list & show dialog > change name , icon
      */
     private void showDeviceEditDialog(final DeviceVO deviceVO) {
 
@@ -498,6 +492,8 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             return;
         }
         String url = ChatApplication.url + Constants.CHECK_INDIVIDUAL_SWITCH_DETAILS;
+
+        ChatApplication.logDisplay("icon list "+url);
 
         new GetJsonTask(this, url, "POST","", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
@@ -544,19 +540,15 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         JSONObject object = new JSONObject();
         try {
             object.put("panel_id", panelVO.getPanelId());
-            object.put("panel_name", panelVO.getPanelName());
-            object.put("room_id", room.getRoomId());
-            object.put("room_name", room.getRoomName());
-            object.put("panel_type", panelVO.getPanel_type());
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String url = ChatApplication.url + Constants.DELETE_ROOM_PANEL;
+        String url = ChatApplication.url + Constants.panelDelete;
 
-
+        ChatApplication.logDisplay("panel delete "+url+" "+object);
         new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {

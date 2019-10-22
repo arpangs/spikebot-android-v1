@@ -20,6 +20,7 @@ import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.LoginActivity;
 import com.spike.bot.adapter.panel.ExistPanelRoomAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
@@ -65,15 +66,13 @@ public class AddExistingPanel extends AppCompatActivity {
     private LinearLayout ll_panel_list, ll_un_view;
 
     String webUrl = "";
-    private String userId = "0";
-    private String token_id = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_existing_panel);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar =  findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -91,9 +90,9 @@ public class AddExistingPanel extends AppCompatActivity {
             ex.printStackTrace();
         }
 
-        ll_panel_view = (LinearLayout) findViewById(R.id.ll_panel_view);
-        ll_un_view = (LinearLayout) findViewById(R.id.ll_un_view);
-        txt_un_room = (EditText) findViewById(R.id.txt_un_room);
+        ll_panel_view =  findViewById(R.id.ll_panel_view);
+        ll_un_view =  findViewById(R.id.ll_un_view);
+        txt_un_room =  findViewById(R.id.txt_un_room);
         ll_un_view.setVisibility(View.GONE);
 
         if (isDeviceAdd) {
@@ -108,13 +107,13 @@ public class AddExistingPanel extends AppCompatActivity {
             ll_panel_view.setVisibility(View.VISIBLE);
         }
 
-        linear_progress = (LinearLayout) findViewById(R.id.linear_progress);
-        ll_panel_list = (LinearLayout) findViewById(R.id.ll_panel_list);
+        linear_progress =  findViewById(R.id.linear_progress);
+        ll_panel_list =  findViewById(R.id.ll_panel_list);
 
-        et_panel_name_existing = (EditText) findViewById(R.id.et_panel_name_existing);
+        et_panel_name_existing =  findViewById(R.id.et_panel_name_existing);
         et_panel_name_existing.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
 
-        list_panel = (RecyclerView) findViewById(R.id.list_panel);
+        list_panel =  findViewById(R.id.list_panel);
         list_panel.setHasFixedSize(true);
         list_panel.setLayoutManager(new LinearLayoutManager(this));
 
@@ -276,7 +275,7 @@ public class AddExistingPanel extends AppCompatActivity {
     private void saveExistPanel() {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            ChatApplication.showToast(getApplicationContext(),getResources().getString(R.string.disconnect));
             return;
         }
         if (!isDeviceAdd) {
@@ -406,7 +405,6 @@ public class AddExistingPanel extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Throwable throwable, String error) {
-                    Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
                     ActivityHelper.dismissProgressDialog();
                 }
             }).execute();

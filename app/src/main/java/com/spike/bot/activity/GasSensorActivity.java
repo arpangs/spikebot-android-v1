@@ -250,7 +250,7 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
 
     private void deleteGas() {
 
-        String url = ChatApplication.url + Constants.DELETE_TEMP_SENSOR;
+        String url = ChatApplication.url + Constants.DELETE_MODULE;
 
         JSONObject object = new JSONObject();
         try {

@@ -1278,7 +1278,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             return;
         }
 
-        String webUrl = ChatApplication.url + Constants.DELETE_TEMP_SENSOR;
+        String webUrl = ChatApplication.url + Constants.DELETE_MODULE;
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
 
         JSONObject jsonNotification = new JSONObject();

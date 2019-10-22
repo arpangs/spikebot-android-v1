@@ -29,10 +29,7 @@ import me.leolin.shortcutbadger.ShortcutBadger;
 public class SendNotificationAsync extends AsyncTask<String, Void, Bitmap> {
 
         private Context ctx;
-        private String message;
-        private String camera_url;
-        private String camera_body;
-        String badge="";
+        private String message,camera_url,camera_body,badge="";
 
         SendNotificationAsync(Context context, String badge) {
             super();
@@ -97,8 +94,6 @@ public class SendNotificationAsync extends AsyncTask<String, Void, Bitmap> {
                                 .setContentIntent(pendingIntent)
                                 .setNumber(Integer.parseInt(badge))
                                 .setLargeIcon(result);
-//                int color = ctx.getColor(R.color.automation_red);
-//                notificationBuilder.setColor(color);
 
                 notificationBuilder.getNotification().flags |= Notification.FLAG_AUTO_CANCEL;
 
@@ -106,9 +101,7 @@ public class SendNotificationAsync extends AsyncTask<String, Void, Bitmap> {
 
                 // Since android Oreo notification channel is needed.
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    NotificationChannel channel = new NotificationChannel(channelId,
-                            "Spike Bot",
-                            NotificationManager.IMPORTANCE_DEFAULT);
+                    NotificationChannel channel = new NotificationChannel(channelId, "Spike Bot", NotificationManager.IMPORTANCE_DEFAULT);
                     channel.setShowBadge(true);
                     notificationManager.createNotificationChannel(channel);
                 }

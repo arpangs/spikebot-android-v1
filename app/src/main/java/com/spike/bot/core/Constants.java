@@ -121,8 +121,6 @@ public class Constants {
     public static final String assignNumberToMood = "/assignNumberToMood";
     public static final String deleteSmartRemote = "/deleteSmartRemote";
     public static final String DELETE_ROOM = "/rooms/delete";
-    public static final String DELETE_ROOM_PANEL = "/panel/delete";
-    public static final String GET_MOOD_DETAILS = "/getMoodDetails";
     public static final String validatecamerakey = "/validatecamerakey";
     public static final String addHueLight = "/addHueLight";
     public static final String getHueRouterDetails = "/getHueRouterDetails";
@@ -176,7 +174,7 @@ public class Constants {
     public static final String GET_UNASSIGNED_SENSORS = "/getUnassignedSensors";
     public static final String SAVE_UNCONFIGURED_SENSOR = "/saveUnconfiguredSensor";
     public static final String UPDATE_UNREAD_LOGS = "/updateUnReadLogs";
-    public static final String SAVE_EDIT_SWITCH = "/saveEditSwitch";
+    public static final String SAVE_EDIT_SWITCH = "/device/edit";
     public static final String configureGasSensorRequest = "/configureGasSensorRequest";
     public static final String getRepeatorLists = "/getRepeatorLists";
     public static final String configureRepeatorRequest = "/configureRepeatorRequest";
@@ -208,7 +206,8 @@ public class Constants {
     public static final String changeMultiSensorNotificationStatus = "/changeMultiSensorNotificationStatus";
     public static final String UPDATE_TEMP_SENSOR = "/updateTempSensor";
     public static final String updateMultiSensor = "/updateMultiSensor";
-    public static final String DELETE_TEMP_SENSOR = "/device/delete";
+    public static final String DELETE_MODULE = "/device/delete";
+    public static final String panelDelete = "/panel/delete";
     public static final String deleteMultiSensor = "/deleteMultiSensor";
     public static final String getCameraLogs = "/getCameraLogs";
     public static final String reportFalseImage = "/reportFalseImage";
@@ -257,8 +256,8 @@ public class Constants {
 
     //mood
     public static final String ADD_NEW_MOOD_NEW = "/mood/add";
-    public static final String SAVEEDITMOOD = "/mood/edit";  //saveEditMood
-    public static final String DELETE_MOOD = "/deleteMood";
+    public static final String EDITMOOD = "/mood/edit";  //saveEditMood
+    public static final String DELETE_MOOD = "/mood/delete";
     public static final String GET_MOOD_DEVICE_DETAILS = "/getMoodDeviceDetails";
 
     //schedule

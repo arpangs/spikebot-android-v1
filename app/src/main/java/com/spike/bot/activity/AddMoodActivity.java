@@ -239,12 +239,16 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                             roomList.get(i).getPanelList().get(j).isActivePanel()) {
                         if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_type().equalsIgnoreCase("temp_sensor")) {
                             roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
+                            roomList.get(i).getPanelList().get(j).setActivePanel(false);
                         } else if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("door_sensor")) {
                             roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
+                            roomList.get(i).getPanelList().get(j).setActivePanel(false);
                         }else if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("door_sensor")) {
                             roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
+                            roomList.get(i).getPanelList().get(j).setActivePanel(false);
                         } else if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("gas_sensor")) {
                             roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
+                            roomList.get(i).getPanelList().get(j).setActivePanel(false);
                         }
 //                        else if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getTo_use().equalsIgnoreCase("0")) {
 //                            roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
@@ -327,8 +331,9 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                     moodIconList.add(0, roomVO1);
 
                     if (editMode) {
+                        select_mood_id=moodVO.getMood_name_id();
                         RoomVO roomVO2 = new RoomVO();
-                        roomVO2.setRoomId(moodVO.getModule_id());
+                        roomVO2.setRoomId(moodVO.getMood_name_id());
                         roomVO2.setRoomName(moodVO.getRoomName());
                         moodIconList.add(1, roomVO2);
                     }
@@ -421,7 +426,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         ActivityHelper.showProgressDialog(AddMoodActivity.this, "Please Wait...", false);
 
         if (editMode) {
-            url = ChatApplication.url + Constants.SAVEEDITMOOD;
+            url = ChatApplication.url + Constants.EDITMOOD;
         } else {
             url = ChatApplication.url + Constants.ADD_NEW_MOOD_NEW;
         }
@@ -430,64 +435,101 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         deviceVOArrayList.clear();
         deviceVOArrayList = removeDuplicates(deviceVOArrayListTemp);
         JSONObject moodObj = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
         try {
 
-            moodObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            moodObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            moodObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+//            if(editMode){
+
+//                for (DeviceVO dPanel : deviceVOArrayList) {
+//                    JSONObject object = new JSONObject();
+//
+//
+//                    object.put("mood_name_id",select_mood_id);
+//                    object.put("user_id",Common.getPrefValue(this, Constants.USER_ID));
+//
+//                    ArrayList<String> deviceIdList = new ArrayList<>();
+//                    deviceIdList.add(dPanel.getPanel_device_id());
+//                    JSONArray array = new JSONArray(deviceIdList);
+//
+//                    object.put("panel_device_ids",array);
+//
+//                    jsonArray.put(object);
+//                }
+//                ChatApplication.logDisplay("hash code is edit "+url+"  " + jsonArray);
 
 
-            ArrayList<String> deviceIdList = new ArrayList<>();
-            for (DeviceVO dPanel : deviceVOArrayList) {
-                deviceIdList.add(dPanel.getPanel_device_id());
+
+//            }else {
+
+            if(editMode){
+                moodObj.put("room_id",moodVO.getRoomId());
             }
-
-            JSONArray array = new JSONArray(deviceIdList);
-            moodObj.put("panel_device_ids", array);
-            moodObj.put("mood_name_id", select_mood_id);
-
-            ChatApplication.logDisplay("hash code is "+url+"  " + moodObj);
+                moodObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+                moodObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+                moodObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
 
+                ArrayList<String> deviceIdList = new ArrayList<>();
+                for (DeviceVO dPanel : deviceVOArrayList) {
+                    deviceIdList.add(dPanel.getPanel_device_id());
+                }
+
+                JSONArray array = new JSONArray(deviceIdList);
+                moodObj.put("panel_device_ids", array);
+                moodObj.put("mood_name_id", select_mood_id);
+
+//            }
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        new GetJsonTask(this, url, "POST", moodObj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                try {
-
-                    ChatApplication.isMoodFragmentNeedResume = true;
-
-                    ChatApplication.logDisplay("mood is " + result);
-
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    if (!TextUtils.isEmpty(message)) {
-                        ChatApplication.showToast(AddMoodActivity.this, message);
-                    }
-
-                    if (code == 200) {
+        ChatApplication.logDisplay("hash code is "+url+"  " + moodObj);
+            new GetJsonTask(this, url, "POST", moodObj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+                @Override
+                public void onSuccess(JSONObject result) {
+                    try {
                         ActivityHelper.dismissProgressDialog();
-                        ChatApplication.isRefreshDashBoard = true;
-                        ChatApplication.isRefreshMood = true;
-                        finish();
+                        resultMood(result);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        ActivityHelper.dismissProgressDialog();
                     }
+                }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
+                @Override
+                public void onFailure(Throwable throwable, String error) {
+                    ChatApplication.showToast(AddMoodActivity.this, getResources().getString(R.string.something_wrong1));
                     ActivityHelper.dismissProgressDialog();
                 }
+            }).execute();
+
+    }
+
+    private void resultMood(JSONObject result) {
+        ChatApplication.isMoodFragmentNeedResume = true;
+
+        ChatApplication.logDisplay("mood is " + result);
+
+        int code = 0;
+        try {
+            code = result.getInt("code");
+            String message = result.getString("message");
+            if (!TextUtils.isEmpty(message)) {
+                ChatApplication.showToast(AddMoodActivity.this, message);
             }
 
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ChatApplication.showToast(AddMoodActivity.this, getResources().getString(R.string.something_wrong1));
+            if (code == 200) {
                 ActivityHelper.dismissProgressDialog();
+                ChatApplication.isRefreshDashBoard = true;
+                ChatApplication.isRefreshMood = true;
+                finish();
             }
-        }).execute();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     /*
@@ -588,8 +630,8 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         dialog.setCanceledOnTouchOutside(false);
         dialog.setContentView(R.layout.dialog_virtual_devices);
 
-        TextView txtRoom = (TextView) dialog.findViewById(R.id.vtxt_room);
-        TextView txtPanel = (TextView) dialog.findViewById(R.id.vtvt_panel);
+        TextView txtRoom =  dialog.findViewById(R.id.vtxt_room);
+        TextView txtPanel =  dialog.findViewById(R.id.vtvt_panel);
 
         txtRoom.setText(roomName);
         txtPanel.setText(panelName);

@@ -30,6 +30,8 @@ public class PanelVO implements Serializable {
     private boolean isActivePanel;
     private String roomId;
 
+
+
     public String getPanel_name_sub() {
         return panel_name_sub;
     }

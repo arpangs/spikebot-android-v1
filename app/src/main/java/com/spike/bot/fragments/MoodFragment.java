@@ -79,8 +79,8 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
     private Activity activity;
 
     private ArrayList<RoomVO> moodList = new ArrayList<>();
-    private Boolean isRefreshonScroll=false,isCallVisibleHint = false;
-    private String userId = "0" ,token_id = "",userName="",panel_name="",panel_id="";
+    private Boolean isCallVisibleHint = false;
+    private String userId = "0" ,token_id = "",panel_name="",panel_id="";
 
 
     public MoodFragment() {
@@ -143,8 +143,6 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
 
     @Override
     public void onRefresh() {
-        isRefreshonScroll=true;
-        mCallback.onArticleSelected(""+userName);
         swipeRefreshLayout.setRefreshing(true);
         sectionedExpandableLayoutHelper.setClickable(false);
         getDeviceList();
@@ -210,7 +208,6 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
     @Override
     public void onResume() {
         super.onResume();
-        userName= ((Main2Activity)getActivity()).toolbarTitle.getText().toString();
         if(ChatApplication.isMoodFragmentNeedResume){
             ChatApplication.isMoodFragmentNeedResume = false;
             try {
@@ -419,15 +416,12 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
         } else if(action.equalsIgnoreCase("textclick")){
             getDeviceDetails(item.getOriginal_room_device_id());
 
-        //    ActivityHelper.showDialog(getActivity(),getString(R.string.app_name),item.getRoomName() + " (" + item.getPanel_name() + ")" ,ActivityHelper.NO_ACTION);
         }else if(action.equalsIgnoreCase("isIRSensorClick")){
             Intent intent = new Intent(getActivity(),IRBlasterRemote.class);
             Bundle bundle = new Bundle();
             bundle.putSerializable("REMOTE_IS_ACTIVE",item.getDeviceStatus());
             bundle.putSerializable("REMOTE_ID",item.getOriginal_room_device_id());
             bundle.putSerializable("ROOM_DEVICE_ID",item.getRoomDeviceId()); //MOOD_DEVICE_ID
-            bundle.putSerializable("IR_BLASTER_ID",item.getSensor_id());
-            // intent.putExtra("IR_BLASTER_ID",item.getIr_blaster_id());
             intent.putExtra("IR_BLASTER_ID",item.getSensor_id());
             intent.putExtras(bundle);
             startActivity(intent);
@@ -541,15 +535,6 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             dialog.show();
         }
 
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-    @Override
-    public void onStop() {
-        super.onStop();
     }
 
     /*--move all onResume code--*/
@@ -678,12 +663,11 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
         }
         JSONObject obj = new JSONObject();
         try {
+
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
             obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
             obj.put("room_id",roomId);
-            obj.put("panel_id",panel_id);
-            obj.put("room_name",room_name);
 
         }catch (Exception e){
             e.printStackTrace();
@@ -722,6 +706,8 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             }
         }).execute();
     }
+
+    /*changeMoodStatus like on/off*/
     public void changeMoodStatus(RoomVO moodVO,String panel_id){
         ChatApplication.logDisplay( "changeMoodStatus changeMoodStatus");
         if(!ActivityHelper.isConnectingToInternet(getActivity())){

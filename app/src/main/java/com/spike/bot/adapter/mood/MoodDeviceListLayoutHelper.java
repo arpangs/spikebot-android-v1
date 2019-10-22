@@ -33,8 +33,7 @@ public class MoodDeviceListLayoutHelper implements SectionStateChangeListener {
         //setting the recycler view
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, gridSpanCount);
         recyclerView.setLayoutManager(gridLayoutManager);
-        mSectionedExpandableGridAdapter = new MoodDeviceListExpandableGridAdapter(context, mDataArrayList,
-                gridLayoutManager, itemClickListener, this,isMoodAdapter);
+        mSectionedExpandableGridAdapter = new MoodDeviceListExpandableGridAdapter(context, mDataArrayList, gridLayoutManager, itemClickListener, this,isMoodAdapter);
         recyclerView.setAdapter(mSectionedExpandableGridAdapter);
         this.context = ctx;
         mRecyclerView = recyclerView;
@@ -95,22 +94,6 @@ public class MoodDeviceListLayoutHelper implements SectionStateChangeListener {
                     if(panelList.get(i).isActivePanel()){
                         mDataArrayList.addAll(panelList.get(i).getDeviceList());
                     }
-
-
-//                    for(int j=0; j<panelList.get(i).getDeviceList().size(); j++){
-//                        if(panelList.get(i).getDeviceList().get(j).isSensor()){
-//                            isSensor=true;
-//                            if (panelList.get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("temp_sensor") ||
-//                                    panelList.get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("door_sensor") ||
-//                                    panelList.get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("gas_sensor") ||
-//                                    panelList.get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("door_sensor")) {
-//                            }else  {
-//                                mDataArrayList.addAll(panelList.get(i).getDeviceList());
-//                            }
-//                        }
-//                    }
-
-
                 }
             }
         }

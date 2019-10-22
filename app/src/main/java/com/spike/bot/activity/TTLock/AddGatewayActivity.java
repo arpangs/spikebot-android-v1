@@ -166,7 +166,6 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
     private void isInitSuccess(String macaddress) {
         GetDataService apiService = RetrofitAPIManager.provideClientApi();
         Call<String> call = apiService.gatewayIsInitSuccess(Constants.client_id, Constants.access_token, macaddress, System.currentTimeMillis());
-        LogUtil.d("call server api isInitSuccess");
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, retrofit2.Response<String> response) {

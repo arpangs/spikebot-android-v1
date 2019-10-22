@@ -861,12 +861,12 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
             return;
         }
 
-        String webUrl = ChatApplication.url + Constants.DELETE_TEMP_SENSOR;
+        String webUrl = ChatApplication.url + Constants.DELETE_MODULE;
 
         JSONObject jsonNotification = new JSONObject();
         try {
 
-            jsonNotification.put("temp_sensor_id", temp_sensor_id);
+            jsonNotification.put("module_id", temp_module_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));

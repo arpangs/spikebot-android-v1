@@ -233,6 +233,16 @@ public class RoomVO implements Serializable{
         roomDeviceIdList = new ArrayList<>();
     }
 
+    public String getMood_name_id() {
+        return mood_name_id;
+    }
+
+    public void setMood_name_id(String mood_name_id) {
+        this.mood_name_id = mood_name_id;
+    }
+
+    private String mood_name_id;
+
     public int getRoom_order() {
         return room_order;
     }

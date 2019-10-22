@@ -15,6 +15,9 @@ https://stackoverflow.com/questions/31759171/recyclerview-and-java-lang-indexout
 - Mood +Add room not expand view click on other view
 
 
+> device_icon means icon load use . device_type means orignal icon
+
+
 hide log isSettingEnable
 ^((?!isSBSettingEnabled).)*$
 

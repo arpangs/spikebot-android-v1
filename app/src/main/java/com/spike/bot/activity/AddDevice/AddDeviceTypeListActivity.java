@@ -33,6 +33,7 @@ import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.LoginActivity;
 import com.spike.bot.activity.Repeatar.RepeaterActivity;
 import com.spike.bot.activity.SensorUnassignedActivity;
 import com.spike.bot.activity.SmartDevice.BrandListActivity;
@@ -508,7 +509,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onFailure(Throwable throwable, String error) {
                 throwable.printStackTrace();
-                ChatApplication.showToast(AddDeviceTypeListActivity.this, getResources().getString(R.string.disconnect));
+                ChatApplication.showToast(AddDeviceTypeListActivity.this,getResources().getString(R.string.something_wrong1));
             }
         }).execute();
 
@@ -721,7 +722,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onFailure(Throwable throwable, String error) {
                 dismissProgressDialog();
-                ChatApplication.showToast(AddDeviceTypeListActivity.this, getResources().getString(R.string.disconnect));
+                ChatApplication.showToast(AddDeviceTypeListActivity.this,getResources().getString(R.string.something_wrong1));
             }
         }).execute();
     }
@@ -857,7 +858,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             public void onFailure(Throwable throwable, String error) {
                 dismissProgressDialog();
                 ChatApplication.logDisplay("onFailure " + error);
-                ChatApplication.showToast(AddDeviceTypeListActivity.this, getResources().getString(R.string.disconnect));
+                ChatApplication.showToast(AddDeviceTypeListActivity.this,getResources().getString(R.string.something_wrong1));
             }
         }).execute();
 

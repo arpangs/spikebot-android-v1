@@ -209,7 +209,7 @@ public class AddTTlockToRoomActivity extends AppCompatActivity implements View.O
     private void saveSensor() {
 
         if (!ActivityHelper.isConnectingToInternet(AddTTlockToRoomActivity.this)) {
-            Toast.makeText(AddTTlockToRoomActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            ChatApplication.showToast(AddTTlockToRoomActivity.this, getResources().getString(R.string.disconnect));
             return;
         }
 

@@ -60,21 +60,11 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
         holder.setIsRecyclable(false);
         item1 = (PanelVO) panelVOs.get(position);
 
+        holder.iv_room_panel_add.setId(position);
         holder.iv_room_panel_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (item1.getDeviceList().size() > 0) {
-                    if (item1.getDeviceList().get(0).getDeviceType().equals("2")) {
-                        isSFlag = true;
-                    } else {
-                        isSFlag = false;
-                    }
-                }
-                if (isSFlag) {
-                    mItemClickListener.itemClicked(item1, "sensorPanel", view);
-                } else {
-                    mItemClickListener.itemClicked(item1, "edit", view);
-                }
+                mItemClickListener.itemClicked( panelVOs.get(holder.iv_room_panel_info.getId()), "edit", view);
 
             }
         });
@@ -192,13 +182,13 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
         public EditViewHolder(View view) {
             super(view);
 
-            view_panel_line = (View) view.findViewById(R.id.view_panel_line);
-            iv_room_panel_add = (ImageView) view.findViewById(R.id.iv_room_panel_add);
-            iv_room_panel_delete = (ImageView) view.findViewById(R.id.iv_room_panel_delete);
-            iv_room_panel_info = (ImageView) view.findViewById(R.id.iv_room_panel_info);
-            et_panel = (EditText) view.findViewById(R.id.et_panel);
+            view_panel_line =  view.findViewById(R.id.view_panel_line);
+            iv_room_panel_add =  view.findViewById(R.id.iv_room_panel_add);
+            iv_room_panel_delete =  view.findViewById(R.id.iv_room_panel_delete);
+            iv_room_panel_info =  view.findViewById(R.id.iv_room_panel_info);
+            et_panel =  view.findViewById(R.id.et_panel);
             et_panel.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-            list_edit_device = (RecyclerView) view.findViewById(R.id.list_edit_device);
+            list_edit_device =  view.findViewById(R.id.list_edit_device);
             list_edit_device.setLayoutManager(new GridLayoutManager(context, Constants.SWITCH_NUMBER));
         }
     }

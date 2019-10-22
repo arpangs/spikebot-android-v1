@@ -44,5 +44,4 @@ public class CameraImagePush extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-    //6005622234
 }

@@ -56,7 +56,6 @@ import static com.spike.bot.core.Common.showToast;
 public class AddUnassignedPanel extends AppCompatActivity implements AddUnassignedPanelAdapter.UnassignedClickEvent {
 
     private RecyclerView mListPanels;
-    private AddUnassignedPanelAdapter addUnassignedPanelAdapter;
     private List<UnassignedListRes.Data.RoomList> roomList;
     private LinearLayout mEmptyView;
 

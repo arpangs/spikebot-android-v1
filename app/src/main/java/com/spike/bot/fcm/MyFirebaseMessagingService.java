@@ -58,23 +58,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getData().size() > 0) {
 //            ChatApplication.logDisplay("Message data payload: " + remoteMessage.getData());
 
-            if (/* Check if data needs to be processed by long running job */ true) {
-                // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
-                //scheduleJob("");
-            } else {
-                // Handle message within 10 seconds
-                handleNow();
-            }
-
             String message = remoteMessage.getData().get("default");
 //            badge = remoteMessage.getData().get("badge");
             if(TextUtils.isEmpty(badge)){
                 badge="0";
             }
-//            int count  = Integer.parseInt(badge)+1;
-//            badge= ""+count;
-
-//            ChatApplication.logDisplay("Message data payload: badge " + badge);
 
             if(!TextUtils.isEmpty(message)){
                 sendNotification(message);
@@ -111,28 +99,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     // [END receive_message]
 
     /**
-     * Schedule a job using FirebaseJobDispatcher.
+     *
      * @param title
      * @param body
      * @param attachment
      */
     private void scheduleJob(String title, String body, String attachment) {
-        // [START dispatch_job]
-      /*  FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
-        Job myJob = dispatcher.newJobBuilder()
-                .setService(MyJobService.class)
-                .setTag("my-job-tag")
-                .build();
-        dispatcher.schedule(myJob);*/
-        // [END dispatch_job]
         new SendNotificationAsync(getApplicationContext(),badge).execute(body, "", attachment);
-    }
-
-    /**
-     * Handle time allotted to BroadcastReceivers.
-     */
-    private void handleNow() {
-        ChatApplication.logDisplay("Short lived task is done.");
     }
 
     /**
@@ -166,10 +139,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setContentIntent(pendingIntent);
 
 
-//        int color = getResources().getColor(R.color.automation_red);
-//        notificationBuilder.setColor(color);
-
-
         notificationBuilder.getNotification().flags |= Notification.FLAG_AUTO_CANCEL;
 
         NotificationManager notificationManager =
@@ -177,9 +146,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         
         // Since android Oreo notification channel is needed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(channelId,
-                    "Spike Bot",
-                    NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel channel = new NotificationChannel(channelId, "Spike Bot", NotificationManager.IMPORTANCE_DEFAULT);
             channel.setShowBadge(true);
             notificationManager.createNotificationChannel(channel);
         }

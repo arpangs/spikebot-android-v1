@@ -572,7 +572,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.txt_temp_in_cf.setVisibility(View.GONE);
                     holder.iv_icon_badge.setVisibility(View.GONE);
                     itemDeviceName = item.getDeviceName();
-                    itemIcon = Common.getIcon(item.getDeviceStatus(), item.getDeviceType());
+                    itemIcon = Common.getIcon(item.getDeviceStatus(), item.getDevice_icon());
                 } else {
                     /*--Sensor type start--*/
 
@@ -797,7 +797,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             } else if (item.getSensor_type() != null && item.getSensor_type().equalsIgnoreCase("multisensor")) {
                                 itemIcon = Common.getIconInActive(status, item.getSensor_type());
                             } else {
-                                itemIcon = Common.getIconInActive(status, item.getDeviceType()); //unavailable means temp or dead sensor is on dead mode
+                                itemIcon = Common.getIconInActive(status, item.getDevice_icon()); //unavailable means temp or dead sensor is on dead mode
                             }
                         } else{
                             itemIcon = Common.getIcon(status, item.getSensor_icon());

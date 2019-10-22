@@ -2219,8 +2219,10 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     if (!TextUtils.isEmpty(roomArrayList.get(i).getDeviceList().get(j).getSensor_type())) {
                         typesensor = roomArrayList.get(i).getDeviceList().get(j).getSensor_type();
                     }
-                    if (typesensor.equalsIgnoreCase("temp") ||
-                            typesensor.equalsIgnoreCase("door")) {
+                    if (typesensor.equalsIgnoreCase("gas_sensor") ||
+                            typesensor.equalsIgnoreCase("temp_sensor") ||
+                            typesensor.equalsIgnoreCase("temp_sensor") ||
+                            typesensor.equalsIgnoreCase("door_sensor" )) {
                         roomArrayList.get(i).getDeviceList().get(j).setSelected(false);
                     }
                 }

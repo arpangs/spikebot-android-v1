@@ -65,8 +65,9 @@ public class JsonHelper {
                 room.setRoomId(roomObj.optString("room_id"));
                 room.setRoom_status(roomObj.optString("room_status").equals("y") ? 0:1);
                 room.setSensor_panel(roomObj.optString("sensor_panel"));
-                if(roomObj.has("device_count")){
-                    room.setDevice_count(roomObj.optString("device_count"));
+                room.setMood_name_id(roomObj.optString("mood_name_id"));
+                if(roomObj.has("total_devices")){
+                    room.setDevice_count(roomObj.optString("total_devices"));
                 }else{
                     room.setDevice_count("0");
                 }
@@ -491,7 +492,6 @@ public class JsonHelper {
 
         ArrayList<DeviceVO> deviceList = new ArrayList<DeviceVO>();
 
-        int countInActive = 0;
         boolean flagRemote=false;
 
         for(int j=0 ; j < sensorArray.length() ; j++){
@@ -647,7 +647,6 @@ public class JsonHelper {
             }
 
         }
-
         panelVO.setActivePanel(flagRemote);
 
         return deviceList;
@@ -697,6 +696,7 @@ public class JsonHelper {
                 d1.setDevice_nameTemp(""+deviceObj.optString("device_name"));
                 d1.setIs_locked(deviceObj.has("is_locked")? deviceObj.optInt("is_locked"):0);
                 d1.setDevice_identifier(deviceObj.optString("device_identifier"));
+                d1.setDevice_sub_type(deviceObj.optString("device_sub_type"));
                 if(!TextUtils.isEmpty(deviceObj.has("room_name")? deviceObj.optString("room_name"):"")){
                     d1.setRoomName(deviceObj.has("room_name")? deviceObj.optString("room_name"):"");
                 }else{

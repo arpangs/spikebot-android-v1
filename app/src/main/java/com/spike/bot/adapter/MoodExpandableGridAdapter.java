@@ -261,7 +261,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
 
                 holder.itemTextView.setText(item.getDeviceName());
 
-                if(item.getDeviceType().equalsIgnoreCase("2")){
+                if(item.getDevice_icon().equalsIgnoreCase("2")){
                     ChatApplication.logDisplay("remote is "+item.getDeviceStatus()+ " ,  "+item.getDevice_icon());
                     if(item.getIsActive() == 0){
                         holder.iv_icon.setImageResource(Common.getIconInActive(item.getDeviceStatus(),item.getDevice_icon()));
@@ -305,7 +305,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     public boolean onLongClick(View v) {
                         if(item.getDevice_icon().equalsIgnoreCase("Remote_AC")){ //click on remote device id
                             mItemClickListener.itemClicked(item,"isIRSensorClick");
-                        }else if(item.getDeviceType().equalsIgnoreCase("-1")){
+                        }else if(item.getDevice_icon().equalsIgnoreCase("-1")){
                             mItemClickListener.itemClicked(item, "heavyloadlongClick");
                         }else if(item.getDeviceType().equalsIgnoreCase("3")){
                             mItemClickListener.itemClicked(item, "philipslongClick");
@@ -314,8 +314,8 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     }
                 });
 
-                if(item.getDeviceType().equalsIgnoreCase("1")){
-                    if(Integer.parseInt(item.getDeviceId()) == 1 && Integer.parseInt(item.getDeviceType()) == 1){
+                if(item.getDeviceType().equalsIgnoreCase("fan")){
+//                    if(Integer.parseInt(item.getDeviceId()) == 1 && Integer.parseInt(item.getDeviceType()) == 1){
                         holder.iv_icon.setOnLongClickListener(new View.OnLongClickListener() {
                             @Override
                             public boolean onLongClick(View view) {
@@ -327,14 +327,16 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                                 return true;
                             }
                         });
-                    }else{
-                        holder.iv_icon.setOnLongClickListener(null);
-                    }
+//                    }else{
+//                        holder.iv_icon.setOnLongClickListener(null);
+//                    }
+                }else {
+                    holder.iv_icon.setOnLongClickListener(null);
                 }
 
                 if(item.getDevice_icon().equalsIgnoreCase("Remote_AC")){
                     holder.imgLongClick.setVisibility(View.VISIBLE);
-                }else if(item.getDeviceType().equalsIgnoreCase("-1") || item.getDeviceType().equalsIgnoreCase("3")){
+                }else if(item.getDeviceType().equalsIgnoreCase("fan") ||item.getDeviceType().equalsIgnoreCase("-1") || item.getDeviceType().equalsIgnoreCase("3")){
                     holder.imgLongClick.setVisibility(View.VISIBLE);
                 }else {
                     if(item.getDeviceType().equalsIgnoreCase("1")){
