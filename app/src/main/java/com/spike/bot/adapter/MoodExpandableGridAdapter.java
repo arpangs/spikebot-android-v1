@@ -116,6 +116,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     holder.sectionTextView.setSingleLine(true);
                 }
 
+                ChatApplication.logDisplay("status update mood room update " + section.getRoom_status());
                 if (section.getRoom_status() == 1) {
                     holder.iv_icon.setImageResource(R.drawable.room_on);
                 } else {
@@ -248,6 +249,8 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
             case VIEW_TYPE_PANEL :
 
                 final PanelVO panel1 = (PanelVO) mDataArrayList.get(position);
+
+                ChatApplication.logDisplay("status update room mood adapter panel call");
                 if(position==0){
                     holder.txtLine.setVisibility(GONE);
                 }else{
@@ -260,9 +263,8 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                 final DeviceVO item = (DeviceVO) mDataArrayList.get(position);
 
                 holder.itemTextView.setText(item.getDeviceName());
-
+                ChatApplication.logDisplay("status update room mood adapter device call");
                 if(item.getDevice_icon().equalsIgnoreCase("2")){
-                    ChatApplication.logDisplay("remote is "+item.getDeviceStatus()+ " ,  "+item.getDevice_icon());
                     if(item.getIsActive() == 0){
                         holder.iv_icon.setImageResource(Common.getIconInActive(item.getDeviceStatus(),item.getDevice_icon()));
                     }else{

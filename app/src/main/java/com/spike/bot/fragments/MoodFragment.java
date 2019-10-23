@@ -131,13 +131,19 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
     }
 
     @Override
+    public void onPause() {
+        if(mSocket!=null) {
+            mSocket.off("changeDeviceStatus", changeDeviceStatus);
+            mSocket.off("updateChildUser", updateChildUser);
+            mSocket.off("changeRoomStatus", roomStatus);
+        }
+        super.onPause();
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
-        if(mSocket!=null) {
-            mSocket.off("ReloadDeviceStatusApp", reloadDeviceStatusApp);
-            mSocket.off("updateChildUser", updateChildUser);
-            mSocket.off("roomStatus", roomStatus);
-        }
+
     }
 
 
@@ -324,20 +330,18 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
                 obj.put("rgb_array","");
                 obj.put("room_device_id",deviceVO.getRoomDeviceId());
             }else {
-                obj.put("room_device_id", deviceVO.getRoomDeviceId());
-                obj.put("module_id", deviceVO.getModuleId());
                 obj.put("device_id", deviceVO.getDeviceId());
-                obj.put("device_status", deviceVO.getOldStatus());
-                obj.put("localData", userId.equalsIgnoreCase("0") ? "0" : "1");
+                obj.put("device_status", deviceVO.getOldStatus()==0 ? "1":"0");
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        if (mSocket != null && mSocket.connected()) {
-            //TODO code here for ACK TimeOut
-            mSocket.emit("socketChangeDevice", obj);
-        }else{
+
+//        if (mSocket != null && mSocket.connected()) {
+//            //TODO code here for ACK TimeOut
+//            mSocket.emit("socketChangeDevice", obj);
+//        }else{
 
             String url="";
             if(deviceVO.getDeviceType().equalsIgnoreCase("3")){
@@ -368,7 +372,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
                 }
             }).execute();
 
-        }
+//        }
 
     }
 
@@ -570,9 +574,9 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             mSocket = app.getSocket();
         }
         if(mSocket!=null && mSocket.connected()){
-            mSocket.on("ReloadDeviceStatusApp", reloadDeviceStatusApp);
+            mSocket.on("changeDeviceStatus", changeDeviceStatus);
             mSocket.on("updateChildUser", updateChildUser);
-            mSocket.on("roomStatus", roomStatus);
+            mSocket.on("changeRoomStatus", roomStatus);
 
            ChatApplication.logDisplay("mSocket.connect()= "  + mSocket.id() );
         }
@@ -840,7 +844,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
         }
     };
 
-    private Emitter.Listener reloadDeviceStatusApp = new Emitter.Listener() {
+    private Emitter.Listener changeDeviceStatus = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             if(getActivity()==null){
@@ -852,12 +856,14 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
                     if(args!=null) {
                         try{
                             JSONObject object = new JSONObject(args[0].toString());
-                            String module_id = object.getString("module_id");
+                            ChatApplication.logDisplay("status update device mood " + object.toString());
+                            String device_type = object.getString("device_type");
                             String device_id = object.getString("device_id");
                             String device_status = object.getString("device_status");
-                            int is_locked = object.optInt("is_locked");
+                            int device_sub_status = object.optInt("device_sub_status");
 
-                            sectionedExpandableLayoutHelper.updateItem(module_id, device_id, device_status,is_locked);
+//                            sectionedExpandableLayoutHelper.updateItem(module_id, device_id, device_status, is_locked);
+                            sectionedExpandableLayoutHelper.updateDeviceItem(device_type, device_id, device_status, device_sub_status);
 
                         }catch (Exception ex){ ex.printStackTrace(); }
 
@@ -879,6 +885,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
                     if (args != null) {
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
+                            ChatApplication.logDisplay("status update room mood " + object.toString());
                             String room_id = object.getString("room_id");
                             String room_status = object.getString("room_status");
                             sectionedExpandableLayoutHelper.updateMood(room_id, room_status);

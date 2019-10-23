@@ -105,87 +105,6 @@ public class Common {
                         resource = R.drawable.curtain_closed;
                         break;
                 }
-            case 1:
-                switch (type) {
-                    case "bulb":
-                        resource = R.drawable.bulb_on;
-                        break;
-                    case "ac":
-                        resource = R.drawable.ac_on;
-                        break;
-                    case "fan":
-                        resource = R.drawable.fan_on;
-                        break;
-                    case "fridge":
-                        resource = R.drawable.fridge_on;
-                        break;
-                    case "tv":
-                        resource = R.drawable.tv_on;
-                        break;
-                    case "oven":
-                        resource = R.drawable.microwave_oven_on;
-                        break;
-                    case "cfl":
-                        resource = R.drawable.cfl_on;
-                        break;
-                    case "generic":
-                        resource = R.drawable.genericelectricdevice_on;
-                        break;
-                    case "camera":
-                        resource = R.drawable.camera_on;
-                        break;
-                    case "work":
-                        resource = R.drawable.smily_yello;
-                        break;
-                    case "home":
-                        resource = R.drawable.smily_yello;
-                        break;
-                    case "night":
-                        resource = R.drawable.smily_yello;
-                        break;
-                    case "temp_sensor":
-                        resource = R.drawable.on_temperature;
-                        break;
-                    case "doorsensor":
-                        resource = R.drawable.on_door;
-                        break;
-                    case "unavailable":
-                        resource = R.drawable.icn_dead_temp;
-                        break;
-                    case "irblaster":
-                        resource = R.drawable.ic_ir_blaster;
-                        break;
-                    case "Remote_AC":
-                        resource = R.drawable.remote_ac;
-                        break;
-
-                    case "heavyload":
-                        resource = R.drawable.on;
-                        break;
-
-                    case "Smart Bulb":
-                        resource = R.drawable.philips_hue_on;
-                        break;
-
-                    case "lockWithDoor":
-                        resource = R.drawable.door_unlocked;
-                        break;
-
-                    case "lockOnly":
-                        resource = R.drawable.unlock_only;
-                        break;
-                        case "gas_sensor":
-                        resource = R.drawable.fire_and_gas;
-                        break;
-
-                        case "curtain":
-                        resource = R.drawable.curtain_open;
-                        break;
-                    default:
-                        resource = R.drawable.bulb_on;
-                        break;
-                }
-                break;
             case 0:
                 switch (type) {
                     case "bulb":
@@ -218,10 +137,13 @@ public class Common {
                     case "work":
                         resource = R.drawable.smily_gray;
                         break;
-                    case "temp_sensor":
+                    case "tempsensor":
                         resource = R.drawable.off_temperature;
                         break;
                     case "doorsensor":
+                        resource = R.drawable.off_door;
+                        break;
+                        case "door_sensor":
                         resource = R.drawable.off_door;
                         break;
                     case "unavailable":
@@ -262,6 +184,90 @@ public class Common {
 
                     default:
                         resource = R.drawable.bulb_off;
+                        break;
+                }
+                break;
+            case 1:
+                switch (type) {
+                    case "bulb":
+                        resource = R.drawable.bulb_on;
+                        break;
+                    case "ac":
+                        resource = R.drawable.ac_on;
+                        break;
+                    case "fan":
+                        resource = R.drawable.fan_on;
+                        break;
+                    case "fridge":
+                        resource = R.drawable.fridge_on;
+                        break;
+                    case "tv":
+                        resource = R.drawable.tv_on;
+                        break;
+                    case "oven":
+                        resource = R.drawable.microwave_oven_on;
+                        break;
+                    case "cfl":
+                        resource = R.drawable.cfl_on;
+                        break;
+                    case "generic":
+                        resource = R.drawable.genericelectricdevice_on;
+                        break;
+                    case "camera":
+                        resource = R.drawable.camera_on;
+                        break;
+                    case "work":
+                        resource = R.drawable.smily_yello;
+                        break;
+                    case "home":
+                        resource = R.drawable.smily_yello;
+                        break;
+                    case "night":
+                        resource = R.drawable.smily_yello;
+                        break;
+                    case "tempsensor":
+                        resource = R.drawable.on_temperature;
+                        break;
+                    case "doorsensor":
+                        resource = R.drawable.on_door;
+                        break;
+                        case "door_sensor":
+                        resource = R.drawable.on_door;
+                        break;
+                    case "unavailable":
+                        resource = R.drawable.icn_dead_temp;
+                        break;
+                    case "irblaster":
+                        resource = R.drawable.ic_ir_blaster;
+                        break;
+                    case "Remote_AC":
+                        resource = R.drawable.remote_ac;
+                        break;
+
+                    case "heavyload":
+                        resource = R.drawable.on;
+                        break;
+
+                    case "Smart Bulb":
+                        resource = R.drawable.philips_hue_on;
+                        break;
+
+                    case "lockWithDoor":
+                        resource = R.drawable.door_unlocked;
+                        break;
+
+                    case "lockOnly":
+                        resource = R.drawable.unlock_only;
+                        break;
+                    case "gas_sensor":
+                        resource = R.drawable.fire_and_gas;
+                        break;
+
+                    case "curtain":
+                        resource = R.drawable.curtain_open;
+                        break;
+                    default:
+                        resource = R.drawable.bulb_on;
                         break;
                 }
                 break;

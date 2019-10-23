@@ -11,6 +11,7 @@ import com.spike.bot.R;
 import com.spike.bot.core.Common;
 import com.spike.bot.model.UnassignedListRes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,56 +20,34 @@ import java.util.List;
  */
 public class AddUnassignedPanelAdapter extends RecyclerView.Adapter<AddUnassignedPanelAdapter.UnassignedHolder> {
 
-    private List<UnassignedListRes.Data.RoomdeviceList> roomdeviceList;
-    UnassignedListRes.Data.RoomdeviceList roomDevice;
+    private List<UnassignedListRes.Data> roomdeviceList;
     private UnassignedClickEvent unassignedClickEvent;
-    String mModuleName = "";
 
-    public AddUnassignedPanelAdapter(List<UnassignedListRes.Data.RoomdeviceList> roomdeviceList, UnassignedClickEvent unassignedClickEvent) {
+    public AddUnassignedPanelAdapter(ArrayList<UnassignedListRes.Data> roomdeviceList, UnassignedClickEvent unassignedClickEvent) {
         this.roomdeviceList = roomdeviceList;
         this.unassignedClickEvent = unassignedClickEvent;
     }
 
     @Override
     public UnassignedHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.row_unassigned_list, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_unassigned_list, parent, false);
         return new UnassignedHolder(view);
     }
 
     @Override
     public void onBindViewHolder(UnassignedHolder holder, final int position) {
-        roomDevice = roomdeviceList.get(position);
 
-        holder.mModuleId.setText("[" + roomDevice.getModuleId() + "]");
-        if (roomDevice.getIsModule() == 1) {
-            holder.mImageIcon.setImageResource(R.drawable.bulb_off);
-            mModuleName = roomDevice.getModuleName();
-        } else {
-            mModuleName = roomDevice.getSensorName();
-            if (roomDevice.getSensorIcon().equals("doorsensor")) {
+        holder.mModuleId.setText("[" + roomdeviceList.get(position).getModuleId() + "]");
 
-                if (roomDevice.getLock_subtype().equals("1")) {
-                    holder.mImageIcon.setImageResource(R.drawable.off_door);
-                } else if (roomDevice.getLock_subtype().equals("2")) {
-                    holder.mModuleId.setText("[" + roomDevice.getLock_id() + "]");
-                    holder.mImageIcon.setImageResource(R.drawable.lock_only_grey);
-                } else {
-                    holder.mImageIcon.setImageResource(R.drawable.door_locked);
-                }
+        holder.mImageIcon.setImageResource(Common.getIcon(0, roomdeviceList.get(position).getModuleType()));
 
-            } else if (roomDevice.getSensorIcon().equals("repeater")) {
-                holder.mImageIcon.setImageResource(R.drawable.gray_repeater);
-            } else {
-                holder.mImageIcon.setImageResource(Common.getIcon(0, roomDevice.getSensorIcon()));
-            }
-        }
+        holder.mDeviceName.setText(roomdeviceList.get(position).getModuleType());
 
-        holder.mDeviceName.setText(mModuleName);
+        holder.mImgAdd.setId(position);
         holder.mImgAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                unassignedClickEvent.onClick(position, roomDevice);
+                unassignedClickEvent.onClick(holder.mImgAdd.getId(), roomdeviceList.get(holder.mImgAdd.getId()));
             }
         });
 
@@ -86,14 +65,14 @@ public class AddUnassignedPanelAdapter extends RecyclerView.Adapter<AddUnassigne
 
         UnassignedHolder(View itemView) {
             super(itemView);
-            mImageIcon = (ImageView) itemView.findViewById(R.id.up_device_icon);
-            mDeviceName = (TextView) itemView.findViewById(R.id.up_device_name);
-            mModuleId = (TextView) itemView.findViewById(R.id.up_device_module);
-            mImgAdd = (ImageView) itemView.findViewById(R.id.up_save);
+            mImageIcon =  itemView.findViewById(R.id.up_device_icon);
+            mDeviceName = itemView.findViewById(R.id.up_device_name);
+            mModuleId = itemView.findViewById(R.id.up_device_module);
+            mImgAdd =  itemView.findViewById(R.id.up_save);
         }
     }
 
     public interface UnassignedClickEvent {
-        void onClick(int position, UnassignedListRes.Data.RoomdeviceList roomdeviceList);
+        void onClick(int position, UnassignedListRes.Data roomdeviceList);
     }
 }

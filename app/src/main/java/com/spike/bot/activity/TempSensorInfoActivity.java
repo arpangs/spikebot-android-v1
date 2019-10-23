@@ -866,7 +866,7 @@ public class TempSensorInfoActivity extends AppCompatActivity implements View.On
         JSONObject jsonNotification = new JSONObject();
         try {
 
-            jsonNotification.put("module_id", temp_module_id);
+            jsonNotification.put("device_id", temp_module_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));

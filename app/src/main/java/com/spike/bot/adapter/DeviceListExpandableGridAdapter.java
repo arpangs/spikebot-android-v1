@@ -189,9 +189,9 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
                         holder.itemTextView.setText(item.getDeviceName());
 
                         if (item.getIsActive() == 0) {
-                                holder.iv_icon.setImageResource(Common.getIconInActive(1, item.getDevice_icon()));//item.getDeviceStatus()
+                                holder.iv_icon.setImageResource(Common.getIconInActive(1, item.getSensor_icon()));//item.getDeviceStatus()
                         } else {
-                                holder.iv_icon.setImageResource(Common.getIcon(0, item.getDevice_icon()));//item.getDeviceStatus()
+                                holder.iv_icon.setImageResource(Common.getIcon(0, item.getSensor_icon()));//item.getDeviceStatus()
                         }
                     } else {
 

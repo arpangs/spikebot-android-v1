@@ -63,7 +63,7 @@ public class JsonHelper {
                 room.setRoomName(roomObj.optString("room_name"));
                 room.setRoom_order(roomObj.optInt("room_order"));
                 room.setRoomId(roomObj.optString("room_id"));
-                room.setRoom_status(roomObj.optString("room_status").equals("y") ? 0:1);
+                room.setRoom_status(roomObj.optInt("room_status"));
                 room.setSensor_panel(roomObj.optString("sensor_panel"));
                 room.setMood_name_id(roomObj.optString("mood_name_id"));
                 if(roomObj.has("total_devices")){
@@ -121,6 +121,101 @@ public class JsonHelper {
                 e.printStackTrace();
             }
         }
+        return  roomList;
+    }
+
+    public static ArrayList<RoomVO> parseRoomObject(JSONObject roomArray,boolean isParseOriginal){
+        ArrayList<RoomVO> roomList = new ArrayList<>();
+
+//        for(int i=0;i<roomArray.length();i++){
+            try {
+                JSONObject roomObj = roomArray;
+
+                //roomDeviceId
+                JSONArray jsonArrayRoomList = null;
+                ArrayList<String> roomDeviceList = new ArrayList<>();
+                if(roomObj.has("roomDeviceId")){
+
+                    jsonArrayRoomList = roomObj.getJSONArray("roomDeviceId");
+
+                    for(int r=0; r < jsonArrayRoomList.length(); r ++){
+                        roomDeviceList.add(""+jsonArrayRoomList.get(r).toString());
+                    }
+                }
+                //roomRemoteId
+                JSONArray roomRemoteArray = null;
+                ArrayList<String> roomRemoteList = new ArrayList<>();
+                if(roomObj.has("roomRemoteId")){
+                    roomRemoteArray = roomObj.getJSONArray("roomRemoteId");
+                    for(int s = 0; s < roomRemoteArray.length(); s ++){
+                        roomRemoteList.add(""+roomRemoteArray.get(s).toString());
+                    }
+                }
+
+                /*room list */
+                RoomVO room = new RoomVO();
+                room.setSmart_remote_number(roomObj.optString("smart_remote_number"));
+                room.setRoomName(roomObj.optString("room_name"));
+                room.setRoom_order(roomObj.optInt("room_order"));
+                room.setRoomId(roomObj.optString("room_id"));
+                room.setRoom_status(roomObj.optInt("room_status"));
+                room.setSensor_panel(roomObj.optString("sensor_panel"));
+                room.setMood_name_id(roomObj.optString("mood_name_id"));
+                if(roomObj.has("total_devices")){
+                    room.setDevice_count(roomObj.optString("total_devices"));
+                }else{
+                    room.setDevice_count("0");
+                }
+
+                if(roomObj.has("is_original")){
+                    room.setIs_original(roomObj.optInt("is_original"));
+                }
+
+                if(roomObj.has("room_icon")){
+                    room.setRoom_icon(roomObj.optString("room_icon"));
+                }
+
+                room.setIs_unread(""+roomObj.optString("is_unread"));
+                room.setTemp_sensor_value(""+roomObj.optString("temp_sensor_value"));
+                room.setDoor_sensor_value(""+roomObj.optString("door_sensor_value"));
+
+                try{
+                    if((jsonArrayRoomList != null ? jsonArrayRoomList.length() : 0) == 0){
+                        room.setRoomDeviceId(null);
+                    }else{
+                        room.setRoomDeviceId(roomDeviceList);
+                    }
+                }catch (Exception ex){ ex.printStackTrace(); }
+
+                if((roomRemoteArray != null ? roomRemoteArray.length() : 0) == 0){
+                    room.setRemoteDeviceList(null);
+                }else{
+                    room.setRemoteDeviceList(roomRemoteList);
+                }
+
+                JSONArray panelArray = roomObj.getJSONArray("panelList");
+
+                ArrayList<PanelVO> panelList = JsonHelper.parsePanelArray(panelArray,room,room.getRoomName(),room.getRoomId(),isParseOriginal); //new ArrayList<PanelVO>();
+
+                for(int j=0; j<panelList.size(); j++){
+                    for(int k=0; k<panelList.get(j).getDeviceList().size(); k++){
+                        if(panelList.get(j).getDeviceList().get(k).getDeviceType().equalsIgnoreCase("-1")){
+                            room.setIsheavyload(true);
+                            break;
+                        }
+
+                    }
+
+                }
+                roomList.add(room);
+
+                room.setPanelList(panelList);
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+//        }
         return  roomList;
     }
 
@@ -232,7 +327,7 @@ public class JsonHelper {
                 objPanel = panelArray.getJSONObject(j);
 
                 PanelVO panelVO = new PanelVO();
-                panelVO.setPanel_status(objPanel.optString("panel_status").equals("y")?0:1);
+                panelVO.setPanel_status(objPanel.optInt("panel_status"));
                 panelVO.setPanelId(hasObject(objPanel,"panel_id") ? objPanel.optString("panel_id") : "");
                 panelVO.setPanelName(hasObject(objPanel,"panel_name") ? objPanel.optString("panel_name") : "");
                 panelVO.setModule_id(hasObject(objPanel,"module_id") ? objPanel.optString("module_id") : "");
@@ -368,7 +463,7 @@ public class JsonHelper {
                 d1.setDeviceType(deviceObj.optString("device_icon"));
                 d1.setDevice_icon(deviceObj.optString("device_icon"));
                 /*is_active means y(1) means active & n(-1) means inactive */
-                d1.setIsActive(deviceObj.optString("is_active").equals("y")?1:-1);
+                d1.setIsActive(deviceObj.optString("is_active").equals("n")?1:-1);
                 d1.setAuto_on_off_value(deviceObj.has("auto_on_off_value")? deviceObj.optInt("auto_on_off_value"):0);
                 d1.setOriginal_room_device_id(deviceObj.has("device_id") ? deviceObj.optString("device_id") : "");
                 d1.setRoomName(roomName);
@@ -454,7 +549,7 @@ public class JsonHelper {
                 d1.setSensor_type(deviceObj.optString("sensor_type"));
 
                 /*is_active means y(1) means active & n(-1) means inactive */
-                d1.setIsActive(deviceObj.optString("is_active").equals("y")?1:-1);
+                d1.setIsActive(deviceObj.optString("is_active").equals("n")?1:-1);
 
                 d1.setIs_unread(hasObject(deviceObj,"is_unread") ? deviceObj.optString("is_unread") : "");
                 d1.setCreated_date(hasObject(deviceObj,"created_date") ? deviceObj.optString("created_date") : "");
@@ -620,7 +715,8 @@ public class JsonHelper {
                 d1.setDoor_sensor_status(hasObject(deviceObj,"device_sub_status") ? deviceObj.optString("device_sub_status") : "");
                 d1.setSensor_type(sensor_type);
                 /*is_active means y(1) means active & n(-1) means inactive */
-                d1.setIsActive(deviceObj.optString("is_active").equals("y")?1:-1);
+
+                d1.setIsActive(deviceObj.optString("is_active").equals("n")?1:-1);
 
                 d1.setIs_unread(hasObject(deviceObj,"is_unread") ? deviceObj.optString("is_unread") : "");
                 d1.setCreated_date(hasObject(deviceObj,"created_date") ? deviceObj.optString("created_date") : "");
@@ -684,7 +780,7 @@ public class JsonHelper {
                 d1.setDevice_icon(deviceObj.optString("device_icon"));
                 d1.setDeviceSpecificValue(deviceObj.has("device_specific_value")?deviceObj.optString("device_specific_value"):"");
                 /*is_active means y(1) means active & n(-1) means inactive */
-                d1.setIsActive(deviceObj.optString("is_active").equals("y")?1:-1);
+                d1.setIsActive(deviceObj.optString("is_active").equals("n")?1:-1);
                 d1.setIsAlive(deviceObj.has("is_alive")? deviceObj.optInt("is_alive"):0);
                 d1.setAuto_on_off_value(deviceObj.has("auto_on_off_value")? deviceObj.optInt("auto_on_off_value"):0);
                 d1.setSchedule_value(deviceObj.has("schedule_value")? deviceObj.optInt("schedule_value"):0);

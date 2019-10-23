@@ -82,12 +82,9 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     public ScrollView scrollviewMulti;
     private EditText sensorName;
     public View viewEditSensor;
-    private TextView txtAlert, txtAlertCount, txtEmpty, txtEmpty_temp, txtHumity, txtGasSensor;
-    private ImageView imgBattery, view_rel_badge, iv_icon_edit, imgLog;
-    private TextView batteryPercentage, txt_empty_notification, txtTempCount;
-    private TextView tempCFValue, txtTempAlertCount;
-    private TextView txtCButton, txtFButton, txtTempAlertCount_temp, txtTempCount_temp;
-    private TextView txtAddButton, txtAddButtonTemp;
+    private ImageView  view_rel_badge, iv_icon_edit, imgLog;
+    private TextView  txtAlertCount, txtEmpty, txtEmpty_temp, txtHumity,txtTempCount,tempCFValue,
+            txtTempAlertCount,txtCButton, txtFButton, txtTempAlertCount_temp, txtTempCount_temp,txtAddButton, txtAddButtonTemp;
     private Button btn_delete;
     private ToggleButton toggleAlert, toggleAlert_temp, toggleAlertSensor;
     private LinearLayout linearAlertExpand, linearAlertDown, linearAlertExpand_temp, linearAlertDown_temp, linearMultisensor;
@@ -95,8 +92,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
     private String temp_sensor_id, temp_room_name, temp_room_id, temp_module_id;
     private int isCFSelected = -1;
-    private String mSensorName;
-    private String temp_unread_count = "";
     private Socket mSocket;
 
     SensorResModel.DATA.TempList[] tempLists;
@@ -134,7 +129,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         temp_sensor_id = getIntent().getStringExtra("temp_sensor_id");
         temp_room_name = getIntent().getStringExtra("temp_room_name");
         temp_room_id = getIntent().getStringExtra("temp_room_id");
-        temp_unread_count = getIntent().getStringExtra("temp_unread_count");
         temp_module_id = getIntent().getStringExtra("temp_module_id");
 
         toolbar.setTitle(temp_room_name);
@@ -220,8 +214,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
     private void bindView() {
 
-        sensor_list = (RecyclerView) findViewById(R.id.sensor_list);
-        sensor_list_temp = (RecyclerView) findViewById(R.id.sensor_list_temp);
+        sensor_list =  findViewById(R.id.sensor_list);
+        sensor_list_temp =  findViewById(R.id.sensor_list_temp);
         sensor_list.setHasFixedSize(true);
         sensor_list.setLayoutManager(new GridLayoutManager(this, 1));
         sensor_list.setVerticalScrollBarEnabled(true);
@@ -230,45 +224,40 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         sensor_list_temp.setLayoutManager(new GridLayoutManager(this, 1));
         sensor_list_temp.setVerticalScrollBarEnabled(true);
 
-        view_rel_badge = (ImageView) findViewById(R.id.view_rel_badge);
-        recyclerAlert = (RecyclerView) findViewById(R.id.recyclerAlert);
+        view_rel_badge =  findViewById(R.id.view_rel_badge);
+        recyclerAlert =  findViewById(R.id.recyclerAlert);
 
-        sensorName = (EditText) findViewById(R.id.sensor_name);
-        imgBattery = (ImageView) findViewById(R.id.img_battery);
-        batteryPercentage = (TextView) findViewById(R.id.txt_bettery_per);
-        tempCFValue = (TextView) findViewById(R.id.txt_tmp_incf);
-        linearAlertDown = (LinearLayout) findViewById(R.id.linearAlertDown);
-        linearAlertDown_temp = (LinearLayout) findViewById(R.id.linearAlertDown_temp);
-        linearAlertExpand = (LinearLayout) findViewById(R.id.linearAlertExpand);
-        linearAlertExpand_temp = (LinearLayout) findViewById(R.id.linearAlertExpand_temp);
-        toggleAlert = (ToggleButton) findViewById(R.id.toggleAlert);
-        toggleAlert_temp = (ToggleButton) findViewById(R.id.toggleAlert_temp);
-        txtAlertCount = (TextView) findViewById(R.id.txtAlertCount);
-        txtAlert = (TextView) findViewById(R.id.txtAlert);
-        txtEmpty = (TextView) findViewById(R.id.txtEmpty);
-        txtEmpty_temp = (TextView) findViewById(R.id.txtEmpty_temp);
-        txtTempAlertCount = (TextView) findViewById(R.id.txtTempAlertCount);
-        txtTempAlertCount_temp = (TextView) findViewById(R.id.txtTempAlertCount_temp);
-        txtHumity = (TextView) findViewById(R.id.txtHumity);
+        sensorName =  findViewById(R.id.sensor_name);
+        tempCFValue =  findViewById(R.id.txt_tmp_incf);
+        linearAlertDown =  findViewById(R.id.linearAlertDown);
+        linearAlertDown_temp =  findViewById(R.id.linearAlertDown_temp);
+        linearAlertExpand =  findViewById(R.id.linearAlertExpand);
+        linearAlertExpand_temp =  findViewById(R.id.linearAlertExpand_temp);
+        toggleAlert =  findViewById(R.id.toggleAlert);
+        toggleAlert_temp =  findViewById(R.id.toggleAlert_temp);
+        txtAlertCount =  findViewById(R.id.txtAlertCount);
+        txtEmpty =  findViewById(R.id.txtEmpty);
+        txtEmpty_temp =  findViewById(R.id.txtEmpty_temp);
+        txtTempAlertCount =  findViewById(R.id.txtTempAlertCount);
+        txtTempAlertCount_temp =  findViewById(R.id.txtTempAlertCount_temp);
+        txtHumity =  findViewById(R.id.txtHumity);
         iv_icon_edit = findViewById(R.id.iv_icon_edit);
         viewEditSensor = findViewById(R.id.viewEditSensor);
         scrollviewMulti = findViewById(R.id.scrollviewMulti);
         toggleAlertSensor = findViewById(R.id.toggleAlertSensor);
-        txtGasSensor = findViewById(R.id.txtGasSensor);
         linearMultisensor = findViewById(R.id.linearMultisensor);
         imgLog = findViewById(R.id.imgLog);
 
-        txtTempCount = (TextView) findViewById(R.id.txtTempCount);
-        txtTempCount_temp = (TextView) findViewById(R.id.txtTempCount_temp);
-        txt_empty_notification = (TextView) findViewById(R.id.txt_empty_notification);
+        txtTempCount =  findViewById(R.id.txtTempCount);
+        txtTempCount_temp =  findViewById(R.id.txtTempCount_temp);
 
-        txtAddButton = (TextView) findViewById(R.id.btnAdd);
-        txtAddButtonTemp = (TextView) findViewById(R.id.btnAdd_temp);
+        txtAddButton =  findViewById(R.id.btnAdd);
+        txtAddButtonTemp =  findViewById(R.id.btnAdd_temp);
 
-        txtCButton = (TextView) findViewById(R.id.txt_c_button);
-        txtFButton = (TextView) findViewById(R.id.txt_f_button);
+        txtCButton =  findViewById(R.id.txt_c_button);
+        txtFButton =  findViewById(R.id.txt_f_button);
 
-        btn_delete = (Button) findViewById(R.id.btn_delete);
+        btn_delete =  findViewById(R.id.btn_delete);
 
         sensorName.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         sensorName.setFilters(new InputFilter[]{new InputFilter.LengthFilter(25)});
@@ -609,19 +598,19 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         Button button_save_notification = (Button) tempSensorNotificationDialog.findViewById(R.id.button_save_notification);
         ImageView closeNotification = tempSensorNotificationDialog.findViewById(R.id.btn_close_notification);
 
-        final EditText edit_min_value = (EditText) tempSensorNotificationDialog.findViewById(R.id.edit_min_value);
-        final EditText edit_max_value = (EditText) tempSensorNotificationDialog.findViewById(R.id.edit_max_value);
+        final EditText edit_min_value =  tempSensorNotificationDialog.findViewById(R.id.edit_min_value);
+        final EditText edit_max_value =  tempSensorNotificationDialog.findViewById(R.id.edit_max_value);
 
-        final TextView txt_notification_alert = (TextView) tempSensorNotificationDialog.findViewById(R.id.txt_notification_alert);
+        final TextView txt_notification_alert =  tempSensorNotificationDialog.findViewById(R.id.txt_notification_alert);
 
         txt_notification_alert.setText("Humidity Alert");
-        text_day_1 = (TextView) tempSensorNotificationDialog.findViewById(R.id.text_day_1);
-        text_day_2 = (TextView) tempSensorNotificationDialog.findViewById(R.id.text_day_2);
-        text_day_3 = (TextView) tempSensorNotificationDialog.findViewById(R.id.text_day_3);
-        text_day_4 = (TextView) tempSensorNotificationDialog.findViewById(R.id.text_day_4);
-        text_day_5 = (TextView) tempSensorNotificationDialog.findViewById(R.id.text_day_5);
-        text_day_6 = (TextView) tempSensorNotificationDialog.findViewById(R.id.text_day_6);
-        text_day_7 = (TextView) tempSensorNotificationDialog.findViewById(R.id.text_day_7);
+        text_day_1 =  tempSensorNotificationDialog.findViewById(R.id.text_day_1);
+        text_day_2 =  tempSensorNotificationDialog.findViewById(R.id.text_day_2);
+        text_day_3 =  tempSensorNotificationDialog.findViewById(R.id.text_day_3);
+        text_day_4 =  tempSensorNotificationDialog.findViewById(R.id.text_day_4);
+        text_day_5 =  tempSensorNotificationDialog.findViewById(R.id.text_day_5);
+        text_day_6 =  tempSensorNotificationDialog.findViewById(R.id.text_day_6);
+        text_day_7 =  tempSensorNotificationDialog.findViewById(R.id.text_day_7);
 
         edit_min_value.setHint("Min %");
         edit_max_value.setHint("Max %");
@@ -781,18 +770,18 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         Button button_save_notification = (Button) tempSensorNotificationDialog.findViewById(R.id.button_save_notification);
         ImageView closeNotification = tempSensorNotificationDialog.findViewById(R.id.btn_close_notification);
 
-        final EditText edit_min_value = (EditText) tempSensorNotificationDialog.findViewById(R.id.edit_min_value);
-        final EditText edit_max_value = (EditText) tempSensorNotificationDialog.findViewById(R.id.edit_max_value);
+        final EditText edit_min_value =  tempSensorNotificationDialog.findViewById(R.id.edit_min_value);
+        final EditText edit_max_value =  tempSensorNotificationDialog.findViewById(R.id.edit_max_value);
 
-        final TextView txt_notification_alert = (TextView) tempSensorNotificationDialog.findViewById(R.id.txt_notification_alert);
+        final TextView txt_notification_alert =  tempSensorNotificationDialog.findViewById(R.id.txt_notification_alert);
 
-        text_day_1 = (TextView) tempSensorNotificationDialog.findViewById(R.id.text_day_1);
-        text_day_2 = (TextView) tempSensorNotificationDialog.findViewById(R.id.text_day_2);
-        text_day_3 = (TextView) tempSensorNotificationDialog.findViewById(R.id.text_day_3);
-        text_day_4 = (TextView) tempSensorNotificationDialog.findViewById(R.id.text_day_4);
-        text_day_5 = (TextView) tempSensorNotificationDialog.findViewById(R.id.text_day_5);
-        text_day_6 = (TextView) tempSensorNotificationDialog.findViewById(R.id.text_day_6);
-        text_day_7 = (TextView) tempSensorNotificationDialog.findViewById(R.id.text_day_7);
+        text_day_1 =  tempSensorNotificationDialog.findViewById(R.id.text_day_1);
+        text_day_2 =  tempSensorNotificationDialog.findViewById(R.id.text_day_2);
+        text_day_3 =  tempSensorNotificationDialog.findViewById(R.id.text_day_3);
+        text_day_4 =  tempSensorNotificationDialog.findViewById(R.id.text_day_4);
+        text_day_5 =  tempSensorNotificationDialog.findViewById(R.id.text_day_5);
+        text_day_6 =  tempSensorNotificationDialog.findViewById(R.id.text_day_6);
+        text_day_7 =  tempSensorNotificationDialog.findViewById(R.id.text_day_7);
 
         if (isCFSelected == 1) {
             edit_min_value.setHint("Min Value " + Common.getC());
@@ -1186,7 +1175,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         int id = v.getId();
         if ((id == R.id.text_day_1) || (id == R.id.text_day_2) || (id == R.id.text_day_3) || (id == R.id.text_day_4)
                 || (id == R.id.text_day_5) || (id == R.id.text_day_6) || (id == R.id.text_day_7)) {
-            Common.setOnOffBackground(this, (TextView) tempSensorNotificationDialog.findViewById(id));
+            Common.setOnOffBackground(this,  tempSensorNotificationDialog.findViewById(id));
         } else if (id == R.id.txt_c_button) {
             isCFSelected = 1;
             setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_yellow, R.drawable.txt_background_white, Color.parseColor("#FFFFFF"), Color.parseColor("#111111"));
@@ -1290,7 +1279,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             //	"phone_id":"1234567",
             //	"phone_type":"Android"
             //	 }
-            jsonNotification.put("module_id", temp_module_id);
+            jsonNotification.put("device_id", temp_module_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -1627,8 +1616,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
             sensorName.setText(tempLists[0].getTempSensorName());
             sensorName.setSelection(sensorName.getText().toString().length());
-            mSensorName = tempLists[0].getTempSensorName();
-
 
             String tmpC = "-- ", tmpF = "-- ";
             if (TextUtils.isEmpty(tempLists[0].getTempInC()) || tempLists[0].getTempInC().equalsIgnoreCase("null"))

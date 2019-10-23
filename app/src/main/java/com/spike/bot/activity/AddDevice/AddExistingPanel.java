@@ -149,7 +149,7 @@ public class AddExistingPanel extends AppCompatActivity {
 
         String url = "";
         if (isSync) {
-            url = webUrl + Constants.GET_ORIGINAL_DEVICES + "/" + 0; //add new unassigned
+            url = webUrl + Constants.deviceunassigned; //add new unassigned
         } else {
             url = webUrl + Constants.GET_ORIGINAL_DEVICES + "/" + 1; //Add from existing
         }

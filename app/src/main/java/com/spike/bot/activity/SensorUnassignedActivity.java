@@ -64,19 +64,19 @@ public class SensorUnassignedActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor_unassigned);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        spinner_room = (Spinner) findViewById(R.id.spinner_room);
-        list_sensor = (RecyclerView) findViewById(R.id.list_sensor);
+        spinner_room =  findViewById(R.id.spinner_room);
+        list_sensor =  findViewById(R.id.list_sensor);
         viewLine = findViewById(R.id.viewLine);
         list_sensor.setLayoutManager(new GridLayoutManager(this, 1));
 
-        ll_sensor_list_empy = (LinearLayout) findViewById(R.id.ll_sensor_list);
-        linear_progress = (LinearLayout) findViewById(R.id.linear_progress);
+        ll_sensor_list_empy =  findViewById(R.id.ll_sensor_list);
+        linear_progress =  findViewById(R.id.linear_progress);
 
         isDoorSensor = getIntent().getIntExtra("isDoorSensor", 0);
         roomName = getIntent().getStringExtra("roomName");
@@ -176,12 +176,7 @@ public class SensorUnassignedActivity extends AppCompatActivity {
 
     private void getSensorUnAssignedDetails(int sensor_type) {
 
-        String url = "";
-        if (sensor_type == 6) {
-            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/curtain"; //0 door - 1 temp
-        } else {
-            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/" + sensor_type; //0 door - 1 temp
-        }
+        String url = ChatApplication.url + Constants.deviceunassigned;
 
         linear_progress.setVisibility(View.VISIBLE);
 

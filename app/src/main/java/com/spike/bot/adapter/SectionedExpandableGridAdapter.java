@@ -65,13 +65,14 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
     private static final int VIEW_TYPE_ITEM = R.layout.row_room_switch_item; //TODO : change this
     private static final int VIEW_TYPE_CAMERA = R.layout.row_camera_listview;
 
+    public GridLayoutManager gridLayoutManager;
 
     public void setCameraClickListener(CameraClickListener mCameraClickListener) {
         this.mCameraClickListener = mCameraClickListener;
     }
 
         SectionedExpandableGridAdapter(Context context, ArrayList<Object> dataArrayList,
-                                   final GridLayoutManager gridLayoutManager, ItemClickListener itemClickListener,
+                                   final GridLayoutManager gridLayout, ItemClickListener itemClickListener,
                                    OnSmoothScrollList onSmoothScroll, TempClickListener tempClickListener, SectionStateChangeListener sectionStateChangeListener) {
         mContext = context;
         mItemClickListener = itemClickListener;
@@ -79,16 +80,23 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
         mDataArrayList = dataArrayList;
         onSmoothScrollList = onSmoothScroll;
         this.tempClickListener = tempClickListener;
+        this.gridLayoutManager=gridLayout;
 
+       setGridView();
+
+    }
+
+    public void setGridView() {
         try {
 
             /* grid view set as per view */
-            gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            this.gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                 @Override
                 public int getSpanSize(int position) {
                     int ffposition=1;
+
                     if(isCamera(position) ){
-                         ffposition = isCamera(position)?gridLayoutManager.getSpanCount() : 1;
+                        ffposition = isCamera(position)?gridLayoutManager.getSpanCount() : 1;
                     } else {
                         ffposition=isSection(position) || isPanel(position) ? gridLayoutManager.getSpanCount() : 1;
                     }
@@ -98,8 +106,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
     }
+
 
     private boolean isSection(int position) {
         try {
@@ -495,6 +503,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 break;
             case VIEW_TYPE_PANEL:
 
+                ChatApplication.logDisplay("status update panel adapter");
                 if (position == 0) {
                     holder.view_line_top.setVisibility(View.GONE);
                 } else {
@@ -566,9 +575,10 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                 String itemDeviceName = "";
                 int itemIcon = 0;
-
+                ChatApplication.logDisplay("status update device adapter "+item.getDeviceStatus()+" "+item.getDeviceId());
                 /* for device */
                 if (!item.isSensor()) {
+//                    ChatApplication.logDisplay("status update device adapter "+item.getDeviceStatus()+" "+item.getDeviceId());
                     holder.txt_temp_in_cf.setVisibility(View.GONE);
                     holder.iv_icon_badge.setVisibility(View.GONE);
                     itemDeviceName = item.getDeviceName();
@@ -589,7 +599,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                         itemDeviceName = item.getSensor_name();
 
-                    }else if(item.getSensor_type().equalsIgnoreCase("door_sensor")){
+                    }else if(item.getSensor_type().equalsIgnoreCase(mContext.getResources().getString(R.string.door_sensor))){
 
                         //onlydoor, subtype=1
                         //only lock, subtype=2
@@ -749,7 +759,6 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             tempInCF=tempInCF+" "+cf+" / "+item.getHumidity()+"%";
                         }
 
-                        ChatApplication.logDisplay("temp is d "+item.getTemp_in_f()+" "+item.getHumidity());
 
                         if(item.getIsActive()!=-1){
                             holder.txt_temp_in_cf.setText(Html.fromHtml("<b>" + tempInCF+ "</b>"));
@@ -792,7 +801,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                         // } else if (item.getIsActive() == 1) {
                         if (item.getIsActive() == -1) {
-                            if (item.getSensor_type() != null && item.getSensor_type().equalsIgnoreCase("temp_sensor")) {
+                            if (item.getSensor_type() != null && item.getSensor_type().equalsIgnoreCase(mContext.getResources().getString(R.string.temp_sensor))) {
                                 itemIcon = Common.getIconInActive(status, item.getSensor_type());
                             } else if (item.getSensor_type() != null && item.getSensor_type().equalsIgnoreCase("multisensor")) {
                                 itemIcon = Common.getIconInActive(status, item.getSensor_type());
@@ -831,7 +840,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         if (!isClickable)
                             return;
 
-                        if(!item.getDevice_icon().equals("curtain")){
+                        ChatApplication.logDisplay("postion click is "+position);
+                        if(!item.getDevice_icon().equals(mContext.getResources().getString(R.string.curtain))){
                             item.setOldStatus(item.getDeviceStatus());
                             item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1 : 0);
                             notifyItemChanged(position, item);
@@ -873,7 +883,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         notifyItemChanged(position, item);
 
                         if (!item.isSensor()) {
-                            if(item.getDeviceType().equalsIgnoreCase("-1")){
+                            if(item.getDeviceType().equalsIgnoreCase("heavyload")){
                                 tempClickListener.itemClicked(item, "heavyloadlongClick", true, position);
                             }else if(item.getDeviceType().equalsIgnoreCase("3")){
                                 tempClickListener.itemClicked(item, "philipslongClick", true, position);

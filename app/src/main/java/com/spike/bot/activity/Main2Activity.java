@@ -256,12 +256,12 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         switch (item.getItemId()) {
             case R.id.navigationDashboard:
                 tabCount=0;
-                if(dashBoardFragment1 ==null){
+//                if(dashBoardFragment1 ==null){
                     dashBoardFragment1 = new DashBoardFragment();
                     fragment= dashBoardFragment1;
-                }else {
-                    fragment= dashBoardFragment1;
-                }
+//                }else {
+//                    fragment= dashBoardFragment1;
+//                }
 
                 break;
 

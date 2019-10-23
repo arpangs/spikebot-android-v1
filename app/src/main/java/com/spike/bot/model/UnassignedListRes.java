@@ -47,7 +47,6 @@ public class UnassignedListRes {
 
     public static class Data {
 
-
         @SerializedName("module_id")
         @Expose
         private String moduleId;
@@ -66,9 +65,6 @@ public class UnassignedListRes {
         @SerializedName("is_configured")
         @Expose
         private String isConfigured;
-        @SerializedName("meta")
-        @Expose
-        private String meta;
 
         public String getModuleId() {
             return moduleId;
@@ -116,14 +112,6 @@ public class UnassignedListRes {
 
         public void setIsConfigured(String isConfigured) {
             this.isConfigured = isConfigured;
-        }
-
-        public String getMeta() {
-            return meta;
-        }
-
-        public void setMeta(String meta) {
-            this.meta = meta;
         }
 
 

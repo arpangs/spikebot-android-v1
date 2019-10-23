@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
@@ -25,6 +26,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
@@ -56,7 +58,6 @@ import static com.spike.bot.core.Common.showToast;
 public class AddUnassignedPanel extends AppCompatActivity implements AddUnassignedPanelAdapter.UnassignedClickEvent {
 
     private RecyclerView mListPanels;
-    private List<UnassignedListRes.Data.RoomList> roomList;
     private LinearLayout mEmptyView;
 
     private Dialog mDialog;
@@ -64,10 +65,15 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
     private EditText mPanelName;
     private Button mBtnSave;
     private ImageView mImageClose;
+
+    String type="";
+
+    AddUnassignedPanelAdapter addUnassignedPanelAdapter;
     private ArrayList<String> roomStrList = new ArrayList<>();
     private ArrayList<String> roomIdList = new ArrayList<>();
     List<UnassignedListRes.Data.RoomdeviceList> roomdeviceList;
     ArrayList<UnassignedListRes.Data.RoomList> roomListArray=new ArrayList<>();
+    ArrayList<UnassignedListRes.Data> roomDeviceListArray=new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,6 +88,7 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setTitle("Unassigned List");
 
+        type=getIntent().getStringExtra("type");
         bindViews();
 
         getRoomList();
@@ -155,22 +162,18 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
     }
 
 
-
+    /*get all unassing list*/
     private void getUnAssignedList() {
-
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             showToast("" + R.string.disconnect);
             return;
         }
 
-        roomdeviceList = new ArrayList<>();
-
-//        ActivityHelper.showProgressDialog(this, "Loading...", false);
-
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonObject.put("module_type", type);
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
@@ -178,7 +181,7 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
             e.printStackTrace();
         }
 
-        String url = ChatApplication.url + Constants.GET_DEVICES_LIST+"/n";
+        String url = ChatApplication.url + Constants.deviceunassigned;
 
         ChatApplication.logDisplay("un assign is "+url+" "+jsonObject);
 
@@ -191,12 +194,7 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
-
-//                        roomListArray = Common.jsonToPojo(result.toString(), UnassignedListRes.class);
-//                        roomList = unassignedListRes.getData().getRoomList();
-//                        roomdeviceList = unassignedListRes.getData().getRoomdeviceList();
-//                        addUnassignedPanelAdapter = new AddUnassignedPanelAdapter(roomdeviceList, AddUnassignedPanel.this);
-//                        mListPanels.setAdapter(addUnassignedPanelAdapter);
+                       setAdapter(result.optString("data"));
 
                     } else {
                         if (!TextUtils.isEmpty(message)) {
@@ -207,7 +205,7 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
                     /**
                      * set empty view visibility if room device list found equal to 0
                      */
-                    if (roomdeviceList.size() == 0) {
+                    if (roomDeviceListArray.size() == 0) {
                         mListPanels.setVisibility(View.GONE);
                         mEmptyView.setVisibility(View.VISIBLE);
                     } else {
@@ -225,6 +223,15 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
                 ActivityHelper.dismissProgressDialog();
             }
         }).execute();
+    }
+
+    private void setAdapter(String result) {
+        Gson gson=new Gson();
+        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(this);
+        mListPanels.setLayoutManager(linearLayoutManager);
+        roomDeviceListArray = gson.fromJson(result, new TypeToken<List<UnassignedListRes.Data>>(){}.getType());
+        addUnassignedPanelAdapter = new AddUnassignedPanelAdapter(roomDeviceListArray, AddUnassignedPanel.this);
+        mListPanels.setAdapter(addUnassignedPanelAdapter);
     }
 
 
@@ -251,29 +258,37 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
      */
 
     @Override
-    public void onClick(int position, UnassignedListRes.Data.RoomdeviceList roomdeviceList) {
+    public void onClick(int position, UnassignedListRes.Data roomdeviceList) {
 
-        if (roomdeviceList.getIsModule() == 1 || roomdeviceList.getIsModule() == 3) {
+        if(roomdeviceList.getModuleType().equals("repeater")){
+
+        }else if(roomdeviceList.getModuleType().equals("door") || roomdeviceList.getModuleType().equals("ttlock")){
+
+        }else {
             showAddDialog(roomdeviceList);
-        } else {
-            if (roomdeviceList.getSensorIcon().equals("doorsensor")) {
-                Intent intent = new Intent(this, AddDeviceConfirmActivity.class);
-                intent.putExtra("isViewType", "syncDoor");
-                intent.putExtra("door_sensor_module_id", "" + roomdeviceList.getModuleId());
-                intent.putExtra("door_sensor_name", "" + roomdeviceList.getSensorName());
-                intent.putExtra("door_type", "" + roomdeviceList.getLock_subtype());
-                if (roomdeviceList.getLock_subtype().equals("2")) {
-                    intent.putExtra("lock_id", roomdeviceList.getLock_id());
-                    intent.putExtra("lock_data", roomdeviceList.getLock_data());
-                }
-                startActivity(intent);
-
-            } else if (roomdeviceList.getSensorIcon().equals("repeater")) {
-                repetearAdd(roomdeviceList);
-            } else {
-                showAddDialog(roomdeviceList);
-            }
         }
+
+//        if (roomdeviceList.getIsModule() == 1 || roomdeviceList.getIsModule() == 3) {
+//            showAddDialog(roomdeviceList);
+//        } else {
+//            if (roomdeviceList.getSensorIcon().equals("doorsensor")) {
+//                Intent intent = new Intent(this, AddDeviceConfirmActivity.class);
+//                intent.putExtra("isViewType", "syncDoor");
+//                intent.putExtra("door_sensor_module_id", "" + roomdeviceList.getModuleId());
+//                intent.putExtra("door_sensor_name", "" + roomdeviceList.getSensorName());
+//                intent.putExtra("door_type", "" + roomdeviceList.getLock_subtype());
+//                if (roomdeviceList.getLock_subtype().equals("2")) {
+//                    intent.putExtra("lock_id", roomdeviceList.getLock_id());
+//                    intent.putExtra("lock_data", roomdeviceList.getLock_data());
+//                }
+//                startActivity(intent);
+//
+//            } else if (roomdeviceList.getSensorIcon().equals("repeater")) {
+//                repetearAdd(roomdeviceList);
+//            } else {
+//                showAddDialog(roomdeviceList);
+//            }
+//        }
 
     }
 
@@ -343,7 +358,7 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
 
     }
 
-    private void showAddDialog(final UnassignedListRes.Data.RoomdeviceList roomdeviceList) {
+    private void showAddDialog(final UnassignedListRes.Data roomdeviceList) {
 
         roomStrList.clear();
         roomIdList.clear();
@@ -355,25 +370,25 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
             mDialog.setCanceledOnTouchOutside(false);
         }
 
-        mSpinnerRoom = (Spinner) mDialog.findViewById(R.id.spinner_room_name);
-        mPanelName = (EditText) mDialog.findViewById(R.id.et_panel_name);
-        mBtnSave = (Button) mDialog.findViewById(R.id.btn_save);
-        mImageClose = (ImageView) mDialog.findViewById(R.id.iv_close);
-        TextView mAddName = (TextView) mDialog.findViewById(R.id.tv_panel_name);
+        mSpinnerRoom =  mDialog.findViewById(R.id.spinner_room_name);
+        mPanelName =  mDialog.findViewById(R.id.et_panel_name);
+        mBtnSave =  mDialog.findViewById(R.id.btn_save);
+        mImageClose =  mDialog.findViewById(R.id.iv_close);
+        TextView mAddName =  mDialog.findViewById(R.id.tv_panel_name);
 
         mPanelName.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         mPanelName.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
 
-        if (roomdeviceList.getIsModule() == 1) {
+        //all","gas_sensor","temp_sensor",
+        // "curtain","5","5f","door","ttlock","irblaster","repeater","smart_remote","heavy_load","double_heavy_load"
+        if (roomdeviceList.getModuleType().equals("5") || roomdeviceList.getModuleType().equals("5f")
+                || roomdeviceList.getModuleType().equals("heavy_load") || roomdeviceList.getModuleType().equals("double_heavy_load")) {
             mAddName.setText("Panel Name");
-            mPanelName.setText(roomdeviceList.getModuleName());
-        } else if (roomdeviceList.getIsModule() == 3) {
-            mAddName.setText("Panel Name");
-            mPanelName.setText(roomdeviceList.getModuleName());
-        } else {
+        }else {
             mAddName.setText("Sensor Name");
-            mPanelName.setText(roomdeviceList.getSensorName());
         }
+
+        mPanelName.setText(roomdeviceList.getModuleType());
 
         mImageClose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -382,8 +397,8 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
             }
         });
 
-        if (roomList != null) {
-            for (UnassignedListRes.Data.RoomList roomListModel : roomList) {
+        if (roomListArray != null) {
+            for (UnassignedListRes.Data.RoomList roomListModel : roomListArray) {
                 roomStrList.add(roomListModel.getRoomName());
                 roomIdList.add(roomListModel.getRoomId());
             }
@@ -399,9 +414,14 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
         mBtnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (roomdeviceList.getIsModule() == 3) {
-                    savePanelCurtain(roomdeviceList, roomIdList.get(mSpinnerRoom.getSelectedItemPosition()), mPanelName.getText().toString().trim(), mDialog);
-                } else {
+                if (mSpinnerRoom.getSelectedItemPosition() == 0) {
+                    showToast("Please select Room Name");
+                    return;
+                }else if (TextUtils.isEmpty(mPanelName.getText().toString().trim())) {
+                    mPanelName.setError("Enter Name");
+                    mPanelName.requestFocus();
+                    return;
+                }else {
                     savePanel(roomdeviceList, roomIdList.get(mSpinnerRoom.getSelectedItemPosition()), mPanelName.getText().toString().trim(), mDialog);
                 }
             }
@@ -498,55 +518,44 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
      * @param panelName      panelName
      * @param mDialog
      */
-    private void savePanel(UnassignedListRes.Data.RoomdeviceList roomdeviceList, String roomId, String panelName, Dialog mDialog) {
+    private void savePanel(UnassignedListRes.Data roomdeviceList, String roomId, String panelName, Dialog mDialog) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (mSpinnerRoom.getSelectedItemPosition() == 0) {
-            showToast("Please select Room Name");
-            return;
-        }
-
-        if (TextUtils.isEmpty(mPanelName.getText().toString().trim())) {
-            mPanelName.setError("Enter Panel Name");
-            mPanelName.requestFocus();
-            return;
-        }
 
         ActivityHelper.showProgressDialog(this, "Loading...", false);
 
-        String mRequestJson = "";
-        final boolean isSensor = roomdeviceList.getIsModule() == 0;
 
         JSONObject object = new JSONObject();
         try {
-            if (roomdeviceList.getIsModule() == 0) {
-                object.put("sensor_name", panelName);
-            } else {
+            //{
+            //	"room_id": "1571407908196_uEVHoQJNR",
+            //	"module_id": "1571407892909_OtecipqUB",
+            //	"panel_name": "my panel 1",
+            //	"user_id": "1568463607921_AyMe7ek9e",
+            //	"device_name": ""
+            //}
+
+            if (roomdeviceList.getModuleType().equals("5") || roomdeviceList.getModuleType().equals("5f")
+                    || roomdeviceList.getModuleType().equals("heavy_load") || roomdeviceList.getModuleType().equals("double_heavy_load")) {
                 object.put("panel_name", panelName);
+            } else {
+                object.put("sensor_name", panelName);
             }
-            object.put("is_module", roomdeviceList.getIsModule());
             object.put("room_id", roomId);
-            object.put("sensor_id", roomdeviceList.getSensorId());
-            //  object.put("sensor_name",panelName);
-            object.put("room_name", mSpinnerRoom.getSelectedItem().toString());
             object.put("module_id", roomdeviceList.getModuleId());
-            object.put("sensor_type", roomdeviceList.getSensorType());
-            object.put("sensor_icon", roomdeviceList.getSensorIcon());
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        String url = ChatApplication.url + Constants.deviceadd;
 
-        mRequestJson = object.toString();
-        String url = ChatApplication.url + Constants.ADD_UN_CONFIGURED_DEVICE;
+        ChatApplication.logDisplay("assign is " + url + " " + object);
 
-        ChatApplication.logDisplay("assign is " + url + " " + mRequestJson);
-
-        new GetJsonTask(this, url, "POST", mRequestJson, new ICallBack() {
+        new GetJsonTask(this, url, "POST", object.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
                 mDialog.dismiss();
@@ -557,10 +566,11 @@ public class AddUnassignedPanel extends AppCompatActivity implements AddUnassign
                     String message = result.getString("message");
 
                     if (!TextUtils.isEmpty(message)) {
-                        showToast(isSensor ? "Sensor added successfully" : "Panel added successfully");
+                        showToast("Added successfully");
                     }
 
                     if (code == 200) {
+                        Common.hideSoftKeyboard(AddUnassignedPanel.this);
                         finish();
                     }
 

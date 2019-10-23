@@ -21,6 +21,7 @@ import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.AddDevice.AddDeviceTypeListActivity;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
@@ -187,7 +188,7 @@ public class AddRoomDialog extends Dialog implements
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if(code==200){
-
+                        Common.hideSoftKeyboard(activity);
                         if(!TextUtils.isEmpty(message)){
                             Toast.makeText(activity.getApplicationContext(), message , Toast.LENGTH_SHORT).show();
                         }

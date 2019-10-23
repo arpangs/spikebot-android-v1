@@ -1,5 +1,6 @@
 package com.spike.bot.adapter.room;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 
 public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapterDeviceV2.EditDeviceHolder> {
 
+    Context context;
     DeviceVO item;
     ArrayList<DeviceVO> deviceVOs;
     private ItemClickRoomEditListener mItemClickListener;
@@ -29,7 +31,8 @@ public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapte
     int itemIcon = 0;
 
 
-    public RoomEditAdapterDeviceV2(ArrayList<DeviceVO> deviceVOs1, ItemClickRoomEditListener itemClickRoomEditListener) {
+    public RoomEditAdapterDeviceV2(Context context,ArrayList<DeviceVO> deviceVOs1, ItemClickRoomEditListener itemClickRoomEditListener) {
+        this.context = context;
         this.deviceVOs = deviceVOs1;
         this.mItemClickListener = itemClickRoomEditListener;
     }
@@ -47,7 +50,7 @@ public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapte
 
         if (!item.isSensor()) {
             itemDeviceName = item.getDeviceName();
-            if (item.getDevice_icon().equals("curtain")) {
+            if (item.getDevice_icon().equals(context.getResources().getString(R.string.curtain))) {
                 itemIcon = Common.getIcon(0, item.getDevice_icon());
             } else {
                 itemIcon = Common.getIcon(0, item.getDevice_icon());
@@ -60,7 +63,7 @@ public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapte
             itemIcon = Common.getIcon(0, item.getSensor_icon());
             clickAction = "isSensorClick";
 
-            if (item.getSensor_icon().equals("doorsensor")) {
+            if (item.getSensor_icon().equals(context.getResources().getString(R.string.door_sensor))) {
                 if (item.getDoor_subtype() == 1) {
                     itemIcon = R.drawable.off_door;
                 } else if (item.getDoor_subtype() == 2) {
@@ -71,7 +74,7 @@ public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapte
             }
         }
 
-        if (item.getDevice_icon().equalsIgnoreCase("heavyload")) {
+        if (item.getDevice_icon().equalsIgnoreCase(context.getResources().getString(R.string.heavyload))) {
             itemIcon = R.drawable.off;
         }
 

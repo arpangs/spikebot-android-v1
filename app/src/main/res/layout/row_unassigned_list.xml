@@ -44,7 +44,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:textSize="18sp"
+                    android:textSize="@dimen/_16sdp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -52,7 +52,8 @@
                     android:id="@+id/up_device_module"
                     android:layout_gravity="bottom"
                     android:gravity="bottom"
-                    android:text="[0123456798]"
+                    android:singleLine="true"
+                    android:textSize="@dimen/_12sdp"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent" />
 

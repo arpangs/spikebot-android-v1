@@ -61,5 +61,8 @@
     <string name="words_enter_account_password">enter account password</string>
     <string name="words_ok">OK</string>
     <string name="fan">fan</string>
+    <string name="curtain">curtain</string>
+    <string name="door_sensor">door_sensor</string>
+    <string name="temp_sensor">temp_sensor</string>
 
 </resources>

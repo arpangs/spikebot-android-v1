@@ -101,9 +101,11 @@ public class Constants {
 
     //room
     public static final String GET_DEVICES_LIST = "/device/list";
+    public static final String roomsget = "/rooms/get";
     public static final String roomslist = "/rooms/list";
     public static final String getMoodName = "/mood/names/list";
     public static final String getChildUsers = "/getChildUsers";
+    public static final String deviceunassigned = "/device/unassigned";
     public static final String DeleteChildUser = "/DeleteChildUser";
     public static final String getRoomCameraList = "/getRoomCameraList";
     public static final String AddChildUser = "/AddChildUser";
@@ -248,7 +250,7 @@ public class Constants {
     public static final String CONFIGURE_NEW_PANEL = "/configureNewPanel";
 
     //devices
-    public static final String CHANGE_DEVICE_STATUS = "/changeDeviceStatus";
+    public static final String CHANGE_DEVICE_STATUS = "/device/status";
     public static final String ADD_CUSTOME_DEVICE = "/addCustomDevice";
     public static final String CHANGE_FAN_SPEED = "/changeFanSpeed";
     public static final String GET_FAN_SPEED = "/getFanSpeed";

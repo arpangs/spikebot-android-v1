@@ -193,7 +193,6 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         JSONObject object = new JSONObject();
         try {
             object.put("room_id", roomVO.getRoomId());
-            object.put("room_name", roomVO.getRoomName());
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -369,6 +368,8 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
     public void getDeviceList() {
         JSONObject jsonObject = new JSONObject();
         try {
+            //"room_id": "1571409634267_43TZShCIQ",
+            //	"room_type": "room"
             jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             jsonObject.put("room_type", "room");
             jsonObject.put("room_id", room.getRoomId());
@@ -379,7 +380,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             e.printStackTrace();
         }
 
-        String url = ChatApplication.url + Constants.GET_DEVICES_LIST;
+        String url = ChatApplication.url + Constants.roomsget;
 
         ChatApplication.logDisplay("edit room "+url+" "+jsonObject);
 
@@ -390,9 +391,9 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                     ActivityHelper.dismissProgressDialog();
                     ArrayList<RoomVO> roomList = new ArrayList<>();
                     JSONObject dataObject = result.getJSONObject("data");
-                    JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
-                    ChatApplication.logDisplay("result is " + roomArray);
-                    roomList = JsonHelper.parseRoomArray(roomArray, false);
+//                    JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
+                    ChatApplication.logDisplay("result is " + dataObject);
+                    roomList = JsonHelper.parseRoomObject(dataObject, false);
                     if (roomList.size() > 0) {
                         room = roomList.get(0);
                         et_toolbar_title.setText(room.getRoomName());

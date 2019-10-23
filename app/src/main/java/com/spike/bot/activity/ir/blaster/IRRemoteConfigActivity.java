@@ -99,9 +99,6 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         mBrandId = getIntent().getStringExtra("BRAND_ID");
         mIRBlasterModuleId = getIntent().getStringExtra("IR_BLASTER_MODULE_ID");
 
-        ChatApplication.logDisplay("Found : " + mBlasterName);
-        getSupportActionBar().setTitle("" + mBrandType);
-
         if (arrayList.getDeviceBrandRemoteList() != null &&
                 arrayList.getDeviceBrandRemoteList().size() > 0) {
             onOffValue = arrayList.getDeviceBrandRemoteList().get(0).getIrCode();
@@ -116,7 +113,9 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Remote Config");
+//        getSupportActionBar().setTitle("Remote Config");
+        getSupportActionBar().setTitle("" + mBrandType);
+
         mTestButtons =  findViewById(R.id.remote_total_step);
         mImgLeft =  findViewById(R.id.remote_left_slider);
         mImgRight =  findViewById(R.id.remote_right_slider);

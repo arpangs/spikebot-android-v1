@@ -794,7 +794,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                     txt_empty_scheduler.setVisibility(View.VISIBLE);
                     rv_mood.setVisibility(View.GONE);
                     ChatApplication.logDisplay("schedule is " + result.toString());
-                    if (result.optJSONObject("data") != null) {
+                    if (result.optJSONObject("data") != null && result.optJSONObject("data").length()>0){
                         JSONObject scheduleObject = result.getJSONObject("data");
 //moodSchedule
                         JSONArray moodArray = scheduleObject.getJSONArray("scheduleList");

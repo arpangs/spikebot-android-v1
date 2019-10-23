@@ -146,7 +146,7 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
             }
         });
 
-        holder.roomEditAdapterDeviceV2 = new RoomEditAdapterDeviceV2(panelVOs.get(position).getDeviceList(), this);
+        holder.roomEditAdapterDeviceV2 = new RoomEditAdapterDeviceV2(context,panelVOs.get(position).getDeviceList(), this);
         holder.list_edit_device.setAdapter(holder.roomEditAdapterDeviceV2);
 
     }

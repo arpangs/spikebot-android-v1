@@ -235,7 +235,9 @@ public class ChatApplication extends Application  {
     private Emitter.Listener onDisconnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
+            ChatApplication.logDisplay("chat onDisconnect call");
             if(Constants.socketIp.length()>0){
+                ChatApplication.logDisplay("chat onDisconnect callll "+url);
                 openSocket(url);
             }
         }

@@ -47,7 +47,7 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
     Button btnDelete;
     ImageView imgEdit;
     AppCompatTextView txtSpeedCount;
-    String room_id = "", room_name = "", sensor_id = "", module_id = "", gas_sensor_module_id = "", gas_sensor_id = "";
+    String room_id = "", room_name = "", sensor_id = "", device_id = "", gas_sensor_module_id = "", gas_sensor_id = "";
     JSONObject objectValue;
     boolean isClick = false;
 
@@ -59,7 +59,7 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
         sensor_id = getIntent().getStringExtra("sensor_id");
         room_name = getIntent().getStringExtra("room_name");
         room_id = getIntent().getStringExtra("room_id");
-        module_id = getIntent().getStringExtra("module_id");
+        device_id = getIntent().getStringExtra("device_id");
 
         setUiId();
     }
@@ -258,7 +258,7 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
             //  "user_id":"",
             //  "phone_id":"",
             //  "phone_type":""
-            object.put("module_id", module_id);
+            object.put("device_id", device_id);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -266,8 +266,6 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
             e.printStackTrace();
         }
         ChatApplication.logDisplay("gas " + url + " " + object);
-
-
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
         new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {

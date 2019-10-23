@@ -162,7 +162,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
     private String userId = "0",webUrl="";
     private int SIGN_IP_REQUEST_CODE = 204,countFlow = 0;
-    public boolean isFABOpen=false,isCloudConnected=false;
+    public boolean isCloudConnected=false;
 
     public DashBoardFragment() {
         super();
@@ -296,8 +296,10 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             ChatApplication.isMainFragmentNeedResume = false;
             onLoadFragment();
         }else if(!ChatApplication.isCallDeviceList && roomList.size()>0){
-            sectionedExpandableLayoutHelper.addSectionList(roomList);
-            sectionedExpandableLayoutHelper.notifyDataSetChanged();
+            if (sectionedExpandableLayoutHelper != null) {
+                sectionedExpandableLayoutHelper.addSectionList(roomList);
+                sectionedExpandableLayoutHelper.notifyDataSetChanged();
+            }
             getDeviceList(15);
         }else{
             getDeviceList(15);
@@ -324,22 +326,22 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
     @Override
     public void onPause() {
         Constants.startUrlset();
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
         if (mSocket != null) {
-            mSocket.off("ReloadDeviceStatusApp", reloadDeviceStatusApp);
-            mSocket.off("roomStatus", roomStatus);
-            mSocket.off("panelStatus", panelStatus);
+            mSocket.off("changeDeviceStatus", changeDeviceStatus);
+            mSocket.off("changeRoomStatus", roomStatus);
+            mSocket.off("changePanelStatus", panelStatus);
             mSocket.off("changeDoorSensorStatus", changeDoorSensorStatus);
             mSocket.off("changeTempSensorValue", changeTempSensorValue);
             mSocket.off("unReadCount", unReadCount);
             mSocket.off("sensorStatus", sensorStatus);
             mSocket.off("updateChildUser", updateChildUser);
         }
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
@@ -502,7 +504,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 intent.putExtra("temp_room_name", item.getRoomName());
                 intent.putExtra("temp_room_id", item.getRoomId());
                 intent.putExtra("temp_unread_count", item.getIs_unread());
-                intent.putExtra("temp_module_id", item.getModuleId());
+                intent.putExtra("temp_module_id", item.getDeviceId());
                 startActivity(intent);
 
             } else if (item.getSensor_type().equalsIgnoreCase("gas_sensor")) {
@@ -513,22 +515,10 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 intent.putExtra("sensor_id", item.getSensor_id());
                 intent.putExtra("room_name", item.getRoomName());
                 intent.putExtra("room_id", item.getRoomId());
-                intent.putExtra("module_id", item.getModuleId());
+                intent.putExtra("device_id", item.getDeviceId());
                 startActivity(intent);
 
-            } else if (item.getSensor_type().equalsIgnoreCase("multisensor")) {
-                if (item.getIsActive() == -1) {
-                    return;
-                }
-
-                Intent intent = new Intent(activity, MultiSensorActivity.class);
-                intent.putExtra("temp_sensor_id", item.getSensor_id());
-                intent.putExtra("temp_room_name", item.getRoomName());
-                intent.putExtra("temp_room_id", item.getRoomId());
-                intent.putExtra("temp_unread_count", item.getIs_unread());
-                intent.putExtra("temp_module_id", item.getModuleId());
-                startActivity(intent);
-            } else if (item.getSensor_type().equalsIgnoreCase("door_sensor")) {
+            }  else if (item.getSensor_type().equalsIgnoreCase("door_sensor")) {
                 ChatApplication.logDisplay("door call is intent " + mSocket.connected());
                 Intent intent = new Intent(activity, DoorSensorInfoActivity.class);
                 intent.putExtra("door_sensor_id", item.getSensor_id());
@@ -677,19 +667,22 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 mSocket.connect();
             }
             try {
-                mSocket.on("ReloadDeviceStatusApp", reloadDeviceStatusApp);  // ac on off
-                mSocket.on("roomStatus", roomStatus);
-                mSocket.on("panelStatus", panelStatus);
-                mSocket.on("changeDoorSensorStatus", changeDoorSensorStatus);
-                mSocket.on("changeTempSensorValue", changeTempSensorValue);
-                mSocket.on("unReadCount", unReadCount);
-                mSocket.on("sensorStatus", sensorStatus);
-                mSocket.on("updateChildUser", updateChildUser);
-
+                    socketOn();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
+    }
+
+    private void socketOn() {
+        mSocket.on("changeDeviceStatus", changeDeviceStatus);  // ac on off
+        mSocket.on("changeRoomStatus", roomStatus);
+        mSocket.on("changePanelStatus", panelStatus);
+        mSocket.on("changeDoorSensorStatus", changeDoorSensorStatus);
+        mSocket.on("changeTempSensorValue", changeTempSensorValue);
+        mSocket.on("unReadCount", unReadCount);
+        mSocket.on("sensorStatus", sensorStatus);
+        mSocket.on("updateChildUser", updateChildUser);
     }
 
     public void onLoadFragment() {
@@ -729,37 +722,44 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 obj.put("rgb_array", "");
                 obj.put("room_device_id", deviceVO.getRoomDeviceId());
             } else {
-                obj.put("room_device_id", deviceVO.getRoomDeviceId());
-                obj.put("module_id", deviceVO.getModuleId());
+                //{
+                //	"device_id": "1571407908196_uEVHoQJNR",
+                //	"device_status": "0n"  on means = 1,  off means 0
+                //}
                 obj.put("device_id", deviceVO.getDeviceId());
-                obj.put("device_status", deviceVO.getOldStatus());
-                obj.put("localData", userId.equalsIgnoreCase("0") ? "0" : "1");
+                obj.put("device_status", deviceVO.getOldStatus()==0 ? "1":"0");
             }
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        ChatApplication.logDisplay("onoff is "+obj);
+        //socketio.emit('changeDeviceStatus', {
+        //                device_id: params.device_id,
+        //                device_type: deviceData.device_type,
+        //                device_status:params.device_status,
+        //                device_sub_status:params.device_sub_status ? params.device_sub_status : 0
+        //            });
 
-        if (mSocket != null && mSocket.connected()) {
-            mSocket.emit("socketChangeDeviceAck", obj, new AckWithTimeOut(Constants.ACK_TIME_OUT) {
-                @Override
-                public void call(Object... args) {
-                    if (args != null) {
-                        if (args[0].toString().equalsIgnoreCase("No Ack")) {
-                            updateDeviceOfflineMode(deviceVO);
 
-                        } else if (args[0].toString().equalsIgnoreCase("true")) {
-                            cancelTimer();
-                        }
-                    }
-                }
-            });
-
-        } else {
+//        if (mSocket != null && mSocket.connected()) {
+//            mSocket.emit("socketChangeDeviceAck", obj, new AckWithTimeOut(Constants.ACK_TIME_OUT) {
+//                @Override
+//                public void call(Object... args) {
+//                    if (args != null) {
+//                        if (args[0].toString().equalsIgnoreCase("No Ack")) {
+//                            updateDeviceOfflineMode(deviceVO);
+//
+//                        } else if (args[0].toString().equalsIgnoreCase("true")) {
+//                            cancelTimer();
+//                        }
+//                    }
+//                }
+//            });
+//
+//        } else {
             callDeviceOnOffApi(deviceVO, obj);
-        }
+//        }
     }
 
     /**
@@ -771,8 +771,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                sectionedExpandableLayoutHelper.updateItem(deviceVO.getModuleId(),
-                        String.valueOf(deviceVO.getDeviceId()), String.valueOf(deviceVO.getOldStatus()), deviceVO.getIs_locked());
+//                sectionedExpandableLayoutHelper.updateItem(deviceVO.getModuleId(), String.valueOf(deviceVO.getDeviceId()), String.valueOf(deviceVO.getOldStatus()), deviceVO.getIs_locked());
+//                sectionedExpandableLayoutHelper.updateDeviceItem(device_type, device_id, device_status, device_sub_status);
+                sectionedExpandableLayoutHelper.updateDeviceItem(deviceVO.getDeviceType(), String.valueOf(deviceVO.getDeviceId()), String.valueOf(deviceVO.getOldStatus()), deviceVO.getDoor_subtype());
             }
         });
     }
@@ -811,18 +812,19 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             url = ChatApplication.url + Constants.CHANGE_DEVICE_STATUS;
         }
 
-        ChatApplication.logDisplay("Device roomPanelOnOff obj " + obj.toString());
+        ChatApplication.logDisplay("Device roomPanelOnOff obj "+url+" "+ obj.toString());
 
         new GetJsonTask(activity, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                ChatApplication.logDisplay("roomPanelOnOff onSuccess " + result.toString());
+                ChatApplication.logDisplay("Device roomPanelOnOff obj result" + result.toString());
                 try {
                     int code = result.getInt("code"); //message
                     String message = result.getString("message");
                     if (code == 200) {
                         sectionedExpandableLayoutHelper.notifyDataSetChanged();
                     } else {
+                        updateDeviceOfflineMode(deviceVO);
                         ChatApplication.showToast(activity, message);
                     }
                 } catch (JSONException e) {
@@ -834,7 +836,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                ChatApplication.logDisplay("roomPanelOnOff onFailure " + error);
+                ChatApplication.logDisplay("Device roomPanelOnOff error " + error);
                 updateDeviceOfflineMode(deviceVO);
             }
         }).execute();
@@ -1657,9 +1659,12 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         hideAdapter(true);
                         mMessagesView.setVisibility(View.VISIBLE);
                         txt_empty_schedule.setVisibility(View.GONE);
+
+                        sectionedExpandableLayoutHelper.clearData();
+
                         JSONObject dataObject = result.optJSONObject("data");
                         ((Main2Activity) activity).getUserDialogClick(true);
-                        roomList = new ArrayList<>();
+//                        roomList = new ArrayList<>();
                         JSONArray userListArray = dataObject.getJSONArray("userList");
 
                         //oppen signup page if userList found zero length
@@ -1879,7 +1884,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             mMessagesView =  view.findViewById(R.id.messages);
         }
         mMessagesView.setClickable(false);
-        roomList = new ArrayList<>();
+//        roomList = new ArrayList<>();
         if (sectionedExpandableLayoutHelper != null) {
             sectionedExpandableLayoutHelper.notifyDataSetChanged();
         }
@@ -2002,14 +2007,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                     Constants.startUrlset();
                     mSocket.emit("socketconnection", "android == startconnect  " + mSocket.id());
 
-                    mSocket.on("ReloadDeviceStatusApp", reloadDeviceStatusApp);  // ac on off
-                    mSocket.on("roomStatus", roomStatus);
-                    mSocket.on("panelStatus", panelStatus);
-                    mSocket.on("changeDoorSensorStatus", changeDoorSensorStatus);
-                    mSocket.on("changeTempSensorValue", changeTempSensorValue);
-                    mSocket.on("unReadCount", unReadCount);
-                    mSocket.on("sensorStatus", sensorStatus);
-                    mSocket.on("updateChildUser", updateChildUser);
+                    socketOn();
                 }
             });
         }
@@ -2029,7 +2027,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             });
         }
     };////////isSensorClick
-    private Emitter.Listener reloadDeviceStatusApp = new Emitter.Listener() {
+    private Emitter.Listener changeDeviceStatus = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             if (activity == null) {
@@ -2040,15 +2038,17 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 public void run() {
                     if (args != null) {
                         try {
-                            //{"module_id":"SpikeBot10355128","device_id":"1563952394430_ANUROHD9-h","device_status":1,"is_locked":0}
+                            //{"device_id":"1571671238168_3FH8phZUCh","device_type":"switch","device_status":0,"device_sub_status":0}
                             JSONObject object = new JSONObject(args[0].toString());
-                            String module_id = object.getString("module_id");
+                            ChatApplication.logDisplay("status update panel device " + object.toString());
+                            String device_type = object.getString("device_type");
                             String device_id = object.getString("device_id");
                             String device_status = object.getString("device_status");
-                            int is_locked = object.optInt("is_locked");
+                            int device_sub_status = object.optInt("device_sub_status");
 
-                            sectionedExpandableLayoutHelper.updateItem(module_id, device_id, device_status, is_locked);
-                            ChatApplication.logDisplay("panel status reloadDeviceStatusApp " + object.toString());
+//                            sectionedExpandableLayoutHelper.updateItem(module_id, device_id, device_status, is_locked);
+                            sectionedExpandableLayoutHelper.updateDeviceItem(device_type, device_id, device_status, device_sub_status);
+
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -2075,10 +2075,11 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
 
-                            ChatApplication.logDisplay("panel status panelStatus " + object.toString());
+                            ChatApplication.logDisplay("status update panel " + object.toString());
+
                             String panel_id = object.optString("panel_id");
                             String panelstatusValue = object.getString("panel_status");
-                            ChatApplication.logDisplay("panel status panelStatus update " + object.toString());
+
                             sectionedExpandableLayoutHelper.updatePanel(panel_id, panelstatusValue, "");
 
                         } catch (Exception ex) {
@@ -2106,8 +2107,10 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                             JSONObject object = new JSONObject(args[0].toString());
                             String room_id = object.getString("room_id");
                             String roomupdateValue = object.getString("room_status");
+
                             sectionedExpandableLayoutHelper.updateRoom(room_id, roomupdateValue);
-                            ChatApplication.logDisplay("panel status roomStatus update " + object.toString());
+
+                            ChatApplication.logDisplay("status update room " + object.toString());
 
                         } catch (Exception e) {
                             e.printStackTrace();
