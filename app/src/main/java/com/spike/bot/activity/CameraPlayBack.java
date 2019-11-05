@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
+import com.kp.core.GetJsonTaskVideo;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
@@ -326,7 +327,7 @@ public class CameraPlayBack extends AppCompatActivity implements ExpandableTestA
 
         ActivityHelper.showProgressDialog(CameraPlayBack.this, "Please wait...", false);
 
-        new GetJsonTask(getApplicationContext(), url, "POST", jsonObject.toString(), new ICallBack() {
+        new GetJsonTaskVideo(getApplicationContext(), url, "POST", jsonObject.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
 

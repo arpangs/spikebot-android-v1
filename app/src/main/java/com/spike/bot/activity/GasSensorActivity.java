@@ -301,12 +301,15 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
 
-        String url = ChatApplication.url + Constants.getGasSensorInfo;
+        String url = ChatApplication.url + Constants.deviceinfo;
 
         JSONObject object = new JSONObject();
         try {
-            //Parameteres:{ "gas_sensor_id" and "user_id"}
-            object.put("gas_sensor_id", sensor_id);
+            //{
+            //	"device_id":"1571998596623_EE9U9Ovz7w",
+            //	"alert_type":"temperature"
+            //}
+            object.put("device_id", sensor_id);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);

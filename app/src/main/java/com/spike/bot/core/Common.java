@@ -89,6 +89,9 @@ public class Common {
 
     public static String TAG = "isReachableURL";
 
+    public static int getDoorIcon(int status){
+        return  status==0 ? R.drawable.on_door:R.drawable.off_door;
+    }
 
     /**
      * @param status
@@ -137,20 +140,25 @@ public class Common {
                     case "work":
                         resource = R.drawable.smily_gray;
                         break;
+                    case "temp_sensor":
+                        resource = R.drawable.off_temperature;
+                        break;
+
                     case "tempsensor":
                         resource = R.drawable.off_temperature;
                         break;
-                    case "doorsensor":
+                    case "door_sensor":
                         resource = R.drawable.off_door;
                         break;
-                        case "door_sensor":
+
+                    case "doorsensor":
                         resource = R.drawable.off_door;
                         break;
                     case "unavailable":
                         resource = R.drawable.icn_dead_temp;
                         break;
-                    case "irblaster":
-                        resource = R.drawable.ic_ir_blaster;
+                    case "remote":
+                        resource = R.drawable.remote_ac_off;
                         break;
                     case "Remote_AC":
                         resource = R.drawable.remote_ac_off;
@@ -158,7 +166,13 @@ public class Common {
                     case "multisensor":
                         resource = R.drawable.icon_multi_sensor;
                         break;
+                    case "heavy_load":
+                        resource = R.drawable.off;
+                        break;
                     case "heavyload":
+                        resource = R.drawable.off;
+                        break;
+                        case "double_heavy_load":
                         resource = R.drawable.off;
                         break;
 
@@ -178,8 +192,15 @@ public class Common {
                         resource = R.drawable.fire_and_gas_gray;
                         break;
 
+                    case "gassensor":
+                        resource = R.drawable.fire_and_gas_gray;
+                        break;
+
                     case "curtain":
                         resource = R.drawable.curtain_closed;
+                        break;
+                        case "repeater":
+                        resource = R.drawable.gray_repeater;
                         break;
 
                     default:
@@ -225,23 +246,30 @@ public class Common {
                     case "night":
                         resource = R.drawable.smily_yello;
                         break;
+                    case "temp_sensor":
+                        resource = R.drawable.on_temperature;
+                        break;
                     case "tempsensor":
                         resource = R.drawable.on_temperature;
                         break;
-                    case "doorsensor":
+                    case "door_sensor":
                         resource = R.drawable.on_door;
                         break;
-                        case "door_sensor":
+                    case "doorsensor":
                         resource = R.drawable.on_door;
                         break;
                     case "unavailable":
                         resource = R.drawable.icn_dead_temp;
                         break;
-                    case "irblaster":
-                        resource = R.drawable.ic_ir_blaster;
+                    case "remote":
+                        resource = R.drawable.remote_ac;
                         break;
                     case "Remote_AC":
                         resource = R.drawable.remote_ac;
+                        break;
+
+                    case "heavy_load":
+                        resource = R.drawable.on;
                         break;
 
                     case "heavyload":
@@ -263,6 +291,9 @@ public class Common {
                         resource = R.drawable.fire_and_gas;
                         break;
 
+                    case "gassensor":
+                        resource = R.drawable.fire_and_gas;
+                        break;
                     case "curtain":
                         resource = R.drawable.curtain_open;
                         break;
@@ -328,8 +359,8 @@ public class Common {
                     case "unavailable":
                         resource = R.drawable.icn_dead_temp;
                         break;
-                    case "irblaster":
-                        resource = R.drawable.ic_ir_blaster;
+                    case "remote":
+                        resource = R.drawable.remote_ac_off;
                         break;
                     case "Remote_AC":
                         resource = R.drawable.remote_ac_off;
@@ -381,10 +412,16 @@ public class Common {
             case "Remote_AC":
                 resource = R.drawable.ac_remote_off_inactive;
                 break;
+                case "gas_sensor":
+                resource = R.drawable.heavuload_inactive;
+                break;
             case "camera":
                 resource = R.drawable.camera_off_inactive;
                 break;
-            case "door":
+            case "door_sensor":
+                resource = R.drawable.door_off_inactive;
+                break;
+            case "doorsensor":
                 resource = R.drawable.door_off_inactive;
                 break;
             case "temp":
@@ -393,8 +430,14 @@ public class Common {
             case "tempsensor":
                 resource = R.drawable.temp_off_inactive;
                 break;
+            case "temp_sensor":
+                resource = R.drawable.temp_off_inactive;
+                break;
             case "heavyload":
-                resource = R.drawable.heavuload_inactive;
+                resource = R.drawable.headload_inactive;
+                break;
+            case "heavy_load":
+                resource = R.drawable.headload_inactive;
                 break;
 
             case "multisensor":
@@ -517,7 +560,6 @@ public class Common {
         String value = settings.getString(key, ""); //0 is the default value
         return value;
     }
-
 
 
     /**

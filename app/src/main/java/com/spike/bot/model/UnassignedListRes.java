@@ -3,13 +3,14 @@ package com.spike.bot.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by Sagar on 3/10/18.
  * Gmail : jethvasagar2@gmail.com
  */
-public class UnassignedListRes {
+public class UnassignedListRes implements Serializable{
 
     @SerializedName("code")
     @Expose
@@ -45,7 +46,7 @@ public class UnassignedListRes {
         this.data = data;
     }
 
-    public static class Data {
+    public static class Data  implements Serializable{
 
         @SerializedName("module_id")
         @Expose
@@ -115,7 +116,7 @@ public class UnassignedListRes {
         }
 
 
-        public static class RoomdeviceList {
+        public static class RoomdeviceList implements Serializable {
 
             @SerializedName("room_id")
             @Expose
@@ -285,7 +286,7 @@ public class UnassignedListRes {
                 this.sensorIcon = sensorIcon;
             }
 
-            public class RoomList_ {
+            public class RoomList_  implements Serializable{
 
                 @SerializedName("room_name")
                 @Expose
@@ -312,7 +313,7 @@ public class UnassignedListRes {
 
             }
 
-            public class DeviceList {
+            public class DeviceList implements Serializable{
 
                 @SerializedName("module_id")
                 @Expose
@@ -453,7 +454,7 @@ public class UnassignedListRes {
         }
 
 
-        public class RoomList {
+        public class RoomList implements Serializable {
 
             @SerializedName("room_id")
             @Expose

@@ -178,7 +178,7 @@ public class Constants {
     public static final String UPDATE_UNREAD_LOGS = "/updateUnReadLogs";
     public static final String SAVE_EDIT_SWITCH = "/device/edit";
     public static final String configureGasSensorRequest = "/configureGasSensorRequest";
-    public static final String getRepeatorLists = "/getRepeatorLists";
+    public static final String devicefind = "/device/find";
     public static final String configureRepeatorRequest = "/configureRepeatorRequest";
     public static final String getGasSensorInfo = "/getGasSensorInfo";
     public static final String deleteGasSensor = "/deleteGasSensor";
@@ -188,6 +188,8 @@ public class Constants {
     public static final String getUnassignedRepeaterList = "/getUnassignedRepeaterList";
     public static final String curtainconfigure = "/curtain/configure";
     public static final String deviceconfigure = "/device/configure/";
+    public static final String alertlist = "/alert/list";
+    public static final String deviceinfo = "/device/info";
 
 
     //temp sensor
@@ -246,14 +248,15 @@ public class Constants {
 
     //panel
     public static final String ADD_CUSTOM_PANEL = "/addCustomPanel";
-    public static final String CHANGE_ROOM_PANELMOOD_STATUS_NEW = "/changeRoomPanelMoodStatus";
+    public static final String CHANGE_ROOM_PANELMOOD_STATUS_NEW = "/room/status";
+    public static final String CHANGE_PANELSTATUS = "/panel/status";
     public static final String CONFIGURE_NEW_PANEL = "/configureNewPanel";
 
     //devices
     public static final String CHANGE_DEVICE_STATUS = "/device/status";
     public static final String ADD_CUSTOME_DEVICE = "/addCustomDevice";
-    public static final String CHANGE_FAN_SPEED = "/changeFanSpeed";
-    public static final String GET_FAN_SPEED = "/getFanSpeed";
+    public static final String CHANGE_FAN_SPEED = "/device/status";
+    public static final String GET_FAN_SPEED = "/device/status";
     public static final String CHECK_INDIVIDUAL_SWITCH_DETAILS = "/device/icon/list";
 
     //mood

@@ -3,13 +3,14 @@ package com.spike.bot.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by Sagar on 18/8/18.
  * Gmail : jethvasagar2@gmail.com
  */
-public class RemoteDetailsRes {
+public class RemoteDetailsRes implements Serializable {
 
 
     @SerializedName("code")
@@ -47,32 +48,252 @@ public class RemoteDetailsRes {
     }
 
 
-    public class Data {
+    public class Data implements Serializable{
 
-        @SerializedName("remote_command_list")
+
+        @SerializedName("device")
         @Expose
-        private List<RemoteCommandList> remoteCommandList = null;
-        @SerializedName("remote_currentStatus_details")
+        private Device device;
+        @SerializedName("alerts")
         @Expose
-        private RemoteCurrentStatusDetails remoteCurrentStatusDetails;
+        private List<Object> alerts = null;
 
-        public List<RemoteCommandList> getRemoteCommandList() {
-            return remoteCommandList;
+        public Device getDevice() {
+            return device;
         }
 
-        public void setRemoteCommandList(List<RemoteCommandList> remoteCommandList) {
-            this.remoteCommandList = remoteCommandList;
+        public void setDevice(Device device) {
+            this.device = device;
         }
 
-        public RemoteCurrentStatusDetails getRemoteCurrentStatusDetails() {
-            return remoteCurrentStatusDetails;
+        public List<Object> getAlerts() {
+            return alerts;
         }
 
-        public void setRemoteCurrentStatusDetails(RemoteCurrentStatusDetails remoteCurrentStatusDetails) {
-            this.remoteCurrentStatusDetails = remoteCurrentStatusDetails;
+        public void setAlerts(List<Object> alerts) {
+            this.alerts = alerts;
         }
 
-        public class RemoteCommandList {
+        public class Device implements Serializable {
+
+            @SerializedName("module_id")
+            @Expose
+            private String moduleId;
+            @SerializedName("device_name")
+            @Expose
+            private String deviceName;
+            @SerializedName("device_icon")
+            @Expose
+            private String deviceIcon;
+            @SerializedName("device_status")
+            @Expose
+            private String deviceStatus;
+            @SerializedName("device_sub_status")
+            @Expose
+            private String deviceSubStatus;
+            @SerializedName("device_type")
+            @Expose
+            private String deviceType;
+            @SerializedName("device_sub_type")
+            @Expose
+            private Object deviceSubType;
+            @SerializedName("device_identifier")
+            @Expose
+            private String deviceIdentifier;
+            @SerializedName("device_meta")
+            @Expose
+            private DeviceMeta deviceMeta;
+            @SerializedName("is_active")
+            @Expose
+            private String isActive;
+            @SerializedName("module_type")
+            @Expose
+            private String moduleType;
+            @SerializedName("module_identifier")
+            @Expose
+            private String moduleIdentifier;
+            @SerializedName("module_meta")
+            @Expose
+            private String moduleMeta;
+
+            public String getModuleId() {
+                return moduleId;
+            }
+
+            public void setModuleId(String moduleId) {
+                this.moduleId = moduleId;
+            }
+
+            public String getDeviceName() {
+                return deviceName;
+            }
+
+            public void setDeviceName(String deviceName) {
+                this.deviceName = deviceName;
+            }
+
+            public String getDeviceIcon() {
+                return deviceIcon;
+            }
+
+            public void setDeviceIcon(String deviceIcon) {
+                this.deviceIcon = deviceIcon;
+            }
+
+            public String getDeviceStatus() {
+                return deviceStatus;
+            }
+
+            public void setDeviceStatus(String deviceStatus) {
+                this.deviceStatus = deviceStatus;
+            }
+
+            public String getDeviceSubStatus() {
+                return deviceSubStatus;
+            }
+
+            public void setDeviceSubStatus(String deviceSubStatus) {
+                this.deviceSubStatus = deviceSubStatus;
+            }
+
+            public String getDeviceType() {
+                return deviceType;
+            }
+
+            public void setDeviceType(String deviceType) {
+                this.deviceType = deviceType;
+            }
+
+            public Object getDeviceSubType() {
+                return deviceSubType;
+            }
+
+            public void setDeviceSubType(Object deviceSubType) {
+                this.deviceSubType = deviceSubType;
+            }
+
+            public String getDeviceIdentifier() {
+                return deviceIdentifier;
+            }
+
+            public void setDeviceIdentifier(String deviceIdentifier) {
+                this.deviceIdentifier = deviceIdentifier;
+            }
+
+            public DeviceMeta getDeviceMeta() {
+                return deviceMeta;
+            }
+
+            public void setDeviceMeta(DeviceMeta deviceMeta) {
+                this.deviceMeta = deviceMeta;
+            }
+
+            public String getIsActive() {
+                return isActive;
+            }
+
+            public void setIsActive(String isActive) {
+                this.isActive = isActive;
+            }
+
+            public String getModuleType() {
+                return moduleType;
+            }
+
+            public void setModuleType(String moduleType) {
+                this.moduleType = moduleType;
+            }
+
+            public String getModuleIdentifier() {
+                return moduleIdentifier;
+            }
+
+            public void setModuleIdentifier(String moduleIdentifier) {
+                this.moduleIdentifier = moduleIdentifier;
+            }
+
+            public String getModuleMeta() {
+                return moduleMeta;
+            }
+
+            public void setModuleMeta(String moduleMeta) {
+                this.moduleMeta = moduleMeta;
+            }
+
+        }
+
+        public class DeviceMeta {
+
+            @SerializedName("device_default_mode")
+            @Expose
+            private String deviceDefaultMode;
+            @SerializedName("device_default_status")
+            @Expose
+            private String deviceDefaultStatus;
+            @SerializedName("device_brand")
+            @Expose
+            private String deviceBrand;
+            @SerializedName("device_model")
+            @Expose
+            private String deviceModel;
+            @SerializedName("device_codeset_id")
+            @Expose
+            private String deviceCodesetId;
+            @SerializedName("ir_blaster_id")
+            @Expose
+            private String irBlasterId;
+
+            public String getDeviceDefaultMode() {
+                return deviceDefaultMode;
+            }
+
+            public void setDeviceDefaultMode(String deviceDefaultMode) {
+                this.deviceDefaultMode = deviceDefaultMode;
+            }
+
+            public String getDeviceDefaultStatus() {
+                return deviceDefaultStatus;
+            }
+
+            public void setDeviceDefaultStatus(String deviceDefaultStatus) {
+                this.deviceDefaultStatus = deviceDefaultStatus;
+            }
+
+            public String getDeviceBrand() {
+                return deviceBrand;
+            }
+
+            public void setDeviceBrand(String deviceBrand) {
+                this.deviceBrand = deviceBrand;
+            }
+
+            public String getDeviceModel() {
+                return deviceModel;
+            }
+
+            public void setDeviceModel(String deviceModel) {
+                this.deviceModel = deviceModel;
+            }
+
+            public String getDeviceCodesetId() {
+                return deviceCodesetId;
+            }
+
+            public void setDeviceCodesetId(String deviceCodesetId) {
+                this.deviceCodesetId = deviceCodesetId;
+            }
+
+            public String getIrBlasterId() {
+                return irBlasterId;
+            }
+
+            public void setIrBlasterId(String irBlasterId) {
+                this.irBlasterId = irBlasterId;
+            }
+
+        }
+
+        public class RemoteCommandList implements Serializable{
 
             @SerializedName("POWER")
             @Expose
@@ -110,7 +331,7 @@ public class RemoteDetailsRes {
 
         }
 
-        public class RemoteCurrentStatusDetails {
+        public class RemoteCurrentStatusDetails implements Serializable {
 
             public String getIr_code() {
                 return ir_code;

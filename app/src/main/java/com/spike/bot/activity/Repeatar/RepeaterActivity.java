@@ -33,6 +33,7 @@ import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.AddDevice.AllUnassignedPanel;
 import com.spike.bot.activity.SensorUnassignedActivity;
 import com.spike.bot.adapter.RepeaterAdapter;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
@@ -164,12 +165,10 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
 
                             ChatApplication.logDisplay("obj is " + obj);
 
-                            //{"module_id":"B04A1D1A004B1200"}
                             if (TextUtils.isEmpty(message)) {
-                                showSensor(obj.optString("module_id"), true, false);
+                                showSensor(obj.optString("module_id"), obj.optString("module_type"));
                             } else {
                                 showConfigAlert(message);
-                                //Toast.makeText(getContext(),message,Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -206,11 +205,11 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
     * sync request */
     private void getconfigureRepeatorRequest() {
         if (!ActivityHelper.isConnectingToInternet(RepeaterActivity.this)) {
-            Toast.makeText(RepeaterActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+           ChatApplication.showToast(RepeaterActivity.this, getResources().getString(R.string.disconnect));
             return;
         }
 
-        ActivityHelper.showProgressDialog(RepeaterActivity.this, "Searching Device attached ", false);
+        ActivityHelper.showProgressDialog(RepeaterActivity.this, "Searching for new Repeater", false);
         startTimer();
 
         String url = ChatApplication.url + Constants.deviceconfigure+"repeater";
@@ -224,7 +223,6 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Toast.makeText(RepeaterActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
     }
@@ -249,13 +247,13 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
         dialog.setCanceledOnTouchOutside(false);
         dialog.setContentView(R.layout.dialog_panel_option);
 
-        TextView txtDialogTitle = (TextView) dialog.findViewById(R.id.txt_dialog_title);
+        TextView txtDialogTitle =  dialog.findViewById(R.id.txt_dialog_title);
         txtDialogTitle.setText("Select Type");
 
-        Button btn_sync = (Button) dialog.findViewById(R.id.btn_panel_sync);
-        Button btn_unaasign = (Button) dialog.findViewById(R.id.btn_panel_unasigned);
-        Button btn_cancel = (Button) dialog.findViewById(R.id.btn_panel_cancel);
-        Button btn_from_existing = (Button) dialog.findViewById(R.id.add_from_existing);
+        Button btn_sync = dialog.findViewById(R.id.btn_panel_sync);
+        Button btn_unaasign = dialog.findViewById(R.id.btn_panel_unasigned);
+        Button btn_cancel = dialog.findViewById(R.id.btn_panel_cancel);
+        Button btn_from_existing = dialog.findViewById(R.id.add_from_existing);
         btn_from_existing.setVisibility(View.GONE);
 
         btn_sync.setOnClickListener(new View.OnClickListener() {
@@ -269,10 +267,13 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                Intent intent = new Intent(RepeaterActivity.this, SensorUnassignedActivity.class);
-                intent.putExtra("isDoorSensor", 10);
-                intent.putExtra("roomName", "");
+                Intent intent=new Intent(RepeaterActivity.this, AllUnassignedPanel.class);
+                intent.putExtra("type","repeater");
                 startActivity(intent);
+//                Intent intent = new Intent(RepeaterActivity.this, SensorUnassignedActivity.class);
+//                intent.putExtra("isDoorSensor", 10);
+//                intent.putExtra("roomName", "");
+//                startActivity(intent);
             }
         });
         btn_cancel.setOnClickListener(new View.OnClickListener() {
@@ -289,20 +290,20 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
 
     }
 
-    private void showSensor(String door_module_id, final boolean isTempSensorRequest, final boolean isMultiSensor) {
+    private void showSensor(String door_module_id,String module_type) {
 
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_add_sensordoor);
         dialog.setCanceledOnTouchOutside(false);
 
-        final EditText edt_door_name = (EditText) dialog.findViewById(R.id.txt_door_sensor_name);
-        final TextView edt_door_module_id = (TextView) dialog.findViewById(R.id.txt_module_id);
-        final Spinner sp_room_list = (Spinner) dialog.findViewById(R.id.sp_room_list);
+        final EditText edt_door_name =  dialog.findViewById(R.id.txt_door_sensor_name);
+        final TextView edt_door_module_id =  dialog.findViewById(R.id.txt_module_id);
+        final Spinner sp_room_list =  dialog.findViewById(R.id.sp_room_list);
         final LinearLayout linearListRoom = dialog.findViewById(R.id.linearListRoom);
 
-        TextView dialogTitle = (TextView) dialog.findViewById(R.id.tv_title);
-        TextView txt_sensor_name = (TextView) dialog.findViewById(R.id.txt_sensor_name);
+        TextView dialogTitle =  dialog.findViewById(R.id.tv_title);
+        TextView txt_sensor_name =  dialog.findViewById(R.id.txt_sensor_name);
 
         dialogTitle.setText("Add Repeater");
         txt_sensor_name.setText("Repeater Name");
@@ -335,9 +336,14 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
         btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveRepeater(dialog, edt_door_name, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list, isTempSensorRequest);
-                dialog.dismiss();
-                ChatApplication.closeKeyboard(RepeaterActivity.this);
+                if (TextUtils.isEmpty(edt_door_name.getText().toString())) {
+                    edt_door_name.setError("Enter Gas Name");
+                    edt_door_name.requestFocus();
+                } else {
+                    saveRepeater(dialog, module_type, edt_door_name.getText().toString(), edt_door_module_id.getText().toString());
+                    dialog.dismiss();
+                    ChatApplication.closeKeyboard(RepeaterActivity.this);
+                }
             }
         });
 
@@ -350,48 +356,36 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
 
     /**
      * Save individual repeater */
-    private void saveRepeater(final Dialog dialog, EditText textInputEditText, String door_name,
-                              String door_module_id, Spinner sp_room_list, final boolean isTempSensorRequest) {
+    private void saveRepeater(final Dialog dialog, String module_type, String door_name, String door_module_id) {
 
         if (!ActivityHelper.isConnectingToInternet(RepeaterActivity.this)) {
             Toast.makeText(RepeaterActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (TextUtils.isEmpty(textInputEditText.getText().toString())) {
-            textInputEditText.setError("Enter Gas Name");
-            textInputEditText.requestFocus();
-            return;
-        }
 
         ActivityHelper.showProgressDialog(RepeaterActivity.this, "Please wait.", false);
 
         JSONObject obj = new JSONObject();
         try {
 
-            // "repeator_module_id": "C7371D1A004B1200",
-            //  "repeator_name": "test",
-            //  "user_id": "1566466327758_FJNyQzUUP",
-            //  "phone_id": "1234567",
-            //  "phone_type": "Android"
-
+            obj.put("room_id", "");
             obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put("repeator_name", door_name);
-            obj.put("repeator_module_id", door_module_id);
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            obj.put("device_name", door_name);
+            obj.put("module_id", door_module_id);
+            obj.put("module_type", module_type);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        String url = ChatApplication.url + Constants.addRepeator;
-
+        String url = ChatApplication.url + Constants.deviceadd;
+        ChatApplication.logDisplay("rep is "+url+" "+obj);
         new GetJsonTask(RepeaterActivity.this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 try {
-                    //{"code":200,"message":"success"}
+                    ChatApplication.logDisplay("rep is "+result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -425,11 +419,23 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
      * get individual door sensor details
      */
     private void getRepeatorLists() {
-        String url = ChatApplication.url + Constants.getRepeatorLists;
+        String url = ChatApplication.url + Constants.devicefind;
 
-        ChatApplication.logDisplay("door " + url + " ");
+        JSONObject obj = new JSONObject();
+        try {
 
-        new GetJsonTask(getApplicationContext(), url, "GET", "", new ICallBack() {
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            obj.put("device_type", "repeater");
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ChatApplication.logDisplay("devicefind is " + url + " "+obj);
+
+        new GetJsonTask(getApplicationContext(), url, "POST", obj.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
 
@@ -439,6 +445,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
                     if (code == 200) {
                         fillData(result);
                     } else {
+                        emptyView();
                         ChatApplication.showToast(RepeaterActivity.this, result.optString("message"));
                     }
                 } catch (JSONException e) {
@@ -462,23 +469,9 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
     * Like :- active repeater, repeater name, repeater module id*/
 
     private void fillData(JSONObject result) {
-        //{
-        //  "code": 200,
-        //  "message": "Success",
-        //  "data": [
-        //    {
-        //      "repeator_module_id": "B04A1D1A004B1200",
-        //      "repeator_name": "t",
-        //      "is_active": 1
-        //    }
-        //  ]
-        //}
-
         try {
             arrayList.clear();
-
             JSONObject object = new JSONObject(String.valueOf(result));
-            JSONObject data = object.optJSONObject("data");
             JSONArray jsonArray = object.getJSONArray("data");
 
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -486,25 +479,28 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
                 RepeaterModel repeaterModel = new RepeaterModel();
 
                 repeaterModel.setIs_active(object1.optString("is_active"));
-                repeaterModel.setRepeator_name(object1.optString("repeator_name"));
-                repeaterModel.setRepeator_module_id(object1.optString("repeator_module_id"));
+                repeaterModel.setRepeator_name(object1.optString("device_name"));
+                repeaterModel.setRepeator_module_id(object1.optString("device_id"));
 
                 arrayList.add(repeaterModel);
             }
 
-            if (arrayList.size() > 0) {
-                txtNodata.setVisibility(View.GONE);
-                recyclerView.setVisibility(View.VISIBLE);
-                setAdapter();
-            } else {
-                txtNodata.setVisibility(View.VISIBLE);
-                recyclerView.setVisibility(View.GONE);
-                ChatApplication.showToast(RepeaterActivity.this, "No data found.");
-            }
-
-
+            emptyView();
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+
+    }
+
+    public void emptyView(){
+        if (arrayList.size() > 0) {
+            txtNodata.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+            setAdapter();
+        } else {
+            txtNodata.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+            ChatApplication.showToast(RepeaterActivity.this, "No data found.");
         }
 
     }
@@ -513,7 +509,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
     private void deleteRepater(RepeaterModel repeaterModel, int postion) {
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-        String url = ChatApplication.url + Constants.deleteRepeator;
+        String url = ChatApplication.url + Constants.DELETE_MODULE;
 
         ChatApplication.logDisplay("door " + url + " ");
 
@@ -521,21 +517,13 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
 
 
         try {
-            object.put("repeator_module_id", repeaterModel.getRepeator_module_id());
-            object.put("repeator_name", repeaterModel.getRepeator_name());
+            object.put("device_id", repeaterModel.getRepeator_module_id());
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-//
-//  	"repeator_module_id"	: "B04A1D1A004B1200",
-//	"repeator_name":"repeator new name",
-//	"user_id":"1566980189559_18CfbqxQo",
-//	"phone_id":"1234567",
-//	"phone_type":"Android"
 
         new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
             @Override
@@ -548,6 +536,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
                         ChatApplication.showToast(RepeaterActivity.this, result.optString("message"));
                         arrayList.remove(postion);
                         repeaterAdapter.notifyDataSetChanged();
+                        emptyView();
                     } else {
                         ChatApplication.showToast(RepeaterActivity.this, result.optString("message"));
                     }
@@ -612,9 +601,9 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
         inputRoom.setVisibility(View.GONE);
         inputRepeator.setVisibility(View.VISIBLE);
 
-        Button btnSave = (Button) dialog.findViewById(R.id.btn_save);
-        Button btn_cancel = (Button) dialog.findViewById(R.id.btn_cancel);
-        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
+        Button btnSave =  dialog.findViewById(R.id.btn_save);
+        Button btn_cancel =  dialog.findViewById(R.id.btn_cancel);
+        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
         TextView tv_title = dialog.findViewById(R.id.tv_title);
         tv_title.setText("Change Repeater Name");
         iv_close.setOnClickListener(new View.OnClickListener() {
@@ -651,13 +640,13 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
     private void updateRepetar(RepeaterModel repeaterModel, int postion, Dialog dialog, String name) {
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-        String url = ChatApplication.url + Constants.updateRepeator;
+        String url = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
 
         JSONObject object = new JSONObject();
 
         try {
-            object.put("repeator_module_id", repeaterModel.getRepeator_module_id());
-            object.put("repeator_name", name);
+            object.put("device_id", repeaterModel.getRepeator_module_id());
+            object.put("device_name", name);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -666,11 +655,6 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
         }
 
         ChatApplication.logDisplay("door " + url + " " + object);
-//"repeator_module_id"	: "B04A1D1A004B1200",
-//	"repeator_name":"repeator new name",
-//	"user_id":"1566980189559_18CfbqxQo",
-//	"phone_id":"1234567",
-//	"phone_type":"Android"
 
         new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
             @Override

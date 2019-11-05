@@ -25,9 +25,12 @@ import android.widget.Toast;
 
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
+import com.kp.core.GetJsonTaskVideo;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.Retrofit.GetDataService;
+import com.spike.bot.Retrofit.RetrofitAPIManager;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.adapter.WifiAdapter;
 import com.spike.bot.core.APIConst;
@@ -35,13 +38,22 @@ import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.customview.CustomEditText;
 import com.spike.bot.listener.WifiListner;
+import com.spike.bot.model.AccountInfo;
+import com.spike.bot.model.UnassignedListRes;
 import com.spike.bot.model.WifiModel;
 import com.spike.bot.receiver.ConnectivityReceiver;
+import com.ttlock.bl.sdk.util.DigitUtil;
+import com.ttlock.bl.sdk.util.GsonUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Sagar on 4/12/18.
@@ -51,13 +63,14 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
 
     public Toolbar toolbar;
     public RecyclerView recyclerWifi;
-    public String wifiIP = "", moduleId = "", roomId = "", roomName = "";
+    public String wifiIP = "", moduleId = "";
     public boolean isNetworkChange = false;
 
     /*Socket*/
     ArrayList<WifiModel.WiFiList> arrayList = new ArrayList<>();
     ArrayList<String> roomIdList = new ArrayList<>();
     ArrayList<String> roomNameList = new ArrayList<>();
+    ArrayList<UnassignedListRes.Data.RoomList> roomListArray=new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,8 +80,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
         ConnectivityReceiver.connectivityReceiverWifi = WifiListActivity.this;
         arrayList = (ArrayList<WifiModel.WiFiList>) getIntent().getSerializableExtra("arrayList");
         wifiIP = getIntent().getStringExtra("wifiIP");
-        roomId = getIntent().getStringExtra("roomId");
-        roomName = getIntent().getStringExtra("roomName");
+        roomListArray = (ArrayList<UnassignedListRes.Data.RoomList>)getIntent().getSerializableExtra("roomListArray");
 
         toolbar =  findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -80,12 +92,13 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
     }
 
     private void setUi() {
-        recyclerWifi = (RecyclerView) findViewById(R.id.recyclerWifi);
+        recyclerWifi =  findViewById(R.id.recyclerWifi);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(WifiListActivity.this);
         recyclerWifi.setLayoutManager(linearLayoutManager);
         WifiAdapter wifiAdapter = new WifiAdapter(WifiListActivity.this, arrayList, this);
         recyclerWifi.setAdapter(wifiAdapter);
         wifiAdapter.notifyDataSetChanged();
+        ChatApplication.logDisplay("roomListArray is "+roomListArray.size());
     }
 
     @Override
@@ -106,46 +119,34 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
         irDialog.setContentView(R.layout.dialog_add_sensordoor);
         irDialog.setCanceledOnTouchOutside(false);
 
-        final EditText edt_door_name = (EditText) irDialog.findViewById(R.id.txt_door_sensor_name);
-        final TextView edt_door_module_id = (TextView) irDialog.findViewById(R.id.txt_module_id);
-        final Spinner sp_room_list = (Spinner) irDialog.findViewById(R.id.sp_room_list);
+        final EditText edt_door_name =  irDialog.findViewById(R.id.txt_door_sensor_name);
+        final TextView edt_door_module_id = irDialog.findViewById(R.id.txt_module_id);
+        final Spinner sp_room_list =  irDialog.findViewById(R.id.sp_room_list);
 
-        TextView dialogTitle = (TextView) irDialog.findViewById(R.id.tv_title);
-        TextView txt_sensor_name = (TextView) irDialog.findViewById(R.id.txt_sensor_name);
+        TextView dialogTitle = irDialog.findViewById(R.id.tv_title);
+        TextView txt_sensor_name =  irDialog.findViewById(R.id.txt_sensor_name);
         TextView txtSelectRoom = irDialog.findViewById(R.id.txtSelectRoom);
 
         dialogTitle.setText("Add IR Blaster");
         txt_sensor_name.setText("IR Name");
-        txtSelectRoom.setText("Room name");
+        txtSelectRoom.setText("Room List");
 
         edt_door_module_id.setText(moduleId);
         edt_door_module_id.setFocusable(false);
 
-
-        roomNameList.add(roomName);
-        roomIdList.add(roomId);
+        roomNameList.clear();
+        if(roomListArray.size()>0){
+            for(int i=0; i<roomListArray.size(); i++){
+                roomNameList.add(roomListArray.get(i).getRoomName());
+            }
+        }
 
         TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(getApplicationContext(), roomNameList, 1, false);
         sp_room_list.setAdapter(customAdapter);
-        sp_room_list.setEnabled(false);
-        sp_room_list.setClickable(false);
 
-
-        sp_room_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        Button btn_cancel = (Button) irDialog.findViewById(R.id.btn_door_cancel);
-        Button btn_save = (Button) irDialog.findViewById(R.id.btn_door_save);
-        ImageView iv_close = (ImageView) irDialog.findViewById(R.id.iv_close);
+        Button btn_cancel =  irDialog.findViewById(R.id.btn_door_cancel);
+        Button btn_save =  irDialog.findViewById(R.id.btn_door_save);
+        ImageView iv_close =  irDialog.findViewById(R.id.iv_close);
 
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,8 +164,14 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
         btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveIRBlaster(irDialog, edt_door_name, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(),
-                        sp_room_list);
+                if (TextUtils.isEmpty(edt_door_name.getText().toString())) {
+                    edt_door_name.requestFocus();
+                    edt_door_name.setError("Enter IR Name");
+                }else if(roomListArray.size()==0){
+                    ChatApplication.showToast(WifiListActivity.this,"Please create room.");
+                }else {
+                    saveIRBlaster(irDialog, edt_door_name, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list);
+                }
             }
         });
         irDialog.show();
@@ -187,22 +194,14 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
             return;
         }
 
-        if (TextUtils.isEmpty(textInputEditText.getText().toString())) {
-            textInputEditText.requestFocus();
-            textInputEditText.setError("Enter IR Name");
-            return;
-        }
-
         ActivityHelper.showProgressDialog(this, "Please wait.", true);
 
         JSONObject obj = new JSONObject();
         try {
-            obj.put("ir_blaster_name", door_name);
-            obj.put("ir_blaster_module_id", door_module_id);
-
-            obj.put("room_id", roomId);
-            obj.put("room_name", roomName);
-
+            obj.put("device_name", door_name);
+            obj.put("module_id", door_module_id);
+            obj.put("module_type", "ir_blaster");
+            obj.put("room_id", roomListArray.get(sp_room_list.getSelectedItemPosition()).getRoomId());
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -211,10 +210,11 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
             e.printStackTrace();
         }
 
-        ChatApplication.logDisplay("obj : " + obj.toString());
         String url = "";
 
-        url = ChatApplication.url + Constants.ADD_IR_BLASTER;
+        url = ChatApplication.url + Constants.deviceadd;
+
+        ChatApplication.logDisplay("obj : "+url+"  " + obj.toString());
 
         new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
@@ -266,10 +266,10 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
         dialog.setContentView(R.layout.dialog_wifi_password);
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
-        final CustomEditText edWifiPassword = (CustomEditText) dialog.findViewById(R.id.edWifiPassword);
-        final CustomEditText edWifiIP = (CustomEditText) dialog.findViewById(R.id.edWifiIP);
-        TextView txtSave = (TextView) dialog.findViewById(R.id.txtSave);
+        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
+        final CustomEditText edWifiPassword =  dialog.findViewById(R.id.edWifiPassword);
+        final CustomEditText edWifiIP =  dialog.findViewById(R.id.edWifiIP);
+        TextView txtSave =  dialog.findViewById(R.id.txtSave);
 
         edWifiIP.setSelection(edWifiPassword.getText().length());
         edWifiPassword.setSelection(edWifiPassword.getText().length());
@@ -304,6 +304,60 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
 
     }
 
+    public void callWifiCheck(String s, WifiModel.WiFiList wiFiList, String edWifiIP, final Dialog dialog) {
+
+
+        GetDataService apiService = RetrofitAPIManager.provideClientApi();
+
+        ActivityHelper.showProgressDialog(WifiListActivity.this, "Please wait... ", true);
+        String url = "http://" + wifiIP + "/wifisave?s=" + wiFiList.getNetworkName() + "&p=" + s + "&$=" + edWifiIP;
+
+        ChatApplication.logDisplay("url tt is " + url);
+
+        Call<ResponseBody> call = apiService.saveIrBlaster(url);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                ChatApplication.logDisplay("ir blaster is found result " + response.body().toString());
+
+                try {
+                    JSONObject object=new JSONObject(response.body().toString());
+                    if (object != null) {
+                        if (object.optString("response").equalsIgnoreCase("success")) {
+                            dialog.dismiss();
+                            Constants.isWifiConnectSave = true;
+                            moduleId = object.optString("moduleId");
+                            if (moduleId.length() > 1) {
+                                setSaveView();
+                            }
+                        } else {
+                            ActivityHelper.dismissProgressDialog();
+                            ChatApplication.showToast(WifiListActivity.this, "" + object.optString("response"));
+                        }
+                    } else {
+                        ActivityHelper.dismissProgressDialog();
+                        ChatApplication.showToast(WifiListActivity.this, "Please try again later.");
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ActivityHelper.dismissProgressDialog();
+                } finally {
+//                    ActivityHelper.dismissProgressDialog();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                ChatApplication.logDisplay("tt lock reponse is error "+t);
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
+
+    }
+
+
     /*blaster wifi connection request
     * */
     private void callWifiPasswordCheck(String s, WifiModel.WiFiList wiFiList, String edWifiIP, final Dialog dialog) {
@@ -316,7 +370,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
         String url = "http://" + wifiIP + "/wifisave?s=" + wiFiList.getNetworkName() + "&p=" + s + "&$=" + edWifiIP;
 
         ChatApplication.logDisplay("url is " + url);
-        new GetJsonTask(WifiListActivity.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL //POST
+        new GetJsonTaskVideo(WifiListActivity.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL //POST
             @Override
             public void onSuccess(final JSONObject result) {
                 ChatApplication.logDisplay("ir blaster is found result " + result.toString());
@@ -344,7 +398,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
                     e.printStackTrace();
                     ActivityHelper.dismissProgressDialog();
                 } finally {
-                    ActivityHelper.dismissProgressDialog();
+//                    ActivityHelper.dismissProgressDialog();
                 }
             }
 

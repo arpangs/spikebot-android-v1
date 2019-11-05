@@ -20,12 +20,12 @@ import java.util.List;
 public class IRBlasterAddListAdapter extends RecyclerView.Adapter<IRBlasterAddListAdapter.IRBlasterHolder> {
 
 
-    List<IRDeviceDetailsRes.Data.Devicelist> mIRDeviceList;
-    IRDeviceDetailsRes.Data.Devicelist devicelist;
+    List<IRDeviceDetailsRes.Data> mIRDeviceList;
+    IRDeviceDetailsRes.Data devicelist;
 
     private IRDeviceClikListener irDeviceClikListener;
 
-    public IRBlasterAddListAdapter(List<IRDeviceDetailsRes.Data.Devicelist> mIRDeviceList, IRDeviceClikListener irDeviceClikListener) {
+    public IRBlasterAddListAdapter(List<IRDeviceDetailsRes.Data> mIRDeviceList, IRDeviceClikListener irDeviceClikListener) {
         this.mIRDeviceList = mIRDeviceList;
         this.irDeviceClikListener = irDeviceClikListener;
     }
@@ -72,6 +72,6 @@ public class IRBlasterAddListAdapter extends RecyclerView.Adapter<IRBlasterAddLi
     }
 
     public interface IRDeviceClikListener {
-        void onIRDeviceClick(IRDeviceDetailsRes.Data.Devicelist devicelist);
+        void onIRDeviceClick(IRDeviceDetailsRes.Data devicelist);
     }
 }

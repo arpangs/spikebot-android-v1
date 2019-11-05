@@ -66,6 +66,7 @@ public class AddRoomDialog extends Dialog implements
         this.device_id=device_id;
         this.roomidlist= roomidlist1;
         this.roomnamelist = roomnamelist1;
+        this.module_type = module_type;
         this.iCallback=iCallback;
     }
 
@@ -155,7 +156,7 @@ public class AddRoomDialog extends Dialog implements
             obj.put("panel_name",et_panel_name.getText().toString());
             obj.put("module_id",et_module_id.getText().toString());
 //            obj.put("device_id",sp_no_of_devices.getSelectedItem().toString());
-//            obj.put("module_type",module_type);
+            obj.put("module_type",module_type);
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);

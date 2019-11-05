@@ -67,16 +67,17 @@ public class FanDialog extends Dialog implements
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.dialog_fan);
 
-        tv_seek_value = (TextView) findViewById(R.id.tv_seek_value);
-        sb_fan = (SeekBar) findViewById(R.id.sb_fan);
-        btn_save = (Button) findViewById(R.id.btn_save);
-        iv_close = (ImageView) findViewById(R.id.iv_close);
+        tv_seek_value =  findViewById(R.id.tv_seek_value);
+        sb_fan =  findViewById(R.id.sb_fan);
+        btn_save =  findViewById(R.id.btn_save);
+        iv_close = findViewById(R.id.iv_close);
 
 
         btn_save.setOnClickListener(this);
         iv_close.setOnClickListener(this);
 
         sb_fan.setProgress(fanSpeed-1);
+
         sb_fan.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -93,7 +94,7 @@ public class FanDialog extends Dialog implements
 
             }
         });
-        getFanDetails();
+//        getFanDetails();
     }
     @Override
     public void onClick(View v) {
@@ -123,9 +124,14 @@ public class FanDialog extends Dialog implements
 
         JSONObject obj = new JSONObject();
         try {
+            //{
+            //	"device_id": "1571916523890_M5cxIPtxSa",
+            //	"device_status": "1",
+            //	"device_sub_status":"2"
+            //}
+            obj.put("device_id",room_device_id);
+            obj.put("device_status",room_device_id);
             obj.put("room_device_id",room_device_id);
-            /*obj.put("room_device_id",room_device_id);
-            obj.put("device_id",device_id);*/
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -177,25 +183,29 @@ public class FanDialog extends Dialog implements
         JSONObject obj = new JSONObject();
         try {
 
+            //{
+            //	"device_id": "1571916523890_M5cxIPtxSa",
+            //	"device_status": "1",
+            //	"device_sub_status":"2"
+            //}
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
             obj.put("user_id", Common.getPrefValue(activity.getApplicationContext(), Constants.USER_ID));
-            obj.put("room_device_id",room_device_id);
-            obj.put("device_specific_value",fanSpeed);
-            obj.put("localData","0");
-            {
-
-            }
+            obj.put("device_id",room_device_id);
+            obj.put("device_status","1");
+            obj.put("device_sub_status",fanSpeed);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         String url = ChatApplication.url + Constants.CHANGE_FAN_SPEED;
 
+        ChatApplication.logDisplay("fan is "+url+" "+obj);
+
         new GetJsonTask(activity,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 try {
-                    //{"code":200,"message":"success"}
+                    ChatApplication.logDisplay("fan is result "+result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if(code==200){
@@ -204,7 +214,8 @@ public class FanDialog extends Dialog implements
                         }
                         ActivityHelper.dismissProgressDialog();
                         dismiss();
-                        iCallback.onSuccess("yes"+"-"+fanSpeed);
+//                        iCallback.onSuccess("yes"+"-"+fanSpeed);
+                        iCallback.onSuccess(""+fanSpeed);
                     }
                     else{
                         Toast.makeText(activity.getApplicationContext(), message , Toast.LENGTH_SHORT).show();

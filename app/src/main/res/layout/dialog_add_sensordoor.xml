@@ -59,6 +59,8 @@
                 android:layout_gravity="center"
                 android:layout_weight="0.4"
                 android:layout_width="0dp"
+                android:textColor="@color/txtPanal"
+                android:textSize="@dimen/_12sdp"
                 android:layout_height="wrap_content" />
 
             <LinearLayout
@@ -112,6 +114,8 @@
                 android:layout_gravity="center"
                 android:layout_weight="0.4"
                 android:layout_width="0dp"
+                android:textColor="@color/txtPanal"
+                android:textSize="@dimen/_12sdp"
                 android:layout_height="wrap_content" />
 
             <EditText
@@ -120,6 +124,8 @@
                 android:layout_width="0dp"
                 android:singleLine="true"
                 android:maxLength="20"
+                android:textColor="@color/txtPanal"
+                android:textSize="@dimen/_12sdp"
                 android:layout_height="wrap_content" />
 
 
@@ -136,6 +142,8 @@
                 android:text="Module Id"
                 android:layout_weight="0.4"
                 android:layout_width="0dp"
+                android:textColor="@color/txtPanal"
+                android:textSize="@dimen/_12sdp"
                 android:layout_height="wrap_content" />
 
             <TextView
@@ -144,6 +152,7 @@
                 android:textColor="#FFF"
                 android:background="#60808080"
                 android:layout_weight="0.6"
+                android:textSize="@dimen/_12sdp"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content">
 

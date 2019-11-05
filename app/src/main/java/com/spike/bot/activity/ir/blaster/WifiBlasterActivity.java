@@ -15,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.view.View;
 import android.widget.Button;
@@ -25,16 +26,24 @@ import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
+import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
+import com.spike.bot.model.UnassignedListRes;
 import com.spike.bot.model.WifiModel;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
+
+import static com.spike.bot.core.Common.showToast;
 
 /**
  * Created by Sagar on 3/12/18.
@@ -46,6 +55,7 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
     public TextView txtWifi;
     public Button btnNext;
     public ArrayList<WifiModel.WiFiList> arrayList = new ArrayList<>();
+    ArrayList<UnassignedListRes.Data.RoomList> roomListArray=new ArrayList<>();
 
     public ProgressDialog progressBar;
     public String wifiIP = "", roomId = "", roomName = "";
@@ -63,12 +73,12 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void setUi() {
-
+        getRoomList();
         Constants.isWifiConnect = true;
         progressBar = new ProgressDialog(WifiBlasterActivity.this);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        btnNext = (Button) findViewById(R.id.btnNext);
-        txtWifi = (TextView) findViewById(R.id.txtWifi);
+        toolbar =  findViewById(R.id.toolbar);
+        btnNext =  findViewById(R.id.btnNext);
+        txtWifi =  findViewById(R.id.txtWifi);
 
 
         setSupportActionBar(toolbar);
@@ -79,7 +89,6 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
 
         String s = "Connect to the Wi-Fi hotspot for the SpikeBot device that you are settings up. It will have <b>SpikeBot_xxxxxxx</b> on the end.";
         txtWifi.setText(Html.fromHtml(s));
-
         btnNext.setOnClickListener(this);
     }
 
@@ -174,6 +183,61 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    private void getRoomList() {
+
+
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            showToast("" + R.string.disconnect);
+            return;
+        }
+
+        ActivityHelper.showProgressDialog(this, "Please wait...", false);
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("room_type", "room");
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String url = ChatApplication.url + Constants.roomslist;
+
+        ChatApplication.logDisplay("un assign is "+url+" "+jsonObject);
+
+        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() {
+            @Override
+            public void onSuccess(JSONObject result) {
+                ActivityHelper.dismissProgressDialog();
+                try {
+                    ChatApplication.logDisplay("un assign is "+result);
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        Type type = new TypeToken<ArrayList<UnassignedListRes.Data.RoomList>>() {}.getType();
+                        roomListArray = (ArrayList<UnassignedListRes.Data.RoomList>) Constants.fromJson(result.optString("data").toString(), type);
+
+                    } else {
+                        if (!TextUtils.isEmpty(message)) {
+                            showToast(message);
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        }).execute();
+    }
+
     /*getting wifi list */
 
     public void getWifiList(final String wifiIP) {
@@ -227,8 +291,7 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
         Intent intent = new Intent(WifiBlasterActivity.this, WifiListActivity.class);
         intent.putExtra("arrayList", arrayList);
         intent.putExtra("wifiIP", wifiIP);
-        intent.putExtra("roomId", roomId);
-        intent.putExtra("roomName", roomName);
+        intent.putExtra("roomListArray", roomListArray);
         startActivity(intent);
     }
 

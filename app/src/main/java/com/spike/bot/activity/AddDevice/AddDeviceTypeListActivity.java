@@ -1,6 +1,5 @@
 package com.spike.bot.activity.AddDevice;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -21,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -33,7 +31,6 @@ import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.LoginActivity;
 import com.spike.bot.activity.Repeatar.RepeaterActivity;
 import com.spike.bot.activity.SensorUnassignedActivity;
 import com.spike.bot.activity.SmartDevice.BrandListActivity;
@@ -45,11 +42,9 @@ import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
-import com.spike.bot.core.JsonHelper;
 import com.spike.bot.dialog.AddRoomDialog;
 import com.spike.bot.dialog.ICallback;
 import com.spike.bot.model.RoomVO;
-import com.spike.bot.model.SensorUnassignedRes;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -70,7 +65,6 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
     RecyclerView recyclerSmartDevice;
     DeviceListAdapter deviceListAdapter;
     ArrayList<String> arrayList = new ArrayList<>();
-    ArrayList<RoomVO> roomList = new ArrayList<>();
     ArrayList<String> roomIdList = new ArrayList<>();
     ArrayList<String> roomNameList = new ArrayList<>();
 
@@ -168,7 +162,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
     }
 
     public void unassignIntent(String type){
-        Intent intent=new Intent(this,AddUnassignedPanel.class);
+        Intent intent=new Intent(this, AllUnassignedPanel.class);
         intent.putExtra("type",type);
         startActivity(intent);
     }
@@ -578,7 +572,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.showToast(AddDeviceTypeListActivity.this, getResources().getString(R.string.something_wrong1));
+//                ChatApplication.showToast(AddDeviceTypeListActivity.this, getResources().getString(R.string.something_wrong1));
             }
         }).execute();
     }
@@ -930,7 +924,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         }
     }
 
-    private void showGasSensor(String door_module_id, final boolean isTempSensorRequest, final boolean isMultiSensor) {
+    private void showGasSensor(String door_module_id, String module_type) {
 
         if (dialog == null) {
             dialog = new Dialog(AddDeviceTypeListActivity.this);
@@ -997,7 +991,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                 if (edt_door_name.getText().toString().trim().length() == 0) {
                     ChatApplication.showToast(AddDeviceTypeListActivity.this, "Please enter name");
                 } else {
-                    addCurtain(dialog, edt_door_name, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list, isTempSensorRequest);
+                    addCurtain(dialog, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list, module_type);
                     dialog.dismiss();
 
                 }
@@ -1006,28 +1000,20 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void addCurtain(final Dialog dialog, EditText textInputEditText, String door_name,
-                            String door_module_id, Spinner sp_room_list, final boolean isTempSensorRequest) {
+    private void addCurtain(final Dialog dialog, String door_name, String door_module_id, Spinner sp_room_list, String  module_type) {
 
 
         ActivityHelper.showProgressDialog(AddDeviceTypeListActivity.this, "Please wait.", false);
 
         JSONObject obj = new JSONObject();
         try {
-
-            //{
-            //	"room_id": "1571059056890_i7o_alqmC",
-            //	"module_id": "1571056602663_8SnoV3G6E",
-            //	"panel_name": "my panel 1",
-            //	"user_id": "1570794065997_5qn_v-fQq"
-            //}
-
             int room_pos = sp_room_list.getSelectedItemPosition();
 
             obj.put("room_id", roomIdList.get(room_pos));
             obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put("panel_name", door_name);
+            obj.put("device_name", door_name);
             obj.put("module_id", door_module_id);
+            obj.put("module_type", module_type);
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -1097,7 +1083,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                         //message, gas_sensor_module_id,room_list
                         JSONObject object = new JSONObject(args[0].toString());
 
-                        ChatApplication.logDisplay("gas is " + object);
+                        ChatApplication.logDisplay("configureDevice is " + object);
 
                         if (TextUtils.isEmpty(object.getString("message"))) {
 
@@ -1117,7 +1103,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                         ChatApplication.logDisplay("typeSync is " + typeSync);
                         if (TextUtils.isEmpty(object.getString("message"))) {
                             if (typeSync == 0) {
-                                addRoomDialog = new AddRoomDialog(AddDeviceTypeListActivity.this, roomIdList, roomNameList, object.getString("module_id"), "" + 5, "", new ICallback() {
+                                addRoomDialog = new AddRoomDialog(AddDeviceTypeListActivity.this, roomIdList, roomNameList, object.getString("module_id"), "" + 5, object.getString("module_type"), new ICallback() {
                                     @Override
                                     public void onSuccess(String str) {
                                         if (str.equalsIgnoreCase("yes")) {
@@ -1132,7 +1118,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                                     addRoomDialog.show();
                                 }
                             } else {
-                                showGasSensor(object.getString("module_id"), true, false);
+                                showGasSensor(object.optString("module_id"),object.optString("module_type"));
                             }
                         } else {
                             showConfigAlert(object.getString("message"));

@@ -112,6 +112,27 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         }
     }
 
+    public void updateFanDevice(String deviceId, String deviceStatus) {
+
+        for (int k = 0; k < mDataArrayList.size(); k++) {
+
+            if(mDataArrayList.get(k) instanceof DeviceVO){
+                DeviceVO deviceVO1 = (DeviceVO) mDataArrayList.get(k);
+                if (deviceVO1 != null) {
+
+                    if (deviceVO1.getDeviceId().equals(deviceId)) {
+                        ChatApplication.logDisplay("status update panel adapter match");
+                        ((DeviceVO) mDataArrayList.get(k)).setDevice_sub_status(deviceStatus);
+                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
+                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
+                        break;
+                    }
+
+                }
+            }
+        }
+    }
+
 
     public void updateDeviceItem(String device_type, String deviceId, String deviceStatus, int device_sub_status) {
 
@@ -126,6 +147,26 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                         ((DeviceVO) mDataArrayList.get(k)).setDeviceStatus(Integer.parseInt(deviceStatus));
                         mSectionedExpandableGridAdapter.notifyItemChanged(k);
                         mSectionedExpandableGridAdapter.notifyDataSetChanged();
+                        break;
+                    }
+
+                }
+            }
+        }
+        mSectionedExpandableGridAdapter.notifyDataSetChanged();
+    }
+
+    public void updateModuleItem(String module_id, String module_status) {
+
+        for (int k = 0; k < mDataArrayList.size(); k++) {
+
+            if(mDataArrayList.get(k) instanceof DeviceVO){
+                DeviceVO deviceVO1 = (DeviceVO) mDataArrayList.get(k);
+                if (deviceVO1 != null && deviceVO1.isSensor()) {
+
+                    if (deviceVO1.getModuleId().equals(module_id)) {
+                        ((DeviceVO) mDataArrayList.get(k)).setIsActive(module_status.equals("y")?1:-1);
+                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
                         break;
                     }
 

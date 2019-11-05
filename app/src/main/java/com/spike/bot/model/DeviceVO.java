@@ -28,6 +28,16 @@ public class DeviceVO implements Serializable,Cloneable {
     private String deviceSync;
     private String deviceType;
 
+    public String getDevice_sub_status() {
+        return device_sub_status;
+    }
+
+    public void setDevice_sub_status(String device_sub_status) {
+        this.device_sub_status = device_sub_status;
+    }
+
+    private String device_sub_status;
+
     public String getDevice_identifier() {
         return device_identifier;
     }

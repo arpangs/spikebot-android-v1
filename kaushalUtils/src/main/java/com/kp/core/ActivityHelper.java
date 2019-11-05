@@ -222,6 +222,45 @@ public class ActivityHelper {
         return result;
     }
 
+    public static String CallJSONServiceVideo(String url, String json, String method) throws Exception {
+
+        String result = "";
+        String url1 = url;
+
+        URL obj = new URL(url1);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+        con.setRequestMethod(method);
+        con.setRequestProperty("User-Agent", "Mozilla/5.0");
+        con.setRequestProperty("Accept-Language", "UTF-8");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("Accept", "application/json");
+
+        con.setConnectTimeout(20000);
+        con.setReadTimeout(20000);
+        con.setUseCaches(false);
+        if (method.equalsIgnoreCase("POST")) {
+            con.setDoOutput(true);
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(con.getOutputStream());
+            outputStreamWriter.write(json);
+            outputStreamWriter.flush();
+        }
+        int responseCode = con.getResponseCode();
+        UtilsConstants.logDisplay("CallJSONService  responseCode  " + responseCode);
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine + "\n");
+        }
+        in.close();
+        result = response.toString();
+
+//        con.disconnect();
+        return result;
+    }
+
     public static String CallJSONService1(String url, String json, String method) throws Exception {
 
         String result = "";

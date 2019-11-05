@@ -90,7 +90,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     private LinearLayout linearAlertExpand, linearAlertDown, linearAlertExpand_temp, linearAlertDown_temp, linearMultisensor;
     private boolean flagAlert = false, flagAlertTemp = false, flagEditSensor = false, flagSensorNoti = false;
 
-    private String temp_sensor_id, temp_room_name, temp_room_id, temp_module_id;
+    private String  temp_room_name, temp_room_id, temp_module_id;
     private int isCFSelected = -1;
     private Socket mSocket;
 
@@ -100,8 +100,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
     private int mScrollState = AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
     private int lastVisibleItem, totalItemCount;
-    private boolean isLoading = false;
-    private int visibleThreshold = 0;
     private boolean isScrollToEndPosition = false;
 
     private TextView text_day_1, text_day_2, text_day_3, text_day_4, text_day_5, text_day_6, text_day_7;
@@ -120,13 +118,12 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multi_sensor);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar =  findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        temp_sensor_id = getIntent().getStringExtra("temp_sensor_id");
         temp_room_name = getIntent().getStringExtra("temp_room_name");
         temp_room_id = getIntent().getStringExtra("temp_room_id");
         temp_module_id = getIntent().getStringExtra("temp_module_id");
@@ -393,24 +390,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             return;
         }
 
-        //{
-        //	"multi_sensor_id": "1559654114379_MnqPvjkOE",
-        //	"is_push_enable":0,
-        //	"user_id":"1559035111028_VojOpeeBF",
-        //	"phone_id":"1234567",
-        //	"phone_type":"Android"
-        //	}
-
-        //{
-        //	   "multi_sensor_notification_id": "1559711839917_iVUxolRrq",
-        //	    "multi_sensor_id": "1559654114379_MnqPvjkOE",
-        //	    "is_active":0,
-        //	    "user_id":"1559035111028_VojOpeeBF",
-        //		"phone_id":"1234567",
-        //		"phone_type":"Android"
-        //
-        //	}
-        //
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
         String webUrl = "";
@@ -425,7 +404,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         try {
             jsonNotification.put("temp_sensor_notification_id", tempSensorNotificationId);
             jsonNotification.put("is_active", isActive ? 1 : 0);
-            jsonNotification.put("temp_sensor_id", temp_sensor_id);
+            jsonNotification.put("temp_sensor_id", temp_module_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -496,14 +475,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_room_edit, menu);
-        MenuItem menulog = menu.findItem(R.id.action_log).setVisible(false);
-        MenuItem action_add = menu.findItem(R.id.action_add).setVisible(false);
-
-//        Drawable drawable = menu.findItem(R.id.action_log).getIcon();
-//
-//        drawable = DrawableCompat.wrap(drawable);
-//        DrawableCompat.setTint(drawable, ContextCompat.getColor(this, R.color.automation_white));
-//        menulog.setIcon(drawable);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -545,7 +516,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             //  "user_id":"",
             //  "phone_id":"",
             //  "phone_type":""
-            jsonNotification.put("temp_sensor_id", temp_sensor_id);
+            jsonNotification.put("temp_sensor_id", temp_module_id);
             jsonNotification.put("temp_sensor_name", sensorName.getText().toString().trim());
             jsonNotification.put("room_id", temp_room_id);
             jsonNotification.put("is_in_C", isCFSelected);
@@ -993,7 +964,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                 jsonNotification.put("temp_sensor_notification_id", temp_sensor_notification_id);
             }
 
-            jsonNotification.put("temp_sensor_id", temp_sensor_id);
+            jsonNotification.put("temp_sensor_id", temp_module_id);
             jsonNotification.put("is_in_C", -1); //1=C 0=F
             jsonNotification.put("min_temp_value", "");
             jsonNotification.put("max_temp_value", "");
@@ -1107,7 +1078,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                 jsonNotification.put("temp_sensor_notification_id", temp_sensor_notification_id);
             }
 
-            jsonNotification.put("temp_sensor_id", temp_sensor_id);
+            jsonNotification.put("temp_sensor_id", temp_module_id);
             jsonNotification.put("is_in_C", isCFSelected); //1=C 0=F
             jsonNotification.put("min_temp_value", Integer.parseInt(minValue.getText().toString().trim()));
             jsonNotification.put("max_temp_value", Integer.parseInt(maxValue.getText().toString().trim()));
@@ -1449,7 +1420,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             } else {
                 jsonNotification.put("temp_sensor_notification_id", notification.getMultiSensorNotificationId());
             }
-            jsonNotification.put("temp_sensor_id", temp_sensor_id);
+            jsonNotification.put("temp_sensor_id", temp_module_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -1561,11 +1532,15 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
 //        String url = ChatApplication.url + Constants.getMultiSensorInfo ;
-        String url = ChatApplication.url + Constants.GET_TEMP_SENSOR_INFO;
+        String url = ChatApplication.url + Constants.deviceinfo;
 
         JSONObject object = new JSONObject();
         try {
-            object.put("temp_sensor_id", temp_sensor_id);
+            //{
+            //	"device_id":"1571998596623_EE9U9Ovz7w",
+            //	"alert_type":"temperature"
+            //}
+            object.put("device_id", temp_module_id);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -1573,8 +1548,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             e.printStackTrace();
         }
 
-        ActivityHelper.showProgressDialog(this, "Please wait...", false);
 
+        ChatApplication.logDisplay("url is "+url+ "  " +object);
         new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {

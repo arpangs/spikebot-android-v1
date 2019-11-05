@@ -275,14 +275,14 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         Button mBtnCancel = mDialog.findViewById(R.id.btn_cancel);
         Button mBtnSave = mDialog.findViewById(R.id.btn_save);
 
-        remote_room_txt = (TextView) mDialog.findViewById(R.id.remote_room_txt);
-        mSpinnerMode = (Spinner) mDialog.findViewById(R.id.remote_mode_spinner);
+        remote_room_txt =  mDialog.findViewById(R.id.remote_room_txt);
+        mSpinnerMode =  mDialog.findViewById(R.id.remote_mode_spinner);
 
-        mRemoteDefaultTemp = (EditText) mDialog.findViewById(R.id.edt_remote_tmp);
+        mRemoteDefaultTemp =  mDialog.findViewById(R.id.edt_remote_tmp);
         mRemoteDefaultTemp.setText("");
         mEdtRemoteName.setText("");
 
-        mTxtBlasterName = (TextView) mDialog.findViewById(R.id.txt_blastername);
+        mTxtBlasterName =  mDialog.findViewById(R.id.txt_blastername);
 
         mRemoteDefaultTemp.setError(null);
         mEdtRemoteName.requestFocus();
@@ -376,18 +376,29 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
             return;
         }
 
+        //{
+        //    "ir_blaster_id": "1572857773561__ugf_F1V1e",
+        //    "device_name": "LG Remote",
+        //    "device_brand": "LG",
+        //    "device_model": "1550",
+        //    "device_codes": "352185100756835",
+        //    "device_codeset_id": "352185100756835",
+        //    "device_default_mode": "LOW",
+        //    "device_default_status":"25",
+        //    "module_type":"remote"
+        //}
         ActivityHelper.showProgressDialog(IRRemoteConfigActivity.this, "Please Wait...", false);
         AddRemoteReq addRemoteReq = new AddRemoteReq(Common.getPrefValue(this, Constants.USER_ID), mIRDeviceId, mIrDeviceType, mBrandId, mIRBrandType, mCodeSet,
-                remoteName, mIRBLasterId, mIRBlasterModuleId, mRoomId, mSpinnerMode.getSelectedItem().toString(), mRemoteDefaultTemp.getText().toString().trim(),
+                remoteName, mIRBLasterId, mIRBlasterModuleId, mRoomId,  mSpinnerMode.getSelectedItem().toString()+"-"+mRemoteDefaultTemp.getText().toString().trim(),
                 APIConst.PHONE_ID_KEY, APIConst.PHONE_TYPE_VALUE, brand_name, remote_codeset_id, model_number, onOffValue);
         addRemoteReq.setUpdate_type(0);
 
         Gson gson = new Gson();
         String mStrOnOffReq = gson.toJson(addRemoteReq);
+        String url = ChatApplication.url + Constants.deviceadd;
 
-        ChatApplication.logDisplay("Request : " + mStrOnOffReq);
+        ChatApplication.logDisplay("Request : "+url +" "+ mStrOnOffReq);
 
-        String url = ChatApplication.url + Constants.ADD_REMOTE;
         new GetJsonTask(this, url, "POST", mStrOnOffReq, new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {

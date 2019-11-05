@@ -23,6 +23,7 @@ import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.irblaster.IRBlasterAddListAdapter;
+import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.IRDeviceDetailsRes;
@@ -44,8 +45,9 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
     private Spinner mSpinnerBlaster;
     private TextView mRoomText, txtNoBlaster;
     private IRBlasterAddListAdapter irBlasterAddAdapter;
-    private List<IRDeviceDetailsRes.Data.IrList> irLists;
-    private List<IRDeviceDetailsRes.Data.Devicelist> mIRDeviceList;
+    private List<IRDeviceDetailsRes.Data> irLists=new ArrayList<>();
+    private List<IRDeviceDetailsRes.Data> mIRDeviceList=new ArrayList<>();
+    private List<String> blasterArraylist=new ArrayList<>();
     private String roomName = "", roomId = "";
     boolean flagisBlaster = false;
 
@@ -57,8 +59,7 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
         roomName = getIntent().getStringExtra("roomName");
         roomId = getIntent().getStringExtra("roomId");
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
+        Toolbar toolbar =  findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -88,14 +89,26 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
         }
         showProgress();
         ActivityHelper.showProgressDialog(IRRemoteAdd.this, "Please Wait...", false);
-        String url = ChatApplication.url + Constants.GET_IR_DEVICE_TYPE_LIST;
+
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            obj.put("device_type", "ir_blaster");
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String url = ChatApplication.url + Constants.devicefind;
 
         irLists = new ArrayList<>();
         irLists.clear();
 
-        ChatApplication.logDisplay("url is " + url);
+        ChatApplication.logDisplay("url is " + url+" "+obj.toString());
 
-        new GetJsonTask(this, url, "GET", "", new ICallBack() {
+        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
 
@@ -110,62 +123,36 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
 
                         ChatApplication.logDisplay("remote res : " + result.toString());
                         IRDeviceDetailsRes irDeviceDetailsRes = Common.jsonToPojo(result.toString(), IRDeviceDetailsRes.class);
-                        mIRDeviceList = irDeviceDetailsRes.getData().getDevicelist();
+                        mIRDeviceList = irDeviceDetailsRes.getData();
 
                         if (mIRDeviceList.size() > 0) {
+                            for(int i=0; i<mIRDeviceList.size(); i++){
+                                blasterArraylist.add(mIRDeviceList.get(i).getDeviceName());
+                            }
                             irBlasterAddAdapter = new IRBlasterAddListAdapter(mIRDeviceList, IRRemoteAdd.this);
                             mIRListView.setAdapter(irBlasterAddAdapter);
 
                         }
 
-                        irLists = irDeviceDetailsRes.getData().getIrList();
+                        irLists = irDeviceDetailsRes.getData();
                         //If not IR Blaster then add default String add in Spinner
                         if (irLists.size() == 0) {
-                            IRDeviceDetailsRes.Data.IrList irEmpty = new IRDeviceDetailsRes.Data.IrList();
-                            irEmpty.setRoomName("");
-                            irEmpty.setIrBlasterId("");
-                            irEmpty.setIrBlasterModuleId("");
-                            irEmpty.setIrBlasterName("No IR Blaster");
-                            irEmpty.setRoomId("");
+                            IRDeviceDetailsRes.Data irEmpty = new IRDeviceDetailsRes.Data();
+                            irEmpty.setDeviceName("");
+                            irEmpty.setDeviceName("No IR Blaster");
                             irLists.add(0, irEmpty);
                         }
 
-                        ArrayAdapter customBlasterAdapter = new ArrayAdapter(getApplicationContext(), R.layout.spinner, irLists);
+                        ArrayAdapter customBlasterAdapter = new ArrayAdapter(getApplicationContext(), R.layout.spinner, blasterArraylist);
                         mSpinnerBlaster.setAdapter(customBlasterAdapter);
-
-                        if (irLists.size() > 0) {
-
-                            for (int i = 0; i < irLists.size(); i++) {
-                                if (roomId.equals(irLists.get(i).getRoomId())) {
-                                    mSpinnerBlaster.setSelection(i);
-                                    roomId = irLists.get(i).getRoomId();
-                                    flagisBlaster = true;
-                                    break;
-                                }
-                            }
-
-                            if (flagisBlaster == false) {
-                                roomId = "";
-                                txtNoBlaster.setVisibility(View.VISIBLE);
-                                mSpinnerBlaster.setVisibility(View.GONE);
-                                txtNoBlaster.setOnClickListener(IRRemoteAdd.this);
-                                mRoomText.setText("");
-                            }
-                        }
 
                         mSpinnerBlaster.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                             @Override
                             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                IRDeviceDetailsRes.Data.IrList irList = (IRDeviceDetailsRes.Data.IrList) mSpinnerBlaster.getSelectedItem();
-
-                                if (irList != null && irList.getRoomName() != null) {
-                                    if (irList.getRoomName().equalsIgnoreCase("No IR Blaster")) {
-                                        // mRoomText.setText("");
-                                    } else {
-                                        mRoomText.setText("" + irList.getRoomName());
-                                        roomId = irList.getRoomId();
+                                    if (!blasterArraylist.get(position).equalsIgnoreCase("No IR Blaster")) {
+                                        mRoomText.setText("" + mIRDeviceList.get(position).getRoom().getRoomName());
+                                        roomId = mIRDeviceList.get(position).getRoom().getRoomId();
                                     }
-                                }
 
                             }
 
@@ -177,21 +164,6 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
 
                     } else {
                         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                    }
-
-
-                    if (irLists != null && irLists.size() == 0) {
-
-                        IRDeviceDetailsRes.Data.IrList irEmpty = new IRDeviceDetailsRes.Data.IrList();
-                        irEmpty.setRoomName("");
-                        irEmpty.setIrBlasterId("");
-                        irEmpty.setIrBlasterModuleId("");
-                        irEmpty.setIrBlasterName("No IR Blaster");
-                        irEmpty.setRoomId("");
-                        irLists.add(0, irEmpty);
-
-                        ArrayAdapter customBlasterAdapter = new ArrayAdapter(getApplicationContext(), R.layout.spinner, irLists);
-                        mSpinnerBlaster.setAdapter(customBlasterAdapter);
                     }
 
                 } catch (JSONException e) {
@@ -229,24 +201,23 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
     }
 
     @Override
-    public void onIRDeviceClick(IRDeviceDetailsRes.Data.Devicelist devicelist) {
+    public void onIRDeviceClick(IRDeviceDetailsRes.Data devicelist) {
         //call listing all device on off screen
 
         if (roomId.equalsIgnoreCase("")) {
             ChatApplication.showToast(IRRemoteAdd.this, "Please select Ir Blaster");
             return;
         }
-        IRDeviceDetailsRes.Data.IrList irList = (IRDeviceDetailsRes.Data.IrList) mSpinnerBlaster.getSelectedItem();
 
         Intent intent = new Intent(this, IRRemoteBrandListActivity.class);
-        intent.putExtra("REMOTE_NAME", devicelist.getDeviceType());
-        intent.putExtra("BLASTER_NAME", irList.getIrBlasterName());
+//        intent.putExtra("REMOTE_NAME", devicelist.getDeviceName());
+        intent.putExtra("BLASTER_NAME", mSpinnerBlaster.getSelectedItem().toString());
         intent.putExtra("ROOM_NAME", mRoomText.getText().toString());
         intent.putExtra("ROOM_ID", "" + roomId);
-        intent.putExtra("SENSOR_ID", irList.getIrBlasterId());
+        intent.putExtra("SENSOR_ID", mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId());
         intent.putExtra("IR_DEVICE_ID", "" + devicelist.getDeviceId());
-        intent.putExtra("IR_DEVICE_TYPE", "" + devicelist.getDeviceType());
-        intent.putExtra("IR_BLASTER_MODULE_ID", irList.getIrBlasterModuleId());
+        intent.putExtra("IR_DEVICE_TYPE", "remote");
+        intent.putExtra("IR_BLASTER_MODULE_ID", mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId());
         startActivityForResult(intent, Constants.REMOTE_REQUEST_CODE);
 
     }

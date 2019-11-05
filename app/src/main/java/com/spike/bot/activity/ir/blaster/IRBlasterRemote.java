@@ -32,12 +32,14 @@ import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.MoodRemoteAdapter;
+import com.spike.bot.adapter.irblaster.IRBlasterAddListAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.listener.MoodEvent;
 import com.spike.bot.model.AddRemoteReq;
 import com.spike.bot.model.IRBlasterAddRes;
+import com.spike.bot.model.IRDeviceDetailsRes;
 import com.spike.bot.model.RemoteDetailsRes;
 import com.spike.bot.model.RemoteMoodModel;
 import com.spike.bot.model.SendRemoteCommandReq;
@@ -60,21 +62,23 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
     private ImageView mImageAuto, mToolbarBack, imgRemoteStatus, mImageEdit, mImageDelete;
     private TextView mTemp, mImageAutoText,mRemoteName, txtRemoteState, txtAcState;
 
-    private String mRemoteId, moodName = "", mRoomDeviceId,module_id="";
+    private String mRemoteId, moodName = "", mRoomDeviceId,module_id="",modeType="";
     private boolean isPowerOn = false;
-    private int mSpeedCurrentPos, isRemoteActive, tempMinus, tempPlus, tempCurrent;
+    private int  isRemoteActive, tempMinus, tempPlus, tempCurrent;
 
     private RemoteDetailsRes mRemoteList;
-    private RemoteDetailsRes.Data.RemoteCommandList mRemoteCommandList;
-    private RemoteDetailsRes.Data.RemoteCurrentStatusDetails mRemoteCurrentStatusList;
+    private RemoteDetailsRes.Data mRemoteCommandList;
+    private RemoteDetailsRes.Data mRemoteCurrentStatusList;
 
-    private List<String> speedList;
+//    private List<String> speedList;
     public RecyclerView recyclerMode;
     public MoodRemoteAdapter moodRemoteAdapter;
     private ArrayList<RemoteMoodModel> arrayListMood = new ArrayList<>();
 
     private List<IRBlasterAddRes.Data.IrList> irList;
     List<IRBlasterAddRes.Data.RoomList> roomLists;
+    private List<IRDeviceDetailsRes.Data> mIRDeviceList=new ArrayList<>();
+    public String[] moodList = new String[]{"AUTO", "LOW", "MEDIUM", "HIGH"};
 
     /**
      * Edit AC Remote
@@ -97,10 +101,12 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         bindView();
 
         getRemoteInfo();
+        /*for ir list getting*/
+        getIRDeviceDetails();
     }
 
     private void syncIntent() {
-        mRemoteId = getIntent().getStringExtra("REMOTE_ID");
+        mRemoteId = getIntent().getStringExtra("IR_BLASTER_ID");
         isRemoteActive = getIntent().getIntExtra("REMOTE_IS_ACTIVE", 0);
         mRoomDeviceId = getIntent().getStringExtra("ROOM_DEVICE_ID");
         module_id = getIntent().getStringExtra("IR_MODULE_ID");
@@ -130,19 +136,28 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         mTempPlus.setOnClickListener(this);
         mImageEdit.setOnClickListener(this);
         mImageDelete.setOnClickListener(this);
+
     }
 
     private void setMoodAdapter() {
         arrayListMood.clear();
-        for (int i = 0; i < mRemoteCommandList.getMODE().size(); i++) {
-            RemoteMoodModel remoteMoodModel = new RemoteMoodModel();
-            remoteMoodModel.setMoodName(mRemoteCommandList.getMODE().get(i));
-            if (mRemoteList.getData().getRemoteCurrentStatusDetails().getMode().equalsIgnoreCase(mRemoteCommandList.getMODE().get(i))) {
-                remoteMoodModel.setSelect(true);
-            } else {
-                remoteMoodModel.setSelect(false);
-            }
+
+        for(int i=0; i<moodList.length; i++){
+            RemoteMoodModel remoteMoodModel=new RemoteMoodModel();
+            remoteMoodModel.setMoodName(moodList[i]);
+            remoteMoodModel.setSelect(false);
             arrayListMood.add(remoteMoodModel);
+        }
+
+        String value[]=mRemoteCommandList.getDevice().getDeviceSubStatus().split("-");
+        modeType=value[0];
+        tempCurrent= Integer.parseInt(value[1]);
+        for (int i = 0; i < arrayListMood.size(); i++) {
+           if(arrayListMood.get(i).getMoodName().equals(modeType)){
+               arrayListMood.get(i).setSelect(true);
+           }else {
+               arrayListMood.get(i).setSelect(false);
+           }
         }
         recyclerMode.setLayoutManager(new GridLayoutManager(this, 4));
         moodRemoteAdapter = new MoodRemoteAdapter(IRBlasterRemote.this, arrayListMood, this);
@@ -151,19 +166,24 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
     private void initView() {
         setMoodAdapter();
-        mTemp.setText("" + mRemoteCurrentStatusList.getTemperature() + Common.getC());
-        txtAcState.setText("Ac state : " + mRemoteCurrentStatusList.getPower());
-        mImageAutoText.setText(String.format("Speed %s", mRemoteCurrentStatusList.getMode()));
-        moodName = mRemoteCurrentStatusList.getMode();
-        setPowerOnOff(mRemoteCurrentStatusList.getPower());
-        mRemoteName.setText(mRemoteCurrentStatusList.getRemoteName());
-        mBrandBottom.setText(mRemoteCurrentStatusList.getBrand_name() + "{" + mRemoteCurrentStatusList.getModel_number() + "}");
+        String value[]=mRemoteCommandList.getDevice().getDeviceSubStatus().split("-");
+        modeType=value[0];
+        tempCurrent= Integer.parseInt(value[1]);
+        isRemoteActive= Integer.parseInt(mRemoteCurrentStatusList.getDevice().getDeviceStatus());
+        mTemp.setText("" + tempCurrent+ Common.getC());
+        if(mRemoteCurrentStatusList.getDevice().getDeviceStatus().equalsIgnoreCase("0")){
+            txtAcState.setText("Ac state : OFF");
+        }else {
+            txtAcState.setText("Ac state : ON");
+        }
+        mImageAutoText.setText(String.format("Speed %s", modeType));
+        moodName = modeType;
+        setPowerOnOff(mRemoteCurrentStatusList.getDevice().getDeviceStatus());
+        mRemoteName.setText(mRemoteCurrentStatusList.getDevice().getDeviceName());
+        mBrandBottom.setText(mRemoteCurrentStatusList.getDevice().getDeviceMeta().getDeviceBrand() + "{" + mRemoteCurrentStatusList.getDevice().getDeviceMeta().getDeviceModel() + "}");
 
-        speedList = mRemoteCommandList.getMODE();
-        tempMinus = mRemoteCommandList.getTEMPERATURE().get(0);
-        tempPlus = mRemoteCommandList.getTEMPERATURE().get(1);
-        tempCurrent = mRemoteCurrentStatusList.getTemperature();
-        mSpeedCurrentPos = getCurrentPos(mRemoteCurrentStatusList.getMode());
+        tempMinus = 16;
+        tempPlus = 30;
     }
 
     private void getRemoteInfo() {
@@ -175,25 +195,33 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
         ActivityHelper.showProgressDialog(IRBlasterRemote.this, "Please Wait...", false);
 
-        String url = ChatApplication.url + Constants.GET_REMOTE_INFO + "/" + mRemoteId;
-        new GetJsonTask(this, url, "GET", "", new ICallBack() {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("device_id", mRemoteId);
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String url = ChatApplication.url + Constants.deviceinfo;
+        ChatApplication.logDisplay("Res : " + url+ " " +object);
+
+        new GetJsonTask(this, url, "POST", object.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-
+                    ChatApplication.logDisplay("Res : " + result.toString());
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
                     ActivityHelper.dismissProgressDialog();
                     if (code == 200) {
-
                         mRemoteList = Common.jsonToPojo(result.toString(), RemoteDetailsRes.class);
-
-                        mRemoteCommandList = mRemoteList.getData().getRemoteCommandList().get(0);
-                        mRemoteCurrentStatusList = mRemoteList.getData().getRemoteCurrentStatusDetails();
-
-                        ChatApplication.logDisplay("Res : " + mRemoteCommandList.getPOWER().size());
+                        mRemoteCommandList = mRemoteList.getData();
+                        mRemoteCurrentStatusList = mRemoteList.getData();
 
                         initView();
 
@@ -215,16 +243,56 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    private int getCurrentPos(String speed) {
-        int cPos = mSpeedCurrentPos;
-        for (int i = 0; i < speedList.size(); i++) {
-            String speedText = speedList.get(i);
-            if (speedText.contains(speed)) {
-                setSpeedText(speedText);
-                cPos = i;
-            }
+    private void getIRDeviceDetails() {
+
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            return;
         }
-        return cPos;
+
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            obj.put("device_type", "ir_blaster");
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String url = ChatApplication.url + Constants.devicefind;
+
+        ChatApplication.logDisplay("url is " + url+" "+obj.toString());
+
+        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() {
+            @Override
+            public void onSuccess(JSONObject result) {
+
+                ActivityHelper.dismissProgressDialog();
+                try {
+
+                    int code = result.getInt("code");
+                    if (code == 200) {
+                        ChatApplication.logDisplay("remote res : " + result.toString());
+                        IRDeviceDetailsRes irDeviceDetailsRes = Common.jsonToPojo(result.toString(), IRDeviceDetailsRes.class);
+                        mIRDeviceList = irDeviceDetailsRes.getData();
+
+
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        }).execute();
+
+
     }
 
     /*set speed test
@@ -346,20 +414,46 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         mRemoteDefaultTemp = mDialog.findViewById(R.id.edt_remote_tmp);
 
         try {
-            mEdtRemoteName.setText("" + mRemoteCurrentStatusList.getRemoteName());
+            mEdtRemoteName.setText("" + mRemoteCurrentStatusList.getDevice().getDeviceName());
             mEdtRemoteName.setSelection(mEdtRemoteName.getText().toString().length());
-            mRemoteDefaultTemp.setText("" + mRemoteCurrentStatusList.getScheduleTemperature());
+            mRemoteDefaultTemp.setText("" + tempCurrent);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        getIRBlasterList(isEdit);
-        String[] moodList = new String[]{"AUTO", "LOW", "MEDIUM", "HIGH"};
+//        getIRBlasterList(isEdit);
+
+        ArrayList<String> arrayList=new ArrayList<>();
+
+        for(int i=0; i<mIRDeviceList.size(); i++){
+            arrayList.add(mIRDeviceList.get(i).getDeviceName());
+        }
+        final ArrayAdapter roomAdapter = new ArrayAdapter(getApplicationContext(), R.layout.spinner, arrayList);
+        mSpinnerBlaster.setAdapter(roomAdapter);
+
+        for (int i = 0; i < arrayList.size(); i++) {
+            if (arrayList.get(i).equalsIgnoreCase(mRemoteCurrentStatusList.getDevice().getDeviceName())) {
+                mSpinnerBlaster.setSelection(i);
+            }
+        }
+
+        mSpinnerBlaster.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                remote_room_txt.setText("" + mIRDeviceList.get(position).getRoom().getRoomName());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
         final ArrayAdapter roomAdapter1 = new ArrayAdapter(getApplicationContext(), R.layout.spinner, moodList);
         mSpinnerMode.setAdapter(roomAdapter1);
 
         for (int i = 0; i < moodList.length; i++) {
-            String str = moodList[i];
-            if (mRemoteCurrentStatusList.getScheduleMode() != null && str.equalsIgnoreCase(mRemoteCurrentStatusList.getScheduleMode())) {
+            if (moodList[i].equalsIgnoreCase(modeType)) {
                 mSpinnerMode.setSelection(i);
             }
         }
@@ -451,20 +545,26 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             }
         }
 
-        AddRemoteReq addRemoteReq = new AddRemoteReq(Common.getPrefValue(this, Constants.USER_ID), mRemoteCurrentStatusList.getRemoteId(), remoteName,
-                ir.getRoomId(), ir.getIrBlasterId(), mSpinnerMode.getSelectedItem().toString(),
-                mRemoteDefaultTemp.getText().toString().trim(),
-                APIConst.PHONE_ID_KEY, APIConst.PHONE_TYPE_VALUE, mSpinnerBlaster.getSelectedItem().toString());
-        addRemoteReq.setUpdate_type(1); //if remote update command fire in mood then pass the update_type = 1
-        addRemoteReq.setRoomDeviceId(mRoomDeviceId);
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            obj.put("user_id", Common.getPrefValue(getApplicationContext(), Constants.USER_ID));
+//            obj.put("device_id",mRemoteCommandList.getDevice().getde);
+            obj.put("device_name", remoteName);
+            obj.put("device_icon", "ir_blaster");
+            obj.put("device_default_status", ""+mSpinnerMode.getSelectedItem().toString()+"-"+mRemoteDefaultTemp.getText().toString().trim());
+            obj.put("ir_blaster_id", mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId());
 
-        Gson gson = new Gson();
-        String mStrOnOffReq = gson.toJson(addRemoteReq);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-        ChatApplication.logDisplay("Request : " + mStrOnOffReq);
+        String url = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
 
-        String url = ChatApplication.url + Constants.UPDATE_REMOTE_DETAILS;
-        new GetJsonTask(this, url, "POST", mStrOnOffReq, new ICallBack() {
+        ChatApplication.logDisplay("Request : "+Constants.SAVE_EDIT_SWITCH+"  "  + obj);
+
+        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
 
@@ -537,7 +637,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
                     for (int i = 0; i < irList.size(); i++) {
                         IRBlasterAddRes.Data.IrList ir = irList.get(i);
-                        if (ir.getIrBlasterId().equalsIgnoreCase(mRemoteCurrentStatusList.getIrBlasterId())) {
+                        if (ir.getIrBlasterId().equalsIgnoreCase(mRemoteCurrentStatusList.getDevice().getModuleId())) {
                             mSpinnerBlaster.setSelection(i);
                         }
                     }
@@ -640,32 +740,30 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             return;
         }
 
-        SendRemoteCommandReq sendRemoteCommandReq = new SendRemoteCommandReq();
 
-        if (mRemoteCurrentStatusList != null && mRemoteCurrentStatusList.getRemoteId() != null) {
-            sendRemoteCommandReq.setRemoteid(mRemoteCurrentStatusList.getRemoteId());
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            obj.put("device_id", mRemoteId);
+            if(counting==0){
+                obj.put("device_status", isRemoteActive==1? "0":"1");
+            }else {
+                obj.put("device_status", "1");
+            }
+
+            obj.put("device_sub_status", moodName.trim()+"-"+tempCurrent);//1;
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
-        ChatApplication.logDisplay("Found : " + mRoomDeviceId);
-        if (counting == 2 || counting == 1) {
-            sendRemoteCommandReq.setPower("ON");
-        } else {
-            sendRemoteCommandReq.setPower(isRemoteActive == 0 ? "ON" : "OFF");
-        }
+        //changedevicestatus
+        String url = ChatApplication.url + Constants.CHANGE_DEVICE_STATUS;
 
-        sendRemoteCommandReq.setSpeed(moodName);
-        sendRemoteCommandReq.setTemperature(tempCurrent);
-        sendRemoteCommandReq.setRoomDeviceId(mRoomDeviceId);
-        sendRemoteCommandReq.setPhoneId(APIConst.PHONE_ID_VALUE);
-        sendRemoteCommandReq.setPhoneType(APIConst.PHONE_TYPE_VALUE);
+        ChatApplication.logDisplay("url is "+url+"  " +obj);
 
-        Gson gson = new Gson();
-        String mRemoteCommandReq = gson.toJson(sendRemoteCommandReq);
-
-        ChatApplication.logDisplay("" + mRemoteCommandReq);
-
-        String url = ChatApplication.url + Constants.SEND_REMOTE_COMMAND;
-        new GetJsonTaskRemote(this, url, "POST", mRemoteCommandReq, new ICallBack() {
+        new GetJsonTaskRemote(this, url, "POST", obj.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
                 ChatApplication.logDisplay("onSuccess result : " + result.toString());
@@ -673,25 +771,26 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                 try {
 
                     int code = result.getInt("code");
-                    String message = result.getString("message");
-
                     if (code == 200) {
                         ChatApplication.isMoodFragmentNeedResume = true;
-                        SendRemoteCommandRes tmpIrBlasterCurrentStatusList = Common.jsonToPojo(result.toString(),
-                                SendRemoteCommandRes.class);
+//                        SendRemoteCommandRes tmpIrBlasterCurrentStatusList = Common.jsonToPojo(result.toString(), SendRemoteCommandRes.class);
 
-                        if (tmpIrBlasterCurrentStatusList.getData().getRemoteCurrentStatusDetails().getPower().equalsIgnoreCase("ON")) {
-                            isRemoteActive = 1;
-                        } else {
-                            isRemoteActive = 0;
+////                        if (tmpIrBlasterCurrentStatusList.getData().getRemoteCurrentStatusDetails().getPower().equalsIgnoreCase("ON")) {
+//                            isRemoteActive = 1;
+//                        } else {
+//                            isRemoteActive = 0;
+//                        }
+
+                        if(counting==0){
+                            isRemoteActive=isRemoteActive==1 ? 0:1;
+                            isPowerOn=isRemoteActive==1?true:false;
                         }
-
                         if (isPowerOn)
                             setPowerOnOff(TURN_OFF);
                         else
                             setPowerOnOff(TURN_ON);
 
-                        updateRemoteUI(tmpIrBlasterCurrentStatusList.getData().getRemoteCurrentStatusDetails());
+                        updateRemoteUI();
 
                     } else {
                         ChatApplication.showToast(IRBlasterRemote.this, mRemoteName.getText() + " " + getString(R.string.ir_error));
@@ -711,17 +810,14 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
     }
 
     /**
-     * @param tmpIrBlasterCurrentStatusList
+     * @param
      */
-    private void updateRemoteUI(SendRemoteCommandRes.Data.RemoteCurrentStatusDetails tmpIrBlasterCurrentStatusList) {
-        mTemp.setText("" + tmpIrBlasterCurrentStatusList.getTemperature() + Common.getC());
-        mImageAutoText.setText("" + String.format("Speed %s", tmpIrBlasterCurrentStatusList.getSpeed()));
+    private void updateRemoteUI() {
+        mTemp.setText("" + tempCurrent + Common.getC());
+        mImageAutoText.setText("" + String.format("Speed %s", moodName));
 
-        setSpeedText("" + tmpIrBlasterCurrentStatusList.getSpeed());
-        mRemoteName.setText("" + tmpIrBlasterCurrentStatusList.getRemoteName());
-
-        ChatApplication.logDisplay("Text : " + tmpIrBlasterCurrentStatusList.getTemperature());
-
+        setSpeedText("" + moodName);
+        mRemoteName.setText("" + mRemoteCommandList.getDevice().getDeviceName());
     }
 
     /*check remote active or not -1 than means remote inactive */
@@ -737,7 +833,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
     @Override
     public void selectMood(RemoteMoodModel remoteMoodModel) {
         moodName = remoteMoodModel.getMoodName();
-        remoteSpeed(remoteMoodModel.getMoodName());
+        remoteSpeed(moodName);
         moodRemoteAdapter.notifyDataSetChanged();
     }
 }

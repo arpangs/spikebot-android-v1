@@ -50,7 +50,7 @@ public class RepeaterAdapter extends RecyclerView.Adapter<RepeaterAdapter.Sensor
     public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
         holder.txtName.setText(arrayListLog.get(position).getRepeator_name());
-        if(arrayListLog.get(position).getIs_active().equals("1")){
+        if(arrayListLog.get(position).getIs_active().equals("y")){
             holder.imgRepeatar.setImageResource(R.drawable.repeater);
         }else {
             holder.imgRepeatar.setImageResource(R.drawable.repeater_with_red_cross);

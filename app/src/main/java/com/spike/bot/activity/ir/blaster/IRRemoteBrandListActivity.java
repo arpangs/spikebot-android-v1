@@ -61,7 +61,6 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
         mIrDeviceId = getIntent().getStringExtra("IR_DEVICE_ID");
         mIRBlasterModuleId = getIntent().getStringExtra("IR_BLASTER_MODULE_ID");
 
-        getSupportActionBar().setTitle("Select " + mRemoteName);
         bindView();
         getIRDetailsList();
     }
@@ -71,6 +70,7 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("Select Remote");
 
         mSearchBrand =  findViewById(R.id.search_brand);
         linear_progress =  findViewById(R.id.linear_progress);
@@ -127,7 +127,9 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
         showProgress();
         ActivityHelper.showProgressDialog(IRRemoteBrandListActivity.this, "Please Wait...", false);
 
-        String url = ChatApplication.url + Constants.getIRDeviceTypeBrands + "/" + mIrDeviceId;
+        String url = ChatApplication.url + Constants.getIRDeviceTypeBrands + "/1";
+
+        ChatApplication.logDisplay("url is "+url);
         new GetJsonTask(this, url, "GET", "", new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
@@ -137,7 +139,7 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
 
                 ActivityHelper.dismissProgressDialog();
                 try {
-
+                    ChatApplication.logDisplay("url is res "+result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
