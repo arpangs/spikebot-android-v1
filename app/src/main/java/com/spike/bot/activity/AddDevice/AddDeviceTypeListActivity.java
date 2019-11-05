@@ -1075,8 +1075,6 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                             countDownTimer.cancel();
                         }
 
-                        //  {"message":"","module_id":"1571132453177_me7iAEteu","room_list":
-                        //  [{"room_id":"1571125128842_9VIk2guMv","room_name":"jhanvi"},{"room_id":"1571129676518_D_axH9LXh","room_name":"Shivam Room"}]}
                         roomIdList.clear();
                         roomNameList.clear();
 

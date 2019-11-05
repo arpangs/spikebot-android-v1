@@ -131,6 +131,7 @@ public class Constants {
     public static final String createHueUSer = "/createHueUSer";
     public static final String addHueBridge = "/addHueBridge";
     public static final String searchBridges = "/searchBridges";
+    public static final String moodsmartremote = "/mood/smart-remote";
 
     //added : 3-10-2018
     public static final String GET_ALL_UNASSIGNED_DEVICES = "/getAllUnassignedDevices";
@@ -576,9 +577,25 @@ public class Constants {
         v1.setDrawingCacheEnabled(true);
         Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
 
-
         return bitmap;
+    }
 
+    public static String getFTemp(String value){
+        double a=Double.parseDouble(value);
+        double b=a*9/5+32;
+        int c=(int)b;
+        String r=String.valueOf(c);
+
+        return r;
+    }
+
+    public static String getCTemp(String value){
+        double a=Double.parseDouble(value);
+        double b=a-32;
+        double c=b*5/9;
+        int c1=(int)b;
+        String r=String.valueOf(c1);
+        return r;
     }
 
 

@@ -581,11 +581,9 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.txt_temp_in_cf.setVisibility(View.GONE);
                     holder.iv_icon_badge.setVisibility(View.GONE);
                     itemDeviceName = item.getDeviceName();
-                    if(item.getIsActive()==1){
-                        itemIcon = Common.getIcon(item.getDeviceStatus(), item.getDevice_icon());
-                    }else {
-                        itemIcon = Common.getIconInActive(item.getDeviceStatus(), item.getDevice_icon());
-                    }
+
+                    itemIcon = Common.getIcon(item.getDeviceStatus(), item.getDevice_icon());
+
                 } else {
                     /*--Sensor type start--*/
 
@@ -823,13 +821,13 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         // } else if (item.getIsActive() == 1) {
                         ChatApplication.logDisplay("temp_sensor is "+item.getIsActive()+" "+item.getSensor_icon());
                         if (item.getIsActive() == -1) {
-                            if (item.getSensor_type() != null && item.getSensor_type().equalsIgnoreCase(mContext.getResources().getString(R.string.temp_sensor))) {
-                                itemIcon = Common.getIconInActive(0, item.getSensor_icon());
+                            if (item.getDevice_icon().equalsIgnoreCase(mContext.getResources().getString(R.string.temp_sensor))) {
+                                itemIcon = Common.getIconInActive(0, item.getDevice_icon());
                             } else {
-                                itemIcon = Common.getIconInActive(0, item.getSensor_icon()); //unavailable means temp or dead sensor is on dead mode
+                                itemIcon = Common.getIconInActive(0, item.getDevice_icon()); //unavailable means temp or dead sensor is on dead mode
                             }
                         } else{
-                            itemIcon = Common.getIcon(status, item.getSensor_icon());
+                            itemIcon = Common.getIcon(1, item.getDevice_icon());
 
                         }
 

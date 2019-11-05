@@ -68,7 +68,6 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
     private RemoteDetailsRes mRemoteList;
     private RemoteDetailsRes.Data mRemoteCommandList;
-    private RemoteDetailsRes.Data mRemoteCurrentStatusList;
 
 //    private List<String> speedList;
     public RecyclerView recyclerMode;
@@ -169,18 +168,18 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         String value[]=mRemoteCommandList.getDevice().getDeviceSubStatus().split("-");
         modeType=value[0];
         tempCurrent= Integer.parseInt(value[1]);
-        isRemoteActive= Integer.parseInt(mRemoteCurrentStatusList.getDevice().getDeviceStatus());
+        isRemoteActive= Integer.parseInt(mRemoteCommandList.getDevice().getDeviceStatus());
         mTemp.setText("" + tempCurrent+ Common.getC());
-        if(mRemoteCurrentStatusList.getDevice().getDeviceStatus().equalsIgnoreCase("0")){
+        if(mRemoteCommandList.getDevice().getDeviceStatus().equalsIgnoreCase("0")){
             txtAcState.setText("Ac state : OFF");
         }else {
             txtAcState.setText("Ac state : ON");
         }
         mImageAutoText.setText(String.format("Speed %s", modeType));
         moodName = modeType;
-        setPowerOnOff(mRemoteCurrentStatusList.getDevice().getDeviceStatus());
-        mRemoteName.setText(mRemoteCurrentStatusList.getDevice().getDeviceName());
-        mBrandBottom.setText(mRemoteCurrentStatusList.getDevice().getDeviceMeta().getDeviceBrand() + "{" + mRemoteCurrentStatusList.getDevice().getDeviceMeta().getDeviceModel() + "}");
+        setPowerOnOff(mRemoteCommandList.getDevice().getDeviceStatus());
+        mRemoteName.setText(mRemoteCommandList.getDevice().getDeviceName());
+        mBrandBottom.setText(mRemoteCommandList.getDevice().getDeviceMeta().getDeviceBrand() + "{" + mRemoteCommandList.getDevice().getDeviceMeta().getDeviceModel() + "}");
 
         tempMinus = 16;
         tempPlus = 30;
@@ -211,7 +210,6 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         new GetJsonTask(this, url, "POST", object.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
                 try {
                     ChatApplication.logDisplay("Res : " + result.toString());
                     int code = result.getInt("code");
@@ -221,8 +219,6 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                     if (code == 200) {
                         mRemoteList = Common.jsonToPojo(result.toString(), RemoteDetailsRes.class);
                         mRemoteCommandList = mRemoteList.getData();
-                        mRemoteCurrentStatusList = mRemoteList.getData();
-
                         initView();
 
                     } else {
@@ -414,7 +410,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         mRemoteDefaultTemp = mDialog.findViewById(R.id.edt_remote_tmp);
 
         try {
-            mEdtRemoteName.setText("" + mRemoteCurrentStatusList.getDevice().getDeviceName());
+            mEdtRemoteName.setText("" + mRemoteCommandList.getDevice().getDeviceName());
             mEdtRemoteName.setSelection(mEdtRemoteName.getText().toString().length());
             mRemoteDefaultTemp.setText("" + tempCurrent);
         } catch (Exception ex) {
@@ -427,11 +423,15 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         for(int i=0; i<mIRDeviceList.size(); i++){
             arrayList.add(mIRDeviceList.get(i).getDeviceName());
         }
+
+        if(arrayList.size()==0){
+            arrayList.add("No IR Blaster");
+        }
         final ArrayAdapter roomAdapter = new ArrayAdapter(getApplicationContext(), R.layout.spinner, arrayList);
         mSpinnerBlaster.setAdapter(roomAdapter);
 
         for (int i = 0; i < arrayList.size(); i++) {
-            if (arrayList.get(i).equalsIgnoreCase(mRemoteCurrentStatusList.getDevice().getDeviceName())) {
+            if (arrayList.get(i).equalsIgnoreCase(mRemoteCommandList.getDevice().getDeviceName())) {
                 mSpinnerBlaster.setSelection(i);
             }
         }
@@ -478,6 +478,11 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                 if (TextUtils.isEmpty(mEdtRemoteName.getText().toString().trim())) {
                     mEdtRemoteName.requestFocus();
                     mEdtRemoteName.setError("Enter Remote name");
+                    return;
+                }
+
+                if (mSpinnerBlaster.getSelectedItem().toString().equalsIgnoreCase("No IR Blaster")) {
+                    Common.showToast("Select Blaster");
                     return;
                 }
 
@@ -536,23 +541,14 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             return;
         }
 
-        IRBlasterAddRes.Data.IrList ir = (IRBlasterAddRes.Data.IrList) mSpinnerBlaster.getSelectedItem();
-
-        if (!isEdit) {
-            if (ir.getIrBlasterName().equalsIgnoreCase("Select Blaster")) {
-                Common.showToast("Select Blaster");
-                return;
-            }
-        }
-
         JSONObject obj = new JSONObject();
         try {
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             obj.put("user_id", Common.getPrefValue(getApplicationContext(), Constants.USER_ID));
-//            obj.put("device_id",mRemoteCommandList.getDevice().getde);
+            obj.put("device_id",mRemoteCommandList.getDevice().getDevice_id());
             obj.put("device_name", remoteName);
-            obj.put("device_icon", "ir_blaster");
+//            obj.put("device_icon", "ir_blaster");
             obj.put("device_default_status", ""+mSpinnerMode.getSelectedItem().toString()+"-"+mRemoteDefaultTemp.getText().toString().trim());
             obj.put("ir_blaster_id", mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId());
 
@@ -637,7 +633,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
                     for (int i = 0; i < irList.size(); i++) {
                         IRBlasterAddRes.Data.IrList ir = irList.get(i);
-                        if (ir.getIrBlasterId().equalsIgnoreCase(mRemoteCurrentStatusList.getDevice().getModuleId())) {
+                        if (ir.getIrBlasterId().equalsIgnoreCase(mRemoteCommandList.getDevice().getModuleId())) {
                             mSpinnerBlaster.setSelection(i);
                         }
                     }
@@ -680,13 +676,13 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
     private void deleteRemote() {
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            ChatApplication.showToast(getApplicationContext(), ""+R.string.disconnect);
             return;
         }
 
         JSONObject object = new JSONObject();
         try {
-            object.put("module_id", module_id);
+            object.put("device_id", mRemoteCommandList.getDevice().getDevice_id());
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -694,7 +690,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             e.printStackTrace();
         }
 
-        String url = ChatApplication.url + Constants.DELETE_REMOTE;
+        String url = ChatApplication.url + Constants.DELETE_MODULE;
 
         new GetJsonTask(this, url, "POST", object.toString(), new ICallBack() {
             @Override
@@ -736,7 +732,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
     private void sendRemoteCommand(final int counting) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            ChatApplication.showToast(getApplicationContext(), ""+R.string.disconnect);
             return;
         }
 

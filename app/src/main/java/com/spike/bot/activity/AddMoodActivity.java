@@ -203,10 +203,9 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                     for (DeviceVO deviceVO : deviceList) {
 
                         for (String deviceVORoot : deviceVOList) {
-
-                            ChatApplication.logDisplay("panel id is "+deviceVO.getDeviceId());
-                            if (deviceVO.getSensor_type() != null && deviceVO.getSensor_type().equalsIgnoreCase("remote")) { //if device type sensor than compare sensor id instead of room device id
-
+                            ChatApplication.logDisplay("panel id is "+deviceVO.getDeviceType());
+                            if (deviceVO.getDeviceType().equalsIgnoreCase("remote")) { //if device type sensor than compare sensor id instead of room device id
+                                ChatApplication.logDisplay("panel id is "+deviceVO.getDeviceType() +"   "+deviceVO.getDeviceId()+"   "+deviceVORoot);
                                 if (deviceVO.getDeviceId().equalsIgnoreCase(deviceVORoot)) {
 
                                     roomVO.setExpanded(true);
@@ -227,6 +226,8 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         }
 
         /**sensor unselect condition */
+
+        ArrayList<RoomVO> roomListTemp=roomList;
         for (int i = 0; i < roomList.size(); i++) {
             for (int j = 0; j < roomList.get(i).getPanelList().size(); j++) {
 
@@ -235,24 +236,14 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                 }
 
                 for (int k = 0; k < roomList.get(i).getPanelList().get(j).getDeviceList().size(); k++) {
-                    if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).isSensor() &&
-                            roomList.get(i).getPanelList().get(j).isActivePanel()) {
-                        if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_type().equalsIgnoreCase("temp_sensor")) {
-                            roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
-                            roomList.get(i).getPanelList().get(j).setActivePanel(false);
-                        } else if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("door_sensor")) {
-                            roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
-                            roomList.get(i).getPanelList().get(j).setActivePanel(false);
-                        }else if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("door_sensor")) {
-                            roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
-                            roomList.get(i).getPanelList().get(j).setActivePanel(false);
-                        } else if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("gas_sensor")) {
+
+                    if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).isSensor() && roomList.get(i).getPanelList().get(j).isActivePanel()) {
+                        if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_type().equalsIgnoreCase("temp_sensor") ||
+                                roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("gas_sensor") ||
+                                roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("door_sensor")) {
                             roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
                             roomList.get(i).getPanelList().get(j).setActivePanel(false);
                         }
-//                        else if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getTo_use().equalsIgnoreCase("0")) {
-//                            roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
-//                        }
                     }
                 }
             }

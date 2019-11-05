@@ -813,10 +813,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         }
 
         ChatApplication.logDisplay("Device roomPanelOnOff obj "+url+" "+ obj.toString());
-        if(mSocket!=null && mSocket.connected()){
-            ChatApplication.logDisplay("Device roomPanelOnOff obj socket");
-        }
-
         new GetJsonTask(activity, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {

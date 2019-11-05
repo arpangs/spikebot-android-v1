@@ -25,10 +25,13 @@ import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.ir.blaster.IRRemoteAdd;
 import com.spike.bot.adapter.SmartRemoteAdapter;
+import com.spike.bot.adapter.irblaster.IRBlasterAddListAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
+import com.spike.bot.model.IRDeviceDetailsRes;
 import com.spike.bot.model.SmartRemoteModel;
 
 import org.json.JSONArray;
@@ -36,6 +39,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -48,9 +52,10 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
 
     public Toolbar toolbar;
     public RecyclerView recyclerRemoteList;
+    TextView txtNodataFound;
     public FloatingActionButton floatingActionButton;
     public SmartRemoteAdapter smartRemoteAdapter;
-    public ArrayList<SmartRemoteModel> arrayList = new ArrayList<>();
+    public List<IRDeviceDetailsRes.Data> arrayList = new ArrayList<>();
 
     private Socket mSocket;
     boolean addRoom = false;
@@ -73,6 +78,7 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
         toolbar.setTitle("Smart Remote List");
         recyclerRemoteList = findViewById(R.id.recyclerRemoteList);
         floatingActionButton = findViewById(R.id.fab);
+        txtNodataFound = findViewById(R.id.txtNodataFound);
         floatingActionButton.setOnClickListener(this);
 
 
@@ -91,7 +97,7 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
     public void onDestroy() {
         super.onDestroy();
         if (mSocket != null) {
-            mSocket.off("configureSmartRemote", configureGatewayDevice);
+            mSocket.off("configureSmartRemote", configureDevice);
         }
     }
 
@@ -115,11 +121,11 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
         }
         mSocket = app.getSocket();
         if (mSocket != null) {
-            mSocket.on("configureSmartRemote", configureGatewayDevice);
+            mSocket.on("configureDevice", configureDevice);
         }
     }
 
-    private Emitter.Listener configureGatewayDevice = new Emitter.Listener() {
+    private Emitter.Listener configureDevice = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             SmartRemoteActivity.this.runOnUiThread(new Runnable() {
@@ -131,15 +137,17 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
                         }
 
                         JSONObject object = new JSONObject(args[0].toString());
+                        ChatApplication.logDisplay("configureDevice is " + object);
 
-                        String message = object.getString("message");
+                        //{"message":"","module_id":"1572951765645_ZE3EGTF4n","module_type":"smart_remote","total_devices":1,"room_list":[{"room_id":"1571986283894_cvUfVSpja","room_name":"Jhanvi M."},{"room_id":"1572851100674_c2sWW4eIR","room_name":"testRoom"}]}
+                        String message = object.optString("message");
 
-                        String temp_sensor_module_id = object.getString("smart_remote_module_id");
+                        String module_id = object.optString("module_id");
 
                         ActivityHelper.dismissProgressDialog();
 
                         if (TextUtils.isEmpty(message)) {
-                            showAddSensorDialog(temp_sensor_module_id);
+                            showAddSensorDialog(module_id,object.optString("module_type"));
                         } else {
                             showConfigAlert(message);
                         }
@@ -157,30 +165,30 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
      * @param door_module_id
      * @param
      */
-    private void showAddSensorDialog(String door_module_id) {
+    private void showAddSensorDialog(String door_module_id,String module_type) {
 
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_add_sensordoor);
         dialog.setCanceledOnTouchOutside(false);
 
-        final EditText edt_door_name = (EditText) dialog.findViewById(R.id.txt_door_sensor_name);
-        final TextView edt_door_module_id = (TextView) dialog.findViewById(R.id.txt_module_id);
+        final EditText edt_door_name =  dialog.findViewById(R.id.txt_door_sensor_name);
+        final TextView edt_door_module_id =  dialog.findViewById(R.id.txt_module_id);
 
-        TextView dialogTitle = (TextView) dialog.findViewById(R.id.tv_title);
-        TextView txt_sensor_name = (TextView) dialog.findViewById(R.id.txt_sensor_name);
+        TextView dialogTitle =  dialog.findViewById(R.id.tv_title);
+        TextView txt_sensor_name =  dialog.findViewById(R.id.txt_sensor_name);
         LinearLayout linearListRoom = dialog.findViewById(R.id.linearListRoom);
         linearListRoom.setVisibility(View.GONE);
 
         dialogTitle.setText("Add Smart Remote");
-        txt_sensor_name.setText("Smart Remote Name");
+        txt_sensor_name.setText("Remote Name");
 
         edt_door_module_id.setText(door_module_id);
         edt_door_module_id.setFocusable(false);
 
-        Button btn_cancel = (Button) dialog.findViewById(R.id.btn_door_cancel);
-        Button btn_save = (Button) dialog.findViewById(R.id.btn_door_save);
-        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
+        Button btn_cancel =  dialog.findViewById(R.id.btn_door_cancel);
+        Button btn_save =  dialog.findViewById(R.id.btn_door_save);
+        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
 
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -203,7 +211,7 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
                     ChatApplication.showToast(SmartRemoteActivity.this, "Please enter Smart remote name");
                 } else {
                     ChatApplication.keyBoardHideForce(SmartRemoteActivity.this);
-                    saveSensor(dialog, edt_door_name.getText().toString(), edt_door_module_id.getText().toString());
+                    saveSensor(dialog, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), module_type);
                 }
             }
         });
@@ -232,7 +240,7 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
     }
 
 
-    private void saveSensor(final Dialog dialog, String door_name, String door_module_id) {
+    private void saveSensor(final Dialog dialog, String door_name, String door_module_id ,String module_type) {
 
         if (!ActivityHelper.isConnectingToInternet(SmartRemoteActivity.this)) {
             Toast.makeText(SmartRemoteActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -243,10 +251,19 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
 
         JSONObject obj = new JSONObject();
         try {
-            obj.put("smart_remote_module_id", door_module_id);
+            //  obj.put("room_id", roomIdList.get(room_pos));
+            //            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            //            obj.put("device_name", door_name);
+            //            obj.put("module_id", door_module_id);
+            //            obj.put("module_type", module_type);
+            //
+            //            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            //            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+            obj.put("module_id", door_module_id);
             obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put("smart_remote_name", door_name);
-            obj.put("is_update", 0);
+            obj.put("device_name", door_name);
+            obj.put("module_type", module_type);
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
@@ -254,7 +271,7 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
             e.printStackTrace();
         }
 
-        String url = ChatApplication.url + Constants.addSmartRemote;
+        String url = ChatApplication.url + Constants.deviceadd;
 
         new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
@@ -355,7 +372,7 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
         startTimer();
         addRoom = true;
 
-        String url = ChatApplication.url + Constants.configuresmartRemoteRequest;
+        String url = ChatApplication.url + Constants.deviceconfigure+"smart_remote";
         new GetJsonTask(this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -375,33 +392,37 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
         }
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
 
-        String url = ChatApplication.url + Constants.getSmartRemoteList;
-        new GetJsonTask(this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            obj.put("device_type", "smart_remote");
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String url = ChatApplication.url + Constants.devicefind;
+        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-
+                ChatApplication.logDisplay("remote res : " + result.toString());
                 try {
-                    if (arrayList != null) {
-                        arrayList.clear();
-                    }
-                    JSONObject object = new JSONObject(result.toString());
-                    JSONObject object1 = object.optJSONObject("data");
-                    JSONArray jsonArray = object1.optJSONArray("smart_remote_list");
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject object2 = jsonArray.optJSONObject(i);
-
-                        SmartRemoteModel smartRemoteModel = new SmartRemoteModel();
-                        smartRemoteModel.setSmart_remote_module_id(object2.optString("smart_remote_module_id"));
-                        smartRemoteModel.setSmart_remote_name(object2.optString("smart_remote_name"));
-
-                        arrayList.add(smartRemoteModel);
-                    }
+                    IRDeviceDetailsRes irDeviceDetailsRes = Common.jsonToPojo(result.toString(), IRDeviceDetailsRes.class);
+                    arrayList = irDeviceDetailsRes.getData();
 
                     if (arrayList.size() > 0) {
+                        txtNodataFound.setVisibility(View.GONE);
+                        recyclerRemoteList.setVisibility(View.VISIBLE);
                         setAdapter();
+                    }else {
+                        txtNodataFound.setVisibility(View.VISIBLE);
+                        recyclerRemoteList.setVisibility(View.VISIBLE);
+                        ChatApplication.showToast(getApplicationContext(),"No data found.");
                     }
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

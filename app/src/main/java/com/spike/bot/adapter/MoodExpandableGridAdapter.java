@@ -263,7 +263,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                 final DeviceVO item = (DeviceVO) mDataArrayList.get(position);
 
                 holder.itemTextView.setText(item.getDeviceName());
-                ChatApplication.logDisplay("status update room mood adapter device call");
+                ChatApplication.logDisplay("status update room mood adapter device call "+item.getDeviceName());
                 if(item.getDevice_icon().equalsIgnoreCase("2")){
                     if(item.getIsActive() == 0){
                         holder.iv_icon.setImageResource(Common.getIconInActive(item.getDeviceStatus(),item.getDevice_icon()));
@@ -433,9 +433,9 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
         JSONObject obj = new JSONObject();
         try {
 
-            obj.put("mood_id", module_id);
+            obj.put("room_id", module_id);
             obj.put("user_id", Common.getPrefValue(mContext, Constants.USER_ID) );
-            obj.put("smart_remote_number",""+value);
+            obj.put("smart_remote_no",""+value);
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
 
@@ -443,7 +443,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
             e.printStackTrace();
         }
 
-        String url =  ChatApplication.url + Constants.assignNumberToMood;
+        String url =  ChatApplication.url + Constants.moodsmartremote;
         new GetJsonTask(mContext,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {

@@ -77,7 +77,6 @@ public class MoodDeviceListLayoutHelper implements SectionStateChangeListener {
     ArrayList<DeviceVO> roomDevices = new ArrayList<>();
 
     private void generateDataList () {
-        boolean isSensor=false;
         roomDevices = getSelectedItemList();
         mDataArrayList.clear();
         for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
@@ -91,7 +90,16 @@ public class MoodDeviceListLayoutHelper implements SectionStateChangeListener {
                     mDataArrayList.add(panelList.get(i));
                     //add all device switch
 
-                    if(panelList.get(i).isActivePanel()){
+                    if(panelList.get(i).isSensorPanel()){
+                        /*for only remote add*/
+                        ArrayList<DeviceVO> deviceVOArrayList=new ArrayList<>();
+                        for(int k=0; k<panelList.get(i).getDeviceList().size(); k++){
+                            if(panelList.get(i).getDeviceList().get(k).getDeviceType().equalsIgnoreCase("remote")){
+                                deviceVOArrayList.add(panelList.get(i).getDeviceList().get(k));
+                            }
+                        }
+                        mDataArrayList.addAll(deviceVOArrayList);
+                    }else {
                         mDataArrayList.addAll(panelList.get(i).getDeviceList());
                     }
                 }

@@ -21,6 +21,7 @@ import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.customview.OnSwipeTouchListener;
 import com.spike.bot.listener.OnNotificationSensorContextMenu;
+import com.spike.bot.model.RemoteDetailsRes;
 import com.spike.bot.model.SensorResModel;
 
 import java.util.ArrayList;
@@ -30,13 +31,13 @@ import java.util.ArrayList;
  * Gmail : vipul patel
  */
 public class TempMultiSensorAdapter extends RecyclerView.Adapter<TempMultiSensorAdapter.SensorViewHolder> {
-    ArrayList<SensorResModel.DATA.TempList.TempNotificationList> notificationList = new ArrayList<>();
-    SensorResModel.DATA.TempList.TempNotificationList notification;
+    ArrayList<RemoteDetailsRes.Data.Alert> notificationList = new ArrayList<>();
+    RemoteDetailsRes.Data.Alert notification;
     private OnNotificationSensorContextMenu onNotificationContextMenu;
     private Context mContext;
     String minVal = "", maxVal = "";
 
-    public TempMultiSensorAdapter(ArrayList<SensorResModel.DATA.TempList.TempNotificationList> arrayList, boolean cfType, OnNotificationSensorContextMenu onNotificationContextMenu) {
+    public TempMultiSensorAdapter(ArrayList<RemoteDetailsRes.Data.Alert> arrayList, boolean cfType, OnNotificationSensorContextMenu onNotificationContextMenu) {
         this.notificationList = arrayList;
         this.onNotificationContextMenu = onNotificationContextMenu;
     }
@@ -62,14 +63,16 @@ public class TempMultiSensorAdapter extends RecyclerView.Adapter<TempMultiSensor
 
         if (notification.isCFActive()) {
 
-            if (!TextUtils.isEmpty(notification.getMinValueC()) && !notification.getMinValueC().equalsIgnoreCase("null") && !TextUtils.isEmpty(notification.getMaxValueC()) && !notification.getMaxValueC().equalsIgnoreCase("null")) {
-                minVal = Common.parseCelsius(notification.getMinValueC());
-                maxVal = Common.parseCelsius(notification.getMaxValueC());
+            if (!TextUtils.isEmpty(notification.getMin_temp()) && !notification.getMin_temp().equalsIgnoreCase("null") &&
+                    !TextUtils.isEmpty(notification.getMax_temp()) && !notification.getMax_temp().equalsIgnoreCase("null")) {
+                minVal = Common.parseCelsius(notification.getMin_temp());
+                maxVal = Common.parseCelsius(notification.getMax_temp());
             }
         } else {
-            if (!TextUtils.isEmpty(notification.getMinValueF()) && !notification.getMinValueF().equalsIgnoreCase("null") && !TextUtils.isEmpty(notification.getMaxValueF()) && !notification.getMaxValueF().equalsIgnoreCase("null")) {
-                minVal = Common.parseFahrenheit(notification.getMinValueF());
-                maxVal = Common.parseFahrenheit(notification.getMaxValueF());
+            if (!TextUtils.isEmpty(notification.getMin_temp()) && !notification.getMin_temp().equalsIgnoreCase("null") &&
+                    !TextUtils.isEmpty(notification.getMax_temp()) && !notification.getMax_temp().equalsIgnoreCase("null")) {
+                minVal = Common.parseFahrenheit(notification.getMin_temp());
+                maxVal = Common.parseFahrenheit(notification.getMax_temp());
             }
         }
 
@@ -77,7 +80,7 @@ public class TempMultiSensorAdapter extends RecyclerView.Adapter<TempMultiSensor
         holder.txtMax.setText(maxVal);
 
         if (!TextUtils.isEmpty(notification.getIsActive()) && !notification.getIsActive().equalsIgnoreCase("null")) {
-            holder.switchCompat.setChecked(Integer.parseInt(notification.getIsActive()) > 0);
+            holder.switchCompat.setChecked((notification.getIsActive()).equals("n")?false:true);
         }
 
         if (!TextUtils.isEmpty(notification.getDays()) && !notification.getDays().equalsIgnoreCase("null")) {
@@ -131,7 +134,7 @@ public class TempMultiSensorAdapter extends RecyclerView.Adapter<TempMultiSensor
      * @param notification
      * @param position
      */
-    private void displayContextMenu(View v, final SensorResModel.DATA.TempList.TempNotificationList notification, final int position) {
+    private void displayContextMenu(View v, final RemoteDetailsRes.Data.Alert notification, final int position) {
 
         PopupMenu popup = new PopupMenu(mContext, v);
         @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(mContext, R.style.PopupMenu);
@@ -174,13 +177,13 @@ public class TempMultiSensorAdapter extends RecyclerView.Adapter<TempMultiSensor
         public SensorViewHolder(View itemView) {
             super(itemView);
 
-            txtMin = (AppCompatTextView) itemView.findViewById(R.id.txt_min);
-            txtMax = (AppCompatTextView) itemView.findViewById(R.id.txt_max);
-            txtDays = (AppCompatTextView) itemView.findViewById(R.id.txt_days);
+            txtMin =  itemView.findViewById(R.id.txt_min);
+            txtMax =  itemView.findViewById(R.id.txt_max);
+            txtDays =  itemView.findViewById(R.id.txt_days);
 
-            switchCompat = (SwitchCompat) itemView.findViewById(R.id.switch_onoff);
-            imgOptions = (AppCompatImageView) itemView.findViewById(R.id.img_options);
-            viewLine = (View) itemView.findViewById(R.id.viewLine);
+            switchCompat =  itemView.findViewById(R.id.switch_onoff);
+            imgOptions =  itemView.findViewById(R.id.img_options);
+            viewLine =  itemView.findViewById(R.id.viewLine);
 
         }
     }

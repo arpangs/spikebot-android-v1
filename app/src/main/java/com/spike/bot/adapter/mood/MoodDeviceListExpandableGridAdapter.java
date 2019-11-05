@@ -55,6 +55,7 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
 
     /**
      * Mood Device List Expandable Grid Adapter
+     *
      * @param context
      * @param dataArrayList
      * @param gridLayoutManager
@@ -74,22 +75,23 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                return isSection(position) || isPanel(position) ? gridLayoutManager.getSpanCount():1 ;
+                return isSection(position) || isPanel(position) ? gridLayoutManager.getSpanCount() : 1;
             }
         });
     }
 
     /**
      * set selection room device id
+     *
      * @param room_device_id
      */
-    public void setSelection(String room_device_id){
+    public void setSelection(String room_device_id) {
         String[] strArray = room_device_id.split(",");
         List<String> listDeviceIds = Arrays.asList(strArray);
-        for(int i=0;i<mDataArrayList.size();i++){
-            if(mDataArrayList.get(i) instanceof DeviceVO){
+        for (int i = 0; i < mDataArrayList.size(); i++) {
+            if (mDataArrayList.get(i) instanceof DeviceVO) {
                 final DeviceVO item = (DeviceVO) mDataArrayList.get(i);
-                if(listDeviceIds.contains(item.getDeviceId())){
+                if (listDeviceIds.contains(item.getDeviceId())) {
                     item.setSelected(true);
                 }
             }
@@ -99,6 +101,7 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
 
     /**
      * check if given number positon is room section or not
+     *
      * @param position
      * @return
      */
@@ -108,6 +111,7 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
 
     /**
      * check if given number of positon is panel or not
+     *
      * @param position
      * @return
      */
@@ -124,11 +128,11 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         switch (holder.viewType) {
-            case VIEW_TYPE_SECTION :
+            case VIEW_TYPE_SECTION:
                 holder.img_room_delete.setVisibility(View.GONE);
-                if(position == 0){
+                if (position == 0) {
                     holder.view_line_top.setVisibility(View.GONE);
-                }else{
+                } else {
                     holder.view_line_top.setVisibility(View.VISIBLE);
                 }
 
@@ -148,8 +152,8 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                 holder.sectionToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if(mContext!=null){
-                            Common.hideSoftKeyboard((Activity)mContext);
+                        if (mContext != null) {
+                            Common.hideSoftKeyboard((Activity) mContext);
                         }
                         mSectionStateChangeListener.onSectionStateChanged(section, isChecked);
                     }
@@ -157,82 +161,78 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                 holder.sectionToggleButton.setChecked(section.isExpanded);
 
                 break;
-            case VIEW_TYPE_PANEL :
+            case VIEW_TYPE_PANEL:
                 final PanelVO panel1 = (PanelVO) mDataArrayList.get(position);
                 holder.sectionTextView.setText(panel1.getPanelName());
                 holder.iv_room_panel_onoff.setVisibility(View.GONE);
 
-                if(panel1.isActivePanel()){
+                if (panel1.isActivePanel()) {
                     holder.sectionTextView.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     holder.sectionTextView.setVisibility(View.GONE);
                 }
                 break;
-            case VIEW_TYPE_ITEM :
+            case VIEW_TYPE_ITEM:
                 final DeviceVO item = (DeviceVO) mDataArrayList.get(position);
 
-                if(item.isSensor() || item.getDeviceType().equalsIgnoreCase("2")){
+                if (item.isSensor() || item.getDeviceType().equalsIgnoreCase("2")) {
 
-                    if(TextUtils.isEmpty(item.getSensor_icon())){
+                    if (TextUtils.isEmpty(item.getSensor_icon())) {
 
                         holder.itemTextView.setText(item.getDeviceName());
 
-                        if(item.getIsActive() == 0){
-                                holder.iv_icon.setImageResource(Common.getIconInActive(1,item.getDevice_icon()));//item.getDeviceStatus()
-                        }else{
-                                holder.iv_icon.setImageResource(Common.getIcon(0,item.getDevice_icon()));//item.getDeviceStatus()
+                        if (item.getIsActive() == 0) {
+                            holder.iv_icon.setImageResource(Common.getIconInActive(1, item.getDevice_icon()));//item.getDeviceStatus()
+                        } else {
+                            holder.iv_icon.setImageResource(Common.getIcon(0, item.getDevice_icon()));//item.getDeviceStatus()
                         }
-                    }else{
+                    } else {
 
                         holder.itemTextView.setText(item.getSensor_name());
 
-                        if(item.getDeviceType().equalsIgnoreCase("2") && item.getIsActive() == 0){
-                            if(item.getSensor_icon()!=null){
-                                holder.iv_icon.setImageResource(Common.getIconInActive(1,item.getSensor_icon()));//item.getDeviceStatus()
+                        if (item.getDeviceType().equalsIgnoreCase("2") && item.getIsActive() == 0) {
+                            if (item.getSensor_icon() != null) {
+                                holder.iv_icon.setImageResource(Common.getIconInActive(1, item.getSensor_icon()));//item.getDeviceStatus()
                             }
-                        }else{
-                            if(item.getSensor_icon()!=null){
-                                holder.iv_icon.setImageResource(Common.getIcon(0,item.getSensor_icon()));//item.getDeviceStatus()
+                        } else {
+                            if (item.getSensor_icon() != null) {
+                                holder.iv_icon.setImageResource(Common.getIcon(0, item.getSensor_icon()));//item.getDeviceStatus()
                             }
                         }
                     }
 
-                }else{
+                } else {
                     holder.itemTextView.setText(item.getDeviceName());
-                    if(item.getDeviceType()!=null){
-                        holder.iv_icon.setImageResource(Common.getIcon(0,item.getDevice_icon()));//item.getDeviceStatus()
+                    if (item.getDeviceType() != null) {
+                        holder.iv_icon.setImageResource(Common.getIcon(0, item.getDevice_icon()));//item.getDeviceStatus()
                     }
                 }
-              if(item.isSelected()){
-                    if(item.isSensor()){
-                        if(item.getDeviceType().equalsIgnoreCase("2")){
-                            holder.iv_icon_select.setVisibility(View.VISIBLE);
-                        }else {
-                            holder.iv_icon_select.setVisibility(View.GONE);
-                        }
-                    }else {
+                if (item.isSelected() && item.isSensor()) {
+                    if (item.getDeviceType().equalsIgnoreCase("remote")) {
                         holder.iv_icon_select.setVisibility(View.VISIBLE);
+                    } else {
+                        holder.iv_icon_select.setVisibility(View.GONE);
                     }
-              }else{
-                  holder.iv_icon_select.setVisibility(View.GONE);
-              }
+                } else {
+                    holder.iv_icon_select.setVisibility(View.GONE);
+                }
 
-                if(item.getSensor_icon()!=null && item.getSensor_icon().equalsIgnoreCase("Remote_AC") && item.getIsActive() == 0){
-                   // holder.view.setClickable(false);
-                    holder.iv_icon.setImageResource(Common.getIconInActive(0,item.getSensor_type()));//item.getDeviceStatus()
+                if (item.getSensor_icon() != null && item.getSensor_icon().equalsIgnoreCase("Remote_AC") && item.getIsActive() == 0) {
+                    // holder.view.setClickable(false);
+                    holder.iv_icon.setImageResource(Common.getIconInActive(0, item.getSensor_type()));//item.getDeviceStatus()
 
-                }else if(item.getSensor_icon()!=null && item.getSensor_icon().equalsIgnoreCase("Remote_AC") && item.getIsActive() == 1){
+                } else if (item.getSensor_icon() != null && item.getSensor_icon().equalsIgnoreCase("Remote_AC") && item.getIsActive() == 1) {
                     holder.view.setClickable(true);
-                    holder.iv_icon.setImageResource(Common.getIcon(0,item.getSensor_icon()));
+                    holder.iv_icon.setImageResource(Common.getIcon(0, item.getSensor_icon()));
                 }
 
-                String isUse="";
-                if(!TextUtils.isEmpty(item.getTo_use())){
-                    isUse=item.getTo_use();
+                String isUse = "";
+                if (!TextUtils.isEmpty(item.getTo_use())) {
+                    isUse = item.getTo_use();
                 }
 
-                if(isUse.equalsIgnoreCase("0")){
-                    holder.iv_icon.setImageResource(Common.getIcon(0,item.getSensor_icon()));
+                if (isUse.equalsIgnoreCase("0")) {
+                    holder.iv_icon.setImageResource(Common.getIcon(0, item.getSensor_icon()));
                 }
 
                 holder.view.setId(position);
@@ -253,22 +253,21 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
 //
 //                        }else {
 
-                            if (item.getSensor_icon() != null && item.getSensor_icon().equalsIgnoreCase("Remote_AC")) {
-                                if (item.getIsActive() == 0) {
-                                } else {
-                                    item.setSelected(!item.isSelected());
-                                    notifyItemChanged(v.getId(), item);
-                                }
-
-                            }else {
-                                ChatApplication.logDisplay("item is "+item.isSelected());
-                                item.setSelected(!item.isSelected());
-                                notifyItemChanged(v.getId(), item);
-                                ((DeviceVO) mDataArrayList.get(v.getId())).setSelected(item.isSelected());
-                                final DeviceVO item1 = (DeviceVO) mDataArrayList.get(v.getId());
-                                ChatApplication.logDisplay("item is111 "+item.isSelected());
-                                ChatApplication.logDisplay("item is11111 "+item1.isSelected());
-                            }
+//                            if (item.getDevice_icon().equalsIgnoreCase("remote")) {
+//                                if (item.getIsActive() != -1) {
+//                                    item.setSelected(!item.isSelected());
+//                                    notifyItemChanged(v.getId(), item);
+//                                }
+//
+//                            }else {
+                        ChatApplication.logDisplay("item is " + item.isSelected());
+                        item.setSelected(!item.isSelected());
+                        notifyItemChanged(v.getId(), item);
+                        ((DeviceVO) mDataArrayList.get(v.getId())).setSelected(item.isSelected());
+                        final DeviceVO item1 = (DeviceVO) mDataArrayList.get(v.getId());
+                        ChatApplication.logDisplay("item is111 " + item.isSelected());
+                        ChatApplication.logDisplay("item is11111 " + item1.isSelected());
+//                            }
 //                        }
                     }
                 });
@@ -308,25 +307,24 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
 
     @Override
     public int getItemViewType(int position) {
-        if (isSection(position)){
+        if (isSection(position)) {
             return VIEW_TYPE_SECTION;
-        }
-        else if(isPanel(position)){
+        } else if (isPanel(position)) {
             return VIEW_TYPE_PANEL;
-        }
-        else {
+        } else {
             return VIEW_TYPE_ITEM;
         }
     }
+
     protected static class ViewHolder extends RecyclerView.ViewHolder {
 
         //common
-        View view,view_line_top;
+        View view, view_line_top;
         int viewType;
-        ImageView iv_room_panel_onoff,img_room_delete,iv_icon,iv_icon_text,iv_icon_select;
+        ImageView iv_room_panel_onoff, img_room_delete, iv_icon, iv_icon_text, iv_icon_select;
         //for section
         ToggleButton sectionToggleButton;
-        TextView sectionTextView,text_section_on_off,text_section_edit,itemTextView;
+        TextView sectionTextView, text_section_on_off, text_section_edit, itemTextView;
         LinearLayout ll_room_item;
         RelativeLayout rel_main_view;
 
@@ -336,77 +334,78 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
             this.view = view;
 
             if (viewType == VIEW_TYPE_ITEM) {
-                itemTextView =  view.findViewById(R.id.text_item);
-                iv_icon =  view.findViewById(R.id.iv_icon);
-                iv_icon_text =  view.findViewById(R.id.iv_icon_text );
-                iv_icon_select =  view.findViewById(R.id.iv_icon_select );
-                ll_room_item = view.findViewById(R.id.ll_room_item );
+                itemTextView = view.findViewById(R.id.text_item);
+                iv_icon = view.findViewById(R.id.iv_icon);
+                iv_icon_text = view.findViewById(R.id.iv_icon_text);
+                iv_icon_select = view.findViewById(R.id.iv_icon_select);
+                ll_room_item = view.findViewById(R.id.ll_room_item);
 
             } else if (viewType == VIEW_TYPE_PANEL) {
-                view_line_top =  view.findViewById(R.id.view_line_top);
+                view_line_top = view.findViewById(R.id.view_line_top);
 
-                itemTextView =  view.findViewById(R.id.heading);
+                itemTextView = view.findViewById(R.id.heading);
                 sectionTextView = itemTextView;
-                iv_room_panel_onoff =  view.findViewById(R.id.iv_room_panel_onoff);
+                iv_room_panel_onoff = view.findViewById(R.id.iv_room_panel_onoff);
 
             } else {
-                view_line_top =  view.findViewById(R.id.view_line_top);
-                sectionTextView =  view.findViewById(R.id.text_section);
+                view_line_top = view.findViewById(R.id.view_line_top);
+                sectionTextView = view.findViewById(R.id.text_section);
 
-                text_section_on_off =  view.findViewById(R.id.text_section_on_off);
-                text_section_edit =  view.findViewById(R.id.text_section_edit);
-                img_room_delete =  view.findViewById(R.id.iv_room_delete);
+                text_section_on_off = view.findViewById(R.id.text_section_on_off);
+                text_section_edit = view.findViewById(R.id.text_section_edit);
+                img_room_delete = view.findViewById(R.id.iv_room_delete);
 
-                sectionToggleButton =  view.findViewById(R.id.toggle_button_section);
+                sectionToggleButton = view.findViewById(R.id.toggle_button_section);
                 rel_main_view = view.findViewById(R.id.rel_main_view);
             }
         }
     }
-    //
-    public String getSelectedItemIds(){
-        String roomIds="";
 
-        for(Object obj :mDataArrayList){
-            if(obj instanceof DeviceVO){
+    //
+    public String getSelectedItemIds() {
+        String roomIds = "";
+
+        for (Object obj : mDataArrayList) {
+            if (obj instanceof DeviceVO) {
                 //3,4,5
-                DeviceVO device = (DeviceVO) obj ;
-                if(device.isSelected()){
+                DeviceVO device = (DeviceVO) obj;
+                if (device.isSelected()) {
                     roomIds += "," + device.getRoomDeviceId();
                 }
             }
         }
 
-        if(roomIds.startsWith(",")) {
-            roomIds = roomIds.replaceFirst(",","");
+        if (roomIds.startsWith(",")) {
+            roomIds = roomIds.replaceFirst(",", "");
         }
         return roomIds;
     }
 
 
     /*
-    * get SelectedItemList Devices in ArrayList
-    * */
-    public ArrayList<DeviceVO> getSelectedItemList(){
+     * get SelectedItemList Devices in ArrayList
+     * */
+    public ArrayList<DeviceVO> getSelectedItemList() {
 
         ArrayList<DeviceVO> arrayList = new ArrayList<>();
 
-        for(Object obj :mDataArrayList){
-             if(obj instanceof RoomVO){
-                RoomVO roomVO =(RoomVO)obj;
-                for(int i=0; i<roomVO.getPanelList().size(); i++){
-                    for(int j=0; j<roomVO.getPanelList().get(i).getDeviceList().size(); j++){
-                        String sensor_type="";
-                        if(TextUtils.isEmpty(roomVO.getPanelList().get(i).getDeviceList().get(j).getSensor_type())){
-                            sensor_type="";
-                        }else {
-                            sensor_type=roomVO.getPanelList().get(i).getDeviceList().get(j).getSensor_type();
+        for (Object obj : mDataArrayList) {
+            if (obj instanceof RoomVO) {
+                RoomVO roomVO = (RoomVO) obj;
+                for (int i = 0; i < roomVO.getPanelList().size(); i++) {
+                    for (int j = 0; j < roomVO.getPanelList().get(i).getDeviceList().size(); j++) {
+                        String sensor_type = "";
+                        if (TextUtils.isEmpty(roomVO.getPanelList().get(i).getDeviceList().get(j).getSensor_type())) {
+                            sensor_type = "";
+                        } else {
+                            sensor_type = roomVO.getPanelList().get(i).getDeviceList().get(j).getSensor_type();
                         }
 
-                        if(sensor_type.equalsIgnoreCase("temp") || sensor_type.equalsIgnoreCase("door_sensor")){
-                        }else if(roomVO.getPanelList().get(i).getDeviceList().get(j).isSelected()){
+                        if (sensor_type.equalsIgnoreCase("temp") || sensor_type.equalsIgnoreCase("door_sensor")) {
+                        } else if (roomVO.getPanelList().get(i).getDeviceList().get(j).isSelected()) {
                             arrayList.add(roomVO.getPanelList().get(i).getDeviceList().get(j));
                         }
-                        ChatApplication.logDisplay("item is selected "+roomVO.getPanelList().get(i).getDeviceList().get(j).isSelected());
+                        ChatApplication.logDisplay("item is selected " + roomVO.getPanelList().get(i).getDeviceList().get(j).isSelected());
                     }
 
                 }

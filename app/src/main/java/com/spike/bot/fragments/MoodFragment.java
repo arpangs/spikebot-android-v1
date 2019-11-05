@@ -678,7 +678,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
         }
 
         ActivityHelper.showProgressDialog(getActivity(),"Please Wait.",false);
-        String url =  ChatApplication.url + Constants.DELETE_MOOD;
+        String url =  ChatApplication.url + Constants.DELETE_ROOM;
         new GetJsonTask(getActivity(),url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
 

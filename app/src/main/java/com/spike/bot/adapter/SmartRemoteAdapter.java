@@ -25,12 +25,14 @@ import com.spike.bot.R;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
+import com.spike.bot.model.IRDeviceDetailsRes;
 import com.spike.bot.model.SmartRemoteModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Sagar on 2/4/19.
@@ -40,11 +42,11 @@ public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.
 
     private TempSensorInfoAdapter.OnNotificationContextMenu onNotificationContextMenu;
     private Activity mContext;
-    ArrayList<SmartRemoteModel> arrayListLog = new ArrayList<>();
+    List<IRDeviceDetailsRes.Data> arrayListLog = new ArrayList<>();
 
-    String url = ChatApplication.url + Constants.addSmartRemote;
+    String url = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
 
-    public SmartRemoteAdapter(Activity context, ArrayList<SmartRemoteModel> arrayListLog1) {
+    public SmartRemoteAdapter(Activity context, List<IRDeviceDetailsRes.Data> arrayListLog1) {
         this.mContext = context;
         this.arrayListLog = arrayListLog1;
     }
@@ -58,7 +60,7 @@ public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.
     @Override
     public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
-        holder.txtNameRemote.setText(arrayListLog.get(position).getSmart_remote_name());
+        holder.txtNameRemote.setText(arrayListLog.get(position).getDeviceName());
 
         holder.imgEditRemote.setId(position);
         holder.imgEditRemote.setOnClickListener(new View.OnClickListener() {
@@ -77,7 +79,7 @@ public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.
                 ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
                     @Override
                     public void onConfirmDialogYesClick() {
-                        deleteRemote(arrayListLog.get(v.getId()).getSmart_remote_module_id(), v.getId(), arrayListLog.get(v.getId()).getSmart_remote_name());
+                        deleteRemote(arrayListLog.get(v.getId()).getDeviceId(), v.getId(), arrayListLog.get(v.getId()).getDeviceName());
 
                     }
 
@@ -145,28 +147,26 @@ public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.
         }
     }
 
-    public void saveSensor(final Dialog dialog, SmartRemoteModel smartRemoteModel, final String name, final int position) {
+    public void saveSensor(final Dialog dialog, IRDeviceDetailsRes.Data smartRemoteModel, final String name, final int position) {
 
         if (!ActivityHelper.isConnectingToInternet(mContext)) {
-            Toast.makeText(mContext.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+           ChatApplication.showToast(mContext.getApplicationContext(), ""+R.string.disconnect);
             return;
         }
 
-        ActivityHelper.showProgressDialog(mContext, "Please wait.", false);
+        ActivityHelper.showProgressDialog(mContext, "Please wait...", false);
 
         JSONObject obj = new JSONObject();
         try {
-            obj.put("smart_remote_module_id", smartRemoteModel.getSmart_remote_module_id());
-            obj.put("user_id", Common.getPrefValue(mContext, Constants.USER_ID));
-            obj.put("smart_remote_name", name);
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            obj.put("user_id", Common.getPrefValue(mContext, Constants.USER_ID));
+            obj.put("device_id",smartRemoteModel.getDeviceId());
+            obj.put("device_name", name);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
         new GetJsonTask(mContext, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -176,7 +176,7 @@ public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.
                     String message = result.getString("message");
                     if (code == 200) {
                         dialog.dismiss();
-                        arrayListLog.get(position).setSmart_remote_name(name);
+                        arrayListLog.get(position).setDeviceName(name);
                         notifyDataSetChanged();
                     } else {
                         ChatApplication.showToast(mContext, message);
@@ -205,21 +205,20 @@ public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.
         }
         ActivityHelper.showProgressDialog(mContext, "Please wait...", false);
 
-        JSONObject obj = new JSONObject();
+        JSONObject object = new JSONObject();
         try {
-            obj.put("smart_remote_module_id", module_id);
-            obj.put("user_id", Common.getPrefValue(mContext, Constants.USER_ID));
-            obj.put("smart_remote_name", smart_remote_name);
-            obj.put("is_update", 1);
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
+            object.put("device_id", module_id);
+            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            object.put("user_id", Common.getPrefValue(mContext, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        String url = ChatApplication.url + Constants.deleteSmartRemote;
-        new GetJsonTask(mContext, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        String url = ChatApplication.url + Constants.DELETE_MODULE;
+
+        ChatApplication.logDisplay("url is "+url+"  "+object);
+        new GetJsonTask(mContext, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();

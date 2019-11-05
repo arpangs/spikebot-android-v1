@@ -21,6 +21,7 @@ import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.customview.OnSwipeTouchListener;
 import com.spike.bot.listener.OnHumitySensorContextMenu;
+import com.spike.bot.model.RemoteDetailsRes;
 import com.spike.bot.model.SensorResModel;
 
 import java.util.ArrayList;
@@ -31,13 +32,13 @@ import java.util.ArrayList;
  */
 public class HumiditySensorAdapter extends RecyclerView.Adapter<HumiditySensorAdapter.SensorViewHolder> {
 
-    ArrayList<SensorResModel.DATA.TempList.HumidityNotificationList> notificationList = new ArrayList<>();
-    SensorResModel.DATA.TempList.HumidityNotificationList notification;
+    ArrayList<RemoteDetailsRes.Data.Alert> notificationList = new ArrayList<>();
+    RemoteDetailsRes.Data.Alert notification;
     private boolean isCF;
     private OnHumitySensorContextMenu onNotificationContextMenu;
     private Context mContext;
 
-    public HumiditySensorAdapter(ArrayList<SensorResModel.DATA.TempList.HumidityNotificationList> arrayList, boolean cfType, OnHumitySensorContextMenu onNotificationContextMenu) {
+    public HumiditySensorAdapter(ArrayList<RemoteDetailsRes.Data.Alert> arrayList, boolean cfType, OnHumitySensorContextMenu onNotificationContextMenu) {
         this.notificationList = arrayList;
         this.isCF = cfType;
         this.onNotificationContextMenu = onNotificationContextMenu;
@@ -64,7 +65,7 @@ public class HumiditySensorAdapter extends RecyclerView.Adapter<HumiditySensorAd
         holder.txtMin.setText("" + notification.getMinHumidity() + " %");
         holder.txtMax.setText("" + notification.getMaxHumidity() + " %");
 
-        holder.switchCompat.setChecked(notification.getIsActive() == 0 ? false : true);
+        holder.switchCompat.setChecked(notification.getIsActive().equals("n") ? false : true);
 
         if (!TextUtils.isEmpty(notification.getDays()) && !notification.getDays().equalsIgnoreCase("null")) {
             holder.txtDays.setText(Html.fromHtml(Common.htmlDaysFormat(notification.getDays())));
@@ -117,7 +118,7 @@ public class HumiditySensorAdapter extends RecyclerView.Adapter<HumiditySensorAd
      * @param notification
      * @param position
      */
-    private void displayContextMenu(View v, final SensorResModel.DATA.TempList.HumidityNotificationList notification, final int position) {
+    private void displayContextMenu(View v, final RemoteDetailsRes.Data.Alert notification, final int position) {
 
         PopupMenu popup = new PopupMenu(mContext, v);
         @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(mContext, R.style.PopupMenu);
@@ -160,13 +161,13 @@ public class HumiditySensorAdapter extends RecyclerView.Adapter<HumiditySensorAd
         public SensorViewHolder(View itemView) {
             super(itemView);
 
-            txtMin = (AppCompatTextView) itemView.findViewById(R.id.txt_min);
-            txtMax = (AppCompatTextView) itemView.findViewById(R.id.txt_max);
-            txtDays = (AppCompatTextView) itemView.findViewById(R.id.txt_days);
+            txtMin =  itemView.findViewById(R.id.txt_min);
+            txtMax =  itemView.findViewById(R.id.txt_max);
+            txtDays =  itemView.findViewById(R.id.txt_days);
 
-            switchCompat = (SwitchCompat) itemView.findViewById(R.id.switch_onoff);
-            imgOptions = (AppCompatImageView) itemView.findViewById(R.id.img_options);
-            viewLine = (View) itemView.findViewById(R.id.viewLine);
+            switchCompat = itemView.findViewById(R.id.switch_onoff);
+            imgOptions =  itemView.findViewById(R.id.img_options);
+            viewLine =  itemView.findViewById(R.id.viewLine);
         }
     }
 }

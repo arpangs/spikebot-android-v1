@@ -56,7 +56,7 @@ public class RemoteDetailsRes implements Serializable {
         private Device device;
         @SerializedName("alerts")
         @Expose
-        private List<Object> alerts = null;
+        private List<Alert> alerts = null;
 
         public Device getDevice() {
             return device;
@@ -66,15 +66,188 @@ public class RemoteDetailsRes implements Serializable {
             this.device = device;
         }
 
-        public List<Object> getAlerts() {
+        public List<Alert> getAlerts() {
             return alerts;
         }
 
-        public void setAlerts(List<Object> alerts) {
+        public void setAlerts(List<Alert> alerts) {
             this.alerts = alerts;
         }
 
+
+        public class Alert implements Serializable{
+
+            @SerializedName("alert_id")
+            @Expose
+            private String alertId;
+            @SerializedName("device_id")
+            @Expose
+            private String deviceId;
+            @SerializedName("alert_type")
+            @Expose
+            private String alertType;
+            @SerializedName("user_id")
+            @Expose
+            private String userId;
+            @SerializedName("days")
+            @Expose
+            private String days;
+            @SerializedName("start_time")
+            @Expose
+            private String startTime;
+            @SerializedName("end_time")
+            @Expose
+            private String endTime;
+            @SerializedName("meta")
+            @Expose
+            private String meta;
+            @SerializedName("is_active")
+            @Expose
+            private String isActive;
+            @SerializedName("min_humidity")
+            @Expose
+            private String minHumidity;
+            @SerializedName("max_humidity")
+            @Expose
+            private String maxHumidity;
+
+            public String getMax_temp() {
+                return max_temp;
+            }
+
+            public void setMax_temp(String max_temp) {
+                this.max_temp = max_temp;
+            }
+
+            public String getMin_temp() {
+                return min_temp;
+            }
+
+            public void setMin_temp(String min_temp) {
+                this.min_temp = min_temp;
+            }
+
+            @SerializedName("max_temp")
+            @Expose
+            private String max_temp;
+
+            @SerializedName("min_temp")
+            @Expose
+            private String min_temp;
+
+            public boolean isCFActive() {
+                return isCFActive;
+            }
+
+            public void setCFActive(boolean CFActive) {
+                isCFActive = CFActive;
+            }
+
+            private boolean isCFActive;
+
+            public String getAlertId() {
+                return alertId;
+            }
+
+            public void setAlertId(String alertId) {
+                this.alertId = alertId;
+            }
+
+            public String getDeviceId() {
+                return deviceId;
+            }
+
+            public void setDeviceId(String deviceId) {
+                this.deviceId = deviceId;
+            }
+
+            public String getAlertType() {
+                return alertType;
+            }
+
+            public void setAlertType(String alertType) {
+                this.alertType = alertType;
+            }
+
+            public String getUserId() {
+                return userId;
+            }
+
+            public void setUserId(String userId) {
+                this.userId = userId;
+            }
+
+            public String getDays() {
+                return days;
+            }
+
+            public void setDays(String days) {
+                this.days = days;
+            }
+
+            public String getStartTime() {
+                return startTime;
+            }
+
+            public void setStartTime(String startTime) {
+                this.startTime = startTime;
+            }
+
+            public String getEndTime() {
+                return endTime;
+            }
+
+            public void setEndTime(String endTime) {
+                this.endTime = endTime;
+            }
+
+            public String getMeta() {
+                return meta;
+            }
+
+            public void setMeta(String meta) {
+                this.meta = meta;
+            }
+
+            public String getIsActive() {
+                return isActive;
+            }
+
+            public void setIsActive(String isActive) {
+                this.isActive = isActive;
+            }
+
+            public String getMinHumidity() {
+                return minHumidity;
+            }
+
+            public void setMinHumidity(String minHumidity) {
+                this.minHumidity = minHumidity;
+            }
+
+            public String getMaxHumidity() {
+                return maxHumidity;
+            }
+
+            public void setMaxHumidity(String maxHumidity) {
+                this.maxHumidity = maxHumidity;
+            }
+
+        }
+
         public class Device implements Serializable {
+
+            public String getDevice_id() {
+                return device_id;
+            }
+
+            public void setDevice_id(String device_id) {
+                this.device_id = device_id;
+            }
+
+            @SerializedName("device_id")
+            @Expose
+            private String device_id;
 
             @SerializedName("module_id")
             @Expose
@@ -115,6 +288,16 @@ public class RemoteDetailsRes implements Serializable {
             @SerializedName("module_meta")
             @Expose
             private String moduleMeta;
+
+            public String getFahrenheitvalue() {
+                return fahrenheitvalue;
+            }
+
+            public void setFahrenheitvalue(String fahrenheitvalue) {
+                this.fahrenheitvalue = fahrenheitvalue;
+            }
+
+            public String fahrenheitvalue;
 
             public String getModuleId() {
                 return moduleId;
@@ -223,6 +406,31 @@ public class RemoteDetailsRes implements Serializable {
         }
 
         public class DeviceMeta {
+
+            @SerializedName("unit")
+            @Expose
+            private String unit;
+            @SerializedName("sensor_battery_level")
+            @Expose
+            private Integer sensorBatteryLevel;
+
+            public String getUnit() {
+                return unit;
+            }
+
+            public void setUnit(String unit) {
+                this.unit = unit;
+            }
+
+            public Integer getSensorBatteryLevel() {
+                return sensorBatteryLevel;
+            }
+
+            public void setSensorBatteryLevel(Integer sensorBatteryLevel) {
+                this.sensorBatteryLevel = sensorBatteryLevel;
+            }
+
+
 
             @SerializedName("device_default_mode")
             @Expose

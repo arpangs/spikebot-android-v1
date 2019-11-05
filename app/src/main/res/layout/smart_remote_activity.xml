@@ -42,6 +42,16 @@
                 app:elevation="0dp"
                 android:layout_margin="@dimen/_5sdp" />
 
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/txtNodataFound"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="No data found."
+                android:textColor="@color/automation_black"
+                android:textSize="@dimen/_15sdp"
+                android:gravity="center"/>
+
 
             <LinearLayout
                 android:layout_width="match_parent"

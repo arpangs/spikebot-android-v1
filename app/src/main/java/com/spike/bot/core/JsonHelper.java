@@ -59,7 +59,6 @@ public class JsonHelper {
 
                 /*room list */
                 RoomVO room = new RoomVO();
-                room.setSmart_remote_number(roomObj.optString("smart_remote_number"));
                 room.setRoomName(roomObj.optString("room_name"));
                 room.setRoom_order(roomObj.optInt("room_order"));
                 room.setRoomId(roomObj.optString("room_id"));
@@ -70,6 +69,13 @@ public class JsonHelper {
                     room.setDevice_count(roomObj.optString("total_devices"));
                 }else{
                     room.setDevice_count("0");
+                }
+
+                if(roomObj.has("meta")){
+                    JSONObject object=new JSONObject(roomObj.optString("meta"));
+                    room.setSmart_remote_number(object.optString("smart_remote_no"));
+                }else {
+                    room.setSmart_remote_number("0");
                 }
 
                 if(roomObj.has("is_original")){
@@ -680,8 +686,9 @@ public class JsonHelper {
                 d1.setDoor_lock_status(door_lock_status);
                 d1.setDevice_sub_status(deviceObj.optString("device_sub_status"));
                 sensor_name = deviceObj.optString("device_name");
+                d1.setDeviceName(sensor_name);
 
-                if(sensor_type.equalsIgnoreCase("irblaster")){
+                if(sensor_type.equalsIgnoreCase("irblaster") || sensor_type.equalsIgnoreCase("remote")){
                     ir_blaster_id = deviceObj.optString("ir_blaster_id");
                     sensor_id = deviceObj.optString("sensor_id");
                     d1.setIr_blaster_id(ir_blaster_id);
@@ -698,7 +705,7 @@ public class JsonHelper {
                 d1.setPanel_id(panel_id);
                 d1.setDeviceId(deviceObj.has("device_id") ? deviceObj.optString("device_id") : "2");
                 d1.setDeviceStatus(deviceObj.has("device_status") ? deviceObj.optInt("device_status") : 0);
-                d1.setDeviceType(deviceObj.has("device_type") ? deviceObj.optString("device_type"):"");
+                d1.setDeviceType(deviceObj.optString("device_type"));
                 d1.setDeviceSpecificValue(deviceObj.has("device_specific_value")?deviceObj.optString("device_specific_value"):"");
                 d1.setAuto_on_off_value(deviceObj.has("auto_on_off_value")? deviceObj.optInt("auto_on_off_value"):0);
                 d1.setSchedule_value(deviceObj.has("schedule_value")? deviceObj.optInt("schedule_value"):0);
@@ -736,7 +743,7 @@ public class JsonHelper {
                 d1.setRoomName(roomName);
                 d1.setRoomId(roomId);
 
-                if(sensor_type.equalsIgnoreCase("irblaster")){
+                if(sensor_type.equalsIgnoreCase("irblaster") || sensor_type.equalsIgnoreCase("remote")){
                     flagRemote=true;
                 }
                 deviceList.add(d1);

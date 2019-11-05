@@ -89,8 +89,8 @@ public class Common {
 
     public static String TAG = "isReachableURL";
 
-    public static int getDoorIcon(int status){
-        return  status==0 ? R.drawable.on_door:R.drawable.off_door;
+    public static int getDoorIcon(int status) {
+        return status == 0 ? R.drawable.on_door : R.drawable.off_door;
     }
 
     /**
@@ -100,6 +100,7 @@ public class Common {
      */
     public static int getIcon(int status, String type) {
         int resource = R.drawable.bulb_on;
+        ChatApplication.logDisplay("type is "+type);
         switch (status) {
 
             case -1:
@@ -160,6 +161,9 @@ public class Common {
                     case "remote":
                         resource = R.drawable.remote_ac_off;
                         break;
+                    case "ir_blaster":
+                        resource = R.drawable.remote_ac_off;
+                        break;
                     case "Remote_AC":
                         resource = R.drawable.remote_ac_off;
                         break;
@@ -172,7 +176,7 @@ public class Common {
                     case "heavyload":
                         resource = R.drawable.off;
                         break;
-                        case "double_heavy_load":
+                    case "double_heavy_load":
                         resource = R.drawable.off;
                         break;
 
@@ -199,8 +203,11 @@ public class Common {
                     case "curtain":
                         resource = R.drawable.curtain_closed;
                         break;
-                        case "repeater":
+                    case "repeater":
                         resource = R.drawable.gray_repeater;
+                        break;
+                    case "smart_remote":
+                        resource = R.drawable.remote;
                         break;
 
                     default:
@@ -262,6 +269,9 @@ public class Common {
                         resource = R.drawable.icn_dead_temp;
                         break;
                     case "remote":
+                        resource = R.drawable.remote_ac;
+                        break;
+                    case "ir_blaster":
                         resource = R.drawable.remote_ac;
                         break;
                     case "Remote_AC":
@@ -353,6 +363,9 @@ public class Common {
                     case "tempsensor":
                         resource = R.drawable.off_temperature;
                         break;
+                        case "temp_sensor":
+                        resource = R.drawable.off_temperature;
+                        break;
                     case "doorsensor":
                         resource = R.drawable.off_door;
                         break;
@@ -412,7 +425,10 @@ public class Common {
             case "Remote_AC":
                 resource = R.drawable.ac_remote_off_inactive;
                 break;
-                case "gas_sensor":
+            case "ir_blaster":
+                resource = R.drawable.ac_remote_off_inactive;
+                break;
+            case "gas_sensor":
                 resource = R.drawable.heavuload_inactive;
                 break;
             case "camera":
