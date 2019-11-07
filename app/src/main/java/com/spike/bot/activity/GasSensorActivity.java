@@ -27,6 +27,7 @@ import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -76,7 +77,7 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toolbar.setTitle("Gas Sensor");
+        toolbar.setTitle(room_name);
 
         imgEdit.setOnClickListener(this);
         btnDelete.setOnClickListener(this);
@@ -127,13 +128,14 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
         }
         if (mSocket != null) {
             mSocket.on("socketGasSensorValues", socketGasSensorValues);
-            mSocket.on("changeGasSensorValue", changeGasSensorValue);
+            mSocket.on("changeDeviceStatus", changeDeviceStatus);
         }
     }
 
-    private Emitter.Listener changeGasSensorValue = new Emitter.Listener() {
+    private Emitter.Listener changeDeviceStatus = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
+
 
             GasSensorActivity.this.runOnUiThread(new Runnable() {
                 @Override
@@ -143,13 +145,13 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
                         try {
                             //{"room_id":"1568962984563_I4dhDWr54","gas_sensor_id":"1568968977282_uG3YUsQ1I","gas_value":"Normal","gas_current_value":2,"threshold_value":10}
                             JSONObject object = new JSONObject(args[0].toString());
-                            ChatApplication.logDisplay("gas socket is update " + object);
+                            ChatApplication.logDisplay("gas socket is update :-" + object);
 
                             //"room_id":"1569405933287_jyzwqWwos","gas_sensor_id":"1569409977792_MP9OiH_QS","gas_value":"Normal","gas_current_value":5,"threshold_value":10}
-
-                            if (sensor_id.equals(object.optString("gas_sensor_id"))) {
+                            setLevel(object.optString("device_status"));
+                          /*  if (sensor_id.equals(object.optString("gas_sensor_id"))) {
                                 setLevel(object.optString("gas_value"));
-                            }
+                            }*/
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -186,7 +188,7 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
     protected void onDestroy() {
         super.onDestroy();
         if (mSocket != null) {
-            mSocket.on("changeGasSensorValue", changeGasSensorValue);
+            mSocket.on("changeDeviceStatus", changeDeviceStatus);
             mSocket.on("socketGasSensorValues", socketGasSensorValues);
         }
     }
@@ -259,9 +261,9 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
             //  "phone_id":"",
             //  "phone_type":""
             object.put("device_id", device_id);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+           /* object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);*/
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -309,10 +311,10 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
             //	"device_id":"1571998596623_EE9U9Ovz7w",
             //	"alert_type":"temperature"
             //}
-            object.put("device_id", sensor_id);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            object.put("device_id", device_id);
+          /*  object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);*/
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -347,29 +349,31 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
 
     }
 
-    private void filldata(JSONObject result) {
+    private void filldata(@NotNull JSONObject result) {
 
         try {
             //{"code":200,"message":"Success","data":{"gas_sensor_id":"1568968977282_uG3YUsQ1I"
             // ,"gas_sensor_module_id":"236F131A004B1200","gas_sensor_name":"ggh","room_id":"1568962984563_I4dhDWr54","room_name":"vpk","is_gas_detected":0,"gas_value":"Normal"}}
             JSONObject object = new JSONObject(result.toString());
             JSONObject data = object.optJSONObject("data");
-            gas_sensor_module_id = data.optString("gas_sensor_module_id");
-            gas_sensor_id = data.optString("gas_sensor_id");
-            edSensorName.setText("" + data.optString("gas_sensor_name"));
+            JSONObject device = data.optJSONObject("device");
+            gas_sensor_module_id = device.optString("module_id");
+            gas_sensor_id = device.optString("device_id");
+            edSensorName.setText("" + device.optString("device_name"));
 
             objectValue = new JSONObject();
             objectValue.put("module_id", gas_sensor_module_id);
 
-            if (!TextUtils.isEmpty(data.optString("gas_value"))) {
-                if (data.optString("gas_value").equals("Normal")) {
+            if (!TextUtils.isEmpty(device.optString("device_status"))) {
+                if (device.optString("device_status").equals("0")) {
                     txtSpeedCount.setTextColor(getResources().getColor(R.color.greenDark));
                     txtSpeedCount.setText("Normal");
                 } else {
-                    txtSpeedCount.setTextColor(Color.RED);
+                    txtSpeedCount.setTextColor(getResources().getColor(R.color.automation_red));
                     txtSpeedCount.setText("High");
                 }
             }
+
 
             if (mSocket != null) {
                 ChatApplication.logDisplay("start count is socket " + objectValue);
@@ -381,8 +385,9 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
-    private void setLevel(String optString) {
-        if (optString.equals("Normal")) {
+
+    private void setLevel(@NotNull String optString) {
+        if (optString.equals("0")) {
             txtSpeedCount.setTextColor(getResources().getColor(R.color.greenDark));
             txtSpeedCount.setText("Normal");
         } else {
@@ -394,31 +399,23 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
     private void updateGasSensor() {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            //Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             showToast("" + R.string.disconnect);
             return;
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String webUrl = ChatApplication.url + Constants.updateGasSensor;
+        String webUrl = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
 
         JSONObject jsonNotification = new JSONObject();
         try {
-            //  "gas_sensor_id"	: "",
-            //  "gas_sensor_name"	: "",
-            //  "room_id":"",
-            //  "room_name":"",
-
-            jsonNotification.put("gas_sensor_id", gas_sensor_id);
-            jsonNotification.put("gas_sensor_name", edSensorName.getText().toString());
-            jsonNotification.put("room_id", room_id);
-            jsonNotification.put("room_name", room_name);
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            //  "device_id"	: "",
+            //  "device_name"	: "",
+            jsonNotification.put("device_id", device_id);
+            jsonNotification.put("device_name", edSensorName.getText().toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
@@ -435,6 +432,7 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
                         edSensorName.setFocusable(false);
                         edSensorName.setFocusableInTouchMode(false); // user touches widget on phone with touch screen
                         edSensorName.setClickable(false);
+
                     }
 
                 } catch (JSONException e) {
