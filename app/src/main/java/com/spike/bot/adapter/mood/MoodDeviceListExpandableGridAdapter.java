@@ -166,11 +166,11 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                 holder.sectionTextView.setText(panel1.getPanelName());
                 holder.iv_room_panel_onoff.setVisibility(View.GONE);
 
-                if (panel1.isActivePanel()) {
+//                if (panel1.isActivePanel()) {
                     holder.sectionTextView.setVisibility(View.VISIBLE);
-                } else {
-                    holder.sectionTextView.setVisibility(View.GONE);
-                }
+//                } else {
+//                    holder.sectionTextView.setVisibility(View.GONE);
+//                }
                 break;
             case VIEW_TYPE_ITEM:
                 final DeviceVO item = (DeviceVO) mDataArrayList.get(position);
@@ -207,12 +207,12 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                         holder.iv_icon.setImageResource(Common.getIcon(0, item.getDevice_icon()));//item.getDeviceStatus()
                     }
                 }
-                if (item.isSelected() && item.isSensor()) {
-                    if (item.getDeviceType().equalsIgnoreCase("remote")) {
+                if (item.isSelected()) {
+//                    if (item.getDeviceType().equalsIgnoreCase("remote")) {
                         holder.iv_icon_select.setVisibility(View.VISIBLE);
-                    } else {
-                        holder.iv_icon_select.setVisibility(View.GONE);
-                    }
+//                    } else {
+//                        holder.iv_icon_select.setVisibility(View.GONE);
+//                    }
                 } else {
                     holder.iv_icon_select.setVisibility(View.GONE);
                 }

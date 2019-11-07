@@ -104,7 +104,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
         imageShowNext = findViewById(R.id.imageShowNext);
         frameChart = findViewById(R.id.frameChart);
         txtNodataFound = findViewById(R.id.txtNodataFound);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar =  findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -158,13 +158,14 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
             public void onTick(long millisUntilFinished) {
             }public void onFinish() {
 
-                if(mSocket!=null  && mSocket.connected()) {
-                    ChatApplication.logDisplay("countDownTimerSocket calling " + object);
-                    mSocket.emit("socketHeavyLoadValues", object);
-                }
-                if(countDownTimerSocket!=null){
-                    countDownTimerSocket.start();
-                }
+                getHeavyLoadValue();
+//                if(mSocket!=null  && mSocket.connected()) {
+//                    ChatApplication.logDisplay("countDownTimerSocket calling " + object);
+//                    mSocket.emit("socketHeavyLoadValues", object);
+//                }
+//                if(countDownTimerSocket!=null){
+//                    countDownTimerSocket.start();
+//                }
             }
         };
         if(countDownTimerSocket!=null){
@@ -304,6 +305,51 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
             });
         }
     };
+
+    public void getHeavyLoadValue() {
+        if (!ActivityHelper.isConnectingToInternet(HeavyLoadDetailActivity.this)) {
+            Toast.makeText(HeavyLoadDetailActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("device_id", device_id);
+            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String url = ChatApplication.url + Constants.deviceheavyloadping;
+        ChatApplication.logDisplay("url is" + jsonObject.toString()+" "+url);
+        new GetJsonTask(HeavyLoadDetailActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onSuccess(JSONObject result) {
+                ActivityHelper.dismissProgressDialog();
+                try {
+
+                    int code = result.getInt("code");
+                    if (code == 200) {
+                        ChatApplication.logDisplay("url is result " + result);
+                        JSONObject object = result.optJSONObject("data");
+
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        }).execute();
+    }
+
 
     public void getHeavyloadDetails() {
         if (!ActivityHelper.isConnectingToInternet(HeavyLoadDetailActivity.this)) {

@@ -49,7 +49,6 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
     private List<IRDeviceDetailsRes.Data> mIRDeviceList=new ArrayList<>();
     private List<String> blasterArraylist=new ArrayList<>();
     private String roomName = "", roomId = "";
-    boolean flagisBlaster = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -215,7 +214,7 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
         intent.putExtra("ROOM_NAME", mRoomText.getText().toString());
         intent.putExtra("ROOM_ID", "" + roomId);
         intent.putExtra("SENSOR_ID", mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId());
-        intent.putExtra("IR_DEVICE_ID", "" + devicelist.getDeviceId());
+        intent.putExtra("IR_DEVICE_ID", ""+mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId());
         intent.putExtra("IR_DEVICE_TYPE", "remote");
         intent.putExtra("IR_BLASTER_MODULE_ID", mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId());
         startActivityForResult(intent, Constants.REMOTE_REQUEST_CODE);

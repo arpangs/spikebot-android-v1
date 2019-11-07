@@ -71,8 +71,8 @@ public class TempMultiSensorAdapter extends RecyclerView.Adapter<TempMultiSensor
         } else {
             if (!TextUtils.isEmpty(notification.getMin_temp()) && !notification.getMin_temp().equalsIgnoreCase("null") &&
                     !TextUtils.isEmpty(notification.getMax_temp()) && !notification.getMax_temp().equalsIgnoreCase("null")) {
-                minVal = Common.parseFahrenheit(notification.getMin_temp());
-                maxVal = Common.parseFahrenheit(notification.getMax_temp());
+                minVal = Common.parseFahrenheit(Constants.getFTemp(notification.getMin_temp()));
+                maxVal = Common.parseFahrenheit(Constants.getFTemp(notification.getMax_temp()));
             }
         }
 
@@ -94,34 +94,37 @@ public class TempMultiSensorAdapter extends RecyclerView.Adapter<TempMultiSensor
                 holder.imgOptions.setVisibility(View.INVISIBLE);
             }
         }
+
+        holder.imgOptions.setId(position);
         holder.imgOptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                displayContextMenu(v, notification, position);
+                displayContextMenu(v, notificationList.get(holder.imgOptions.getId()), holder.imgOptions.getId());
             }
         });
 
 
+        holder.switchCompat.setId(position);
         holder.switchCompat.setOnTouchListener(new OnSwipeTouchListener(mContext) {
             @Override
             public void onClick() {
                 super.onClick();
                 holder.switchCompat.setChecked(holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchChanged(notification, holder.switchCompat, position, !holder.switchCompat.isChecked());
+                onNotificationContextMenu.onSwitchChanged(notificationList.get(holder.imgOptions.getId()), holder.switchCompat, holder.switchCompat.getId(), !holder.switchCompat.isChecked());
             }
 
             @Override
             public void onSwipeLeft() {
                 super.onSwipeLeft();
                 holder.switchCompat.setChecked(holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchChanged(notification, holder.switchCompat, position, !holder.switchCompat.isChecked());
+                onNotificationContextMenu.onSwitchChanged(notificationList.get(holder.imgOptions.getId()), holder.switchCompat, holder.switchCompat.getId(), !holder.switchCompat.isChecked());
             }
 
             @Override
             public void onSwipeRight() {
                 super.onSwipeRight();
                 holder.switchCompat.setChecked(holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchChanged(notification, holder.switchCompat, position, !holder.switchCompat.isChecked());
+                onNotificationContextMenu.onSwitchChanged(notificationList.get(holder.imgOptions.getId()), holder.switchCompat, holder.switchCompat.getId(), !holder.switchCompat.isChecked());
             }
 
         });

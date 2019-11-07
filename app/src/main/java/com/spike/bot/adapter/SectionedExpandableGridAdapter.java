@@ -877,9 +877,9 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             if (item.getDeviceType().equalsIgnoreCase("remote")) {
                                 tempClickListener.itemClicked(item, "isIRSensorClick", true, position);
                             } else {
-//                                if(item.getIsActive()!= -1){
+                                if(item.getIsActive()!= -1){
                                     tempClickListener.itemClicked(item, "isSensorClick", true, position);
-//                                }
+                                }
                             }
                         }
                     }

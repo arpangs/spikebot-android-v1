@@ -98,7 +98,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     ArrayList<RemoteDetailsRes.Data.Alert> notificationHumidityList = new ArrayList<>();
 
     private int mScrollState = AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
-    private int lastVisibleItem, totalItemCount;
+    private int lastVisibleItem;
     private boolean isScrollToEndPosition = false;
 
     private TextView text_day_1, text_day_2, text_day_3, text_day_4, text_day_5, text_day_6, text_day_7;
@@ -155,12 +155,12 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         }
 
         if (mSocket != null) {
-            mSocket.on("changeTempSensorValue", changeTempSensorValue);
+            mSocket.on("changeDeviceStatus ", changeDeviceStatus );
         }
     }
 
 
-    private Emitter.Listener changeTempSensorValue = new Emitter.Listener() {
+    private Emitter.Listener changeDeviceStatus  = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
 
@@ -203,7 +203,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     protected void onDestroy() {
         super.onDestroy();
         if (mSocket != null) {
-            mSocket.off("changeTempSensorValue", changeTempSensorValue);
+            mSocket.off("changeDeviceStatus ", changeDeviceStatus);
         }
     }
 
@@ -384,26 +384,21 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     private void tempSensorNotificationStatus(String tempSensorNotificationId, final SwitchCompat notiSwitchOnOff, boolean isActive, boolean isNotification, final int position, final int isType) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            //Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             showToast("" + R.string.disconnect);
             return;
         }
 
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String webUrl = "";
-        if (!isNotification) {
-            webUrl = ChatApplication.url + Constants.changeMultiSensorStatus;
-        } else {
-            webUrl = ChatApplication.url + Constants.changeTempSensorNotificationStatus;
-        }
+        String webUrl = ChatApplication.url + Constants.UPDATE_TEMP_SENSOR_NOTIFICATION;
+        ;
+//
 
         JSONObject jsonNotification = new JSONObject();
 
         try {
-            jsonNotification.put("temp_sensor_notification_id", tempSensorNotificationId);
-            jsonNotification.put("is_active", isActive ? 1 : 0);
-            jsonNotification.put("temp_sensor_id", temp_module_id);
+            jsonNotification.put("is_active", isActive ? "y" :"n");
+            jsonNotification.put("alert_id", tempSensorNotificationId);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -412,18 +407,35 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             e.printStackTrace();
         }
 
+        ChatApplication.logDisplay("url is "+webUrl+" "+jsonNotification);
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
 
                 ActivityHelper.dismissProgressDialog();
                 try {
-
+                    ChatApplication.logDisplay("url is result "+result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
-                        JSONObject dataObject = result.getJSONObject("data");
-                        String is_active = dataObject.getString("is_active");
+
+                        if (isType == 1) {
+                            if (position != -1) {
+                                notificationList.get(position).setIsActive(isActive ? "y" :"n");
+                            }
+
+                            tempSensorInfoAdapter.notifyItemChanged(position, notificationList.get(position));
+                            tempSensorInfoAdapter.notifyDataSetChanged();
+                        }else {
+                            if (position != -1) {
+                                notificationHumidityList.get(position).setIsActive(isActive ? "y" :"n");
+                            }
+
+                            humiditySensorAdapter.notifyItemChanged(position, notificationHumidityList.get(position));
+                            humiditySensorAdapter.notifyDataSetChanged();
+                        }
+//                        JSONObject dataObject = result.getJSONObject("data");
+//                        String is_active = dataObject.getString("is_active");
 
 //                        if (isType == 1) {
 //                            if (position != -1) {
@@ -479,10 +491,18 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         return super.onCreateOptionsMenu(menu);
     }
 
+    public void hideSoftKeyboard() {
+        if (getCurrentFocus() != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_save) {
+            hideSoftKeyboard();
             updateTempSensor();
         } else if (id == R.id.action_log) {
             checkIntent(true);
@@ -504,24 +524,20 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String webUrl = ChatApplication.url + Constants.UPDATE_TEMP_SENSOR;
+        String webUrl = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
 
         JSONObject jsonNotification = new JSONObject();
         try {
 
-            //"temp_sensor_id"	: "",
-            //  "temp_sensor_name"	: "",
-            //  "room_id":"",
-            //  "room_name":"",
-            //  "is_in_C":0,
-            //  "user_id":"",
-            //  "phone_id":"",
-            //  "phone_type":""
-            jsonNotification.put("temp_sensor_id", temp_module_id);
-            jsonNotification.put("temp_sensor_name", sensorName.getText().toString().trim());
-            jsonNotification.put("room_id", temp_room_id);
-            jsonNotification.put("is_in_C", isCFSelected);
-            jsonNotification.put("room_name", temp_room_name);
+            //{
+            //	"device_id": "1571407908196_uEVHoQJNR",
+            //	"device_name": "jghgh",
+            //	"device_icon": "my panel 1",
+            //	"device_sub_type":"dimmer"
+            //}
+            jsonNotification.put("device_id", temp_module_id);
+            jsonNotification.put("device_name", sensorName.getText().toString().trim());
+            jsonNotification.put("unit", isCFSelected == 1 ? "C" : "F");
             jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -739,7 +755,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         tempSensorNotificationDialog.setContentView(R.layout.dialog_temp_sensor_notificaiton);
         tempSensorNotificationDialog.setCanceledOnTouchOutside(false);
 
-        Button button_save_notification = (Button) tempSensorNotificationDialog.findViewById(R.id.button_save_notification);
+        Button button_save_notification = tempSensorNotificationDialog.findViewById(R.id.button_save_notification);
         ImageView closeNotification = tempSensorNotificationDialog.findViewById(R.id.btn_close_notification);
 
         final EditText edit_min_value = tempSensorNotificationDialog.findViewById(R.id.edit_min_value);
@@ -865,8 +881,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                 edit_min_value.setText(notificationList.getMin_temp());
                 edit_max_value.setText(notificationList.getMax_temp());
             } else {
-                edit_min_value.setText(notificationList.getMin_temp());
-                edit_max_value.setText(notificationList.getMax_temp());
+                edit_min_value.setText(Constants.getFTemp(notificationList.getMin_temp()));
+                edit_max_value.setText(Constants.getFTemp(notificationList.getMax_temp()));
             }
 
             if (dayOfWeek.contains("0")) {
@@ -905,7 +921,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             public void onClick(View v) {
 
                 hideKeyboard();
-                addNotification(txt_notification_alert, edit_min_value, edit_max_value, isEdit, isEdit ? notificationList.getDeviceId() : "");
+                addNotification(txt_notification_alert, edit_min_value, edit_max_value, isEdit, isEdit ? notificationList.getAlertId() : "");
             }
 
         });
@@ -961,20 +977,21 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
         JSONObject jsonNotification = new JSONObject();
         try {
-            if (isEdit) {
-                jsonNotification.put("temp_sensor_notification_id", temp_sensor_notification_id);
-            }
-
-            jsonNotification.put("temp_sensor_id", temp_module_id);
-            jsonNotification.put("is_in_C", -1); //1=C 0=F
-            jsonNotification.put("min_temp_value", "");
-            jsonNotification.put("max_temp_value", "");
-            jsonNotification.put("min_humidity_value", Integer.parseInt(minValue.getText().toString().trim()));
-            jsonNotification.put("max_humidity_value", Integer.parseInt(maxValue.getText().toString().trim()));
+            jsonNotification.put("min_humidity", Integer.parseInt(minValue.getText().toString().trim()));
+            jsonNotification.put("max_humidity", Integer.parseInt(maxValue.getText().toString().trim()));
+            jsonNotification.put("alert_type", "humidity");
             jsonNotification.put("days", repeatDayString);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+
+            if (isEdit) {
+                jsonNotification.put("alert_id", temp_module_id);
+
+            } else {
+                jsonNotification.put("device_id", mRemoteCommandList.getDevice().getDevice_id());
+            }
+
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1053,48 +1070,45 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         }
 
         String webUrl = "";
-        if (!isEdit) {
-            webUrl = ChatApplication.url + Constants.ADD_TEMP_SENSOR_NOTIFICATION;
-        } else {
+        if (isEdit) {
             webUrl = ChatApplication.url + Constants.UPDATE_TEMP_SENSOR_NOTIFICATION;
+        } else {
+            webUrl = ChatApplication.url + Constants.ADD_TEMP_SENSOR_NOTIFICATION;
         }
 
         JSONObject jsonNotification = new JSONObject();
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
         try {
 
-            //  "temp_sensor_id"	: "",
-            //  "min_temp_value": "",
-            //  "max_temp_value": "",
-            //  "is_in_C": ,                   //0 and 1 for Temp, -1 for Humidity
-            //  "min_humidity_value": ,
-            //  "max_humidity_value": ,
-            //  "days": "",
-            //  "user_id":"",
-            //  "phone_id": "",
-            //  "phone_type": ""
-            //
-
-            if (isEdit) {
-                jsonNotification.put("temp_sensor_notification_id", temp_sensor_notification_id);
+            if (isCFSelected == 1) {
+                jsonNotification.put("min_temp", Integer.parseInt(minValue.getText().toString().trim()));
+                jsonNotification.put("max_temp", Integer.parseInt(maxValue.getText().toString().trim()));
+            } else {
+                jsonNotification.put("min_temp", Constants.getCTemp(minValue.getText().toString().trim()));
+                jsonNotification.put("max_temp", Constants.getCTemp(maxValue.getText().toString().trim()));
             }
 
-            jsonNotification.put("temp_sensor_id", temp_module_id);
-            jsonNotification.put("is_in_C", isCFSelected); //1=C 0=F
-            jsonNotification.put("min_temp_value", Integer.parseInt(minValue.getText().toString().trim()));
-            jsonNotification.put("max_temp_value", Integer.parseInt(maxValue.getText().toString().trim()));
-            jsonNotification.put("min_humidity_value", "");
-            jsonNotification.put("max_humidity_value", "");
+            jsonNotification.put("alert_type", "temperature");
+
             jsonNotification.put("days", repeatDayString);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
+
+            if (isEdit) {
+                jsonNotification.put("alert_id", temp_sensor_notification_id);
+
+            } else {
+                jsonNotification.put("device_id", mRemoteCommandList.getDevice().getDevice_id());
+            }
+
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        ChatApplication.logDisplay("json : " + jsonNotification.toString());
+        ChatApplication.logDisplay("json : " + webUrl + "  " + jsonNotification.toString());
 
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
@@ -1233,7 +1247,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
      */
     private void deleteTempSensor() {
 
-
         if (!ActivityHelper.isConnectingToInternet(this)) {
             showToast("" + R.string.disconnect);
             return;
@@ -1244,13 +1257,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
         JSONObject jsonNotification = new JSONObject();
         try {
-
-            // {
-            //	"multi_sensor_id"	: "1559630413440_xZzVL01iz",
-            //	"user_id":"1559035111028_VojOpeeBF",
-            //	"phone_id":"1234567",
-            //	"phone_type":"Android"
-            //	 }
             jsonNotification.put("device_id", temp_module_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -1299,12 +1305,12 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
         if (isCF) {
             setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_yellow, R.drawable.txt_background_white, Color.parseColor("#FFFFFF"), Color.parseColor("#111111"));
-            tempCFValue.setText(mRemoteCommandList.getDevice().getDeviceStatus()+ " ");
+            tempCFValue.setText(mRemoteCommandList.getDevice().getDeviceStatus() + " ");
 
         } else {
             setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_white, R.drawable.txt_background_yellow, Color.parseColor("#111111"), Color.parseColor("#FFFFFF"));
 
-            tempCFValue.setText(mRemoteCommandList.getDevice().getFahrenheitvalue()+ " ");
+            tempCFValue.setText(mRemoteCommandList.getDevice().getFahrenheitvalue() + " ");
         }
 
 
@@ -1352,7 +1358,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
     /**
      * check if temp sensro notification status update or not
-     *  @param notification
+     *
+     * @param notification
      * @param swithcCompact
      * @param position
      * @param isActive
@@ -1360,14 +1367,16 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onSwitchChanged(RemoteDetailsRes.Data.Alert notification, SwitchCompat swithcCompact, int position, boolean isActive) {
 
-        showAlertDialog(notification.getDeviceId(), swithcCompact, isActive, true, position, 1);
+        showAlertDialog(notification.getAlertId(), swithcCompact, isActive, true, position, 1);
 
     }
 
     /**
      * Delete temp sensor notification
-     *  @param notificationList
-     * @param notification*/
+     *
+     * @param notificationList
+     * @param notification
+     */
     private void deleteTempSensorNotification(RemoteDetailsRes.Data.Alert notificationList, RemoteDetailsRes.Data.Alert notification) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
@@ -1389,20 +1398,18 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         try {
 
             if (notificationList != null) {
-                jsonNotification.put("temp_sensor_notification_id", notificationList.getDeviceId());
+                jsonNotification.put("alert_id", notificationList.getAlertId());
 
             } else {
-                jsonNotification.put("temp_sensor_notification_id", notification.getDeviceId());
+                jsonNotification.put("alert_id", notification.getAlertId());
             }
-            jsonNotification.put("temp_sensor_id", temp_module_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        //ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        ChatApplication.logDisplay("url is "+webUrl+" "+jsonNotification);
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
@@ -1532,6 +1539,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                 ChatApplication.logDisplay("result is " + result);
                 ActivityHelper.dismissProgressDialog();
 
+                notificationHumidityList.clear();
+                notificationList.clear();
                 mRemoteList = Common.jsonToPojo(result.toString(), RemoteDetailsRes.class);
                 mRemoteCommandList = mRemoteList.getData();
 
@@ -1567,13 +1576,17 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         if (sensorResModel.getDevice().getDeviceMeta().getUnit().equalsIgnoreCase("C") && !isCFDone) {
             isCFSelected = 1;
             setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_yellow, R.drawable.txt_background_white, Color.parseColor("#FFFFFF"), Color.parseColor("#111111"));
-            tempCFValue.setText(sensorResModel.getDevice().getDeviceStatus()+ " ");
+            tempCFValue.setText(sensorResModel.getDevice().getDeviceStatus() + " ");
+
+            /*every getting c value only unit sign change*/
+            sensorResModel.getDevice().setFahrenheitvalue(Constants.getFTemp(sensorResModel.getDevice().getDeviceStatus()));
+
         } else {
             isCFSelected = 0;
             setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_white, R.drawable.txt_background_yellow, Color.parseColor("#111111"), Color.parseColor("#FFFFFF"));
 
-            /*every getting c value only unit sign change*/
             sensorResModel.getDevice().setFahrenheitvalue(Constants.getFTemp(sensorResModel.getDevice().getDeviceStatus()));
+
             tempCFValue.setText(sensorResModel.getDevice().getFahrenheitvalue() + " ");
         }
 
@@ -1643,8 +1656,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                     mScrollState = newState;
 
                     if (newState == SCROLL_STATE_IDLE) {
-
-                        totalItemCount = linearLayoutManager.getItemCount();
                         lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
 
                         isScrollToEndPosition = (notificationList.size() - 1) == lastVisibleItem && mScrollState == SCROLL_STATE_IDLE;
@@ -1720,10 +1731,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                     mScrollState = newState;
 
                     if (newState == SCROLL_STATE_IDLE) {
-
-                        totalItemCount = linearLayoutManager.getItemCount();
                         lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-
                         isScrollToEndPosition = (notificationList.size() - 1) == lastVisibleItem && mScrollState == SCROLL_STATE_IDLE;
                     }
                 }
@@ -1774,13 +1782,13 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onSwitchHumityChanged(RemoteDetailsRes.Data.Alert notification, SwitchCompat swithcCompact, int position, boolean isActive) {
 
-        showAlertDialog(notification.getDeviceId(), swithcCompact, isActive, true, position, 2);
+        showAlertDialog(notification.getAlertId(), swithcCompact, isActive, true, position, 2);
     }
 
     private void checkIntent(boolean b) {
         if (b) {
             Intent intent = new Intent(MultiSensorActivity.this, DeviceLogActivity.class);
-            intent.putExtra("ROOM_ID", "" +temp_room_id);
+            intent.putExtra("ROOM_ID", "" + temp_room_id);
             intent.putExtra("Mood_Id", "" + mRemoteCommandList.getDevice().getDevice_id());
             intent.putExtra("activity_type", "tempsensor");
             intent.putExtra("IS_SENSOR", true);

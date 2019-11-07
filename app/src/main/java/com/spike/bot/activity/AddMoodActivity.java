@@ -226,8 +226,6 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         }
 
         /**sensor unselect condition */
-
-        ArrayList<RoomVO> roomListTemp=roomList;
         for (int i = 0; i < roomList.size(); i++) {
             for (int j = 0; j < roomList.get(i).getPanelList().size(); j++) {
 

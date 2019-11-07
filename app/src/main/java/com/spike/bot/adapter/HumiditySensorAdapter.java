@@ -78,34 +78,37 @@ public class HumiditySensorAdapter extends RecyclerView.Adapter<HumiditySensorAd
                 holder.imgOptions.setVisibility(View.INVISIBLE);
             }
         }
+
+        holder.imgOptions.setId(position);
         holder.imgOptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                displayContextMenu(v, notification, position);
+                displayContextMenu(v, notificationList.get(holder.imgOptions.getId()), holder.imgOptions.getId());
             }
         });
 
 
+        holder.switchCompat.setId(position);
         holder.switchCompat.setOnTouchListener(new OnSwipeTouchListener(mContext) {
             @Override
             public void onClick() {
                 super.onClick();
                 holder.switchCompat.setChecked(holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchHumityChanged(notification, holder.switchCompat, position, !holder.switchCompat.isChecked());
+                onNotificationContextMenu.onSwitchHumityChanged(notificationList.get(holder.switchCompat.getId()), holder.switchCompat, holder.switchCompat.getId(), !holder.switchCompat.isChecked());
             }
 
             @Override
             public void onSwipeLeft() {
                 super.onSwipeLeft();
                 holder.switchCompat.setChecked(holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchHumityChanged(notification, holder.switchCompat, position, !holder.switchCompat.isChecked());
+                onNotificationContextMenu.onSwitchHumityChanged(notificationList.get(holder.switchCompat.getId()), holder.switchCompat, holder.switchCompat.getId(), !holder.switchCompat.isChecked());
             }
 
             @Override
             public void onSwipeRight() {
                 super.onSwipeRight();
                 holder.switchCompat.setChecked(holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchHumityChanged(notification, holder.switchCompat, position, !holder.switchCompat.isChecked());
+                onNotificationContextMenu.onSwitchHumityChanged(notificationList.get(holder.switchCompat.getId()), holder.switchCompat, holder.switchCompat.getId(), !holder.switchCompat.isChecked());
             }
 
         });

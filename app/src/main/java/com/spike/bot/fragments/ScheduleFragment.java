@@ -97,8 +97,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     DashBoardFragment.OnHeadlineSelectedListener mCallback;
     private Socket mSocket;
     private FloatingActionButton mFab;
-    private CardView mFabMenuLayout;
-    private TextView fab_menu1, fab_menu2, fab_menu3, fab_menu4, fab_menu5, fab_menu6, fab_menu7;
     View view;
 
     // This event fires 1st, before creation of fragment or any views
@@ -227,22 +225,16 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             moodId = getArguments().getString("moodId");
             roomId = getArguments().getString("roomId");
             isActivityType = getArguments().getString("isActivityType");
-                moodId2 = getArguments().getString("moodId2");
-                moodId3 = getArguments().getString("moodId3");
-                isRoomMainFm = getArguments().getString("isRoomMainFm");
-                selection = getArguments().getInt("selection");
-                isMoodAdapter = getArguments().getBoolean("isMoodAdapter");
+            moodId2 = getArguments().getString("moodId2");
+            moodId3 = getArguments().getString("moodId3");
+            isRoomMainFm = getArguments().getString("isRoomMainFm");
+            selection = getArguments().getInt("selection");
+            isMoodAdapter = getArguments().getBoolean("isMoodAdapter");
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         linearTabSchedule =  view.findViewById(R.id.linearTabSchedule);
-        mFabMenuLayout =  view.findViewById(R.id.fabLayout1);
-        fab_menu1 =  view.findViewById(R.id.fab_menu1);
-        fab_menu2 =  view.findViewById(R.id.fab_menu2);
-        fab_menu3 =  view.findViewById(R.id.fab_menu3);
-        fab_menu4 =  view.findViewById(R.id.fab_menu4);
-
         mFab =  view.findViewById(R.id.fab);
         setId();
 
@@ -256,8 +248,8 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             ll_mood_view.setVisibility(View.GONE);
         }
 
-        iv_mood_add = (ImageView) view.findViewById(R.id.iv_mood_add);
-        iv_room_add = (ImageView) view.findViewById(R.id.iv_room_add);
+        iv_mood_add =  view.findViewById(R.id.iv_mood_add);
+        iv_room_add =  view.findViewById(R.id.iv_room_add);
 
         if (isMood || !TextUtils.isEmpty(moodId) || !TextUtils.isEmpty(moodId2)) {
             iv_mood_add.setVisibility(View.VISIBLE);
@@ -285,7 +277,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             onLoadFragment(0); //uncomment
         }
 
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
+        swipeRefreshLayout =  view.findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(this);
 
         empty_add_image.setOnClickListener(new View.OnClickListener() {
@@ -318,17 +310,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             }
         });
 
-
-//        scheduleRoomAdapter = new ScheduleAdapter(getActivity(), scheduleRoomArrayList, ScheduleFragment.this, true, false);
-
         setViewClickLister();
-        if (isMood) {
-            linearTabSchedule.setVisibility(View.GONE);
-        } else {
-            ll_recycler.setVisibility(View.VISIBLE);
-            rv_mood.setVisibility(View.VISIBLE);
-            linearTabSchedule.setVisibility(View.VISIBLE);
-        }
 
         return view;
     }
@@ -340,39 +322,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                 showFABMenu();
             }
         });
-
-        fab_menu1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(activity, DeviceLogActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        fab_menu2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent logIntent = new Intent(getActivity(), SensorDoorLogActivity.class);
-                startActivity(logIntent);
-            }
-        });
-
-        fab_menu3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intentNotification = new Intent(activity, NotificationSetting.class);
-                startActivity(intentNotification);
-            }
-        });
-
-        fab_menu4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intentProfile = new Intent(activity, ProfileActivity.class);
-                startActivity(intentProfile);
-            }
-        });
-
     }
 
 

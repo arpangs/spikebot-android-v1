@@ -106,7 +106,18 @@ public class DeviceListLayoutHelper implements SectionStateChangeListener {
                     //add panel
                     mDataArrayList.add(panelList.get(i));
                     //add all device switch
-                    mDataArrayList.addAll(panelList.get(i).getDeviceList());
+                    if(panelList.get(i).isSensorPanel()){
+                        /*for only remote add*/
+                        ArrayList<DeviceVO> deviceVOArrayList=new ArrayList<>();
+                        for(int k=0; k<panelList.get(i).getDeviceList().size(); k++){
+                            if(panelList.get(i).getDeviceList().get(k).getDeviceType().equalsIgnoreCase("remote")){
+                                deviceVOArrayList.add(panelList.get(i).getDeviceList().get(k));
+                            }
+                        }
+                        mDataArrayList.addAll(deviceVOArrayList);
+                    }else {
+                        mDataArrayList.addAll(panelList.get(i).getDeviceList());
+                    }
                 }
             }
         }

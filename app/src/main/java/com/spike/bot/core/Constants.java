@@ -111,9 +111,6 @@ public class Constants {
     public static final String AddChildUser = "/AddChildUser";
     public static final String updateChildUser = "/updateChildUser";
     public static final String ADD_CUSTOME_ROOM = "/rooms/add";
- //   public static final String SAVE_ROOM_AND_PANEL_NAME = "/saveRoomAndPanelName";
-    //    public static final String CONFIGURE_NEWROOM = "/configureNewRoom";
- //   public static final String ADD_CUSTOME_ROOM = "/addCustomRoom";
     public static final String SAVE_ROOM_AND_PANEL_NAME = "/rooms/edit";
 //    public static final String CONFIGURE_NEWROOM = "/configureNewRoom";
     public static final String GET_EDIT_ROOM_INFO = "/getEditRoomInfo";
@@ -171,6 +168,7 @@ public class Constants {
     public static final String curtainupdate = "/curtain/update";
     public static final String curtaindelete = "/curtain/delete";
     public static final String curtainupdatestatus = "/curtain/update-status";
+    public static final String deviceheavyloadping = "/device/heavy-load/ping";
 
     public static final String SENSOR_ROOM_DETAILS = "/sensorRoomDetails";
     public static final String SENSOR_NOTIFICATION = "/sensorNotification";
@@ -199,11 +197,11 @@ public class Constants {
     public static final String CONFIGURE_TEMP_SENSOR_REQUEST = "/configureTempSensorRequest";
     public static final String configureMultiSensorRequest = "/configureMultiSensorRequest";
     public static final String ADD_TEMP_SENSOR = "/addTempSensor";
-    public static final String ADD_TEMP_SENSOR_NOTIFICATION = "/addTempSensorNotification";
+    public static final String ADD_TEMP_SENSOR_NOTIFICATION = "/alert/add";
     public static final String addMultiSensorNotification = "/addMultiSensorNotification";
-    public static final String UPDATE_TEMP_SENSOR_NOTIFICATION = "/updateTempSensorNotification";
+    public static final String UPDATE_TEMP_SENSOR_NOTIFICATION = "/alert/edit";
     public static final String updateMultiSensorNotification = "/updateMultiSensorNotification";
-    public static final String DELETE_TEMP_SENSOR_NOTIFICATION = "/deleteTempSensorNotification";
+    public static final String DELETE_TEMP_SENSOR_NOTIFICATION = "/alert/delete";
     public static final String deleteMultiSensorNotification = "/deleteMultiSensorNotification";
     public static final String CHANGE_TEMP_SENSOR_STATUS = "/changeTempSensorStatus";
     public static final String changeMultiSensorStatus = "/changeMultiSensorStatus";
@@ -267,7 +265,7 @@ public class Constants {
     public static final String GET_MOOD_DEVICE_DETAILS = "/getMoodDeviceDetails";
 
     //schedule
-    public static final String ADD_NEW_SCHEDULE = "/addSchedule";
+    public static final String ADD_NEW_SCHEDULE = "/schedule/add";
     public static final String UPDATE_SCHEDULE = "/updateSchedule";
     public static final String CHANGE_SCHEDULE_STATUS = "/changeScheduleStatus";
     public static final String DELETE_SCHEDULE = "/deleteSchedule";
@@ -585,7 +583,6 @@ public class Constants {
         double b=a*9/5+32;
         int c=(int)b;
         String r=String.valueOf(c);
-
         return r;
     }
 
@@ -593,8 +590,9 @@ public class Constants {
         double a=Double.parseDouble(value);
         double b=a-32;
         double c=b*5/9;
-        int c1=(int)b;
+        int c1=(int)c;
         String r=String.valueOf(c1);
+        ChatApplication.logDisplay("ff is "+value+"  "+r);
         return r;
     }
 

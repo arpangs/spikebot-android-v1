@@ -558,7 +558,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
         String url = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
 
-        ChatApplication.logDisplay("Request : "+Constants.SAVE_EDIT_SWITCH+"  "  + obj);
+        ChatApplication.logDisplay("Request : "+url+"  "  + obj);
 
         new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() {
             @Override
@@ -735,7 +735,6 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             ChatApplication.showToast(getApplicationContext(), ""+R.string.disconnect);
             return;
         }
-
 
         JSONObject obj = new JSONObject();
         try {

@@ -514,8 +514,8 @@
 
                                 <TextView
                                     android:id="@+id/btnAdd"
-                                    android:layout_width="@dimen/_27sdp"
-                                    android:layout_height="@dimen/_27sdp"
+                                    android:layout_width="@dimen/_29sdp"
+                                    android:layout_height="@dimen/_29sdp"
                                     android:layout_gravity="center"
                                     android:background="@drawable/add_blue"
                                     android:gravity="center"
@@ -727,8 +727,8 @@
 
                                 <TextView
                                     android:id="@+id/btnAdd_temp"
-                                    android:layout_width="@dimen/_27sdp"
-                                    android:layout_height="@dimen/_27sdp"
+                                    android:layout_width="@dimen/_29sdp"
+                                    android:layout_height="@dimen/_29sdp"
                                     android:layout_gravity="center"
                                     android:visibility="visible"
                                     android:background="@drawable/add_blue"

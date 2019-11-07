@@ -1332,7 +1332,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             }
 
             if (TextUtils.isEmpty(et_schedule_name.getText().toString())) {
-                ////
                 String errorMsg = "";
                 if (rg_schedule_select.getCheckedRadioButtonId() == R.id.rb_schedule_select_schedule) {
                     errorMsg = "Enter Schedule name";
@@ -1379,7 +1378,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     et_off_time_min.setText("00");
                 }
 
-                int rId = rg_schedule_select.getCheckedRadioButtonId();
 
                 int on_hour = 0;
 
@@ -1428,17 +1426,19 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
             try {
 
-                deviceObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-                deviceObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+//                if (isEdit) {
+//                    deviceObj.put("schedule_id", scheduleVO.getSchedule_id());
+//                    deviceObj.put("schedule_status", scheduleVO.getSchedule_status()); //added
+//                }
+                //{
+                //	"schedule_days":["0","1","2","3","4","5","6"],
+                //	"on_time":"19:00",
+                //	"off_time":"19:01",
+                //	"devices":[""]
+                //}
 
-                if (isEdit) {
-                    deviceObj.put("schedule_id", scheduleVO.getSchedule_id());
-                    deviceObj.put("schedule_status", scheduleVO.getSchedule_status()); //added
-                }
+//                deviceObj.put("schedule_type", isSelectMode ? 0 : 1);
 
-
-                deviceObj.put("schedule_type", isSelectMode ? 0 : 1);
-                deviceObj.put("schedule_name", et_schedule_name.getText().toString());
 
                 String onTime = "", offTime = "";
                 if (!TextUtils.isEmpty(et_schedule_on_time.getText().toString())) {
@@ -1458,253 +1458,212 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     Toast.makeText(this, "Select atleast one or more devices", Toast.LENGTH_SHORT).show();
                     return false;
                 }
-                String ss = "";
-                JSONArray array = new JSONArray();
 
-                JSONArray roomDeviceArray = new JSONArray();
-
-                for (DeviceVO dPanel : deviceVOArrayList) {
-
-                    JSONObject object = new JSONObject();
-                    mRoomIdList.add("" + dPanel.getRoomId());
-                    roomName.add("" + dPanel.getRoomName());
-
-                    if (dPanel.getSensor_type() != null && dPanel.getSensor_type().equalsIgnoreCase("remote")) {
-                        object.put("module_id", dPanel.getModuleId());
-                        object.put("room_device_id", "" + dPanel.getRoomDeviceId());
-                        object.put("sensor_icon", "" + dPanel.getSensor_icon());
-                        object.put("is_active", "" + dPanel.getIsActive());
-                        object.put("device_type", "" + dPanel.getDeviceType());
-                        object.put("original_room_device_id", "" + dPanel.getOriginal_room_device_id());
-                        object.put("sensor_id", "" + dPanel.getSensor_id());
-                        object.put("sensor_type", "" + dPanel.getSensor_type());
-                        object.put("device_id", "" + dPanel.getDeviceId());
-                        object.put("ir_blaster_id", "" + dPanel.getIr_blaster_id());
-                        object.put("sensor_name", "" + dPanel.getSensor_name());
-                        object.put("is_original", "" + dPanel.getIs_original());
-                        object.put("device_status", "" + dPanel.getDeviceStatus());
-                        object.put("device_specific_value", "" + dPanel.getDeviceSpecificValue());
-                        object.put("device_type", "" + dPanel.getDeviceType());
-                        object.put("remote_status", "" + dPanel.getRemote_status());
-                        object.put("panel_id", "" + dPanel.getPanel_id());
-                        object.put("remote_device_id", "" + dPanel.getRemote_device_id());
-                        object.put("ir_blaster_id", "" + dPanel.getIr_blaster_id());
-
-                    } else {
-                        object.put("device_icon", dPanel.getDevice_icon());
-                        object.put("room_device_id", "" + dPanel.getRoomDeviceId());
-                        object.put("module_id", "" + dPanel.getModuleId());
-                        object.put("device_id", "" + dPanel.getDeviceId());
-
-                        //added
-
-                        object.put("device_name", dPanel.getDeviceName());
-                        object.put("device_status", dPanel.getDeviceStatus());
-                        object.put("device_specific_value", dPanel.getDeviceSpecificValue());
-                        object.put("device_type", dPanel.getDeviceType());
-
-                        object.put("original_room_device_id", dPanel.getOriginal_room_device_id());
-                        object.put("is_active", dPanel.getIsActive());
-                        object.put("is_alive", dPanel.getIsAlive());
-                        object.put("is_original", dPanel.getIs_original());
-
-                    }
-
-
-                    array.put(object);
-                    roomDeviceArray.put(dPanel.getRoomDeviceId());
-                }
-                //room_devices
-                if (isEdit) {
-                    deviceObj.put("room_devices", roomDeviceArray);
-                }
-                deviceObj.put("deviceList", array);
-                if (isSelectMode) {
-
-                    RoomVO room = (RoomVO) sp_schedule_list.getSelectedItem();
-                    if (sp_schedule_list.getSelectedItem() != null) {
-                        deviceObj.put("room_id", room.getRoomId());
-
-                    } else {
-                        //Remove Duplicate room id from mRoomIdList List
-                        ArrayList<String> resultRoomId = new ArrayList<>();
-                        ArrayList<String> resultRoomName = new ArrayList<>();
-
-                        HashSet<String> set = new HashSet<>();
-                        HashSet<String> setName = new HashSet<>();
-
-                        for (String roomId : mRoomIdList) {
-                            if (!set.contains(roomId)) {
-                                resultRoomId.add(roomId);
-                                set.add(roomId);
-                            }
-                        }
-
-                        for (String roomId : roomName) {
-                            if (!setName.contains(roomId)) {
-                                resultRoomName.add(roomId);
-                                setName.add(roomId);
-                            }
-                        }
-
-                        JSONArray jsonArray = new JSONArray();
-
-                        for (int i = 0; i < resultRoomId.size(); i++) {
-                            JSONObject jsonObject = new JSONObject();
-                            jsonObject.put("room_id", resultRoomId.get(i));
-                            jsonObject.put("room_name", resultRoomName.get(i));
-
-                            jsonArray.put(jsonObject);
-                        }
-
-                        //deviceObj.put("room_id", "");
-                        String collectionRoomId = "";
-                        for (String mRoomId : resultRoomId) {
-                            collectionRoomId += mRoomId + ",";
-                        }
-                        //deviceObj.put("room_id_is", ""+collectionRoomId.substring(0, collectionRoomId.lastIndexOf(",")));
-                        deviceObj.put("room_id", jsonArray);
-                    }
-                    if (!TextUtils.isEmpty(roomId)) {
-                        ArrayList<String> resultRoomId = new ArrayList<>();
-                        ArrayList<String> resultRoomName = new ArrayList<>();
-
-                        HashSet<String> set = new HashSet<>();
-                        HashSet<String> setName = new HashSet<>();
-
-                        for (String roomId : mRoomIdList) {
-                            if (!set.contains(roomId)) {
-                                resultRoomId.add(roomId);
-                                set.add(roomId);
-                            }
-                        }
-
-                        for (String roomId : roomName) {
-                            if (!setName.contains(roomId)) {
-                                resultRoomName.add(roomId);
-                                setName.add(roomId);
-                            }
-                        }
-
-                        JSONArray jsonArray = new JSONArray();
-
-                        for (int i = 0; i < resultRoomId.size(); i++) {
-                            JSONObject jsonObject = new JSONObject();
-                            jsonObject.put("room_id", resultRoomId.get(i));
-                            jsonObject.put("room_name", resultRoomName.get(i));
-
-                            jsonArray.put(jsonObject);
-                        }
-
-
-                        String collectionRoomId = "";
-                        for (String mRoomId : resultRoomId) {
-                            collectionRoomId += mRoomId + ",";
-                        }
-                        deviceObj.put("room_id", jsonArray);
-                    }
-
-                } else {
-                    int mood_selected_id = sp_mood_selection.getSelectedItemPosition();
-                    String mood_string_id = moodListSpinner.get(mood_selected_id).getRoomId();
-
-                    JSONArray jsonArray = new JSONArray();
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("room_id", mood_string_id);
-                    jsonObject.put("room_name", moodListSpinner.get(mood_selected_id).getRoomName());
-                    jsonArray.put(jsonObject);
-
-                    deviceObj.put("room_id", jsonArray);
-                }
-                deviceObj.put("is_duplicate", 0);
+                deviceObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+                deviceObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
                 deviceObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+                deviceObj.put("schedule_name", et_schedule_name.getText().toString());
+                deviceObj.put("schedule_days",repeatDayString);
+                deviceObj.put("on_time",onTime);
+                deviceObj.put("off_time",offTime);
+                deviceObj.put("schedule_device_type",isSelectMode?"room":"mood");
+
+                int rId = rg_schedule_select.getCheckedRadioButtonId();
+                if (rId == R.id.rb_schedule_select_schedule) {
+                    deviceObj.put("schedule_type","schedule");
+                } else  {
+                    deviceObj.put("schedule_type","timer");
+                }
+
+                ArrayList<String> stringArrayList=new ArrayList<>();
+                for(int i=0; i<deviceVOArrayList.size(); i++){
+                    stringArrayList.add(deviceVOArrayList.get(i).getPanel_device_id());
+                }
+
+                JSONArray jsonArray=new JSONArray(stringArrayList);
+                deviceObj.put("devices",jsonArray);
+
+//                if (isSelectMode) {
+//
+//                    RoomVO room = (RoomVO) sp_schedule_list.getSelectedItem();
+//                    if (sp_schedule_list.getSelectedItem() != null) {
+//                        deviceObj.put("room_id", room.getRoomId());
+//
+//                    } else {
+//                        //Remove Duplicate room id from mRoomIdList List
+//                        ArrayList<String> resultRoomId = new ArrayList<>();
+//                        ArrayList<String> resultRoomName = new ArrayList<>();
+//
+//                        HashSet<String> set = new HashSet<>();
+//                        HashSet<String> setName = new HashSet<>();
+//
+//                        for (String roomId : mRoomIdList) {
+//                            if (!set.contains(roomId)) {
+//                                resultRoomId.add(roomId);
+//                                set.add(roomId);
+//                            }
+//                        }
+//
+//                        for (String roomId : roomName) {
+//                            if (!setName.contains(roomId)) {
+//                                resultRoomName.add(roomId);
+//                                setName.add(roomId);
+//                            }
+//                        }
+//
+//                        JSONArray jsonArray = new JSONArray();
+//
+//                        for (int i = 0; i < resultRoomId.size(); i++) {
+//                            JSONObject jsonObject = new JSONObject();
+//                            jsonObject.put("room_id", resultRoomId.get(i));
+//                            jsonObject.put("room_name", resultRoomName.get(i));
+//
+//                            jsonArray.put(jsonObject);
+//                        }
+//
+//                        //deviceObj.put("room_id", "");
+//                        String collectionRoomId = "";
+//                        for (String mRoomId : resultRoomId) {
+//                            collectionRoomId += mRoomId + ",";
+//                        }
+//                        //deviceObj.put("room_id_is", ""+collectionRoomId.substring(0, collectionRoomId.lastIndexOf(",")));
+//                        deviceObj.put("room_id", jsonArray);
+//                    }
+//                    if (!TextUtils.isEmpty(roomId)) {
+//                        ArrayList<String> resultRoomId = new ArrayList<>();
+//                        ArrayList<String> resultRoomName = new ArrayList<>();
+//
+//                        HashSet<String> set = new HashSet<>();
+//                        HashSet<String> setName = new HashSet<>();
+//
+//                        for (String roomId : mRoomIdList) {
+//                            if (!set.contains(roomId)) {
+//                                resultRoomId.add(roomId);
+//                                set.add(roomId);
+//                            }
+//                        }
+//
+//                        for (String roomId : roomName) {
+//                            if (!setName.contains(roomId)) {
+//                                resultRoomName.add(roomId);
+//                                setName.add(roomId);
+//                            }
+//                        }
+//
+//                        JSONArray jsonArray = new JSONArray();
+//
+//                        for (int i = 0; i < resultRoomId.size(); i++) {
+//                            JSONObject jsonObject = new JSONObject();
+//                            jsonObject.put("room_id", resultRoomId.get(i));
+//                            jsonObject.put("room_name", resultRoomName.get(i));
+//
+//                            jsonArray.put(jsonObject);
+//                        }
+//
+//
+//                        deviceObj.put("room_id", jsonArray);
+//                    }
+//
+//                } else {
+//                    int mood_selected_id = sp_mood_selection.getSelectedItemPosition();
+//                    String mood_string_id = moodListSpinner.get(mood_selected_id).getRoomId();
+//
+//                    JSONArray jsonArray = new JSONArray();
+//                    JSONObject jsonObject = new JSONObject();
+//                    jsonObject.put("room_id", mood_string_id);
+//                    jsonObject.put("room_name", moodListSpinner.get(mood_selected_id).getRoomName());
+//                    jsonArray.put(jsonObject);
+//
+//                    deviceObj.put("room_id", jsonArray);
+//                }
+
 
                 //add after select
 
-                if (r_id_select == R.id.rb_schedule_select_timer) {
-
-                    deviceObj.put("schedule_device_day", "");
-
-                    deviceObj.put("is_timer", 1);
-
-                    if (!TextUtils.isEmpty(et_on_time_hours.getText().toString()) && TextUtils.isEmpty(et_on_time_min.getText().toString())) {
-                        et_on_time_min.setText("00");
-                    }
-                    if (TextUtils.isEmpty(et_on_time_hours.getText().toString()) && !TextUtils.isEmpty(et_on_time_min.getText().toString())) {
-                        et_on_time_hours.setText("00");
-                    }
-
-                    if (!TextUtils.isEmpty(et_on_time_hours.getText().toString()) && !TextUtils.isEmpty(et_on_time_min.getText().toString())) {
-
-                        int hOn = Integer.parseInt(et_on_time_hours.getText().toString());
-                        int mOn = Integer.parseInt(et_on_time_min.getText().toString());
-
-                        if (hOn == 0 && mOn == 0) {
-                            deviceObj.put("schedule_device_on_time", "");
-                            deviceObj.put("timer_on_after", "");
-                            deviceObj.put("timer_on_date", "");
-                        } else {
-                            if (!TextUtils.isEmpty(et_on_time_bottom_header_at_time.getText().toString())) {
-
-                                deviceObj.put("schedule_device_on_time", et_on_hour_ampm_12);
-                            } else {
-                                deviceObj.put("schedule_device_on_time", on_at_time);
-                            }
-                            deviceObj.put("timer_on_after", ActivityHelper.hourMinuteZero(hOn, mOn));
-                            deviceObj.put("timer_on_date", on_time_date);
-                        }
-                    } else {
-                        deviceObj.put("schedule_device_on_time", "");
-                        deviceObj.put("timer_on_after", "");
-                        deviceObj.put("timer_on_date", "");
-                    }
-
-
-                    if (!TextUtils.isEmpty(et_off_time_hours.getText().toString()) && TextUtils.isEmpty(et_off_time_min.getText().toString())) {
-                        et_off_time_min.setText("00");
-                    }
-                    if (TextUtils.isEmpty(et_off_time_hours.getText().toString()) && !TextUtils.isEmpty(et_off_time_min.getText().toString())) {
-                        et_off_time_hours.setText("00");
-                    }
-
-                    if (!TextUtils.isEmpty(et_off_time_hours.getText().toString()) && !TextUtils.isEmpty(et_off_time_min.getText().toString())) {
-
-                        int hFn = Integer.parseInt(et_off_time_hours.getText().toString());
-                        int mFn = Integer.parseInt(et_off_time_min.getText().toString());
-
-                        if (hFn == 0 && mFn == 0) {
-                            deviceObj.put("schedule_device_off_time", "");
-                            deviceObj.put("timer_off_after", "");
-                            deviceObj.put("timer_off_date", "");
-                        } else {
-
-                            if (!TextUtils.isEmpty(et_off_time_bottom_header_at_time.getText().toString())) {
-                                deviceObj.put("schedule_device_off_time", et_off_hour_ampm_12);
-                            } else {
-                                deviceObj.put("schedule_device_off_time", off_at_time);
-                            }
-                            deviceObj.put("timer_off_after", ActivityHelper.hourMinuteZero(hFn, mFn));
-                            deviceObj.put("timer_off_date", off_time_date);
-                        }
-                    } else {
-                        deviceObj.put("schedule_device_off_time", "");
-                        deviceObj.put("timer_off_after", "");
-                        deviceObj.put("timer_off_date", "");
-                    }
-
-                } else {
-
-                    deviceObj.put("schedule_device_day", repeatDayString);
-
-                    deviceObj.put("schedule_device_on_time", onTime);
-                    deviceObj.put("schedule_device_off_time", offTime);
-
-                    deviceObj.put("is_timer", 0);
-                    deviceObj.put("timer_on_after", "");
-                    deviceObj.put("timer_on_date", "");
-                    deviceObj.put("timer_off_after", "");
-                    deviceObj.put("timer_off_date", "");
-                }
+//                if (r_id_select == R.id.rb_schedule_select_timer) {
+//
+//                    deviceObj.put("schedule_device_day", "");
+//
+//                    deviceObj.put("is_timer", 1);
+//
+//                    if (!TextUtils.isEmpty(et_on_time_hours.getText().toString()) && TextUtils.isEmpty(et_on_time_min.getText().toString())) {
+//                        et_on_time_min.setText("00");
+//                    }
+//                    if (TextUtils.isEmpty(et_on_time_hours.getText().toString()) && !TextUtils.isEmpty(et_on_time_min.getText().toString())) {
+//                        et_on_time_hours.setText("00");
+//                    }
+//
+//                    if (!TextUtils.isEmpty(et_on_time_hours.getText().toString()) && !TextUtils.isEmpty(et_on_time_min.getText().toString())) {
+//
+//                        int hOn = Integer.parseInt(et_on_time_hours.getText().toString());
+//                        int mOn = Integer.parseInt(et_on_time_min.getText().toString());
+//
+//                        if (hOn == 0 && mOn == 0) {
+//                            deviceObj.put("schedule_device_on_time", "");
+//                            deviceObj.put("timer_on_after", "");
+//                            deviceObj.put("timer_on_date", "");
+//                        } else {
+//                            if (!TextUtils.isEmpty(et_on_time_bottom_header_at_time.getText().toString())) {
+//
+//                                deviceObj.put("schedule_device_on_time", et_on_hour_ampm_12);
+//                            } else {
+//                                deviceObj.put("schedule_device_on_time", on_at_time);
+//                            }
+//                            deviceObj.put("timer_on_after", ActivityHelper.hourMinuteZero(hOn, mOn));
+//                            deviceObj.put("timer_on_date", on_time_date);
+//                        }
+//                    } else {
+//                        deviceObj.put("schedule_device_on_time", "");
+//                        deviceObj.put("timer_on_after", "");
+//                        deviceObj.put("timer_on_date", "");
+//                    }
+//
+//
+//                    if (!TextUtils.isEmpty(et_off_time_hours.getText().toString()) && TextUtils.isEmpty(et_off_time_min.getText().toString())) {
+//                        et_off_time_min.setText("00");
+//                    }
+//                    if (TextUtils.isEmpty(et_off_time_hours.getText().toString()) && !TextUtils.isEmpty(et_off_time_min.getText().toString())) {
+//                        et_off_time_hours.setText("00");
+//                    }
+//
+//                    if (!TextUtils.isEmpty(et_off_time_hours.getText().toString()) && !TextUtils.isEmpty(et_off_time_min.getText().toString())) {
+//
+//                        int hFn = Integer.parseInt(et_off_time_hours.getText().toString());
+//                        int mFn = Integer.parseInt(et_off_time_min.getText().toString());
+//
+//                        if (hFn == 0 && mFn == 0) {
+//                            deviceObj.put("schedule_device_off_time", "");
+//                            deviceObj.put("timer_off_after", "");
+//                            deviceObj.put("timer_off_date", "");
+//                        } else {
+//
+//                            if (!TextUtils.isEmpty(et_off_time_bottom_header_at_time.getText().toString())) {
+//                                deviceObj.put("schedule_device_off_time", et_off_hour_ampm_12);
+//                            } else {
+//                                deviceObj.put("schedule_device_off_time", off_at_time);
+//                            }
+//                            deviceObj.put("timer_off_after", ActivityHelper.hourMinuteZero(hFn, mFn));
+//                            deviceObj.put("timer_off_date", off_time_date);
+//                        }
+//                    } else {
+//                        deviceObj.put("schedule_device_off_time", "");
+//                        deviceObj.put("timer_off_after", "");
+//                        deviceObj.put("timer_off_date", "");
+//                    }
+//
+//                } else {
+//
+//                    deviceObj.put("schedule_device_day", repeatDayString);
+//
+//                    deviceObj.put("schedule_device_on_time", onTime);
+//                    deviceObj.put("schedule_device_off_time", offTime);
+//
+//                    deviceObj.put("is_timer", 0);
+//                    deviceObj.put("timer_on_after", "");
+//                    deviceObj.put("timer_on_date", "");
+//                    deviceObj.put("timer_off_after", "");
+//                    deviceObj.put("timer_off_date", "");
+//                }
 
 
                 addSchedule();
@@ -2294,11 +2253,8 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
         ActivityHelper.showProgressDialog(this, "Please Wait.", false);
         String url = webUrl + Constants.ADD_NEW_SCHEDULE;
-        if (isEdit) {
-            url = webUrl + Constants.UPDATE_SCHEDULE;
-        }
 
-        ChatApplication.logDisplay("schu is " + deviceObj.toString());
+        ChatApplication.logDisplay("schu is " +url+" "+ deviceObj.toString());
 
         new GetJsonTask(ScheduleActivity.this, url, "POST", deviceObj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
@@ -2526,7 +2482,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         ArrayList<String> arrayList = new ArrayList<>();
         ArrayList<DeviceVO> listTemp = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
-            arrayList.add(list.get(i).getRoomDeviceId());
+            arrayList.add(list.get(i).getPanel_device_id());
         }
 
         HashSet<String> hashSet = new HashSet<String>();
@@ -2537,7 +2493,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
         for (int j = 0; j < list.size(); j++) {
             for (int i = 0; i < arrayList.size(); i++) {
-                if (arrayList.get(i).length() > 2 && list.get(j).getRoomDeviceId().equalsIgnoreCase(arrayList.get(i))) {
+                if (arrayList.get(i).length() > 2 && list.get(j).getPanel_device_id().equalsIgnoreCase(arrayList.get(i))) {
                     arrayList.set(i, arrayList.get(i) + "i");
                     listTemp.add(list.get(i));
                 }

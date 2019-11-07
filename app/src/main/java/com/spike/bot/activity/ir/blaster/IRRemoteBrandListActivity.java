@@ -136,8 +136,6 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
 
                 hideProgress();
                 ActivityHelper.dismissProgressDialog();
-
-                ActivityHelper.dismissProgressDialog();
                 try {
                     ChatApplication.logDisplay("url is res "+result);
                     int code = result.getInt("code");

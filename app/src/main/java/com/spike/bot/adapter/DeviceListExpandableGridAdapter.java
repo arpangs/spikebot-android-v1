@@ -74,6 +74,7 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
         });
     }
 
+    /*get selection view */
     public void setSelection(String room_device_id) {
         strArray = room_device_id.split(",");
         listDeviceIds = Arrays.asList(strArray);
@@ -90,6 +91,7 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
 
     }
 
+    /*get all select value*/
     public void setSelectionAllDevices() {
 
         for (int i = 0; i < mDataArrayList.size(); i++) {
@@ -142,6 +144,13 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
                 holder.sectionToggleButton.setVisibility(View.VISIBLE);
 
                 holder.rel_main_view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded);
+                    }
+                });
+
+                holder.txtSelectDevice.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded);
@@ -218,11 +227,11 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
                     if (!TextUtils.isEmpty(item.getSensor_type())) {
                         type = item.getSensor_type();
                     }
-                    if (type.equalsIgnoreCase("temp_sensor") || type.equalsIgnoreCase("door_sensor")|| type.equalsIgnoreCase("gas_sensor")) {
-                        holder.iv_icon_select.setVisibility(View.GONE);
-                    } else {
+//                    if (type.equalsIgnoreCase("temp_sensor") || type.equalsIgnoreCase("door_sensor")|| type.equalsIgnoreCase("gas_sensor")) {
+//                        holder.iv_icon_select.setVisibility(View.GONE);
+//                    } else {
                         holder.iv_icon_select.setVisibility(View.VISIBLE);
-                    }
+//                    }
 
                 } else {
                     holder.iv_icon_select.setVisibility(View.GONE);
@@ -248,38 +257,30 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
 
                                 if (!isMoodAdapter) {
 
-                                    if (item.getSensor_icon() != null && item.getSensor_icon().equalsIgnoreCase("Remote_AC")) {
+                                    if (item.getDevice_icon().equalsIgnoreCase("remote")) {
 
-                                        if (item.getIsActive() == 0) {
-
-                                        } else {
-
+                                        if (item.getIsActive() !=-1) {
                                             item.setSelected(!item.isSelected());
                                             notifyItemChanged(position, item);
                                         }
 
                                     } else {
-                                        if (item.getIs_original() == 0) {
-
-                                            mItemClickListener.itemClicked(item, "disable_device", position);
-                                        } else {
+//                                        if (item.getIs_original() == 0) {
+//
+//                                            mItemClickListener.itemClicked(item, "disable_device", position);
+//                                        } else {
                                             holder.iv_icon_select.setVisibility(View.VISIBLE);
                                             item.setSelected(!item.isSelected());
-                                        }
+//                                        }
                                     }
 
                                 } else {
-
                                     if (item.getDeviceType().equalsIgnoreCase("2")) {
-                                        if (item.getIsActive() == 0) {
-
-                                        } else {
+                                        if (item.getIsActive() !=-1) {
                                             holder.iv_icon_select.setVisibility(View.VISIBLE);
                                             item.setSelected(!item.isSelected());
                                         }
-
                                     } else {
-
                                         holder.iv_icon_select.setVisibility(View.VISIBLE);
                                         item.setSelected(!item.isSelected());
                                     }
@@ -326,13 +327,11 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
     private void alertShow() {
         final AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("Alert")
-                .setMessage("This sensor is not allowed to be added in mood.")
+        builder.setTitle("Alert").setMessage("This sensor is not allowed to be added in mood.")
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                    }
-                })
+                    }})
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
     }
@@ -431,14 +430,13 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
         ArrayList<DeviceVO> arrayList = new ArrayList<>();
 
         for (Object obj : mDataArrayList) {
-            if (obj instanceof DeviceVO) {
-            } else if (obj instanceof RoomVO) {
+            if (obj instanceof RoomVO) {
                 RoomVO roomVO = (RoomVO) obj;
                 for (int i = 0; i < roomVO.getPanelList().size(); i++) {
                     for (int j = 0; j < roomVO.getPanelList().get(i).getDeviceList().size(); j++) {
                         String type = "";
-                        if (!TextUtils.isEmpty(roomVO.getPanelList().get(i).getDeviceList().get(j).getSensor_type())) {
-                            type = roomVO.getPanelList().get(i).getDeviceList().get(j).getSensor_type();
+                        if (!TextUtils.isEmpty(roomVO.getPanelList().get(i).getDeviceList().get(j).getDeviceType())) {
+                            type = roomVO.getPanelList().get(i).getDeviceList().get(j).getDeviceType();
                         }
                         if (type.equalsIgnoreCase("temp") ||
                                 type.equalsIgnoreCase("door")) {

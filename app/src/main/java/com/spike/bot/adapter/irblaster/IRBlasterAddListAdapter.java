@@ -32,15 +32,14 @@ public class IRBlasterAddListAdapter extends RecyclerView.Adapter<IRBlasterAddLi
 
     @Override
     public IRBlasterHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.row_ir_add_list, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_ir_add_list, parent, false);
         return new IRBlasterHolder(view);
     }
 
     @Override
     public void onBindViewHolder(IRBlasterHolder holder, int position) {
         devicelist = mIRDeviceList.get(position);
-        holder.ir_add_remote_name.setText(devicelist.getDeviceType());
+        holder.ir_add_remote_name.setText("AC");
 
         holder.ir_rrot_click.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,7 +51,7 @@ public class IRBlasterAddListAdapter extends RecyclerView.Adapter<IRBlasterAddLi
 
     @Override
     public int getItemCount() {
-        return mIRDeviceList.size();
+        return 1;
     }
 
     class IRBlasterHolder extends RecyclerView.ViewHolder {
@@ -64,10 +63,10 @@ public class IRBlasterAddListAdapter extends RecyclerView.Adapter<IRBlasterAddLi
         IRBlasterHolder(View itemView) {
             super(itemView);
 
-            ir_rrot_click = (RelativeLayout) itemView.findViewById(R.id.ir_rrot_click);
+            ir_rrot_click =  itemView.findViewById(R.id.ir_rrot_click);
 
-            ir_add_remote_img = (ImageView) itemView.findViewById(R.id.ir_add_remote_img);
-            ir_add_remote_name = (TextView) itemView.findViewById(R.id.ir_add_remote_name);
+            ir_add_remote_img =  itemView.findViewById(R.id.ir_add_remote_img);
+            ir_add_remote_name =  itemView.findViewById(R.id.ir_add_remote_name);
         }
     }
 
