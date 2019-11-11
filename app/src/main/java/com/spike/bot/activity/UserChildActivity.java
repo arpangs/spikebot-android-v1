@@ -206,8 +206,6 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
             selectRoomList = "";
             strRoomList = "";
             roomListString.clear();
-
-            setSelectValue();
             if (modeType.equalsIgnoreCase("update")) {
                 if (isClickFlag) {
                     addUserChild();
@@ -376,8 +374,6 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
             recyclerCamera.setAdapter(cameraListAdapter);
         }
         cameraListAdapter.notifyDataSetChanged();
-
-
     }
 
     private void getRoomList() {
@@ -462,6 +458,13 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
         }
 
         try {
+
+            for(int i=0; i<roomList.size(); i++){
+                if(roomList.get(i).isDisable()){
+                    roomListString.add(roomList.get(i).getRoomId());
+                }
+            }
+
             ArrayList<String> cameraList = new ArrayList<>();
 
             for (int i = 0; i < cameraarrayList.size(); i++) {

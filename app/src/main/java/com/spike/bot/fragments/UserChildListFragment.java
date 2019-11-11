@@ -76,7 +76,6 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
     public static UserChildListFragment newInstance() {
         UserChildListFragment fragment = new UserChildListFragment();
         Bundle args = new Bundle();
-        //args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
     }
@@ -92,7 +91,6 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
     }
 
     private void setUiId() {
-
         recyclerUserList = view.findViewById(R.id.recyclerUserList);
         LinearLayoutManager linearLayoutManager=new LinearLayoutManager(getActivity());
         recyclerUserList.setLayoutManager(linearLayoutManager);

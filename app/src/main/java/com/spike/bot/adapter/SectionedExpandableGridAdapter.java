@@ -753,8 +753,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         String tempInCF = "";
                         String cf = "";
 
-                        if (item.getIs_in_c().equalsIgnoreCase("C")) {
-
+                        if (item.getTemp_in_c().equalsIgnoreCase("C")) {
                             if (TextUtils.isEmpty(""+item.getDeviceStatus())) {
                                 tempInCF = "-- ";
                             } else {
@@ -763,11 +762,11 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             cf = Common.getC();
 
                         } else {
-
-                            if (TextUtils.isEmpty(item.getIs_in_c())) {
+                            if (TextUtils.isEmpty(item.getTemp_in_c())) {
                                 tempInCF = "-- ";
                             } else {
-                                tempInCF = ""+item.getDeviceStatus();
+                                tempInCF = ""+Constants.getFTemp(""+item.getDeviceStatus());
+                                ChatApplication.logDisplay("tem pis "+Constants.getFTemp(""+item.getDeviceStatus()));
                             }
                             cf = Common.getF();
                         }
@@ -869,7 +868,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         ChatApplication.logDisplay("postion click is "+item.getDeviceType());
                         if(item.getDeviceType().equals(mContext.getResources().getString(R.string.curtain))){
 
-                        }else if(item.getDeviceType().equalsIgnoreCase("door_sensor")){
+                        }else if(item.getDeviceType().equalsIgnoreCase("door_sensor") || item.getDeviceType().equalsIgnoreCase("temp_sensor")){
 
                         }else {
                             item.setOldStatus(item.getDeviceStatus());
