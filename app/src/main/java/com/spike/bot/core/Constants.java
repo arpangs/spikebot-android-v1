@@ -291,7 +291,7 @@ public class Constants {
 
     //others
     public static final String getScheduleNotification = "/getScheduleNotification";
-    public static final String GET_FILTER_NOTIFICATION_INFO = "/filterNotificationInfo";
+    public static final String GET_FILTER_NOTIFICATION_INFO = "/logs/categories";
     public static final String GET_NOTIFICATION_LIST = "/getNotificationList";
     public static final String SAVE_NOTIFICATION_LIST = "/saveNotificationList";
     public static final String roomSensorUnreadLogs = "/roomSensorUnreadLogs";
