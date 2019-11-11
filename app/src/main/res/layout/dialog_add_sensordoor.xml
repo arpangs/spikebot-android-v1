@@ -102,6 +102,7 @@
 
 
         <LinearLayout
+            android:layout_marginTop="@dimen/_8sdp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_width="match_parent"
@@ -124,7 +125,7 @@
                 android:layout_width="0dp"
                 android:singleLine="true"
                 android:maxLength="20"
-                android:textColor="@color/txtPanal"
+                android:textColor="@color/automation_black"
                 android:textSize="@dimen/_12sdp"
                 android:layout_height="wrap_content" />
 
@@ -132,6 +133,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_width="match_parent"
@@ -162,7 +164,7 @@
 
 
         <LinearLayout
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/_20sdp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_width="match_parent"

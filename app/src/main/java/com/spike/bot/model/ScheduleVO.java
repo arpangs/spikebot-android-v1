@@ -1,6 +1,10 @@
 package com.spike.bot.model;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by kaushal on 10/1/18.
@@ -27,6 +31,26 @@ public class ScheduleVO implements Serializable{
     private String timer_on_date;
     private String timer_off_after;
     private String timer_off_date;
+
+    public String getDevicesList() {
+        return devicesList;
+    }
+
+    public void setDevicesList(String devicesList) {
+        this.devicesList = devicesList;
+    }
+
+    private String devicesList;
+
+    public String getSchedule_device_type() {
+        return schedule_device_type;
+    }
+
+    public void setSchedule_device_type(String schedule_device_type) {
+        this.schedule_device_type = schedule_device_type;
+    }
+
+    private String schedule_device_type;
 
     public String getUser_id() {
         return user_id;

@@ -292,11 +292,21 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         }
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
 
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         String url = ChatApplication.url + Constants.getMoodName; //get mood name list with the mood icon name / not display sensor panel
 
         ChatApplication.logDisplay("add mood is " + url);
 
-        new GetJsonTask(this, url, "POST", "", new ICallBack() { //Constants.CHAT_SERVER_URL
+        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 try {

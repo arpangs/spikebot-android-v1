@@ -264,8 +264,8 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
 
                 holder.itemTextView.setText(item.getDeviceName());
                 ChatApplication.logDisplay("status update room mood adapter device call "+item.getDeviceName());
-                if(item.getDevice_icon().equalsIgnoreCase("2")){
-                    if(item.getIsActive() == 0){
+                if(item.getDevice_icon().equalsIgnoreCase("remote")){
+                    if(item.getIsActive() == -1){
                         holder.iv_icon.setImageResource(Common.getIconInActive(item.getDeviceStatus(),item.getDevice_icon()));
                     }else{
                         holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(),item.getDevice_icon()));
@@ -290,14 +290,18 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     public void onClick(View v) {
                         if(!isClickable)
                             return;
+
+                        item.setOldStatus(item.getDeviceStatus());
+                        item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1:0 );
+                        notifyItemChanged(position, item);
                         //If Device icon Equal to Remote AC then open remote instead of call onOff Device item
-                        if(item.getDevice_icon().equalsIgnoreCase("Remote_AC")){ //click on remote device id
+                        if(item.getDeviceType().equalsIgnoreCase("remote")){ //click on remote device id
                             mItemClickListener.itemClicked(item,"isIRSensorOnClick");
                         }else{
-                            item.setOldStatus(item.getDeviceStatus());
-                            item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1:0 );
+//                            item.setOldStatus(item.getDeviceStatus());
+//                            item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1:0 );
                             mItemClickListener.itemClicked(item,"itemOnOffclick");
-                            notifityData.notifyData();
+//                            notifityData.notifyData();
                         }
                     }
                 });
@@ -305,9 +309,9 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                 holder.iv_icon.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        if(item.getDevice_icon().equalsIgnoreCase("Remote_AC")){ //click on remote device id
+                        if(item.getDeviceType().equalsIgnoreCase("remote")){ //click on remote device id
                             mItemClickListener.itemClicked(item,"isIRSensorClick");
-                        }else if(item.getDevice_icon().equalsIgnoreCase("-1")){
+                        }else if(item.getDeviceType().equalsIgnoreCase("heavyload")){
                             mItemClickListener.itemClicked(item, "heavyloadlongClick");
                         }else if(item.getDeviceType().equalsIgnoreCase("3")){
                             mItemClickListener.itemClicked(item, "philipslongClick");
@@ -333,10 +337,10 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
 //                        holder.iv_icon.setOnLongClickListener(null);
 //                    }
                 }else {
-                    holder.iv_icon.setOnLongClickListener(null);
+                    holder.view.setOnLongClickListener(null);
                 }
 
-                if(item.getDevice_icon().equalsIgnoreCase("Remote_AC")){
+                if(item.getDeviceType().equalsIgnoreCase("remote") || item.getDeviceType().equalsIgnoreCase("heavyload")){
                     holder.imgLongClick.setVisibility(View.VISIBLE);
                 }else if(item.getDeviceType().equalsIgnoreCase("fan") ||item.getDeviceType().equalsIgnoreCase("-1") || item.getDeviceType().equalsIgnoreCase("3")){
                     holder.imgLongClick.setVisibility(View.VISIBLE);

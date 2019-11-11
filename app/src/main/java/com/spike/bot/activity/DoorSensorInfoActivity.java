@@ -17,7 +17,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
@@ -49,7 +48,6 @@ import com.spike.bot.R;
 import com.spike.bot.Retrofit.GetDataService;
 import com.spike.bot.Retrofit.RetrofitAPIManager;
 import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
-import com.spike.bot.adapter.DoorAlertAdapter;
 import com.spike.bot.adapter.DoorSensorInfoAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
@@ -59,10 +57,9 @@ import com.spike.bot.dialog.ICallback;
 import com.spike.bot.dialog.TimePickerFragment12;
 import com.spike.bot.model.DoorSensorResModel;
 import com.spike.bot.model.LockObj;
+import com.spike.bot.model.RemoteDetailsRes;
 import com.spike.bot.receiver.ConnectivityReceiver;
 import com.ttlock.bl.sdk.api.TTLockClient;
-import com.ttlock.bl.sdk.callback.SetAutoLockingPeriodCallback;
-import com.ttlock.bl.sdk.entity.LockError;
 import com.ttlock.bl.sdk.util.DigitUtil;
 import com.ttlock.bl.sdk.util.GsonUtil;
 
@@ -77,7 +74,6 @@ import java.util.Calendar;
 
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -112,8 +108,9 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
     //Declare timer
     CountDownTimer cTimer = null;
 
-    public DoorSensorResModel.DATA.DoorList[] tempLists = new DoorSensorResModel.DATA.DoorList[0];
-    DoorSensorResModel doorSensorResModel;
+//    public DoorSensorResModel.DATA.DoorList[] tempLists = new DoorSensorResModel.DATA.DoorList[0];
+    private RemoteDetailsRes doorSensorResModelData;
+    private RemoteDetailsRes.Data doorSensorResModel;
     private String door_sensor_id, door_room_name, door_room_id, door_module_id, mac_address = "";
     private Socket mSocket;
     private String door_unread_count = "", door_subtype = "";
@@ -156,7 +153,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
         ChatApplication.logDisplay("door call is start " + ChatApplication.url);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar =  findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -283,26 +280,26 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                             String door_sensor_status = object.optString("door_sensor_status");
                             String door_lock_status = object.optString("door_lock_status");
 
-                            if (door_sensorid.equals(door_sensor_id)) {
-                                if (!TextUtils.isEmpty(door_lock_status) && !door_lock_status.equals("null") && door_lock_status.length() > 0) {
-                                    doorSensorResModel.getDate().getDoorLists()[0].setDoor_lock_status(door_lock_status);
-                                }
-
-                                if (!TextUtils.isEmpty(door_sensor_status) && !door_sensor_status.equals("null") && !door_sensor_status.equals("null")) {
-                                    doorSensorResModel.getDate().getDoorLists()[0].setmDoorSensorStatus("" + door_sensor_status);
-                                }
-
-                                //onlydoor, subtype=1
-                                //only lock, subtype=2
-                                //door+lock, subtype=3
-                                if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("2")) {
-                                    setLockStatus(2);
-                                } else if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("3")) {
-                                    setLockStatus(3);
-                                } else {
-                                    setLockStatus(4);
-                                }
-                            }
+//                            if (door_sensorid.equals(door_sensor_id)) {
+//                                if (!TextUtils.isEmpty(door_lock_status) && !door_lock_status.equals("null") && door_lock_status.length() > 0) {
+//                                    doorSensorResModel.getDate().getDoorLists()[0].setDoor_lock_status(door_lock_status);
+//                                }
+//
+//                                if (!TextUtils.isEmpty(door_sensor_status) && !door_sensor_status.equals("null") && !door_sensor_status.equals("null")) {
+//                                    doorSensorResModel.getDate().getDoorLists()[0].setmDoorSensorStatus("" + door_sensor_status);
+//                                }
+//
+//                                //onlydoor, subtype=1
+//                                //only lock, subtype=2
+//                                //door+lock, subtype=3
+//                                if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("2")) {
+//                                    setLockStatus(2);
+//                                } else if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("3")) {
+//                                    setLockStatus(3);
+//                                } else {
+//                                    setLockStatus(4);
+//                                }
+//                            }
 
 
                         } catch (JSONException e) {
@@ -333,13 +330,13 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         if (!ChatApplication.url.startsWith("http")) {
             ChatApplication.url = "http://" + ChatApplication.url;
         }
-        String url = ChatApplication.url + Constants.GET_DOOR_SENSOR_INFO;
+        String url = ChatApplication.url + Constants.deviceinfo;
 
         ChatApplication.logDisplay("door " + url + " ");
 
         JSONObject object = new JSONObject();
         try {
-            object.put("door_sensor_id", door_sensor_id);
+            object.put("device_id", door_sensor_id);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -354,12 +351,15 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
                 ChatApplication.logDisplay("door is " + result);
-                doorSensorResModel = Common.jsonToPojo(result.toString(), DoorSensorResModel.class);
-                if (doorSensorResModel.getCode() == 200) {
+                doorSensorResModelData = Common.jsonToPojo(result.toString(), RemoteDetailsRes.class);
+                doorSensorResModel = doorSensorResModelData.getData();
+
+                if (doorSensorResModelData.getCode() == 200) {
                     fillData(doorSensorResModel);
                 }
+
+                ActivityHelper.dismissProgressDialog();
             }
 
             @Override
@@ -377,36 +377,31 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
      * @param doorSensorResModel
      */
 
-    private void fillData(DoorSensorResModel doorSensorResModel) {
+    private void fillData(RemoteDetailsRes.Data doorSensorResModel) {
 
-        tempLists = doorSensorResModel.getDate().getDoorLists();
-
-        if (tempLists.length > 0) {
-            toolbar.setTitle(tempLists[0].getmDoorSensorName());
-            img_door_on.setImageResource(R.drawable.on_door);
-
-            sensorName.setText(tempLists[0].getmDoorSensorName());
-            mSensorName = tempLists[0].getmDoorSensorName();
+            toolbar.setTitle(doorSensorResModel.getDevice().getDeviceName());
+            sensorName.setText(doorSensorResModel.getDevice().getDeviceName());
+            mSensorName = doorSensorResModel.getDevice().getDeviceName();
             sensorName.setSelection(sensorName.getText().length());
 
             int perc = 0;
-            if (!TextUtils.isEmpty(tempLists[0].getmDoorSensorPerc())) {
+            if (!TextUtils.isEmpty(""+doorSensorResModel.getDevice().getDeviceMeta().getSensorBatteryLevel())) {
                 try {
-                    perc = (int) Double.parseDouble((tempLists[0].getmDoorSensorPerc()));
+                    perc = doorSensorResModel.getDevice().getDeviceMeta().getSensorBatteryLevel();
                 } catch (Exception ex) {
                     perc = 100;
                     ex.printStackTrace();
                 }
             }
             batteryPercentage.setText(perc + "%");
-            imgBattery.setImageResource(Common.getBatteryIcon(tempLists[0].getmDoorSensorPerc()));
+            imgBattery.setImageResource(Common.getBatteryIcon(""+doorSensorResModel.getDevice().getDeviceMeta().getSensorBatteryLevel()));
 
-            if (doorSensorResModel.getDate().getDoorLists()[0].getNotificationLists().length > 0) {
+            if (doorSensorResModel.getAlerts()!=null && doorSensorResModel.getAlerts().size()>0) {
                 door_sensor_list.setVisibility(View.VISIBLE);
                 txtAlertTempCount.setVisibility(View.VISIBLE);
                 txt_empty_notification.setVisibility(View.GONE);
-                txtAlertTempCount.setText("(" + doorSensorResModel.getDate().getDoorLists()[0].getNotificationLists().length + " Added" + ")");
-                tempSensorInfoAdapter = new DoorSensorInfoAdapter(doorSensorResModel.getDate().getDoorLists()[0].getNotificationLists(), true, DoorSensorInfoActivity.this);
+                txtAlertTempCount.setText("(" + doorSensorResModel.getAlerts().size() + " Added" + ")");
+                tempSensorInfoAdapter = new DoorSensorInfoAdapter(doorSensorResModel.getAlerts(), true, DoorSensorInfoActivity.this);
                 door_sensor_list.setAdapter(tempSensorInfoAdapter);
             } else {
                 txtAlertTempCount.setVisibility(View.INVISIBLE);
@@ -415,96 +410,98 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             }
 
 
-            if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equals("1")) {
-                cardViewLock.setVisibility(View.GONE);
-                cardViewDoor.setVisibility(View.VISIBLE);
-            } else if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equals("2")) {
-                cardViewLock.setVisibility(View.VISIBLE);
-                cardViewDoor.setVisibility(View.GONE);
-            } else {
-                cardViewLock.setVisibility(View.VISIBLE);
-                cardViewDoor.setVisibility(View.VISIBLE);
-            }
+//            if (doorSensorResModel.getDoor_subtype().equals("1")) {
+//                cardViewLock.setVisibility(View.GONE);
+//                cardViewDoor.setVisibility(View.VISIBLE);
+//            } else if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equals("2")) {
+//                cardViewLock.setVisibility(View.VISIBLE);
+//                cardViewDoor.setVisibility(View.GONE);
+//            } else {
+//                cardViewLock.setVisibility(View.VISIBLE);
+//                cardViewDoor.setVisibility(View.VISIBLE);
+//            }
 
-            if (TextUtils.isEmpty(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status()) ||
-                    doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equalsIgnoreCase("null")) {
-                doorSensorResModel.getDate().getDoorLists()[0].setDoor_lock_status("0");
-            }
+//            if (TextUtils.isEmpty(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status()) ||
+//                    doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equalsIgnoreCase("null")) {
+//                doorSensorResModel.getDate().getDoorLists()[0].setDoor_lock_status("0");
+//            }
 //
 
             //onlydoor, subtype=1
             //only lock, subtype=2
             //door+lock, subtype=3
 
-            if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("1")) {
+//            if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("1")) {
                 cardViewDoor.setVisibility(View.VISIBLE);
                 cardViewLock.setVisibility(View.GONE);
 
-                img_door_on.setImageResource(doorSensorResModel.getDate().getDoorLists()[0].getmDoorSensorStatus().equals("0") ? R.drawable.off_door : R.drawable.on_door);
-                txtDoorStatus.setText(doorSensorResModel.getDate().getDoorLists()[0].getmDoorSensorStatus().equals("0") ? "Door Close" : "Door Open");
+                img_door_on.setImageResource(doorSensorResModel.getDevice().getDeviceStatus().equals("0") ? R.drawable.off_door : R.drawable.on_door);
+                txtDoorStatus.setText(doorSensorResModel.getDevice().getDeviceStatus().equals("0") ? "Door Close" : "Door Open");
 
                 setLockStatus(4);
-            } else if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("2")) {
+//            } else if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("2")) {
+//
+//                cardViewDoor.setVisibility(View.GONE);
+//                cardViewLock.setVisibility(View.VISIBLE);
+//                setLockStatus(2);
 
-                cardViewDoor.setVisibility(View.GONE);
-                cardViewLock.setVisibility(View.VISIBLE);
-                setLockStatus(2);
 
-                switchAutoLock.setChecked(doorSensorResModel.getDate().getDoorLists()[0].getIs_autolock_enable() == 1 ? true : false);
+
+//                switchAutoLock.setChecked(doorSensorResModel.getDate().getDoorLists()[0].getIs_autolock_enable() == 1 ? true : false);
 
                 if (!isRefreshAll) {
                     checkBridgeDetail();
                 }
-            } else if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("3")) {
-                cardViewDoor.setVisibility(View.VISIBLE);
-                cardViewLock.setVisibility(View.VISIBLE);
-                setLockStatus(3);
-
-                switchAutoLock.setChecked(doorSensorResModel.getDate().getDoorLists()[0].getIs_autolock_enable() == 1 ? true : false);
-                if (!isRefreshAll) {
-                    checkBridgeDetail();
-                }
-            } else {
-                linearLock.setVisibility(View.GONE);
-            }
+//            } else if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("3")) {
+//                cardViewDoor.setVisibility(View.VISIBLE);
+//                cardViewLock.setVisibility(View.VISIBLE);
+//                setLockStatus(3);
+//
+//                switchAutoLock.setChecked(doorSensorResModel.getDate().getDoorLists()[0].getIs_autolock_enable() == 1 ? true : false);
+//                if (!isRefreshAll) {
+//                    checkBridgeDetail();
+//                }
+//            } else {
+//                linearLock.setVisibility(View.GONE);
+//            }
 
             isRefreshAll = false;
 
-            if (doorSensorResModel.getDate().getDoorLists()[0].getUnreadLogs() != null) {
-                if (doorSensorResModel.getDate().getDoorLists()[0].getUnreadLogs().length > 0) {
-                    int countTemp = doorSensorResModel.getDate().getDoorLists()[0].getUnreadLogs().length;
-                    if (countTemp > 99) {
-                        txtAlertCount.setText("99+");
-                    } else {
-                        txtAlertCount.setText("" + countTemp);
-                    }
-
-                } else {
-                    txtAlertCount.setText("0");
-                }
-
-                if (doorSensorResModel.getDate().getDoorLists()[0].getUnreadLogs().length > 0) {
-
-                    int countTemp = doorSensorResModel.getDate().getDoorLists()[0].getUnreadLogs().length;
-                    if (countTemp > 99) {
-                        txtAlertCount.setText("99+");
-                    } else {
-                        txtAlertCount.setText("" + countTemp);
-                    }
-                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(DoorSensorInfoActivity.this);
-                    recyclerAlert.setLayoutManager(linearLayoutManager);
-                    DoorAlertAdapter doorAlertAdapter = new DoorAlertAdapter(DoorSensorInfoActivity.this, doorSensorResModel.getDate().getDoorLists()[0].getUnreadLogs());
-                    recyclerAlert.setAdapter(doorAlertAdapter);
-                } else {
-                    txtAlertCount.setVisibility(View.GONE);
-                    recyclerAlert.setVisibility(View.GONE);
-                    txt_empty_notificationALert.setVisibility(View.VISIBLE);
-                }
-            } else {
-                txtAlertCount.setVisibility(View.GONE);
-                recyclerAlert.setVisibility(View.GONE);
-                txt_empty_notificationALert.setVisibility(View.VISIBLE);
-            }
+//            if (doorSensorResModel.getDate().getDoorLists()[0].getUnreadLogs() != null) {
+//                if (doorSensorResModel.getDate().getDoorLists()[0].getUnreadLogs().length > 0) {
+//                    int countTemp = doorSensorResModel.getDate().getDoorLists()[0].getUnreadLogs().length;
+//                    if (countTemp > 99) {
+//                        txtAlertCount.setText("99+");
+//                    } else {
+//                        txtAlertCount.setText("" + countTemp);
+//                    }
+//
+//                } else {
+//                    txtAlertCount.setText("0");
+//                }
+//
+//                if (doorSensorResModel.getDate().getDoorLists()[0].getUnreadLogs().length > 0) {
+//
+//                    int countTemp = doorSensorResModel.getDate().getDoorLists()[0].getUnreadLogs().length;
+//                    if (countTemp > 99) {
+//                        txtAlertCount.setText("99+");
+//                    } else {
+//                        txtAlertCount.setText("" + countTemp);
+//                    }
+//                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(DoorSensorInfoActivity.this);
+//                    recyclerAlert.setLayoutManager(linearLayoutManager);
+//                    DoorAlertAdapter doorAlertAdapter = new DoorAlertAdapter(DoorSensorInfoActivity.this, doorSensorResModel.getDate().getDoorLists()[0].getUnreadLogs());
+//                    recyclerAlert.setAdapter(doorAlertAdapter);
+//                } else {
+//                    txtAlertCount.setVisibility(View.GONE);
+//                    recyclerAlert.setVisibility(View.GONE);
+//                    txt_empty_notificationALert.setVisibility(View.VISIBLE);
+//                }
+//            } else {
+//                txtAlertCount.setVisibility(View.GONE);
+//                recyclerAlert.setVisibility(View.GONE);
+//                txt_empty_notificationALert.setVisibility(View.VISIBLE);
+//            }
 
 
             switchAutoLock.setOnTouchListener(new OnSwipeTouchListener(this) {
@@ -530,16 +527,15 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                 }
             });
 
-        }
     }
 
     private void checkBridgeDetail() {
-        if (doorSensorResModel.getDate().getBridgeList() != null && doorSensorResModel.getDate().getBridgeList().length > 0) {
-            callGatewayList();
-        } else {
-            inactiveStatusUpdate(-1);
-            callLockBatterystatus();
-        }
+//        if (doorSensorResModel.getDate().getBridgeList() != null && doorSensorResModel.getDate().getBridgeList().length > 0) {
+//            callGatewayList();
+//        } else {
+//            inactiveStatusUpdate(-1);
+//            callLockBatterystatus();
+//        }
     }
 
     //start timer function
@@ -569,7 +565,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         dialog.setContentView(R.layout.dialog_auto_lock);
 
         Button btnSave = (Button) dialog.findViewById(R.id.btn_save);
-        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
+        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
         TextView txtTitle = dialog.findViewById(R.id.txtTitle);
 
         if (switchAutoLock.isChecked()) {
@@ -602,29 +598,29 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
     }
 
     private void setAUtolock() {
-        int count = 10;
-        if (switchAutoLock.isChecked()) {
-            count = 0;
-        }
-        ActivityHelper.showProgressDialog(this, "Please Wait...", false);
-        ChatApplication.logDisplay("count is " + count);
-        ChatApplication.logDisplay("count is " + mac_address);
-        ChatApplication.logDisplay("count is " + doorSensorResModel.getDate().getDoorLists()[0].getLock_data());
-        TTLockClient.getDefault().setAutomaticLockingPeriod(count, doorSensorResModel.getDate().getDoorLists()[0].getLock_data(), mac_address, new SetAutoLockingPeriodCallback() {
-            @Override
-            public void onSetAutoLockingPeriodSuccess() {
-                switchAutoLock.setChecked(!switchAutoLock.isChecked());
-                ChatApplication.logDisplay("auto lock done");
-                callAulockSpikebot(1);
-            }
-
-            @Override
-            public void onFail(LockError error) {
-                ActivityHelper.dismissProgressDialog();
-                switchAutoLock.setChecked(switchAutoLock.isChecked());
-                ChatApplication.logDisplay("auto lock done error ");
-            }
-        });
+//        int count = 10;
+//        if (switchAutoLock.isChecked()) {
+//            count = 0;
+//        }
+//        ActivityHelper.showProgressDialog(this, "Please Wait...", false);
+//        ChatApplication.logDisplay("count is " + count);
+//        ChatApplication.logDisplay("count is " + mac_address);
+//        ChatApplication.logDisplay("count is " + doorSensorResModel.getDate().getDoorLists()[0].getLock_data());
+//        TTLockClient.getDefault().setAutomaticLockingPeriod(count, doorSensorResModel.getDate().getDoorLists()[0].getLock_data(), mac_address, new SetAutoLockingPeriodCallback() {
+//            @Override
+//            public void onSetAutoLockingPeriodSuccess() {
+//                switchAutoLock.setChecked(!switchAutoLock.isChecked());
+//                ChatApplication.logDisplay("auto lock done");
+//                callAulockSpikebot(1);
+//            }
+//
+//            @Override
+//            public void onFail(LockError error) {
+//                ActivityHelper.dismissProgressDialog();
+//                switchAutoLock.setChecked(switchAutoLock.isChecked());
+//                ChatApplication.logDisplay("auto lock done error ");
+//            }
+//        });
     }
 
     private void callAulockSpikebot(int count) {
@@ -682,38 +678,38 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
     }
 
     private void setLockStatus(int type) {
-        if (type == 2) {
-            if (doorSensorResModel.getDate().getDoorLists()[0].getIs_lock_active().equals("-1")) {
-                inActivieStatus(-1);
-            } else {
-                imgLock.setImageResource(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? R.drawable.unlock_only : R.drawable.lock_only);
-                txtlockStatus.setText(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? "Unlocked" : "Locked");
-                txtlockStatus.setTextColor(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.green));
-                imgLock.setClickable(true);
-            }
-        } else if (type == 4) {
-            if (doorSensorResModel.getDate().getDoorLists()[0].getIs_door_active().equals("-1")) {
+//        if (type == 2) {
+//            if (doorSensorResModel.getDate().getDoorLists()[0].getIs_lock_active().equals("-1")) {
+//                inActivieStatus(-1);
+//            } else {
+//                imgLock.setImageResource(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? R.drawable.unlock_only : R.drawable.lock_only);
+//                txtlockStatus.setText(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? "Unlocked" : "Locked");
+//                txtlockStatus.setTextColor(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.green));
+//                imgLock.setClickable(true);
+//            }
+//        } else if (type == 4) {
+            if (doorSensorResModel.getDevice().getIsActive().equals("-1")) {
                 inActivieStatusDoor(-1);
             } else {
                 inActivieStatusDoor(1);
             }
-        } else {
-            imgLock.setImageResource(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? R.drawable.unlock_only : R.drawable.lock_only);
-            txtlockStatus.setText(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? "Unlocked" : "Locked");
-            txtlockStatus.setTextColor(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.green));
-
-            img_door_on.setImageResource(doorSensorResModel.getDate().getDoorLists()[0].getmDoorSensorStatus().equals("1") ? R.drawable.on_door : R.drawable.off_door);
-            txtDoorStatus.setText(doorSensorResModel.getDate().getDoorLists()[0].getmDoorSensorStatus().equals("1") ? "Door Open" : "Door Close");
-            txtDoorStatus.setTextColor(doorSensorResModel.getDate().getDoorLists()[0].getmDoorSensorStatus().equals("1") ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.green));
-
-            if (doorSensorResModel.getDate().getDoorLists()[0].getIs_door_active().equals("-1")) {
-                img_door_on.setImageResource(R.drawable.door_off_inactive);
-                txtDoorStatus.setText("InActive");
-                txtDoorStatus.setTextColor(getResources().getColor(R.color.automation_red));
-            } else if (doorSensorResModel.getDate().getDoorLists()[0].getIs_lock_active().equals("-1")) {
-                inActivieStatus(-1);
-            }
-        }
+//        } else {
+//            imgLock.setImageResource(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? R.drawable.unlock_only : R.drawable.lock_only);
+//            txtlockStatus.setText(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? "Unlocked" : "Locked");
+//            txtlockStatus.setTextColor(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.green));
+//
+//            img_door_on.setImageResource(doorSensorResModel.getDate().getDoorLists()[0].getmDoorSensorStatus().equals("1") ? R.drawable.on_door : R.drawable.off_door);
+//            txtDoorStatus.setText(doorSensorResModel.getDate().getDoorLists()[0].getmDoorSensorStatus().equals("1") ? "Door Open" : "Door Close");
+//            txtDoorStatus.setTextColor(doorSensorResModel.getDate().getDoorLists()[0].getmDoorSensorStatus().equals("1") ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.green));
+//
+//            if (doorSensorResModel.getDate().getDoorLists()[0].getIs_door_active().equals("-1")) {
+//                img_door_on.setImageResource(R.drawable.door_off_inactive);
+//                txtDoorStatus.setText("InActive");
+//                txtDoorStatus.setTextColor(getResources().getColor(R.color.automation_red));
+//            } else if (doorSensorResModel.getDate().getDoorLists()[0].getIs_lock_active().equals("-1")) {
+//                inActivieStatus(-1);
+//            }
+//        }
     }
 
     public void inActivieStatusDoor(int status) {
@@ -723,9 +719,9 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             txtDoorStatus.setTextColor(getResources().getColor(R.color.automation_red));
             img_door_on.setClickable(false);
         } else {
-            img_door_on.setImageResource(doorSensorResModel.getDate().getDoorLists()[0].getmDoorSensorStatus().equals("1") ? R.drawable.on_door : R.drawable.off_door);
-            txtDoorStatus.setText(doorSensorResModel.getDate().getDoorLists()[0].getmDoorSensorStatus().equals("1") ? "Door Open" : "Door Close");
-            txtDoorStatus.setTextColor(doorSensorResModel.getDate().getDoorLists()[0].getmDoorSensorStatus().equals("1") ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.green));
+            img_door_on.setImageResource(doorSensorResModel.getDevice().getDeviceStatus().equals("1") ? R.drawable.on_door : R.drawable.off_door);
+            txtDoorStatus.setText(doorSensorResModel.getDevice().getDeviceStatus().equals("1") ? "Door Open" : "Door Close");
+            txtDoorStatus.setTextColor(doorSensorResModel.getDevice().getDeviceStatus().equals("1") ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.green));
             img_door_on.setClickable(true);
         }
     }
@@ -733,17 +729,17 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
     public void inActivieStatus(int status) {
         if (status == -1) {
-            doorSensorResModel.getDate().getDoorLists()[0].setIs_lock_active("-1");
+            doorSensorResModel.getDevice().setIsActive("-1");
             imgLock.setImageResource(R.drawable.gray_lock_disabled);
             txtlockStatus.setText("InActive");
             txtlockStatus.setTextColor(getResources().getColor(R.color.automation_red));
             imgLock.setClickable(false);
         } else {
-            imgLock.setImageResource(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? R.drawable.unlock_only : R.drawable.lock_only);
-            txtlockStatus.setText(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? "Unlocked" : "Locked");
-            txtlockStatus.setTextColor(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.green));
-            doorSensorResModel.getDate().getDoorLists()[0].setIs_lock_active("1");
-            imgLock.setClickable(true);
+//            imgLock.setImageResource(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? R.drawable.unlock_only : R.drawable.lock_only);
+//            txtlockStatus.setText(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? "Unlocked" : "Locked");
+//            txtlockStatus.setTextColor(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.green));
+//            doorSensorResModel.getDate().getDoorLists()[0].setIs_lock_active("1");
+//            imgLock.setClickable(true);
         }
     }
 
@@ -752,48 +748,48 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
      */
     private void callLockBatterystatus() {
 
-        ActivityHelper.showProgressDialog(this, "Fetching Lock Details...", false);
-        GetDataService apiService = RetrofitAPIManager.provideClientApi();
+//        ActivityHelper.showProgressDialog(this, "Fetching Lock Details...", false);
+//        GetDataService apiService = RetrofitAPIManager.provideClientApi();
 
-        Call<String> call = apiService.lockDetails(Constants.client_id, Constants.access_token, Integer.parseInt(doorSensorResModel.getDate().getDoorLists()[0].getLock_id()), System.currentTimeMillis());
-
-        ChatApplication.logDisplay("door call");
-
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                ActivityHelper.dismissProgressDialog();
-                if (response.code() == 200) {
-                    try {
-                        String json = response.body().toString();
-                        ChatApplication.logDisplay("lock is " + json);
-                        JSONObject object = new JSONObject(json);
-
-                        if (!TextUtils.isEmpty(object.optString("electricQuantity"))) {
-                            imgLockBattery.setImageResource(Common.getBatteryIcon(object.optString("electricQuantity")));
-                            txtBettrylock.setText(object.optString("electricQuantity") + " %");
-                            mac_address = object.optString("lockMac");
-
-                            if (object.optInt("electricQuantity") < 1) {
-                                inactiveStatusUpdate(-1);
-                            }
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    ChatApplication.logDisplay("lock is " + response.toString());
-
-                } else {
-                    ChatApplication.logDisplay("tt lock reponse is error ff ");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay("tt lock reponse is error");
-            }
-        });
+//        Call<String> call = apiService.lockDetails(Constants.client_id, Constants.access_token, Integer.parseInt(doorSensorResModel.getDate().getDoorLists()[0].getLock_id()), System.currentTimeMillis());
+//
+//        ChatApplication.logDisplay("door call");
+//
+//        call.enqueue(new Callback<String>() {
+//            @Override
+//            public void onResponse(Call<String> call, Response<String> response) {
+//                ActivityHelper.dismissProgressDialog();
+//                if (response.code() == 200) {
+//                    try {
+//                        String json = response.body().toString();
+//                        ChatApplication.logDisplay("lock is " + json);
+//                        JSONObject object = new JSONObject(json);
+//
+//                        if (!TextUtils.isEmpty(object.optString("electricQuantity"))) {
+//                            imgLockBattery.setImageResource(Common.getBatteryIcon(object.optString("electricQuantity")));
+//                            txtBettrylock.setText(object.optString("electricQuantity") + " %");
+//                            mac_address = object.optString("lockMac");
+//
+//                            if (object.optInt("electricQuantity") < 1) {
+//                                inactiveStatusUpdate(-1);
+//                            }
+//                        }
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                    ChatApplication.logDisplay("lock is " + response.toString());
+//
+//                } else {
+//                    ChatApplication.logDisplay("tt lock reponse is error ff ");
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<String> call, Throwable t) {
+//                ActivityHelper.dismissProgressDialog();
+//                ChatApplication.logDisplay("tt lock reponse is error");
+//            }
+//        });
     }
 
     private void callTTAuth() {
@@ -843,49 +839,49 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
     public void inactiveStatusUpdate(int status) {
 
-        if (!ActivityHelper.isConnectingToInternet(this)) {
-            showToast("" + R.string.disconnect);
-            return;
-        }
-
-        //{"lock_id":1578230,"status":"1"}
-        //1 = active &&& -1 = inactive
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String webUrl = ChatApplication.url + Constants.updateTTLockActiveStatus;
-
-        JSONObject jsonNotification = new JSONObject();
-        try {
-            jsonNotification.put("lock_id", doorSensorResModel.getDate().getDoorLists()[0].getLock_id());
-            jsonNotification.put("status", status);
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
-
-                ActivityHelper.dismissProgressDialog();
-                try {
-
-                    int code = result.getInt("code");
-                    ChatApplication.logDisplay("status is " + result);
-                    if (code == 200) {
-                        inActivieStatus(status);
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
-            }
-        }).execute();
+//        if (!ActivityHelper.isConnectingToInternet(this)) {
+//            showToast("" + R.string.disconnect);
+//            return;
+//        }
+//
+//        //{"lock_id":1578230,"status":"1"}
+//        //1 = active &&& -1 = inactive
+//        ActivityHelper.showProgressDialog(this, "Please wait.", false);
+//        String webUrl = ChatApplication.url + Constants.updateTTLockActiveStatus;
+//
+//        JSONObject jsonNotification = new JSONObject();
+//        try {
+//            jsonNotification.put("lock_id", doorSensorResModel.getDate().getDoorLists()[0].getLock_id());
+//            jsonNotification.put("status", status);
+//            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+//            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+//            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+//            @Override
+//            public void onSuccess(JSONObject result) {
+//
+//                ActivityHelper.dismissProgressDialog();
+//                try {
+//
+//                    int code = result.getInt("code");
+//                    ChatApplication.logDisplay("status is " + result);
+//                    if (code == 200) {
+//                        inActivieStatus(status);
+//                    }
+//
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable throwable, String error) {
+//                ActivityHelper.dismissProgressDialog();
+//            }
+//        }).execute();
 
     }
 
@@ -928,157 +924,157 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
     }
 
     private void getAlllockList(int gatewayId) {
-        ActivityHelper.showProgressDialog(this, "Please Wait...", false);
-
-        GetDataService apiService = RetrofitAPIManager.provideClientApi();
-        Call<String> call = apiService.getlockbygateway(Constants.client_id, Constants.access_token, "" + gatewayId, System.currentTimeMillis());
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, retrofit2.Response<String> response) {
-                String json = response.body();
-                ActivityHelper.dismissProgressDialog();
-                if (json.contains("list")) {
-                    try {
-                        locklistAll.clear();
-                        JSONObject jsonObject = new JSONObject(json);
-                        JSONArray array = jsonObject.getJSONArray("list");
-                        locklistAll = GsonUtil.toObject(array.toString(), new TypeToken<ArrayList<LockObj>>() {
-                        });
-
-                        if (locklistAll.size() > 0) {
-                            boolean isFlag = false;
-                            for (int i = 0; i < locklistAll.size(); i++) {
-                                if (locklistAll.get(i).getLockId() == Integer.parseInt(doorSensorResModel.getDate().getDoorLists()[0].getLock_id())) {
-                                    isFlag = true;
-                                    callLockBatterystatus();
-                                    break;
-                                }
-                            }
-
-                            if (!isFlag) {
-                                inactiveStatusUpdate(-1);
-                                callLockBatterystatus();
-                            }
-                        } else {
-                            inactiveStatusUpdate(-1);
-                            callLockBatterystatus();
-                        }
-
-                    } catch (JSONException e) {
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                ActivityHelper.dismissProgressDialog();
-            }
-        });
+//        ActivityHelper.showProgressDialog(this, "Please Wait...", false);
+//
+//        GetDataService apiService = RetrofitAPIManager.provideClientApi();
+//        Call<String> call = apiService.getlockbygateway(Constants.client_id, Constants.access_token, "" + gatewayId, System.currentTimeMillis());
+//        call.enqueue(new Callback<String>() {
+//            @Override
+//            public void onResponse(Call<String> call, retrofit2.Response<String> response) {
+//                String json = response.body();
+//                ActivityHelper.dismissProgressDialog();
+//                if (json.contains("list")) {
+//                    try {
+//                        locklistAll.clear();
+//                        JSONObject jsonObject = new JSONObject(json);
+//                        JSONArray array = jsonObject.getJSONArray("list");
+//                        locklistAll = GsonUtil.toObject(array.toString(), new TypeToken<ArrayList<LockObj>>() {
+//                        });
+//
+//                        if (locklistAll.size() > 0) {
+//                            boolean isFlag = false;
+//                            for (int i = 0; i < locklistAll.size(); i++) {
+//                                if (locklistAll.get(i).getLockId() == Integer.parseInt(doorSensorResModel.getDate().getDoorLists()[0].getLock_id())) {
+//                                    isFlag = true;
+//                                    callLockBatterystatus();
+//                                    break;
+//                                }
+//                            }
+//
+//                            if (!isFlag) {
+//                                inactiveStatusUpdate(-1);
+//                                callLockBatterystatus();
+//                            }
+//                        } else {
+//                            inactiveStatusUpdate(-1);
+//                            callLockBatterystatus();
+//                        }
+//
+//                    } catch (JSONException e) {
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<String> call, Throwable t) {
+//                ActivityHelper.dismissProgressDialog();
+//            }
+//        });
     }
 
     private void checkLocklist() {
-        for (int i = 0; i < gatewayList.size(); i++) {
-            for (int j = 0; j < doorSensorResModel.getDate().getBridgeList().length; j++) {
-                if (gatewayList.get(i).getGatewayId() == doorSensorResModel.getDate().getBridgeList()[j].getBridge_id()) {
-                    if (gatewayList.get(i).getIsOnline() == 1 && gatewayList.get(i).getLockNum() > 0) {
-                        // online gateway
-                        if (!TextUtils.isEmpty(doorSensorResModel.getDate().getDoorLists()[0].getIs_lock_active()) &&
-                                doorSensorResModel.getDate().getDoorLists()[0].getIs_lock_active().length() > 0 &&
-                                !doorSensorResModel.getDate().getDoorLists()[0].getIs_lock_active().equals("null") &&
-                                doorSensorResModel.getDate().getDoorLists()[0].getIs_lock_active().equals("-1")) {
-                            inactiveStatusUpdate(1);
-                        }
-
-                        getAlllockList(gatewayList.get(i).getGatewayId());
-                    } else {
-                        // call inactive status
-                        inactiveStatusUpdate(-1);
-                        callLockBatterystatus();
-                    }
-                }
-            }
-        }
+//        for (int i = 0; i < gatewayList.size(); i++) {
+//            for (int j = 0; j < doorSensorResModel.getDate().getBridgeList().length; j++) {
+//                if (gatewayList.get(i).getGatewayId() == doorSensorResModel.getDate().getBridgeList()[j].getBridge_id()) {
+//                    if (gatewayList.get(i).getIsOnline() == 1 && gatewayList.get(i).getLockNum() > 0) {
+//                        // online gateway
+//                        if (!TextUtils.isEmpty(doorSensorResModel.getDate().getDoorLists()[0].getIs_lock_active()) &&
+//                                doorSensorResModel.getDate().getDoorLists()[0].getIs_lock_active().length() > 0 &&
+//                                !doorSensorResModel.getDate().getDoorLists()[0].getIs_lock_active().equals("null") &&
+//                                doorSensorResModel.getDate().getDoorLists()[0].getIs_lock_active().equals("-1")) {
+//                            inactiveStatusUpdate(1);
+//                        }
+//
+//                        getAlllockList(gatewayList.get(i).getGatewayId());
+//                    } else {
+//                        // call inactive status
+//                        inactiveStatusUpdate(-1);
+//                        callLockBatterystatus();
+//                    }
+//                }
+//            }
+//        }
     }
 
     private void doorOpenCLose() {
 
-        if (mSocket != null) {
-            // "lock_id":"",
-            // "user_id":"",
-            // "door_sensor_status":"",
-            // "lock_status":""
-
-            JSONObject object = new JSONObject();
-            try {
-                object.put("lock_id", doorSensorResModel.getDate().getDoorLists()[0].getLock_id());
-                object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-                object.put("lock_status", doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? 0 : 1);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            ChatApplication.logDisplay("door json " + object);
-            mSocket.emit("changeLockStatus", object);
-
-            doorSensorResModel.getDate().getDoorLists()[0].setDoor_lock_status(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? "0" : "1");
-
-            //onlydoor, subtype=1
-            //only lock, subtype=2
-            //door+lock, subtype=3
-            if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("2")) {
-                setLockStatus(2);
-            } else if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("3")) {
-                setLockStatus(3);
-            }
-        }
+//        if (mSocket != null) {
+//            // "lock_id":"",
+//            // "user_id":"",
+//            // "door_sensor_status":"",
+//            // "lock_status":""
+//
+//            JSONObject object = new JSONObject();
+//            try {
+//                object.put("lock_id", doorSensorResModel.getDate().getDoorLists()[0].getLock_id());
+//                object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+//                object.put("lock_status", doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? 0 : 1);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//            ChatApplication.logDisplay("door json " + object);
+//            mSocket.emit("changeLockStatus", object);
+//
+//            doorSensorResModel.getDate().getDoorLists()[0].setDoor_lock_status(doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equals("1") ? "0" : "1");
+//
+//            //onlydoor, subtype=1
+//            //only lock, subtype=2
+//            //door+lock, subtype=3
+//            if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("2")) {
+//                setLockStatus(2);
+//            } else if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("3")) {
+//                setLockStatus(3);
+//            }
+//        }
 
     }
 
     private void callDoorRemotly() {
-        ActivityHelper.showProgressDialog(this, "Please Wait...", false);
-        GetDataService apiService = RetrofitAPIManager.provideClientApi();
-
-        Call<ResponseBody> call;
-        if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equalsIgnoreCase("1")) {
-            call = apiService.lockGatewayUse(Constants.client_id, Constants.access_token, Integer.parseInt(doorSensorResModel.getDate().getDoorLists()[0].getLock_id()), System.currentTimeMillis());
-        } else {
-            call = apiService.unlockGatewayUse(Constants.client_id, Constants.access_token, Integer.parseInt(doorSensorResModel.getDate().getDoorLists()[0].getLock_id()), System.currentTimeMillis());
-        }
-        ChatApplication.logDisplay("door json call");
-
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                ActivityHelper.dismissProgressDialog();
-                if (response.code() == 200) {
-                    ChatApplication.logDisplay("lock is " + response.body().source());
-                    ChatApplication.logDisplay("lock is " + response.message());
-                    ChatApplication.logDisplay("lock is " + response.toString());
-                    ChatApplication.logDisplay("lock is " + response.isSuccessful());
-
-                    int found = response.body().source().toString().indexOf("failed or means no");
-                    if (found == -1) {
-                        if (switchAutoLock.isChecked() && doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equalsIgnoreCase("0")) {
-                            startTimer();
-                        } else {
-                            cancelTimer();
-                        }
-
-                        doorOpenCLose();
-                        ChatApplication.logDisplay("lock is " + response.body().toString());
-                    } else {
-                        ChatApplication.showToast(DoorSensorInfoActivity.this, "failed");
-                    }
-                } else {
-                    ChatApplication.logDisplay("tt lock reponse is error ff ");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay("tt lock reponse is error");
-            }
-        });
+//        ActivityHelper.showProgressDialog(this, "Please Wait...", false);
+//        GetDataService apiService = RetrofitAPIManager.provideClientApi();
+//
+//        Call<ResponseBody> call;
+//        if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equalsIgnoreCase("1")) {
+//            call = apiService.lockGatewayUse(Constants.client_id, Constants.access_token, Integer.parseInt(doorSensorResModel.getDate().getDoorLists()[0].getLock_id()), System.currentTimeMillis());
+//        } else {
+//            call = apiService.unlockGatewayUse(Constants.client_id, Constants.access_token, Integer.parseInt(doorSensorResModel.getDate().getDoorLists()[0].getLock_id()), System.currentTimeMillis());
+//        }
+//        ChatApplication.logDisplay("door json call");
+//
+//        call.enqueue(new Callback<ResponseBody>() {
+//            @Override
+//            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                ActivityHelper.dismissProgressDialog();
+//                if (response.code() == 200) {
+//                    ChatApplication.logDisplay("lock is " + response.body().source());
+//                    ChatApplication.logDisplay("lock is " + response.message());
+//                    ChatApplication.logDisplay("lock is " + response.toString());
+//                    ChatApplication.logDisplay("lock is " + response.isSuccessful());
+//
+//                    int found = response.body().source().toString().indexOf("failed or means no");
+//                    if (found == -1) {
+//                        if (switchAutoLock.isChecked() && doorSensorResModel.getDate().getDoorLists()[0].getDoor_lock_status().equalsIgnoreCase("0")) {
+//                            startTimer();
+//                        } else {
+//                            cancelTimer();
+//                        }
+//
+//                        doorOpenCLose();
+//                        ChatApplication.logDisplay("lock is " + response.body().toString());
+//                    } else {
+//                        ChatApplication.showToast(DoorSensorInfoActivity.this, "failed");
+//                    }
+//                } else {
+//                    ChatApplication.logDisplay("tt lock reponse is error ff ");
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ResponseBody> call, Throwable t) {
+//                ActivityHelper.dismissProgressDialog();
+//                ChatApplication.logDisplay("tt lock reponse is error");
+//            }
+//        });
     }
 
     @Override
@@ -1125,19 +1121,20 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
         Button btnSave = (Button) dialog.findViewById(R.id.btn_save);
         Button btn_cancel = (Button) dialog.findViewById(R.id.btn_cancel);
-        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
+        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
         TextView tv_title = dialog.findViewById(R.id.tv_title);
 
-        if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equals("1")) {
+//        if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equals("1")) {
             txtInputSensor.setHint("Enter sensor name");
             tv_title.setText("Sensor Name");
-        } else if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equals("2")) {
-            txtInputSensor.setHint("Enter Lock name");
-            tv_title.setText("Lock Name");
-        } else {
-            txtInputSensor.setHint("Enter Door/Lock name");
-            tv_title.setText("Door/Lock Name");
-        }
+//        }
+//        else if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equals("2")) {
+//            txtInputSensor.setHint("Enter Lock name");
+//            tv_title.setText("Lock Name");
+//        } else {
+//            txtInputSensor.setHint("Enter Door/Lock name");
+//            tv_title.setText("Door/Lock Name");
+//        }
 
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1161,7 +1158,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                 if (edSensorName.getText().toString().length() == 0) {
                     ChatApplication.showToast(DoorSensorInfoActivity.this, "Please enter name");
                 } else {
-                    updateDoorSensor(edSensorName.getText().toString());
+                    updateDoorSensor(edSensorName.getText().toString(),dialog);
                 }
             }
         });
@@ -1170,7 +1167,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
     }
 
-    private void updateDoorSensor(String sensor_name) {
+    private void updateDoorSensor(String sensor_name, Dialog dialog) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             showToast("" + R.string.disconnect);
@@ -1178,35 +1175,36 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String webUrl = ChatApplication.url + Constants.UPDATE_DOOR_SENSOR;
+        String webUrl = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
 
         JSONObject jsonNotification = new JSONObject();
         try {
-            jsonNotification.put("door_sensor_id", door_sensor_id);
-            jsonNotification.put("door_sensor_name", sensor_name);
-            jsonNotification.put("room_id", door_room_id);
+
+            jsonNotification.put("device_id", door_sensor_id);
+            jsonNotification.put("device_name", sensor_name);
+            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
+        ChatApplication.logDisplay("url is "+webUrl+" "+jsonNotification);
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
 
                 ActivityHelper.dismissProgressDialog();
                 try {
-
+                    ChatApplication.logDisplay("url is "+result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (!TextUtils.isEmpty(message)) {
                         showToast(message);
                     }
                     if (code == 200) {
-                        finish();
+                        dialog.dismiss();
+                        toolbar.setTitle(sensor_name);
+//                        finish();
                     }
 
                 } catch (JSONException e) {
@@ -1231,34 +1229,34 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
     private void bindView() {
 
-        door_sensor_list = (RecyclerView) findViewById(R.id.sensor_list);
-        recyclerAlert = (RecyclerView) findViewById(R.id.recyclerAlert);
+        door_sensor_list =  findViewById(R.id.sensor_list);
+        recyclerAlert =  findViewById(R.id.recyclerAlert);
         door_sensor_list.setLayoutManager(new GridLayoutManager(this, 1));
         door_sensor_list.setVerticalScrollBarEnabled(true);
 
-        view_rel_badge = (ImageView) findViewById(R.id.view_rel_badge);
+        view_rel_badge =  findViewById(R.id.view_rel_badge);
 
-        sensorName = (EditText) findViewById(R.id.sensor_name);
-        linearAlertDown = (LinearLayout) findViewById(R.id.linearAlertDown);
-        linearAlertExpand = (LinearLayout) findViewById(R.id.linearAlertExpand);
-        toggleAlert = (ToggleButton) findViewById(R.id.toggleAlert);
-        txtAlertTempCount = (TextView) findViewById(R.id.txtAlertTempCount);
+        sensorName =  findViewById(R.id.sensor_name);
+        linearAlertDown =  findViewById(R.id.linearAlertDown);
+        linearAlertExpand =  findViewById(R.id.linearAlertExpand);
+        toggleAlert =  findViewById(R.id.toggleAlert);
+        txtAlertTempCount =  findViewById(R.id.txtAlertTempCount);
 
         sensorName.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         sensorName.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
 
 
         //sensorLog = (TextView) findViewById(R.id.iv_icon_badge);
-        imgBattery = (ImageView) findViewById(R.id.img_battery);
-        img_door_on = (ImageView) findViewById(R.id.img_temp_on);
-        batteryPercentage = (TextView) findViewById(R.id.txt_bettery_per);
+        imgBattery =  findViewById(R.id.img_battery);
+        img_door_on =  findViewById(R.id.img_temp_on);
+        batteryPercentage =  findViewById(R.id.txt_bettery_per);
         //notiSwitchOnOff = (SwitchCompat) findViewById(R.id.switch_noti_onoff);
         doorAddButton = findViewById(R.id.btnAdd);
-        txtTempCount = (TextView) findViewById(R.id.txtTempCount);
-        btn_delete = (Button) findViewById(R.id.btn_delete);
-        txt_empty_notification = (TextView) findViewById(R.id.txt_empty_notification_alert);
-        txt_empty_notificationALert = (TextView) findViewById(R.id.txt_empty_notification);
-        txtAlertCount = (TextView) findViewById(R.id.txtAlertCount);
+        txtTempCount =  findViewById(R.id.txtTempCount);
+        btn_delete =  findViewById(R.id.btn_delete);
+        txt_empty_notification =  findViewById(R.id.txt_empty_notification_alert);
+        txt_empty_notificationALert =  findViewById(R.id.txt_empty_notification);
+        txtAlertCount =  findViewById(R.id.txtAlertCount);
         txtAddLock = findViewById(R.id.txtAddLock);
         linearLock = findViewById(R.id.linearLock);
         imgLock = findViewById(R.id.imgLock);
@@ -1368,19 +1366,29 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         if (!isNotification) {
             webUrl = ChatApplication.url + Constants.CHANGE_DOOR_SENSOR_STATUS;
         } else {
-            webUrl = ChatApplication.url + Constants.CHANGE_DOOR_SENSOR_NOTIFICATION_STATUS;
+            webUrl = ChatApplication.url + Constants.UPDATE_TEMP_SENSOR_NOTIFICATION;
         }
 
         JSONObject jsonNotification = new JSONObject();
 
         try {
+            // try {
+            //            jsonNotification.put("is_active", isActive ? "y" :"n");
+            //            jsonNotification.put("alert_id", tempSensorNotificationId);
+            //            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            //            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            //            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            //
+            //        } catch (JSONException e) {
+            //            e.printStackTrace();
+            //        }
+
             if (isNotification) {
-                jsonNotification.put("door_sensor_notification_id", doorSensorNotificationId);
-                jsonNotification.put("is_active", isActive ? 1 : 0);
+                jsonNotification.put("alert_id", doorSensorNotificationId);
+                jsonNotification.put("is_active", isActive ? "y" : "n");
             } else {
                 jsonNotification.put("is_push_enable", isActive ? 1 : 0);
             }
-            jsonNotification.put("door_sensor_id", door_sensor_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -1388,15 +1396,14 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
+        ChatApplication.logDisplay("url is "+webUrl+" "+jsonNotification);
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
 
                 ActivityHelper.dismissProgressDialog();
                 try {
-
+                    ChatApplication.logDisplay("url is "+result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -1606,37 +1613,36 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
     }
 
-    private void doorSensorNotification(final DoorSensorResModel.DATA.DoorList.NotificationList notification, final boolean isEdit) {
+    private void doorSensorNotification(final RemoteDetailsRes.Data.Alert notification, final boolean isEdit) {
 
         doorSensorNotificationDialog = new Dialog(this);
         doorSensorNotificationDialog.setContentView(R.layout.dialog_door_sensor_notification);
         doorSensorNotificationDialog.setCanceledOnTouchOutside(false);
 
-        Button button_save_notification = (Button) doorSensorNotificationDialog.findViewById(R.id.button_save_notification);
+        Button button_save_notification = doorSensorNotificationDialog.findViewById(R.id.button_save_notification);
         ImageView closeNotification = doorSensorNotificationDialog.findViewById(R.id.btn_close_notification);
 
-        final EditText edit_start_time = (EditText) doorSensorNotificationDialog.findViewById(R.id.edit_start_time);
-        final EditText edti_end_time = (EditText) doorSensorNotificationDialog.findViewById(R.id.edit_end_time);
+        final EditText edit_start_time = doorSensorNotificationDialog.findViewById(R.id.edit_start_time);
+        final EditText edti_end_time = doorSensorNotificationDialog.findViewById(R.id.edit_end_time);
 
         edit_start_time.setFocusable(false);
         edti_end_time.setFocusable(false);
 
         if (isEdit) {
-
             try {
-                String editStartTime = DateHelper.formateDate(DateHelper.parseTimeSimple(notification.getmStartDateTime(), DateHelper.DATE_FROMATE_HH_MM), DateHelper.DATE_FROMATE_H_M_AMPM);
-                String editEndTime = DateHelper.formateDate(DateHelper.parseTimeSimple(notification.getmEndDateTime(), DateHelper.DATE_FROMATE_HH_MM), DateHelper.DATE_FROMATE_H_M_AMPM);
+                String editStartTime = DateHelper.formateDate(DateHelper.parseTimeSimple(notification.getStartTime(), DateHelper.DATE_FROMATE_HH_MM), DateHelper.DATE_FROMATE_H_M_AMPM);
+                String editEndTime = DateHelper.formateDate(DateHelper.parseTimeSimple(notification.getEndTime(), DateHelper.DATE_FROMATE_HH_MM), DateHelper.DATE_FROMATE_H_M_AMPM);
 
                 edit_start_time.setText(editStartTime);
                 edti_end_time.setText(editEndTime);
 
                 Calendar calendarStart = Calendar.getInstance();
-                calendarStart.set(Calendar.HOUR_OF_DAY, Integer.parseInt(notification.getmStartDateTime().split(":")[0]));
-                calendarStart.set(Calendar.MINUTE, Integer.parseInt(notification.getmStartDateTime().split(":")[1]));
+                calendarStart.set(Calendar.HOUR_OF_DAY, Integer.parseInt(notification.getStartTime().split(":")[0]));
+                calendarStart.set(Calendar.MINUTE, Integer.parseInt(notification.getStartTime().split(":")[1]));
 
                 Calendar calendarEnd = Calendar.getInstance();
-                calendarEnd.set(Calendar.HOUR_OF_DAY, Integer.parseInt(notification.getmEndDateTime().split(":")[0]));
-                calendarEnd.set(Calendar.MINUTE, Integer.parseInt(notification.getmEndDateTime().split(":")[1]));
+                calendarEnd.set(Calendar.HOUR_OF_DAY, Integer.parseInt(notification.getEndTime().split(":")[0]));
+                calendarEnd.set(Calendar.MINUTE, Integer.parseInt(notification.getEndTime().split(":")[1]));
 
                 mStartTime = startTimeFormat().format(calendarStart.getTime());
                 mEndTime = startTimeFormat().format(calendarEnd.getTime());
@@ -1644,7 +1650,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-
         }
 
         edit_start_time.setInputType(InputType.TYPE_NULL);
@@ -1736,7 +1741,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
      * @param stat_time
      * @param end_time
      */
-    private void addNotification(final Dialog doorSensorNotificationDialog, EditText stat_time, final EditText end_time, boolean isEdit, DoorSensorResModel.DATA.DoorList.NotificationList notification) {
+    private void addNotification(final Dialog doorSensorNotificationDialog, EditText stat_time, final EditText end_time, boolean isEdit,RemoteDetailsRes.Data.Alert  notification) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -1762,34 +1767,52 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
         try {
 
-            if (isEdit) {
-                jsonNotification.put("door_sensor_notification_id", notification.getmDoorSensorNotificationId());
-            }
+//            if (isEdit) {
+//                jsonNotification.put("door_sensor_notification_id", notification.getAlertId());
+//            }
+//
+//            jsonNotification.put("door_sensor_id", door_sensor_id);
+//            jsonNotification.put("start_datetime", mStartTime);
+//            jsonNotification.put("end_datetime", mEndTime);
+//            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+//            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+//            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
-            jsonNotification.put("door_sensor_id", door_sensor_id);
-            jsonNotification.put("start_datetime", mStartTime);
-            jsonNotification.put("end_datetime", mEndTime);
+
+            jsonNotification.put("start_time",mStartTime);
+            jsonNotification.put("end_time",mEndTime);
+            jsonNotification.put("alert_type", "door_open_close");
+            jsonNotification.put("days", "0,1,2,3,4,5,6");
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+
+            if (isEdit) {
+                jsonNotification.put("alert_id", notification.getAlertId());
+
+            } else {
+                jsonNotification.put("device_id", doorSensorResModel.getDevice().getDevice_id());
+            }
+
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         String webUrl = "";
-        if (!isEdit) {
-            webUrl = ChatApplication.url + Constants.ADD_DOOR_SENSOR_NOTIFICATION;
+        if (isEdit) {
+            webUrl = ChatApplication.url + Constants.UPDATE_TEMP_SENSOR_NOTIFICATION;
         } else {
-            webUrl = ChatApplication.url + Constants.UPDATE_DOOR_SENSOR_NOTIFICATION;
+            webUrl = ChatApplication.url + Constants.ADD_TEMP_SENSOR_NOTIFICATION;
         }
 
+        ChatApplication.logDisplay("url is "+webUrl+" "+jsonNotification);
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
 
                 try {
-
+                    ChatApplication.logDisplay("url is "+result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -1830,7 +1853,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
      * @param notification
      */
 
-    private void deleteDoorSensorNotification(DoorSensorResModel.DATA.DoorList.NotificationList notification) {
+    private void deleteDoorSensorNotification(RemoteDetailsRes.Data.Alert notification) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             //Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -1839,12 +1862,12 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String webUrl = ChatApplication.url + Constants.DELETE_DOOR_SENSOR_NOTIFICATION;
+        String webUrl = ChatApplication.url + Constants.DELETE_TEMP_SENSOR_NOTIFICATION;
 
         JSONObject jsonNotification = new JSONObject();
         try {
-            jsonNotification.put("door_sensor_notification_id", notification.getmDoorSensorNotificationId());
-            jsonNotification.put("door_sensor_id", door_sensor_id);
+
+            jsonNotification.put("alert_id", notification.getAlertId());
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -1890,7 +1913,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
      * @param isEdit
      */
     @Override
-    public void onEditOpetion(final DoorSensorResModel.DATA.DoorList.NotificationList notification, int position, boolean isEdit) {
+    public void onEditOpetion(final RemoteDetailsRes.Data.Alert notification, int position, boolean isEdit) {
         if (isEdit) {
             doorSensorNotification(notification, isEdit);
         } else {
@@ -1910,73 +1933,73 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
     }
 
     @Override
-    public void onSwitchChanged(DoorSensorResModel.DATA.DoorList.NotificationList notification, SwitchCompat swithcCompact, int position, boolean isActive) {
-        showAlertDialog(notification.getmDoorSensorNotificationId(), swithcCompact, isActive, true);
+    public void onSwitchChanged(RemoteDetailsRes.Data.Alert notification, SwitchCompat swithcCompact, int position, boolean isActive) {
+        showAlertDialog(notification.getAlertId(), swithcCompact, isActive, true);
     }
 
     public void unreadApiCall(final boolean b) {
 
-        if (recyclerAlert.getVisibility() == View.VISIBLE) {
-
-        } else {
-            checkIntent(b);
-            return;
-        }
-        ChatApplication.logDisplay("tempLists is " + tempLists.length);
-        if (tempLists.length == 0) {
-            return;
-        }
-
-        if (TextUtils.isEmpty(tempLists[0].getmDoorSensorMoudleId())) {
-            return;
-        }
-
-
-        String webUrl = ChatApplication.url + Constants.UPDATE_UNREAD_LOGS;
-        JSONObject jsonObject = new JSONObject();
-        try {
-
-            JSONArray jsonArray = new JSONArray();
-
-            JSONObject object = new JSONObject();
-            object.put("sensor_type", "door");
-            object.put("module_id", "" + tempLists[0].getmDoorSensorMoudleId());
-            object.put("room_id", "" + tempLists[0].getRoom_id());
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonArray.put(object);
-            jsonObject.put("update_logs", jsonArray);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("door is " + jsonObject.toString());
-        new GetJsonTask(this, webUrl, "POST", jsonObject.toString(), new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
-
-                checkIntent(b);
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                checkIntent(b);
-            }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//        if (recyclerAlert.getVisibility() == View.VISIBLE) {
+//
+//        } else {
+//            checkIntent(b);
+//            return;
+//        }
+//        ChatApplication.logDisplay("tempLists is " + tempLists.length);
+//        if (tempLists.length == 0) {
+//            return;
+//        }
+//
+//        if (TextUtils.isEmpty(tempLists[0].getmDoorSensorMoudleId())) {
+//            return;
+//        }
+//
+//
+//        String webUrl = ChatApplication.url + Constants.UPDATE_UNREAD_LOGS;
+//        JSONObject jsonObject = new JSONObject();
+//        try {
+//
+//            JSONArray jsonArray = new JSONArray();
+//
+//            JSONObject object = new JSONObject();
+//            object.put("sensor_type", "door");
+//            object.put("module_id", "" + tempLists[0].getmDoorSensorMoudleId());
+//            object.put("room_id", "" + tempLists[0].getRoom_id());
+//            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+//            jsonArray.put(object);
+//            jsonObject.put("update_logs", jsonArray);
+//
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        ChatApplication.logDisplay("door is " + jsonObject.toString());
+//        new GetJsonTask(this, webUrl, "POST", jsonObject.toString(), new ICallBack() {
+//            @Override
+//            public void onSuccess(JSONObject result) {
+//
+//                checkIntent(b);
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable throwable, String error) {
+//                checkIntent(b);
+//            }
+//        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
     }
 
     public void checkIntent(boolean b) {
         if (b) {
-            Intent intent = new Intent(DoorSensorInfoActivity.this, DeviceLogActivity.class);
-            intent.putExtra("ROOM_ID", tempLists[0].getRoom_id());
-            intent.putExtra("Mood_Id", "" + tempLists[0].getmDoorSensorMoudleId());
-            intent.putExtra("activity_type", "door");
-            intent.putExtra("IS_SENSOR", true);
-            intent.putExtra("tabSelect", "show");
-            intent.putExtra("isCheckActivity", "doorSensor");
-            intent.putExtra("isRoomName", "" + sensorName.getText().toString());
-            startActivity(intent);
+//            Intent intent = new Intent(DoorSensorInfoActivity.this, DeviceLogActivity.class);
+//            intent.putExtra("ROOM_ID", tempLists[0].getRoom_id());
+//            intent.putExtra("Mood_Id", "" + tempLists[0].getmDoorSensorMoudleId());
+//            intent.putExtra("activity_type", "door");
+//            intent.putExtra("IS_SENSOR", true);
+//            intent.putExtra("tabSelect", "show");
+//            intent.putExtra("isCheckActivity", "doorSensor");
+//            intent.putExtra("isRoomName", "" + sensorName.getText().toString());
+//            startActivity(intent);
         } else {
             DoorSensorInfoActivity.this.finish();
         }

@@ -154,7 +154,7 @@ public class Constants {
     public static final String updateUnReadCameraLogs = "/updateUnReadCameraLogs";
     public static final String getSmartDeviceBrands = "/getSmartDeviceBrands";
     public static final String getSmartDeviceType = "/getSmartDeviceType";
-    public static final String getHeavyLoadDetails = "/getHeavyLoadDetails";
+    public static final String getHeavyLoadDetails = "/device/heavy-load/usage";
     public static final String filterHeavyLoadData = "/filterHeavyLoadData";
     public static final String getHueBridgeList = "/getHueBridgeList";
     public static final String getSpikebotHueLightList = "/getSpikebotHueLightList";
@@ -163,7 +163,6 @@ public class Constants {
     public static final String addLockBridge = "/addLockBridge";
     public static final String deleteTTLockBridge = "/deleteTTLockBridge";
     public static final String updateTTLockActiveStatus = "/updateTTLockActiveStatus";
-    public static final String curtainadd = "device/add";
     public static final String deviceadd = "/device/add";
     public static final String curtainupdate = "/curtain/update";
     public static final String curtaindelete = "/curtain/delete";
@@ -261,15 +260,14 @@ public class Constants {
     //mood
     public static final String ADD_NEW_MOOD_NEW = "/mood/add";
     public static final String EDITMOOD = "/mood/edit";  //saveEditMood
-    public static final String DELETE_MOOD = "/mood/delete";
     public static final String GET_MOOD_DEVICE_DETAILS = "/getMoodDeviceDetails";
 
     //schedule
     public static final String ADD_NEW_SCHEDULE = "/schedule/add";
-    public static final String UPDATE_SCHEDULE = "/updateSchedule";
+    public static final String scheduleedit = "/schedule/edit";
     public static final String CHANGE_SCHEDULE_STATUS = "/changeScheduleStatus";
-    public static final String DELETE_SCHEDULE = "/deleteSchedule";
-    public static final String GET_SCHEDULE_LIST = "/getScheduleList";
+    public static final String DELETE_SCHEDULE = "/schedule/delete";
+    public static final String GET_SCHEDULE_LIST = "/schedule/list";
     public static final String GET_SCHEDULE_LIST_LOG = "/getScheduleListForLogs";
     public static final String GET_SCHEDULE_ON_ROOM = "/getScheduleOnRoom";
     public static final String GET_ORIGINAL_DEVICES = "/getOriginalDevices";

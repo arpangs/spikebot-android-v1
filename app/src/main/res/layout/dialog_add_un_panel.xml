@@ -105,10 +105,41 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="@dimen/_10sdp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:gravity="center_vertical"
+                android:text="Module ID" />
+
+            <TextView
+                android:id="@+id/txtModuleId"
+                android:layout_width="0dp"
+                android:layout_marginLeft="8dp"
+                android:maxLength="25"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:padding="@dimen/_5sdp"
+                android:background="#60808080"
+                android:layout_height="match_parent"
+                android:layout_weight="0.75"
+                android:hint="" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal"
             android:paddingLeft="8dp"
             android:weightSum="1">
@@ -116,7 +147,7 @@
             <Button
                 android:id="@+id/btn_save"
                 android:layout_width="0dp"
-                android:layout_height="35dp"
+                android:layout_height="@dimen/_40sdp"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_weight="0.30"

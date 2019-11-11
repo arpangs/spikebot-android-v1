@@ -20,9 +20,11 @@ import com.spike.bot.R;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.customview.OnSwipeTouchListener;
-import com.spike.bot.model.DoorSensorResModel;
+import com.spike.bot.model.RemoteDetailsRes;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Sagar on 7/5/18.
@@ -31,14 +33,14 @@ import java.text.ParseException;
 
 public class DoorSensorInfoAdapter extends RecyclerView.Adapter<DoorSensorInfoAdapter.SensorViewHolder> {
 
-    DoorSensorResModel.DATA.DoorList.NotificationList[] notificationList;
+    List<RemoteDetailsRes.Data.Alert> notificationList=new ArrayList<>();
     private boolean isCF;
     private OnNotificationContextMenu onNotificationContextMenu;
     private Context mContext;
 
     String startTime, endTime, conDateStart, conDateEnd;
 
-    public DoorSensorInfoAdapter(DoorSensorResModel.DATA.DoorList.NotificationList[] notificationList, boolean cfType, OnNotificationContextMenu onNotificationContextMenu) {
+    public DoorSensorInfoAdapter(List<RemoteDetailsRes.Data.Alert> notificationList, boolean cfType, OnNotificationContextMenu onNotificationContextMenu) {
         this.notificationList = notificationList;
         this.isCF = cfType;
         this.onNotificationContextMenu = onNotificationContextMenu;
@@ -59,13 +61,12 @@ public class DoorSensorInfoAdapter extends RecyclerView.Adapter<DoorSensorInfoAd
         } else {
             holder.viewLine.setVisibility(View.VISIBLE);
         }
-        final DoorSensorResModel.DATA.DoorList.NotificationList notification = notificationList[position];
 
-        startTime = notification.getmStartDateTime();
-        endTime = notification.getmEndDateTime();
+        startTime = notificationList.get(position).getStartTime();
+        endTime = notificationList.get(position).getEndTime();
 
         if (Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
-            if (Common.getPrefValue(mContext, Constants.USER_ID).equalsIgnoreCase(notification.getUser_id())) {
+            if (Common.getPrefValue(mContext, Constants.USER_ID).equalsIgnoreCase(notificationList.get(position).getUserId())) {
                 holder.imgOptions.setVisibility(View.VISIBLE);
             } else {
                 holder.imgOptions.setVisibility(View.INVISIBLE);
@@ -87,37 +88,39 @@ public class DoorSensorInfoAdapter extends RecyclerView.Adapter<DoorSensorInfoAd
             e.printStackTrace();
         }
 
-        if (!TextUtils.isEmpty(notification.getmIsActive()) && !notification.getmIsActive().equalsIgnoreCase("null")) {
-            holder.switchCompat.setChecked(Integer.parseInt(notification.getmIsActive()) > 0);
+        if (!TextUtils.isEmpty(notificationList.get(position).getIsActive()) && !notificationList.get(position).getIsActive().equalsIgnoreCase("null")) {
+            holder.switchCompat.setChecked(notificationList.get(position).getIsActive().equals("y") ? true :false);
         }
 
+        holder.imgOptions.setId(position);
         holder.imgOptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                displayContextMenu(v, notification, position);
+                displayContextMenu(v,notificationList.get(holder.imgOptions.getId()), holder.imgOptions.getId());
             }
         });
 
+        holder.switchCompat.setId(position);
         holder.switchCompat.setOnTouchListener(new OnSwipeTouchListener(mContext) {
             @Override
             public void onClick() {
                 super.onClick();
                 holder.switchCompat.setChecked(holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchChanged(notification, holder.switchCompat, position, !holder.switchCompat.isChecked());
+                onNotificationContextMenu.onSwitchChanged(notificationList.get(holder.switchCompat.getId()), holder.switchCompat,  holder.switchCompat.getId(), !holder.switchCompat.isChecked());
             }
 
             @Override
             public void onSwipeLeft() {
                 super.onSwipeLeft();
                 holder.switchCompat.setChecked(holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchChanged(notification, holder.switchCompat, position, !holder.switchCompat.isChecked());
+                onNotificationContextMenu.onSwitchChanged(notificationList.get(holder.switchCompat.getId()), holder.switchCompat,  holder.switchCompat.getId(), !holder.switchCompat.isChecked());
             }
 
             @Override
             public void onSwipeRight() {
                 super.onSwipeRight();
                 holder.switchCompat.setChecked(holder.switchCompat.isChecked());
-                onNotificationContextMenu.onSwitchChanged(notification, holder.switchCompat, position, !holder.switchCompat.isChecked());
+                onNotificationContextMenu.onSwitchChanged(notificationList.get(holder.switchCompat.getId()), holder.switchCompat,  holder.switchCompat.getId(), !holder.switchCompat.isChecked());
             }
 
         });
@@ -129,7 +132,7 @@ public class DoorSensorInfoAdapter extends RecyclerView.Adapter<DoorSensorInfoAd
      * @param notification
      * @param position
      */
-    private void displayContextMenu(View v, final DoorSensorResModel.DATA.DoorList.NotificationList notification, final int position) {
+    private void displayContextMenu(View v, final RemoteDetailsRes.Data.Alert notification, final int position) {
 
         PopupMenu popup = new PopupMenu(mContext, v);
         @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(mContext, R.style.PopupMenu);
@@ -159,7 +162,7 @@ public class DoorSensorInfoAdapter extends RecyclerView.Adapter<DoorSensorInfoAd
 
     @Override
     public int getItemCount() {
-        return notificationList.length;
+        return notificationList.size();
     }
 
     public class SensorViewHolder extends RecyclerView.ViewHolder {
@@ -172,18 +175,18 @@ public class DoorSensorInfoAdapter extends RecyclerView.Adapter<DoorSensorInfoAd
         public SensorViewHolder(View itemView) {
             super(itemView);
 
-            txtMin = (AppCompatTextView) itemView.findViewById(R.id.txt_min);
-            txtMax = (AppCompatTextView) itemView.findViewById(R.id.txt_max);
+            txtMin =  itemView.findViewById(R.id.txt_min);
+            txtMax =  itemView.findViewById(R.id.txt_max);
 
-            switchCompat = (SwitchCompat) itemView.findViewById(R.id.switch_onoff);
-            imgOptions = (AppCompatImageView) itemView.findViewById(R.id.img_options);
-            viewLine = (View) itemView.findViewById(R.id.viewLine);
+            switchCompat =  itemView.findViewById(R.id.switch_onoff);
+            imgOptions =  itemView.findViewById(R.id.img_options);
+            viewLine =  itemView.findViewById(R.id.viewLine);
         }
     }
 
     public interface OnNotificationContextMenu {
-        void onEditOpetion(DoorSensorResModel.DATA.DoorList.NotificationList notification, int position, boolean isEdit);
+        void onEditOpetion(RemoteDetailsRes.Data.Alert notification, int position, boolean isEdit);
 
-        void onSwitchChanged(DoorSensorResModel.DATA.DoorList.NotificationList notification, SwitchCompat swithcCompact, int position, boolean isActive);
+        void onSwitchChanged(RemoteDetailsRes.Data.Alert notification, SwitchCompat swithcCompact, int position, boolean isActive);
     }
 }

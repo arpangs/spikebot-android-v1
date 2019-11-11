@@ -374,6 +374,9 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
             obj.put("device_name", door_name);
             obj.put("module_id", door_module_id);
             obj.put("module_type", module_type);
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
         } catch (JSONException e) {
             e.printStackTrace();

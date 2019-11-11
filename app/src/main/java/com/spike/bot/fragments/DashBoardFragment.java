@@ -522,7 +522,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             }  else if (item.getSensor_type().equalsIgnoreCase("door_sensor")) {
                 ChatApplication.logDisplay("door call is intent " + mSocket.connected());
                 Intent intent = new Intent(activity, DoorSensorInfoActivity.class);
-                intent.putExtra("door_sensor_id", item.getSensor_id());
+                intent.putExtra("door_sensor_id", item.getDeviceId());
                 intent.putExtra("door_room_name", item.getRoomName());
                 intent.putExtra("door_room_id", item.getRoomId());
                 intent.putExtra("door_unread_count", item.getIs_unread());
@@ -532,7 +532,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             }
         } else if (action.equalsIgnoreCase("heavyloadlongClick")) {
             Intent intent = new Intent(activity, HeavyLoadDetailActivity.class);
-            intent.putExtra("getRoomDeviceId", item.getRoomDeviceId());
             intent.putExtra("getRoomName", item.getRoomName());
             intent.putExtra("getModuleId", item.getModuleId());
             intent.putExtra("device_id", item.getDeviceId());
@@ -566,14 +565,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             intent.putExtra("IR_BLASTER_ID", item.getDeviceId());
             intent.putExtra("ROOM_DEVICE_ID", item.getRoomDeviceId());
 //            intent.putExtras(bundle);
-            startActivity(intent);
-        } else if (action.equalsIgnoreCase("doorLongClick")) {
-            Intent intent = new Intent(activity, DoorSensorInfoActivity.class);
-            intent.putExtra("door_sensor_id", item.getSensor_id());
-            intent.putExtra("door_room_name", item.getRoomName());
-            intent.putExtra("door_room_id", item.getRoomId());
-            intent.putExtra("door_unread_count", item.getIs_unread());
-            intent.putExtra("door_module_id", item.getModuleId());
             startActivity(intent);
         }
     }
@@ -1045,7 +1036,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             ChatApplication.showToast(activity, getResources().getString(R.string.disconnect));
             return;
         }
-        String mRemoteCommandReq = "";
         String url = "";
 
         url = ChatApplication.url + Constants.CHANGE_DEVICE_STATUS;
@@ -1067,7 +1057,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 dismissProgressDialog();
                 try {
                     int code = result.getInt("code");
-                    String message = result.getString("message");
                     ChatApplication.logDisplay("result is ir " + result);
                     if (code == 200) {
                         ChatApplication.isMoodFragmentNeedResume = true;
@@ -1374,6 +1363,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
         if (isShow == 0) {
             if (ChatApplication.url.startsWith(Constants.startUrl)) {
+                dismissProgressDialog();
                 if (m_progressDialog!=null && m_progressDialog.isShowing()) {
                    m_progressDialog.setMessage("Connecting to cloud...");
                 }else {
@@ -1381,6 +1371,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 }
             } else {
                 if(!m_progressDialog.isShowing()){
+                    dismissProgressDialog();
                     showProgressDialog(activity, "Please Wait...", true);
                 }
             }
@@ -1616,6 +1607,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
         if (isShow == 0) {
                 if(m_progressDialog!=null && !m_progressDialog.isShowing()){
+                    dismissProgressDialog();
                     showProgressDialog(activity, "Please Wait...", true);
                 }
         }

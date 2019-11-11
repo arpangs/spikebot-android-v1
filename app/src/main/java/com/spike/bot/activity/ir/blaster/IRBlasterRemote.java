@@ -74,8 +74,6 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
     public MoodRemoteAdapter moodRemoteAdapter;
     private ArrayList<RemoteMoodModel> arrayListMood = new ArrayList<>();
 
-    private List<IRBlasterAddRes.Data.IrList> irList;
-    List<IRBlasterAddRes.Data.RoomList> roomLists;
     private List<IRDeviceDetailsRes.Data> mIRDeviceList=new ArrayList<>();
     public String[] moodList = new String[]{"AUTO", "LOW", "MEDIUM", "HIGH"};
 
@@ -586,92 +584,6 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                 ChatApplication.showToast(IRBlasterRemote.this, getResources().getString(R.string.something_wrong1));
             }
         }).execute();
-    }
-
-
-    /**
-     * get IR Blaster list
-     *
-     * @param isEdit
-     */
-    private void getIRBlasterList(final boolean isEdit) {
-
-        if (!ActivityHelper.isConnectingToInternet(this)) {
-            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        irList = new ArrayList<>();
-        irList.clear();
-
-        String URL = ChatApplication.url + Constants.GET_IR_BLASTER_LIST;
-
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
-        new GetJsonTask(this, URL, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
-                android.util.Log.d("getIRBlasterList", "result : " + result.toString());
-
-                IRBlasterAddRes irBlasterAddRes = Common.jsonToPojo(result.toString(), IRBlasterAddRes.class);
-                if (irBlasterAddRes.getCode() == 200) {
-                    irList = irBlasterAddRes.getData().getIrList();
-                    roomLists = irBlasterAddRes.getData().getRoomList();
-
-                    if (!isEdit) {
-                        IRBlasterAddRes.Data.IrList ir0 = new IRBlasterAddRes.Data.IrList();
-                        ir0.setIrBlasterName("Select Blaster");
-                        ir0.setIrBlasterId("-1");
-                        irList.add(0, ir0);
-                    } else {
-                        remote_room_txt.setText("" + irList.get(0).getRoomName());
-                    }
-
-                    final ArrayAdapter roomAdapter1 = new ArrayAdapter(getApplicationContext(), R.layout.spinner, irList);
-                    mSpinnerBlaster.setAdapter(roomAdapter1);
-
-                    for (int i = 0; i < irList.size(); i++) {
-                        IRBlasterAddRes.Data.IrList ir = irList.get(i);
-                        if (ir.getIrBlasterId().equalsIgnoreCase(mRemoteCommandList.getDevice().getModuleId())) {
-                            mSpinnerBlaster.setSelection(i);
-                        }
-                    }
-
-                    mSpinnerBlaster.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            remote_room_txt.setText("" + irList.get(position).getRoomName());
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
-
-                        }
-                    });
-
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                throwable.printStackTrace();
-                Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
-            }
-        }).execute();
-
-        /**
-         * if there are no any ir blaster then display error message
-         */
-        if (irList.size() == 0) {
-            IRBlasterAddRes.Data.IrList ir0 = new IRBlasterAddRes.Data.IrList();
-            ir0.setIrBlasterName("No IR Blaster Found");
-            ir0.setIrBlasterId("-1");
-            irList.add(0, ir0);
-            ArrayAdapter roomAdapter1 = new ArrayAdapter(getApplicationContext(), R.layout.spinner, irList);
-            mSpinnerBlaster.setAdapter(roomAdapter1);
-        }
-
     }
 
     private void deleteRemote() {

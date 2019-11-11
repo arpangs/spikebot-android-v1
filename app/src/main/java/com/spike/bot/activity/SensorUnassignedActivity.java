@@ -310,7 +310,7 @@ public class SensorUnassignedActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        String webUrl = ChatApplication.url + Constants.curtainadd;
+        String webUrl = ChatApplication.url + Constants.deviceadd;
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
         new GetJsonTask(this, webUrl, "POST", jsonObject.toString(), new ICallBack() {

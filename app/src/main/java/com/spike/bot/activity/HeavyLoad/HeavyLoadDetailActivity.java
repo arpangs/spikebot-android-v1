@@ -72,7 +72,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
 
     public boolean isApiStatus=false;
     public int currentDay = 0;
-    public String room_device_id = "",getRoomName="",getModuleId="",device_id="";
+    public String getRoomName="",device_id="";
 
     ArrayList arrayListYearList = new ArrayList<>();
     ArrayList<Entry> entries = new ArrayList<>();
@@ -85,9 +85,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_heavy_load);
 
-        room_device_id = getIntent().getStringExtra("getRoomDeviceId");
         getRoomName = getIntent().getStringExtra("getRoomName");
-        getModuleId = getIntent().getStringExtra("getModuleId");
         device_id = getIntent().getStringExtra("device_id");
 
         setUiId();
@@ -139,33 +137,14 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
 
         getHeavyloadDetails();
 
-        final JSONObject object = new JSONObject();
-        try {
-            object.put("module_id", getModuleId);
-            object.put("device_id","0"+ device_id);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        if(mSocket!=null){
-            mSocket.emit("socketHeavyLoadValues", object);
-        }
-
-        ChatApplication.logDisplay("json is "+object.toString());
+        /*for live data */
+        getHeavyLoadValue();
 
         /*every 10 sec after emit data for status of heavyload data*/
         countDownTimerSocket = new CountDownTimer(10000, 1000) {
             public void onTick(long millisUntilFinished) {
             }public void onFinish() {
-
                 getHeavyLoadValue();
-//                if(mSocket!=null  && mSocket.connected()) {
-//                    ChatApplication.logDisplay("countDownTimerSocket calling " + object);
-//                    mSocket.emit("socketHeavyLoadValues", object);
-//                }
-//                if(countDownTimerSocket!=null){
-//                    countDownTimerSocket.start();
-//                }
             }
         };
         if(countDownTimerSocket!=null){
@@ -249,14 +228,14 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
             mSocket = app.getSocket();
         }
         if(mSocket!=null){
-            mSocket.on("heavyLoadValue", heavyLoadValue);
+            mSocket.on("statusMapping:heavy_load_voltage", heavyLoadValue);
         }
     }
 
     @Override
     protected void onPause() {
         if(mSocket!=null){
-            mSocket.on("heavyLoadValue", heavyLoadValue);
+            mSocket.on("statusMapping:heavy_load_voltage", heavyLoadValue);
         }
 
         if(countDownTimerSocket!=null){
@@ -282,7 +261,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
                             JSONObject object = new JSONObject(args[0].toString());
 //  {"room_device_id":"1561365773929_OvHzT5WcFU","real_power":25}
 
-                            if(room_device_id.equals(object.optString("room_device_id"))){
+                            if(device_id.equals(object.optString("room_device_id"))){
                                 String real_power=object.optString("real_power");
                                 if(Integer.parseInt(object.optString("real_power"))>0){
                                     imgHL.setVisibility(View.VISIBLE);
@@ -333,8 +312,6 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
                     int code = result.getInt("code");
                     if (code == 200) {
                         ChatApplication.logDisplay("url is result " + result);
-                        JSONObject object = result.optJSONObject("data");
-
                     }
 
                 } catch (Exception e) {
@@ -361,9 +338,10 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
         ActivityHelper.showProgressDialog(HeavyLoadDetailActivity.this, "Please wait... ", false);
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("room_device_id", room_device_id);
+            jsonObject.put("device_id", device_id);
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -383,7 +361,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
                         ChatApplication.logDisplay("json filter is first " + result);
                         JSONObject object = result.optJSONObject("data");
 
-                        heavyModel = (DataHeavyModel) Common.fromJson(object.toString(), new TypeToken<DataHeavyModel>() {}.getType());
+                        heavyModel = (DataHeavyModel) Common.fromJson(result.toString(), new TypeToken<DataHeavyModel>() {}.getType());
 
                         chartDataset(false);
 
@@ -431,7 +409,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
             // "room_device_id":"1561365773929_OvHzT5WcFU",
             // "filter_type":"month",   //year
             // "filter_value":"06"
-            jsonObject.put("room_device_id", room_device_id);
+            jsonObject.put("device_id", device_id);
 
             if (spinnerMonth.getSelectedItem().equals("All")) {
                 jsonObject.put("filter_type", "year");
@@ -446,15 +424,16 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
                 jsonObject.put("filter_type", "month");
                 jsonObject.put("filter_value", strLess + value + "," + spinnerYear.getSelectedItem());
             }
+            jsonObject.put("device_id", device_id);
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        String url = ChatApplication.url + Constants.filterHeavyLoadData;
+        String url = ChatApplication.url + Constants.getHeavyLoadDetails;
         ChatApplication.logDisplay("json filter is " + jsonObject.toString()+" "+url);
         new GetJsonTask(HeavyLoadDetailActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
             @RequiresApi(api = Build.VERSION_CODES.O)
@@ -464,7 +443,6 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
                 try {
 
                     int code = result.getInt("code");
-                    String message = result.getString("message");
                     if (code == 200) {
                         ChatApplication.logDisplay("json filter is result " + result);
 
@@ -483,12 +461,9 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
                         barChart.resetZoom();
 
                         chartDataset(true);
-
                     }
-
                 } catch (Exception e) {
                     e.printStackTrace();
-                } finally {
                 }
             }
 

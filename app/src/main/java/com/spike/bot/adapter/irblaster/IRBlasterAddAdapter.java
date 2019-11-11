@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.spike.bot.R;
+import com.spike.bot.activity.ir.blaster.IRBlasterAddActivity;
 import com.spike.bot.model.IRBlasterAddRes;
 
 import java.util.List;
@@ -20,21 +21,20 @@ import java.util.List;
  */
 public class IRBlasterAddAdapter extends RecyclerView.Adapter<IRBlasterAddAdapter.IRBlasterViewHolder> {
 
-    List<IRBlasterAddRes.Data.IrList> irList;
-    IRBlasterAddRes.Data.IrList ir;
+    List<IRBlasterAddRes.Datum> irList;
+    IRBlasterAddRes.Datum ir;
 
     private Context mContext;
     private BlasterAction blasterAction;
 
-    public IRBlasterAddAdapter(List<IRBlasterAddRes.Data.IrList> irList, BlasterAction blasterAction) {
+    public IRBlasterAddAdapter(List<IRBlasterAddRes.Datum> irList, IRBlasterAddActivity blasterAction) {
         this.irList = irList;
         this.blasterAction = blasterAction;
     }
 
     @Override
     public IRBlasterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.row_ir_blaster_list, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_ir_blaster_list, parent, false);
         mContext = view.getContext();
         return new IRBlasterViewHolder(view);
     }
@@ -43,8 +43,8 @@ public class IRBlasterAddAdapter extends RecyclerView.Adapter<IRBlasterAddAdapte
     public void onBindViewHolder(IRBlasterViewHolder holder, final int position) {
 
         ir = irList.get(position);
-        holder.mIBName.setText(ir.getIrBlasterName());
-        holder.mRoomName.setText("[ " + ir.getRoomName() + " ]");
+        holder.mIBName.setText(ir.getDeviceName());
+        holder.mRoomName.setText("[ " + ir.getRoom().getRoomName() + " ]");
 
         holder.mIrRemoteListAdapter = new IRBlasterAddRemoteList(ir.getRemoteList());
         holder.mIRRemoteList.setAdapter(holder.mIrRemoteListAdapter);
@@ -91,9 +91,9 @@ public class IRBlasterAddAdapter extends RecyclerView.Adapter<IRBlasterAddAdapte
 
 
     public interface BlasterAction {
-        void onEdit(int position, IRBlasterAddRes.Data.IrList ir);
+        void onEdit(int position, IRBlasterAddRes.Datum ir);
 
-        void onDelete(int position, IRBlasterAddRes.Data.IrList ir);
+        void onDelete(int position, IRBlasterAddRes.Datum ir);
     }
 
 }

@@ -264,29 +264,6 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
         }else {
             showAddDialog(roomdeviceList);
         }
-
-//        if (roomdeviceList.getIsModule() == 1 || roomdeviceList.getIsModule() == 3) {
-//            showAddDialog(roomdeviceList);
-//        } else {
-//            if (roomdeviceList.getSensorIcon().equals("doorsensor")) {
-//                Intent intent = new Intent(this, AddDeviceConfirmActivity.class);
-//                intent.putExtra("isViewType", "syncDoor");
-//                intent.putExtra("door_sensor_module_id", "" + roomdeviceList.getModuleId());
-//                intent.putExtra("door_sensor_name", "" + roomdeviceList.getSensorName());
-//                intent.putExtra("door_type", "" + roomdeviceList.getLock_subtype());
-//                if (roomdeviceList.getLock_subtype().equals("2")) {
-//                    intent.putExtra("lock_id", roomdeviceList.getLock_id());
-//                    intent.putExtra("lock_data", roomdeviceList.getLock_data());
-//                }
-//                startActivity(intent);
-//
-//            } else if (roomdeviceList.getSensorIcon().equals("repeater")) {
-//                repetearAdd(roomdeviceList);
-//            } else {
-//                showAddDialog(roomdeviceList);
-//            }
-//        }
-
     }
 
     private void repetearAdd(UnassignedListRes.Data roomdeviceList) {
@@ -374,6 +351,7 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
         mBtnSave =  mDialog.findViewById(R.id.btn_save);
         mImageClose =  mDialog.findViewById(R.id.iv_close);
         TextView mAddName =  mDialog.findViewById(R.id.tv_panel_name);
+        TextView txtModuleId =  mDialog.findViewById(R.id.txtModuleId);
 
         mPanelName.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         mPanelName.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
@@ -388,6 +366,8 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
         }
 
         mPanelName.setText(roomdeviceList.getModuleType());
+        txtModuleId.setText(roomdeviceList.getModuleId());
+        mPanelName.setSelection(mPanelName.getText().length());
 
         mImageClose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -469,6 +449,9 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
             object.put("module_type", roomdeviceList.getModuleType());
             object.put("module_id", roomdeviceList.getModuleId());
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

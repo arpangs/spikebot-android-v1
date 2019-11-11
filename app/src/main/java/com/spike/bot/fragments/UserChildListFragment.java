@@ -38,7 +38,6 @@ import com.spike.bot.activity.UserChildActivity;
 import com.spike.bot.adapter.ChildUserAdapter;
 import com.spike.bot.adapter.MoodExpandableLayoutHelper;
 import com.spike.bot.adapter.RoomeListAdapter;
-import com.spike.bot.adapter.UserRoomExpandableLayoutHelper;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -75,8 +74,6 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
     public ArrayList<User> userArrayList=new ArrayList<>();
     public static ArrayList<RoomVO> roomList = new ArrayList<>();
     public static ArrayList<CameraVO> cameraList = new ArrayList<CameraVO>();
-
-    UserRoomExpandableLayoutHelper sectionedExpandableLayoutHelper;
 
     public static UserChildListFragment newInstance() {
         UserChildListFragment fragment = new UserChildListFragment();

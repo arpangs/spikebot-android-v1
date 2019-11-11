@@ -127,7 +127,6 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
             mSocket = app.getSocket();
         }
         if (mSocket != null) {
-            mSocket.on("socketGasSensorValues", socketGasSensorValues);
             mSocket.on("changeDeviceStatus", changeDeviceStatus);
         }
     }
@@ -135,7 +134,6 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
     private Emitter.Listener changeDeviceStatus = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-
 
             GasSensorActivity.this.runOnUiThread(new Runnable() {
                 @Override
@@ -147,33 +145,9 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
                             JSONObject object = new JSONObject(args[0].toString());
                             ChatApplication.logDisplay("gas socket is update :-" + object);
 
-                            //"room_id":"1569405933287_jyzwqWwos","gas_sensor_id":"1569409977792_MP9OiH_QS","gas_value":"Normal","gas_current_value":5,"threshold_value":10}
-                            setLevel(object.optString("device_status"));
-                          /*  if (sensor_id.equals(object.optString("gas_sensor_id"))) {
-                                setLevel(object.optString("gas_value"));
-                            }*/
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener socketGasSensorValues = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-
-            GasSensorActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    if (args != null) {
-                        try {
-                            JSONObject object = new JSONObject(args[0].toString());
-                            ChatApplication.logDisplay("gas socket is " + object);
-                            // setDoorUnreadCount(doorSensorVoltage);
+                            if (device_id.equals(object.optString("device_id"))) {
+                                setLevel(object.optString("device_status"));
+                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -189,7 +163,6 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
         super.onDestroy();
         if (mSocket != null) {
             mSocket.on("changeDeviceStatus", changeDeviceStatus);
-            mSocket.on("socketGasSensorValues", socketGasSensorValues);
         }
     }
 
@@ -256,14 +229,10 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
 
         JSONObject object = new JSONObject();
         try {
-            //gas_sensor_id"	: "",
-            //  "user_id":"",
-            //  "phone_id":"",
-            //  "phone_type":""
             object.put("device_id", device_id);
-           /* object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);*/
+            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -307,14 +276,10 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
 
         JSONObject object = new JSONObject();
         try {
-            //{
-            //	"device_id":"1571998596623_EE9U9Ovz7w",
-            //	"alert_type":"temperature"
-            //}
             object.put("device_id", device_id);
-          /*  object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);*/
+            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -331,8 +296,6 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
                     String message = result.getString("message");
                     if (code == 200) {
                         filldata(result);
-                        //{"code":200,"message":"Success","data":{"gas_sensor_id":"1568885313159_JFUdxkSHH","gas_sensor_module_id":"90A1131A004B1200"
-                        // ,"gas_sensor_name":"gas !!","room_id":"1568885033394_wTSzIhXxu","room_name":"Jhanvi","is_gas_detected":"","gas_value":""}}
                     }
 
                 } catch (JSONException e) {
@@ -352,8 +315,6 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
     private void filldata(@NotNull JSONObject result) {
 
         try {
-            //{"code":200,"message":"Success","data":{"gas_sensor_id":"1568968977282_uG3YUsQ1I"
-            // ,"gas_sensor_module_id":"236F131A004B1200","gas_sensor_name":"ggh","room_id":"1568962984563_I4dhDWr54","room_name":"vpk","is_gas_detected":0,"gas_value":"Normal"}}
             JSONObject object = new JSONObject(result.toString());
             JSONObject data = object.optJSONObject("data");
             JSONObject device = data.optJSONObject("device");
@@ -408,10 +369,11 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
 
         JSONObject jsonNotification = new JSONObject();
         try {
-            //  "device_id"	: "",
-            //  "device_name"	: "",
             jsonNotification.put("device_id", device_id);
             jsonNotification.put("device_name", edSensorName.getText().toString());
+            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }

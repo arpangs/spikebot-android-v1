@@ -38,12 +38,13 @@
                     android:layout_height="wrap_content"
                     android:gravity="center|top"
                     android:layout_marginRight="4dp"
+                    android:layout_marginTop="@dimen/_3sdp"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
                     android:ellipsize="end"
                     android:singleLine="true"
                     android:textColor="@color/sky_blue"
-                    android:textSize="20sp" />
+                    android:textSize="@dimen/_16sdp" />
 
                 <TextView
                     android:id="@+id/tv_schedule_days"

@@ -572,7 +572,6 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-//                ChatApplication.showToast(AddDeviceTypeListActivity.this, getResources().getString(R.string.something_wrong1));
             }
         }).execute();
     }
@@ -705,6 +704,9 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         JSONObject object = new JSONObject();
         try {
             object.put("key", roomName.getText().toString());
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1010,11 +1012,10 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             int room_pos = sp_room_list.getSelectedItemPosition();
 
             obj.put("room_id", roomIdList.get(room_pos));
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             obj.put("device_name", door_name);
             obj.put("module_id", door_module_id);
             obj.put("module_type", module_type);
-
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 

@@ -32,6 +32,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
@@ -48,16 +49,20 @@ import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.IRBlasterAddRes;
 import com.spike.bot.model.SensorUnassignedRes;
+import com.spike.bot.model.UnassignedListRes;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+
+import static com.spike.bot.core.Common.showToast;
 
 /**
  * Created by Sagar on 21/8/18.
@@ -72,11 +77,12 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
     public static int SENSOR_TYPE_IR = 3;
 
     private IRBlasterAddAdapter irBlasterAddAdapter;
-    private List<IRBlasterAddRes.Data.IrList> irList;
+    private List<IRBlasterAddRes.Datum> irList;
+    ArrayList<UnassignedListRes.Data.RoomList> roomListArray=new ArrayList<>();
+    ArrayList<String> roomListString=new ArrayList<>();
 
     ArrayList<String> roomIdList = new ArrayList<>();
     ArrayList<String> roomNameList = new ArrayList<>();
-    List<IRBlasterAddRes.Data.RoomList> roomLists;
     private Dialog mDialog;
     EditText mBlasterName;
     Dialog irDialog;
@@ -93,6 +99,8 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
     @Override
     protected void onResume() {
         super.onResume();
+        roomListArray.clear();
+        roomListString.clear();
         Constants.isWifiConnect = false;
         Constants.isWifiConnectSave = false;
         startSocketConnection();
@@ -531,6 +539,64 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
 
     };
 
+    /*get room list*/
+    private void getRoomList() {
+
+
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            showToast("" + R.string.disconnect);
+            return;
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("room_type", "room");
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String url = ChatApplication.url + Constants.roomslist;
+
+        ChatApplication.logDisplay("un assign is "+url+" "+jsonObject);
+
+        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() {
+            @Override
+            public void onSuccess(JSONObject result) {
+                ActivityHelper.dismissProgressDialog();
+                try {
+                    ChatApplication.logDisplay("un assign is "+result);
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        Type type = new TypeToken<ArrayList<UnassignedListRes.Data.RoomList>>() {}.getType();
+                        roomListArray = (ArrayList<UnassignedListRes.Data.RoomList>) Constants.fromJson(result.optString("data").toString(), type);
+
+                        for(int i=0; i<roomListArray.size(); i++){
+                            roomListString.add(roomListArray.get(i).getRoomName());
+                        }
+
+                    } else {
+                        if (!TextUtils.isEmpty(message)) {
+                            showToast(message);
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        }).execute();
+    }
+
     /**
      * get IR Blaster list
      */
@@ -541,24 +607,35 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             return;
         }
 
-        String URL = ChatApplication.url + Constants.GET_IR_BLASTER_LIST;
+        ActivityHelper.showProgressDialog(this, "Please wait.", false);
+
+        String url = ChatApplication.url + Constants.devicefind;
 
         if (irList != null) {
             irList.clear();
         }
 
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            obj.put("device_type", "ir_blaster");
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-        new GetJsonTask(this, URL, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
+        ChatApplication.logDisplay("url is "+url+" "+obj);
+        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
+
                 ChatApplication.logDisplay("result : " + result.toString());
 
                 IRBlasterAddRes irBlasterAddRes = Common.jsonToPojo(result.toString(), IRBlasterAddRes.class);
                 if (irBlasterAddRes.getCode() == 200) {
-                    irList = irBlasterAddRes.getData().getIrList();
-                    roomLists = irBlasterAddRes.getData().getRoomList();
+                    irList = irBlasterAddRes.getData();
+                    irList = irBlasterAddRes.getData();
 
                     irBlasterAddAdapter = new IRBlasterAddAdapter(irList, IRBlasterAddActivity.this);
                     mBlasterList.setAdapter(irBlasterAddAdapter);
@@ -583,6 +660,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
                     mBlasterList.setVisibility(View.VISIBLE);
                 }
 
+                getRoomList();
             }
 
             @Override
@@ -601,16 +679,16 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
     }
 
     @Override
-    public void onEdit(int position, IRBlasterAddRes.Data.IrList ir) {
+    public void onEdit(int position, IRBlasterAddRes.Datum ir) {
         showBlasterEditDialog(ir);
     }
 
     @Override
-    public void onDelete(int position, final IRBlasterAddRes.Data.IrList ir) {
-        ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to delete " + ir.getIrBlasterName() + "?\n Note : All Schedules will be affected", new ConfirmDialog.IDialogCallback() {
+    public void onDelete(int position, final IRBlasterAddRes.Datum ir) {
+        ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to delete " + ir.getDeviceName() + "?\n Note : All Schedules will be affected", new ConfirmDialog.IDialogCallback() {
             @Override
             public void onConfirmDialogYesClick() {
-                deleteBlaster(ir.getIrBlasterId());
+                deleteBlaster(ir.getDeviceId());
             }
 
             @Override
@@ -687,7 +765,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
     /**
      * @param ir
      */
-    private void showBlasterEditDialog(final IRBlasterAddRes.Data.IrList ir) {
+    private void showBlasterEditDialog(final IRBlasterAddRes.Datum ir) {
 
         mDialog = getDialogContext();
         mBlasterName = mDialog.findViewById(R.id.edt_blaster_name);
@@ -702,14 +780,13 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         ImageView btnClose = mDialog.findViewById(R.id.iv_close);
 
 
-        mBlasterName.setText(ir.getIrBlasterName());
+        mBlasterName.setText(ir.getDeviceName());
         mBlasterName.setSelection(mBlasterName.getText().length());
-        final ArrayAdapter roomAdapter = new ArrayAdapter(this, R.layout.spinner, roomLists);
+        final ArrayAdapter roomAdapter = new ArrayAdapter(this, R.layout.spinner, roomListString);
         mRoomSpinner.setAdapter(roomAdapter);
 
-        for (int i = 0; i < roomLists.size(); i++) {
-            IRBlasterAddRes.Data.RoomList room = roomLists.get(i);
-            if (room.getRoomName().equalsIgnoreCase(ir.getRoomName())) {
+        for (int i = 0; i < roomListString.size(); i++) {
+            if (roomListString.get(i).equalsIgnoreCase(ir.getRoom().getRoomName())) {
                 mRoomSpinner.setSelection(i);
                 break;
             }
@@ -733,8 +810,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             @Override
             public void onClick(View v) {
 
-                IRBlasterAddRes.Data.RoomList roomList = (IRBlasterAddRes.Data.RoomList) mRoomSpinner.getSelectedItem();
-                updateBlaster(mDialog, mBlasterName, roomList, ir.getIrBlasterId());
+                updateBlaster(mDialog, mBlasterName, ir.getDeviceId());
             }
         });
 
@@ -752,10 +828,9 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
     /**
      * @param mDialog
      * @param mBlasterName
-     * @param roomList
      * @param irBlasterId
      */
-    private void updateBlaster(final Dialog mDialog, EditText mBlasterName, IRBlasterAddRes.Data.RoomList roomList, String irBlasterId) {
+    private void updateBlaster(final Dialog mDialog, EditText mBlasterName, String irBlasterId) {
 
         if (!ActivityHelper.isConnectingToInternet(getApplicationContext())) {
             Common.showToast("" + getString(R.string.error_connect));
@@ -774,8 +849,8 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         try {
             object.put("ir_blaster_name", mBlasterName.getText().toString().trim());
             object.put("ir_blaster_id", "" + irBlasterId);
-            object.put("room_id", "" + roomList.getRoomId());
-            object.put("room_name", "" + roomList.getRoomName());
+//            object.put("room_id", "" + roomList.getRoomId());
+//            object.put("room_name", "" + roomList.getRoomName());
             object.put("phone_id", "" + APIConst.PHONE_ID_VALUE);
             object.put("phone_type", "" + APIConst.PHONE_TYPE_VALUE);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));

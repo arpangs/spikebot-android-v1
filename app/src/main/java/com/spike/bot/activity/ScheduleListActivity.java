@@ -86,6 +86,4 @@ public class ScheduleListActivity extends AppCompatActivity {
         }
         return super.onPrepareOptionsMenu(menu);
     }
-
-
 }

@@ -155,7 +155,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         }
 
         if (mSocket != null) {
-            mSocket.on("changeDeviceStatus ", changeDeviceStatus );
+            mSocket.on("changeDeviceStatus", changeDeviceStatus );
         }
     }
 
@@ -172,22 +172,29 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
 
-                            // {"room_id":"1568356634757_Yy4oiLUbl","room_order":0,"temp_sensor_id":"1568367831844_0ygOKL1C-","is_in_C":1,"temp_celsius":30,"temp_fahrenheit":86,"humidity":36}
+                            //{"device_id":"1571998596623_EE9U9Ovz7w","device_type":"temp_sensor","device_status":"28","device_sub_status":43}
 
                             ChatApplication.logDisplay("temp is " + object);
 
-                            if (!TextUtils.isEmpty(object.optString("humidity"))) {
-                                txtHumity.setText(object.optString("humidity") + " %");
-                            } else {
-                                txtHumity.setText("--");
-                            }
+                            if(mRemoteCommandList.getDevice().getDevice_id().equalsIgnoreCase(object.optString("device_id"))) {
+                                if (!TextUtils.isEmpty(object.optString("device_sub_status"))) {
+                                    txtHumity.setText(object.optString("device_sub_status") + " %");
+                                } else {
+                                    txtHumity.setText("--");
+                                }
 
-                            if (isCFSelected == 1) {
-                                setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_yellow, R.drawable.txt_background_white, Color.parseColor("#FFFFFF"), Color.parseColor("#111111"));
-                                tempCFValue.setText(object.optString("temp_celsius") + " ");
-                            } else {
-                                setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_white, R.drawable.txt_background_yellow, Color.parseColor("#111111"), Color.parseColor("#FFFFFF"));
-                                tempCFValue.setText(object.optString("temp_fahrenheit") + " ");
+                                if (!TextUtils.isEmpty(object.optString("device_status"))) {
+                                    mRemoteCommandList.getDevice().setDeviceStatus(object.optString("device_status"));
+                                    mRemoteCommandList.getDevice().setFahrenheitvalue(Constants.getFTemp(object.optString("device_status")));
+                                }
+
+                                if (isCFSelected == 1) {
+                                    setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_yellow, R.drawable.txt_background_white, Color.parseColor("#FFFFFF"), Color.parseColor("#111111"));
+                                    tempCFValue.setText(mRemoteCommandList.getDevice().getDeviceStatus() + " ");
+                                } else {
+                                    setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_white, R.drawable.txt_background_yellow, Color.parseColor("#111111"), Color.parseColor("#FFFFFF"));
+                                    tempCFValue.setText(mRemoteCommandList.getDevice().getFahrenheitvalue() + " ");
+                                }
                             }
 
                         } catch (JSONException e) {
@@ -270,6 +277,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         imgLog.setOnClickListener(this);
 
         view_rel_badge.setOnClickListener(this);
+
+        startSocketConnection();
 
         txtAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -391,8 +400,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
         String webUrl = ChatApplication.url + Constants.UPDATE_TEMP_SENSOR_NOTIFICATION;
-        ;
-//
 
         JSONObject jsonNotification = new JSONObject();
 
@@ -1535,7 +1542,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             public void onSuccess(JSONObject result) {
 
                 ActivityHelper.dismissProgressDialog();
-                startSocketConnection();
                 ChatApplication.logDisplay("result is " + result);
                 ActivityHelper.dismissProgressDialog();
 

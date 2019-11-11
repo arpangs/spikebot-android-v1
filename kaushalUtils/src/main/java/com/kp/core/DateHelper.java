@@ -23,6 +23,8 @@ public class DateHelper {
 	public static final String DATE_D_MMM = "d-MMM";
 	public static final String DATE_FROMATE_HH_MM_AMPM = "hh:mm a";
 	public static final String DATE_FROMATE_H_M_AMPM = "h:mm a";
+	public static final String DATE_FROMATE_H_M_AMPM1 = "yyyy-MM-dd HH:mm:ss";
+	public static final String DATE_FROMATE_H_M_AMPM12 = "MMM dd, yyyy hh:mm aa";
 	public static final String DATE_FROMATE_HH_MM= "HH:mm";
 	public static final String DATE_FROMATE_HH_MM_TEMP= "HH:mm";
 	public static final String DATE_DD_MMM_YYYY_HH_MM_AMPM = "dd-MMM-yyyy hh:mm a";
@@ -360,34 +362,8 @@ public class DateHelper {
 
 		return calendar.getTime();
 	}
-	public static Date parseDate(String date, String format) throws ParseException
-	{
-		SimpleDateFormat formatter = new SimpleDateFormat(format);
-		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(formatter.parse(date));
-		calendar.setTimeZone(TimeZone.getDefault());
-
-		TimeZone timezone = TimeZone.getDefault();
-
-			/*TimeZone timezone = TimeZone.getDefault();
-		    String TimeZoneName = timezone.getDisplayName();
-		    CustomLogHandler.printInfolog("","AM DayLight DayLight TimeZoneName = " +TimeZoneName);
-			int TimeZoneOffset = timezone.getRawOffset() / (60 * 60 * 1000);
-			CustomLogHandler.printInfolog("","AM DayLight DayLightSaving: TimeZoneOffset " + TimeZoneOffset);
-
-			double hoursDiff = timezone.getDSTSavings() / (60 * 60 * 1000);
-			CustomLogHandler.printInfolog("","AM DayLight DayLightSaving: hoursDiff " + hoursDiff);*/
-
-		int TimeZoneOffset = timezone.getRawOffset() / (60 * 60 * 1000);
-//			CustomLogHandler.printInfolog("","AM DayLight DayLightSaving: TimeZoneOffset " + TimeZoneOffset);
-		double hoursDiff = timezone.getDSTSavings() / (60 * 60 * 1000);
 
 
-//		    return new Date(calendar.getTime().getTime() + timezone.getDSTSavings());
-		return calendar.getTime();
-	}
 	public static Date parseDateSimple(String date, String format) throws ParseException
 	{
 		SimpleDateFormat formatter = new SimpleDateFormat(format);

@@ -729,16 +729,23 @@ public class JsonHelper {
 
                 d1.setIs_unread(hasObject(deviceObj,"is_unread") ? deviceObj.optString("is_unread") : "");
                 d1.setCreated_date(hasObject(deviceObj,"created_date") ? deviceObj.optString("created_date") : "");
-                d1.setTemp_in_c(hasObject(deviceObj,"temp_in_C") ? deviceObj.optString("temp_in_C") : "");
+
                 d1.setTemp_in_f(hasObject(deviceObj,"temp_in_F") ? deviceObj.optString("temp_in_F") : "");
                 d1.setIs_in_c(hasObject(deviceObj,"is_in_C") ? deviceObj.optString("is_in_C") : "");
                 d1.setHumidity(deviceObj.optString("humidity"));
                 d1.setTo_use(hasObject(deviceObj,"to_use") ? deviceObj.optString("to_use") : "");
 
+                if(deviceObj.has("device_meta")){
+                    JSONObject object=deviceObj.optJSONObject("device_meta");
+                    if(object!=null){
+                        d1.setTemp_in_c(object.optString("unit"));
+                    }
+
+                }
+
                 if(!TextUtils.isEmpty(is_original)){
                     d1.setIs_original(Integer.parseInt(is_original));
                 }
-
 
                 d1.setRoomName(roomName);
                 d1.setRoomId(roomId);
@@ -833,6 +840,20 @@ public class JsonHelper {
         for(int j=0 ; j < deviceArray.length() ; j++){
             try {
 
+                // "schedule_id": "SCHEDULE-1573040647697_z1aeEJsfn",
+                //      "schedule_name": null,
+                //      "schedule_type": "schedule",
+                //      "schedule_device_type": "room",
+                //      "schedule_days": "0,1,2,3,4",
+                //      "on_time": "19:00",
+                //      "off_time": "19:01",
+                //      "is_active": "y",
+                //      "meta": "{}",
+                //      "created_by": null,
+                //      "devices": [
+                //
+                //      ]
+
                 JSONObject deviceObj = deviceArray.getJSONObject(j);
 
                 int id = j;
@@ -848,23 +869,26 @@ public class JsonHelper {
 
                 ScheduleVO d1 = new ScheduleVO();
                 d1.setSchedule_id(deviceObj.optString("schedule_id"));
-                d1.setSchedule_type(deviceObj.optInt("schedule_type"));
+                d1.setSchedule_type(deviceObj.optString("schedule_type").equals("schedule") ? 0:1);  /*1 means timer & 0 means schudule*/
                 d1.setSchedule_name(deviceObj.optString("schedule_name"));
-                d1.setSchedule_device_on_time(deviceObj.optString("schedule_device_on_time"));
-                d1.setSchedule_device_off_time(deviceObj.optString("schedule_device_off_time"));
-                d1.setSchedule_device_day(deviceObj.optString("schedule_device_day"));
+                d1.setSchedule_device_on_time(deviceObj.optString("on_time"));
+                d1.setSchedule_device_off_time(deviceObj.optString("off_time"));
+                d1.setSchedule_device_day(deviceObj.optString("schedule_days"));
                 d1.setSchedule_status(deviceObj.optInt("schedule_status"));
                 d1.setRoom_id(deviceObj.optString("room_id"));
                 d1.setUser_id(deviceObj.optString("user_id"));
                 d1.setRoom_name(deviceObj.optString("room_name"));
                 d1.setRoom_device_id(deviceObj.optString("room_device_id"));
+                d1.setSchedule_device_type(deviceObj.optString("schedule_device_type"));
                 d1.setId(id);
+                d1.setIs_active(deviceObj.optString("is_active").equals("y")?1:-1);
 
                 d1.setIs_timer(is_timer);
                 d1.setTimer_on_after(timer_on_after);
                 d1.setTimer_on_date(timer_on_date);
                 d1.setTimer_off_after(timer_off_after);
                 d1.setTimer_off_date(timer_off_date);
+                d1.setDevicesList(deviceObj.optString("devices"));
 
 
                 deviceList.add(d1);

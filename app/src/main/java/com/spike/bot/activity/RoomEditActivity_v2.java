@@ -493,10 +493,17 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             return;
         }
         String url = ChatApplication.url + Constants.CHECK_INDIVIDUAL_SWITCH_DETAILS;
-
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         ChatApplication.logDisplay("icon list "+url);
 
-        new GetJsonTask(this, url, "POST","", new ICallBack() { //Constants.CHAT_SERVER_URL
+        new GetJsonTask(this, url, "POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
 
@@ -580,41 +587,41 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
 
     public void openAddPopup(final View v) {//,final ICallBackAction actionCallBack
 
-        @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenu);
-        PopupMenu popup = new PopupMenu(wrapper, v);
-
-        popup.getMenuInflater().inflate(R.menu.menu_room_edit_add_popup, popup.getMenu());
-
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_add_existing:
-                        action = "add_new_existing";
-
-                        Intent intentPanel = new Intent(getApplicationContext(), AddExistingPanel.class);
-                        intentPanel.putExtra("roomId", room.getRoomId());
-                        intentPanel.putExtra("roomName", room.getRoomName());
-                        intentPanel.putExtra("isDeviceAdd", false);
-                        startActivity(intentPanel);
-                        break;
-                    case R.id.action_add_schedule:
-                        action = "action_add_schedule";
-                        Intent intent = new Intent(getApplicationContext(), ScheduleListActivity.class);
-                        intent.putExtra("moodId3", room.getRoomId());
-                        intent.putExtra("roomId", room.getRoomId());
-                        intent.putExtra("roomName", room.getRoomName());
-                        intent.putExtra("selection", 1);
-                        intent.putExtra("isMoodAdapter", true);
-                        startActivity(intent);
-
-                        break;
-                    default:
-                        break;
-                }
-                return true;
-            }
-        });
-        popup.show();
+//        @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenu);
+//        PopupMenu popup = new PopupMenu(wrapper, v);
+//
+//        popup.getMenuInflater().inflate(R.menu.menu_room_edit_add_popup, popup.getMenu());
+//
+//        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+//            @Override
+//            public boolean onMenuItemClick(MenuItem item) {
+//                switch (item.getItemId()) {
+//                    case R.id.action_add_existing:
+//                        action = "add_new_existing";
+//
+//                        Intent intentPanel = new Intent(getApplicationContext(), AddExistingPanel.class);
+//                        intentPanel.putExtra("roomId", room.getRoomId());
+//                        intentPanel.putExtra("roomName", room.getRoomName());
+//                        intentPanel.putExtra("isDeviceAdd", false);
+//                        startActivity(intentPanel);
+//                        break;
+//                    case R.id.action_add_schedule:
+//                        action = "action_add_schedule";
+//                        Intent intent = new Intent(getApplicationContext(), ScheduleListActivity.class);
+//                        intent.putExtra("moodId3", room.getRoomId());
+//                        intent.putExtra("roomId", room.getRoomId());
+//                        intent.putExtra("roomName", room.getRoomName());
+//                        intent.putExtra("selection", 1);
+//                        intent.putExtra("isMoodAdapter", true);
+//                        startActivity(intent);
+//
+//                        break;
+//                    default:
+//                        break;
+//                }
+//                return true;
+//            }
+//        });
+//        popup.show();
     }
 }

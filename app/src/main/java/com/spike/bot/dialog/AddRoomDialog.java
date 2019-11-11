@@ -173,6 +173,8 @@ public class AddRoomDialog extends Dialog implements
         else{
             try {
                 obj.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
+                obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+                obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

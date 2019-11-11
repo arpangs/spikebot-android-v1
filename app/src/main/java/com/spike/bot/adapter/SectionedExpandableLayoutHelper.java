@@ -145,6 +145,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                     if (deviceVO1.getDeviceId().equals(deviceId)) {
                         ChatApplication.logDisplay("status update panel adapter match");
                         ((DeviceVO) mDataArrayList.get(k)).setDeviceStatus(Integer.parseInt(deviceStatus));
+                        ((DeviceVO) mDataArrayList.get(k)).setDevice_sub_status(String.valueOf(device_sub_status));
                         mSectionedExpandableGridAdapter.notifyItemChanged(k);
                         mSectionedExpandableGridAdapter.notifyDataSetChanged();
                         break;

@@ -300,14 +300,10 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             intent.putExtra("isRoomName",""+roomVO.getRoomName());
             startActivity(intent);
         }else if(action.equalsIgnoreCase("imgSch")){
-
             Intent intent = new Intent(getActivity(), ScheduleListActivity.class);
-            //intent.putExtra("isMood",true);
             intent.putExtra("moodName",roomVO.getRoomName());
-            //intent.putExtra("moodId",item.getPanelId());
             intent.putExtra("moodId",roomVO.getRoomId());
             intent.putExtra("isMoodAdapter",true); //added in last call
-            intent.putExtra("moodId2",roomVO.getRoomId());
             intent.putExtra("isActivityType","2");
             startActivity(intent);
 
@@ -401,19 +397,18 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             sendRemoteCommand(item);
         }
         else if(action.equalsIgnoreCase("scheduleclick")){
-            Intent intent = new Intent(getActivity(), ScheduleListActivity.class);
-            startActivity(intent);
+//            Intent intent = new Intent(getActivity(), ScheduleListActivity.class);
+//            startActivity(intent);
         }
         if(action.equalsIgnoreCase("longclick")){
-           int getDeviceSpecificValue=0;
-           if(!TextUtils.isEmpty( item.getDeviceSpecificValue())){
-               getDeviceSpecificValue= Integer.parseInt(item.getDeviceSpecificValue());
-           }
-            FanDialog fanDialog = new FanDialog(getActivity(), item.getRoomDeviceId(),  getDeviceSpecificValue, new ICallback() {
+            int getDeviceSpecificValue = 0;
+            if (!TextUtils.isEmpty(item.getDevice_sub_status())) {
+                getDeviceSpecificValue = Integer.parseInt(item.getDevice_sub_status());
+            }
+            FanDialog fanDialog = new FanDialog(getActivity(), item.getDeviceId(),  getDeviceSpecificValue, new ICallback() {
                 @Override
                 public void onSuccess(String str) {
-                    if(str.contains("yes")){
-                    }
+                    sectionedExpandableLayoutHelper.updateFanDevice(item.getDeviceId(),str);
                 }
             });
             fanDialog.show();
@@ -441,33 +436,33 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
     @Override
     public void itemClicked(final PanelVO item, String action) {
 
-        if(action.equalsIgnoreCase("scheduleclick")){
-           ChatApplication.logDisplay(action +" itemClicked itemClicked DeviceVO "  );
-
-            String moodName = "";
-            String moodId = "";
-            if(moodList.size()>0){  //get MoodId
-
-                for(RoomVO moodVO : moodList){
-                    ArrayList<PanelVO> panelVOArrayList = moodVO.getPanelList();
-                    for(PanelVO panelVO : panelVOArrayList){
-                        if(panelVO.getPanelId().equalsIgnoreCase(item.getPanelId())){
-                            moodName = moodVO.getRoomName();
-                            moodId = moodVO.getRoomId();
-                        }
-                    }
-                }
-            }
-
-            Intent intent = new Intent(getActivity(), ScheduleListActivity.class);
-            //intent.putExtra("scheduleIcon",true);
-            intent.putExtra("moodName",moodName);
-            intent.putExtra("moodId",item.getPanelId());
-            intent.putExtra("isMoodAdapter",true); //added in last call
-            intent.putExtra("moodId2",moodId);
-            intent.putExtra("isActivityType","2");
-            startActivity(intent);
-        }
+//        if(action.equalsIgnoreCase("scheduleclick")){
+//           ChatApplication.logDisplay(action +" itemClicked itemClicked DeviceVO "  );
+//
+//            String moodName = "";
+//            String moodId = "";
+//            if(moodList.size()>0){  //get MoodId
+//
+//                for(RoomVO moodVO : moodList){
+//                    ArrayList<PanelVO> panelVOArrayList = moodVO.getPanelList();
+//                    for(PanelVO panelVO : panelVOArrayList){
+//                        if(panelVO.getPanelId().equalsIgnoreCase(item.getPanelId())){
+//                            moodName = moodVO.getRoomName();
+//                            moodId = moodVO.getRoomId();
+//                        }
+//                    }
+//                }
+//            }
+//
+//            Intent intent = new Intent(getActivity(), ScheduleListActivity.class);
+//            //intent.putExtra("scheduleIcon",true);
+//            intent.putExtra("moodName",moodName);
+//            intent.putExtra("moodId",item.getPanelId());
+//            intent.putExtra("isMoodAdapter",true); //added in last call
+//            intent.putExtra("moodId2",moodId);
+//            intent.putExtra("isActivityType","2");
+//            startActivity(intent);
+//        }
 
     }
 
@@ -569,7 +564,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
 
         ChatApplication app = ChatApplication.getInstance();
         if(mSocket!=null && mSocket.connected()){
-           ChatApplication.logDisplay("mSocket.connected  return.." + mSocket.id() );
+           ChatApplication.logDisplay("mSocket.connected  return.." + mSocket.id());
         }else{
             mSocket = app.getSocket();
         }
@@ -773,22 +768,23 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             return;
         }
 
-        SendRemoteCommandReq sendRemoteCommandReq = new SendRemoteCommandReq();
-        sendRemoteCommandReq.setRemoteid(item.getOriginal_room_device_id());
-        sendRemoteCommandReq.setPower(item.getDeviceStatus()==0 ? "ON" : "OFF");
-        sendRemoteCommandReq.setSpeed(item.getSpeed());
-        sendRemoteCommandReq.setTemperature(Integer.parseInt(item.getTemperature()));
-        sendRemoteCommandReq.setRoomDeviceId(item.getRoomDeviceId());
-        sendRemoteCommandReq.setPhoneId(APIConst.PHONE_ID_VALUE);
-        sendRemoteCommandReq.setPhoneType(APIConst.PHONE_TYPE_VALUE);
-        sendRemoteCommandReq.setSpeed(item.getMode());
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
+            obj.put("device_id", item.getDeviceId());
+            obj.put("device_status", item.getDeviceStatus());
 
-        Gson gson = new Gson();
-        String mRemoteCommandReq = gson.toJson(sendRemoteCommandReq);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-        String url = ChatApplication.url + Constants.SEND_REMOTE_COMMAND;
+        String url = ChatApplication.url + Constants.CHANGE_DEVICE_STATUS;
 
-        new GetJsonTaskRemote(getContext(), url, "POST", mRemoteCommandReq, new ICallBack() {
+        ChatApplication.logDisplay("result is ir "+url+" "+obj);
+
+        new GetJsonTaskRemote(getContext(), url, "POST", obj.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
                 ChatApplication.logDisplay("result is ir "+result);

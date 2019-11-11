@@ -745,29 +745,29 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         String tempInCF = "";
                         String cf = "";
 
-                        if (item.getIs_in_c().equalsIgnoreCase("1")) {
+                        if (item.getIs_in_c().equalsIgnoreCase("C")) {
 
-                            if (TextUtils.isEmpty(item.getTemp_in_c()) || item.getTemp_in_c().equalsIgnoreCase("null")) {
+                            if (TextUtils.isEmpty(""+item.getDeviceStatus())) {
                                 tempInCF = "-- ";
                             } else {
-                                tempInCF = item.getTemp_in_c();
+                                tempInCF = String.valueOf(item.getDeviceStatus());
                             }
                             cf = Common.getC();
 
                         } else {
 
-                            if (TextUtils.isEmpty(item.getTemp_in_f()) || item.getTemp_in_f().equalsIgnoreCase("null")) {
+                            if (TextUtils.isEmpty(item.getIs_in_c())) {
                                 tempInCF = "-- ";
                             } else {
-                                tempInCF = item.getTemp_in_f();
+                                tempInCF = ""+item.getDeviceStatus();
                             }
                             cf = Common.getF();
                         }
 
                         String humility="";
 
-                        if(!TextUtils.isEmpty(item.getHumidity()) && item.getHumidity()!=null){
-                            humility=item.getHumidity();
+                        if(!TextUtils.isEmpty(item.getDevice_sub_status()) && item.getDevice_sub_status()!=null){
+                            humility=item.getDevice_sub_status();
                         }
                         if(TextUtils.isEmpty(humility)){
                             humility="";
@@ -775,7 +775,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         if(humility.equalsIgnoreCase("null")){
                             tempInCF=tempInCF+" "+cf;
                         }else {
-                            tempInCF=tempInCF+" "+cf+" / "+item.getHumidity()+"%";
+                            tempInCF=tempInCF+" "+cf+" / "+item.getDevice_sub_status()+"%";
                         }
 
 
@@ -858,8 +858,12 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         if (!isClickable)
                             return;
 
-                        ChatApplication.logDisplay("postion click is "+position);
-                        if(!item.getDevice_icon().equals(mContext.getResources().getString(R.string.curtain))){
+                        ChatApplication.logDisplay("postion click is "+item.getDeviceType());
+                        if(item.getDeviceType().equals(mContext.getResources().getString(R.string.curtain))){
+
+                        }else if(item.getDeviceType().equalsIgnoreCase("door_sensor")){
+
+                        }else {
                             item.setOldStatus(item.getDeviceStatus());
                             item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1 : 0);
                             notifyItemChanged(position, item);
@@ -914,7 +918,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 });
 
 
-                if (item.getDeviceType().equals("remote")||item.getDevice_identifier().equalsIgnoreCase("1")|| item.getDeviceType().equalsIgnoreCase("-1")|| item.getDeviceType().equalsIgnoreCase("2") || item.getDeviceType().equalsIgnoreCase("3")) {
+                if (item.getDeviceType().equals("remote")||item.getDeviceType().equalsIgnoreCase("heavyload")|| item.getDeviceType().equalsIgnoreCase("-1")|| item.getDeviceType().equalsIgnoreCase("2") || item.getDeviceType().equalsIgnoreCase("3")) {
                     holder.imgLongClick.setVisibility(View.VISIBLE);
                 }else {
                     if(!item.getDeviceType().equalsIgnoreCase("1")){

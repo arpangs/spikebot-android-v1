@@ -30,6 +30,7 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -90,7 +91,7 @@ public class Common {
     public static String TAG = "isReachableURL";
 
     public static int getDoorIcon(int status) {
-        return status == 0 ? R.drawable.on_door : R.drawable.off_door;
+        return status == 0 ? R.drawable.off_door : R.drawable.on_door;
     }
 
     /**
@@ -617,6 +618,106 @@ public class Common {
         String outputPattern2 = Constants.SIMPLE_DATE_FORMAT_1;
         SimpleDateFormat outputFormat2 = new SimpleDateFormat(outputPattern2);
         return outputFormat2.format(calendar.getTime());
+    }
+
+    public static String getConvertDateForSchedule(String value) {
+        //Nov 11, 2019 52: ,,  Nov 10, 2019 10:45
+        SimpleDateFormat spf=new SimpleDateFormat("MMM dd, yyyy hh:mm aa");
+        Date newDate= null;
+        try {
+            newDate = spf.parse(value);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        spf= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date = spf.format(newDate);
+        return date;
+    }
+
+    public static String getConvertDateForSchedule1(String value) {
+        //Nov 11, 2019 52: ,,  Nov 10, 2019 10:45
+        SimpleDateFormat spf=new SimpleDateFormat("MMM dd, yyyy HH:mm");
+        Date newDate= null;
+        try {
+            newDate = spf.parse(value);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        spf= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date = spf.format(newDate);
+        return date;
+    }
+
+    public static String getHH(String value) {
+        //Nov 11, 2019 52:52
+        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date newDate= null;
+        try {
+            newDate = spf.parse(value);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        spf= new SimpleDateFormat("HH:mm");
+        String date = spf.format(newDate);
+        return date;
+    }
+
+
+    public static String getTimeHH(String value) {
+        //Nov 11, 2019 52:52
+        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date newDate= null;
+        try {
+            newDate = spf.parse(value);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        spf= new SimpleDateFormat("hh:mm a");
+        String date = spf.format(newDate);
+        return date;
+    }
+
+    public static String getTimeAM(String value) {
+        //Nov 11, 2019 52:52
+        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date newDate= null;
+        try {
+            newDate = spf.parse(value);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        spf= new SimpleDateFormat("a");
+        String date = spf.format(newDate);
+        return date;
+    }
+
+    public static String getDateTime(String value) {
+        //Nov 11, 2019 52:52
+        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date newDate= null;
+        try {
+            newDate = spf.parse(value);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        spf= new SimpleDateFormat("MMM dd, yyyy");
+        String date = spf.format(newDate);
+        return date;
+    }
+
+
+    public static String getConvertDateForScheduleHour(String value) {
+        //Nov 11, 2019 52:52
+        SimpleDateFormat spf=new SimpleDateFormat("HH:mm");
+        Date newDate= null;
+        try {
+            newDate = spf.parse(value);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        spf= new SimpleDateFormat("hh:mm a");
+        String date = spf.format(newDate);
+        return date;
     }
 
     /**

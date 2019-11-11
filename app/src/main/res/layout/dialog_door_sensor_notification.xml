@@ -13,7 +13,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="16dp"
-            android:layout_margin="10dp"
+            android:layout_margin="@dimen/_8sdp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -25,14 +25,13 @@
                 android:text="Alert"
                 android:textStyle="bold"
                 android:textSize="20sp"
-                android:layout_weight="0.9"
-                android:id="@+id/txt_notification_alert"
-                />
+                android:layout_weight="1"
+                android:id="@+id/txt_notification_alert" />
             <ImageView
-                android:layout_width="0dp"
-                android:layout_height="32dp"
+                android:layout_width="@dimen/_27sdp"
+                android:layout_height="@dimen/_27sdp"
                 android:text="Close"
-                android:layout_weight="0.1"
+                android:scaleType="fitXY"
                 android:layout_gravity="right"
                 android:backgroundTint="@color/sensor_button"
                 android:id="@+id/btn_close_notification"
@@ -61,7 +60,7 @@
             android:layout_marginRight="16dp"
             android:layout_marginBottom="16dp"
             android:layout_width="match_parent"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="@dimen/_10sdp"
             android:layout_height="wrap_content">
             <EditText
                 android:hint="Start Time"
@@ -85,12 +84,12 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="16dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="@dimen/_10sdp"
             android:textColor="@color/automation_white"
             android:background="@drawable/button_radius"
             android:gravity="center"
-            android:layout_width="52dp"
-            android:layout_height="34dp"
+            android:layout_width="@dimen/_80sdp"
+            android:layout_height="@dimen/_32sdp"
             android:text="Save"
             android:id="@+id/button_save_notification"
             />

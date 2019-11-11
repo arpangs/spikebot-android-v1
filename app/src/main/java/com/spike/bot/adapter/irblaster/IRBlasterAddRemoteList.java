@@ -22,11 +22,11 @@ import java.util.List;
 public class IRBlasterAddRemoteList extends RecyclerView.Adapter<IRBlasterAddRemoteList.IRBlasterRemoteViewHolder> {
 
     private Context mContext;
-    private List<IRBlasterAddRes.Data.IrList.RemoteList> remoteList;
-    IRBlasterAddRes.Data.IrList.RemoteList remote;
+    private List<IRBlasterAddRes.RemoteList> remoteList;
+    IRBlasterAddRes.RemoteList remote;
 
-    public IRBlasterAddRemoteList(List<IRBlasterAddRes.Data.IrList.RemoteList> lists) {
-        this.remoteList = lists;
+    public IRBlasterAddRemoteList(List<IRBlasterAddRes.RemoteList> remoteList) {
+        this.remoteList = remoteList;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class IRBlasterAddRemoteList extends RecyclerView.Adapter<IRBlasterAddRem
     @Override
     public void onBindViewHolder(IRBlasterRemoteViewHolder holder, int position) {
         remote = remoteList.get(position);
-        holder.mRemoteName.setText(remote.getRemoteName());
+        holder.mRemoteName.setText(remote.getDeviceName());
         //TODO code here for change remote icon
         holder.mRemoteIcon.setImageResource(R.drawable.remote_ac_off);
 
@@ -49,8 +49,8 @@ public class IRBlasterAddRemoteList extends RecyclerView.Adapter<IRBlasterAddRem
             public void onClick(View v) {
 
                 Intent intent = new Intent(mContext, IRBlasterRemote.class);
-                intent.putExtra("REMOTE_ID", remote.getRemoteId());
-                intent.putExtra("IR_BLASTER_ID", remote.getIrBlasterId());
+                intent.putExtra("REMOTE_ID", remote.getDeviceId());
+                intent.putExtra("IR_BLASTER_ID", remote.getDeviceId());
             }
         });
     }

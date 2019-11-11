@@ -15,7 +15,7 @@ public class DataHeavyModel implements Serializable {
     @SerializedName("real_power")
     @Expose
     private RealPower realPower;
-    @SerializedName("graph_data")
+    @SerializedName("data")
     @Expose
     private List<GraphDatum> graphData = null;
 
