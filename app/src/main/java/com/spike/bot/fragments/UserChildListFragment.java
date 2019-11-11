@@ -72,8 +72,6 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
     public RecyclerView recyclerUserList;
     ChildUserAdapter childUserAdapter;
     public ArrayList<User> userArrayList=new ArrayList<>();
-    public static ArrayList<RoomVO> roomList = new ArrayList<>();
-    public static ArrayList<CameraVO> cameraList = new ArrayList<CameraVO>();
 
     public static UserChildListFragment newInstance() {
         UserChildListFragment fragment = new UserChildListFragment();
@@ -91,12 +89,6 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
 
         setUiId();
         return view;
-    }
-
-    @Override
-    public void onResume() {
-
-        super.onResume();
     }
 
     private void setUiId() {
@@ -200,7 +192,7 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
 
     private void setAdapter() {
         if(userArrayList.size()>0){
-            childUserAdapter=new ChildUserAdapter(getActivity(),userArrayList,this,roomList,cameraList);
+            childUserAdapter=new ChildUserAdapter(getActivity(),userArrayList,this);
             recyclerUserList.setAdapter(childUserAdapter);
         }
     }

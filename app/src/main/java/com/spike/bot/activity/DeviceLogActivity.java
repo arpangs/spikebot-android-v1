@@ -128,20 +128,15 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_log);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar =  findViewById(R.id.toolbar);
 
         activity = this;
-        rv_device_log = (RecyclerView) findViewById(R.id.rv_device_log);
-        ll_empty = (LinearLayout) findViewById(R.id.ll_empty);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        rv_device_log =  findViewById(R.id.rv_device_log);
+        ll_empty =  findViewById(R.id.ll_empty);
+        swipeRefreshLayout =  findViewById(R.id.swiperefresh);
         ll_empty.setVisibility(View.GONE);
 
         setSupportActionBar(toolbar);
-
-        String userFname = Common.getPrefValue(ChatApplication.getInstance(), "first_name");
-        String userLname = Common.getPrefValue(ChatApplication.getInstance(), "last_name");
-
-
         mRoomId = getIntent().getStringExtra("ROOM_ID");
         Schedule_id = getIntent().getStringExtra("Schedule_id");
         activity_type = getIntent().getStringExtra("activity_type");
@@ -224,9 +219,9 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
         });
         swipeRefreshLayout.setOnRefreshListener(this);
 
-        btnDevice = (Button) findViewById(R.id.btn_device);
-        btnSensor = (Button) findViewById(R.id.btn_sensor);
-        cardViewBtn = (CardView) findViewById(R.id.cardViewBtn);
+        btnDevice =  findViewById(R.id.btn_device);
+        btnSensor =  findViewById(R.id.btn_sensor);
+        cardViewBtn = findViewById(R.id.cardViewBtn);
 
         if (tabSelect.equalsIgnoreCase("hide")) {
             cardViewBtn.setVisibility(View.GONE);
@@ -636,20 +631,20 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             checkBoxMark = dialog.findViewById(R.id.chk_all);
             final TextView title_check_all = dialog.findViewById(R.id.title_check_all);
 
-            mSpinnerRoomMood = (Spinner) dialog.findViewById(R.id.spinner_room_mood);
-            mSpinnerRoomList = (Spinner) dialog.findViewById(R.id.spinner_room_list);
-            mSpinnerPanelList = (Spinner) dialog.findViewById(R.id.spinner_panel_list);
-            mSpinnerDeviceList = (Spinner) dialog.findViewById(R.id.spinner_device_list);
-            panel_view = (LinearLayout) dialog.findViewById(R.id.panel_view);
-            frame_living_room = (FrameLayout) dialog.findViewById(R.id.frame_living_room);
-            frame_all_devices = (FrameLayout) dialog.findViewById(R.id.frame_all_devices);
-            btnSensorDialog = (Button) dialog.findViewById(R.id.btnSensorDialog);
-            btnDeviceDialog = (Button) dialog.findViewById(R.id.btnDeviceDialog);
+            mSpinnerRoomMood =  dialog.findViewById(R.id.spinner_room_mood);
+            mSpinnerRoomList =  dialog.findViewById(R.id.spinner_room_list);
+            mSpinnerPanelList =  dialog.findViewById(R.id.spinner_panel_list);
+            mSpinnerDeviceList =  dialog.findViewById(R.id.spinner_device_list);
+            panel_view =  dialog.findViewById(R.id.panel_view);
+            frame_living_room =  dialog.findViewById(R.id.frame_living_room);
+            frame_all_devices =  dialog.findViewById(R.id.frame_all_devices);
+            btnSensorDialog =  dialog.findViewById(R.id.btnSensorDialog);
+            btnDeviceDialog =  dialog.findViewById(R.id.btnDeviceDialog);
 
-            edt_start_date = (CustomEditText) dialog.findViewById(R.id.edt_log_start_date);
-            edt_end_date = (CustomEditText) dialog.findViewById(R.id.edt_log_end_date);
+            edt_start_date =  dialog.findViewById(R.id.edt_log_start_date);
+            edt_end_date =  dialog.findViewById(R.id.edt_log_end_date);
 
-            recyclerView = (RecyclerView) dialog.findViewById(R.id.root_list);
+            recyclerView =  dialog.findViewById(R.id.root_list);
             recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
 
             end_date = ChatApplication.getCurrentDateTime();
@@ -2009,9 +2004,9 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
                         }
 
-                        JSONArray notificationArray = result.getJSONArray("notificationList");
+                        JSONArray notificationArray = result.optJSONArray("notificationList");
 
-                        if (notificationArray.length() == 0) {
+                        if (notificationArray!=null && notificationArray.length() == 0) {
                             isScrollDown = true;
                         } else {
                             isScrollDown = false;

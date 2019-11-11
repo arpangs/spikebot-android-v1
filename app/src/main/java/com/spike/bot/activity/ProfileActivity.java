@@ -78,7 +78,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         strList.add("User Details");
         strList.add("Child users");
-        getRoomCameraList();
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         // Set up the ViewPager with the sections adapter.
@@ -184,69 +183,6 @@ public class ProfileActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             return strList.get(position);
         }
-    }
-
-    public void getRoomCameraList() {
-
-        ActivityHelper.showProgressDialog(this, "Please Wait...", false);
-        String url = ChatApplication.url + Constants.getRoomCameraList;
-
-        ChatApplication.logDisplay("url is " + url);
-        new GetJsonTask2(this, url, "GET", "", new ICallBack2() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                ChatApplication.logDisplay("getRoomCameraList onSuccess " + result.toString());
-                try {
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    if (code == 200) {
-                        UserChildListFragment.cameraList.clear();
-                        UserChildListFragment.roomList.clear();
-
-                        JSONObject dataObject = result.getJSONObject("data");
-                        JSONArray roomArray = dataObject.getJSONArray("roomList");
-
-                        for (int i = 0; i < roomArray.length(); i++) {
-
-                            JSONObject object = roomArray.getJSONObject(i);
-
-                            RoomVO roomVO = new RoomVO();
-                            roomVO.setRoomId(object.optString("room_id"));
-                            roomVO.setRoomName(object.optString("room_name"));
-
-                            UserChildListFragment.roomList.add(roomVO);
-                        }
-
-                        JSONArray cameraArray = dataObject.getJSONArray("cameradeviceList");
-                        if (cameraArray.length() > 0) {
-
-                            for (int i = 0; i < cameraArray.length(); i++) {
-
-                                JSONObject object = cameraArray.getJSONObject(i);
-
-                                CameraVO roomVO = new CameraVO();
-                                roomVO.setCamera_id(object.optString("camera_id"));
-                                roomVO.setCamera_name(object.optString("camera_name"));
-                                UserChildListFragment.cameraList.add(roomVO);
-                            }
-
-                        }
-
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                    ActivityHelper.dismissProgressDialog();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error, int reCode) {
-                ActivityHelper.dismissProgressDialog();
-
-            }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @Override

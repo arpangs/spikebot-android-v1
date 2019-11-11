@@ -23,7 +23,7 @@ public class DateHelper {
 	public static final String DATE_D_MMM = "d-MMM";
 	public static final String DATE_FROMATE_HH_MM_AMPM = "hh:mm a";
 	public static final String DATE_FROMATE_H_M_AMPM = "h:mm a";
-	public static final String DATE_FROMATE_H_M_AMPM1 = "yyyy-MM-dd HH:mm:ss";
+	public static final String DATE_FROMATE_H_M_AMPM1 = "yyyy-MM-dd HH:mm";
 	public static final String DATE_FROMATE_H_M_AMPM12 = "MMM dd, yyyy hh:mm aa";
 	public static final String DATE_FROMATE_HH_MM= "HH:mm";
 	public static final String DATE_FROMATE_HH_MM_TEMP= "HH:mm";

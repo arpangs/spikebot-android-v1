@@ -463,6 +463,16 @@ public class UnassignedListRes implements Serializable{
             @Expose
             private String roomName;
 
+            public boolean isDisable() {
+                return isDisable;
+            }
+
+            public void setDisable(boolean disable) {
+                isDisable = disable;
+            }
+
+            private boolean isDisable;
+
             public String getRoomId() {
                 return roomId;
             }

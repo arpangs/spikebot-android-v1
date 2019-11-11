@@ -31,16 +31,12 @@ public class ChildUserAdapter extends RecyclerView.Adapter<ChildUserAdapter.Sens
     private Context mContext;
     ArrayList<User> userArrayList = new ArrayList<>();
     UserChildAction userChildAction;
-    ArrayList<RoomVO> roomList = new ArrayList<>();
-    ArrayList<CameraVO> cameraLis = new ArrayList<>();
 
 
-    public ChildUserAdapter(Context activity, ArrayList<User> userArrayList, UserChildAction userChildAction, ArrayList<RoomVO> roomList, ArrayList<CameraVO> cameraList) {
+    public ChildUserAdapter(Context activity, ArrayList<User> userArrayList, UserChildAction userChildAction) {
         this.mContext = activity;
         this.userArrayList = userArrayList;
         this.userChildAction = userChildAction;
-        this.cameraLis = cameraList;
-        this.roomList = roomList;
 
     }
 
@@ -117,7 +113,7 @@ public class ChildUserAdapter extends RecyclerView.Adapter<ChildUserAdapter.Sens
 
         public SensorViewHolder(View view) {
             super(view);
-            txtUserName = (TextView) itemView.findViewById(R.id.txtUserName);
+            txtUserName =  itemView.findViewById(R.id.txtUserName);
             recyclerRoomList = itemView.findViewById(R.id.recyclerRoomList);
             recyclerCameraList = itemView.findViewById(R.id.recyclerCameraList);
             imgArrow = itemView.findViewById(R.id.imgArrow);

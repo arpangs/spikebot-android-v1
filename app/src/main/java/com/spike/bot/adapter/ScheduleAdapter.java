@@ -316,7 +316,13 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
                 if (!isClickable)
                     return;
-                scheduleArrayList.get(holder.ll_schedule_on_off.getId()).setIs_active(scheduleVO.getIs_active() == 1 ? 0 : 1);
+
+                if(scheduleArrayList.get(holder.iv_sch_type.getId()).getIs_active()==1){
+                    scheduleArrayList.get(holder.iv_sch_type.getId()).setIs_active(0);
+                }else {
+                    scheduleArrayList.get(holder.iv_sch_type.getId()).setIs_active(1);
+                }
+
                 notifyDataSetChanged();
                 scheduleClickListener.itemClicked(scheduleArrayList.get(holder.ll_schedule_on_off.getId()), "active", isMoodAdapter);
             }
@@ -329,9 +335,13 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
                 if (!isClickable)
                     return;
-                scheduleArrayList.get(holder.iv_sch_type.getId()).setIs_active(scheduleVO.getIs_active() == 1 ? 0 : 1);
-                notifyDataSetChanged();
+                if(scheduleArrayList.get(holder.iv_sch_type.getId()).getIs_active()==1){
+                    scheduleArrayList.get(holder.iv_sch_type.getId()).setIs_active(0);
+                }else {
+                    scheduleArrayList.get(holder.iv_sch_type.getId()).setIs_active(1);
+                }
 
+                notifyDataSetChanged();
                 scheduleClickListener.itemClicked(scheduleArrayList.get(holder.iv_sch_type.getId()), "active", isMoodAdapter);
             }
         });

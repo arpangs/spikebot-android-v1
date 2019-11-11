@@ -881,7 +881,7 @@ public class JsonHelper {
                 d1.setRoom_device_id(deviceObj.optString("room_device_id"));
                 d1.setSchedule_device_type(deviceObj.optString("schedule_device_type"));
                 d1.setId(id);
-                d1.setIs_active(deviceObj.optString("is_active").equals("y")?1:-1);
+                d1.setIs_active(deviceObj.optString("is_active").equals("y")?1:0);
 
                 d1.setIs_timer(is_timer);
                 d1.setTimer_on_after(timer_on_after);

@@ -582,8 +582,15 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.iv_icon_badge.setVisibility(View.GONE);
                     itemDeviceName = item.getDeviceName();
 
-                    itemIcon = Common.getIcon(item.getDeviceStatus(), item.getDevice_icon());
-
+                    if(item.getDevice_icon().equalsIgnoreCase("heavyload")){
+                      if(item.getIsActive()==1){
+                          itemIcon=item.getDeviceStatus()==1 ? R.drawable.on:R.drawable.off;
+                      }else {
+                          itemIcon=R.drawable.headload_inactive;
+                      }
+                    }else {
+                        itemIcon = Common.getIcon(item.getDeviceStatus(), item.getDevice_icon());
+                    }
                 } else {
                     /*--Sensor type start--*/
 
@@ -612,6 +619,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         //only lock, subtype=2
                         //door+lock, subtype=3
 
+                        /*only for door 1=close , 0=open*/
                         if(item.getIsActive()==-1){
                             itemIcon = Common.getIconInActive(item.getDeviceStatus(), item.getDevice_icon());
                         }else {

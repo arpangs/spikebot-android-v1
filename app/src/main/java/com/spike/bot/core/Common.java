@@ -91,7 +91,7 @@ public class Common {
     public static String TAG = "isReachableURL";
 
     public static int getDoorIcon(int status) {
-        return status == 0 ? R.drawable.off_door : R.drawable.on_door;
+        return status == 0 ? R.drawable.on_door : R.drawable.off_door;
     }
 
     /**
@@ -150,11 +150,11 @@ public class Common {
                         resource = R.drawable.off_temperature;
                         break;
                     case "door_sensor":
-                        resource = R.drawable.off_door;
+                        resource = R.drawable.on_door;
                         break;
 
                     case "doorsensor":
-                        resource = R.drawable.off_door;
+                        resource = R.drawable.on_door;
                         break;
                     case "unavailable":
                         resource = R.drawable.icn_dead_temp;
@@ -261,10 +261,10 @@ public class Common {
                         resource = R.drawable.on_temperature;
                         break;
                     case "door_sensor":
-                        resource = R.drawable.on_door;
+                        resource = R.drawable.off_door;
                         break;
                     case "doorsensor":
-                        resource = R.drawable.on_door;
+                        resource = R.drawable.off_door;
                         break;
                     case "unavailable":
                         resource = R.drawable.icn_dead_temp;
@@ -634,23 +634,9 @@ public class Common {
         return date;
     }
 
-    public static String getConvertDateForSchedule1(String value) {
-        //Nov 11, 2019 52: ,,  Nov 10, 2019 10:45
-        SimpleDateFormat spf=new SimpleDateFormat("MMM dd, yyyy HH:mm");
-        Date newDate= null;
-        try {
-            newDate = spf.parse(value);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        spf= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String date = spf.format(newDate);
-        return date;
-    }
-
     public static String getHH(String value) {
         //Nov 11, 2019 52:52
-        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date newDate= null;
         try {
             newDate = spf.parse(value);
@@ -665,7 +651,7 @@ public class Common {
 
     public static String getTimeHH(String value) {
         //Nov 11, 2019 52:52
-        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date newDate= null;
         try {
             newDate = spf.parse(value);
@@ -679,7 +665,7 @@ public class Common {
 
     public static String getTimeAM(String value) {
         //Nov 11, 2019 52:52
-        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date newDate= null;
         try {
             newDate = spf.parse(value);
@@ -693,7 +679,7 @@ public class Common {
 
     public static String getDateTime(String value) {
         //Nov 11, 2019 52:52
-        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date newDate= null;
         try {
             newDate = spf.parse(value);

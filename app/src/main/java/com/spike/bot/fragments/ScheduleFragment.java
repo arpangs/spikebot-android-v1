@@ -90,7 +90,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 //    ArrayList<ScheduleVO> scheduleMoodArrayList = new ArrayList<>();
 
     public boolean isFilterType = false, isMood, isMoodAdapter, isRefreshonScroll = false;
-    String isRoomMainFm = "", isActivityType = "", webUrl = "", moodId = "", moodId2 = "", moodId3 = "", roomId = "", userName = "";
+    String isRoomMainFm = "", isActivityType = "", moodId = "", moodId2 = "", moodId3 = "", roomId = "", userName = "";
     int selection = 0;
     boolean isCallVisibleHint = false;
     Menu mainMenu;
@@ -220,7 +220,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         view = inflater.inflate(R.layout.fragment_schedule, container, false);
         try {
             isMood = getArguments().getBoolean("isMood");
-            ChatApplication.logDisplay("adapter is show " + isMood);
             moodId = getArguments().getString("moodId");
             roomId = getArguments().getString("roomId");
             isActivityType = getArguments().getString("isActivityType");
@@ -264,10 +263,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             iv_mood_add.setVisibility(View.GONE);
             iv_room_add.setVisibility(View.GONE);
         }
-
-        //rv_room.setLayoutManager(new LinearLayoutManager(getActivity()));
-        ChatApplication app = ChatApplication.getInstance();
-        webUrl = app.url;
 
         iv_mood_add.setOnClickListener(this);
         iv_room_add.setOnClickListener(this);
@@ -437,7 +432,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     public void startSocketConnection() {
 
         ChatApplication app = ChatApplication.getInstance();
-        webUrl = app.url;
 
         if (mSocket != null && mSocket.connected()) {
             try {
@@ -671,8 +665,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         } else {
             mSocket = app.getSocket();
         }
-        webUrl = app.url;
-
         if (view == null) {
             return;
         }
@@ -714,7 +706,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             return;
         }
 
-        String url = webUrl + Constants.GET_SCHEDULE_LIST;//+userId;
+        String url = ChatApplication.url + Constants.GET_SCHEDULE_LIST;//+userId;
 
         JSONObject jsonObject = new JSONObject();
         try {
@@ -894,7 +886,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         if (ChatApplication.isShowProgress) {
             ActivityHelper.showProgressDialog(getActivity(), "Please wait...", false);
         }
-        String url = webUrl + Constants.GET_SCHEDULE_ON_ROOM;
+        String url = ChatApplication.url + Constants.GET_SCHEDULE_ON_ROOM;
 
         ChatApplication.logDisplay("jsonObject is schedule mood " + url + " " + obj.toString());
 
@@ -975,7 +967,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             e.printStackTrace();
         }
         ActivityHelper.showProgressDialog(getActivity(), "Please Wait.", false);
-        String url = webUrl + Constants.DELETE_SCHEDULE;
+        String url = ChatApplication.url + Constants.DELETE_SCHEDULE;
         new GetJsonTask(getActivity(), url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -1024,20 +1016,21 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         }
         ActivityHelper.showProgressDialog(getActivity(), "Please Wait.", false);
 
+        String timer_on_date = "";
+        String timer_off_date = "";
+
         JSONObject obj = new JSONObject();
         try {
+            ChatApplication.logDisplay("is ative is "+scheduleVO.getIs_active());
             obj.put("schedule_id", scheduleVO.getSchedule_id());
-            obj.put("is_active", scheduleVO.getSchedule_status()==1 ? "y":"n");
-
-            String timer_on_date = "";
-            String timer_off_date = "";
+            obj.put("is_active", scheduleVO.getIs_active()==1 ? "y":"n");
 
             if (scheduleVO.getSchedule_status() == 0 && scheduleVO.getSchedule_type() == 1) {
 
-                String sch_on_after = scheduleVO.getSchedule_device_on_time();
-                String sch_off_date = scheduleVO.getSchedule_device_off_time();
+                String sch_on_after = scheduleVO.getSchedule_device_on_time().trim();
+                String sch_off_date = scheduleVO.getSchedule_device_off_time().trim();
 
-                if (!TextUtils.isEmpty(sch_on_after) && !TextUtils.isEmpty(sch_off_date)) {
+                if (!TextUtils.isEmpty(sch_on_after) && !TextUtils.isEmpty(sch_off_date) && !sch_off_date.equalsIgnoreCase("null")) {
                     ChatApplication.logDisplay("timer is "+sch_on_after);
                     try {
 
@@ -1070,40 +1063,43 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                         ex.printStackTrace();
                     }
 
-                }
-
-                if (!TextUtils.isEmpty(sch_off_date) && !TextUtils.isEmpty(sch_off_date)) {
-                    try {
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(new Date());
-                        sch_off_date = Common.getHH(sch_off_date);
-                        calendar.add(Calendar.HOUR, Integer.parseInt(sch_off_date.split(":")[0]));
-                        calendar.add(Calendar.MINUTE, Integer.parseInt(sch_off_date.split(":")[1]));
-
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm aa");
-                        String formattedDate = dateFormat.format(calendar.getTime()).toString();
-
-                        SimpleDateFormat format = new SimpleDateFormat("MMM dd, yyyy");
-                        Date sendDate = null;
+                    if (!TextUtils.isEmpty(sch_off_date) && !sch_off_date.equalsIgnoreCase("null")) {
                         try {
-                            sendDate = format.parse(formattedDate);
-                        } catch (ParseException e) {
-                            e.printStackTrace();
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(new Date());
+                            sch_off_date = Common.getHH(sch_off_date);
+                            calendar.add(Calendar.HOUR, Integer.parseInt(sch_off_date.split(":")[0]));
+                            calendar.add(Calendar.MINUTE, Integer.parseInt(sch_off_date.split(":")[1]));
+
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm aa");
+                            String formattedDate = dateFormat.format(calendar.getTime()).toString();
+
+                            SimpleDateFormat format = new SimpleDateFormat("MMM dd, yyyy");
+                            Date sendDate = null;
+                            try {
+                                sendDate = format.parse(formattedDate);
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            Calendar sendCalendar = Calendar.getInstance();
+                            sendCalendar.setTime(sendDate);
+
+
+                            SimpleDateFormat sendDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            timer_off_date = sendDateFormat.format(calendar.getTime()).toString();
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
                         }
-                        Calendar sendCalendar = Calendar.getInstance();
-                        sendCalendar.setTime(sendDate);
-
-
-                        SimpleDateFormat sendDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                        timer_off_date = sendDateFormat.format(calendar.getTime()).toString();
-
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
                     }
+
+                    scheduleVO.setSchedule_device_on_time(timer_on_date+" "+sch_on_after);
+                    scheduleVO.setSchedule_device_off_time(timer_off_date+" "+sch_off_date);
+                    obj.put("on_time",timer_on_date+" "+sch_on_after);
+                    obj.put("off_time",timer_off_date+" "+sch_off_date);
+
                 }
 
-                obj.put("on_time",timer_on_date);
-                obj.put("off_time",timer_off_date);
 
             }
 
@@ -1120,7 +1116,8 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             e.printStackTrace();
         }
 
-        String url = webUrl + Constants.CHANGE_SCHEDULE_STATUS;
+        String url = ChatApplication.url + Constants.scheduleedit;
+        ChatApplication.logDisplay("url is "+url+" "+obj);
 
         new GetJsonTask(getActivity(), url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
@@ -1130,69 +1127,63 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
-                        //  Toast.makeText(getActivity().getApplicationContext(), "Schedule status changed Successfully" , Toast.LENGTH_SHORT).show();
                         if (!TextUtils.isEmpty(message)) {
-                            Toast.makeText(getActivity().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                           ChatApplication.showToast(getActivity().getApplicationContext(), message);
                         }
 
-                        JSONObject jsonObjectData = result.getJSONObject("data");
-                        String schedule_id = jsonObjectData.getString("schedule_id");
-                        int is_timer = jsonObjectData.getInt("is_timer");
-                        int schedule_status = jsonObjectData.getInt("schedule_status");
-                        String schedule_device_on_time = jsonObjectData.getString("schedule_device_on_time");
-                        String timer_on_date = jsonObjectData.getString("timer_on_date");
-                        String schedule_device_off_time = jsonObjectData.getString("schedule_device_off_time");
-                        String timer_off_date = jsonObjectData.getString("timer_off_date");
+//                        JSONObject jsonObjectData = result.getJSONObject("data");
+//                        String schedule_id = jsonObjectData.getString("schedule_id");
+//                        int is_timer = jsonObjectData.getInt("is_timer");
+//                        int schedule_status = jsonObjectData.getInt("schedule_status");
+//                        String schedule_device_on_time = jsonObjectData.getString("schedule_device_on_time");
+//                        String timer_on_date = jsonObjectData.getString("timer_on_date");
+//                        String schedule_device_off_time = jsonObjectData.getString("schedule_device_off_time");
+//                        String timer_off_date = jsonObjectData.getString("timer_off_date");
+//
+//                        ScheduleVO scheduleVO1 = new ScheduleVO();
+//                        scheduleVO1.setSchedule_id(schedule_id);
+//                        scheduleVO1.setIs_timer(is_timer);
+//                        scheduleVO1.setSchedule_status(schedule_status);
+//                        scheduleVO1.setSchedule_device_on_time(schedule_device_on_time);
+//                        scheduleVO1.setTimer_on_date(timer_on_date);
+//                        scheduleVO1.setSchedule_device_off_time(schedule_device_off_time);
+//                        scheduleVO1.setTimer_off_date(timer_off_date);
+//                        scheduleVO1.setUser_id(scheduleVO.getUser_id());
+//                        // scheduleVO1.setIs_active();
 
-                        ScheduleVO scheduleVO1 = new ScheduleVO();
-                        scheduleVO1.setSchedule_id(schedule_id);
-                        scheduleVO1.setIs_timer(is_timer);
-                        scheduleVO1.setSchedule_status(schedule_status);
-                        scheduleVO1.setSchedule_device_on_time(schedule_device_on_time);
-                        scheduleVO1.setTimer_on_date(timer_on_date);
-                        scheduleVO1.setSchedule_device_off_time(schedule_device_off_time);
-                        scheduleVO1.setTimer_off_date(timer_off_date);
-                        scheduleVO1.setUser_id(scheduleVO.getUser_id());
-                        // scheduleVO1.setIs_active();
-
-
-                        //onLoadFragment(); //uncomment
-                        if (isMood) {
-                            ll_room.setVisibility(View.GONE);
-
-                            try {
-                                for (int i = 0; i < scheduleRoomArrayList.size(); i++) {
-                                    ScheduleVO scheduleVO2 = scheduleRoomArrayList.get(i);
-                                    if (scheduleVO2.getSchedule_id().equalsIgnoreCase(scheduleVO1.getSchedule_id())) {
-
-                                        schSetV02ToV01(scheduleVO1, scheduleVO2);
-
-                                        scheduleRoomArrayList.set(i, scheduleVO1);
-                                        scheduleRoomAdapter.notifyItemChanged(i, scheduleVO1);
-                                    }
-                                }
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-
-                        } else {
+//                        if (isMood) {
+//                            ll_room.setVisibility(View.GONE);
+//
+//                            try {
+//                                for (int i = 0; i < scheduleRoomArrayList.size(); i++) {
+//                                    ScheduleVO scheduleVO2 = scheduleRoomArrayList.get(i);
+//                                    if (scheduleVO2.getSchedule_id().equalsIgnoreCase(scheduleVO1.getSchedule_id())) {
+//
+//                                        schSetV02ToV01(scheduleVO1, scheduleVO2);
+//
+//                                        scheduleRoomArrayList.set(i, scheduleVO1);
+//                                        scheduleRoomAdapter.notifyItemChanged(i, scheduleVO1);
+//                                    }
+//                                }
+//                            } catch (Exception ex) {
+//                                ex.printStackTrace();
+//                            }
+//
+//                        } else {
 
                             try {
                                 for (int i = 0; i < scheduleRoomArrayList.size(); i++) {
                                     ScheduleVO scheduleVO2 = scheduleRoomArrayList.get(i);
-                                    if (scheduleVO2.getSchedule_id().equalsIgnoreCase(scheduleVO1.getSchedule_id())) {
-
-                                        schSetV02ToV01(scheduleVO1, scheduleVO2);
-
-                                        scheduleRoomArrayList.set(i, scheduleVO1);
-                                        scheduleRoomAdapter.notifyItemChanged(i, scheduleVO1);
+                                    if (scheduleVO2.getSchedule_id().equalsIgnoreCase(scheduleVO.getSchedule_id())) {
+//                                        scheduleRoomArrayList.set(i, scheduleVO);
+                                        scheduleRoomAdapter.notifyItemChanged(i,scheduleVO);
                                     }
                                 }
 
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-                        }
+//                        }
 
                     } else {
                         Toast.makeText(getActivity().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
@@ -1247,8 +1238,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         } else if (action.equalsIgnoreCase("edit")) {
             String room_device_id = "";
             Gson gson = new Gson();
-            List<Device> deviceList = gson.fromJson(scheduleVO.getDevicesList(), new TypeToken<List<Device>>() {
-            }.getType());
+            List<Device> deviceList = gson.fromJson(scheduleVO.getDevicesList(), new TypeToken<List<Device>>() {}.getType());
 
             for (int i = 0; i < deviceList.size(); i++) {
                 if (i == 0) {
@@ -1305,8 +1295,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             ActivityHelper.showProgressDialog(getActivity(), "Please Wait...", false);
         }
 
-        //       String url = webUrl + Constants.GET_DEVICES_LIST + "/" + Constants.DEVICE_TOKEN + "/0/1";
-        String url = webUrl + Constants.GET_DEVICES_LIST;
+        String url = ChatApplication.url + Constants.GET_DEVICES_LIST;
 
         JSONObject jsonObject = new JSONObject();
         try {

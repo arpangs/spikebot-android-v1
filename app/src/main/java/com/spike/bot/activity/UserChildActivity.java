@@ -16,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,8 +33,11 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
+import com.kp.core.GetJsonTask;
 import com.kp.core.GetJsonTask2;
+import com.kp.core.ICallBack;
 import com.kp.core.ICallBack2;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
@@ -44,6 +48,7 @@ import com.spike.bot.fragments.UserChildListFragment;
 import com.spike.bot.listener.SelectCamera;
 import com.spike.bot.model.CameraVO;
 import com.spike.bot.model.RoomVO;
+import com.spike.bot.model.UnassignedListRes;
 import com.spike.bot.model.User;
 import com.spike.bot.model.UserRoomModel;
 
@@ -51,7 +56,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+
+import static com.spike.bot.core.Common.showToast;
 
 /**
  * Created by Sagar on 4/3/19.
@@ -73,9 +81,8 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
     public boolean isClickFlag = false;
 
     public User user;
-    private ArrayList<RoomVO> roomList = new ArrayList<>();
+    private ArrayList<UnassignedListRes.Data.RoomList> roomList = new ArrayList<>();
     private ArrayList<String> roomListString = new ArrayList<>();
-    private ArrayList<String> roomListNameString = new ArrayList<>();
     public ArrayList<CameraVO> cameraarrayList = new ArrayList<>();
 
     RoomListAdapter roomListAdapter;
@@ -97,10 +104,6 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void setUiId() {
-        roomList.clear();
-        cameraarrayList.clear();
-        roomList = UserChildListFragment.roomList;
-        cameraarrayList = UserChildListFragment.cameraList;
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -134,6 +137,8 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
         ll_password_view_expand.setOnClickListener(this);
         btnChangePassword.setOnClickListener(this);
 
+        getRoomList();
+
         if (modeType.equalsIgnoreCase("update")) {
             btnChangePassword.setText("Change password");
             toolbar.setTitle("Edit Child User");
@@ -142,32 +147,14 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
             edtUsername.setText(user.getFirstname());
             edDisplayName.setSelection(edDisplayName.getText().length());
 
-            for (int i = 0; i < roomList.size(); i++) {
-                for (int j = 0; j < user.getRoomList().size(); j++) {
-                    if (user.getRoomList().get(j).equalsIgnoreCase(roomList.get(i).getRoomId())) {
-                        roomList.get(i).setDisable(true);
-                    }
-                }
-            }
-
-            for (int i = 0; i < cameraarrayList.size(); i++) {
-                for (int j = 0; j < user.getCameralist().size(); j++) {
-                    if (user.getCameralist().get(j).equalsIgnoreCase(cameraarrayList.get(i).getCamera_id())) {
-                        cameraarrayList.get(i).setDisable(true);
-                    }
-                }
-            }
-
             edtUsername.setClickable(false);
             edtUsername.setEnabled(false);
             edDisplayName.setClickable(false);
             edDisplayName.setEnabled(false);
-            setSelectValue();
         } else {
             btnChangePassword.setText("Enter password");
             txtPasswordChange.setText("Enter Password");
         }
-        setRoomAdapter();
 
         edtUsername.setFilters(new InputFilter[]{Constants.ignoreFirstWhiteSpace()});
         et_new_password.addTextChangedListener(new TextWatcher() {
@@ -219,7 +206,6 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
             selectRoomList = "";
             strRoomList = "";
             roomListString.clear();
-            roomListNameString.clear();
 
             setSelectValue();
             if (modeType.equalsIgnoreCase("update")) {
@@ -281,9 +267,9 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
         inputPassword.setVisibility(View.VISIBLE);
 
         TextView tv_title = dialog.findViewById(R.id.tv_title);
-        Button btnSave = (Button) dialog.findViewById(R.id.btn_save);
-        Button btn_cancel = (Button) dialog.findViewById(R.id.btn_cancel);
-        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
+        Button btnSave =  dialog.findViewById(R.id.btn_save);
+        Button btn_cancel =  dialog.findViewById(R.id.btn_cancel);
+        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -325,20 +311,35 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void setSelectValue() {
+        if (modeType.equalsIgnoreCase("update")) {
+            for (int i = 0; i < roomList.size(); i++) {
+                for (int j = 0; j < user.getRoomList().size(); j++) {
+                    if (user.getRoomList().get(j).equalsIgnoreCase(roomList.get(i).getRoomId())) {
+                        roomList.get(i).setDisable(true);
+                    }
+                }
+            }
+
+            for (int i = 0; i < cameraarrayList.size(); i++) {
+                for (int j = 0; j < user.getCameralist().size(); j++) {
+                    if (user.getCameralist().get(j).equalsIgnoreCase(cameraarrayList.get(i).getCamera_id())) {
+                        cameraarrayList.get(i).setDisable(true);
+                    }
+                }
+            }
+        }
+
         for (int i = 0; i < roomList.size(); i++) {
             if (roomList.get(i).isDisable()) {
                 roomListString.add(roomList.get(i).getRoomId());
-                roomListNameString.add(roomList.get(i).getRoomName());
             }
         }
 
         for (int i = 0; i < roomListString.size(); i++) {
             if (i == roomListString.size() - 1) {
                 selectRoomList = selectRoomList + roomListString.get(i);
-                strRoomList = strRoomList + roomListNameString.get(i);
             } else {
                 selectRoomList = selectRoomList + roomListString.get(i) + ",";
-                strRoomList = strRoomList + roomListNameString.get(i) + " , ";
             }
         }
 
@@ -379,6 +380,63 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
 
     }
 
+    private void getRoomList() {
+
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            showToast("" + R.string.disconnect);
+            return;
+        }
+
+        ActivityHelper.showProgressDialog(this, "Loading...", false);
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("room_type", "room");
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String url = ChatApplication.url + Constants.roomslist;
+
+        ChatApplication.logDisplay("un assign is "+url+" "+jsonObject);
+
+        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() {
+            @Override
+            public void onSuccess(JSONObject result) {
+                ActivityHelper.dismissProgressDialog();
+                try {
+                    ChatApplication.logDisplay("un assign is "+result);
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        Type type = new TypeToken<ArrayList<UnassignedListRes.Data.RoomList>>() {}.getType();
+                        roomList = (ArrayList<UnassignedListRes.Data.RoomList>) Constants.fromJson(result.optString("data").toString(), type);
+                        setSelectValue();
+                    } else {
+                        if (!TextUtils.isEmpty(message)) {
+                            showToast(message);
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        }).execute();
+    }
+
+
+
+
     @SuppressLint("NewApi")
     public void addUserChild() {
 
@@ -404,55 +462,39 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
         }
 
         try {
+            ArrayList<String> cameraList = new ArrayList<>();
 
-            ArrayList<UserRoomModel> roomListTemp = new ArrayList<>();
-
-            for (int i = 0; i < roomListString.size(); i++) {
-                UserRoomModel userRoomModel = new UserRoomModel();
-                userRoomModel.setRoom_id(roomListString.get(i));
-                userRoomModel.setRoom_name(roomListNameString.get(i));
-                roomListTemp.add(userRoomModel);
-            }
-
-            ArrayList<String> cameraId = new ArrayList<>();
             for (int i = 0; i < cameraarrayList.size(); i++) {
-                if (cameraarrayList.get(i).isDisable()) {
-                    cameraId.add(cameraarrayList.get(i).getCamera_id());
-                }
+               if(cameraarrayList.get(i).isDisable()){
+                   cameraList.add(cameraarrayList.get(i).getCamera_id());
+               }
             }
 
-            Gson gson = new Gson();
-            String personString = gson.toJson(roomListTemp);
-            String toJson = gson.toJson(cameraId);
-            String listIdString = gson.toJson(roomListString);
 
-            JSONArray jsonArray = new JSONArray(personString);
-            JSONArray jsonArray1 = new JSONArray(toJson);
-            JSONArray jsonArray2 = new JSONArray(listIdString);
-
-            if (cameraId.size() == 0 && selectRoomList.length() == 0) {
+            if (roomListString.size() == 0 && cameraarrayList.size() == 0) {
                 ChatApplication.showToast(this, "Please select at least one room or camera");
                 return;
             }
 
             ActivityHelper.showProgressDialog(this, "Please Wait...", false);
 
+            JSONArray jsonArray3=new JSONArray(roomListString);
+            JSONArray jsonArray4=new JSONArray(cameraList);
             if (modeType.equalsIgnoreCase("update")) {
                 jsonObject.put("child_user_id", user.getUser_id());
-                jsonObject.put("roomList", jsonArray2);
-                jsonObject.put("cameraList", jsonArray1);
-                jsonObject.put("user_password", "" + strPassword);
+                jsonObject.put("roomList", jsonArray3);
+                jsonObject.put("cameraList", jsonArray4);
+
             } else {
-                jsonObject.put("admin_user_id", Common.getPrefValue(this, Constants.USER_ID));
                 jsonObject.put("user_name", edtUsername.getText().toString());
-                jsonObject.put("user_password", "" + strPassword);
                 jsonObject.put("display_name", edDisplayName.getText().toString());
-                jsonObject.put("roomList", jsonArray);
-                jsonObject.put("cameraList", jsonArray1);
-                jsonObject.put("admin", isChildType);
-
+                jsonObject.put("roomList", jsonArray3);
+                jsonObject.put("cameraList", jsonArray4);
             }
-
+            if(!TextUtils.isEmpty(strPassword) && strPassword.length()>0){
+                jsonObject.put("user_password", "" + strPassword);
+            }
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
@@ -498,18 +540,6 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    @Override
-    protected void onStop() {
-        for (int i = 0; i < UserChildListFragment.roomList.size(); i++) {
-            UserChildListFragment.roomList.get(i).setDisable(false);
-        }
-
-        for (int i = 0; i < UserChildListFragment.cameraList.size(); i++) {
-            UserChildListFragment.cameraList.get(i).setDisable(false);
-        }
-        super.onStop();
-    }
-
     private void setdefult() {
         edDisplayName.setText("");
         edtUsername.setText("");
@@ -519,7 +549,6 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
         selectRoomList = "";
         strRoomList = "";
         roomListString.clear();
-        roomListNameString.clear();
         spinnerRoomList.setText("");
         spinnerCameraList.setText("");
         edDisplayName.requestFocus();
@@ -528,10 +557,9 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
     public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.SensorViewHolder> {
 
         private Context mContext;
-        ArrayList<RoomVO> arrayListLog = new ArrayList<>();
-        public SelectCamera selectCamera;
+        ArrayList<UnassignedListRes.Data.RoomList> arrayListLog = new ArrayList<>();
 
-        public RoomListAdapter(Context context, ArrayList<RoomVO> roomListString) {
+        public RoomListAdapter(Context context, ArrayList<UnassignedListRes.Data.RoomList> roomListString) {
             this.mContext = context;
             this.arrayListLog = roomListString;
         }
@@ -613,7 +641,6 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
 
         private Context mContext;
         ArrayList<CameraVO> arrayListLog = new ArrayList<>();
-        public SelectCamera selectCamera;
 
         public CameraListAdapter(Context context, ArrayList<CameraVO> roomListString) {
             this.mContext = context;
