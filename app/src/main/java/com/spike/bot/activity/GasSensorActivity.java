@@ -82,6 +82,10 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
         imgEdit.setOnClickListener(this);
         btnDelete.setOnClickListener(this);
 
+        if (!Common.getPrefValue(this, Constants.USER_ADMIN_TYPE).equals("1")) {
+            btnDelete.setVisibility(View.GONE);
+        }
+
         getGasSensorDetails();
         startTimer();
     }

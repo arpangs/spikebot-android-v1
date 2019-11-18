@@ -116,6 +116,7 @@ public class UnassignedListRes implements Serializable{
         }
 
 
+
         public static class RoomdeviceList implements Serializable {
 
             @SerializedName("room_id")

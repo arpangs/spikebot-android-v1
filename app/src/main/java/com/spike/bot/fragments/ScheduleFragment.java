@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
@@ -30,13 +29,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.activity.Main2Activity;
-import com.spike.bot.activity.NotificationSetting;
-import com.spike.bot.activity.ProfileActivity;
 import com.spike.bot.activity.ScheduleActivity;
 import com.spike.bot.activity.ScheduleListActivity;
-import com.spike.bot.activity.SensorDoorLogActivity;
 import com.spike.bot.adapter.ScheduleAdapter;
 import com.spike.bot.adapter.ScheduleClickListener;
 import com.spike.bot.core.APIConst;
@@ -1025,7 +1020,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             obj.put("schedule_id", scheduleVO.getSchedule_id());
             obj.put("is_active", scheduleVO.getIs_active()==1 ? "y":"n");
 
-            if (scheduleVO.getSchedule_status() == 0 && scheduleVO.getSchedule_type() == 1) {
+            if (scheduleVO.getIs_active() == 1 && scheduleVO.getSchedule_type() == 1) {
 
                 String sch_on_after = scheduleVO.getSchedule_device_on_time().trim();
                 String sch_off_date = scheduleVO.getSchedule_device_off_time().trim();
@@ -1095,15 +1090,11 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
                     scheduleVO.setSchedule_device_on_time(timer_on_date+" "+sch_on_after);
                     scheduleVO.setSchedule_device_off_time(timer_off_date+" "+sch_off_date);
-                    obj.put("on_time",timer_on_date+" "+sch_on_after);
-                    obj.put("off_time",timer_off_date+" "+sch_off_date);
+                    obj.put("on_time",timer_on_date+" "+sch_on_after+":00");
+                    obj.put("off_time",timer_off_date+" "+sch_off_date+":00");
 
                 }
-
-
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }

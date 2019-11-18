@@ -84,24 +84,6 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         mSectionedExpandableGridAdapter.notifyDataSetChanged();
     }
 
-    public static String getLauncherClassName(Context context) {
-
-        PackageManager pm = context.getPackageManager();
-
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-
-        List<ResolveInfo> resolveInfos = pm.queryIntentActivities(intent, 0);
-        for (ResolveInfo resolveInfo : resolveInfos) {
-            String pkgName = resolveInfo.activityInfo.applicationInfo.packageName;
-            if (pkgName.equalsIgnoreCase(context.getPackageName())) {
-                String className = resolveInfo.activityInfo.name;
-                return className;
-            }
-        }
-        return null;
-    }
-
     //reload the row item in recycle
     public void reloadDeviceList1(Object obj) {
         int position = mDataArrayList.indexOf(obj);
@@ -124,7 +106,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                         ChatApplication.logDisplay("status update panel adapter match");
                         ((DeviceVO) mDataArrayList.get(k)).setDevice_sub_status(deviceStatus);
                         mSectionedExpandableGridAdapter.notifyItemChanged(k);
-                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
+//                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
                         break;
                     }
 
@@ -147,14 +129,36 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                         ((DeviceVO) mDataArrayList.get(k)).setDeviceStatus(Integer.parseInt(deviceStatus));
                         ((DeviceVO) mDataArrayList.get(k)).setDevice_sub_status(String.valueOf(device_sub_status));
                         mSectionedExpandableGridAdapter.notifyItemChanged(k);
-                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
+//                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
                         break;
                     }
 
                 }
             }
         }
-        mSectionedExpandableGridAdapter.notifyDataSetChanged();
+//        mSectionedExpandableGridAdapter.notifyDataSetChanged();
+    }
+
+    public void updateDeviceBlaster(String deviceId, String deviceStatus) {
+
+        for (int k = 0; k < mDataArrayList.size(); k++) {
+
+            if(mDataArrayList.get(k) instanceof DeviceVO){
+                DeviceVO deviceVO1 = (DeviceVO) mDataArrayList.get(k);
+                if (deviceVO1 != null) {
+
+                    if (deviceVO1.getDeviceId().equals(deviceId)) {
+                        ChatApplication.logDisplay("status update panel adapter match");
+                        ((DeviceVO) mDataArrayList.get(k)).setDeviceStatus(Integer.parseInt(deviceStatus));
+                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
+//                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
+                        break;
+                    }
+
+                }
+            }
+        }
+//        mSectionedExpandableGridAdapter.notifyDataSetChanged();
     }
 
     public void updateModuleItem(String module_id, String module_status) {
@@ -168,13 +172,36 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                     if (deviceVO1.getModuleId().equals(module_id)) {
                         ((DeviceVO) mDataArrayList.get(k)).setIsActive(module_status.equals("y")?1:-1);
                         mSectionedExpandableGridAdapter.notifyItemChanged(k);
+//                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
                         break;
                     }
 
                 }
             }
         }
-        mSectionedExpandableGridAdapter.notifyDataSetChanged();
+//        mSectionedExpandableGridAdapter.notifyDataSetChanged();
+
+    }
+
+
+    public void updateModuleActiveItem(String module_id, String module_status) {
+
+        for (int k = 0; k < mDataArrayList.size(); k++) {
+
+            if(mDataArrayList.get(k) instanceof DeviceVO){
+                DeviceVO deviceVO1 = (DeviceVO) mDataArrayList.get(k);
+                if (deviceVO1 != null) {
+                    if (deviceVO1.getDeviceId().equals(module_id)) {
+                        ((DeviceVO) mDataArrayList.get(k)).setIsActive(module_status.equals("y")?1:-1);
+                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
+//                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
+                        break;
+                    }
+
+                }
+            }
+        }
+//        mSectionedExpandableGridAdapter.notifyDataSetChanged();
 
     }
 
@@ -205,7 +232,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                             devicesList.get(i).setRemote_status(Integer.parseInt(deviceStatus) == 1 ? "ON" : "OFF");
                         }
 
-                    } else {
+                    }else {
                         if (devicesList.get(i).getModuleId().equalsIgnoreCase(moduleId) && devicesList.get(i)
                                 .getDeviceId().equalsIgnoreCase(deviceId)) {
                             if (devicesList.get(i).getSensor_type() != null &&
@@ -222,7 +249,6 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                         }
                     }
                 }
-                // }
             }
         }
         mSectionedExpandableGridAdapter.notifyDataSetChanged();
@@ -230,40 +256,41 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
     }
 
     public void updatePanel(String id, String deviceStatus, String room_panel_id) {
-        PanelVO item = new PanelVO();
-        item.setPanelId(id);
-        item.setPanel_status(Integer.parseInt(deviceStatus));
-//        String pName=getPanelName(room_panel_id);
-//        ChatApplication.logDisplay("panel status panelStatus pName "+pName);
-//        ChatApplication.logDisplay("panel status panelStatus pName room_panel_id "+room_panel_id);
+        for (int k = 0; k < mDataArrayList.size(); k++) {
 
-        // item.setPanelName(getPanelName(room_panel_id));
-
-        for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
-            RoomVO key = entry.getKey();
-
-            ArrayList<PanelVO> panelsList = entry.getValue();
-            if (panelsList.contains(item)) {
-
-                for (int i = 0; i < panelsList.size(); i++) {
-
-                    if (panelsList.get(i).equals(item)) {
-                        panelsList.get(i).setPanel_status(Integer.parseInt(deviceStatus));
-
-                        reloadDeviceList(panelsList.get(i));
+            if(mDataArrayList.get(k) instanceof PanelVO){
+                PanelVO deviceVO1 = (PanelVO) mDataArrayList.get(k);
+                if (deviceVO1 != null) {
+                    if (deviceVO1.getPanelId().equals(id)) {
+                        ((PanelVO) mDataArrayList.get(k)).setPanel_status(Integer.parseInt(deviceStatus));
+                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
+//                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
+                        break;
                     }
+
                 }
-//                for(int i=0;i<panelsList.size();i++) {
+            }
+        }
+//        PanelVO item = new PanelVO();
+//        item.setPanelId(id);
+//        item.setPanel_status(Integer.parseInt(deviceStatus));
 //
-//                    if (panelsList.get(i).getPanelId().equals(item.getPanelId()) &&
-//                            panelsList.get(i).getRoom_panel_id().equals(room_panel_id)) {
+//        for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
+//            RoomVO key = entry.getKey();
+//
+//            ArrayList<PanelVO> panelsList = entry.getValue();
+//            if (panelsList.contains(item)) {
+//
+//                for (int i = 0; i < panelsList.size(); i++) {
+//
+//                    if (panelsList.get(i).equals(item)) {
 //                        panelsList.get(i).setPanel_status(Integer.parseInt(deviceStatus));
-//                        panelsList.get(i).setPanel_name_sub(item.getPanelName());
+//
 //                        reloadDeviceList(panelsList.get(i));
 //                    }
 //                }
-            }
-        }
+//            }
+//        }
     }
 
     public String getPanelName(String roomPanelId) {
@@ -286,23 +313,33 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
     }
 
     public void updateRoom(String id, String deviceStatus) {
-        //  Log.d("roomStatus "  , id + " roomStatus updatePanel " + deviceStatus);
-        RoomVO item = new RoomVO();
-        item.setRoomId(id);
-        //  item.setRoom_status(Integer.parseInt(deviceStatus));
+//        RoomVO item = new RoomVO();
+//        item.setRoomId(id);
+//
+//        for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
+//            RoomVO key = entry.getKey();
+//            if (id.equals(key.getRoomId())) {
+//                key.setRoom_status(Integer.parseInt(deviceStatus));
+//                reloadDeviceList(key);
+//            }
+//        }
 
-        for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
-            RoomVO key = entry.getKey();
-            //mDataArrayList.add((key = entry.getKey()));
-            //if (key.isExpanded)
-            //if(key.equals(item)){
-            if (id.equals(key.getRoomId())) {
-                //   Log.d("roomStatus "  , id + " id updatePanel roomid " + key.getRoomId() );
-                key.setRoom_status(Integer.parseInt(deviceStatus));
-                reloadDeviceList(key);
+        for (int k = 0; k < mDataArrayList.size(); k++) {
+
+            if(mDataArrayList.get(k) instanceof RoomVO){
+                RoomVO deviceVO1 = (RoomVO) mDataArrayList.get(k);
+                if (deviceVO1 != null) {
+                    if (deviceVO1.getRoomId().equals(id)) {
+                        ChatApplication.logDisplay("room refreesh is ");
+                        ((RoomVO) mDataArrayList.get(k)).setRoom_status(Integer.parseInt(deviceStatus));
+                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
+//                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
+                        break;
+                    }
+
+                }
             }
         }
-        //    mSectionedExpandableGridAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -347,47 +384,6 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
 
     }
 
-
-    /**
-     * @param room_id
-     * @param room_order
-     * @param temp_sensor_id
-     * @param temp_celsius
-     * @param temp_fahrenheit
-     * @param is_in_C
-     */
-    public void updateTempSensor(String room_id, String room_order, String temp_sensor_id, String temp_celsius, String temp_fahrenheit, String is_in_C, String humidity) {
-
-
-        for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
-
-            RoomVO key = entry.getKey();
-
-            ArrayList<PanelVO> panelsList = entry.getValue();
-
-            for (int i1 = 0; i1 < panelsList.size(); i1++) {
-                PanelVO panel = panelsList.get(i1);
-
-                ArrayList<DeviceVO> devicesList = panel.getDeviceList();
-
-                for (int i = 0; i < devicesList.size(); i++) {
-
-                    if (!TextUtils.isEmpty(devicesList.get(i).getSensor_type()) && devicesList.get(i).getSensor_type().equalsIgnoreCase("tempsensor")) {
-
-                        if (devicesList.get(i).getSensor_id().equalsIgnoreCase(temp_sensor_id)) {
-
-                            devicesList.get(i).setTemp_in_c(temp_celsius);
-                            devicesList.get(i).setTemp_in_f(temp_fahrenheit);
-                            devicesList.get(i).setIs_in_c(is_in_C); //last updated
-                            devicesList.get(i).setHumidity(humidity); //last updated
-                        }
-                    }
-                }
-            }
-        }
-        mSectionedExpandableGridAdapter.notifyDataSetChanged();
-
-    }
 
     /**
      * @param sensor_type
@@ -437,56 +433,6 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         mSectionedExpandableGridAdapter.notifyDataSetChanged();
 
     }
-
-    /**
-     * update dead sensor
-     *
-     * @param sensor_id
-     * @param is_active
-     */
-    public void updateDeadSensor(String sensor_id, String is_active) {
-
-        for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
-
-            RoomVO key = entry.getKey();
-
-            ArrayList<PanelVO> panelsList = entry.getValue();
-
-            for (int i1 = 0; i1 < panelsList.size(); i1++) {
-                PanelVO panel = panelsList.get(i1);
-
-                ArrayList<DeviceVO> devicesList = panel.getDeviceList();
-
-                for (int i = 0; i < devicesList.size(); i++) {
-
-                    if (!TextUtils.isEmpty(devicesList.get(i).getSensor_type()) && devicesList.get(i).getSensor_type().equalsIgnoreCase("tempsensor")) {
-
-                        if (devicesList.get(i).getSensor_id().equalsIgnoreCase(sensor_id)) {
-
-                            devicesList.get(i).setIsActive(Integer.parseInt(is_active));
-
-                        }
-                    } else if (!TextUtils.isEmpty(devicesList.get(i).getSensor_type()) && devicesList.get(i).getSensor_type().equalsIgnoreCase("door")) {
-
-                        if (devicesList.get(i).getSensor_id().equalsIgnoreCase(sensor_id)) {
-
-                            devicesList.get(i).setIsActive(Integer.parseInt(is_active));
-
-                        }
-                    } else if (!TextUtils.isEmpty(devicesList.get(i).getSensor_type()) && devicesList.get(i).getSensor_type().equalsIgnoreCase("multisensor")) {
-
-                        if (devicesList.get(i).getSensor_id().equalsIgnoreCase(sensor_id)) {
-                            devicesList.get(i).setIsActive(Integer.parseInt(is_active));
-
-                        }
-                    }
-                }
-            }
-        }
-        mSectionedExpandableGridAdapter.notifyDataSetChanged();
-
-    }
-
 
     //reload the row item in recycle
     public void reloadDeviceList(Object obj) {
@@ -550,22 +496,6 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         mSectionDataMap.put(section, section.getPanelList());
     }
 
-    public void addPanel(RoomVO section) {
-        //mSectionMap.put(section.getRoomName(), section);
-        mSectionDataMap.put(section, section.getPanelList());
-    }
-  /*  public void addItem(RoomVO section, DeviceVO item) {
-        mSectionDataMap.get(mSectionMap.get(section.getRoomName())).add(item);
-    }
-
-    public void removeItem(RoomVO section, DeviceVO item) {
-        mSectionDataMap.get(mSectionMap.get(section.getRoomName())).remove(item);
-    }
-
-    public void removeSection(RoomVO section) {
-        mSectionDataMap.remove(mSectionMap.get(section.getRoomName()));
-        mSectionMap.remove(section);
-    }*/
 
     private void generateDataList() {
         // Log.d("CallAPI"," generateDataList =  " + mSectionDataMap.size());

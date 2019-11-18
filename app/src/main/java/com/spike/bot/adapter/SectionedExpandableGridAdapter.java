@@ -71,7 +71,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
         this.mCameraClickListener = mCameraClickListener;
     }
 
-        SectionedExpandableGridAdapter(Context context, ArrayList<Object> dataArrayList,
+   public SectionedExpandableGridAdapter(Context context, ArrayList<Object> dataArrayList,
                                    final GridLayoutManager gridLayout, ItemClickListener itemClickListener,
                                    OnSmoothScrollList onSmoothScroll, TempClickListener tempClickListener, SectionStateChangeListener sectionStateChangeListener) {
         mContext = context;
@@ -80,25 +80,24 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
         mDataArrayList = dataArrayList;
         onSmoothScrollList = onSmoothScroll;
         this.tempClickListener = tempClickListener;
-        this.gridLayoutManager=gridLayout;
+        this.gridLayoutManager = gridLayout;
 
-       setGridView();
+        setGridView();
 
     }
 
     public void setGridView() {
         try {
-
             /* grid view set as per view */
             this.gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                 @Override
                 public int getSpanSize(int position) {
-                    int ffposition=1;
+                    int ffposition = 1;
 
-                    if(isCamera(position) ){
-                        ffposition = isCamera(position)?gridLayoutManager.getSpanCount() : 1;
+                    if (isCamera(position)) {
+                        ffposition = isCamera(position) ? gridLayoutManager.getSpanCount() : 1;
                     } else {
-                        ffposition=isSection(position) || isPanel(position) ? gridLayoutManager.getSpanCount() : 1;
+                        ffposition = isSection(position) || isPanel(position) ? gridLayoutManager.getSpanCount() : 1;
                     }
                     return ffposition;
                 }
@@ -173,9 +172,9 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.txtTotalDevices.setVisibility(View.GONE);
 
                     /*99 + notification than show */
-                    if(Integer.parseInt(section.getDevice_count())>99){
+                    if (Integer.parseInt(section.getDevice_count()) > 99) {
                         holder.txtTotalDevices.setText("" + "99+ devices");
-                    }else {
+                    } else {
                         holder.txtTotalDevices.setText("" + section.getDevice_count() + " devices");
                     }
 
@@ -208,15 +207,15 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     }
 
 
-                    String styledText = "<u><font color='#0098C0'>"+roomName+"</font></u>";
+                    String styledText = "<u><font color='#0098C0'>" + roomName + "</font></u>";
                     holder.sectionTextView.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
 
                     if (section.getRoom_status() == 1) {
                         holder.text_section_on_off.setBackground(mContext.getResources().getDrawable(R.drawable.room_on));
-                        holder.text_section_on_off.setTextColor(mContext.getResources().getColor(R.color.automation_white));
+//                        holder.text_section_on_off.setTextColor(mContext.getResources().getColor(R.color.automation_white));
                     } else {
                         holder.text_section_on_off.setBackground(mContext.getResources().getDrawable(R.drawable.room_off));
-                        holder.text_section_on_off.setTextColor(mContext.getResources().getColor(R.color.sky_blue));
+//                        holder.text_section_on_off.setTextColor(mContext.getResources().getColor(R.color.sky_blue));
                     }
 
                     holder.sectionToggleButton.setChecked(section.isExpanded);
@@ -256,9 +255,9 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             holder.img_room_delete.setVisibility(View.GONE);
                         }
 
-                        if(section.isExpanded){
+                        if (section.isExpanded) {
                             mItemClickListener.itemClicked(section, "heavyloadSocketon");
-                        }else {
+                        } else {
                             mItemClickListener.itemClicked(section, "heavyloadSocketoff");
                         }
 
@@ -272,7 +271,6 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         public void onClick(View v) {
                             if (!isClickable)
                                 return;
-
                             /*
                              * if panel list found 1 or more so change room icon immediately
                              * */
@@ -376,9 +374,9 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                                 return;
 
                             mSectionStateChangeListener.onSectionStateChanged(section, isChecked);
-                            if(section.isExpanded){
+                            if (section.isExpanded) {
                                 mItemClickListener.itemClicked(section, "heavyloadSocketon");
-                            }else {
+                            } else {
                                 mItemClickListener.itemClicked(section, "heavyloadSocketoff");
                             }
                         }
@@ -435,11 +433,11 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     for (int i = 0; i < section.getPanelList().size(); i++) {
                         for (int j = 0; j < section.getPanelList().get(i).getDeviceList().size(); j++) {
                             if (!TextUtils.isEmpty(section.getPanelList().get(i).getDeviceList().get(j).getSensor_type())) {
-                                if (section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("temp") ||
+                                if (section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("temp_sensor") ||
                                         section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("remote") ||
                                         section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("multisensor") ||
                                         section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("gassensor") ||
-                                        section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("door")) {
+                                        section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("door_sensor")) {
 
                                     flag = true;
                                 }
@@ -448,19 +446,19 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     }
 
                     String isunRead = section.getIs_unread();
-                    ChatApplication.logDisplay("isunRead is "+isunRead);
-                    if (!TextUtils.isEmpty(isunRead) && Integer.parseInt(isunRead)>0) {
+                    ChatApplication.logDisplay("isunRead is " + isunRead);
+                    if (!TextUtils.isEmpty(isunRead) && Integer.parseInt(isunRead) > 0) {
                         holder.img_setting_badge_count.setVisibility(View.VISIBLE);
                         if (Integer.parseInt(isunRead) > 99) {
                             holder.img_setting_badge_count.setText("99+");
                             holder.img_setting_badge_count.getLayoutParams().width = Common.dpToPx(mContext, 27);
                             holder.img_setting_badge_count.getLayoutParams().height = Common.dpToPx(mContext, 27);
-                        } else if(Integer.parseInt(isunRead)>0) {
-                            holder.img_setting_badge_count.setText(""+isunRead);
+                        } else if (Integer.parseInt(isunRead) > 0) {
+                            holder.img_setting_badge_count.setText("" + isunRead);
                             holder.img_setting_badge_count.getLayoutParams().width = Common.dpToPx(mContext, 27);
                             holder.img_setting_badge_count.getLayoutParams().height = Common.dpToPx(mContext, 27);
 
-                        }else {
+                        } else {
                             holder.img_setting_badge_count.setVisibility(View.GONE);
                         }
 
@@ -473,16 +471,16 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     if (flag || section.getRoomId().equalsIgnoreCase("Camera")) {
                         holder.img_setting_badge.setVisibility(View.VISIBLE);
 
-                        if(TextUtils.isEmpty(section.getIs_unread())){
+                        if (TextUtils.isEmpty(section.getIs_unread())) {
                             holder.img_setting_badge_count.setVisibility(View.GONE);
                         } else if (section.getIs_unread().equalsIgnoreCase("0")) {
                             holder.img_setting_badge_count.setVisibility(View.GONE);
                         } else {
                             holder.img_setting_badge_count.setVisibility(View.VISIBLE);
-                            if (!TextUtils.isEmpty(isunRead)&&Integer.parseInt(isunRead) > 99) {
+                            if (!TextUtils.isEmpty(isunRead) && Integer.parseInt(isunRead) > 99) {
                                 holder.img_setting_badge_count.setText("99+");
-                            }else {
-                                holder.img_setting_badge_count.setText(""+isunRead);
+                            } else {
+                                holder.img_setting_badge_count.setText("" + isunRead);
                             }
                         }
                     } else {
@@ -491,11 +489,11 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     }
 
 
-                        if (section.isExpanded) {
-                            holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side));
-                        } else {
-                            holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow));
-                        }
+                    if (section.isExpanded) {
+                        holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side));
+                    } else {
+                        holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow));
+                    }
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -512,9 +510,9 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                 final PanelVO panel1 = (PanelVO) mDataArrayList.get(position);
 
-                if(panel1.getDeviceList().size()==0){
+                if (panel1.getDeviceList().size() == 0) {
                     holder.ll_background.setVisibility(View.GONE);
-                }else {
+                } else {
                     holder.ll_background.setVisibility(View.VISIBLE);
                     holder.sectionTextView.setText(panel1.getPanelName());
                 }
@@ -542,7 +540,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
 
                 //5 for curtain
-                if (panel1.getType().equalsIgnoreCase("camera") || panel1.getPanel_type()==5) {
+                if (panel1.getType().equalsIgnoreCase("camera") || panel1.getPanel_type() == 5) {
                     holder.txt_recording.setVisibility(View.GONE);
                     holder.txt_recording.setText(Html.fromHtml("<font color=\"red\">◉</font> <font color=\"#FFFFFF\">RECORDINGS</font>"));
                     holder.iv_room_panel_onoff.setVisibility(View.GONE);//INVISIBLE
@@ -561,10 +559,10 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.txt_recording.setVisibility(View.GONE);
                     holder.iv_room_panel_onoff.setVisibility(View.VISIBLE);
 
-                    if(panel1.isSensorPanel()){
-                        if(panel1.isRemoteAvabile()){
+                    if (panel1.isSensorPanel()) {
+                        if (panel1.isRemoteAvabile()) {
                             holder.iv_room_panel_onoff.setVisibility(View.VISIBLE);
-                        }else {
+                        } else {
                             holder.iv_room_panel_onoff.setVisibility(View.GONE);
                         }
                     }
@@ -582,13 +580,13 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.iv_icon_badge.setVisibility(View.GONE);
                     itemDeviceName = item.getDeviceName();
 
-                    if(item.getDevice_icon().equalsIgnoreCase("heavyload")){
-                      if(item.getIsActive()==1){
-                          itemIcon=item.getDeviceStatus()==1 ? R.drawable.on:R.drawable.off;
-                      }else {
-                          itemIcon=R.drawable.headload_inactive;
-                      }
-                    }else {
+                    if (item.getDevice_icon().equalsIgnoreCase("heavyload")) {
+                        if (item.getIsActive() == 1) {
+                            itemIcon = item.getDeviceStatus() == 1 ? R.drawable.on : R.drawable.off;
+                        } else {
+                            itemIcon = R.drawable.headload_inactive;
+                        }
+                    } else {
                         itemIcon = Common.getIcon(item.getDeviceStatus(), item.getDevice_icon());
                     }
                 } else {
@@ -601,28 +599,29 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         holder.txt_temp_in_cf.setVisibility(View.INVISIBLE);
                         holder.iv_icon.setVisibility(View.VISIBLE);
 
-                        if(item.getIsActive()==-1){
+                        if (item.getIsActive() == -1) {
                             itemIcon = Common.getIconInActive(item.getDeviceStatus(), item.getDevice_icon());
-                        }else {
+                        } else {
                             itemIcon = Common.getIcon(item.getDeviceStatus(), item.getSensor_icon()); //AC off icon  itemIcon = Common.getDoorIcon(item.getDeviceStatus());
                         }
 
 
+                        holder.iv_icon_badge.setVisibility(View.GONE);
                         holder.itemTextView.setVisibility(View.VISIBLE);
                         holder.itemTextView.setText(item.getSensor_name());
 
                         itemDeviceName = item.getSensor_name();
 
-                    }else if(item.getSensor_type().equalsIgnoreCase(mContext.getResources().getString(R.string.door_sensor))){
+                    } else if (item.getSensor_type().equalsIgnoreCase(mContext.getResources().getString(R.string.door_sensor))) {
 
                         //onlydoor, subtype=1
                         //only lock, subtype=2
                         //door+lock, subtype=3
 
                         /*only for door 1=close , 0=open*/
-                        if(item.getIsActive()==-1){
+                        if (item.getIsActive() == -1) {
                             itemIcon = Common.getIconInActive(item.getDeviceStatus(), item.getDevice_icon());
-                        }else {
+                        } else {
                             itemIcon = Common.getDoorIcon(item.getDeviceStatus());
                         }
 
@@ -708,13 +707,13 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             holder.iv_icon_badge.setVisibility(View.GONE);
                         }
 
-                    }else if(item.getSensor_type().equals("gas_sensor")){
+                    } else if (item.getSensor_type().equals("gas_sensor")) {
                         holder.txt_temp_in_cf.setVisibility(View.INVISIBLE);
                         holder.iv_icon.setVisibility(View.VISIBLE);
 
-                        if(item.getIsActive()==-1){
+                        if (item.getIsActive() == -1) {
                             itemIcon = Common.getIconInActive(item.getDeviceStatus(), item.getDevice_icon());
-                        }else {
+                        } else {
                             itemIcon = Common.getIcon(1, item.getDevice_icon());
                         }
 
@@ -754,7 +753,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         String cf = "";
 
                         if (item.getTemp_in_c().equalsIgnoreCase("C")) {
-                            if (TextUtils.isEmpty(""+item.getDeviceStatus())) {
+                            if (TextUtils.isEmpty("" + item.getDeviceStatus())) {
                                 tempInCF = "-- ";
                             } else {
                                 tempInCF = String.valueOf(item.getDeviceStatus());
@@ -765,31 +764,31 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             if (TextUtils.isEmpty(item.getTemp_in_c())) {
                                 tempInCF = "-- ";
                             } else {
-                                tempInCF = ""+Constants.getFTemp(""+item.getDeviceStatus());
-                                ChatApplication.logDisplay("tem pis "+Constants.getFTemp(""+item.getDeviceStatus()));
+                                tempInCF = "" + Constants.getFTemp("" + item.getDeviceStatus());
+                                ChatApplication.logDisplay("tem pis " + Constants.getFTemp("" + item.getDeviceStatus()));
                             }
                             cf = Common.getF();
                         }
 
-                        String humility="";
+                        String humility = "";
 
-                        if(!TextUtils.isEmpty(item.getDevice_sub_status()) && item.getDevice_sub_status()!=null){
-                            humility=item.getDevice_sub_status();
+                        if (!TextUtils.isEmpty(item.getDevice_sub_status()) && item.getDevice_sub_status() != null) {
+                            humility = item.getDevice_sub_status();
                         }
-                        if(TextUtils.isEmpty(humility)){
-                            humility="";
+                        if (TextUtils.isEmpty(humility)) {
+                            humility = "";
                         }
-                        if(humility.equalsIgnoreCase("null")){
-                            tempInCF=tempInCF+" "+cf;
-                        }else {
-                            tempInCF=tempInCF+" "+cf+" / "+item.getDevice_sub_status()+"%";
+                        if (humility.equalsIgnoreCase("null")) {
+                            tempInCF = tempInCF + " " + cf;
+                        } else {
+                            tempInCF = tempInCF + " " + cf + " / " + item.getDevice_sub_status() + "%";
                         }
 
 
-                        if(item.getIsActive()!=-1){
-                            holder.txt_temp_in_cf.setText(Html.fromHtml("<b>" + tempInCF+ "</b>"));
-                        }else {
-                            holder.txt_temp_in_cf.setText(Html.fromHtml("<b>" + "-- "+cf+ "</b>"));
+                        if (item.getIsActive() != -1) {
+                            holder.txt_temp_in_cf.setText(Html.fromHtml("<b>" + tempInCF + "</b>"));
+                        } else {
+                            holder.txt_temp_in_cf.setText(Html.fromHtml("<b>" + "-- " + cf + "</b>"));
                         }
 
                         if (item.getSensor_type().equalsIgnoreCase("door")) {
@@ -826,14 +825,14 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         }
 
                         // } else if (item.getIsActive() == 1) {
-                        ChatApplication.logDisplay("temp_sensor is "+item.getIsActive()+" "+item.getSensor_icon());
+                        ChatApplication.logDisplay("temp_sensor is " + item.getIsActive() + " " + item.getSensor_icon());
                         if (item.getIsActive() == -1) {
                             if (item.getDevice_icon().equalsIgnoreCase(mContext.getResources().getString(R.string.temp_sensor))) {
                                 itemIcon = Common.getIconInActive(0, item.getDevice_icon());
                             } else {
                                 itemIcon = Common.getIconInActive(0, item.getDevice_icon()); //unavailable means temp or dead sensor is on dead mode
                             }
-                        } else{
+                        } else {
                             itemIcon = Common.getIcon(1, item.getDevice_icon());
 
                         }
@@ -864,31 +863,30 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     public void onClick(View v) {
                         if (!isClickable)
                             return;
+                        ChatApplication.logDisplay("postion click is " + item.getDeviceType());
+                        if (item.getDeviceType().equals(mContext.getResources().getString(R.string.curtain))) {
 
-                        ChatApplication.logDisplay("postion click is "+item.getDeviceType());
-                        if(item.getDeviceType().equals(mContext.getResources().getString(R.string.curtain))){
+                        } else if (item.getDeviceType().equalsIgnoreCase("door_sensor") || item.getDeviceType().equalsIgnoreCase("temp_sensor")) {
 
-                        }else if(item.getDeviceType().equalsIgnoreCase("door_sensor") || item.getDeviceType().equalsIgnoreCase("temp_sensor")){
-
-                        }else {
+                        } else {
                             item.setOldStatus(item.getDeviceStatus());
                             item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1 : 0);
                             notifyItemChanged(position, item);
                         }
 
                         if (!item.isSensor()) {
-                            if(item.getDeviceType().equalsIgnoreCase("3")){
+                            if (item.getDeviceType().equalsIgnoreCase("3")) {
                                 mItemClickListener.itemClicked(item, "philipsClick", position);
-                            }else if(item.getDevice_icon().equalsIgnoreCase("curtain")){
+                            } else if (item.getDevice_icon().equalsIgnoreCase("curtain")) {
                                 mItemClickListener.itemClicked(item, "curtain", position);
-                            }else {
+                            } else {
                                 mItemClickListener.itemClicked(item, "itemclick", position);
                             }
                         } else {
                             if (item.getDeviceType().equalsIgnoreCase("remote")) {
                                 tempClickListener.itemClicked(item, "isIRSensorClick", true, position);
                             } else {
-                                if(item.getIsActive()!= -1){
+                                if (item.getIsActive() != -1) {
                                     tempClickListener.itemClicked(item, "isSensorClick", true, position);
                                 }
                             }
@@ -906,31 +904,34 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         if (!isClickable)
                             return false;
 
+                        if(item.getIsActive()!=1){
+                            return false;
+                        }
                         item.setOldStatus(item.getDeviceStatus());
-                        if(item.getIs_locked()==1){
+                        if (item.getIs_locked() == 1) {
                             item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1 : 0);
                         }
 
                         notifyItemChanged(position, item);
 
-                            if(item.getDeviceType().equalsIgnoreCase("heavyload")){
-                                tempClickListener.itemClicked(item, "heavyloadlongClick", true, position);
-                            }else if(item.getDeviceType().equalsIgnoreCase("3")){
-                                tempClickListener.itemClicked(item, "philipslongClick", true, position);
-                            }else if (item.getDeviceType().equalsIgnoreCase("remote")) {
-                                tempClickListener.itemClicked(item, "isIRSensorLongClick", true, position);
-                            }
+                        if (item.getDeviceType().equalsIgnoreCase("heavyload")) {
+                            tempClickListener.itemClicked(item, "heavyloadlongClick", true, position);
+                        } else if (item.getDeviceType().equalsIgnoreCase("3")) {
+                            tempClickListener.itemClicked(item, "philipslongClick", true, position);
+                        } else if (item.getDeviceType().equalsIgnoreCase("remote")) {
+                            tempClickListener.itemClicked(item, "isIRSensorLongClick", true, position);
+                        }
                         return false;
                     }
                 });
 
 
-                if (item.getDeviceType().equals("remote")||item.getDeviceType().equalsIgnoreCase("heavyload")|| item.getDeviceType().equalsIgnoreCase("-1")|| item.getDeviceType().equalsIgnoreCase("2") || item.getDeviceType().equalsIgnoreCase("3")) {
+                if (item.getDeviceType().equals("remote") || item.getDeviceType().equalsIgnoreCase("heavyload") || item.getDeviceType().equalsIgnoreCase("fan") || item.getDeviceType().equalsIgnoreCase("2") || item.getDeviceType().equalsIgnoreCase("3")) {
                     holder.imgLongClick.setVisibility(View.VISIBLE);
-                }else {
-                    if(!item.getDeviceType().equalsIgnoreCase("1")){
+                } else {
+                    if (!item.getDeviceType().equalsIgnoreCase("1")) {
                         holder.imgLongClick.setVisibility(View.GONE);
-                    }else {
+                    } else {
                         holder.imgLongClick.setVisibility(View.GONE);
                     }
                 }
@@ -945,7 +946,9 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 //                            if(item.getIs_locked()==1){
 //                                Toast.makeText(mContext,mContext.getResources().getString(R.string.fan_error),Toast.LENGTH_LONG).show();
 //                            }else {
+                            if(item.getDeviceStatus()==1){
                                 mItemClickListener.itemClicked(item, "longclick", position);
+                            }
 //                            }
                             return true;
                         }
@@ -971,10 +974,10 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.iv_icon.setImageResource(Common.getIcon(1, cameraVO.getCamera_icon()));
                 }
 
-                if(!TextUtils.isEmpty(cameraVO.getIs_unread())&&!cameraVO.getIs_unread().equalsIgnoreCase("0")){
+                if (!TextUtils.isEmpty(cameraVO.getIs_unread()) && !cameraVO.getIs_unread().equalsIgnoreCase("0")) {
                     holder.txtCameraCount.setVisibility(View.VISIBLE);
-                    holder.txtCameraCount.setText(""+cameraVO.getIs_unread());
-                }else {
+                    holder.txtCameraCount.setText("" + cameraVO.getIs_unread());
+                } else {
                     holder.txtCameraCount.setVisibility(View.INVISIBLE);
                 }
                 holder.iv_icon_text.setOnClickListener(new View.OnClickListener() {
@@ -987,7 +990,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 holder.iv_icon.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (mCameraClickListener != null && cameraVO.getIsActive()==1) {
+                        if (mCameraClickListener != null && cameraVO.getIsActive() == 1) {
                             mCameraClickListener.itemClicked(cameraVO, "editclick_true");
                         } else {
                             Common.showToast("Camera not active");
@@ -997,7 +1000,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 holder.itemTextView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (mCameraClickListener != null && cameraVO.getIsActive()==1) {
+                        if (mCameraClickListener != null && cameraVO.getIsActive() == 1) {
                             mCameraClickListener.itemClicked(cameraVO, "editclick_true");
                         } else {
                             Common.showToast("Camera not active");
@@ -1007,7 +1010,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 holder.view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (mCameraClickListener != null && cameraVO.getIsActive()==1) {
+                        if (mCameraClickListener != null && cameraVO.getIsActive() == 1) {
                             mCameraClickListener.itemClicked(cameraVO, "editclick_true");
                         } else {
                             Common.showToast("Camera not active");
@@ -1050,12 +1053,12 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
     protected static class ViewHolder extends RecyclerView.ViewHolder {
         View view;
         int viewType;
-        ImageView iv_room_panel_onoff,view_line_top,mImgSch, img_setting_badge,mImgIcnLog,img_room_delete,iv_icon,imgLongClick,iv_icon_text,mImgCameraActive,imgLogCamera;
+        ImageView iv_room_panel_onoff, view_line_top, mImgSch, img_setting_badge, mImgIcnLog, img_room_delete, iv_icon, imgLongClick, iv_icon_text, mImgCameraActive, imgLogCamera;
         ToggleButton sectionToggleButton;
-        TextView sectionTextView,text_section_on_off,text_section_edit,iv_icon_badge_room,img_setting_badge_count,
-                itemTextView,iv_icon_badge, txt_temp_in_cf, txtTotalDevices,txtCameraCount,txt_recording,textRefreshCamera,textShowCamera;
+        TextView sectionTextView, text_section_on_off, text_section_edit, iv_icon_badge_room, img_setting_badge_count,
+                itemTextView, iv_icon_badge, txt_temp_in_cf, txtTotalDevices, txtCameraCount, txt_recording, textRefreshCamera, textShowCamera;
         RelativeLayout rel_main_view;
-        LinearLayout ll_background,ll_room_item, linearRowRoom, linearPanelList,ll_root_view_section;
+        LinearLayout ll_background, ll_room_item, linearRowRoom, linearPanelList, ll_root_view_section;
 
         public ViewHolder(View view, int viewType) {
             super(view);
@@ -1063,34 +1066,34 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
             this.view = view;
             if (viewType == VIEW_TYPE_ITEM) {
                 itemTextView = view.findViewById(R.id.text_item);
-                iv_icon =  view.findViewById(R.id.iv_icon);
-                iv_icon_text =  view.findViewById(R.id.iv_icon_text);
-                ll_room_item =  view.findViewById(R.id.ll_room_item);
-                iv_icon_badge =  view.findViewById(R.id.iv_icon_badge);
-                txt_temp_in_cf =  view.findViewById(R.id.txt_temp_in_cf);
-                imgLongClick =  view.findViewById(R.id.imgLongClick);
-                mImgCameraActive =  view.findViewById(R.id.iv_icon_active_camera);
+                iv_icon = view.findViewById(R.id.iv_icon);
+                iv_icon_text = view.findViewById(R.id.iv_icon_text);
+                ll_room_item = view.findViewById(R.id.ll_room_item);
+                iv_icon_badge = view.findViewById(R.id.iv_icon_badge);
+                txt_temp_in_cf = view.findViewById(R.id.txt_temp_in_cf);
+                imgLongClick = view.findViewById(R.id.imgLongClick);
+                mImgCameraActive = view.findViewById(R.id.iv_icon_active_camera);
 
             } else if (viewType == VIEW_TYPE_PANEL) {
 
-                view_line_top =  view.findViewById(R.id.view_line_top);
+                view_line_top = view.findViewById(R.id.view_line_top);
 
-                itemTextView =  view.findViewById(R.id.heading);
+                itemTextView = view.findViewById(R.id.heading);
                 sectionTextView = itemTextView;
-                iv_room_panel_onoff =  view.findViewById(R.id.iv_room_panel_onoff);
-                ll_background =  view.findViewById(R.id.ll_background);
-                txt_recording =  view.findViewById(R.id.txt_recording);
-            }else if(viewType == VIEW_TYPE_CAMERA){
-                itemTextView =  view.findViewById(R.id.text_item);
+                iv_room_panel_onoff = view.findViewById(R.id.iv_room_panel_onoff);
+                ll_background = view.findViewById(R.id.ll_background);
+                txt_recording = view.findViewById(R.id.txt_recording);
+            } else if (viewType == VIEW_TYPE_CAMERA) {
+                itemTextView = view.findViewById(R.id.text_item);
                 iv_icon = view.findViewById(R.id.iv_icon);
                 iv_icon_text = view.findViewById(R.id.iv_icon_text);
-                ll_room_item =  view.findViewById(R.id.ll_room_item);
-                imgLogCamera =  view.findViewById(R.id.imgLogCamera);
-                txtCameraCount =  view.findViewById(R.id.txtCameraCount);
+                ll_room_item = view.findViewById(R.id.ll_room_item);
+                imgLogCamera = view.findViewById(R.id.imgLogCamera);
+                txtCameraCount = view.findViewById(R.id.txtCameraCount);
 
             } else {
-                textShowCamera =  view.findViewById(R.id.textShowCamera);
-                textRefreshCamera =  view.findViewById(R.id.textRefreshCamera);
+                textShowCamera = view.findViewById(R.id.textShowCamera);
+                textRefreshCamera = view.findViewById(R.id.textRefreshCamera);
                 rel_main_view = view.findViewById(R.id.rel_main_view);
                 linearRowRoom = view.findViewById(R.id.linearRowRoom);
                 linearPanelList = view.findViewById(R.id.linearPanelList);
@@ -1098,20 +1101,20 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 view_line_top = view.findViewById(R.id.view_line_top);
                 sectionTextView = view.findViewById(R.id.text_section);
 
-                text_section_on_off =  view.findViewById(R.id.text_section_on_off);
-                text_section_edit =  view.findViewById(R.id.text_section_edit);
+                text_section_on_off = view.findViewById(R.id.text_section_on_off);
+                text_section_edit = view.findViewById(R.id.text_section_edit);
 
                 img_room_delete = view.findViewById(R.id.iv_room_delete);
 
-                sectionToggleButton =  view.findViewById(R.id.toggle_button_section);//toggle_button_section
-                ll_root_view_section =  view.findViewById(R.id.ll_root_view_section);
-                iv_icon_badge_room =  view.findViewById(R.id.iv_icon_badge_room);
+                sectionToggleButton = view.findViewById(R.id.toggle_button_section);//toggle_button_section
+                ll_root_view_section = view.findViewById(R.id.ll_root_view_section);
+                iv_icon_badge_room = view.findViewById(R.id.iv_icon_badge_room);
 
-                mImgIcnLog =  view.findViewById(R.id.img_icn_log);
+                mImgIcnLog = view.findViewById(R.id.img_icn_log);
                 mImgSch = view.findViewById(R.id.icn_schedule_v2);
-                img_setting_badge =  view.findViewById(R.id.img_setting_badge);
-                img_setting_badge_count =  view.findViewById(R.id.img_setting_badge_count);
-                txtTotalDevices =  view.findViewById(R.id.txtTotalDevices);
+                img_setting_badge = view.findViewById(R.id.img_setting_badge);
+                img_setting_badge_count = view.findViewById(R.id.img_setting_badge_count);
+                txtTotalDevices = view.findViewById(R.id.txtTotalDevices);
 
             }
         }

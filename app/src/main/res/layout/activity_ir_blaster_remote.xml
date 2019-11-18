@@ -47,16 +47,16 @@
 
                 <ImageView
                     android:id="@+id/action_edit"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="@dimen/_25sdp"
+                    android:layout_height="@dimen/_25sdp"
                     android:layout_gravity="center"
                     android:layout_marginRight="15dp"
                     android:src="@drawable/edit_white_new" />
 
                 <ImageView
                     android:id="@+id/action_delete"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="@dimen/_25sdp"
+                    android:layout_height="@dimen/_25sdp"
                     android:layout_gravity="center"
                     android:layout_marginRight="8dp"
                     android:src="@drawable/delete_white_new"

@@ -144,6 +144,10 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
         countDownTimerSocket = new CountDownTimer(10000, 1000) {
             public void onTick(long millisUntilFinished) {
             }public void onFinish() {
+                if(countDownTimerSocket!=null){
+                    countDownTimerSocket.start();
+                }
+
                 getHeavyLoadValue();
             }
         };
@@ -233,7 +237,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
     }
 
     @Override
-    protected void onPause() {
+    protected void onStop() {
         if(mSocket!=null){
             mSocket.on("statusMapping:heavy_load_voltage", heavyLoadValue);
         }
@@ -243,8 +247,9 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
             countDownTimerSocket.onFinish();
             countDownTimerSocket=null;
         }
-        super.onPause();
+        super.onStop();
     }
+
 
     private Emitter.Listener heavyLoadValue = new Emitter.Listener() {
         @Override
@@ -260,8 +265,8 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
 //  {"room_device_id":"1561365773929_OvHzT5WcFU","real_power":25}
-
-                            if(device_id.equals(object.optString("room_device_id"))){
+                            ChatApplication.logDisplay("object  heavyLoadValue " + object);
+                            if(device_id.equals(object.optString("device_id"))){
                                 String real_power=object.optString("real_power");
                                 if(Integer.parseInt(object.optString("real_power"))>0){
                                     imgHL.setVisibility(View.VISIBLE);
@@ -272,7 +277,6 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
                                 }
                                 txtCurrentValue.setText(real_power);
 
-                                ChatApplication.logDisplay("object  heavyLoadValue " + object);
                             }
 
                         } catch (JSONException e) {
@@ -293,6 +297,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
 
         JSONObject jsonObject = new JSONObject();
         try {
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             jsonObject.put("device_id", device_id);
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -308,10 +313,9 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-
+                    ChatApplication.logDisplay("url is result " + result);
                     int code = result.getInt("code");
                     if (code == 200) {
-                        ChatApplication.logDisplay("url is result " + result);
                     }
 
                 } catch (Exception e) {
@@ -448,7 +452,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
 
                         JSONObject object = result.optJSONObject("data");
 
-                        heavyModel = (DataHeavyModel) Common.fromJson(object.toString(), new TypeToken<DataHeavyModel>() {}.getType());
+                        heavyModel = (DataHeavyModel) Common.fromJson(result.toString(), new TypeToken<DataHeavyModel>() {}.getType());
 
                         formatter=null;
                         entries.clear();

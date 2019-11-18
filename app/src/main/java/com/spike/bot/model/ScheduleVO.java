@@ -32,6 +32,16 @@ public class ScheduleVO implements Serializable{
     private String timer_off_after;
     private String timer_off_date;
 
+    public String getCreated_by() {
+        return created_by;
+    }
+
+    public void setCreated_by(String created_by) {
+        this.created_by = created_by;
+    }
+
+    private String created_by;
+
     public String getDevicesList() {
         return devicesList;
     }

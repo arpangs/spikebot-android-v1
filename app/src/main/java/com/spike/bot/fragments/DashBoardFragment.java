@@ -145,7 +145,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
     private ImageView empty_add_image;
     Button button_retry;
     Toolbar toolbar;
-    FloatingActionButton fab;
+    FloatingActionButton addDeviceFab;
     private SwipeRefreshLayout swipeRefreshLayout;
 
     ResponseErrorCode responseErrorCode;
@@ -240,7 +240,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         empty_add_image =  view.findViewById(R.id.empty_add_image);
         button_retry = view.findViewById(R.id.button_retry);
         linear_retry = view.findViewById(R.id.linear_retry);
-        fab = view.findViewById(R.id.fab);
+        addDeviceFab = view.findViewById(R.id.fab);
 
         txt_empty_schedule.setVisibility(View.GONE);
         ChatApplication.isRefreshDashBoard = true;
@@ -254,6 +254,10 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
     }
 
     private void clickListerFolatingBtn() {
+
+        if (!Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE).equals("1")) {
+            addDeviceFab.setVisibility(View.GONE);
+        }
         empty_add_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -268,7 +272,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             }
         });
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        addDeviceFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(getActivity(), AddDeviceTypeListActivity.class);
@@ -285,7 +289,11 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
     public void onResume() {
         super.onResume();
 
-        ChatApplication.logDisplay("array is "+roomList.size());
+        if(mSocket==null){
+            ChatApplication.logDisplay("socket is nulll");
+        }else {
+            ChatApplication.logDisplay("socket is nulll "+mSocket.connected());
+        }
 
         ((Main2Activity)activity).setCallBack(this);
         if (ChatApplication.isLocalFragmentResume) {
@@ -335,6 +343,12 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             mSocket.off("unReadCount", unReadCount);
 //            mSocket.off("sensorStatus", sensorStatus);
             mSocket.off("updateChildUser", updateChildUser);
+        }
+
+        if(mSocket==null){
+            ChatApplication.logDisplay("socket is nulll pause");
+        }else {
+            ChatApplication.logDisplay("socket is nulll pause "+mSocket.connected());
         }
         super.onPause();
     }
@@ -498,7 +512,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             tmpDeviceV0 = item;
             tmpPosition = position;
 
-//            if (item.getSensor_type().equalsIgnoreCase("temp_sensor") && item.getIsActive() == 1) {
             if (item.getSensor_type().equalsIgnoreCase("temp_sensor")) {
                 Intent intent = new Intent(activity, MultiSensorActivity.class);
                 intent.putExtra("temp_sensor_id", item.getSensor_id());
@@ -618,7 +631,11 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
     // view refresh
     private void refreshAllView() {
-        fab.setVisibility(View.VISIBLE);
+        if (!Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE).equals("1")) {
+            addDeviceFab.setVisibility(View.GONE);
+        }else {
+            addDeviceFab.setVisibility(View.VISIBLE);
+        }
         linear_retry.setVisibility(View.GONE);
         ((Main2Activity)activity).tabShow(true);
         ChatApplication.isCallDeviceList=true;
@@ -627,7 +644,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
     /*getting error than */
     public void errorViewClick(){
-        fab.setVisibility(View.GONE);
+        addDeviceFab.setVisibility(View.GONE);
         txt_empty_schedule.setVisibility(View.GONE);
         linear_retry.setVisibility(View.VISIBLE);
         ((Main2Activity)activity).tabShow(false);
@@ -1061,7 +1078,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                     if (code == 200) {
                         ChatApplication.isMoodFragmentNeedResume = true;
                     } else {
-                        ChatApplication.showToast(activity, item.getSensor_name() + " " + activity.getString(R.string.ir_error));
+                        sectionedExpandableLayoutHelper.updateDeviceBlaster(item.getDeviceId(),""+item.getOldStatus());
                     }
 
                 } catch (JSONException e) {
@@ -1073,6 +1090,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             @Override
             public void onFailure(Throwable throwable, String error) {
                 dismissProgressDialog();
+                sectionedExpandableLayoutHelper.updateDeviceBlaster(item.getDeviceId(),""+item.getOldStatus());
                 ChatApplication.logDisplay("result is ir error " + error.toString());
                 ChatApplication.showToast(activity, item.getSensor_name() + " " + activity.getString(R.string.ir_error));
             }
@@ -2136,12 +2154,13 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 public void run() {
                     if (args != null) {
                         try {
+                            //{"module_id":"1573121550836_Prw60ijgq","is_active":"y"}
                             JSONObject object = new JSONObject(args[0].toString());
                             ChatApplication.logDisplay("changeModuleStatus is " + object);
                             String module_id = object.optString("module_id");
-                            String module_status = object.optString("module_status");
+                            String is_active = object.optString("is_active");
 
-                            sectionedExpandableLayoutHelper.updateModuleItem(module_id,module_status);
+                            sectionedExpandableLayoutHelper.updateModuleActiveItem(module_id,is_active);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -2186,42 +2205,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         }
     };
 
-    /* change temp sensor */
-    private Emitter.Listener changeTempSensorValue = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-
-            if (activity == null) {
-                return;
-            }
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-                        try {
-
-                            JSONObject object = new JSONObject(args[0].toString());
-                            ChatApplication.logDisplay("temp is " + object);
-                            String room_id = object.getString("room_id");
-                            String room_order = object.getString("room_order");
-                            String temp_sensor_id = object.getString("temp_sensor_id");
-                            String temp_celsius = object.getString("temp_celsius");
-                            String temp_fahrenheit = object.getString("temp_fahrenheit");
-                            String is_in_C = object.getString("is_in_C");
-                            String humidity = object.getString("humidity");
-
-                            sectionedExpandableLayoutHelper.updateTempSensor(room_id, room_order, temp_sensor_id, temp_celsius, temp_fahrenheit, is_in_C, humidity);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                }
-            });
-        }
-    };
-
     /*update child socket like rmeove , add Or delete room */
     private Emitter.Listener updateChildUser = new Emitter.Listener() {
         @Override
@@ -2247,40 +2230,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                             e.printStackTrace();
                         }
 
-                    }
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener sensorStatus = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            if (activity == null) {
-                return;
-            }
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-                        try {
-                            JSONObject jsonObject = new JSONObject(args[0].toString());
-                            ChatApplication.logDisplay("sensorStatus is " + jsonObject.toString());
-                            String is_active = jsonObject.getString("is_active");
-                            String sensor_id = "";
-                            if (jsonObject.has("sensor_id")) {
-                                sensor_id = jsonObject.getString("sensor_id");
-                            } else if (jsonObject.has("door_sensor_id")) {
-                                sensor_id = jsonObject.getString("door_sensor_id");
-                            }
-
-                            //{"door_sensor_id":"1527913226555_Bk7fo51gQ","is_active":1}
-
-                            sectionedExpandableLayoutHelper.updateDeadSensor(sensor_id, is_active);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
                     }
                 }
             });

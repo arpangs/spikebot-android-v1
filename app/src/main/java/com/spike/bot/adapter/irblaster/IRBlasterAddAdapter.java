@@ -79,12 +79,12 @@ public class IRBlasterAddAdapter extends RecyclerView.Adapter<IRBlasterAddAdapte
 
         IRBlasterViewHolder(View itemView) {
             super(itemView);
-            mIBName = (TextView) itemView.findViewById(R.id.et_panel);
-            mRoomName = (TextView) itemView.findViewById(R.id.room_name);
-            mIrEdit = (ImageView) itemView.findViewById(R.id.iv_room_panel_add);
-            mIrDelete = (ImageView) itemView.findViewById(R.id.iv_room_panel_delete);
+            mIBName =  itemView.findViewById(R.id.et_panel);
+            mRoomName =  itemView.findViewById(R.id.room_name);
+            mIrEdit =  itemView.findViewById(R.id.iv_room_panel_add);
+            mIrDelete = itemView.findViewById(R.id.iv_room_panel_delete);
 
-            mIRRemoteList = (RecyclerView) itemView.findViewById(R.id.list_edit_device);
+            mIRRemoteList =  itemView.findViewById(R.id.list_edit_device);
             mIRRemoteList.setLayoutManager(new GridLayoutManager(mContext, 4));
         }
     }

@@ -39,7 +39,12 @@ public class AddUnassignedPanelAdapter extends RecyclerView.Adapter<AddUnassigne
 
         holder.mModuleId.setText("[" + roomdeviceList.get(position).getModuleId() + "]");
 
-        holder.mImageIcon.setImageResource(Common.getIcon(0, roomdeviceList.get(position).getModuleType()));
+        if(roomdeviceList.get(position).getModuleType().equalsIgnoreCase("door_sensor")){
+            holder.mImageIcon.setImageResource(Common.getIcon(1, roomdeviceList.get(position).getModuleType()));
+        }else {
+            holder.mImageIcon.setImageResource(Common.getIcon(0, roomdeviceList.get(position).getModuleType()));
+        }
+
 
         holder.mDeviceName.setText(roomdeviceList.get(position).getModuleType());
 

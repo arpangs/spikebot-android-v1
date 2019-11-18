@@ -19,6 +19,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
 import android.util.LruCache;
 import android.view.View;
@@ -46,6 +47,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class Constants {
 
@@ -253,8 +255,6 @@ public class Constants {
     //devices
     public static final String CHANGE_DEVICE_STATUS = "/device/status";
     public static final String ADD_CUSTOME_DEVICE = "/addCustomDevice";
-    public static final String CHANGE_FAN_SPEED = "/device/status";
-    public static final String GET_FAN_SPEED = "/device/status";
     public static final String CHECK_INDIVIDUAL_SWITCH_DETAILS = "/device/icon/list";
 
     //mood
@@ -290,6 +290,7 @@ public class Constants {
     //others
     public static final String getScheduleNotification = "/getScheduleNotification";
     public static final String GET_FILTER_NOTIFICATION_INFO = "/logs/categories";
+    public static final String logsfind = "/logs/find";
     public static final String GET_NOTIFICATION_LIST = "/getNotificationList";
     public static final String SAVE_NOTIFICATION_LIST = "/saveNotificationList";
     public static final String roomSensorUnreadLogs = "/roomSensorUnreadLogs";
@@ -297,7 +298,7 @@ public class Constants {
     public static final String updateBadgeCount = "/updateBadgeCount";
     public static final String getCameraToken = "/getCameraToken/";
     public static final String getAllCameraToken = "/getAllCameraToken";
-    public static final String getLocalMacAddress = "/getLocalMacAddress";
+    public static final String getLocalMacAddress = "/system/mac-address";
     public static final String addTTLock = "/addTTLock";
     public static final String getLockLists = "/getLockLists";
     public static final String deleteTTLock = "/deleteTTLock";
@@ -594,6 +595,21 @@ public class Constants {
         return r;
     }
 
+    public static String getCurrentDate(){
+        Date c = Calendar.getInstance().getTime();
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        String formattedDate = df.format(c);
+        return  formattedDate;
+    }
+
+    public static String logConverterDate(long activity_time){
+        Calendar calendar = Calendar.getInstance();
+        TimeZone tz = TimeZone.getDefault();
+        calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault());
+        java.util.Date currenTimeZone=new java.util.Date((long)activity_time);
+        return sdf.format(currenTimeZone);
+    }
 
 
 }

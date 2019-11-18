@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.kp.core.DateHelper;
 import com.spike.bot.R;
+import com.spike.bot.core.Constants;
 import com.spike.bot.model.DeviceLog;
 
 import java.text.ParseException;
@@ -83,15 +84,15 @@ public class LogRoomAdapter extends RecyclerView.Adapter<LogRoomAdapter.ViewHold
             }
 
             if (!TextUtils.isEmpty(deviceLog.getActivity_time())) {
-                Date today = DateHelper.parseDateSimple(deviceLog.getActivity_time(), DateHelper.DATE_YYYY_MM_DD_HH_MM_SS);//2018-01-12 19:40:07
 
-                strDateOfTime = DateHelper.getDayString(today);
-                strDateOfTimeTemp = strDateOfTime.split(" ");
+                String dateString = Constants.logConverterDate(Long.parseLong(deviceLog.getActivity_time()));
 
-                if (strDateOfTimeTemp.length > 2) {
-                    dateTime = strDateOfTimeTemp[1] + " " + strDateOfTimeTemp[2] + System.getProperty("line.separator") + strDateOfTimeTemp[0];
-                } else {
-                    dateTime = strDateOfTimeTemp[0] + " " + strDateOfTimeTemp[1];
+                strDateOfTimeTemp  =dateString.split(" ");
+
+                if(strDateOfTimeTemp[0].equalsIgnoreCase(Constants.getCurrentDate())){
+                    dateTime = strDateOfTimeTemp[1]+" "+strDateOfTimeTemp[2];
+                }else {
+                    dateTime = strDateOfTimeTemp[1]+ strDateOfTimeTemp[2]+ System.getProperty("line.separator") + strDateOfTimeTemp[0] ;
                 }
 
                 holder.tv_device_log_date.setText(dateTime);
@@ -122,7 +123,7 @@ public class LogRoomAdapter extends RecyclerView.Adapter<LogRoomAdapter.ViewHold
             }
 
 
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

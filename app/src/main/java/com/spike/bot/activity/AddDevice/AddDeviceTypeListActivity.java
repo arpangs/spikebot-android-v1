@@ -453,7 +453,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             public void onClick(View v) {
                 dialog.dismiss();
                 if(sensor_type==1){
-                    unassignIntent("door");
+                    unassignIntent("door_sensor");
                 }else  if(sensor_type==2){
                     unassignIntent("temp_sensor");
                 }else {
@@ -703,7 +703,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
         JSONObject object = new JSONObject();
         try {
-            object.put("key", roomName.getText().toString());
+            object.put("key", roomName.getText().toString()); /*key is spike123*/
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);

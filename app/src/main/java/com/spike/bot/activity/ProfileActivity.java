@@ -95,7 +95,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
 
                 //lock second
-                if (isFlagUser) {
+                if (isFlagUser && menuAdd!=null) {
                     if (position == 1) {
                         menuAdd.setVisible(true);
                     } else {

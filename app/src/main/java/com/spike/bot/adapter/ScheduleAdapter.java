@@ -300,7 +300,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
 
         if (!Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equals("1")) {
-            if (Common.getPrefValue(mContext, Constants.USER_ID).equals(scheduleVO.getUser_id())) {
+            if (Common.getPrefValue(mContext, Constants.USER_ID).equals(scheduleVO.getCreated_by())) {
                 holder.iv_schedule_dots.setVisibility(View.VISIBLE);
             } else {
                 holder.iv_schedule_dots.setVisibility(View.INVISIBLE);
@@ -402,11 +402,11 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                                 intent.putExtra("ROOM_ID", "" + scheduleArrayList.get(holder.iv_schedule_dots.getId()).getSchedule_id());
                                 intent.putExtra("activity_type", "" + scheduleArrayList.get(holder.iv_schedule_dots.getId()).getIs_timer());
                                 intent.putExtra("isRoomName", "" + scheduleArrayList.get(holder.iv_schedule_dots.getId()).getSchedule_name());
-                                if (scheduleArrayList.get(holder.iv_schedule_dots.getId()).getIs_timer() == 0) {
+//                                if (scheduleArrayList.get(holder.iv_schedule_dots.getId()).getIs_timer() == 0) {
                                     intent.putExtra("isCheckActivity", "schedule");
-                                } else {
-                                    intent.putExtra("isCheckActivity", "Timer");
-                                }
+//                                } else {
+//                                    intent.putExtra("isCheckActivity", "Timer");
+//                                }
                                 mContext.startActivity(intent);
                                 break;
                         }

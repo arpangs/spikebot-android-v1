@@ -1488,6 +1488,10 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
                 deviceObj.put("schedule_device_type", isSelectMode ? "room" : "mood");
 
+                if(!isSelectMode){
+                    deviceObj.put("room_id",moodListAdd.get(sp_mood_selection.getSelectedItemPosition()).getRoomId());
+                }
+
 
                 if(isEdit){
                     deviceObj.put("schedule_id",scheduleVO.getSchedule_id());
@@ -1834,11 +1838,9 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                         rb_schedule_type_room.setClickable(false);
 
                         sp_schedule_list.setEnabled(false);
-
-
                     }
-                    setData(roomListAdd, 2, false);
 
+                    setData(roomListAdd, 2, false);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } finally {
@@ -1858,7 +1860,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ChatApplication.logDisplay("getDeviceList onFailure " + error);
-                Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
                 if (roomListAdd.size() == 0) {
                     empty_ll_view.setVisibility(View.VISIBLE);
                     txt_empty_sch.setText("No Room Found");
@@ -2210,18 +2211,19 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
 
                                         if (sID.equals(deviceVOList.get(k).getPanel_device_id())) {
-                                            String typesensor = "";
-                                            if (!TextUtils.isEmpty(deviceVOList.get(k).getDeviceType())) {
-                                                typesensor = roomVO.getPanelList().get(i).getDeviceList().get(j).getDeviceType();
-                                            }
-                                            if (typesensor.equalsIgnoreCase("temp") ||
-                                                    typesensor.equalsIgnoreCase("door")) {
-                                                deviceVOList.get(k).setSelected(false);
-                                                roomVO.setExpanded(true);
-                                            } else {
+//                                            String typesensor = "";
+//                                            if (!TextUtils.isEmpty(deviceVOList.get(k).getDeviceType())) {
+//                                                ChatApplication.logDisplay("id get is "+roomVO.getPanelList().get(i).getDeviceList().get(j).getDeviceType());
+//                                                typesensor = roomVO.getPanelList().get(i).getDeviceList().get(j).getDeviceType();
+//                                            }
+//                                            if (typesensor.equalsIgnoreCase("temp") ||
+//                                                    typesensor.equalsIgnoreCase("door")) {
+//                                                deviceVOList.get(k).setSelected(false);
+//                                                roomVO.setExpanded(true);
+//                                            } else {
                                                 deviceVOList.get(k).setSelected(true);
                                                 roomVO.setExpanded(true);
-                                            }
+//                                            }
                                         }
                                     }
                                 }
@@ -2236,7 +2238,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         }
 
         //if add cheduler default expanded devices list //for select all room deviceid
-        if (isEditOpen && !TextUtils.isEmpty(roomId)) {
+        if (isEditOpen && !TextUtils.isEmpty(roomId) && !roomId.equals("null")) {
 
             ArrayList<RoomVO> roomListTemp = new ArrayList<>();
 

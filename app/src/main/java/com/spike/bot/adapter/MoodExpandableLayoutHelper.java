@@ -116,6 +116,30 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
     }
 
 
+
+    public void updateDeviceBlaster(String deviceId, String deviceStatus) {
+
+        for (int k = 0; k < mDataArrayList.size(); k++) {
+
+            if(mDataArrayList.get(k) instanceof DeviceVO){
+                DeviceVO deviceVO1 = (DeviceVO) mDataArrayList.get(k);
+                if (deviceVO1 != null) {
+
+                    if (deviceVO1.getDeviceId().equals(deviceId)) {
+                        ChatApplication.logDisplay("status update panel adapter match");
+                        ((DeviceVO) mDataArrayList.get(k)).setDeviceStatus(Integer.parseInt(deviceStatus));
+                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
+                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
+                        break;
+                    }
+
+                }
+            }
+        }
+        mSectionedExpandableGridAdapter.notifyDataSetChanged();
+    }
+
+
     public void updateItem(String moduleId,String deviceId,String deviceStatus,int is_locked) {
 
         DeviceVO item = new DeviceVO();

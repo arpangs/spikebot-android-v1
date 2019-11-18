@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
@@ -48,6 +49,7 @@ import com.spike.bot.R;
 import com.spike.bot.Retrofit.GetDataService;
 import com.spike.bot.Retrofit.RetrofitAPIManager;
 import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
+import com.spike.bot.adapter.DoorAlertAdapter;
 import com.spike.bot.adapter.DoorSensorInfoAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
@@ -207,7 +209,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         if (mSocket != null) {
             mSocket.on("doorsensorvoltage", doorsensorvoltage);
             mSocket.on("unReadCount", unReadCount);
-            mSocket.on("changeDoorSensorStatus", changeDoorSensorStatus);
+            mSocket.on("changeDeviceStatus", changeDoorSensorStatus);
         }
 
     }
@@ -276,9 +278,16 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                             //{"door_sensor_id":"1568731205713_SbQBf-JvXS","door_sensor_status":0,"door_lock_status":0}
                             JSONObject object = new JSONObject(args[0].toString());
                             ChatApplication.logDisplay("door is " + object);
-                            String door_sensorid = object.optString("door_sensor_id");
-                            String door_sensor_status = object.optString("door_sensor_status");
-                            String door_lock_status = object.optString("door_lock_status");
+
+                            String device_type = object.getString("device_type");
+                            String device_id = object.getString("device_id");
+                            String device_status = object.getString("device_status");
+                            int device_sub_status = object.optInt("device_sub_status");
+
+                            if(device_id.equalsIgnoreCase(doorSensorResModel.getDevice().getDevice_id())){
+                                doorSensorResModel.getDevice().setDeviceStatus(device_status);
+                                inActivieStatusDoor(1);
+                            }
 
 //                            if (door_sensorid.equals(door_sensor_id)) {
 //                                if (!TextUtils.isEmpty(door_lock_status) && !door_lock_status.equals("null") && door_lock_status.length() > 0) {
@@ -318,7 +327,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         if (mSocket != null) {
             mSocket.off("doorsensorvoltage", doorsensorvoltage);
             mSocket.off("unReadCount", unReadCount);
-            mSocket.on("changeDoorSensorStatus", changeDoorSensorStatus);
+            mSocket.on("changeDeviceStatus", changeDoorSensorStatus);
         }
     }
 
@@ -435,8 +444,8 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                 cardViewDoor.setVisibility(View.VISIBLE);
                 cardViewLock.setVisibility(View.GONE);
 
-                img_door_on.setImageResource(doorSensorResModel.getDevice().getDeviceStatus().equals("0") ? R.drawable.off_door : R.drawable.on_door);
-                txtDoorStatus.setText(doorSensorResModel.getDevice().getDeviceStatus().equals("0") ? "Door Close" : "Door Open");
+//                img_door_on.setImageResource(doorSensorResModel.getDevice().getDeviceStatus().equals("1") ? R.drawable.off_door : R.drawable.on_door);
+//                txtDoorStatus.setText(doorSensorResModel.getDevice().getDeviceStatus().equals("1") ? "Door Close" : "Door Open");
 
                 setLockStatus(4);
 //            } else if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("2")) {
@@ -479,24 +488,24 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 //                } else {
 //                    txtAlertCount.setText("0");
 //                }
-//
-//                if (doorSensorResModel.getDate().getDoorLists()[0].getUnreadLogs().length > 0) {
-//
-//                    int countTemp = doorSensorResModel.getDate().getDoorLists()[0].getUnreadLogs().length;
-//                    if (countTemp > 99) {
-//                        txtAlertCount.setText("99+");
-//                    } else {
-//                        txtAlertCount.setText("" + countTemp);
-//                    }
-//                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(DoorSensorInfoActivity.this);
-//                    recyclerAlert.setLayoutManager(linearLayoutManager);
-//                    DoorAlertAdapter doorAlertAdapter = new DoorAlertAdapter(DoorSensorInfoActivity.this, doorSensorResModel.getDate().getDoorLists()[0].getUnreadLogs());
-//                    recyclerAlert.setAdapter(doorAlertAdapter);
-//                } else {
-//                    txtAlertCount.setVisibility(View.GONE);
-//                    recyclerAlert.setVisibility(View.GONE);
-//                    txt_empty_notificationALert.setVisibility(View.VISIBLE);
-//                }
+
+                if (doorSensorResModel.getUnseenLogs()!=null && doorSensorResModel.getUnseenLogs().size()>0) {
+
+                    int countTemp = doorSensorResModel.getUnseenLogs().size();
+                    if (countTemp > 99) {
+                        txtAlertCount.setText("99+");
+                    } else {
+                        txtAlertCount.setText("" + countTemp);
+                    }
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(DoorSensorInfoActivity.this);
+                    recyclerAlert.setLayoutManager(linearLayoutManager);
+                    DoorAlertAdapter doorAlertAdapter = new DoorAlertAdapter(DoorSensorInfoActivity.this, doorSensorResModel.getUnseenLogs());
+                    recyclerAlert.setAdapter(doorAlertAdapter);
+                } else {
+                    txtAlertCount.setVisibility(View.GONE);
+                    recyclerAlert.setVisibility(View.GONE);
+                    txt_empty_notificationALert.setVisibility(View.VISIBLE);
+                }
 //            } else {
 //                txtAlertCount.setVisibility(View.GONE);
 //                recyclerAlert.setVisibility(View.GONE);
@@ -564,7 +573,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         dialog.setCanceledOnTouchOutside(false);
         dialog.setContentView(R.layout.dialog_auto_lock);
 
-        Button btnSave = (Button) dialog.findViewById(R.id.btn_save);
+        Button btnSave =  dialog.findViewById(R.id.btn_save);
         ImageView iv_close =  dialog.findViewById(R.id.iv_close);
         TextView txtTitle = dialog.findViewById(R.id.txtTitle);
 
@@ -719,9 +728,9 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             txtDoorStatus.setTextColor(getResources().getColor(R.color.automation_red));
             img_door_on.setClickable(false);
         } else {
-            img_door_on.setImageResource(doorSensorResModel.getDevice().getDeviceStatus().equals("1") ? R.drawable.on_door : R.drawable.off_door);
-            txtDoorStatus.setText(doorSensorResModel.getDevice().getDeviceStatus().equals("1") ? "Door Open" : "Door Close");
-            txtDoorStatus.setTextColor(doorSensorResModel.getDevice().getDeviceStatus().equals("1") ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.green));
+            img_door_on.setImageResource(doorSensorResModel.getDevice().getDeviceStatus().equals("0") ? R.drawable.on_door : R.drawable.off_door);
+            txtDoorStatus.setText(doorSensorResModel.getDevice().getDeviceStatus().equals("0") ? "Door Open" : "Door Close");
+            txtDoorStatus.setTextColor(doorSensorResModel.getDevice().getDeviceStatus().equals("0") ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.green));
             img_door_on.setClickable(true);
         }
     }
@@ -1273,6 +1282,9 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         imgDoorDelete = findViewById(R.id.imgDoorDelete);
         imgLockDelete = findViewById(R.id.imgLockDelete);
 
+        if (!Common.getPrefValue(this, Constants.USER_ADMIN_TYPE).equals("1")) {
+            btn_delete.setVisibility(View.GONE);
+        }
         btn_delete.setOnClickListener(this);
         view_rel_badge.setOnClickListener(this);
         linearAlertDown.setOnClickListener(this);
@@ -1436,7 +1448,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
         } else if (id == R.id.view_rel_badge) {
             view_rel_badge.setClickable(false);
-            unreadApiCall(true);
+            checkIntent(true);
         } else if (id == R.id.linearAlertDown) {
             if (flagAlert) {
                 flagAlert = false;
@@ -1477,12 +1489,12 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "" + message, "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
             @Override
             public void onConfirmDialogYesClick() {
-                if (count == 1 || count == 2) {
-                    deleteManual(count);
-                } else {
+//                if (count == 1 || count == 2) {
+//                    deleteManual(count);
+//                } else {
                     deleteDoorSensor();
 
-                }
+//                }
 
             }
 
@@ -1570,11 +1582,11 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
-        String webUrl = ChatApplication.url + Constants.DELETE_DOOR_SENSOR;
+        String webUrl = ChatApplication.url + Constants.DELETE_MODULE;
 
         JSONObject jsonNotification = new JSONObject();
         try {
-            jsonNotification.put("door_sensor_id", door_sensor_id);
+            jsonNotification.put("device_id", door_sensor_id);
             jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -1991,15 +2003,15 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
     public void checkIntent(boolean b) {
         if (b) {
-//            Intent intent = new Intent(DoorSensorInfoActivity.this, DeviceLogActivity.class);
-//            intent.putExtra("ROOM_ID", tempLists[0].getRoom_id());
-//            intent.putExtra("Mood_Id", "" + tempLists[0].getmDoorSensorMoudleId());
-//            intent.putExtra("activity_type", "door");
-//            intent.putExtra("IS_SENSOR", true);
-//            intent.putExtra("tabSelect", "show");
-//            intent.putExtra("isCheckActivity", "doorSensor");
-//            intent.putExtra("isRoomName", "" + sensorName.getText().toString());
-//            startActivity(intent);
+            Intent intent = new Intent(DoorSensorInfoActivity.this, DeviceLogActivity.class);
+            intent.putExtra("ROOM_ID", door_sensor_id);
+            intent.putExtra("Mood_Id", "" + door_sensor_id);
+            intent.putExtra("activity_type", "door");
+            intent.putExtra("IS_SENSOR", true);
+            intent.putExtra("tabSelect", "show");
+            intent.putExtra("isCheckActivity", "doorSensor");
+            intent.putExtra("isRoomName", "" + sensorName.getText().toString());
+            startActivity(intent);
         } else {
             DoorSensorInfoActivity.this.finish();
         }
@@ -2008,7 +2020,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
     @Override
     public void onBackPressed() {
-        unreadApiCall(false);
         super.onBackPressed();
     }
 }

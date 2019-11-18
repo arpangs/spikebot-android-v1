@@ -136,7 +136,7 @@ public class FanDialog extends Dialog implements
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String url = ChatApplication.url + Constants.GET_FAN_SPEED;
+        String url = ChatApplication.url + Constants.CHANGE_DEVICE_STATUS;
 
         new GetJsonTask(activity,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
@@ -197,7 +197,7 @@ public class FanDialog extends Dialog implements
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String url = ChatApplication.url + Constants.CHANGE_FAN_SPEED;
+        String url = ChatApplication.url + Constants.CHANGE_DEVICE_STATUS;
 
         ChatApplication.logDisplay("fan is "+url+" "+obj);
 
@@ -231,7 +231,6 @@ public class FanDialog extends Dialog implements
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
     }

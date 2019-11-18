@@ -236,8 +236,8 @@ public class ActivityHelper {
         con.setRequestProperty("Content-Type", "application/json");
         con.setRequestProperty("Accept", "application/json");
 
-        con.setConnectTimeout(20000);
-        con.setReadTimeout(20000);
+        con.setConnectTimeout(30000);
+        con.setReadTimeout(30000);
         con.setUseCaches(false);
         if (method.equalsIgnoreCase("POST")) {
             con.setDoOutput(true);

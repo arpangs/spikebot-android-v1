@@ -97,7 +97,6 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         syncIntent();
         bindView();
 
-        getRemoteInfo();
         /*for ir list getting*/
         getIRDeviceDetails();
     }
@@ -133,6 +132,10 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         mTempPlus.setOnClickListener(this);
         mImageEdit.setOnClickListener(this);
         mImageDelete.setOnClickListener(this);
+
+        if (!Common.getPrefValue(this, Constants.USER_ADMIN_TYPE).equals("1")) {
+            mImageDelete.setVisibility(View.GONE);
+        }
 
     }
 
@@ -190,8 +193,6 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             return;
         }
 
-        ActivityHelper.showProgressDialog(IRBlasterRemote.this, "Please Wait...", false);
-
         JSONObject object = new JSONObject();
         try {
             object.put("device_id", mRemoteId);
@@ -243,7 +244,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-
+        ActivityHelper.showProgressDialog(IRBlasterRemote.this, "Please Wait...", false);
         JSONObject obj = new JSONObject();
         try {
             obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -262,8 +263,6 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
-
-                ActivityHelper.dismissProgressDialog();
                 try {
 
                     int code = result.getInt("code");
@@ -272,9 +271,9 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                         IRDeviceDetailsRes irDeviceDetailsRes = Common.jsonToPojo(result.toString(), IRDeviceDetailsRes.class);
                         mIRDeviceList = irDeviceDetailsRes.getData();
 
-
                     }
 
+                    getRemoteInfo();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -404,13 +403,18 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         mSpinnerBlaster = mDialog.findViewById(R.id.remote_blaster_spinner);
         remote_room_txt =  mDialog.findViewById(R.id.remote_room_txt);
         mSpinnerMode = mDialog.findViewById(R.id.remote_mode_spinner);
-
         mRemoteDefaultTemp = mDialog.findViewById(R.id.edt_remote_tmp);
 
+        String modeDefult="";
         try {
-            mEdtRemoteName.setText("" + mRemoteCommandList.getDevice().getDeviceName());
+            if(!TextUtils.isEmpty(mRemoteCommandList.getDevice().getDeviceMeta().getDeviceDefaultStatus())){
+                String[] spiltarray=mRemoteCommandList.getDevice().getDeviceMeta().getDeviceDefaultStatus().split("-");
+                mRemoteDefaultTemp.setText("" + spiltarray[1]);
+                modeDefult=spiltarray[0];
+            }
+            mEdtRemoteName.setText("" +mRemoteCommandList.getDevice().getDeviceName());
             mEdtRemoteName.setSelection(mEdtRemoteName.getText().toString().length());
-            mRemoteDefaultTemp.setText("" + tempCurrent);
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -451,7 +455,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         mSpinnerMode.setAdapter(roomAdapter1);
 
         for (int i = 0; i < moodList.length; i++) {
-            if (moodList[i].equalsIgnoreCase(modeType)) {
+            if (moodList[i].equalsIgnoreCase(modeDefult)) {
                 mSpinnerMode.setSelection(i);
             }
         }

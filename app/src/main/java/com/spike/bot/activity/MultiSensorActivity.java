@@ -278,6 +278,10 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
         view_rel_badge.setOnClickListener(this);
 
+        if (!Common.getPrefValue(this, Constants.USER_ADMIN_TYPE).equals("1")) {
+            btn_delete.setVisibility(View.GONE);
+        }
+
         startSocketConnection();
 
         txtAddButton.setOnClickListener(new View.OnClickListener() {
@@ -1540,10 +1544,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
-
-                ActivityHelper.dismissProgressDialog();
                 ChatApplication.logDisplay("result is " + result);
-                ActivityHelper.dismissProgressDialog();
 
                 notificationHumidityList.clear();
                 notificationList.clear();
@@ -1553,8 +1554,9 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                 if (mRemoteList.getCode() == 200) {
                     txtEmpty.setVisibility(View.GONE);
                     fillData(mRemoteCommandList, true);
-
                 }
+                ActivityHelper.dismissProgressDialog();
+
             }
 
             @Override
@@ -1794,7 +1796,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     private void checkIntent(boolean b) {
         if (b) {
             Intent intent = new Intent(MultiSensorActivity.this, DeviceLogActivity.class);
-            intent.putExtra("ROOM_ID", "" + temp_room_id);
+            intent.putExtra("ROOM_ID", "" + mRemoteCommandList.getDevice().getDevice_id());
             intent.putExtra("Mood_Id", "" + mRemoteCommandList.getDevice().getDevice_id());
             intent.putExtra("activity_type", "tempsensor");
             intent.putExtra("IS_SENSOR", true);

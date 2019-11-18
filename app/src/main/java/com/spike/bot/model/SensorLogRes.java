@@ -3,6 +3,7 @@ package com.spike.bot.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -10,183 +11,208 @@ import java.util.List;
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class SensorLogRes {
+public class SensorLogRes implements Serializable {
 
-    @SerializedName("code")
+    @Expose
     private Integer code;
     @SerializedName("message")
+    @Expose
     private String message;
     @SerializedName("data")
-    private Data data;
+    @Expose
+    private List<Datum> data = null;
 
     public Integer getCode() {
-       return code;
+        return code;
     }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
     public String getMessage() {
-       return message;
+        return message;
     }
 
-    public Data getData() {
-       return data;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public class Data {
+    public List<Datum> getData() {
+        return data;
+    }
 
-        @SerializedName("doorSensor")
-        private List<DoorSensor> doorSensor = null;
-        @SerializedName("tempSensor")
-        private List<TempSensor> tempSensor = null;
+    public void setData(List<Datum> data) {
+        this.data = data;
+    }
 
-        @SerializedName("multiSensor")
+    public class Datum {
+
+        @SerializedName("panel_device_id")
         @Expose
-        private List<MultiSensor> multiSensor = null;
+        private String panelDeviceId;
+        @SerializedName("device_id")
+        @Expose
+        private String deviceId;
+        @SerializedName("panel_device_meta")
+        @Expose
+        private String panelDeviceMeta;
+        @SerializedName("module_id")
+        @Expose
+        private String moduleId;
+        @SerializedName("device_name")
+        @Expose
+        private String deviceName;
+        @SerializedName("device_icon")
+        @Expose
+        private String deviceIcon;
+        @SerializedName("device_status")
+        @Expose
+        private String deviceStatus;
+        @SerializedName("device_sub_status")
+        @Expose
+        private String deviceSubStatus;
+        @SerializedName("device_type")
+        @Expose
+        private String deviceType;
+        @SerializedName("device_sub_type")
+        @Expose
+        private Object deviceSubType;
+        @SerializedName("device_identifier")
+        @Expose
+        private String deviceIdentifier;
+        @SerializedName("device_meta")
+        @Expose
+        private String deviceMeta;
+        @SerializedName("is_active")
+        @Expose
+        private String isActive;
+        @SerializedName("module_type")
+        @Expose
+        private String moduleType;
+        @SerializedName("module_meta")
+        @Expose
+        private String moduleMeta;
 
-        public List<MultiSensor> getMultiSensor() {
-            return multiSensor;
+        public String getPanelDeviceId() {
+            return panelDeviceId;
         }
 
-        public void setMultiSensor(List<MultiSensor> multiSensor) {
-            this.multiSensor = multiSensor;
+        public void setPanelDeviceId(String panelDeviceId) {
+            this.panelDeviceId = panelDeviceId;
         }
 
-
-
-        public List<DoorSensor> getDoorSensor() {
-            return doorSensor;
+        public String getDeviceId() {
+            return deviceId;
         }
 
-        public List<TempSensor> getTempSensor() {
-            return tempSensor;
+        public void setDeviceId(String deviceId) {
+            this.deviceId = deviceId;
         }
 
-        public class MultiSensor {
-
-            @SerializedName("multi_sensor_name")
-            @Expose
-            private String multiSensorName;
-            @SerializedName("room_name")
-            @Expose
-            private String roomName;
-            @SerializedName("module_id")
-            @Expose
-            private String moduleId;
-            @SerializedName("room_id")
-            @Expose
-            private String roomId;
-            @SerializedName("sensor_name")
-            @Expose
-            private String sensorName;
-
-            public String getMultiSensorName() {
-                return multiSensorName;
-            }
-
-            public void setMultiSensorName(String multiSensorName) {
-                this.multiSensorName = multiSensorName;
-            }
-
-            public String getRoomName() {
-                return roomName;
-            }
-
-            public void setRoomName(String roomName) {
-                this.roomName = roomName;
-            }
-
-            public String getModuleId() {
-                return moduleId;
-            }
-
-            public void setModuleId(String moduleId) {
-                this.moduleId = moduleId;
-            }
-
-            public String getRoomId() {
-                return roomId;
-            }
-
-            public void setRoomId(String roomId) {
-                this.roomId = roomId;
-            }
-
-            public String getSensorName() {
-                return sensorName;
-            }
-
-            public void setSensorName(String sensorName) {
-                this.sensorName = sensorName;
-            }
-
+        public String getPanelDeviceMeta() {
+            return panelDeviceMeta;
         }
 
-        public class DoorSensor {
-            @SerializedName("door_sensor_name")
-            private String doorSensorName;
-            @SerializedName("room_name")
-            private String roomName;
-            @SerializedName("module_id")
-            private String moduleId;
-            @SerializedName("room_id")
-            private String roomId;
-            @SerializedName("sensor_name")
-            private String sensorName;
-
-            public String getDoorSensorName() {
-                return doorSensorName;
-            }
-
-            public String getRoomName() {
-                return roomName;
-            }
-
-            public String getModuleId() {
-                return moduleId;
-            }
-
-            public String getRoomId() {
-                return roomId;
-            }
-
-            public String getSensorName() {
-                return sensorName;
-            }
-
+        public void setPanelDeviceMeta(String panelDeviceMeta) {
+            this.panelDeviceMeta = panelDeviceMeta;
         }
 
-        public class TempSensor {
+        public String getModuleId() {
+            return moduleId;
+        }
 
-            @SerializedName("temp_sensor_name")
-            private String tempSensorName;
-            @SerializedName("room_name")
-            private String roomName;
-            @SerializedName("module_id")
-            private String moduleId;
-            @SerializedName("room_id")
-            private String roomId;
-            @SerializedName("sensor_name")
-            private String sensorName;
+        public void setModuleId(String moduleId) {
+            this.moduleId = moduleId;
+        }
 
-            public String getTempSensorName() {
-                return tempSensorName;
-            }
+        public String getDeviceName() {
+            return deviceName;
+        }
 
-            public String getRoomName() {
-                return roomName;
-            }
+        public void setDeviceName(String deviceName) {
+            this.deviceName = deviceName;
+        }
 
-            public String getModuleId() {
-                return moduleId;
-            }
+        public String getDeviceIcon() {
+            return deviceIcon;
+        }
 
-            public String getRoomId() {
-                return roomId;
-            }
+        public void setDeviceIcon(String deviceIcon) {
+            this.deviceIcon = deviceIcon;
+        }
 
-            public String getSensorName() {
-                return sensorName;
-            }
+        public String getDeviceStatus() {
+            return deviceStatus;
+        }
+
+        public void setDeviceStatus(String deviceStatus) {
+            this.deviceStatus = deviceStatus;
+        }
+
+        public String getDeviceSubStatus() {
+            return deviceSubStatus;
+        }
+
+        public void setDeviceSubStatus(String deviceSubStatus) {
+            this.deviceSubStatus = deviceSubStatus;
+        }
+
+        public String getDeviceType() {
+            return deviceType;
+        }
+
+        public void setDeviceType(String deviceType) {
+            this.deviceType = deviceType;
+        }
+
+        public Object getDeviceSubType() {
+            return deviceSubType;
+        }
+
+        public void setDeviceSubType(Object deviceSubType) {
+            this.deviceSubType = deviceSubType;
+        }
+
+        public String getDeviceIdentifier() {
+            return deviceIdentifier;
+        }
+
+        public void setDeviceIdentifier(String deviceIdentifier) {
+            this.deviceIdentifier = deviceIdentifier;
+        }
+
+        public String getDeviceMeta() {
+            return deviceMeta;
+        }
+
+        public void setDeviceMeta(String deviceMeta) {
+            this.deviceMeta = deviceMeta;
+        }
+
+        public String getIsActive() {
+            return isActive;
+        }
+
+        public void setIsActive(String isActive) {
+            this.isActive = isActive;
+        }
+
+        public String getModuleType() {
+            return moduleType;
+        }
+
+        public void setModuleType(String moduleType) {
+            this.moduleType = moduleType;
+        }
+
+        public String getModuleMeta() {
+            return moduleMeta;
+        }
+
+        public void setModuleMeta(String moduleMeta) {
+            this.moduleMeta = moduleMeta;
         }
 
     }
-
 }

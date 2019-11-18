@@ -406,11 +406,6 @@
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden|adjustResize"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <activity android:name="com.spike.bot.activity.SensorDoorLogActivity"
-            android:windowSoftInputMode="stateHidden|adjustPan"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
-
         <activity android:name="com.spike.bot.activity.SensorUnassignedActivity"
             android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme.NoActionBar"
@@ -530,7 +525,7 @@
             android:exported="true" />
 
         <!--
-     Google console Account with FCM ACCOUNT > anuj@spikebot.io / Hello$123
+     Google console Account with FCM push notificationACCOUNT > anuj@spikebot.io / Hello$123
 >SPike bot crashing LOgin  with  ttchatcrash@gmail.com / ttchat$123
 
      -->

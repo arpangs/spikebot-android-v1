@@ -44,8 +44,8 @@
         <ImageView
             android:id="@+id/iv_room_panel_onoff"
             android:visibility="visible"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="@dimen/_31sdp"
+            android:layout_height="@dimen/_31sdp"
             android:layout_gravity="center_vertical"
             android:adjustViewBounds="true"
             android:padding="1dp"

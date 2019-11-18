@@ -13,10 +13,12 @@ import android.view.animation.ScaleAnimation;
 import android.widget.TextView;
 
 import com.spike.bot.R;
+import com.spike.bot.core.Constants;
 import com.spike.bot.model.DeviceLog;
 import com.kp.core.DateHelper;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -65,8 +67,13 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
                 holder.view_header.setVisibility(View.VISIBLE);
             }
 
-            holder.tvUserName.setVisibility(View.VISIBLE);
-            holder.tvUserName.setText(deviceLog.getUser_name());
+
+            if(deviceLog.getUser_name()!=null && !deviceLog.getUser_name().equals("null")){
+                holder.tvUserName.setVisibility(View.VISIBLE);
+                holder.tvUserName.setText(deviceLog.getUser_name());
+            }else {
+                holder.tvUserName.setVisibility(View.GONE);
+            }
 
             if(deviceLog.getActivity_action().equalsIgnoreCase("End of Record")){
                 holder.txt_empty_view.setVisibility(View.GONE);
@@ -82,14 +89,15 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
             }
 
             if(!TextUtils.isEmpty(deviceLog.getActivity_time())){
-                Date today = DateHelper.parseDateSimple(deviceLog.getActivity_time(),DateHelper.DATE_YYYY_MM_DD_HH_MM_SS);//2018-01-12 19:40:07
 
-                strDateOfTime =DateHelper.getDayString(today);
-                strDateOfTimeTemp  =strDateOfTime.split(" ");
-                if(strDateOfTimeTemp.length>2){
-                         dateTime = strDateOfTimeTemp[1]+ " "+strDateOfTimeTemp[2]+ System.getProperty("line.separator") + strDateOfTimeTemp[0] ;
+                String dateString = Constants.logConverterDate(Long.parseLong(deviceLog.getActivity_time()));
+
+                strDateOfTimeTemp  =dateString.split(" ");
+
+                if(strDateOfTimeTemp[0].equalsIgnoreCase(Constants.getCurrentDate())){
+                    dateTime = strDateOfTimeTemp[1]+" "+strDateOfTimeTemp[2];
                 }else {
-                        dateTime = strDateOfTimeTemp[0]+" "+strDateOfTimeTemp[1];
+                    dateTime = strDateOfTimeTemp[1]+ strDateOfTimeTemp[2]+ System.getProperty("line.separator") + strDateOfTimeTemp[0] ;
                 }
 
                 holder.tv_device_log_date.setText(dateTime);
@@ -97,7 +105,6 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
 
 
             if(deviceLog.getIs_unread().equalsIgnoreCase("1")){
-
                 holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
                 holder.tv_device_log_type.setTextColor(mContext.getResources().getColor(R.color.automation_red));
                 holder.tvUserName.setTextColor(mContext.getResources().getColor(R.color.automation_red));
@@ -137,7 +144,7 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
             }
 
 
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

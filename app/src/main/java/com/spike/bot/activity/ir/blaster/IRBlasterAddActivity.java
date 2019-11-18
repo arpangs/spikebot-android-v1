@@ -706,11 +706,11 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             return;
         }
 
-        String URL = ChatApplication.url + Constants.DELETE_IR_BLASTER;
+        String URL = ChatApplication.url + Constants.DELETE_MODULE;
 
         JSONObject object = new JSONObject();
         try {
-            object.put("ir_blaster_id", "" + irBlasterId);
+            object.put("device_id", "" + irBlasterId);
             object.put("phone_id", "" + APIConst.PHONE_ID_VALUE);
             object.put("phone_type", "" + APIConst.PHONE_TYPE_VALUE);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -770,6 +770,8 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         mDialog = getDialogContext();
         mBlasterName = mDialog.findViewById(R.id.edt_blaster_name);
         final Spinner mRoomSpinner = mDialog.findViewById(R.id.blaster_room_spinner);
+        mRoomSpinner.setEnabled(false);
+        mRoomSpinner.setClickable(false);
 
         InputFilter[] filterArray = new InputFilter[1];
         filterArray[0] = new InputFilter.LengthFilter(25); //Remote Name max length to set only 25
@@ -810,7 +812,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             @Override
             public void onClick(View v) {
 
-                updateBlaster(mDialog, mBlasterName, ir.getDeviceId());
+                updateBlaster(mDialog, mBlasterName, ir.getDeviceId(),ir);
             }
         });
 
@@ -829,8 +831,9 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
      * @param mDialog
      * @param mBlasterName
      * @param irBlasterId
+     * @param ir
      */
-    private void updateBlaster(final Dialog mDialog, EditText mBlasterName, String irBlasterId) {
+    private void updateBlaster(final Dialog mDialog, EditText mBlasterName, String irBlasterId, IRBlasterAddRes.Datum ir) {
 
         if (!ActivityHelper.isConnectingToInternet(getApplicationContext())) {
             Common.showToast("" + getString(R.string.error_connect));
@@ -847,10 +850,11 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
 
         JSONObject object = new JSONObject();
         try {
-            object.put("ir_blaster_name", mBlasterName.getText().toString().trim());
-            object.put("ir_blaster_id", "" + irBlasterId);
-//            object.put("room_id", "" + roomList.getRoomId());
-//            object.put("room_name", "" + roomList.getRoomName());
+            //"device_id": "1571407908196_uEVHoQJNR",
+            //	"device_name": "jghgh",
+            //
+            object.put("device_name", mBlasterName.getText().toString().trim());
+            object.put("device_id", "" + irBlasterId);
             object.put("phone_id", "" + APIConst.PHONE_ID_VALUE);
             object.put("phone_type", "" + APIConst.PHONE_TYPE_VALUE);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -864,7 +868,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             hideSoftKeyboard(mBlasterName);
         }
 
-        String URL = ChatApplication.url + Constants.UPDATE_IR_BLASTER;
+        String URL = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
 
         new GetJsonTask(this, URL, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
@@ -876,11 +880,15 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
                     String code = result.getString("code");
                     String message = result.getString("message");
                     if (!TextUtils.isEmpty(message)) {
-                        Common.showToast(message);
+                        showToast(message);
                     }
                     if (code.equalsIgnoreCase("200")) {
                         mDialog.dismiss();
-                        getIRBlasterList();
+                        ir.setDeviceName(mBlasterName.getText().toString().trim());
+                        irBlasterAddAdapter.notifyDataSetChanged();
+
+
+//                        getIRBlasterList();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

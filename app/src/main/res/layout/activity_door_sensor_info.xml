@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:background="@drawable/new_screen_resolution"
-    android:layout_height="match_parent"
-    tools:context="com.spike.bot.activity.RoomEditActivity">
+    android:layout_height="match_parent">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -195,7 +194,7 @@
                                 android:layout_width="@dimen/_25sdp"
                                 android:layout_height="@dimen/_25sdp"
                                 android:layout_marginTop="@dimen/_5sdp"
-                                android:visibility="visible"
+                                android:visibility="invisible"
                                 android:layout_gravity="center"
                                 android:src="@drawable/delete_blue"/>
 

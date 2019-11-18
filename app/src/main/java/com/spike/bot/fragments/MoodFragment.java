@@ -166,6 +166,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
         mFab = view.findViewById(R.id.fab);
         txt_empty_schedule.setVisibility(View.GONE);
 
+
         try {
             startSocketConnection();
         } catch (Exception e) {
@@ -296,7 +297,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
         }else if(action.equalsIgnoreCase("imgLog")){
             Intent intent = new Intent(getActivity(),DeviceLogActivity.class);
             intent.putExtra("ROOM_ID",roomVO.getRoomId());
-            intent.putExtra("isCheckActivity","mode");
+            intent.putExtra("isCheckActivity","mood");
             intent.putExtra("isRoomName",""+roomVO.getRoomName());
             startActivity(intent);
         }else if(action.equalsIgnoreCase("imgSch")){
@@ -714,11 +715,9 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             return;
         }
 
-
-        if (mSocket==null){
-            ChatApplication.logDisplay("mSocket is null mood");
-           return;
-        }
+        //http://192.168.175.118/room/status
+        // {"phone_id":"352185100756835","phone_type":"android","user_id":"1568463607921_AyMe7ek9e",
+        // "room_id":"1573121015048_CGqaArkr3","room_status":0}
 
         JSONObject obj = new JSONObject();
         try {
@@ -727,17 +726,15 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
             obj.put("room_id", moodVO.getRoomId());
             obj.put("panel_id",panel_id);
-            obj.put("device_status", moodVO.getOld_room_status());
-            obj.put("operationtype", 3);
-            obj.put("localData", userId.equalsIgnoreCase("0") ? "0" : "1");
+            obj.put("room_status",moodVO.getRoom_status());
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        if(mSocket!=null && mSocket.connected()){
-            mSocket.emit("changeRoomPanelMoodStatus", obj);
-
-        }else{
+//        if(mSocket!=null && mSocket.connected()){
+//            mSocket.emit("changeRoomPanelMoodStatus", obj);
+//
+//        }else{
             String url =  ChatApplication.url + Constants.CHANGE_ROOM_PANELMOOD_STATUS_NEW;
             new GetJsonTask(getActivity(),url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
                 @Override
@@ -757,7 +754,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
                     ActivityHelper.dismissProgressDialog();
                 }
             }).execute();
-        }
+//        }
 
     }
 
@@ -794,6 +791,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
                     if(code == 200){
                     }else{
                         ChatApplication.showToast(getActivity(),item.getDeviceName()+" "+getString(R.string.ir_error));
+                        sectionedExpandableLayoutHelper.updateDeviceBlaster(item.getDeviceId(),""+item.getOldStatus());
                     }
 
                 } catch (JSONException e) {
@@ -806,6 +804,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.logDisplay("result is ir error "+error.toString());
                 ChatApplication.showToast(getActivity(),item.getDeviceName()+" "+getString(R.string.ir_error));
+                sectionedExpandableLayoutHelper.updateDeviceBlaster(item.getDeviceId(),""+item.getOldStatus());
             }
 
         }).execute();

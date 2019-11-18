@@ -10,10 +10,14 @@ import android.widget.TextView;
 
 import com.kp.core.DateHelper;
 import com.spike.bot.R;
+import com.spike.bot.core.Constants;
 import com.spike.bot.model.DoorSensorResModel;
+import com.spike.bot.model.RemoteDetailsRes;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Sagar on 28/11/18.
@@ -23,21 +27,20 @@ public class DoorAlertAdapter extends RecyclerView.Adapter<DoorAlertAdapter.Sens
 
     private TempSensorInfoAdapter.OnNotificationContextMenu onNotificationContextMenu;
     private Context mContext;
-    DoorSensorResModel.DATA.DoorList.UnreadLogs[] arrayListLog;
+    List<RemoteDetailsRes.Data.UnseenLog>  arrayListLog =new ArrayList<>();
 
     String strDateOfTime, dateTime = "";
     String[] strDateOfTimeTemp;
 
 
-    public DoorAlertAdapter(Context context, DoorSensorResModel.DATA.DoorList.UnreadLogs[] arrayListLog1) {
+    public DoorAlertAdapter(Context context, List<RemoteDetailsRes.Data.UnseenLog> arrayListLog1) {
         this.mContext = context;
         this.arrayListLog = arrayListLog1;
     }
 
     @Override
     public SensorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.row_door_alert, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_door_alert, parent, false);
         return new SensorViewHolder(view);
     }
 
@@ -49,29 +52,39 @@ public class DoorAlertAdapter extends RecyclerView.Adapter<DoorAlertAdapter.Sens
         } else {
             holder.viewLine.setVisibility(View.VISIBLE);
         }
-        final DoorSensorResModel.DATA.DoorList.UnreadLogs unreadLogs = arrayListLog[position];
 
-        if (!TextUtils.isEmpty(unreadLogs.getActivityTime())) {
-            Date today = null;//2018-01-12 19:40:07
-            try {
-                today = DateHelper.parseDateSimple(unreadLogs.getActivityTime(), DateHelper.DATE_YYYY_MM_DD_HH_MM_SS);
-            } catch (ParseException e) {
-                e.printStackTrace();
+        if (!TextUtils.isEmpty(arrayListLog.get(position).getCreatedAt())) {
+//            Date today = null;//2018-01-12 19:40:07
+//            try {
+//                today = DateHelper.parseDateSimple(arrayListLog.get(position).getCreatedAt(), DateHelper.DATE_YYYY_MM_DD_HH_MM_SS);
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//            }
+//
+//            strDateOfTime = DateHelper.getDayString(today);
+//            strDateOfTimeTemp = strDateOfTime.split(" ");
+//            if (strDateOfTimeTemp.length > 2) {
+//                dateTime = strDateOfTimeTemp[1] + " " + strDateOfTimeTemp[2] + System.getProperty("line.separator") + strDateOfTimeTemp[0];
+//            } else {
+//                dateTime = strDateOfTimeTemp[0] + " " + strDateOfTimeTemp[1];
+//            }
+
+            String dateString = Constants.logConverterDate(Long.parseLong(arrayListLog.get(position).getCreatedAt()));
+
+            strDateOfTimeTemp  =dateString.split(" ");
+
+            if(strDateOfTimeTemp[0].equalsIgnoreCase(Constants.getCurrentDate())){
+                dateTime = strDateOfTimeTemp[1]+" "+strDateOfTimeTemp[2];
+            }else {
+                dateTime = strDateOfTimeTemp[1]+ strDateOfTimeTemp[2]+ System.getProperty("line.separator") + strDateOfTimeTemp[0] ;
             }
 
-            strDateOfTime = DateHelper.getDayString(today);
-            strDateOfTimeTemp = strDateOfTime.split(" ");
-            if (strDateOfTimeTemp.length > 2) {
-                dateTime = strDateOfTimeTemp[1] + " " + strDateOfTimeTemp[2] + System.getProperty("line.separator") + strDateOfTimeTemp[0];
-            } else {
-                dateTime = strDateOfTimeTemp[0] + " " + strDateOfTimeTemp[1];
-            }
 
             holder.tv_device_log_date.setText(dateTime);
         }
 
-        holder.tv_device_description.setText(unreadLogs.getActivityDescription());
-        holder.tv_device_log_type.setText(unreadLogs.getActivityAction());
+        holder.tv_device_description.setText(arrayListLog.get(position).getActivityDescription());
+        holder.tv_device_log_type.setText(arrayListLog.get(position).getActivityAction());
 
 
     }
@@ -79,7 +92,7 @@ public class DoorAlertAdapter extends RecyclerView.Adapter<DoorAlertAdapter.Sens
 
     @Override
     public int getItemCount() {
-        return arrayListLog.length;
+        return arrayListLog.size();
     }
 
 
@@ -95,10 +108,10 @@ public class DoorAlertAdapter extends RecyclerView.Adapter<DoorAlertAdapter.Sens
 
         public SensorViewHolder(View view) {
             super(view);
-            tv_device_description = (TextView) itemView.findViewById(R.id.txtDetails);
-            tv_device_log_type = (TextView) itemView.findViewById(R.id.txtAction);
-            tv_device_log_date = (TextView) itemView.findViewById(R.id.txtDateTime);
-            viewLine = (View) itemView.findViewById(R.id.viewLine);
+            tv_device_description =  itemView.findViewById(R.id.txtDetails);
+            tv_device_log_type =  itemView.findViewById(R.id.txtAction);
+            tv_device_log_date =  itemView.findViewById(R.id.txtDateTime);
+            viewLine =  itemView.findViewById(R.id.viewLine);
         }
     }
 }

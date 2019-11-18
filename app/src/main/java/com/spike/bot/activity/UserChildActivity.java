@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Camera;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -44,13 +45,9 @@ import com.spike.bot.R;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
-import com.spike.bot.fragments.UserChildListFragment;
-import com.spike.bot.listener.SelectCamera;
 import com.spike.bot.model.CameraVO;
-import com.spike.bot.model.RoomVO;
 import com.spike.bot.model.UnassignedListRes;
 import com.spike.bot.model.User;
-import com.spike.bot.model.UserRoomModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -265,9 +262,9 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
         inputPassword.setVisibility(View.VISIBLE);
 
         TextView tv_title = dialog.findViewById(R.id.tv_title);
-        Button btnSave =  dialog.findViewById(R.id.btn_save);
-        Button btn_cancel =  dialog.findViewById(R.id.btn_cancel);
-        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
+        Button btnSave = dialog.findViewById(R.id.btn_save);
+        Button btn_cancel = dialog.findViewById(R.id.btn_cancel);
+        ImageView iv_close = dialog.findViewById(R.id.iv_close);
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -396,21 +393,35 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
             e.printStackTrace();
         }
 
-        String url = ChatApplication.url + Constants.roomslist;
+        String url = ChatApplication.url + Constants.getRoomCameraList;
 
-        ChatApplication.logDisplay("un assign is "+url+" "+jsonObject);
+        ChatApplication.logDisplay("un assign is " + url + " " + jsonObject);
 
-        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() {
+        new GetJsonTask(this, url, "GET", "", new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-                    ChatApplication.logDisplay("un assign is "+result);
+                    ChatApplication.logDisplay("un assign is " + result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
-                        Type type = new TypeToken<ArrayList<UnassignedListRes.Data.RoomList>>() {}.getType();
-                        roomList = (ArrayList<UnassignedListRes.Data.RoomList>) Constants.fromJson(result.optString("data").toString(), type);
+                        Type type = new TypeToken<ArrayList<UnassignedListRes.Data.RoomList>>() {
+                        }.getType();
+                        roomList = (ArrayList<UnassignedListRes.Data.RoomList>) Constants.fromJson(result.optJSONObject("data").optJSONArray("roomList").toString(), type);
+//                        cameraarrayList = (ArrayList<CameraVO>) Constants.fromJson(result.optJSONObject("data").optJSONArray("cameradeviceList").toString(), type);
+
+//
+//                        for"id": 1,
+//                                "camera_id": "1573725334535_A1lcc_Tq6",
+//                                "camera_name": "iot",
+                        for (int i = 0; i < result.optJSONObject("data").optJSONArray("cameradeviceList").length(); i++) {
+                            JSONObject object = result.optJSONObject("data").optJSONArray("cameradeviceList").optJSONObject(i);
+                            CameraVO cameraVO = new CameraVO();
+                            cameraVO.setCamera_id(object.optString("camera_id"));
+                            cameraVO.setCamera_name(object.optString("camera_name"));
+                            cameraarrayList.add(cameraVO);
+                        }
                         setSelectValue();
                     } else {
                         if (!TextUtils.isEmpty(message)) {
@@ -429,8 +440,6 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
             }
         }).execute();
     }
-
-
 
 
     @SuppressLint("NewApi")
@@ -459,8 +468,8 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
 
         try {
 
-            for(int i=0; i<roomList.size(); i++){
-                if(roomList.get(i).isDisable()){
+            for (int i = 0; i < roomList.size(); i++) {
+                if (roomList.get(i).isDisable()) {
                     roomListString.add(roomList.get(i).getRoomId());
                 }
             }
@@ -468,9 +477,9 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
             ArrayList<String> cameraList = new ArrayList<>();
 
             for (int i = 0; i < cameraarrayList.size(); i++) {
-               if(cameraarrayList.get(i).isDisable()){
-                   cameraList.add(cameraarrayList.get(i).getCamera_id());
-               }
+                if (cameraarrayList.get(i).isDisable()) {
+                    cameraList.add(cameraarrayList.get(i).getCamera_id());
+                }
             }
 
 
@@ -481,8 +490,8 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
 
             ActivityHelper.showProgressDialog(this, "Please Wait...", false);
 
-            JSONArray jsonArray3=new JSONArray(roomListString);
-            JSONArray jsonArray4=new JSONArray(cameraList);
+            JSONArray jsonArray3 = new JSONArray(roomListString);
+            JSONArray jsonArray4 = new JSONArray(cameraList);
             if (modeType.equalsIgnoreCase("update")) {
                 jsonObject.put("child_user_id", user.getUser_id());
                 jsonObject.put("roomList", jsonArray3);
@@ -494,7 +503,7 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
                 jsonObject.put("roomList", jsonArray3);
                 jsonObject.put("cameraList", jsonArray4);
             }
-            if(!TextUtils.isEmpty(strPassword) && strPassword.length()>0){
+            if (!TextUtils.isEmpty(strPassword) && strPassword.length() > 0) {
                 jsonObject.put("user_password", "" + strPassword);
             }
             jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));

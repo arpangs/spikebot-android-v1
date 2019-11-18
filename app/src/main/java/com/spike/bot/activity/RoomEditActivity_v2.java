@@ -317,7 +317,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                     isEmptyPanel = true;
                 }
             }
-            obj.put("paneldata", panelArray);
+            obj.put("panel_data", panelArray);
 
         } catch (JSONException e) {
             e.printStackTrace();

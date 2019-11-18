@@ -58,6 +58,18 @@ public class RemoteDetailsRes implements Serializable {
         @Expose
         private List<Alert> alerts = null;
 
+        public List<UnseenLog> getUnseenLogs() {
+            return unseenLogs;
+        }
+
+        public void setUnseenLogs(List<UnseenLog> unseenLogs) {
+            this.unseenLogs = unseenLogs;
+        }
+
+        @SerializedName("unseen_logs")
+        @Expose
+        private List<UnseenLog> unseenLogs = null;
+
         public Device getDevice() {
             return device;
         }
@@ -74,6 +86,88 @@ public class RemoteDetailsRes implements Serializable {
             this.alerts = alerts;
         }
 
+
+        public class UnseenLog implements Serializable {
+
+            @SerializedName("id")
+            @Expose
+            private String id;
+            @SerializedName("log_type")
+            @Expose
+            private String logType;
+            @SerializedName("seen_by")
+            @Expose
+            private Object seenBy;
+            @SerializedName("activity_action")
+            @Expose
+            private String activityAction;
+            @SerializedName("activity_type")
+            @Expose
+            private String activityType;
+            @SerializedName("activity_description")
+            @Expose
+            private String activityDescription;
+            @SerializedName("created_at")
+            @Expose
+            private String createdAt;
+
+            public String getId() {
+                return id;
+            }
+
+            public void setId(String id) {
+                this.id = id;
+            }
+
+            public String getLogType() {
+                return logType;
+            }
+
+            public void setLogType(String logType) {
+                this.logType = logType;
+            }
+
+            public Object getSeenBy() {
+                return seenBy;
+            }
+
+            public void setSeenBy(Object seenBy) {
+                this.seenBy = seenBy;
+            }
+
+            public String getActivityAction() {
+                return activityAction;
+            }
+
+            public void setActivityAction(String activityAction) {
+                this.activityAction = activityAction;
+            }
+
+            public String getActivityType() {
+                return activityType;
+            }
+
+            public void setActivityType(String activityType) {
+                this.activityType = activityType;
+            }
+
+            public String getActivityDescription() {
+                return activityDescription;
+            }
+
+            public void setActivityDescription(String activityDescription) {
+                this.activityDescription = activityDescription;
+            }
+
+            public String getCreatedAt() {
+                return createdAt;
+            }
+
+            public void setCreatedAt(String createdAt) {
+                this.createdAt = createdAt;
+            }
+
+        }
 
         public class Alert implements Serializable{
 

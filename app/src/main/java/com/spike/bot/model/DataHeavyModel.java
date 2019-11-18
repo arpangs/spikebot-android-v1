@@ -12,8 +12,8 @@ import java.util.List;
  */
 public class DataHeavyModel implements Serializable {
 
-    @SerializedName("real_power")
-    @Expose
+//    @SerializedName("real_power")
+//    @Expose
     private RealPower realPower;
     @SerializedName("data")
     @Expose

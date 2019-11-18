@@ -22,8 +22,8 @@ public class GraphDatum implements Serializable {
         this.month = month;
     }
 
-    @SerializedName("month")
-    @Expose
+//    @SerializedName("month")
+//    @Expose
     private String month;
 
     public Integer getEnergy() {
