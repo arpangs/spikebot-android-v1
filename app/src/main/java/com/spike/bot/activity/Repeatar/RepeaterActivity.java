@@ -34,7 +34,6 @@ import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.AddDevice.AllUnassignedPanel;
-import com.spike.bot.activity.SensorUnassignedActivity;
 import com.spike.bot.adapter.RepeaterAdapter;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.core.APIConst;

@@ -49,11 +49,6 @@ public class MoodDeviceListLayoutHelper implements SectionStateChangeListener {
 
 
     String room_device_id="";
-//    public void setSelection(String room_device_id){
-//        this.room_device_id = room_device_id;
-//        mSectionedExpandableGridAdapter.setSelection(room_device_id);
-//        mSectionedExpandableGridAdapter.notifyDataSetChanged();
-//    }
 
     public void notifyDataSetChanged() {
         //TODO : handle this condition such that these functions won't be called if the recycler view is on scroll

@@ -166,11 +166,11 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                 holder.sectionTextView.setText(panel1.getPanelName());
                 holder.iv_room_panel_onoff.setVisibility(View.GONE);
 
-//                if (panel1.isActivePanel()) {
+                if (panel1.isActivePanel()) {
                     holder.sectionTextView.setVisibility(View.VISIBLE);
-//                } else {
-//                    holder.sectionTextView.setVisibility(View.GONE);
-//                }
+                } else {
+                    holder.sectionTextView.setVisibility(View.GONE);
+                }
                 break;
             case VIEW_TYPE_ITEM:
                 final DeviceVO item = (DeviceVO) mDataArrayList.get(position);

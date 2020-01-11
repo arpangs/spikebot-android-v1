@@ -47,7 +47,7 @@ import io.socket.client.Socket;
 public class SignUp extends AppCompatActivity {
 
     private Button btn_signup,btn_sign_up_cancel;
-    private EditText edt_first_name,edt_last_name,edt_email_id,edt_user_name,edt_password,edt_con_password,edt_phone_no;
+    private EditText edt_first_name,edt_last_name,edt_email_id,edt_user_name,edt_password,edt_con_password,edt_phone_no,edtIPAddress;
 
     String webUrl = "";
     private Socket mSocket;
@@ -79,6 +79,7 @@ public class SignUp extends AppCompatActivity {
         edt_password = (EditText) findViewById(R.id.edt_password_su);
         edt_con_password = (EditText) findViewById(R.id.edt_con_password_su);
         edt_phone_no = (EditText) findViewById(R.id.edt_phone_no_su);
+        edtIPAddress = (EditText) findViewById(R.id.edtIPAddress);
 
         Gson gson = new Gson();
         String jsonText = Common.getPrefValue(getApplicationContext(),Common.USER_JSON);
@@ -232,6 +233,13 @@ public class SignUp extends AppCompatActivity {
             return;
         }
 
+//        if (TextUtils.isEmpty(edtIPAddress.getText().toString())) {
+//            edtIPAddress.requestFocus();
+//            edtIPAddress.setError("Please enter ip address");
+//            //Toast.makeText(getApplicationContext(), "Invalid Phone No", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+
         if(TextUtils.isEmpty(imei)){
             getUUID();
         }
@@ -251,8 +259,8 @@ public class SignUp extends AppCompatActivity {
         }
 //        webUrl = app.url;
 //        String url = "http://" + ipAddressPI + ":"  + Constants.SIGNUP_API;
-//        String url = "http://" + "192.168.75.111" + ":"  + Constants.SIGNUP_API;//111
-        String url = "http://" + "192.168.175.121" + ":"  + Constants.SIGNUP_API;//117
+        String url = "http://" + "192.168.175.121" + ":"  + Constants.SIGNUP_API;//111
+//        String url = "http://" + edtIPAddress.getText().toString() + ":"  + Constants.SIGNUP_API;//117
         String token = FirebaseInstanceId.getInstance().getToken();
         Common.savePrefValue(getApplicationContext(),Constants.DEVICE_PUSH_TOKEN,token);
 
@@ -347,9 +355,7 @@ public class SignUp extends AppCompatActivity {
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
                         finish();
-//                        Intent resultIntent = new Intent();
-//                        setResult(Activity.RESULT_OK, resultIntent);
-//                        finish();
+
                     }
                     else{
                         Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();

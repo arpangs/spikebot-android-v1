@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.NotificationSettingAdapter;
+import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.NotificationListRes;
@@ -154,24 +155,27 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
             return;
         }
 
+        ActivityHelper.showProgressDialog(this, "Please wait.", false);
         String webUrl = ChatApplication.url + Constants.GET_NOTIFICATION_LIST;
 
         JSONObject dataObject = new JSONObject();
 
         try {
             dataObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            dataObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            dataObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        ChatApplication.logDisplay("result is "+webUrl);
 
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
         new GetJsonTask(this, webUrl, "POST", dataObject.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
 
                 ActivityHelper.dismissProgressDialog();
                 try {
-
+                    ChatApplication.logDisplay("result is "+result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if(code == 200){

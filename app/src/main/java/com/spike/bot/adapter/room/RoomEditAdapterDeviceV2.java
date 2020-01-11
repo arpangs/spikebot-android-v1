@@ -60,17 +60,11 @@ public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapte
         } else {
 
             itemDeviceName = item.getSensor_name();
-            itemIcon = Common.getIcon(0, item.getSensor_icon());
+            itemIcon = Common.getIcon(0, item.getDevice_icon());
             clickAction = "isSensorClick";
 
             if (item.getSensor_icon().equals(context.getResources().getString(R.string.door_sensor))) {
-                if (item.getDoor_subtype() == 1) {
-                    itemIcon = R.drawable.off_door;
-                } else if (item.getDoor_subtype() == 2) {
-                    itemIcon = R.drawable.lock_only_grey;
-                } else {
-                    itemIcon = R.drawable.gray_door_red_lock_disabled;
-                }
+                itemIcon = Common.getDoorIcon(1);
             }
         }
 

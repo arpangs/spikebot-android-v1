@@ -191,7 +191,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
             if(mDataArrayList.get(k) instanceof DeviceVO){
                 DeviceVO deviceVO1 = (DeviceVO) mDataArrayList.get(k);
                 if (deviceVO1 != null) {
-                    if (deviceVO1.getDeviceId().equals(module_id)) {
+                    if (deviceVO1.getModuleId().equals(module_id)) {
                         ((DeviceVO) mDataArrayList.get(k)).setIsActive(module_status.equals("y")?1:-1);
                         mSectionedExpandableGridAdapter.notifyItemChanged(k);
 //                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
@@ -385,15 +385,28 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
     }
 
 
-    /**
-     * @param sensor_type
-     * @param sensor_unread
-     * @param module_id
-     * @param room_id
-     * @param room_unread
-     */
-    public void updateBadgeCount(String sensor_type, String sensor_unread, String module_id, String room_id, String room_unread) {
 
+    public void updateBadgeCount(String deviceId, String counter) {
+
+        for (int k = 0; k < mDataArrayList.size(); k++) {
+
+            if(mDataArrayList.get(k) instanceof DeviceVO){
+                DeviceVO deviceVO1 = (DeviceVO) mDataArrayList.get(k);
+                if (deviceVO1 != null) {
+                    if (deviceVO1.getDeviceId().equals(deviceId)) {
+                        ChatApplication.logDisplay("room refreesh is ");
+                        ((DeviceVO) mDataArrayList.get(k)).setIs_unread(counter);
+                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
+                        break;
+                    }
+
+                }
+            }
+        }
+    }
+
+
+    public void updateBadgeCount1(String sensor_type, String sensor_unread, String module_id, String room_id, String room_unread) {
 
         for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
 
@@ -431,7 +444,6 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
             }
         }
         mSectionedExpandableGridAdapter.notifyDataSetChanged();
-
     }
 
     //reload the row item in recycle

@@ -1253,7 +1253,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                     if (code == 200) {
                         scheduleRoomArrayList.clear();
 
-                        ChatApplication.logDisplay("json is  data  " + result);
+//                        ChatApplication.logDisplay("json is  data  " + result);
 
                         if (isFilterType) {
                             frame_living_room.setVisibility(View.VISIBLE);
@@ -1900,7 +1900,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                         ll_empty.setVisibility(View.GONE);
                         rv_device_log.setVisibility(View.VISIBLE);
 
-                        ChatApplication.logDisplay("data obj is " + result);
+                        ChatApplication.logDisplay("object is response " + result);
 
                         JSONArray notificationArray = result.optJSONArray("data");
 

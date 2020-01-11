@@ -7,4 +7,9 @@ package com.spike.bot.listener;
 public interface DeviceListRefreshView {
 
     public void deviceRefreshView(int count);
+
+    static int test(){
+        return 0;
+
+    }
 }

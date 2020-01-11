@@ -181,7 +181,6 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
         if (moodVO != null) {
 
-//            List<String> deviceVOList = moodVO.getRoomDeviceIdList();
             List<String> deviceVOList = new ArrayList<>();
 
 
@@ -240,7 +239,10 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                                 roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("gas_sensor") ||
                                 roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("door_sensor")) {
                             roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
-                            roomList.get(i).getPanelList().get(j).setActivePanel(false);
+//                            roomList.get(i).getPanelList().get(j).setActivePanel(false);
+                        }else if(roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_type().equalsIgnoreCase("remote")){
+                            roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(true);
+//                            roomList.get(i).getPanelList().get(j).setActivePanel(true);
                         }
                     }
                 }
@@ -315,13 +317,6 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                     getDeviceList();
 
                     moodList.clear();
-                    //"data": [
-                    //        {
-                    //            "id": 3,
-                    //            "mood_name": "lobby",
-                    //            "is_active": 1
-                    //        },
-                    //        {
                     JSONArray moodNamesArray = new JSONArray(result.getString("data"));
 
                     RoomVO roomVO1 = new RoomVO();
@@ -434,32 +429,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         deviceVOArrayList.clear();
         deviceVOArrayList = removeDuplicates(deviceVOArrayListTemp);
         JSONObject moodObj = new JSONObject();
-        JSONArray jsonArray = new JSONArray();
         try {
-
-//            if(editMode){
-
-//                for (DeviceVO dPanel : deviceVOArrayList) {
-//                    JSONObject object = new JSONObject();
-//
-//
-//                    object.put("mood_name_id",select_mood_id);
-//                    object.put("user_id",Common.getPrefValue(this, Constants.USER_ID));
-//
-//                    ArrayList<String> deviceIdList = new ArrayList<>();
-//                    deviceIdList.add(dPanel.getPanel_device_id());
-//                    JSONArray array = new JSONArray(deviceIdList);
-//
-//                    object.put("panel_device_ids",array);
-//
-//                    jsonArray.put(object);
-//                }
-//                ChatApplication.logDisplay("hash code is edit "+url+"  " + jsonArray);
-
-
-
-//            }else {
-
             if(editMode){
                 moodObj.put("room_id",moodVO.getRoomId());
             }
@@ -476,9 +446,6 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                 JSONArray array = new JSONArray(deviceIdList);
                 moodObj.put("panel_device_ids", array);
                 moodObj.put("mood_name_id", select_mood_id);
-
-//            }
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -527,8 +494,6 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
     }
 
     /*
@@ -603,7 +568,6 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
             }
         });
-
     }
 
     private void sortList(final List<RoomVO> roomVOs) {
@@ -635,7 +599,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         txtRoom.setText(roomName);
         txtPanel.setText(panelName);
 
-        Button btnOK = (Button) dialog.findViewById(R.id.vbtn_ok);
+        Button btnOK = dialog.findViewById(R.id.vbtn_ok);
 
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -664,7 +628,6 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         hashSet.addAll(arrayList);
         arrayList.clear();
         arrayList.addAll(hashSet);
-
 
         for (int j = 0; j < list.size(); j++) {
             for (int i = 0; i < arrayList.size(); i++) {

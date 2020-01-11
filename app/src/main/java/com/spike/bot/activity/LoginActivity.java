@@ -60,6 +60,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setUiId();
     }
 
+
     private void setUiId() {
         getUUId();
 

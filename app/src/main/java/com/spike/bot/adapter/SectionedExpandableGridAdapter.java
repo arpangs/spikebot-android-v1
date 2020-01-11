@@ -2,15 +2,10 @@ package com.spike.bot.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +14,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.CameraDeviceLogActivity;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.customview.recycle.ItemClickListener;
@@ -35,11 +28,8 @@ import com.spike.bot.model.CameraVO;
 import com.spike.bot.model.DeviceVO;
 import com.spike.bot.model.PanelVO;
 import com.spike.bot.model.RoomVO;
-import com.sun.mail.pop3.POP3Folder;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * Created by lenovo on 2/23/2016.
@@ -432,12 +422,11 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     boolean flag = false;
                     for (int i = 0; i < section.getPanelList().size(); i++) {
                         for (int j = 0; j < section.getPanelList().get(i).getDeviceList().size(); j++) {
-                            if (!TextUtils.isEmpty(section.getPanelList().get(i).getDeviceList().get(j).getSensor_type())) {
-                                if (section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("temp_sensor") ||
-                                        section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("remote") ||
-                                        section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("multisensor") ||
-                                        section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("gassensor") ||
-                                        section.getPanelList().get(i).getDeviceList().get(j).getSensor_type().equalsIgnoreCase("door_sensor")) {
+                            if (!TextUtils.isEmpty(section.getPanelList().get(i).getDeviceList().get(j).getDeviceType())) {
+                                if (section.getPanelList().get(i).getDeviceList().get(j).getDeviceType().equalsIgnoreCase("temp_sensor") ||
+                                        section.getPanelList().get(i).getDeviceList().get(j).getDeviceType().equalsIgnoreCase("remote") ||
+                                        section.getPanelList().get(i).getDeviceList().get(j).getDeviceType().equalsIgnoreCase("gas_sensor") ||
+                                        section.getPanelList().get(i).getDeviceList().get(j).getDeviceType().equalsIgnoreCase("door_sensor")) {
 
                                     flag = true;
                                 }

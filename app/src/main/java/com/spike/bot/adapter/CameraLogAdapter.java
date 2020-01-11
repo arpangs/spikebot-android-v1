@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.kp.core.DateHelper;
 import com.spike.bot.R;
-import com.spike.bot.activity.ImageZoomActivity;
+import com.spike.bot.activity.Camera.ImageZoomActivity;
 import com.spike.bot.model.NotificationList;
 
 import java.text.ParseException;

@@ -1,7 +1,6 @@
 package com.spike.bot.activity.ir.blaster;
 
 import android.annotation.SuppressLint;
-import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,7 +9,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,7 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,7 +27,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
@@ -39,9 +35,7 @@ import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.HeavyLoad.HeavyLoadDetailActivity;
-import com.spike.bot.activity.RoomEditActivity_v2;
-import com.spike.bot.activity.SensorUnassignedActivity;
+import com.spike.bot.activity.Sensor.SensorUnassignedActivity;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.adapter.irblaster.IRBlasterAddAdapter;
 import com.spike.bot.core.APIConst;
@@ -80,7 +74,6 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
     private List<IRBlasterAddRes.Datum> irList;
     ArrayList<UnassignedListRes.Data.RoomList> roomListArray=new ArrayList<>();
     ArrayList<String> roomListString=new ArrayList<>();
-
     ArrayList<String> roomIdList = new ArrayList<>();
     ArrayList<String> roomNameList = new ArrayList<>();
     private Dialog mDialog;
@@ -139,8 +132,6 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         if (mSocket != null) {
             mSocket.on("configureIRBlaster", configureIRBlaster);
         }
-
-
     }
 
     @Override
@@ -194,13 +185,13 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         dialog.setCanceledOnTouchOutside(false);
         dialog.setContentView(R.layout.dialog_panel_option);
 
-        TextView txtDialogTitle = (TextView) dialog.findViewById(R.id.txt_dialog_title);
+        TextView txtDialogTitle =  dialog.findViewById(R.id.txt_dialog_title);
         txtDialogTitle.setText("Select Sensor Type");
 
-        Button btn_sync = (Button) dialog.findViewById(R.id.btn_panel_sync);
-        Button btn_unaasign = (Button) dialog.findViewById(R.id.btn_panel_unasigned);
-        Button btn_cancel = (Button) dialog.findViewById(R.id.btn_panel_cancel);
-        Button btn_from_existing = (Button) dialog.findViewById(R.id.add_from_existing);
+        Button btn_sync =  dialog.findViewById(R.id.btn_panel_sync);
+        Button btn_unaasign =  dialog.findViewById(R.id.btn_panel_unasigned);
+        Button btn_cancel =  dialog.findViewById(R.id.btn_panel_cancel);
+        Button btn_from_existing =  dialog.findViewById(R.id.add_from_existing);
         btn_from_existing.setVisibility(View.GONE);
 
         btn_sync.setOnClickListener(new View.OnClickListener() {

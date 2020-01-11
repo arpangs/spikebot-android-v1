@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.spike.bot.R;
 import com.spike.bot.model.NotificationListRes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,8 +20,7 @@ import java.util.List;
  */
 public class NotificationSettingAdapter extends RecyclerView.Adapter<NotificationSettingAdapter.NotificationHolder>{
 
-    private List<NotificationListRes.Data> notificationList;
-    private NotificationListRes.Data data;
+    private List<NotificationListRes.Data> notificationList=new ArrayList<>();
     private SwitchChanges switchChanges;
 
     public NotificationSettingAdapter(List<NotificationListRes.Data> notificationList,SwitchChanges switchChanges){
@@ -38,18 +38,18 @@ public class NotificationSettingAdapter extends RecyclerView.Adapter<Notificatio
     @Override
     public void onBindViewHolder(NotificationHolder holder, final int position) {
 
-        data = notificationList.get(position);
-        holder.notification_title.setText(data.getTitle());
+        holder.notification_title.setText(notificationList.get(position).getTitle());
 
-        holder.switch_temp.setChecked((data.getValue() == 1));
+        holder.switch_temp.setChecked((notificationList.get(position).getValue() == 1));
 
+        holder.switch_temp.setId(position);
         holder.switch_temp.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(buttonView.isPressed()){
-                    data.setValue(isChecked ? 1 : 0);
-                    notifyItemChanged(position,data);
-                    switchChanges.onCheckedChanged(data,position);
+                    notificationList.get(holder.switch_temp.getId()).setValue(isChecked ? 1 : 0);
+                    notifyItemChanged(holder.switch_temp.getId(),notificationList.get(holder.switch_temp.getId()));
+                    switchChanges.onCheckedChanged(notificationList.get(holder.switch_temp.getId()),holder.switch_temp.getId());
                 }
             }
         });

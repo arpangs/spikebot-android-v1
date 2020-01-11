@@ -259,7 +259,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add) {
-            openAddPopup(findViewById(R.id.action_add));
+//            openAddPopup(findViewById(R.id.action_add));
             return true;
         } else if (id == R.id.action_save) {
             ActivityHelper.hideKeyboard(this);
@@ -583,45 +583,5 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                 ChatApplication.showToast(getApplicationContext(), getResources().getString(R.string.something_wrong1));
             }
         }).execute();
-    }
-
-    public void openAddPopup(final View v) {//,final ICallBackAction actionCallBack
-
-//        @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenu);
-//        PopupMenu popup = new PopupMenu(wrapper, v);
-//
-//        popup.getMenuInflater().inflate(R.menu.menu_room_edit_add_popup, popup.getMenu());
-//
-//        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(MenuItem item) {
-//                switch (item.getItemId()) {
-//                    case R.id.action_add_existing:
-//                        action = "add_new_existing";
-//
-//                        Intent intentPanel = new Intent(getApplicationContext(), AddExistingPanel.class);
-//                        intentPanel.putExtra("roomId", room.getRoomId());
-//                        intentPanel.putExtra("roomName", room.getRoomName());
-//                        intentPanel.putExtra("isDeviceAdd", false);
-//                        startActivity(intentPanel);
-//                        break;
-//                    case R.id.action_add_schedule:
-//                        action = "action_add_schedule";
-//                        Intent intent = new Intent(getApplicationContext(), ScheduleListActivity.class);
-//                        intent.putExtra("moodId3", room.getRoomId());
-//                        intent.putExtra("roomId", room.getRoomId());
-//                        intent.putExtra("roomName", room.getRoomName());
-//                        intent.putExtra("selection", 1);
-//                        intent.putExtra("isMoodAdapter", true);
-//                        startActivity(intent);
-//
-//                        break;
-//                    default:
-//                        break;
-//                }
-//                return true;
-//            }
-//        });
-//        popup.show();
     }
 }

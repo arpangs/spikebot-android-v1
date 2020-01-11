@@ -17,7 +17,7 @@ import android.text.TextUtils;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.CameraImagePush;
+import com.spike.bot.activity.Camera.CameraImagePush;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -15,7 +15,6 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -29,9 +28,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
@@ -39,35 +35,28 @@ import com.google.gson.reflect.TypeToken;
 import com.kp.core.GetJsonTaskMacAddress;
 import com.kp.core.GetJsonTaskRemote;
 import com.kp.core.GetJsonTaslLocal;
-import com.spike.bot.Beacon.BeaconActivity;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.Retrofit.GetDataService;
 import com.spike.bot.Retrofit.RetrofitAPIManager;
-import com.spike.bot.ack.AckWithTimeOut;
 import com.spike.bot.activity.AddDevice.AddDeviceTypeListActivity;
-import com.spike.bot.activity.CameraDeviceLogActivity;
-import com.spike.bot.activity.CameraEdit;
-import com.spike.bot.activity.CameraGridActivity;
-import com.spike.bot.activity.CameraNotificationActivity;
-import com.spike.bot.activity.CameraPlayBack;
+import com.spike.bot.activity.Camera.CameraDeviceLogActivity;
+import com.spike.bot.activity.Camera.CameraEdit;
+import com.spike.bot.activity.Camera.CameraGridActivity;
+import com.spike.bot.activity.Camera.CameraNotificationActivity;
+import com.spike.bot.activity.Camera.CameraPlayBack;
 import com.spike.bot.activity.Curtain.CurtainActivity;
 import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.activity.DeviceLogRoomActivity;
-import com.spike.bot.activity.DoorSensorInfoActivity;
-import com.spike.bot.activity.GasSensorActivity;
+import com.spike.bot.activity.Sensor.DoorSensorInfoActivity;
+import com.spike.bot.activity.Sensor.GasSensorActivity;
 import com.spike.bot.activity.HeavyLoad.HeavyLoadDetailActivity;
-import com.spike.bot.activity.MultiSensorActivity;
-import com.spike.bot.activity.Repeatar.RepeaterActivity;
+import com.spike.bot.activity.Sensor.MultiSensorActivity;
 import com.spike.bot.activity.ScheduleListActivity;
 import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.activity.RoomEditActivity_v2;
 import com.spike.bot.activity.ScheduleActivity;
 import com.spike.bot.activity.SmartColorPickerActivity;
-import com.spike.bot.activity.SmartDevice.BrandListActivity;
-import com.spike.bot.activity.SmartRemoteActivity;
-import com.spike.bot.activity.TTLock.LockBrandActivity;
-import com.spike.bot.activity.ir.blaster.IRBlasterAddActivity;
 import com.spike.bot.activity.ir.blaster.IRBlasterRemote;
 import com.spike.bot.adapter.CloudAdapter;
 import com.spike.bot.adapter.SectionedExpandableGridAdapter;
@@ -90,15 +79,12 @@ import com.spike.bot.model.CameraVO;
 import com.spike.bot.model.DeviceVO;
 import com.spike.bot.model.PanelVO;
 import com.spike.bot.model.RoomVO;
-import com.spike.bot.model.SendRemoteCommandReq;
-import com.spike.bot.model.SendRemoteCommandRes;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.GetJsonTask2;
 import com.kp.core.ICallBack;
 import com.kp.core.ICallBack2;
 import com.kp.core.dialog.ConfirmDialog;
-import com.spike.bot.model.UnassignedListRes;
 import com.spike.bot.model.User;
 
 import org.json.JSONArray;
@@ -116,8 +102,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static com.spike.bot.core.Common.showToast;
 
 /**
  * DashBoard fragment / Room
@@ -289,10 +273,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
     public void onResume() {
         super.onResume();
 
-        if(mSocket==null){
-            ChatApplication.logDisplay("socket is nulll");
-        }else {
-            ChatApplication.logDisplay("socket is nulll "+mSocket.connected());
+         if(mSocket!=null){
+            socketOn();
+            ChatApplication.logDisplay("socket is null");
         }
 
         ((Main2Activity)activity).setCallBack(this);
@@ -340,7 +323,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             mSocket.off("changePanelStatus", panelStatus);
             mSocket.off("changeModuleStatus", changeModuleStatus);
 //            mSocket.off("changeTempSensorValue", changeTempSensorValue);
-            mSocket.off("unReadCount", unReadCount);
+            mSocket.off("updateDeviceBadgeCounter", unReadCount);
 //            mSocket.off("sensorStatus", sensorStatus);
             mSocket.off("updateChildUser", updateChildUser);
         }
@@ -351,11 +334,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             ChatApplication.logDisplay("socket is nulll pause "+mSocket.connected());
         }
         super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
     }
 
     @Override
@@ -689,7 +667,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         mSocket.on("changePanelStatus", panelStatus);
         mSocket.on("changeModuleStatus", changeModuleStatus);
 //        mSocket.on("changeTempSensorValue", changeTempSensorValue);
-        mSocket.on("unReadCount", unReadCount);
+        mSocket.on("updateDeviceBadgeCounter", unReadCount);
 //        mSocket.on("sensorStatus", sensorStatus);
         mSocket.on("updateChildUser", updateChildUser);
     }
@@ -1154,9 +1132,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         }).execute();
 
     }
-
-
-    boolean addRoom = false;
 
     /**
      * Show custom room dialog
@@ -2184,16 +2159,15 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 public void run() {
                     if (args != null) {
                         try {
+                            // user_id, device_id, counter
                             JSONObject object = new JSONObject(args[0].toString());
-                            String sensor_type = object.getString("sensor_type");
-                            String sensor_unread = object.getString("sensor_unread");
-                            String module_id = object.getString("module_id");
-                            String room_id = object.getString("room_id");
-                            String room_unread = object.getString("room_unread");
+                            ChatApplication.logDisplay("unReadCount is "+object);
+                            String device_id = object.getString("device_id");
+                            String counter = object.getString("counter");
                             String user_id = object.getString("user_id");
 
                             if (user_id.equalsIgnoreCase(Common.getPrefValue(activity, Constants.USER_ID))) {
-                                sectionedExpandableLayoutHelper.updateBadgeCount(sensor_type, sensor_unread, module_id, room_id, room_unread);
+                                sectionedExpandableLayoutHelper.updateBadgeCount(device_id,counter);
                             }
 
                         } catch (JSONException e) {
@@ -2235,4 +2209,5 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             });
         }
     };
+
 }

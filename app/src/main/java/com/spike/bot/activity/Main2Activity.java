@@ -688,16 +688,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                         }
 
                         break;
-                    case R.id.action_sensor_log:
-//                        if(linearTab.getVisibility()==View.VISIBLE){
-//                            Intent intent1 = new Intent(Main2Activity.this, DeviceLogActivity.class);
-//                            intent1.putExtra("IS_SENSOR", true);
-//                            startActivity(intent1);
-//                        }else {
-//                            ChatApplication.showToast(Main2Activity.this,getResources().getString(R.string.something_wrong1));
-//                        }
-
-                        break;
                     case R.id.action_notification_settings:
                         if(linearTab.getVisibility()==View.VISIBLE){
                             Intent intentNotification = new Intent(Main2Activity.this, NotificationSetting.class);

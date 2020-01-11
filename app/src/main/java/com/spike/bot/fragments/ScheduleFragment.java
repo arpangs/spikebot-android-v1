@@ -203,8 +203,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         String jsonText = Common.getPrefValue(getActivity(), Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {
-            }.getType();
+            Type type = new TypeToken<List<User>>() {}.getType();
             userList = gson.fromJson(jsonText, type);
         }
         return userList;

@@ -170,19 +170,25 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" />
 
-        <activity android:name="com.spike.bot.activity.VideoVLCActivity" />
 
         <activity android:name="com.spike.bot.camera.CameraPlayer"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <activity android:name="com.spike.bot.activity.VideoVLC2Activity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+
         <activity
             android:name="com.spike.bot.activity.ProfileActivity"
             android:label="@string/title_activity_profile"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".activity.SmartCam.AddJetSonActivity"
+            android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name="com.spike.bot.activity.DeviceLogActivity"
             android:screenOrientation="portrait"
@@ -294,12 +300,12 @@
             android:windowSoftInputMode="stateHidden" />
 
         <activity
-            android:name="com.spike.bot.activity.CameraDeviceLogActivity"
+            android:name="com.spike.bot.activity.Camera.CameraDeviceLogActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" />
 
-        <activity android:name="com.spike.bot.activity.CameraNotificationActivity"
+        <activity android:name="com.spike.bot.activity.Camera.CameraNotificationActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden"/>
@@ -309,7 +315,7 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden"/>
 
-        <activity android:name="com.spike.bot.activity.ImageZoomActivity"
+        <activity android:name="com.spike.bot.activity.Camera.ImageZoomActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden"/>
@@ -320,12 +326,12 @@
             android:windowSoftInputMode="adjustPan|adjustResize|stateAlwaysHidden"/>
 
 
-        <activity android:name=".activity.TempActivity"
+        <activity android:name=".activity.Sensor.TempActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan|adjustResize"/>
 
-        <activity android:name=".activity.GasSensorActivity"
+        <activity android:name=".activity.Sensor.GasSensorActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan|adjustResize"/>
@@ -374,14 +380,14 @@
 
         </activity>
 
-        <activity android:name="com.spike.bot.activity.CameraPlayBack"
+        <activity android:name="com.spike.bot.activity.Camera.CameraPlayBack"
             android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <activity android:name="com.spike.bot.activity.VideoViewPLayer"
+        <activity android:name="com.spike.bot.activity.Camera.VideoViewPLayer"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity android:name="com.spike.bot.activity.CameraEdit"
+        <activity android:name="com.spike.bot.activity.Camera.CameraEdit"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name="com.spike.bot.activity.SignUp"
@@ -393,26 +399,26 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"/>
 
-        <activity android:name="com.spike.bot.activity.TempSensorInfoActivity"
+        <activity android:name="com.spike.bot.activity.Sensor.TempSensorInfoActivity"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <activity android:name="com.spike.bot.activity.MultiSensorActivity"
+        <activity android:name="com.spike.bot.activity.Sensor.MultiSensorActivity"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden"
             android:theme="@style/AppTheme.NoActionBar"/>
 
 
-        <activity android:name="com.spike.bot.activity.DoorSensorInfoActivity"
+        <activity android:name="com.spike.bot.activity.Sensor.DoorSensorInfoActivity"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden|adjustResize"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <activity android:name="com.spike.bot.activity.SensorUnassignedActivity"
+        <activity android:name="com.spike.bot.activity.Sensor.SensorUnassignedActivity"
             android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             />
 
-        <activity android:name="com.spike.bot.activity.CameraImagePush"
+        <activity android:name="com.spike.bot.activity.Camera.CameraImagePush"
             android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
@@ -435,7 +441,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <activity android:name=".activity.CameraGridActivity"
+        <activity android:name=".activity.Camera.CameraGridActivity"
             android:windowSoftInputMode="stateHidden|stateAlwaysHidden"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
@@ -541,6 +547,8 @@
 
 
         <!--tt lock login ttchatcrash@gmail.com / ttchat$123-->
+
+        <!--camera key spike123-->
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="c0d1eedb6db67baf3bc4ceedbe67ac87f6fc95a2" />

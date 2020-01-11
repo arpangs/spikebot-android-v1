@@ -32,7 +32,7 @@ import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Repeatar.RepeaterActivity;
-import com.spike.bot.activity.SensorUnassignedActivity;
+import com.spike.bot.activity.SmartCam.AddJetSonActivity;
 import com.spike.bot.activity.SmartDevice.BrandListActivity;
 import com.spike.bot.activity.SmartRemoteActivity;
 import com.spike.bot.activity.TTLock.LockBrandActivity;
@@ -120,6 +120,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         arrayList.add("Temperature Sensor");
         arrayList.add("Repeaters");
         arrayList.add("Camera");
+        arrayList.add("Add Smart Cam");
     }
 
 
@@ -158,6 +159,9 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             } else {
                 addCamera();
             }
+        }else if (position == 13) {
+            Intent intent=new Intent(this, AddJetSonActivity.class);
+            startActivity(intent);
         }
     }
 
@@ -477,51 +481,6 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
     }
 
-    private void isUnassignedDoorSensor(final int isDoorSensor) {
-//        ActivityHelper.showProgressDialog(this, "Please wait...", false);
-//        String url = "";
-//        //muitl == 5
-//        if (isDoorSensor == 3) {
-//            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/2"; //0 door - 1 ir
-//        }
-//        if (isDoorSensor == Curtain) {
-//            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/curtain"; //0 door - 1 ir
-//        } else if (isDoorSensor == 4) {
-//            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/5"; //0 door - 1 ir
-//        } else if (isDoorSensor == 5) {
-//            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/5"; //0 door - 1 ir
-//        } else {
-////            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/2"; //0 door - 1 ir
-//            url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/0"; //0 door - 1 ir
-//        }
-//
-//        new GetJsonTask(this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
-//            @Override
-//            public void onSuccess(JSONObject result) {
-//                ActivityHelper.dismissProgressDialog();
-//                SensorUnassignedRes sensorUnassignedRes = Common.jsonToPojo(result.toString(), SensorUnassignedRes.class);
-//
-//                if (sensorUnassignedRes.getCode() == 200) {
-//                    if (sensorUnassignedRes.getData() != null && sensorUnassignedRes.getData().getUnassigendSensorList().size() > 0) {
-                        Intent intent = new Intent(AddDeviceTypeListActivity.this, SensorUnassignedActivity.class);
-                        intent.putExtra("isDoorSensor", isDoorSensor);
-                        intent.putExtra("roomId", room.getRoomId());
-                        startActivity(intent);
-//                    } else {
-//                        ChatApplication.showToast(AddDeviceTypeListActivity.this, sensorUnassignedRes.getMessage());
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable throwable, String error) {
-//                throwable.printStackTrace();
-//                ChatApplication.showToast(AddDeviceTypeListActivity.this,getResources().getString(R.string.something_wrong1));
-//            }
-//        }).execute();
-
-    }
-
     /**
      * call api for get configure device data
      */
@@ -578,67 +537,6 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
 
     /**
-     * get method for call getOriginalDevices api
-     * delete device list panel list
-     */
-    private void getUnasignedDeviceList() {
-
-//        roomList.clear();
-//        ActivityHelper.showProgressDialog(this, "Please wait...", false);
-//
-//        JSONObject jsonObject = new JSONObject();
-//        try {
-//            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-//            jsonObject.put("module_type", "5f");
-//            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-//            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-//
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//        String url = ChatApplication.url + Constants.deviceunassigned;
-//
-//        ChatApplication.logDisplay("url is "+url+" "+jsonObject);
-//        new GetJsonTask(getApplicationContext(), url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
-//            @Override
-//            public void onSuccess(JSONObject result) {
-//                ActivityHelper.dismissProgressDialog();
-//
-//                try {
-//
-//                    JSONObject dataObject = result.getJSONObject("data");
-//
-//                    JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
-//                    roomList = JsonHelper.parseExistPanelArray(roomArray);
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                } finally {
-//
-//                }
-//                if (roomList.size() == 0) {
-//                    ChatApplication.showToast(AddDeviceTypeListActivity.this, "No Unassigned Panel Found.");
-//                } else {
-
-//                    Intent intentPanel = new Intent(getApplicationContext(), AddExistingPanel.class);
-//                    intentPanel.putExtra("roomId","");
-//                    intentPanel.putExtra("roomName", "");
-//                    intentPanel.putExtra("isSync", true);
-//                    intentPanel.putExtra("isDeviceAdd", false);
-//                    startActivity(intentPanel);
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable throwable, String error) {
-//                ChatApplication.showToast(AddDeviceTypeListActivity.this, getResources().getString(R.string.something_wrong1));
-//            }
-//        }).execute();
-
-    }
-
-    /**
      * dialog enter key camera
      */
     public void addKeyCamera() {
@@ -657,7 +555,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
         Button btnSave = dialog.findViewById(R.id.btn_save);
         Button btn_cancel = dialog.findViewById(R.id.btn_cancel);
-        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
+        ImageView iv_close = dialog.findViewById(R.id.iv_close);
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -687,6 +585,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
     }
 
     /**
+     * camera key : spike123
      * camera key check is valid or not..
      */
     private void saveCameraKey(EditText roomName, final Dialog dialog) {

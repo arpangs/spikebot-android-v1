@@ -162,7 +162,10 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 holder.ll_on.setVisibility(View.VISIBLE);
 
                 if (scheduleVO.getSchedule_type()==1) {
-                    holder.tv_schedule_on_time.setText("- " + DateHelper.formateDate(DateHelper.parseTimeSimple(scheduleVO.getSchedule_device_on_time(), DateHelper.DATE_FROMATE_H_M_AMPM1), DateHelper.DATE_FROMATE_H_M_AMPM12));
+                    if(!scheduleVO.getSchedule_device_on_time().equals("null")){
+                        holder.tv_schedule_on_time.setText("- " + DateHelper.formateDate(DateHelper.parseTimeSimple(scheduleVO.getSchedule_device_on_time(), DateHelper.DATE_FROMATE_H_M_AMPM1), DateHelper.DATE_FROMATE_H_M_AMPM12));
+                    }
+
                 }else {
                     holder.tv_schedule_on_time.setText("- " + Common.getConvertDateForScheduleHour(scheduleVO.getSchedule_device_on_time()));
                 }
@@ -229,6 +232,13 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
                 holder.tv_schedule_off_time.setVisibility(View.GONE);
                 holder.tv_schedule_off.setVisibility(View.GONE);
+            }
+
+            /*on time null*/
+            if (TextUtils.isEmpty(scheduleVO.getSchedule_device_on_time()) || scheduleVO.getSchedule_device_on_time().equalsIgnoreCase("null")) {
+                holder.ll_on.setVisibility(View.GONE);
+                holder.tv_schedule_on_time.setVisibility(View.GONE);
+                holder.tv_schedule_on.setVisibility(View.GONE);
             }
 
             holder.tv_schedule_name.setText(scheduleVO.getSchedule_name());

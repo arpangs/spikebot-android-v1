@@ -97,12 +97,9 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
         mListPanels.setLayoutManager(new GridLayoutManager(this, 1));
         mEmptyView =  findViewById(R.id.txt_empty_list);
         mEmptyView.setVisibility(View.GONE);
-
     }
 
     private void getRoomList() {
-
-
         if (!ActivityHelper.isConnectingToInternet(this)) {
             showToast("" + R.string.disconnect);
             return;
