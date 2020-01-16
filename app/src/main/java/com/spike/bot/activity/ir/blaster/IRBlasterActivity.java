@@ -76,6 +76,7 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
 
     }
 
+    /*get data form intent*/
     private void getIntentData(){
         mIRBlasterId = getIntent().getStringExtra("SENSOR_ID");
         mRoomId = getIntent().getStringExtra("ROOM_ID");
@@ -83,7 +84,6 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
     }
 
     private void showProgress(){
-
         linear_progress.setVisibility(View.VISIBLE);
         mIRListView.setVisibility(View.GONE);
     }
@@ -196,6 +196,7 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
     public void onIRBlasterDelete(IRBlasterInfoRes.Data.IrBlasterList.RemoteList irBlasterList) {
         showDialog(irBlasterList);
     }
+    /*delete dialog */
     private void showDialog(final IRBlasterInfoRes.Data.IrBlasterList.RemoteList remoteList){
         ConfirmDialog newFragment = new ConfirmDialog("Yes","No" ,"Confirm", "Are you sure ?",new ConfirmDialog.IDialogCallback() {
             @Override
@@ -210,7 +211,7 @@ public class IRBlasterActivity extends AppCompatActivity implements IRBlasterInf
         newFragment.show(getFragmentManager(), "dialog");
     }
 
-
+    /*delete schedule*/
     private void deleteSchedule(IRBlasterInfoRes.Data.IrBlasterList.RemoteList remoteList){
 
         if (!ActivityHelper.isConnectingToInternet(this)) {

@@ -133,7 +133,6 @@ public class AddExistingPanel extends AppCompatActivity {
     }
 
     private void hideProgress() {
-
         list_panel.setVisibility(View.VISIBLE);
         linear_progress.setVisibility(View.GONE);
     }
@@ -271,7 +270,7 @@ public class AddExistingPanel extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    //save
+    /*save existing panel */
     private void saveExistPanel() {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {

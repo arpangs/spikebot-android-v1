@@ -82,7 +82,6 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
         for (int i = 0; i < mDataArrayList.size(); i++) {
             if (mDataArrayList.get(i) instanceof DeviceVO) {
                 final DeviceVO item = (DeviceVO) mDataArrayList.get(i);
-//                if (listDeviceIds.contains(item.getRoomDeviceId())) {
                 if (listDeviceIds.contains(item.getDeviceId())) {
                     item.setSelected(true);
                 }

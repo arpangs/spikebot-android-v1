@@ -79,7 +79,8 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
         mIRListView =  findViewById(R.id.list_ir_sensor_add);
         mIRListView.setLayoutManager(new GridLayoutManager(this, 3));
     }
-
+    /* get details ir
+    * device_type = ir_blaster*/
     private void getIRDeviceDetails() {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {

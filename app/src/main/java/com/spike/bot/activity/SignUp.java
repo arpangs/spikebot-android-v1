@@ -69,17 +69,17 @@ public class SignUp extends AppCompatActivity {
        // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
        // getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        btn_signup = (Button) findViewById(R.id.btn_sign_up);
-        btn_sign_up_cancel = (Button) findViewById(R.id.btn_sign_up_cancel);
+        btn_signup =  findViewById(R.id.btn_sign_up);
+        btn_sign_up_cancel =  findViewById(R.id.btn_sign_up_cancel);
 
-        edt_first_name = (EditText) findViewById(R.id.edt_first_name_su);
-        edt_last_name = (EditText) findViewById(R.id.edt_last_name_su);
-        edt_email_id = (EditText) findViewById(R.id.edt_emailid_su);
-        edt_user_name = (EditText) findViewById(R.id.edt_user_name_su);
-        edt_password = (EditText) findViewById(R.id.edt_password_su);
-        edt_con_password = (EditText) findViewById(R.id.edt_con_password_su);
-        edt_phone_no = (EditText) findViewById(R.id.edt_phone_no_su);
-        edtIPAddress = (EditText) findViewById(R.id.edtIPAddress);
+        edt_first_name = findViewById(R.id.edt_first_name_su);
+        edt_last_name = findViewById(R.id.edt_last_name_su);
+        edt_email_id = findViewById(R.id.edt_emailid_su);
+        edt_user_name = findViewById(R.id.edt_user_name_su);
+        edt_password = findViewById(R.id.edt_password_su);
+        edt_con_password = findViewById(R.id.edt_con_password_su);
+        edt_phone_no = findViewById(R.id.edt_phone_no_su);
+        edtIPAddress = findViewById(R.id.edtIPAddress);
 
         Gson gson = new Gson();
         String jsonText = Common.getPrefValue(getApplicationContext(),Common.USER_JSON);
@@ -164,6 +164,7 @@ public class SignUp extends AppCompatActivity {
     String imei = "";
     private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
 
+    /* frist check wifi connect in your pie network */
     private void singUP(){
 
         if(!ActivityHelper.isConnectingToInternet(this)){
@@ -176,60 +177,51 @@ public class SignUp extends AppCompatActivity {
 
         String[] array = hostname.split("\\.");
 
-//        String ipAddressPI = array[0] + "." + array[1] + "." + array[2] + "." + Constants.IP_END;
         String ipAddressPI = array[0] + "." + array[1] + "." + array[2] + "." + array[3];
 
 
         if(TextUtils.isEmpty(edt_first_name.getText().toString())){
             edt_first_name.requestFocus();
             edt_first_name.setError("Enter First Name");
-            //Toast.makeText(getApplicationContext(),"Enter First Name",Toast.LENGTH_SHORT).show();
             return;
         }
         if(TextUtils.isEmpty(edt_last_name.getText().toString())){
             edt_last_name.requestFocus();
             edt_last_name.setError("Enter Last Name");
-            //Toast.makeText(getApplicationContext(),"Enter Last Name",Toast.LENGTH_SHORT).show();
             return;
         }
         if(TextUtils.isEmpty(edt_email_id.getText().toString())){
             edt_email_id.requestFocus();
             edt_email_id.setError("Enter Emaid Id");
-            //Toast.makeText(getApplicationContext(),"Enter Email Id",Toast.LENGTH_SHORT).show();
             return;
         }
         if(TextUtils.isEmpty(edt_user_name.getText().toString())){
             edt_user_name.requestFocus();
             edt_user_name.setError("Enter User Name");
-            //Toast.makeText(getApplicationContext(),"Enter User Name",Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (edt_user_name.getText().toString().trim().matches(".*([ \t]).*")){
             edt_user_name.requestFocus();
             edt_user_name.setError("Invalid Username");
-            //Toast.makeText(getApplicationContext(), "Invalid Username", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if(TextUtils.isEmpty(edt_password.getText().toString())){
             edt_password.requestFocus();
             edt_password.setError("Enter Password");
-            //Toast.makeText(getApplicationContext(),"Enter Password",Toast.LENGTH_SHORT).show();
             return;
         }
 
         if(TextUtils.isEmpty(edt_phone_no.getText().toString())){
             edt_phone_no.requestFocus();
             edt_phone_no.setError("Enter Phone No");
-            //Toast.makeText(getApplicationContext(),"Enter Phone No",Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (!isValidMobile(edt_phone_no.getText().toString())) {
             edt_phone_no.requestFocus();
             edt_phone_no.setError("Invalid Phone no");
-            //Toast.makeText(getApplicationContext(), "Invalid Phone No", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -258,8 +250,9 @@ public class SignUp extends AppCompatActivity {
             mSocket = app.getSocket();
         }
 //        webUrl = app.url;
-//        String url = "http://" + ipAddressPI + ":"  + Constants.SIGNUP_API;
-        String url = "http://" + "192.168.175.121" + ":"  + Constants.SIGNUP_API;//111
+        /*set statically ip address*/
+        String url = "http://" + ipAddressPI + ":"  + Constants.SIGNUP_API;
+//        String url = "http://" + "192.168.175.121" + ":"  + Constants.SIGNUP_API;//111
 //        String url = "http://" + edtIPAddress.getText().toString() + ":"  + Constants.SIGNUP_API;//117
         String token = FirebaseInstanceId.getInstance().getToken();
         Common.savePrefValue(getApplicationContext(),Constants.DEVICE_PUSH_TOKEN,token);

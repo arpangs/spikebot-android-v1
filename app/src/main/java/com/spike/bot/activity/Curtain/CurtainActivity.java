@@ -148,6 +148,7 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    /*ggeting curtain status*/
     private Emitter.Listener updateCurtainStatus = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -183,6 +184,7 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
         imgPause.setImageResource(pause ? R.drawable.puse_enabled:R.drawable.puse_disabled);
     }
 
+    /*dialog for add room*/
     private void dialogEditName() {
         final Dialog dialog = new Dialog(CurtainActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -257,6 +259,7 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
         newFragment.show(getFragmentManager(), "dialog");
     }
 
+    /*delete panale*/
     private void deletePanel() {
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
         String url = ChatApplication.url + Constants.curtaindelete;

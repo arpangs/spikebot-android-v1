@@ -342,7 +342,7 @@ public class AddTTlockActivity extends AppCompatActivity implements View.OnClick
         }
 
     }
-
+    /*update to tt lock server */
     private void addlockInit(ExtendedBluetoothDevice device, String lockName) {
 
         ActivityHelper.showProgressDialog(AddTTlockActivity.this, "Please Wait...", false);
@@ -388,6 +388,8 @@ public class AddTTlockActivity extends AppCompatActivity implements View.OnClick
         });
     }
 
+    /*set remotely work
+    * y can access outside using*/
     public void setRemotlyOn(String lockData, ExtendedBluetoothDevice device, int specialValue) {
         if (!DigitUtil.isSupportAudioManagement(specialValue)) {
             ChatApplication.showToast(AddTTlockActivity.this, "this lock does not support remote unlock");
@@ -410,6 +412,7 @@ public class AddTTlockActivity extends AppCompatActivity implements View.OnClick
         });
     }
 
+    /*set auto lock mode*/
     private void setlock(String lockData, ExtendedBluetoothDevice device, int specialValue) {
         TTLockClient.getDefault().controlLock(ControlAction.LOCK, lockData, device.getAddress(), new ControlLockCallback() {
             @Override
@@ -483,6 +486,7 @@ public class AddTTlockActivity extends AppCompatActivity implements View.OnClick
         });
     }
 
+    /*add tt lock to spiek bot server */
     private void callAddTTlock(String lock_id, String lockData) {
         ActivityHelper.showProgressDialog(this, " Please Wait...", false);
         String url = ChatApplication.url + Constants.addTTLock;
@@ -565,6 +569,7 @@ public class AddTTlockActivity extends AppCompatActivity implements View.OnClick
             }
         }).execute();
     }
+
 
     private void deletLockFromSpikebot(LockInitResultObj result, String lockData) {
 

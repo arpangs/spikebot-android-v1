@@ -48,6 +48,7 @@ import static com.spike.bot.core.Common.showToast;
 /**
  * Created by Sagar on 3/12/18.
  * Gmail : jethvasagar2@gmail.com
+ *
  */
 public class WifiBlasterActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -123,6 +124,7 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
         return true;
     }
 
+    /* get connect wifi ip address*/
     public class ServiceEventAsync extends AsyncTask {
         private WifiManager.MulticastLock lock;
 
@@ -182,7 +184,7 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
             super.onPostExecute(o);
         }
     }
-
+    /*get room list*/
     private void getRoomList() {
 
 
@@ -285,6 +287,7 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
         }).execute();
     }
 
+    /*send next activity*/
     private void setNextIntent() {
         Constants.activityWifi = WifiBlasterActivity.this;
 

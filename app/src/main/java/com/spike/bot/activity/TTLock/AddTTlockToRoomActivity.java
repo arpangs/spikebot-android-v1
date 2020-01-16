@@ -443,6 +443,7 @@ public class AddTTlockToRoomActivity extends AppCompatActivity implements View.O
         });
     }
 
+    /*set device list*/
     private void setDeviceList(final int positionRoom, final int positionpanel) {
         device_id = "";
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, stringDevicelist);

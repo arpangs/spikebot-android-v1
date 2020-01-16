@@ -182,6 +182,7 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                         holder.itemTextView.setText(item.getDeviceName());
 
                         if (item.getIsActive() == 0) {
+                            /*inactive icon */
                             holder.iv_icon.setImageResource(Common.getIconInActive(1, item.getDevice_icon()));//item.getDeviceStatus()
                         } else {
                             holder.iv_icon.setImageResource(Common.getIcon(0, item.getDevice_icon()));//item.getDeviceStatus()
@@ -208,17 +209,12 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                     }
                 }
                 if (item.isSelected()) {
-//                    if (item.getDeviceType().equalsIgnoreCase("remote")) {
-                        holder.iv_icon_select.setVisibility(View.VISIBLE);
-//                    } else {
-//                        holder.iv_icon_select.setVisibility(View.GONE);
-//                    }
+                    holder.iv_icon_select.setVisibility(View.VISIBLE);
                 } else {
                     holder.iv_icon_select.setVisibility(View.GONE);
                 }
 
                 if (item.getSensor_icon() != null && item.getSensor_icon().equalsIgnoreCase("Remote_AC") && item.getIsActive() == 0) {
-                    // holder.view.setClickable(false);
                     holder.iv_icon.setImageResource(Common.getIconInActive(0, item.getSensor_type()));//item.getDeviceStatus()
 
                 } else if (item.getSensor_icon() != null && item.getSensor_icon().equalsIgnoreCase("Remote_AC") && item.getIsActive() == 1) {
@@ -239,65 +235,18 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                 holder.view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-//                        String isUse="";
-//                        if(!TextUtils.isEmpty(item.getTo_use())){
-//                            isUse=item.getTo_use();
-//                        }
-//
-//                        if(isUse.equalsIgnoreCase("0")){
-//                            alertShow();
-//                        }else if (item.getIs_original() == 0) {
-//                            //id Device room id is duplicate that's means display device get info dialog in mood
-//                            mItemClickListener.itemClicked(item, "disable_device", position);
-//
-//                        }else {
-
-//                            if (item.getDevice_icon().equalsIgnoreCase("remote")) {
-//                                if (item.getIsActive() != -1) {
-//                                    item.setSelected(!item.isSelected());
-//                                    notifyItemChanged(v.getId(), item);
-//                                }
-//
-//                            }else {
                         ChatApplication.logDisplay("item is " + item.isSelected());
                         item.setSelected(!item.isSelected());
                         notifyItemChanged(v.getId(), item);
                         ((DeviceVO) mDataArrayList.get(v.getId())).setSelected(item.isSelected());
                         final DeviceVO item1 = (DeviceVO) mDataArrayList.get(v.getId());
-                        ChatApplication.logDisplay("item is111 " + item.isSelected());
-                        ChatApplication.logDisplay("item is11111 " + item1.isSelected());
-//                            }
-//                        }
                     }
                 });
 
-                //disable device if is_Original is 0
-//                if(item.getIs_original() == 0 && !item.getDeviceType().equalsIgnoreCase("2")){
-//                    holder.view.setAlpha(0.50f);
-//                }else{
-//                    holder.view.setAlpha(1);
-//                }
-
                 holder.iv_icon_text.setVisibility(View.GONE);
                 holder.ll_room_item.setOnClickListener(null);
-
                 break;
         }
-    }
-
-    private void alertShow() {
-        final AlertDialog.Builder builder;
-        builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("Alert")
-                .setMessage("This sensor is not allowed to be added in mood.")
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
     }
 
     @Override

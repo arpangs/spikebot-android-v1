@@ -27,7 +27,6 @@ import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.User;
 import com.spike.bot.receiver.ConnectivityReceiver;
-import com.spike.bot.receiver.StickyService;
 
 import org.json.JSONObject;
 
@@ -60,7 +59,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setUiId();
     }
 
-
     private void setUiId() {
         getUUId();
 
@@ -73,11 +71,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         btn_login.setOnClickListener(this);
         btn_SKIP.setOnClickListener(this);
         btnSignUp.setOnClickListener(this);
-
-        //for beacon service stop when application kill
-        Intent stickyService = new Intent(this, StickyService.class);
-        startService(stickyService);
-
     }
 
     @Override
@@ -146,6 +139,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    /*login call*/
     public void loginCloud() {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
@@ -228,6 +222,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         Gson gson = new Gson();
                         String jsonText = Common.getPrefValue(getApplicationContext(), Common.USER_JSON);
                         List<User> userList = new ArrayList<User>();
+                        /*set active user */
                         if (!TextUtils.isEmpty(jsonText) && !jsonText.equals("[]") && !jsonText.equals("null")) {
                             Type type = new TypeToken<List<User>>() {}.getType();
                             userList = gson.fromJson(jsonText, type);

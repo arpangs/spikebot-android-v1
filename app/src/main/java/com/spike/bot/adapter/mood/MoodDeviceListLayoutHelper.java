@@ -29,8 +29,6 @@ public class MoodDeviceListLayoutHelper implements SectionStateChangeListener {
 
 
     public MoodDeviceListLayoutHelper(Context ctx, RecyclerView recyclerView, ItemClickListener itemClickListener, int gridSpanCount, boolean isMoodAdapter) {
-
-        //setting the recycler view
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, gridSpanCount);
         recyclerView.setLayoutManager(gridLayoutManager);
         mSectionedExpandableGridAdapter = new MoodDeviceListExpandableGridAdapter(context, mDataArrayList, gridLayoutManager, itemClickListener, this,isMoodAdapter);
@@ -50,6 +48,7 @@ public class MoodDeviceListLayoutHelper implements SectionStateChangeListener {
 
     String room_device_id="";
 
+    /*adapter refresh */
     public void notifyDataSetChanged() {
         //TODO : handle this condition such that these functions won't be called if the recycler view is on scroll
         generateDataList();

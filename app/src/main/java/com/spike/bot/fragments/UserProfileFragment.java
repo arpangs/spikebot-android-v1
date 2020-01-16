@@ -91,19 +91,19 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
 
-        et_profile_first_name = (EditText) view.findViewById(R.id.et_profile_first_name);
-        et_profile_last_name = (EditText) view.findViewById(R.id.et_profile_last_name);
-        et_profile_contact_no = (EditText) view.findViewById(R.id.et_profile_contact_no);
-        et_profile_email = (EditText) view.findViewById(R.id.et_profile_email);
-        et_profile_user_name = (EditText) view.findViewById(R.id.et_profile_user_name);
-        btn_save  = (Button) view.findViewById(R.id.btn_save);
-        ll_password_view_expand = (LinearLayout) view.findViewById(R.id.ll_password_view);
-        ll_pass_edittext_view = (LinearLayout) view.findViewById(R.id.ll_pass_edittext_view);
-        img_pass_arrow = (ImageView)view.findViewById(R.id.img_pass_arrow);
+        et_profile_first_name =  view.findViewById(R.id.et_profile_first_name);
+        et_profile_last_name =  view.findViewById(R.id.et_profile_last_name);
+        et_profile_contact_no =  view.findViewById(R.id.et_profile_contact_no);
+        et_profile_email =  view.findViewById(R.id.et_profile_email);
+        et_profile_user_name =  view.findViewById(R.id.et_profile_user_name);
+        btn_save  =  view.findViewById(R.id.btn_save);
+        ll_password_view_expand =  view.findViewById(R.id.ll_password_view);
+        ll_pass_edittext_view =  view.findViewById(R.id.ll_pass_edittext_view);
+        img_pass_arrow = view.findViewById(R.id.img_pass_arrow);
         btnChangePassword = view.findViewById(R.id.btnChangePassword);
         btnChangePassword.setOnClickListener(this);
-        edt_new_password = (EditText)view.findViewById(R.id.et_new_password);
-        edt_confrim_password = (EditText)view.findViewById(R.id.et_new_password_confirm);
+        edt_new_password = view.findViewById(R.id.et_new_password);
+        edt_confrim_password = view.findViewById(R.id.et_new_password_confirm);
 
         et_profile_first_name.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         et_profile_last_name.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
@@ -147,6 +147,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
         return view;
     }
+    /*user profile */
     public void getProfile(){
 
         if(!ActivityHelper.isConnectingToInternet(getContext())){
@@ -169,11 +170,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                         JSONObject data = result.getJSONObject("data");
                         JSONArray profileArray = data.getJSONArray("userProfileData");
                         JSONObject obj = profileArray.getJSONObject(0);
-                        /*"user_email": "test@gmail.com",
-                                "first_name": "test",
-                                "last_name": "patel",
-                                "user_name": "test",
-                                "user_phone": "123123"*/
+
                         ChatApplication.logDisplay( "getProfile obj " + obj.toString() );
                         String user_email = obj.getString("user_email");
                         String first_name = obj.getString("first_name");
@@ -193,7 +190,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                     }else{
                         Toast.makeText(getContext(), message , Toast.LENGTH_SHORT).show();
                     }
-                    // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                     ChatApplication.logDisplay( "Exception getProfile e.getMessage() " + e.getMessage() );
@@ -205,7 +201,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             }
             @Override
             public void onFailure(Throwable throwable, String error) {
-                ChatApplication.logDisplay( "getProfile onFailure " + error );
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(getContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
@@ -266,24 +261,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             Toast.makeText(getContext(), "Invalid Username", Toast.LENGTH_SHORT).show();
             return;
         }
-
-//        if(!TextUtils.isEmpty(edt_new_password.getText().toString())){
-//
-//            if(edt_new_password.getText().length()>1){
-//                if(edt_new_password.getText().toString().equalsIgnoreCase(edt_confrim_password.getText().toString())){
-//                    isValidate = true;
-//                }else{
-//                    isValidate = false;
-//                    Toast.makeText(getContext(), "Password not match..." , Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//            }else{
-//                isValidate = false;
-//                Toast.makeText(getContext(), "Invalid Password..." , Toast.LENGTH_SHORT).show();
-//                return;
-//            }
-//        }
-
 
         ActivityHelper.showProgressDialog(getContext(),"Please wait.",false);
 
@@ -353,7 +330,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
                         Toast.makeText(getContext(), message , Toast.LENGTH_SHORT).show();
                         ActivityHelper.hideKeyboard(getActivity());
-                       // finish();
                         ActivityHelper.dismissProgressDialog();
                         ChatApplication.isRefreshUserData = true;
 
@@ -361,7 +337,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                         ChatApplication.isRefreshUserData = false;
                         Toast.makeText(getContext(), message , Toast.LENGTH_SHORT).show();
                     }
-                    // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                     ChatApplication.logDisplay( "Exception saveProfile e.getMessage() " + e.getMessage() );
@@ -373,7 +348,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             }
             @Override
             public void onFailure(Throwable throwable, String error) {
-                ChatApplication.logDisplay( "saveProfile onFailure " + error );
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(getContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
@@ -394,14 +368,11 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         inputRoom.setVisibility(View.GONE);
         inputPassword.setVisibility(View.VISIBLE);
 
-//        InputFilter[] filterArray = new InputFilter[1];
-//        filterArray[0] = new InputFilter.LengthFilter(25);
-//        room_name.setFilters(filterArray);
 
         TextView tv_title =  dialog.findViewById(R.id.tv_title);
-        Button btnSave = (Button) dialog.findViewById(R.id.btn_save);
-        Button btn_cancel = (Button) dialog.findViewById(R.id.btn_cancel);
-        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
+        Button btnSave =  dialog.findViewById(R.id.btn_save);
+        Button btn_cancel =  dialog.findViewById(R.id.btn_cancel);
+        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

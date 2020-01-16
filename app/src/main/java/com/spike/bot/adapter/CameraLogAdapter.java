@@ -125,12 +125,12 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
 
         public SensorViewHolder(View view) {
             super(view);
-            tv_device_description = (TextView) itemView.findViewById(R.id.tv_device_description);
-            tv_device_log_type = (TextView) itemView.findViewById(R.id.tv_device_log_type);
-            txtImage = (ImageView) itemView.findViewById(R.id.txtImage);
-            tv_device_log_date = (TextView) itemView.findViewById(R.id.tv_device_log_date);
-            view_header = (View) itemView.findViewById(R.id.view_header);
-            linearAlert = (LinearLayout) itemView.findViewById(R.id.linearAlert);
+            tv_device_description =  itemView.findViewById(R.id.tv_device_description);
+            tv_device_log_type =  itemView.findViewById(R.id.tv_device_log_type);
+            txtImage =  itemView.findViewById(R.id.txtImage);
+            tv_device_log_date =  itemView.findViewById(R.id.tv_device_log_date);
+            view_header =  itemView.findViewById(R.id.view_header);
+            linearAlert =  itemView.findViewById(R.id.linearAlert);
         }
     }
 }

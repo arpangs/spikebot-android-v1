@@ -128,6 +128,7 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         }
     }
 
+    /*create room*/
     public void addCustomRoom() {
 
         final Dialog dialog = new Dialog(this);
@@ -171,6 +172,7 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         }
     }
 
+    /*room add service*/
     private void saveCustomRoom(EditText roomName, final Dialog dialog) {
 
         if (!ActivityHelper.isConnectingToInternet(AddDeviceConfirmActivity.this)) {
@@ -233,6 +235,7 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         }).execute();
     }
 
+    /*check add  door / lock */
     private void showAddSensorDialog(String room_id) {
 
         final Dialog dialog = new Dialog(this);
@@ -445,6 +448,7 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         startActivity(intent);
     }
 
+    /* add smart device bulb*/
     public void getHueBridgeLightList(String room_id) {
         if (!ActivityHelper.isConnectingToInternet(AddDeviceConfirmActivity.this)) {
             Toast.makeText(AddDeviceConfirmActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();

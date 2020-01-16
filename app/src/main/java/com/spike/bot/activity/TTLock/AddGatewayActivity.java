@@ -91,6 +91,7 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
 
     }
 
+    /*check permission */
     @TargetApi(Build.VERSION_CODES.M)
     private void startScan() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -258,6 +259,8 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
 
     }
 
+    /*delete gateway
+    * every time add device first delete device after add lock*/
     private void deleteGateway(int gatewayId) {
 
 

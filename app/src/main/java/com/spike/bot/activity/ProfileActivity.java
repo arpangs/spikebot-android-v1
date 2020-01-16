@@ -69,6 +69,7 @@ public class ProfileActivity extends AppCompatActivity {
             isFlagUser = true;
         }
 
+        /*add fragment*/
         fragmentList.add(UserProfileFragment.newInstance());
         if (isFlagUser) {
             fragmentList.add(UserChildListFragment.newInstance());

@@ -77,7 +77,7 @@ public class SearchSubHueBridgeActivity extends AppCompatActivity implements Vie
             callsearchBridges();
         }
     }
-
+    /*call bridges list*/
     public void callsearchBridges() {
         if (!ActivityHelper.isConnectingToInternet(SearchSubHueBridgeActivity.this)) {
             Toast.makeText(SearchSubHueBridgeActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();

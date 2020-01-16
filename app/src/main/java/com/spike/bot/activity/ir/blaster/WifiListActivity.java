@@ -112,6 +112,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
         return true;
     }
 
+    /*add ir blaster dialog */
     private void showIRSensorDialog() {
 
         final Dialog irDialog = new Dialog(this);
@@ -304,60 +305,6 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
 
     }
 
-    public void callWifiCheck(String s, WifiModel.WiFiList wiFiList, String edWifiIP, final Dialog dialog) {
-
-
-        GetDataService apiService = RetrofitAPIManager.provideClientApi();
-
-        ActivityHelper.showProgressDialog(WifiListActivity.this, "Please wait... ", true);
-        String url = "http://" + wifiIP + "/wifisave?s=" + wiFiList.getNetworkName() + "&p=" + s + "&$=" + edWifiIP;
-
-        ChatApplication.logDisplay("url tt is " + url);
-
-        Call<ResponseBody> call = apiService.saveIrBlaster(url);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                ChatApplication.logDisplay("ir blaster is found result " + response.body().toString());
-
-                try {
-                    JSONObject object=new JSONObject(response.body().toString());
-                    if (object != null) {
-                        if (object.optString("response").equalsIgnoreCase("success")) {
-                            dialog.dismiss();
-                            Constants.isWifiConnectSave = true;
-                            moduleId = object.optString("moduleId");
-                            if (moduleId.length() > 1) {
-                                setSaveView();
-                            }
-                        } else {
-                            ActivityHelper.dismissProgressDialog();
-                            ChatApplication.showToast(WifiListActivity.this, "" + object.optString("response"));
-                        }
-                    } else {
-                        ActivityHelper.dismissProgressDialog();
-                        ChatApplication.showToast(WifiListActivity.this, "Please try again later.");
-                    }
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    ActivityHelper.dismissProgressDialog();
-                } finally {
-//                    ActivityHelper.dismissProgressDialog();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                ChatApplication.logDisplay("tt lock reponse is error "+t);
-                ActivityHelper.dismissProgressDialog();
-            }
-        });
-
-    }
-
-
     /*blaster wifi connection request
     * */
     private void callWifiPasswordCheck(String s, WifiModel.WiFiList wiFiList, String edWifiIP, final Dialog dialog) {
@@ -413,6 +360,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
     }
 
     /*for blaster wifi off & last wifi connectiong wait ..
+    some time wifi connectig few sec so timer cout adding
     * */
     private void setSaveView() {
         new CountDownTimer(2500, 1000) {

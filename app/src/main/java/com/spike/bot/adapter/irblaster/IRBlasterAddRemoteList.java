@@ -67,8 +67,8 @@ public class IRBlasterAddRemoteList extends RecyclerView.Adapter<IRBlasterAddRem
 
         IRBlasterRemoteViewHolder(View itemView) {
             super(itemView);
-            mRemoteName = (TextView) itemView.findViewById(R.id.text_item);
-            mRemoteIcon = (ImageView) itemView.findViewById(R.id.iv_icon);
+            mRemoteName =  itemView.findViewById(R.id.text_item);
+            mRemoteIcon =  itemView.findViewById(R.id.iv_icon);
         }
     }
 }

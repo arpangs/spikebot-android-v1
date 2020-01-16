@@ -251,15 +251,6 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
 
         JSONObject obj = new JSONObject();
         try {
-            //  obj.put("room_id", roomIdList.get(room_pos));
-            //            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            //            obj.put("device_name", door_name);
-            //            obj.put("module_id", door_module_id);
-            //            obj.put("module_type", module_type);
-            //
-            //            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            //            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
             obj.put("module_id", door_module_id);
             obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             obj.put("device_name", door_name);

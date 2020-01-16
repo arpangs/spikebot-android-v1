@@ -34,7 +34,6 @@ import com.spike.bot.model.LockObj;
 import com.spike.bot.model.User;
 import com.spike.bot.receiver.ApplicationCrashHandler;
 import com.spike.bot.receiver.ConnectivityReceiver;
-import com.spike.bot.receiver.StickyService;
 
 import io.fabric.sdk.android.Fabric;
 import org.acra.ACRA;
@@ -114,8 +113,6 @@ public class ChatApplication extends Application  {
 
     //beacon
     private long lastSyncTimeStamp = 0;
-    public BluetoothUtils mBluetoothUtils;
-    public static BluetoothLeScanner mScanner;
     public BluetoothLeDeviceStore mDeviceStore;
     List<LeDeviceItem> itemList = new ArrayList<>();
     List<LeDeviceItem> itemListTemp = new ArrayList<>();
@@ -438,49 +435,6 @@ public class ChatApplication extends Application  {
     };
 
 
-    public static void createFileLog(String message) {
-         StringBuilder log = null;
-        try {
-            Process process = Runtime.getRuntime().exec("logcat -d");
-            BufferedReader bufferedReader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream()));
-
-            log=new StringBuilder();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                log.append(line);
-            }
-//            TextView tv = (TextView)findViewById(R.id.textView1);
-//            tv.setText(log.toString());
-        } catch (IOException e) {
-        }
-
-
-        //convert log to string
-        final String logString = new String(log.toString());
-
-        //create text file in SDCard
-        File sdCard = Environment.getExternalStorageDirectory();
-        File dir = new File (sdCard.getAbsolutePath() + "/myLogcat");
-        dir.mkdirs();
-        File file = new File(dir, "logcat.txt");
-
-        try {
-            //to write logcat in text file
-            FileOutputStream fOut = new FileOutputStream(file);
-            OutputStreamWriter osw = new OutputStreamWriter(fOut);
-
-            // Write the string to the file
-            osw.write(logString);
-            osw.flush();
-            osw.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     //beacon
 
     private void setSyncRange() {
@@ -525,7 +479,7 @@ public class ChatApplication extends Application  {
                                     if (itemList.get(i).getDevice().getAddress().equals(leDevice.getAddress())) {
 //                                        Log.d("System out","mLeScanCallback is 22 name "+leDevice.getRunningAverageRssi());
 
-//                                        itemList.set(i,new LeDeviceItem(leDevice));
+//                           Z             itemList.set(i,new LeDeviceItem(leDevice));
 
                                         LeDeviceItem leDeviceItem=new LeDeviceItem(leDevice);
                                         leDeviceItem.setRssRange(itemList.get(i).isRssRange());

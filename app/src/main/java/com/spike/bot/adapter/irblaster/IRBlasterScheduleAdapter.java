@@ -45,8 +45,7 @@ public class IRBlasterScheduleAdapter extends RecyclerView.Adapter<IRBlasterSche
 
     @Override
     public IRBlasterSch onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.row_remote_schedule, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_remote_schedule, parent, false);
         mContext = view.getContext();
         return new IRBlasterSch(view);
     }
@@ -88,6 +87,8 @@ public class IRBlasterScheduleAdapter extends RecyclerView.Adapter<IRBlasterSche
                         holder.ir_tv_off_time.length() - 2, holder.ir_tv_off_time.length());
 
 
+                /*am type : blue color set
+                * pm type : yellow colors set */
                 if (lastAMPMStart.equalsIgnoreCase("AM") || lastAMPMStart.equalsIgnoreCase("am")) {
                     holder.ir_on_view.setBackgroundResource(blue_border_yellow_top);
                 }
@@ -148,20 +149,20 @@ public class IRBlasterScheduleAdapter extends RecyclerView.Adapter<IRBlasterSche
         IRBlasterSch(View itemView) {
             super(itemView);
 
-            ir_onoff_view = (LinearLayout) itemView.findViewById(R.id.ir_onoff_view);
-            ir_on_view = (LinearLayout) itemView.findViewById(R.id.ir_on_view);
-            ir_off_view = (LinearLayout) itemView.findViewById(R.id.ir_off_view);
+            ir_onoff_view =  itemView.findViewById(R.id.ir_onoff_view);
+            ir_on_view =  itemView.findViewById(R.id.ir_on_view);
+            ir_off_view =  itemView.findViewById(R.id.ir_off_view);
 
-            ir_tv_on_time = (TextView) itemView.findViewById(R.id.ir_tv_schedule_on_time);
-            ir_tv_off_time = (TextView) itemView.findViewById(R.id.ir_tv_schedule_off_time);
+            ir_tv_on_time = itemView.findViewById(R.id.ir_tv_schedule_on_time);
+            ir_tv_off_time = itemView.findViewById(R.id.ir_tv_schedule_off_time);
 
-            ir_tv_on = (TextView) itemView.findViewById(R.id.ir_tv_schedule_on);
-            ir_tv_off = (TextView) itemView.findViewById(R.id.ir_tv_schedule_off);
+            ir_tv_on = itemView.findViewById(R.id.ir_tv_schedule_on);
+            ir_tv_off = itemView.findViewById(R.id.ir_tv_schedule_off);
 
-            ir_tv_name = (TextView) itemView.findViewById(R.id.ir_tv_name);
-            ir_tv_schedule_days = (TextView) itemView.findViewById(R.id.ir_tv_schedule_days);
+            ir_tv_name = itemView.findViewById(R.id.ir_tv_name);
+            ir_tv_schedule_days = itemView.findViewById(R.id.ir_tv_schedule_days);
 
-            ir_iv_schedule_dots = (ImageView) itemView.findViewById(R.id.ir_iv_schedule_dots);
+            ir_iv_schedule_dots =  itemView.findViewById(R.id.ir_iv_schedule_dots);
 
         }
     }

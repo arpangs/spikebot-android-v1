@@ -29,6 +29,7 @@ import android.widget.TextView;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
+import com.spike.bot.Beacon.AddBeaconActivity;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Repeatar.RepeaterActivity;
@@ -106,6 +107,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
     }
 
+    /*add arraylist static data*/
     public void getArraylist() {
         arrayList.add("Unassigned List");
         arrayList.add("Room");
@@ -121,9 +123,10 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         arrayList.add("Repeaters");
         arrayList.add("Camera");
         arrayList.add("Add Smart Cam");
+        arrayList.add("Add Beacon");
     }
 
-
+    /*item click */
     private void setIntent(int position) {
         if (position == 0) {
            unassignIntent("all");
@@ -162,15 +165,19 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         }else if (position == 13) {
             Intent intent=new Intent(this, AddJetSonActivity.class);
             startActivity(intent);
+        }else if (position == 14) {
+            Intent intent=new Intent(this, AddBeaconActivity.class);
+            startActivity(intent);
         }
     }
-
+    /*unassign list*/
     public void unassignIntent(String type){
         Intent intent=new Intent(this, AllUnassignedPanel.class);
         intent.putExtra("type",type);
         startActivity(intent);
     }
 
+    /*start connection socket*/
     public void startSocketConnection() {
         ChatApplication app = (ChatApplication) getApplication();
         if (mSocket != null && mSocket.connected()) {
@@ -190,7 +197,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         }
     }
 
-
+    /*device list adapter*/
     public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.SensorViewHolder> {
 
         private Context mContext;
@@ -428,7 +435,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             dialog.show();
         }
     }
-
+    /*dialog for sensor type selection*/
     private void showOptionDialog(final int sensor_type) {
 
         final Dialog dialog = new Dialog(AddDeviceTypeListActivity.this);
@@ -783,7 +790,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         }).execute();
 
     }
-
+    /*count down for 7 sec after finish*/
     CountDownTimer countDownTimer = new CountDownTimer(7000, 4000) {
         public void onTick(long millisUntilFinished) {
         }
@@ -825,6 +832,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         }
     }
 
+    /*dialog for sensor */
     private void showGasSensor(String door_module_id, String module_type) {
 
         if (dialog == null) {
@@ -901,6 +909,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    /*add device comman service */
     private void addCurtain(final Dialog dialog, String door_name, String door_module_id, Spinner sp_room_list, String  module_type) {
 
 

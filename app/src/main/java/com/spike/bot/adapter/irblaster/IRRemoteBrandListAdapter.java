@@ -66,7 +66,7 @@ public class IRRemoteBrandListAdapter extends RecyclerView.Adapter<IRRemoteBrand
 
         RemoteBrand(View itemView) {
             super(itemView);
-            ir_brand_view = (RelativeLayout) itemView.findViewById(R.id.ir_brand_view);
+            ir_brand_view =  itemView.findViewById(R.id.ir_brand_view);
             ir_brand_name = itemView.findViewById(R.id.ir_brand_name);
         }
     }

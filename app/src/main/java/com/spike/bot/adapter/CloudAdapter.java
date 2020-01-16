@@ -46,23 +46,13 @@ public class CloudAdapter extends RecyclerView.Adapter<CloudAdapter.CloudViewHol
     public void onBindViewHolder(CloudViewHolder holder, final int position) {
 
         final User user = userList.get(position);
-//        holder.txt_title.setText(user.getFirstname()+" "+user.getLastname());
         holder.txt_title.setText(user.getFirstname());
-
-//        if(user.isActive()){
-//            holder.image_cloud.setImageResource(R.drawable.icn_check);
-//        }else{
-//            holder.image_cloud.setImageResource(R.drawable.icn_round);
-//        }
 
         if(userid.equalsIgnoreCase(user.getUser_id())){
             holder.image_cloud.setImageResource(R.drawable.icn_check);
         }else{
             holder.image_cloud.setImageResource(R.drawable.icn_round);
         }
-
-
-        //holder.radioButton.setChecked(user.isActive());
 
         holder.txt_title.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,9 +99,8 @@ public class CloudAdapter extends RecyclerView.Adapter<CloudAdapter.CloudViewHol
 
         CloudViewHolder(View itemView) {
             super(itemView);
-            txt_title = (TextView)itemView.findViewById(R.id.txt_row_clou_name);
-            //  radioButton = (RadioButton)itemView.findViewById(R.id.radio_cloud);
-            image_cloud = (ImageView) itemView.findViewById(R.id.image_cloud);
+            txt_title = itemView.findViewById(R.id.txt_row_clou_name);
+            image_cloud =  itemView.findViewById(R.id.image_cloud);
         }
     }
 

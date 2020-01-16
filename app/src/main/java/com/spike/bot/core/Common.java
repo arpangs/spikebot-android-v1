@@ -856,17 +856,6 @@ public class Common {
     }
 
 
-    /**
-     * @param context
-     * @return
-     */
-    public static boolean isWifiAvailable(Context context) {
-        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-
-        return wifi.isConnected();
-    }
-
 
     public static Object fromJson(String jsonString, Type type) {
         return new Gson().fromJson(jsonString, type);

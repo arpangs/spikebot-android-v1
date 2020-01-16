@@ -305,6 +305,7 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
+    /*set value selection*/
     private void setSelectValue() {
         if (modeType.equalsIgnoreCase("update")) {
             for (int i = 0; i < roomList.size(); i++) {
@@ -411,10 +412,6 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
                         roomList = (ArrayList<UnassignedListRes.Data.RoomList>) Constants.fromJson(result.optJSONObject("data").optJSONArray("roomList").toString(), type);
 //                        cameraarrayList = (ArrayList<CameraVO>) Constants.fromJson(result.optJSONObject("data").optJSONArray("cameradeviceList").toString(), type);
 
-//
-//                        for"id": 1,
-//                                "camera_id": "1573725334535_A1lcc_Tq6",
-//                                "camera_name": "iot",
                         for (int i = 0; i < result.optJSONObject("data").optJSONArray("cameradeviceList").length(); i++) {
                             JSONObject object = result.optJSONObject("data").optJSONArray("cameradeviceList").optJSONObject(i);
                             CameraVO cameraVO = new CameraVO();

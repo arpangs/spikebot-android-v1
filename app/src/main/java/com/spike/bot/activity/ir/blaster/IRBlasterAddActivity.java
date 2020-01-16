@@ -178,6 +178,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         return super.onOptionsItemSelected(item);
     }
 
+    /* show dialog for sync device*/
     private void showOptionDialogIr(final int sensorType) {
 
         final Dialog dialog = new Dialog(this);
@@ -225,6 +226,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
 
     }
 
+    /*getting socket fot ir blaster any update & change*/
     private Emitter.Listener configureIRBlaster = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -299,6 +301,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         builder.create().show();
     }
 
+    /* show dialog for add ir blaster*/
     private void showIRSensorDialog(String ir_module_id) {
 
         if (irDialog == null) {
@@ -483,6 +486,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
 
     }
 
+    /*call for ir sensor */
     private void isUnassignedDoorSensor(final int isDoorSensor) {
 
         String url = "";
@@ -690,6 +694,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         newFragment.show(getFragmentManager(), "dialog");
     }
 
+    /*delete blaster */
     private void deleteBlaster(String irBlasterId) {
 
         if (!ActivityHelper.isConnectingToInternet(getApplicationContext())) {

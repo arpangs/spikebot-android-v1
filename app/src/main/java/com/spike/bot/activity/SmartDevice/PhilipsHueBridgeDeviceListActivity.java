@@ -144,6 +144,7 @@ public class PhilipsHueBridgeDeviceListActivity extends AppCompatActivity {
         return true;
     }
 
+    /*get bridge list*/
     public void getHueBridgeLightList() {
         if (!ActivityHelper.isConnectingToInternet(PhilipsHueBridgeDeviceListActivity.this)) {
             Toast.makeText(PhilipsHueBridgeDeviceListActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -302,6 +303,7 @@ public class PhilipsHueBridgeDeviceListActivity extends AppCompatActivity {
         newFragment.show(getFragmentManager(), "dialog");
     }
 
+    /*delete device */
     public void deleteDevice(final SmartBrandDeviceModel showDeleteshowDelete) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {

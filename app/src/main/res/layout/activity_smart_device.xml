@@ -50,7 +50,7 @@
             android:layout_weight="0.3"
             android:layout_gravity="center"
             app:enableBrightness="false"
-            app:selector="@drawable/wheel"
+            app:selector="@drawable/wheel_color"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>

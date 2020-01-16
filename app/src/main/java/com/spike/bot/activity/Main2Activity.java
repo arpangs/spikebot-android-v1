@@ -165,7 +165,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             isResumeConnect = false;
         } else if (Common.isConnected() && ChatApplication.isRefreshHome) {
             hideAlertDialog();
-            loginDialog(false, false);
             linear_progress.setVisibility(View.GONE);
             ChatApplication.isRefreshHome = false;
         } else if (!Common.isConnected()) {
@@ -343,7 +342,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
      * @param user
      */
 
-
+    /*user selection set value & refresh*/
     @Override
     public void userSelectclick(User user) {
         if (dialogUser != null) {
@@ -480,7 +479,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     @Override
     public void showLogin() {
         flagPicheck = true;
-        loginDialog(true, true);
     }
 
     @Override
@@ -576,6 +574,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     /**
      * show Account Dialog with toolbar title
+     * add new user & set another user dialog
      *
      * @param toolbarTitle
      */
@@ -648,6 +647,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    /*setting menu dialog*/
     public void openSettingPopup(final View v) {//,final ICallBackAction actionCallBack
         PopupMenu popup = null;
         @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenu);
@@ -818,7 +818,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         } else {
             ChatApplication app = ChatApplication.getInstance();
             app.closeSocket(webUrl);
-            loginDialog(true, false);
         }
 
 
@@ -954,7 +953,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         } else {
             ChatApplication app = ChatApplication.getInstance();
             app.closeSocket(webUrl);
-            loginDialog(true, false);
         }
     }
 
@@ -1003,7 +1001,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 ChatApplication.url = webUrl;
                 flagPicheck = false;
                 listServiceTemp("\nService resolved: ", webUrl, 80, true, false);
-                loginDialog(false, false);
 
         } else {
             isNetwork = true;
@@ -1070,40 +1067,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     public void hideAlertDialog() {
         linear_main.setVisibility(View.VISIBLE);
     }
-
-    /* login dialog all most  */
-    public void loginDialog(final boolean value, final boolean isCancelButtonVisible) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ActivityHelper.dismissProgressDialog();
-
-//                    if (flagPicheck && !value) {
-//                        hideAlertDialog();
-//                        mViewPager.setVisibility(View.VISIBLE);
-//                        linear_progress.setVisibility(View.GONE);
-//                        mToolBarSettings.setVisibility(View.INVISIBLE);
-//                        toolbarTitle.setVisibility(View.VISIBLE);
-//                    } else {
-//
-//                        if (value) {
-//                            hideAlertDialog();
-//                            mViewPager.setVisibility(View.GONE);
-//                            linear_progress.setVisibility(View.GONE);
-//                            mToolBarSettings.setVisibility(View.GONE);
-//                            toolbarTitle.setVisibility(View.GONE);
-//                        } else {
-//                            hideAlertDialog();
-//                            linear_main.setVisibility(View.VISIBLE);
-//                            mViewPager.setVisibility(View.VISIBLE);
-//                            mToolBarSettings.setVisibility(View.VISIBLE);
-//                            toolbarTitle.setVisibility(View.VISIBLE);
-//                        }
-//                    }
-            }
-        });
-    }
-
 
 
     //Socket

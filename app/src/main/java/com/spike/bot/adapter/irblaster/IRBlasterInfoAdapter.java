@@ -37,8 +37,7 @@ public class IRBlasterInfoAdapter extends RecyclerView.Adapter<IRBlasterInfoAdap
 
     @Override
     public IRBlasterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.row_ir_blaster_info, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_ir_blaster_info, parent, false);
         mContext = view.getContext();
         return new IRBlasterViewHolder(view);
     }

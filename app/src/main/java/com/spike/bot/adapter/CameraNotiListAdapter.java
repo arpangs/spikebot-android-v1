@@ -77,10 +77,10 @@ public class CameraNotiListAdapter extends RecyclerView.Adapter<CameraNotiListAd
 
         public SensorViewHolder(View view) {
             super(view);
-            text_item = (TextView) itemView.findViewById(R.id.text_item);
-            iv_icon_text = (ImageView) itemView.findViewById(R.id.iv_icon_text);
-            iv_icon_active_camera = (ImageView) itemView.findViewById(R.id.iv_icon_active_camera);
-            iv_icon = (ImageView) itemView.findViewById(R.id.iv_icon);
+            text_item =  itemView.findViewById(R.id.text_item);
+            iv_icon_text =  itemView.findViewById(R.id.iv_icon_text);
+            iv_icon_active_camera =  itemView.findViewById(R.id.iv_icon_active_camera);
+            iv_icon =  itemView.findViewById(R.id.iv_icon);
         }
     }
 }

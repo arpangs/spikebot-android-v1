@@ -76,7 +76,6 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_irblaster_edit);
 
-
         syncIntent();
         bindView();
         getSchDetails();
@@ -167,6 +166,7 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
         }
         return super.onOptionsItemSelected(item);
     }
+    /* update remote */
     private void updateRemote(){
 
         //mRemoteName
@@ -621,6 +621,7 @@ public class IRBlasterEditActivity extends AppCompatActivity implements View.OnC
         }
     }
 
+    /*get repeat day list*/
     public void getRepeatString() {
 
         repeatDayString = "";

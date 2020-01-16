@@ -101,6 +101,7 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
     public void onClick(View v) {
     }
 
+    /* child user list */
     public void getUserCHildList() {
 
         ActivityHelper.showProgressDialog(getActivity(), "Please Wait...", false);
@@ -195,6 +196,7 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
         }
     }
 
+    /*confim dialog */
     private void showDeleteDialog(final int position, final User user){
         ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete child user ? "+user.getFirstname(), new ConfirmDialog.IDialogCallback() {
             @Override
@@ -210,6 +212,7 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
         newFragment.show(getActivity().getFragmentManager(), "dialog");
     }
 
+    /*child user delete */
     private void deleteUserChild(final int position, User user) {
         ActivityHelper.showProgressDialog(getActivity(), "Please Wait...", false);
         String url = ChatApplication.url + Constants.DeleteChildUser;
@@ -277,18 +280,4 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
             setUiId();
         }
     }
-
-//    @Override
-//    public void itemClicked(RoomVO item, String action) {
-//        if(action.equalsIgnoreCase("deleteclick")){
-//            showDeleteDialog(item);
-//        }else if(action.equalsIgnoreCase("editclick")){
-//            Intent intent=new Intent(getActivity(),UserChildActivity.class);
-//            intent.putExtra("modeType","update");
-//            intent.putExtra("arraylist",item);
-//            startActivity(intent);
-//        }
-//
-//    }
-
 }

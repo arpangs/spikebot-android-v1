@@ -82,9 +82,9 @@ public class ExistPanelGridAdapter extends RecyclerView.Adapter<ExistPanelGridAd
 
         public DeviceHolder(View itemView) {
             super(itemView);
-            device_icon = (ImageView)itemView.findViewById(R.id.device_icon);
-            device_header = (TextView)itemView.findViewById(R.id.device_title);
-            iv_icon_select = (ImageView)itemView.findViewById(R.id.iv_icon_select);
+            device_icon = itemView.findViewById(R.id.device_icon);
+            device_header = itemView.findViewById(R.id.device_title);
+            iv_icon_select = itemView.findViewById(R.id.iv_icon_select);
         }
     }
 }

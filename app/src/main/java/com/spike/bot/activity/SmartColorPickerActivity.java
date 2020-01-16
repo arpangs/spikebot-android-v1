@@ -16,7 +16,6 @@ import android.widget.Toast;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
-import com.skydoves.colorpickerview.listeners.ColorPickerViewListener;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.core.APIConst;
@@ -31,7 +30,7 @@ import org.json.JSONObject;
  * Created by Sagar on 16/5/19.
  * Gmail : vipul patel
  */
-public class SmartColorPickerActivity extends AppCompatActivity implements View.OnClickListener, ColorPickerViewListener {
+public class SmartColorPickerActivity extends AppCompatActivity implements View.OnClickListener {
 
     public Toolbar toolbar;
     public top.defaults.colorpicker.ColorPickerView colorPickerView1;
@@ -144,6 +143,7 @@ public class SmartColorPickerActivity extends AppCompatActivity implements View.
     }
 
 
+    /*set smart bulb color set*/
     private void callHueLightState() {
         if (!ActivityHelper.isConnectingToInternet(SmartColorPickerActivity.this)) {
             Toast.makeText(SmartColorPickerActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();

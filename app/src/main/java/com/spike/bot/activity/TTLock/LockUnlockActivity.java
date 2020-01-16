@@ -113,6 +113,7 @@ public class LockUnlockActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
+    /**/
     private void blueToothUnlock() {
         if (mMyTestLockEKey == null) {
             ChatApplication.showToast(this, " you should get your key list first ");

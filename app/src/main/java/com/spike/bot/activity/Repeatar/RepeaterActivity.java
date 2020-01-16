@@ -123,6 +123,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
         return super.onOptionsItemSelected(item);
     }
 
+    /*start socket connection*/
     public void startSocketConnection() {
         ChatApplication app = (ChatApplication) getApplication();
         mSocket = app.getSocket();
@@ -139,6 +140,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
         }
     }
 
+    /*configure device socket */
     private Emitter.Listener configureDevice = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -163,6 +165,10 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
                             String message = obj.optString("message");
 
                             ChatApplication.logDisplay("obj is " + obj);
+
+                            /*
+                            * if message getting null means module add first time
+                            * another module already add or getting any error message showing */
 
                             if (TextUtils.isEmpty(message)) {
                                 showSensor(obj.optString("module_id"), obj.optString("module_type"));
@@ -239,6 +245,12 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
         builder.create().show();
     }
 
+    /*show sync dialog
+    * sync means add new device .
+    * Unassigned means already adding device but delete this device than its showing in Unassigned
+    * Add From Existing means create cusotm panel
+    *
+    * */
     private void showOptionDialog() {
 
         final Dialog dialog = new Dialog(RepeaterActivity.this);
@@ -269,10 +281,6 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
                 Intent intent=new Intent(RepeaterActivity.this, AllUnassignedPanel.class);
                 intent.putExtra("type","repeater");
                 startActivity(intent);
-//                Intent intent = new Intent(RepeaterActivity.this, SensorUnassignedActivity.class);
-//                intent.putExtra("isDoorSensor", 10);
-//                intent.putExtra("roomName", "");
-//                startActivity(intent);
             }
         });
         btn_cancel.setOnClickListener(new View.OnClickListener() {
@@ -576,6 +584,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
         }
     }
 
+    /*delete dialog*/
     private void deleteRepaterDialog(RepeaterModel repeaterModel, int postion) {
         ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
             @Override
@@ -591,6 +600,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
     }
 
 
+    /*update repeater dialog*/
     private void showEditNameDailog(RepeaterModel repeaterModel, int postion) {
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);

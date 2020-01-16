@@ -44,7 +44,7 @@ public class CustomSpinnerAdapter extends ArrayAdapter<String> {
             flater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             rowview = flater.inflate(R.layout.row_spinner_dropdown_item, null, false);
 
-            holder.txtTitle = (TextView) rowview.findViewById(R.id.spinner_item);
+            holder.txtTitle =  rowview.findViewById(R.id.spinner_item);
 
             rowview.setTag(holder);
         } else {

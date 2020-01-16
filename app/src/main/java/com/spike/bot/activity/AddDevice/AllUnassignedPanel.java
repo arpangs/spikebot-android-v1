@@ -99,6 +99,7 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
         mEmptyView.setVisibility(View.GONE);
     }
 
+    /*get room list */
     private void getRoomList() {
         if (!ActivityHelper.isConnectingToInternet(this)) {
             showToast("" + R.string.disconnect);
@@ -127,7 +128,6 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
         new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
-//                ActivityHelper.dismissProgressDialog();
                 try {
                     ChatApplication.logDisplay("un assign is "+result);
                     int code = result.getInt("code");
@@ -219,6 +219,7 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
         }).execute();
     }
 
+    /*set view*/
     private void setAdapter(String result) {
         Gson gson=new Gson();
         LinearLayoutManager linearLayoutManager=new LinearLayoutManager(this);
@@ -263,6 +264,7 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
         }
     }
 
+    /*delete alert dialog*/
     private void repetearAdd(UnassignedListRes.Data roomdeviceList) {
         ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Add?", new ConfirmDialog.IDialogCallback() {
             @Override
@@ -331,6 +333,7 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
 
     }
 
+    /*show add dialog for panel & sensor */
     private void showAddDialog(final UnassignedListRes.Data roomdeviceList) {
 
         roomStrList.clear();

@@ -138,7 +138,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         }
 
     }
-
+    /*set adapter*/
     private void setMoodAdapter() {
         arrayListMood.clear();
 
@@ -186,6 +186,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         tempPlus = 30;
     }
 
+    /*get rempte data*/
     private void getRemoteInfo() {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
@@ -307,6 +308,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    /*set speed type*/
     private void setNormalText(String normalText) {
         mImageAutoText.setText("Speed " + normalText);
     }
@@ -590,6 +592,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         }).execute();
     }
 
+    /*delete remote*/
     private void deleteRemote() {
         if (!ActivityHelper.isConnectingToInternet(this)) {
             ChatApplication.showToast(getApplicationContext(), ""+R.string.disconnect);
@@ -643,6 +646,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
     /*
     remote mode change
+    isactive=1 on & =0 off
     * */
 
     private void sendRemoteCommand(final int counting) {

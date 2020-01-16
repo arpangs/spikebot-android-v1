@@ -94,7 +94,6 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
                 }
             }
             if (isSFlag) {
-//                holder.iv_room_panel_add.setVisibility(View.VISIBLE);
                 holder.iv_room_panel_add.setVisibility(View.INVISIBLE);
             } else {
                 holder.iv_room_panel_add.setVisibility(View.GONE);
@@ -104,7 +103,6 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
             if (item1.getPanel_type() == 5) {
                 holder.iv_room_panel_add.setVisibility(View.GONE);
             } else {
-//                holder.iv_room_panel_add.setVisibility(View.VISIBLE);
                 holder.iv_room_panel_add.setVisibility(View.INVISIBLE);
             }
         }

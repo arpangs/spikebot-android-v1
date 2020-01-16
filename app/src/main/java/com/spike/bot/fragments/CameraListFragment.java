@@ -157,15 +157,6 @@ public class CameraListFragment extends Fragment implements CameraGridActivity.t
 
                 nodePlayer.start();
 
-//            holder.zoomlayout.setOnTouchListener(new View.OnTouchListener() {
-//                @Override
-//                public boolean onTouch(View v, MotionEvent event) {
-//                    holder.zoomlayout.init(mContext);
-//                    return false;
-//                }
-//            });
-
-
                 nodePlayer.setNodePlayerDelegate(new NodePlayerDelegate() {
                     @Override
                     public void onEventCallback(NodePlayer player, int event, String msg) {

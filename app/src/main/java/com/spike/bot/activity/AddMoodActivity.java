@@ -408,6 +408,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         }).execute();
     }
 
+    /*add mood web service*/
     public void saveMood() {
         if (!ActivityHelper.isConnectingToInternet(this)) {
             ChatApplication.showToast(this, getResources().getString(R.string.disconnect));

@@ -238,14 +238,14 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
 
         public SensorViewHolder(View view) {
             super(view);
-            imgArrow = (AppCompatImageView) itemView.findViewById(R.id.imgArrow);
-            txtStartTime = (AppCompatTextView) itemView.findViewById(R.id.txtStartTime);
-            txtEndTime = (AppCompatTextView) itemView.findViewById(R.id.txtEndTime);
-            switchAlert = (SwitchCompat) itemView.findViewById(R.id.switchAlert);
-            imgMore = (AppCompatImageView) itemView.findViewById(R.id.imgMore);
-            linearCamera = (LinearLayout) itemView.findViewById(R.id.linearCamera);
-            recyclerCamera = (RecyclerView) itemView.findViewById(R.id.recyclerCamera);
-            viewLine = (View) itemView.findViewById(R.id.viewLine);
+            imgArrow =  itemView.findViewById(R.id.imgArrow);
+            txtStartTime =  itemView.findViewById(R.id.txtStartTime);
+            txtEndTime =  itemView.findViewById(R.id.txtEndTime);
+            switchAlert =  itemView.findViewById(R.id.switchAlert);
+            imgMore =  itemView.findViewById(R.id.imgMore);
+            linearCamera =  itemView.findViewById(R.id.linearCamera);
+            recyclerCamera =  itemView.findViewById(R.id.recyclerCamera);
+            viewLine =  itemView.findViewById(R.id.viewLine);
         }
     }
 }

@@ -47,6 +47,10 @@ import java.util.List;
 /**
  * Created by Sagar on 2/8/18.
  * Gmail : jethvasagar2@gmail.com
+ *
+ * activity drc
+ * first on click than set show yes or no dialog than check ac responed or not if yes than click yes & click to no than check to ac reposend or not
+ *
  */
 public class IRRemoteConfigActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -259,6 +263,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         }).execute();
     }
 
+    /*save remote dialog*/
     private void showRemoteSaveDialog() {
         if (mDialog == null) {
             mDialog = new Dialog(this);
@@ -376,17 +381,6 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
             return;
         }
 
-        //{
-        //    "ir_blaster_id": "1572857773561__ugf_F1V1e",
-        //    "device_name": "LG Remote",
-        //    "device_brand": "LG",
-        //    "device_model": "1550",
-        //    "device_codes": "352185100756835",
-        //    "device_codeset_id": "352185100756835",
-        //    "device_default_mode": "LOW",
-        //    "device_default_status":"25",
-        //    "module_type":"remote"
-        //}
         ActivityHelper.showProgressDialog(IRRemoteConfigActivity.this, "Please Wait...", false);
         AddRemoteReq addRemoteReq = new AddRemoteReq(Common.getPrefValue(this, Constants.USER_ID), mIRDeviceId, mIrDeviceType, mBrandId, mIRBrandType, mCodeSet,
                 remoteName, mIRBLasterId, mIRBlasterModuleId, mRoomId,  mSpinnerMode.getSelectedItem().toString()+"-"+mRemoteDefaultTemp.getText().toString().trim(),

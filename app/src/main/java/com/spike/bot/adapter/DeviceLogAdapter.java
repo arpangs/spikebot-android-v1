@@ -67,7 +67,6 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
                 holder.view_header.setVisibility(View.VISIBLE);
             }
 
-
             if(deviceLog.getUser_name()!=null && !deviceLog.getUser_name().equals("null")){
                 holder.tvUserName.setVisibility(View.VISIBLE);
                 holder.tvUserName.setText(deviceLog.getUser_name());

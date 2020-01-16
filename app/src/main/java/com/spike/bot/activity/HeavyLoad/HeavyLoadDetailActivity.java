@@ -39,8 +39,7 @@ import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.DataHeavyModel;
-import com.spike.bot.model.HeavyModel;
-import com.spike.bot.receiver.YourMarkerView;
+import com.spike.bot.receiver.MarkerBoxView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -159,7 +158,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
         txtYAxis.setAnimation(rotate);
     }
 
-
+    /*set spinner month & year */
     private void setSPinner() {
         Calendar c = Calendar.getInstance();
         int month = c.get(Calendar.MONTH) + 1;
@@ -205,10 +204,8 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
 
     }
 
+    /*set year dynamically */
     private void setYearlist() {
-//        arrayListYearList.add("2018");
-//        arrayListYearList.add("2019");
-
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
 
@@ -250,7 +247,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
         super.onStop();
     }
 
-
+    /*heavy load value get & update view */
     private Emitter.Listener heavyLoadValue = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -289,6 +286,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
         }
     };
 
+    /*call service for heavy load*/
     public void getHeavyLoadValue() {
         if (!ActivityHelper.isConnectingToInternet(HeavyLoadDetailActivity.this)) {
             Toast.makeText(HeavyLoadDetailActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -617,7 +615,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
             barChart.animateX(1500);
 
 
-            IMarker marker = new YourMarkerView(this,R.layout.activity_text_label);
+            IMarker marker = new MarkerBoxView(this,R.layout.activity_text_label);
             barChart.setMarker(marker);
             barChart.setScaleYEnabled(false);
             barChart.setScaleXEnabled(false);

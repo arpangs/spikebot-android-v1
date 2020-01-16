@@ -118,9 +118,9 @@ public class ExistPanelRoomAdapter extends RecyclerView.Adapter<ExistPanelRoomAd
 
         ExistPanelHolder(View itemView) {
             super(itemView);
-            txt_room_panel_name = (TextView) itemView.findViewById(R.id.txt_room_panel_name);
-            devicesList = (RecyclerView) itemView.findViewById(R.id.list_panel_devices);
-            img_check_panel = (ImageView) itemView.findViewById(R.id.img_check_panel);
+            txt_room_panel_name =  itemView.findViewById(R.id.txt_room_panel_name);
+            devicesList =  itemView.findViewById(R.id.list_panel_devices);
+            img_check_panel =  itemView.findViewById(R.id.img_check_panel);
             devicesList.setLayoutManager(new GridLayoutManager(context, Constants.SWITCH_NUMBER_EXIST_PANEL));
         }
     }

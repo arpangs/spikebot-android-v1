@@ -198,7 +198,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
 
         ChatApplication.isRefreshHome = true;
 
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
+        swipeRefreshLayout =  view.findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(this);
 
         empty_add_image.setOnClickListener(new View.OnClickListener() {
@@ -297,7 +297,8 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
         }else if(action.equalsIgnoreCase("imgLog")){
             Intent intent = new Intent(getActivity(),DeviceLogActivity.class);
             intent.putExtra("ROOM_ID",roomVO.getRoomId());
-            intent.putExtra("isCheckActivity","mood");
+//            intent.putExtra("isCheckActivity","mood");
+            intent.putExtra("isCheckActivity","mode");
             intent.putExtra("isRoomName",""+roomVO.getRoomName());
             startActivity(intent);
         }else if(action.equalsIgnoreCase("imgSch")){
@@ -334,12 +335,6 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             e.printStackTrace();
         }
 
-
-//        if (mSocket != null && mSocket.connected()) {
-//            //TODO code here for ACK TimeOut
-//            mSocket.emit("socketChangeDevice", obj);
-//        }else{
-
             String url="";
             if(deviceVO.getDeviceType().equalsIgnoreCase("3")){
                 url = ChatApplication.url + Constants.changeHueLightState;
@@ -369,8 +364,6 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
                 }
             }).execute();
 
-//        }
-
     }
 
     // Panel buttons click
@@ -397,11 +390,8 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
         }else if(action.equalsIgnoreCase("isIRSensorOnClick")){
             sendRemoteCommand(item);
         }
-        else if(action.equalsIgnoreCase("scheduleclick")){
-//            Intent intent = new Intent(getActivity(), ScheduleListActivity.class);
-//            startActivity(intent);
-        }
-        if(action.equalsIgnoreCase("longclick")){
+
+       if(action.equalsIgnoreCase("longclick")){
             int getDeviceSpecificValue = 0;
             if (!TextUtils.isEmpty(item.getDevice_sub_status())) {
                 getDeviceSpecificValue = Integer.parseInt(item.getDevice_sub_status());
@@ -436,35 +426,6 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
      */
     @Override
     public void itemClicked(final PanelVO item, String action) {
-
-//        if(action.equalsIgnoreCase("scheduleclick")){
-//           ChatApplication.logDisplay(action +" itemClicked itemClicked DeviceVO "  );
-//
-//            String moodName = "";
-//            String moodId = "";
-//            if(moodList.size()>0){  //get MoodId
-//
-//                for(RoomVO moodVO : moodList){
-//                    ArrayList<PanelVO> panelVOArrayList = moodVO.getPanelList();
-//                    for(PanelVO panelVO : panelVOArrayList){
-//                        if(panelVO.getPanelId().equalsIgnoreCase(item.getPanelId())){
-//                            moodName = moodVO.getRoomName();
-//                            moodId = moodVO.getRoomId();
-//                        }
-//                    }
-//                }
-//            }
-//
-//            Intent intent = new Intent(getActivity(), ScheduleListActivity.class);
-//            //intent.putExtra("scheduleIcon",true);
-//            intent.putExtra("moodName",moodName);
-//            intent.putExtra("moodId",item.getPanelId());
-//            intent.putExtra("isMoodAdapter",true); //added in last call
-//            intent.putExtra("moodId2",moodId);
-//            intent.putExtra("isActivityType","2");
-//            startActivity(intent);
-//        }
-
     }
 
     /**
@@ -543,7 +504,6 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
         ChatApplication.isRefreshMood = true;
         try{
 
-          //  ChatApplication app = (ChatApplication) getActivity().getApplication();
             ChatApplication app = ChatApplication.getInstance();
             if(mSocket!=null && mSocket.connected()){
                ChatApplication.logDisplay("mSocket.connected  return.." + mSocket.id() );
@@ -561,6 +521,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
 
     }
 
+    /*start socket connection */
     public void startSocketConnection() throws Exception{
 
         ChatApplication app = ChatApplication.getInstance();
@@ -715,10 +676,6 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             return;
         }
 
-        //http://192.168.175.118/room/status
-        // {"phone_id":"352185100756835","phone_type":"android","user_id":"1568463607921_AyMe7ek9e",
-        // "room_id":"1573121015048_CGqaArkr3","room_status":0}
-
         JSONObject obj = new JSONObject();
         try {
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -731,10 +688,6 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             e.printStackTrace();
         }
 
-//        if(mSocket!=null && mSocket.connected()){
-//            mSocket.emit("changeRoomPanelMoodStatus", obj);
-//
-//        }else{
             String url =  ChatApplication.url + Constants.CHANGE_ROOM_PANELMOOD_STATUS_NEW;
             new GetJsonTask(getActivity(),url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
                 @Override
@@ -754,7 +707,6 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
                     ActivityHelper.dismissProgressDialog();
                 }
             }).execute();
-//        }
 
     }
 
@@ -810,6 +762,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
         }).execute();
     }
 
+    /*update child user like room , camera */
     private Emitter.Listener updateChildUser = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -839,6 +792,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
         }
     };
 
+    /*device status on , off change */
     private Emitter.Listener changeDeviceStatus = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -868,6 +822,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
         }
     };
 
+    /*mood on off than found this socket */
     private Emitter.Listener roomStatus = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {

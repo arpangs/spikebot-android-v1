@@ -216,28 +216,6 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             cardViewBtn.setVisibility(View.GONE);
         }
 
-
-//        btnDevice.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                isSensorLog = false;
-//                isScrollDown = false;
-//                deviceLogList.clear();
-//                udpateButton();
-//                getDeviceLog(0);
-//            }
-//        });
-
-//        btnSensor.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                isSensorLog = true;
-//                isScrollDown = false;
-//                udpateButton();
-//                getSensorLog(0);
-//            }
-//        });
-
         getDeviceLog(0);
 //        if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor") || isCheckActivity.equals("multisensor")) {
 //            getSensorLog(0);
@@ -260,219 +238,6 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
         btnDeviceDialog.setTextColor(getResources().getColor(R.color.automation_white));
         btnSensorDialog.setTextColor(getResources().getColor(R.color.automation_white));
-    }
-
-    //get sensor log when click on sensor button
-    private void getSensorLog(int lastVisibleItem) {
-        if (lastVisibleItem == 0) {
-            deviceLogList.clear();
-        }
-        if (deviceLogAdapter != null) {
-            deviceLogAdapter.notifyDataSetChanged();
-        }
-
-        applyFilter(lastVisibleItem, true);
-    }
-
-    private void applyFilter(final int position, boolean isSensorIntent) {
-
-        if (!ActivityHelper.isConnectingToInternet(this)) {
-            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        //API =  sensorRoomDetails
-
-        String webUrl = ChatApplication.url + Constants.SENSOR_NOTIFICATION;
-
-        JSONObject jsonNotification = new JSONObject();
-
-        String sensor_type = "";
-
-        sensor_type = "";
-
-        try {
-            jsonNotification.put("notification_number", position);
-            jsonNotification.put("module_id", "");
-            jsonNotification.put("room_id", "");
-            jsonNotification.put("end_datetime", "");
-            jsonNotification.put("start_datetime", "");
-
-            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor") || isCheckActivity.equals("multisensor")) {
-                if (isCheckActivity.equals("doorSensor")) {
-                    jsonNotification.put("sensor_type", "door");
-                } else if (isCheckActivity.equals("tempsensor")) {
-                    jsonNotification.put("sensor_type", "temp");
-                } else if (isCheckActivity.equals("multisensor")) {
-                    jsonNotification.put("sensor_type", "temp");
-                }
-
-                jsonNotification.put("module_id", "" + Mood_Id);
-                jsonNotification.put("room_id", "" + mRoomId);
-            } else {
-                jsonNotification.put("sensor_type", "" + sensor_type);
-            }
-
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonNotification.put("admin", Integer.parseInt(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE)));
-            jsonNotification.put("filter_data", "");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
-                swipeRefreshLayout.setRefreshing(false);
-                try {
-//{"room_id":"1559719722430_hp_nJGEwO","room_order":0,"multi_sensor_id":"1561119898083_wE4svmRfN","is_in_C":1,"temp_in_C":26,"temp_in_F":78,"gas_status":"Normal","gas_value":1,"gas_threshold_value":15,"humidity":38}
-
-                    //{"code":200,"message":"success"}
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    if (code == 200) {
-                        if (position == 0) {
-                            deviceLogList.clear();
-                        }
-                        ll_empty.setVisibility(View.GONE);
-                        rv_device_log.setVisibility(View.VISIBLE);
-
-                        JSONObject dataObj = result.getJSONObject("data");
-                        ChatApplication.logDisplay("dataObj is " + dataObj);
-
-                        if (dataObj.has("devicefilterList")) {
-                            isScrollDown = false;
-                            JSONArray logJsonArray = dataObj.getJSONArray("devicefilterList");
-                            if (!isFilterActive) {
-                                if (filterArrayListTemp != null) {
-                                    filterArrayListTemp.clear();
-                                    filterArrayList.clear();
-                                }
-                                for (int i = 0; i < logJsonArray.length(); i++) {
-                                    JSONObject object = logJsonArray.getJSONObject(i);
-
-                                    String logName = object.getString("filter_name");
-                                    String action_name = object.getString("action_name");
-
-                                    String filtername = "";
-                                    char firstChar = logName.charAt(0);
-                                    char firstCharToUpperCase = Character.toUpperCase(firstChar);
-                                    filtername = filtername + firstCharToUpperCase;
-                                    boolean terminalCharacterEncountered = false;
-                                    char[] terminalCharacters = {'.', '?', '!'};
-                                    for (int j = 1; j < logName.length(); j++) {
-                                        char currentChar = logName.charAt(j);
-                                        if (terminalCharacterEncountered) {
-                                            if (currentChar == ' ') {
-                                                filtername = filtername + currentChar;
-                                            } else {
-                                                char currentCharToUpperCase = Character.toUpperCase(currentChar);
-                                                filtername = filtername + currentCharToUpperCase;
-                                                terminalCharacterEncountered = false;
-                                            }
-                                        } else {
-                                            char currentCharToLowerCase = Character.toLowerCase(currentChar);
-                                            filtername = filtername + currentCharToLowerCase;
-                                        }
-                                        for (int k = 0; k < terminalCharacters.length; k++) {
-                                            if (currentChar == terminalCharacters[k]) {
-                                                terminalCharacterEncountered = true;
-                                                break;
-                                            }
-                                        }
-                                    }
-
-                                    ArrayList<Filter.SubFilter> subFilterArrayList = new ArrayList<Filter.SubFilter>();
-                                    for (String subLog : action_name.split(",")) {
-                                        subFilterArrayList.add(new Filter.SubFilter(subLog, false));
-                                    }
-                                    filterArrayListTemp.add(new Filter(filtername, false, false, subFilterArrayList));
-                                }
-                            }
-                        }
-
-                        if (dataObj.has("sensorfilterList")) {
-                            isScrollDown = false;
-                            JSONArray logJsonArray = dataObj.getJSONArray("sensorfilterList");
-
-                            if (!isFilterActive) {
-                                if (filterArrayListSensorTemp != null) {
-                                    filterArraySensor.clear();
-                                    filterArrayListSensorTemp.clear();
-                                }
-
-                                for (int i = 0; i < logJsonArray.length(); i++) {
-                                    JSONObject object = logJsonArray.getJSONObject(i);
-
-                                    String logName = object.getString("filter_name");
-                                    String action_name = object.getString("action_name");
-                                    ArrayList<Filter.SubFilter> subFilterArrayList = new ArrayList<Filter.SubFilter>();
-                                    for (String subLog : action_name.split(",")) {
-                                        subFilterArrayList.add(new Filter.SubFilter(subLog, false));
-                                    }
-                                    filterArrayListSensorTemp.add(new Filter(logName, false, false, subFilterArrayList));
-                                }
-                            }
-                        }
-
-                        JSONArray notificationArray = dataObj.getJSONArray("notificationList");
-
-                        if (notificationArray.length() == 0) {
-                            isScrollDown = true;
-                        } else {
-                            isScrollDown = false;
-                        }
-                        for (int i = 0; i < notificationArray.length(); i++) {
-                            JSONObject jsonObject = notificationArray.getJSONObject(i);
-                            String activity_action = jsonObject.getString("activity_action");
-                            String activity_type = jsonObject.getString("activity_type");
-                            String activity_description = jsonObject.getString("activity_description");
-                            String activity_time = jsonObject.getString("activity_time");
-                            String user_name = jsonObject.optString("user_name");
-                            String is_unread = jsonObject.optString("is_unread");
-
-                            if (!isMultiSensor && is_unread.equalsIgnoreCase("1")) {
-                                isMultiSensor = true;
-                            }
-
-                            deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "", user_name, is_unread));
-                        }
-
-                        if (notificationArray.length() == 0 && isFilterActive && isLoading) {
-
-                            if (!isEndOfRecord) {
-                                deviceLogList.add(new DeviceLog("End of Record", "End of Record", "", "", "", "", ""));
-                                deviceLogAdapter.setEOR(true);
-                            }
-                            isEndOfRecord = true;
-
-                        } else if (notificationArray.length() == 0 && isFilterActive) {
-                            deviceLogList.add(new DeviceLog("End of Record", "No Record Found", "", "", "", "", ""));
-                            deviceLogAdapter.setEOR(true);
-                            showAToast("No Record Found...");
-                        }
-                        deviceLogAdapter.notifyDataSetChanged();
-
-                        ActivityHelper.dismissProgressDialog();
-                    } else {
-                        Toast.makeText(activity.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    ActivityHelper.dismissProgressDialog();
-
-                }
-
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
-            }
-        }).execute();
-
     }
 
 
@@ -809,9 +574,6 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                 initSpinnerData(filterRootAdapter);
             }
         });
-
-        //2018-04-09 18:05:13
-        //2018-04-10 18:51:23
 
         edt_start_date.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1431,6 +1193,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                     panel_view.setVisibility(View.GONE);
                     return;
                 }
+
                 if (!actionType.equals("Mood") && !actionType.equals("Schedule")) {
                     if (position != 0 || actionType.equals("Room")) {
                         if (mSpinnerRoomMood.getSelectedItem().equals("Room")) {
@@ -1716,7 +1479,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             if(typeofFilter.equalsIgnoreCase("refresh")){
                 object.put("start_date", "");
                 object.put("end_date", "");
-                if (isCheckActivity.equals("room") || isCheckActivity.equals("mood")) {
+//                if (isCheckActivity.equals("room") || isCheckActivity.equals("mood")) {
+                if (isCheckActivity.equals("room") || isCheckActivity.equals("mode")) {
                     object.put("room_id", "" + mRoomId);
                 }else if(isCheckActivity.equalsIgnoreCase("schedule")){
                     object.put("schedule_id", "" + mRoomId);
@@ -1724,7 +1488,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
                 if (isCheckActivity.equals("room")) {
                     object.put("filter_type", "room");
-                }else if( isCheckActivity.equalsIgnoreCase("mood")){
+                }else if( isCheckActivity.equalsIgnoreCase("mode")){
                     object.put("filter_type", "mood");
                 }else if( isCheckActivity.equals("schedule")){
                     object.put("filter_type", "schedule");
@@ -1842,7 +1606,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                 } else {
                     if (roomVO != null) {
                         object.put("room_id", "" + roomVO.getRoomId());
-                    } else if (isCheckActivity.equals("room") || isCheckActivity.equalsIgnoreCase("mood")) {
+                    } else if (isCheckActivity.equals("room") || isCheckActivity.equalsIgnoreCase("mode")) {
                         object.put("room_id", "" + mRoomId);
                     }else if(isCheckActivity.equalsIgnoreCase("schedule")){
                         object.put("schedule_id", "" + mRoomId);
@@ -1863,7 +1627,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                 } else {
                     if (isCheckActivity.equals("room")) {
                         object.put("filter_type", "room");
-                    }else if( isCheckActivity.equalsIgnoreCase("mood")){
+                    }else if( isCheckActivity.equalsIgnoreCase("mode")){
                         object.put("filter_type", "mood");
                     }else if( isCheckActivity.equals("schedule")){
                         object.put("filter_type", "schedule");

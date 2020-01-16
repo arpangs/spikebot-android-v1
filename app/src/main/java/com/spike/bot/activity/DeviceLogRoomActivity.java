@@ -172,7 +172,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
             }
         });
     }
-
+    /*geting unseen log*/
     public void getDeviceList(final int position) {
 
         if (!ActivityHelper.isConnectingToInternet(DeviceLogRoomActivity.this)) {
@@ -273,6 +273,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    /*back pressed after clear log count*/
     private void callreadCountApi() {
 
         String webUrl = ChatApplication.url + Constants.UPDATE_UNREAD_LOGS;

@@ -80,6 +80,7 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
         searchBrand();
     }
 
+    /*serach view */
     private void searchBrand() {
         mSearchBrand.addTextChangedListener(new TextWatcher() {
             @Override
@@ -118,6 +119,7 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
 
     }
 
+    /*call for details*/
     private void getIRDetailsList() {
         if (!ActivityHelper.isConnectingToInternet(this)) {
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();

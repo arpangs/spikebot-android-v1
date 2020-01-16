@@ -48,7 +48,6 @@ public class SmartBrandAdapter extends RecyclerView.Adapter<SmartBrandAdapter.Se
 
         holder.txtBrandName.setText(arrayListLog.get(position).getSmart_device_brand_name());
 
-        ChatApplication.logDisplay("img is " + ChatApplication.url + arrayListLog.get(position).getIcon_image());
         Glide.with(mContext).load(ChatApplication.url + arrayListLog.get(position).getIcon_image()).asBitmap().centerCrop().into(new BitmapImageViewTarget(holder.imgBrand) {
             @Override
             protected void setResource(Bitmap resource) {
