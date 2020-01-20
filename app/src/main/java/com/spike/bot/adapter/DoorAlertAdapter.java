@@ -1,6 +1,8 @@
 package com.spike.bot.adapter;
 
 import android.content.Context;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -14,8 +16,10 @@ import com.spike.bot.core.Constants;
 import com.spike.bot.model.DoorSensorResModel;
 import com.spike.bot.model.RemoteDetailsRes;
 
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -44,6 +48,7 @@ public class DoorAlertAdapter extends RecyclerView.Adapter<DoorAlertAdapter.Sens
         return new SensorViewHolder(view);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
@@ -83,7 +88,11 @@ public class DoorAlertAdapter extends RecyclerView.Adapter<DoorAlertAdapter.Sens
             holder.tv_device_log_date.setText(dateTime);
         }
 
-        holder.tv_device_description.setText(arrayListLog.get(position).getActivityDescription());
+        if(!TextUtils.isEmpty(arrayListLog.get(position).getActivityDescription())){
+            holder.tv_device_description.setText(arrayListLog.get(position).getActivityDescription().replace("|","\n"));
+        }
+
+
         holder.tv_device_log_type.setText(arrayListLog.get(position).getActivityAction());
 
 

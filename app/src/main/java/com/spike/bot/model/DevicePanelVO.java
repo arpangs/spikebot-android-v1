@@ -16,7 +16,7 @@ public class DevicePanelVO implements Serializable,Cloneable {
     private String homeControllerDeviceId;
     private String roomId;
     private String roomName;
-    private int deviceId;
+    private String deviceId;
     private String deviceName;
     private String deviceImage;
     private String device_icon;
@@ -41,7 +41,7 @@ public class DevicePanelVO implements Serializable,Cloneable {
     private int auto_on_off_value;
     private int schedule_value;
     private String panel_name;
-    private boolean selected;
+    private boolean selected=false;
     private String panel_id;
 
     private int is_original;
@@ -147,11 +147,11 @@ public class DevicePanelVO implements Serializable,Cloneable {
         this.panel_name = panel_name;
     }
 
-    public int getDeviceId() {
+    public String getDeviceId() {
         return deviceId;
     }
 
-    public void setDeviceId(int deviceId) {
+    public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
     }
 
@@ -369,7 +369,7 @@ public class DevicePanelVO implements Serializable,Cloneable {
     public int hashCode() {
         int hash = 3;
         hash = 53 * hash + (this.moduleId != null ? this.moduleId.hashCode() : 0);
-        hash = 53 * hash + this.deviceId;
+//        hash = 53 * hash + this.deviceId;
         return hash;
     }
     @Override public DevicePanelVO clone() {

@@ -254,7 +254,7 @@ public class Constants {
 
     //devices
     public static final String CHANGE_DEVICE_STATUS = "/device/status";
-    public static final String ADD_CUSTOME_DEVICE = "/addCustomDevice";
+    public static final String ADD_CUSTOME_DEVICE = "/panel/update/devices";
     public static final String CHECK_INDIVIDUAL_SWITCH_DETAILS = "/device/icon/list";
 
     //mood
@@ -270,7 +270,7 @@ public class Constants {
     public static final String GET_SCHEDULE_LIST = "/schedule/list";
     public static final String GET_SCHEDULE_LIST_LOG = "/getScheduleListForLogs";
     public static final String GET_SCHEDULE_ON_ROOM = "/getScheduleOnRoom";
-    public static final String GET_ORIGINAL_DEVICES = "/getOriginalDevices";
+    public static final String GET_ORIGINAL_DEVICES = "/device/custom-panel-details";
     public static final String addCameraNotification = "/addCameraNotification";
     public static final String deleteCameraNotification = "/deleteCameraNotification";
     public static final String updateCameraNotification = "/updateCameraNotification";

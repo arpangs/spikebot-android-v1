@@ -157,11 +157,11 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         dialog.setContentView(R.layout.dialog_filter_camera);
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        ImageView iv_close = (ImageView) dialog.findViewById(R.id.iv_close);
-        et_schedule_on_time = (TextView) dialog.findViewById(R.id.et_schedule_on_time);
-        et_schedule_off_time = (TextView) dialog.findViewById(R.id.et_schedule_off_time);
-        TextView txtSave = (TextView) dialog.findViewById(R.id.txtSave);
-        Spinner spinnerCamera = (Spinner) dialog.findViewById(R.id.spinnerCamera);
+        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
+        et_schedule_on_time =  dialog.findViewById(R.id.et_schedule_on_time);
+        et_schedule_off_time =  dialog.findViewById(R.id.et_schedule_off_time);
+        TextView txtSave =  dialog.findViewById(R.id.txtSave);
+        Spinner spinnerCamera =  dialog.findViewById(R.id.spinnerCamera);
 
         final ArrayList<String> stringArrayList = new ArrayList<>();
         stringArrayList.add("All");

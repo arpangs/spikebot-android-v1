@@ -424,9 +424,9 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                 dialog.dismiss();
 
                 Intent intentPanel = new Intent(getApplicationContext(), AddExistingPanel.class);
-                intentPanel.putExtra("roomId", room.getRoomId());
-                intentPanel.putExtra("roomName", room.getRoomName());
-                intentPanel.putExtra("isDeviceAdd", false);
+//                intentPanel.putExtra("roomId", room.getRoomId());
+//                intentPanel.putExtra("roomName", room.getRoomName());
+//                intentPanel.putExtra("isDeviceAdd", false);
                 startActivity(intentPanel);
             }
         });

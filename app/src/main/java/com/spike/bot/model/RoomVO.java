@@ -32,7 +32,7 @@ public class RoomVO implements Serializable{
     private String roomName;
     private String homeControllerDeviceId;
     private int room_status;
-    public boolean isExpanded;
+    public boolean isExpanded=false;
     private String type;
     private ArrayList<String> roomDeviceIdList;
 

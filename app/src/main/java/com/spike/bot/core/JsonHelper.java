@@ -263,7 +263,7 @@ public class JsonHelper {
                         JSONObject deviceObject = jsonArrayRoomList.getJSONObject(d);
                         DevicePanelVO deviceVO = new DevicePanelVO();
                         deviceVO.setModuleId(deviceObject.optString("module_id"));
-                        deviceVO.setDeviceId(deviceObject.optInt("device_id"));
+                        deviceVO.setDeviceId(deviceObject.optString("device_id"));
                         deviceVO.setDeviceName(deviceObject.optString("device_name"));
                         deviceVO.setDevice_icon(deviceObject.optString("device_icon"));
                         deviceVO.setRoom_panel_id(""+deviceObject.optString("room_panel_id"));
@@ -299,7 +299,7 @@ public class JsonHelper {
                     }
                 }
 
-                sortDevice(deviceList);
+//                sortDevice(deviceList);
 
                 room.setDevicePanelList(deviceList);
                 roomDeviceList.add(room);
@@ -935,12 +935,12 @@ public class JsonHelper {
 
 
     private static void sortDevice(ArrayList<DevicePanelVO> list){
-        Collections.sort(list, new Comparator<DevicePanelVO>() {
-            @Override
-            public int compare(DevicePanelVO o1, DevicePanelVO o2) {
-                return o1.getDeviceId() - o2.getDeviceId();
-            }
-        });
+//        Collections.sort(list, new Comparator<DevicePanelVO>() {
+//            @Override
+//            public int compare(DevicePanelVO o1, DevicePanelVO o2) {
+//                return o1.getDeviceId() - o2.getDeviceId();
+//            }
+//        });
     }
 
 

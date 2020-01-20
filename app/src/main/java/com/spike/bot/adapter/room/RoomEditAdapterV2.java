@@ -86,24 +86,13 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
 
         //Hide sensor edit option if found panel is sensor
         if (item1.isSensorPanel()) {
-            if (item1.getDeviceList().size() > 0) {
-                if (item1.getDeviceList().get(0).getDeviceType().equals("2")) {
-                    isSFlag = false;
-                } else {
-                    isSFlag = false;
-                }
-            }
-            if (isSFlag) {
-                holder.iv_room_panel_add.setVisibility(View.INVISIBLE);
-            } else {
-                holder.iv_room_panel_add.setVisibility(View.GONE);
-            }
+            holder.iv_room_panel_add.setVisibility(View.GONE);
         } else {
             ChatApplication.logDisplay("panel type " + item1.getPanel_type());
             if (item1.getPanel_type() == 5) {
                 holder.iv_room_panel_add.setVisibility(View.GONE);
             } else {
-                holder.iv_room_panel_add.setVisibility(View.INVISIBLE);
+                holder.iv_room_panel_add.setVisibility(View.VISIBLE);
             }
         }
 

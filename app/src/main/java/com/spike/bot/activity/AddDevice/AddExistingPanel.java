@@ -147,17 +147,28 @@ public class AddExistingPanel extends AppCompatActivity {
         roomList = new ArrayList<>();
 
         String url = "";
-        if (isSync) {
-            url = webUrl + Constants.deviceunassigned; //add new unassigned
-        } else {
-            url = webUrl + Constants.GET_ORIGINAL_DEVICES + "/" + 1; //Add from existing
+//        if (isSync) {
+////            url = webUrl + Constants.deviceunassigned; //add new unassigned
+////        } else {
+////            url = webUrl + Constants.GET_ORIGINAL_DEVICES + "/" + 1; //Add from existing
+////        }
+
+        url = webUrl + Constants.GET_ORIGINAL_DEVICES ; //add new unassigned
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
         ChatApplication.logDisplay("web url : " + url);
 
         showProgress();
 
-        new GetJsonTask(getApplicationContext(), url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
+        new GetJsonTask(getApplicationContext(), url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
@@ -178,7 +189,9 @@ public class AddExistingPanel extends AppCompatActivity {
                                 ArrayList<DevicePanelVO> panelList = roomVO.getDevicePanelList();
                                 for (DevicePanelVO devicePanelVO : panelList) {
 
-                                    if (Integer.parseInt(deviceVO.getDeviceId()) == devicePanelVO.getDeviceId() && deviceVO.getModuleId().equalsIgnoreCase(devicePanelVO.getModuleId())) {
+                                    ChatApplication.logDisplay("id is "+deviceVO.getDeviceId()+"  "+devicePanelVO.getDeviceId());
+//                                    if (deviceVO.getDeviceId() == devicePanelVO.getDeviceId() && deviceVO.getModuleId().equalsIgnoreCase(devicePanelVO.getModuleId())) {
+                                    if (deviceVO.getDeviceId().equals(devicePanelVO.getDeviceId())) {
                                         roomVO.setExpanded(true);
                                         devicePanelVO.setSelected(true);
                                     }
@@ -284,12 +297,9 @@ public class AddExistingPanel extends AppCompatActivity {
             }
         }
 
-        ChatApplication app = (ChatApplication) getApplication();
-        String webUrl = app.url;
-
-
         boolean isSelected = false;
         ArrayList<DevicePanelVO> selectedDevice = new ArrayList<>();
+        ArrayList<String> listDevice = new ArrayList<>();
         if (roomList.size() > 0) {
 
             for (RoomVO room : roomList) {
@@ -299,6 +309,7 @@ public class AddExistingPanel extends AppCompatActivity {
                     if (devie.isSelected()) {
                         isSelected = true;
                         selectedDevice.add(devie);
+                        listDevice.add(devie.getDeviceId());
                     }
                 }
             }
@@ -311,11 +322,11 @@ public class AddExistingPanel extends AppCompatActivity {
         } else {
 
             String url = "";
-            if (!isDeviceAdd) {
-                url = webUrl + Constants.ADD_CUSTOM_PANEL;
-            } else {
-                url = webUrl + Constants.ADD_CUSTOME_DEVICE;
-            }
+//            if (!isDeviceAdd) {
+//                url = ChatApplication.url + Constants.ADD_CUSTOM_PANEL;
+//            } else {
+                url = ChatApplication.url + Constants.ADD_CUSTOME_DEVICE;
+//            }
 
             ChatApplication.logDisplay("URL CALL : " + url + " isDeviceAdd : " + isDeviceAdd);
             JSONObject panelObj = new JSONObject();
@@ -323,48 +334,49 @@ public class AddExistingPanel extends AppCompatActivity {
                 panelObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
                 panelObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
-                panelObj.put("room_id", roomId);
-                panelObj.put("room_name", roomName);
+//                panelObj.put("room_id", roomId);
+//                panelObj.put("room_name", roomName);
                 panelObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
-                if (isDeviceAdd) {
+//                if (isDeviceAdd) {
                     panelObj.put("panel_id", panelId);
-                    panelObj.put("panel_name", panel_name);
-                } else {
-                    panelObj.put("panel_name", et_panel_name_existing.getText().toString());
-                }
+//                    panelObj.put("panel_name", panel_name);
+//                } else {
+//                    panelObj.put("panel_name", et_panel_name_existing.getText().toString());
+//                }
 
-                JSONArray jsonArrayDevice = new JSONArray();
-                JSONArray array = new JSONArray();
+                JSONArray jsonArrayDevice = new JSONArray(listDevice);
+//                jsonArrayDevice.put(listDevice);
+//                JSONArray array = new JSONArray();
 
-                for (DevicePanelVO dPanel : selectedDevice) {
-                    JSONObject ob1 = new JSONObject();
-                    ob1.put("module_id", dPanel.getModuleId());
-                    ob1.put("module_id", dPanel.getModuleId());
-                    ob1.put("device_id", "" + dPanel.getDeviceId());
-                    ob1.put("room_device_id", dPanel.getRoomDeviceId());
+//                for (DevicePanelVO dPanel : selectedDevice) {
+//                    JSONObject ob1 = new JSONObject();
+//                    ob1.put("module_id", dPanel.getModuleId());
+//                    ob1.put("module_id", dPanel.getModuleId());
+//                    ob1.put("device_id", "" + dPanel.getDeviceId());
+//                    ob1.put("room_device_id", dPanel.getRoomDeviceId());
+//
+//                    ob1.put("device_icon", dPanel.getDevice_icon());
+//                    ob1.put("device_name", dPanel.getDeviceName());
+//                    ob1.put("device_status", dPanel.getDeviceStatus());
+//                    ob1.put("device_type", Integer.parseInt(dPanel.getDeviceType()));
+//                    ob1.put("device_specific_value", dPanel.getDeviceSpecificValue());
+//                    ob1.put("room_panel_id", dPanel.getRoom_panel_id());
+//
+//                    ob1.put("original_room_device_id", dPanel.getOriginal_room_device_id());
 
-                    ob1.put("device_icon", dPanel.getDevice_icon());
-                    ob1.put("device_name", dPanel.getDeviceName());
-                    ob1.put("device_status", dPanel.getDeviceStatus());
-                    ob1.put("device_type", Integer.parseInt(dPanel.getDeviceType()));
-                    ob1.put("device_specific_value", dPanel.getDeviceSpecificValue());
-                    ob1.put("room_panel_id", dPanel.getRoom_panel_id());
+//                    jsonArrayDevice.put(ob1);
 
-                    ob1.put("original_room_device_id", dPanel.getOriginal_room_device_id());
+//                    try {
+//                        array.put(dPanel.getRoomDeviceId()); //remove last comma of String index @String str = "abc,xyz,"
+//                    } catch (Exception ex) {
+//                        ex.printStackTrace();
+//                    }
+//                }
 
-                    jsonArrayDevice.put(ob1);
+//                panelObj.put("room_devices", array);
 
-                    try {
-                        array.put(dPanel.getRoomDeviceId()); //remove last comma of String index @String str = "abc,xyz,"
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-
-                panelObj.put("room_devices", array);
-
-                panelObj.put("deviceList", jsonArrayDevice);
+                panelObj.put("devices", jsonArrayDevice);
 
                 ChatApplication.logDisplay("JSONObject : " + panelObj.toString());
 
