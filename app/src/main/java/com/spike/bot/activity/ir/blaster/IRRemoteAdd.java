@@ -150,8 +150,11 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
                             @Override
                             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                                     if (!blasterArraylist.get(position).equalsIgnoreCase("No IR Blaster")) {
-                                        mRoomText.setText("" + mIRDeviceList.get(position).getRoom().getRoomName());
-                                        roomId = mIRDeviceList.get(position).getRoom().getRoomId();
+                                        if( mIRDeviceList.get(position).getRoom()!=null){
+                                            mRoomText.setText("" + mIRDeviceList.get(position).getRoom().getRoomName());
+                                            roomId = mIRDeviceList.get(position).getRoom().getRoomId();
+                                        }
+
                                     }
 
                             }

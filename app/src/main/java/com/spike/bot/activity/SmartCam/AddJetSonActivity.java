@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatImageView;
+import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -134,8 +135,11 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
         AppCompatEditText editIpAddress = dialog.findViewById(R.id.editIpAddress);
         AppCompatEditText editDeviceName = dialog.findViewById(R.id.editDeviceName);
         AppCompatImageView imgClose = dialog.findViewById(R.id.imgClose);
+        AppCompatTextView txtTitleJetson = dialog.findViewById(R.id.txtTitleJetson);
 
         if(isFlag){
+            txtTitleJetson.setText("Edit Jetson");
+            btnAdd.setText("Update");
             editDeviceName.setText(arrayList.get(position).getDeviceName());
             try {
                 JSONObject object=new JSONObject(arrayList.get(position).getModuleMeta());
@@ -143,8 +147,6 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-
         }
 
         btnCancel.setOnClickListener(new View.OnClickListener() {

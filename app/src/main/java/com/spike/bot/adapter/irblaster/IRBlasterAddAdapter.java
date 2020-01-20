@@ -44,7 +44,10 @@ public class IRBlasterAddAdapter extends RecyclerView.Adapter<IRBlasterAddAdapte
 
         ir = irList.get(position);
         holder.mIBName.setText(ir.getDeviceName());
-        holder.mRoomName.setText("[ " + ir.getRoom().getRoomName() + " ]");
+        if(ir.getRoom() !=null){
+
+            holder.mRoomName.setText("[ " + ir.getRoom().getRoomName() + " ]");
+        }
 
         holder.mIrRemoteListAdapter = new IRBlasterAddRemoteList(ir.getRemoteList());
         holder.mIRRemoteList.setAdapter(holder.mIrRemoteListAdapter);

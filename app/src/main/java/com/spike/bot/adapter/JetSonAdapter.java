@@ -57,6 +57,7 @@ public class JetSonAdapter extends RecyclerView.Adapter<JetSonAdapter.SensorView
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(mContext, SmartCameraActivity.class);
+                intent.putExtra("jetson_id",arrayListLog.get(holder.txtNameJetson.getId()).getDeviceId());
                 mContext.startActivity(intent);
             }
         });
