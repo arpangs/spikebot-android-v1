@@ -208,7 +208,6 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
                     int code = result.getInt("code");
                     ChatApplication.logDisplay("response is "+result);
                     String message = result.getString("message");
-                    ChatApplication.showToast(AddJetSonActivity.this, message);
                     if (code == 200) {
                         showView(true);
                         JSONObject  object= new JSONObject(String.valueOf(result));
@@ -225,6 +224,7 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
 
                         ChatApplication.logDisplay("response is "+result);
                     }else {
+                        ChatApplication.showToast(AddJetSonActivity.this, message);
                         showView(false);
                     }
                 } catch (Exception e) {
@@ -318,6 +318,7 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
 
         JSONObject obj = new JSONObject();
         try {
+            obj.put("module_id", arrayList.get(position).getModuleId());
             obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -326,7 +327,7 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
             e.printStackTrace();
         }
 
-        String url= ChatApplication.url + Constants.deviceadd;
+        String url= ChatApplication.url + Constants.devicemoduledelete;
 
         ChatApplication.logDisplay("door sensor " + url + obj);
 

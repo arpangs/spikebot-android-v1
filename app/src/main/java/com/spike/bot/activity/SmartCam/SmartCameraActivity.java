@@ -411,7 +411,7 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
                     int code = result.getInt("code");
                     ChatApplication.logDisplay("response is "+result);
                     String message = result.getString("message");
-                    ChatApplication.showToast(SmartCameraActivity.this, message);
+
                     if (code == 200) {
                         showView(true);
 
@@ -429,6 +429,7 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
                                 showView(false);
                             }
                         }else {
+                            ChatApplication.showToast(SmartCameraActivity.this, message);
                             showView(false);
                         }
 
