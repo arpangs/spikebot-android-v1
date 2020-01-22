@@ -50,6 +50,7 @@ public class JetSonAdapter extends RecyclerView.Adapter<JetSonAdapter.SensorView
     @Override
     public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
+        holder.imgView.setImageResource(R.drawable.jetson);
         holder.txtNameJetson.setText(arrayListLog.get(position).getDeviceName());
 
         if(arrayListLog.get(position).getIsActive().equals("0")){

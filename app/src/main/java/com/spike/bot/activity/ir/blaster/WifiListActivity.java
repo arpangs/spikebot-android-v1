@@ -385,12 +385,12 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
 
             public void onFinish() {
                 ChatApplication.logDisplay("wifi is "+ NetworkUtil.getWifiSSid(WifiListActivity.this));
-                if(!NetworkUtil.getWifiSSid(WifiListActivity.this).toString().startsWith("SPIKE")){
+                if(NetworkUtil.getWifiSSid(WifiListActivity.this).toString().startsWith("SPIKE")){
+                    ChatApplication.showToast(WifiListActivity.this,getResources().getString(R.string.something_wrong1));
+                }else {
                     dialog.dismiss();
                     ActivityHelper.dismissProgressDialog();
                     ChatApplication.showToast(WifiListActivity.this,"Ir blaster successfully add.");
-                }else {
-                    ChatApplication.showToast(WifiListActivity.this,getResources().getString(R.string.something_wrong1));
                 }
 
             }
