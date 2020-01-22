@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.UnassignedListRes;
 import com.spike.bot.model.WifiModel;
+import com.ttlock.bl.sdk.util.NetworkUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -91,6 +93,7 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
         String s = "Connect to the Wi-Fi hotspot for the SpikeBot device that you are settings up. It will have <b>SpikeBot_xxxxxxx</b> on the end.";
         txtWifi.setText(Html.fromHtml(s));
         btnNext.setOnClickListener(this);
+
     }
 
     public static boolean setMobileDataEnabled(Activity wifiBlasterActivity) {

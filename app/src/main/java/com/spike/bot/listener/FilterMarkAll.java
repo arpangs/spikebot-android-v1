@@ -11,4 +11,8 @@ import java.util.ArrayList;
 public interface FilterMarkAll {
 
     public void filterAllMark(ArrayList<Filter> filters);
+
+    public default void test(){
+
+    }
 }

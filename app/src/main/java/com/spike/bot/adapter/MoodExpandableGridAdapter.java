@@ -136,6 +136,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     holder.iv_mood_edit.setVisibility(View.GONE);
                 }
 
+                holder.iv_icon.setId(position);
                 holder.iv_icon.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -143,17 +144,18 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                             return;
                         section.setOld_room_status(section.getRoom_status());
                         section.setRoom_status(section.getRoom_status()==0?1:0);
-                        notifyItemChanged(position);
+                        notifyItemChanged( holder.iv_icon.getId());
                         mItemClickListener.itemClicked(section,"onoffclick");
                     }
                 });
 
+                holder.ll_top_section.setId(position);
                 holder.ll_top_section.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if(!isClickable)
                             return;
-                        mItemClickListener.itemClicked(section,"expandclick");
+                        mItemClickListener.itemClicked((RoomVO) mDataArrayList.get(holder.ll_top_section.getId()),"expandclick");
                         mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded);
                     }
                 });

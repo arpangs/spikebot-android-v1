@@ -52,12 +52,18 @@ public class JetSonAdapter extends RecyclerView.Adapter<JetSonAdapter.SensorView
 
         holder.txtNameJetson.setText(arrayListLog.get(position).getDeviceName());
 
-        holder.txtNameJetson.setId(position);
-        holder.txtNameJetson.setOnClickListener(new View.OnClickListener() {
+        if(arrayListLog.get(position).getIsActive().equals("0")){
+            holder.imgView.setImageResource(R.drawable.camera_off_inactive);
+        }else {
+            holder.imgView.setImageResource(R.drawable.camera_on);
+        }
+
+        holder.view.setId(position);
+        holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(mContext, SmartCameraActivity.class);
-                intent.putExtra("jetson_id",arrayListLog.get(holder.txtNameJetson.getId()).getDeviceId());
+                intent.putExtra("jetson_id",arrayListLog.get(holder.view.getId()).getDeviceId());
                 mContext.startActivity(intent);
             }
         });
@@ -112,13 +118,16 @@ public class JetSonAdapter extends RecyclerView.Adapter<JetSonAdapter.SensorView
 
     public class SensorViewHolder extends RecyclerView.ViewHolder{
 
+        View view;
         public TextView txtNameJetson;
-        public AppCompatImageView imgMoreJetjson;
+        public AppCompatImageView imgMoreJetjson,imgView;
 
         public SensorViewHolder(View view) {
             super(view);
+            this.view=view;
             txtNameJetson =  itemView.findViewById(R.id.txtNameJetson);
             imgMoreJetjson =  itemView.findViewById(R.id.imgMoreJetjson);
+            imgView =  itemView.findViewById(R.id.imgView);
         }
     }
 

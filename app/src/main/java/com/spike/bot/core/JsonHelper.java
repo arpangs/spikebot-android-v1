@@ -923,6 +923,60 @@ public class JsonHelper {
                 cameraVO.setCamera_url(hasObject(deviceObj,"camera_url") ? deviceObj.optString("camera_url") : "");
                 cameraVO.setTotal_unread(hasObject(deviceObj,"total_unread") ? deviceObj.optString("total_unread") : "");
                 cameraVO.setIs_unread(hasObject(deviceObj,"is_unread") ? deviceObj.optString("is_unread") : "");
+                cameraVO.setJetson_device_id(hasObject(deviceObj,"jetson_device_id") ? deviceObj.optString("jetson_device_id") : "");
+
+                cameraList.add(cameraVO);
+
+            } catch (Exception e) {
+                Log.d("", "Exception parseScheduleArray " + e.getMessage());
+            }
+        }
+        return  cameraList;
+    }
+
+
+    public static ArrayList<CameraVO> parseJetSOnArray(JSONArray cameraArray){
+        ArrayList<CameraVO> cameraList = new ArrayList<CameraVO>();
+
+        //"id": 5,
+        //            "camera_id": "CAMERA-1579525471811_RIALF9EuM3",
+        //            "camera_name": "test am",
+        //            "camera_ip": "192.168.55.33",
+        //            "camera_videopath": "temp://shsh.jd",
+        //            "camera_icon": "camera",
+        //            "camera_vpn_port": "10012",
+        //            "camera_url": "/live/livestream1579525471805_5RBK5jfrj",
+        //            "user_name": "kp",
+        //            "password": "123",
+        //            "is_active": 1,
+        //            "is_sync": 0,
+        //            "user_id": "1578660700344_goCIb6AP6",
+        //            "home_controller_device_id": "b8:27:eb:fe:b8:0e",
+        //            "created_by": "1578660700344_goCIb6AP6",
+        //            "created_date": "2020-01-20 18:34:31",
+        //            "modified_by": null,
+        //            "modified_date": null,
+        //            "jetson_device_id": "JETSON-1578907521043_qI928kb6cH",
+        //            "total_unread": 1
+        for(int j=0 ; j < cameraArray.length() ; j++){
+            try {
+                JSONObject deviceObj = cameraArray.getJSONObject(j);
+
+                CameraVO cameraVO = new CameraVO();
+                cameraVO.setCamera_id(hasObject(deviceObj,"camera_id") ? deviceObj.optString("camera_id") : "");
+                cameraVO.setUserId(hasObject(deviceObj,"user_id") ? deviceObj.optString("user_id") : "");
+                cameraVO.setHomeControllerDeviceId(hasObject(deviceObj,"home_controller_device_id") ? deviceObj.optString("home_controller_device_id") : "");
+                cameraVO.setCamera_name(hasObject(deviceObj,"camera_name") ? deviceObj.optString("camera_name") : "");
+                cameraVO.setCamera_ip(hasObject(deviceObj,"camera_ip") ? deviceObj.optString("camera_ip") : "");
+                cameraVO.setCamera_videopath(hasObject(deviceObj,"camera_videopath") ? deviceObj.optString("camera_videopath") : "");
+                cameraVO.setUserName(hasObject(deviceObj,"user_name") ? deviceObj.optString("user_name") : "");
+                cameraVO.setPassword(hasObject(deviceObj,"password") ? deviceObj.optString("password") : "");
+                cameraVO.setIsActive(hasObject(deviceObj,"is_active") ? deviceObj.optInt("is_active") : 1);
+                cameraVO.setCamera_icon(hasObject(deviceObj,"camera_icon") ? deviceObj.optString("camera_icon") : "");
+                cameraVO.setCamera_vpn_port(hasObject(deviceObj,"camera_vpn_port") ? deviceObj.optString("camera_vpn_port") : "");
+                cameraVO.setCamera_url(hasObject(deviceObj,"camera_url") ? deviceObj.optString("camera_url") : "");
+                cameraVO.setTotal_unread(hasObject(deviceObj,"total_unread") ? deviceObj.optString("total_unread") : "");
+                cameraVO.setIs_unread(hasObject(deviceObj,"is_unread") ? deviceObj.optString("is_unread") : "");
 
                 cameraList.add(cameraVO);
 

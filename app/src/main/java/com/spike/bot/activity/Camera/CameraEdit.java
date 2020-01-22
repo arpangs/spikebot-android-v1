@@ -6,6 +6,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,10 +46,7 @@ import io.socket.client.Socket;
 public class CameraEdit extends AppCompatActivity {
 
     public boolean isEditable = false;
-    private ArrayList<CameraVO> cameraVOArrayList;
     private CameraVO cameraSelcet;
-    ArrayList<String> cameraStr;
-    ArrayList<String> cameraId;
 
     private Spinner sp_camera_list;
     private ImageView sp_drop_down;
@@ -76,66 +74,25 @@ public class CameraEdit extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         isEditable = getIntent().getBooleanExtra("isEditable", false);
-        cameraVOArrayList = (ArrayList<CameraVO>) getIntent().getExtras().getSerializable("cameraList");
         cameraSelcet = (CameraVO) getIntent().getExtras().getSerializable("cameraSelcet");
 
         setTitle("Camera");
 
         sp_camera_list = findViewById(R.id.sp_camera_list);
-        sp_drop_down =  findViewById(R.id.sp_drop_down);
+        sp_drop_down = findViewById(R.id.sp_drop_down);
 
-        btnDelete =  findViewById(R.id.btnDelete);
+        btnDelete = findViewById(R.id.btnDelete);
 
         edt_camera_name = findViewById(R.id.edt_camera_name);
         edt_camera_ip = findViewById(R.id.edt_camera_ip);
         edt_video_path = findViewById(R.id.edt_video_path);
         edt_user_name = findViewById(R.id.edt_user_name);
-        edt_user_password =  findViewById(R.id.edt_password);
-
-        cameraStr = new ArrayList<>();
-        cameraStr.clear();
-
-        cameraId = new ArrayList<>();
-        cameraId.clear();
-
+        edt_user_password = findViewById(R.id.edt_password);
 
         sp_camera_list.setEnabled(false);
         sp_drop_down.setEnabled(false);
         sp_camera_list.setClickable(false);
         sp_drop_down.setClickable(false);
-
-
-        if (!cameraVOArrayList.isEmpty()) {
-            for (CameraVO cameraVO : cameraVOArrayList) {
-                cameraStr.add(cameraVO.getCamera_name());
-                cameraId.add(cameraVO.getCamera_id());
-            }
-        }
-
-        TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(this, cameraStr, 1, false);
-        sp_camera_list.setAdapter(customAdapter);
-
-        initUI(cameraSelcet.getCamera_name());
-
-        for (int i = 0; i < cameraId.size(); i++) {
-            if (cameraId.get(i).equalsIgnoreCase(cameraSelcet.getCamera_id())) {
-                sp_camera_list.setSelection(i);
-                break;
-            }
-        }
-
-        sp_camera_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //  initUI(cameraStr.get(position));
-                getCameraInfo(cameraId.get(position));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
 
         sp_drop_down.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,125 +107,21 @@ public class CameraEdit extends AppCompatActivity {
             }
         });
 
-    }
-
-    /**
-     * getCameraInfo by camera_id
-     */
-
-    private void getCameraInfo(String camera_id) {
-
-        if (!ActivityHelper.isConnectingToInternet(this)) {
-            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        ChatApplication app = ChatApplication.getInstance();
-        if (mSocket != null && mSocket.connected()) {
-        } else {
-            mSocket = app.getSocket();
-        }
-        webUrl = app.url;
-
-        String url = webUrl + Constants.GET_CAMERA_INFO;
-
-        JSONObject object = new JSONObject();
-        try {
-            object.put("camera_id", camera_id);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ActivityHelper.showProgressDialog(CameraEdit.this, "Please wait...", false);
-
-        new GetJsonTask(this, url, "POST", object.toString(), new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
-                try {
-
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-
-                    if (code == 200) {
-                        JSONArray array = result.getJSONArray("data");
-
-                        JSONObject deviceObj = array.getJSONObject(0);
-
-                        String camera_id = deviceObj.getString("camera_id");
-                        String user_id = deviceObj.getString("user_id");
-                        String home_controller_device_id = deviceObj.getString("home_controller_device_id");
-                        String camera_name = deviceObj.getString("camera_name");
-
-                        String camera_ip = deviceObj.getString("camera_ip");
-                        String camera_videopath = deviceObj.getString("camera_videopath");
-                        String camera_icon = deviceObj.getString("camera_icon");
-
-                        String userName = deviceObj.getString("user_name");
-                        String password = deviceObj.getString("password");
-                        int is_active = deviceObj.getInt("is_active");
-
-                        CameraVO cameraVO = new CameraVO();
-                        cameraVO.setCamera_id(camera_id);
-                        cameraVO.setUserId(user_id);
-                        cameraVO.setHomeControllerDeviceId(home_controller_device_id);
-                        cameraVO.setCamera_name(camera_name);
-                        cameraVO.setCamera_ip(camera_ip);
-                        cameraVO.setCamera_videopath(camera_videopath);
-                        cameraVO.setUserName(userName);
-                        cameraVO.setPassword(password);
-                        cameraVO.setIsActive(is_active);
-                        cameraVO.setCamera_icon(camera_icon);
-
-                        initUI(cameraVO);
-                    }
-
-                    if (code != 200) {
-                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                    }
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                    ActivityHelper.dismissProgressDialog();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
-                ActivityHelper.dismissProgressDialog();
-            }
-        }).execute();
-
+        initUI();
     }
 
     /*set data */
-    private void initUI(String cameraName) {
-
-        for (CameraVO cameraVO : cameraVOArrayList) {
-            if (cameraVO.getCamera_name().equalsIgnoreCase(cameraName)) {
-
-                edt_camera_name.setText(cameraVO.getCamera_name());
-                edt_camera_ip.setText(cameraVO.getCamera_ip());
-                edt_video_path.setText(cameraVO.getCamera_videopath());
-                edt_user_name.setText(cameraVO.getUserName());
-                edt_user_password.setText(cameraVO.getPassword());
-
-            }
+    private void initUI() {
+        edt_camera_name.setText(cameraSelcet.getCamera_name());
+        edt_camera_ip.setText(cameraSelcet.getCamera_ip());
+        edt_video_path.setText(cameraSelcet.getCamera_videopath());
+        if (TextUtils.isEmpty(cameraSelcet.getUserName())) {
+            edt_user_name.setText(cameraSelcet.getUser_name());
+        } else {
+            edt_user_name.setText(cameraSelcet.getUserName());
         }
 
-    }
-
-    private void initUI(CameraVO cameraVO) {
-
-        edt_camera_name.setText(cameraVO.getCamera_name());
-        edt_camera_ip.setText(cameraVO.getCamera_ip());
-        edt_video_path.setText(cameraVO.getCamera_videopath());
-        edt_user_name.setText(cameraVO.getUserName());
-        edt_user_password.setText(cameraVO.getPassword());
-
+        edt_user_password.setText(cameraSelcet.getPassword());
     }
 
     /**
@@ -279,9 +132,7 @@ public class CameraEdit extends AppCompatActivity {
         ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure ?", new ConfirmDialog.IDialogCallback() {
             @Override
             public void onConfirmDialogYesClick() {
-
-                int spinner_position = sp_camera_list.getSelectedItemPosition();
-                deleteCamera(cameraId.get(spinner_position).toString());
+                deleteCamera(cameraSelcet.getCamera_id().toString());
             }
 
             @Override
@@ -340,12 +191,6 @@ public class CameraEdit extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                         }
                         finish();
-                        //if deletre success return initUI with 0 Index position
-                        if (cameraVOArrayList.size() > 0) {
-                            //  initUI(cameraVOArrayList.get(0).getCamera_id());
-                        } else {
-                            //  finish();
-                        }
                     } else {
                         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     }
@@ -386,7 +231,6 @@ public class CameraEdit extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_add) {
 
             return true;
@@ -416,6 +260,12 @@ public class CameraEdit extends AppCompatActivity {
             edt_camera_ip.requestFocus();
             return;
         }
+
+        if(!Patterns.IP_ADDRESS.matcher(edt_camera_ip.getText()).matches()){
+            edt_camera_ip.requestFocus();
+            edt_camera_ip.setError("Please enter valid ip address");
+            return;
+        }
         if (TextUtils.isEmpty(edt_video_path.getText().toString().trim())) {
             edt_video_path.setError("Enter Camera Video Path");
             edt_video_path.requestFocus();
@@ -441,7 +291,7 @@ public class CameraEdit extends AppCompatActivity {
             int spinner_position = sp_camera_list.getSelectedItemPosition();
 
             obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put("camera_id", cameraId.get(spinner_position));
+            obj.put("camera_id", cameraSelcet.getCamera_id());
             obj.put("camera_name", edt_camera_name.getText().toString().trim());
             obj.put("camera_ip", edt_camera_ip.getText().toString().trim());
             obj.put("camera_icon", "camera");
@@ -461,6 +311,7 @@ public class CameraEdit extends AppCompatActivity {
         webUrl = app.url;
 
         String url = webUrl + Constants.SAVE_EDIT_CAMERA;
+        ChatApplication.logDisplay("url is " + url + " " + obj);
 
         ActivityHelper.showProgressDialog(CameraEdit.this, "Please wait...", false);
 

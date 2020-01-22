@@ -14,12 +14,15 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -56,8 +59,9 @@ import java.util.List;
 public class AddJetSonActivity extends AppCompatActivity implements View.OnClickListener , JetSonAdapter.JetsonAction {
 
     public Toolbar toolbar;
-    TextView txtNodataFound;
-    public FloatingActionButton floatingActionButton;
+    ImageView empty_add_image;
+    TextView txt_empty_text;
+    LinearLayout linearNodataFound;
     public RecyclerView recyclerview;
     public JetSonAdapter jetSonAdapter;
     public ArrayList<JetSonModel.Datum> arrayList=new ArrayList<>();
@@ -65,33 +69,35 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.smart_remote_activity);
+        setContentView(R.layout.activity_jetson);
 
         setViewId();
     }
 
     private void setViewId() {
         toolbar = findViewById(R.id.toolbar);
+        empty_add_image = findViewById(R.id.empty_add_image);
+        txt_empty_text = findViewById(R.id.txt_empty_text);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toolbar.setTitle("Add JetSon");
+        toolbar.setTitle("Jetson");
         recyclerview = findViewById(R.id.recyclerRemoteList);
-        floatingActionButton = findViewById(R.id.fab);
-        txtNodataFound = findViewById(R.id.txtNodataFound);
-        floatingActionButton.setOnClickListener(this);
-        floatingActionButton.setVisibility(View.GONE);
-
+        linearNodataFound = findViewById(R.id.linearNodataFound);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerview.setLayoutManager(linearLayoutManager);
+
+        txt_empty_text.setText("No Jetson Added");
+        empty_add_image.setOnClickListener(this);
+        txt_empty_text.setOnClickListener(this);
 
         callGetJetson();
     }
 
     @Override
     public void onClick(View v) {
-        if (v == floatingActionButton) {
+        if (v == txt_empty_text || v==empty_add_image) {
             AddJetsonDialog(false,0);
         }
     }
@@ -118,10 +124,16 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
     /*view hide use for getting error*/
     public void showView(boolean isflag){
         recyclerview.setVisibility(isflag ? View.VISIBLE : View.GONE);
-        txtNodataFound.setVisibility(isflag ? View.GONE : View.VISIBLE);
+        linearNodataFound.setVisibility(isflag ? View.GONE : View.VISIBLE);
     }
     /*add jetson dialog.*/
     private void AddJetsonDialog(boolean isFlag,int position) {
@@ -129,9 +141,10 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_add_jetson);
         dialog.setCanceledOnTouchOutside(true);
+        Window window = dialog.getWindow();
+        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
         AppCompatButton btnAdd = dialog.findViewById(R.id.btnAdd);
-        AppCompatButton btnCancel = dialog.findViewById(R.id.btnCancel);
         AppCompatEditText editIpAddress = dialog.findViewById(R.id.editIpAddress);
         AppCompatEditText editDeviceName = dialog.findViewById(R.id.editDeviceName);
         AppCompatImageView imgClose = dialog.findViewById(R.id.imgClose);
@@ -139,7 +152,6 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
 
         if(isFlag){
             txtTitleJetson.setText("Edit Jetson");
-            btnAdd.setText("Update");
             editDeviceName.setText(arrayList.get(position).getDeviceName());
             try {
                 JSONObject object=new JSONObject(arrayList.get(position).getModuleMeta());
@@ -148,13 +160,6 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
                 e.printStackTrace();
             }
         }
-
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
 
         imgClose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -170,6 +175,8 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
                     ChatApplication.showToast(AddJetSonActivity.this,"Please enter name address");
                 }else if(editIpAddress.getText().toString().length()==0){
                     ChatApplication.showToast(AddJetSonActivity.this,"Please enter ip address");
+                }else if(!Patterns.IP_ADDRESS.matcher(editIpAddress.getText()).matches()){
+                    ChatApplication.showToast(AddJetSonActivity.this,"Please enter valid ip address");
                 }else {
                     callAddJetson(editDeviceName.getText().toString(),editIpAddress.getText().toString(),dialog,isFlag,position);
                 }

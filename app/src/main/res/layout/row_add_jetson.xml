@@ -9,16 +9,25 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_5sdp"
         android:padding="@dimen/_5sdp"
+        android:gravity="center"
         android:background="@drawable/background_shadow"
         android:orientation="horizontal">
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/imgView"
+            android:layout_width="@dimen/_45sdp"
+            android:layout_height="@dimen/_45sdp"
+            android:src="@drawable/camera_on"/>
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/txtNameJetson"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:textColor="@color/automation_black"
+            android:textColor="@color/automation_blue"
             android:textSize="@dimen/_14sdp"
+            android:layout_marginLeft="@dimen/_6sdp"
+            android:paddingRight="@dimen/_5sdp"
             android:gravity="center|left"
             android:padding="@dimen/_5sdp"
             android:singleLine="true"/>

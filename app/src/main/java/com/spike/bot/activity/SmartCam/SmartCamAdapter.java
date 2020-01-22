@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.spike.bot.R;
 import com.spike.bot.adapter.JetSonAdapter;
+import com.spike.bot.model.CameraVO;
 import com.spike.bot.model.JetSonModel;
 
 import java.util.ArrayList;
@@ -27,9 +28,9 @@ public class SmartCamAdapter extends RecyclerView.Adapter<SmartCamAdapter.Sensor
 
     private Context mContext;
     JetSonAdapter.JetsonAction jetsonAction;
-    ArrayList<JetSonModel.Datum> arrayListLog=new ArrayList<>();
+    ArrayList<CameraVO> arrayListLog=new ArrayList<>();
 
-    public SmartCamAdapter(Context context, JetSonAdapter.JetsonAction jetsonAction, ArrayList<JetSonModel.Datum> arrayList) {
+    public SmartCamAdapter(Context context, JetSonAdapter.JetsonAction jetsonAction, ArrayList<CameraVO> arrayList) {
         this.mContext=context;
         this.jetsonAction=jetsonAction;
         this.arrayListLog=arrayList;
@@ -44,8 +45,14 @@ public class SmartCamAdapter extends RecyclerView.Adapter<SmartCamAdapter.Sensor
     @Override
     public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
-        holder.txtNameJetson.setText(arrayListLog.get(position).getCameraName());
-        //
+        holder.txtNameJetson.setText(arrayListLog.get(position).getCamera_name());
+
+        if(arrayListLog.get(position).getIsActive()==0){
+            holder.imgView.setImageResource(R.drawable.camera_off_inactive);
+        }else {
+            holder.imgView.setImageResource(R.drawable.camera_on);
+        }
+
         holder.imgMoreJetjson.setId(position);
         holder.imgMoreJetjson.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,12 +104,13 @@ public class SmartCamAdapter extends RecyclerView.Adapter<SmartCamAdapter.Sensor
     public class SensorViewHolder extends RecyclerView.ViewHolder{
 
         public TextView txtNameJetson;
-        public AppCompatImageView imgMoreJetjson;
+        public AppCompatImageView imgMoreJetjson,imgView;
 
         public SensorViewHolder(View view) {
             super(view);
             txtNameJetson =  itemView.findViewById(R.id.txtNameJetson);
             imgMoreJetjson =  itemView.findViewById(R.id.imgMoreJetjson);
+            imgView =  itemView.findViewById(R.id.imgView);
         }
     }
 

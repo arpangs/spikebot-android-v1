@@ -44,6 +44,7 @@ import com.spike.bot.model.WifiModel;
 import com.spike.bot.receiver.ConnectivityReceiver;
 import com.ttlock.bl.sdk.util.DigitUtil;
 import com.ttlock.bl.sdk.util.GsonUtil;
+import com.ttlock.bl.sdk.util.NetworkUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -271,6 +272,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
         final CustomEditText edWifiPassword =  dialog.findViewById(R.id.edWifiPassword);
         final CustomEditText edWifiIP =  dialog.findViewById(R.id.edWifiIP);
         TextView txtSave =  dialog.findViewById(R.id.txtSave);
+        TextView txtWait =  dialog.findViewById(R.id.txtWait);
 
         edWifiIP.setSelection(edWifiPassword.getText().length());
         edWifiPassword.setSelection(edWifiPassword.getText().length());
@@ -290,7 +292,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
                 } else {
                     InputMethodManager imm = (InputMethodManager) WifiListActivity.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(edWifiPassword.getWindowToken(), 0);
-                    callWifiPasswordCheck(edWifiPassword.getText().toString(), wiFiList, edWifiIP.getText().toString(), dialog);
+                    callWifiPasswordCheck(txtWait,edWifiPassword.getText().toString(), wiFiList, edWifiIP.getText().toString(), dialog);
                 }
             }
         });
@@ -307,7 +309,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
 
     /*blaster wifi connection request
     * */
-    private void callWifiPasswordCheck(String s, WifiModel.WiFiList wiFiList, String edWifiIP, final Dialog dialog) {
+    private void callWifiPasswordCheck(TextView txtWait,String s, WifiModel.WiFiList wiFiList, String edWifiIP, final Dialog dialog) {
         if (!ActivityHelper.isConnectingToInternet(WifiListActivity.this)) {
             Toast.makeText(WifiListActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -325,11 +327,11 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
                 try {
                     if (result != null) {
                         if (result.optString("response").equalsIgnoreCase("success")) {
-                            dialog.dismiss();
+//                            dialog.dismiss();
                             Constants.isWifiConnectSave = true;
                             moduleId = result.optString("moduleId");
                             if (moduleId.length() > 1) {
-                                setSaveView();
+                                setSaveView(txtWait,dialog);
                             }
                         } else {
                             ActivityHelper.dismissProgressDialog();
@@ -362,15 +364,35 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
     /*for blaster wifi off & last wifi connectiong wait ..
     some time wifi connectig few sec so timer cout adding
     * */
-    private void setSaveView() {
-        new CountDownTimer(2500, 1000) {
+    private void setSaveView(TextView txtWait, Dialog dialog) {
+//        new CountDownTimer(2500, 1000) {
+//            public void onTick(long millisUntilFinished) {
+//            }
+//
+//            public void onFinish() {
+//                ActivityHelper.dismissProgressDialog();
+//                isNetworkChange = true;
+//                showIRSensorDialog();
+//            }
+//
+//        }.start();
+
+        new CountDownTimer(30000, 1000) {
             public void onTick(long millisUntilFinished) {
+                txtWait.setText("Please wait "+millisUntilFinished+" sec");
+
             }
 
             public void onFinish() {
-                ActivityHelper.dismissProgressDialog();
-                isNetworkChange = true;
-                showIRSensorDialog();
+                ChatApplication.logDisplay("wifi is "+ NetworkUtil.getWifiSSid(WifiListActivity.this));
+                if(!NetworkUtil.getWifiSSid(WifiListActivity.this).toString().startsWith("SPIKE")){
+                    dialog.dismiss();
+                    ActivityHelper.dismissProgressDialog();
+                    ChatApplication.showToast(WifiListActivity.this,"Ir blaster successfully add.");
+                }else {
+                    ChatApplication.showToast(WifiListActivity.this,getResources().getString(R.string.something_wrong1));
+                }
+
             }
 
         }.start();

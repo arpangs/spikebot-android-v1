@@ -531,7 +531,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 ChatApplication.showToast(activity, "Please device on");
             }
 
-
         } else if (action.equalsIgnoreCase("isIRSensorClick")) {
             //on-off remote
             sendRemoteCommand(item, "isIRSensorClick");
@@ -1691,6 +1690,52 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
                             sectionedExpandableLayoutHelper.addSectionList(roomList);
                         }
+                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
+
+                        //for jetson
+                        JSONArray jetsonList=dataObject.optJSONArray("jetsonList");
+
+                        if(jetsonList!=null && jetsonList.length()>0){
+                            for(int i=0; i<jetsonList.length(); i++){
+
+                                JSONObject object=jetsonList.optJSONObject(i);
+
+                                ArrayList<CameraVO> cameraList = JsonHelper.parseCameraArray(object.optJSONArray("cameraList"));
+
+                                RoomVO section = new RoomVO();
+                                section.setRoomName(object.optString("device_name"));
+//                                section.setRoomName("Camera");
+                                section.setRoomId(object.optString("device_id"));
+//                                section.setRoomId("Camera");
+                                section.setDevice_count("0");
+
+                                ArrayList<PanelVO> panelList = new ArrayList<>();
+                                PanelVO panel = new PanelVO();
+                                panel.setPanelName("Devices");
+                                panel.setType("JETSON-");
+                                panel.setCameraList(cameraList);
+
+                                panelList.add(panel);
+
+                                section.setPanelList(panelList);
+//                                section.setIs_unread(""+cameraList.get(i).getTotal_unread());
+                                section.setIs_unread("0");
+
+                                roomList.add(section);
+
+                            }
+
+//                                /*camera device counting*/
+                            for (int j = 0; j < roomList.size(); j++) {
+                                if (roomList.get(j).getRoomId().equalsIgnoreCase("JETSON-")) {
+                                    roomList.get(j).setDevice_count("" + roomList.get(j).getPanelList().get(0).getCameraList().size());
+                                }
+                            }
+
+                            sectionedExpandableLayoutHelper.addSectionList(roomList);
+                        }
+
+
                         sectionedExpandableLayoutHelper.notifyDataSetChanged();
                         ((Main2Activity) activity).invalidateToolbarCloudImage();
 

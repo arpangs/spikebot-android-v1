@@ -258,12 +258,12 @@
             android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity
+     <!--   <activity
             android:name="com.spike.bot.activity.SmartDevice.AddOrSelectBridgeActivity"
             android:label="@string/title_activity_profile"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar" />-->
 
         <activity
             android:name="com.spike.bot.activity.SmartDevice.PhilipsHueBridgeDeviceListActivity"
@@ -279,13 +279,13 @@
             android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity
+      <!--  <activity
             android:name="com.spike.bot.activity.SearchSmartDeviceActivity"
             android:label="@string/title_activity_profile"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme.NoActionBar" />
-
+-->
 
         <activity
             android:name="com.spike.bot.activity.SmartRemoteActivity"
@@ -399,10 +399,10 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"/>
 
-        <activity android:name="com.spike.bot.activity.Sensor.TempSensorInfoActivity"
+       <!-- <activity android:name="com.spike.bot.activity.Sensor.TempSensorInfoActivity"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden"
             android:theme="@style/AppTheme.NoActionBar"/>
-
+-->
         <activity android:name="com.spike.bot.activity.Sensor.MultiSensorActivity"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden"
             android:theme="@style/AppTheme.NoActionBar"/>
@@ -431,10 +431,10 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <activity android:name=".activity.ir.blaster.WifiBlasterActivity"
+      <!--  <activity android:name=".activity.ir.blaster.WifiBlasterActivity"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"/>-->
 
         <activity android:name=".activity.ir.blaster.WifiListActivity"
             android:windowSoftInputMode="stateHidden|stateAlwaysHidden"
@@ -497,7 +497,7 @@
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name=".activity.SmartCam.SmartCameraActivity"
-            android:windowSoftInputMode="stateHidden"
+            android:windowSoftInputMode="stateHidden|stateAlwaysHidden"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
@@ -527,8 +527,8 @@
         </service>
 
         <!--for beacon services stop-->
-        <service android:name=".receiver.StickyService"></service>
-
+        <!--<service android:name=".receiver.StickyService"></service>
+-->
 
 
         <service

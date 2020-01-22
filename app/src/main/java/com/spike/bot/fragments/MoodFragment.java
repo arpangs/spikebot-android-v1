@@ -40,6 +40,7 @@ import com.spike.bot.core.JsonHelper;
 import com.spike.bot.customview.recycle.ItemClickMoodListener;
 import com.spike.bot.dialog.FanDialog;
 import com.spike.bot.dialog.ICallback;
+import com.spike.bot.listener.FilterMarkAll;
 import com.spike.bot.listener.ResponseErrorCode;
 import com.spike.bot.model.DeviceVO;
 import com.spike.bot.model.PanelVO;
@@ -282,8 +283,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             });
             newFragment.show(getActivity().getFragmentManager(), "dialog");
 
-        }
-        else if(action.equalsIgnoreCase("editclick")){
+        } else if(action.equalsIgnoreCase("editclick")){
 
             Intent intent = new Intent(getActivity(), AddMoodActivity.class);
             intent.putExtra("editMode",true);

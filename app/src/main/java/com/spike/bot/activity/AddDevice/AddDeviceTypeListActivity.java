@@ -122,7 +122,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         arrayList.add("Temperature Sensor");
         arrayList.add("Repeaters");
         arrayList.add("Camera");
-        arrayList.add("Add Smart Cam");
+        arrayList.add("Smart Camera");
         arrayList.add("Add Beacon");
     }
 

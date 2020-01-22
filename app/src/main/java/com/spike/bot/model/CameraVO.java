@@ -19,6 +19,26 @@ public class CameraVO implements Serializable,Cloneable {
     private int isActive;
     private String camera_vpn_port;
 
+    public String getUser_name() {
+        return user_name;
+    }
+
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
+    }
+
+    private String user_name;
+
+    public String getJetson_device_id() {
+        return jetson_device_id;
+    }
+
+    public void setJetson_device_id(String jetson_device_id) {
+        this.jetson_device_id = jetson_device_id;
+    }
+
+    private String jetson_device_id;
+
     public boolean isIs_Open() {
         return is_Open;
     }

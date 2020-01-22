@@ -136,7 +136,7 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         dialog.setCanceledOnTouchOutside(false);
         dialog.setContentView(R.layout.dialog_add_custome_room);
 
-        final TextInputEditText room_name = (TextInputEditText) dialog.findViewById(R.id.edt_room_name);
+        final TextInputEditText room_name =  dialog.findViewById(R.id.edt_room_name);
         room_name.setSingleLine(true);
 
         InputFilter[] filterArray = new InputFilter[1];
@@ -405,7 +405,6 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
                     String message = result.getString("message");
 
                     if (code == 200) {
-
                         if (!TextUtils.isEmpty(message)) {
                             Toast.makeText(AddDeviceConfirmActivity.this.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                         }
