@@ -152,13 +152,9 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
 
         if(isFlag){
             txtTitleJetson.setText("Edit Jetson");
-            editDeviceName.setText(arrayList.get(position).getDeviceName());
-            try {
-                JSONObject object=new JSONObject(arrayList.get(position).getModuleMeta());
-                editIpAddress.setText(object.optString("ip_address"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            editDeviceName.setText(arrayList.get(position).getJetsonName());
+            editIpAddress.setText(arrayList.get(position).getJetsonIp());
+
         }
 
         imgClose.setOnClickListener(new View.OnClickListener() {
@@ -195,7 +191,7 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
         JSONObject obj = new JSONObject();
         try {
 
-            obj.put("device_type", "jetson");
+            obj.put("device_name", "jetson");
             obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -204,7 +200,7 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
             e.printStackTrace();
         }
 
-        String url = ChatApplication.url + Constants.devicefind;
+        String url = ChatApplication.url + Constants.jetsonlist;
 
         ChatApplication.logDisplay("door sensor" + url + obj);
 
@@ -264,15 +260,21 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
         JSONObject obj = new JSONObject();
         try {
 
+            //{
+            //    "user_id": "1568463607921_AyMe7ek9e",
+            //    "phone_id": "asdf",
+            //    "phone_type": "IOS",
+            //    "jetson_id": "JETSON-1579775948513_u4dPheIQ4",
+            //    "jetson_name": "Jetson",
+            //    "jetson_ip": "192.168.175.121"
+            //}
             if(isFlag){
                 //pass jetson_ip, device_name as params and device_id
-                obj.put("module_type", "jetson");
-                obj.put("device_id", arrayList.get(position).getDeviceId());
-            }else {
-                obj.put("module_type", "jetson");
+                obj.put("jetson_id", arrayList.get(position).getJetsonId());
             }
-            obj.put("device_name", devicename);
-            obj.put("jetson_ip",ipaddress );
+
+            obj.put("jetson_name", devicename);
+            obj.put("jetson_ip",ipaddress);
             obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -284,9 +286,9 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
         String url="";
 
         if(isFlag){
-            url = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
+            url = ChatApplication.url + Constants.jetsonupdate;
         }else {
-            url = ChatApplication.url + Constants.deviceadd;
+            url = ChatApplication.url + Constants.jetsonadd;
         }
 
         ChatApplication.logDisplay("door sensor " + url + obj);
@@ -325,7 +327,7 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
 
         JSONObject obj = new JSONObject();
         try {
-            obj.put("module_id", arrayList.get(position).getModuleId());
+            obj.put("jetson_id", arrayList.get(position).getJetsonId());
             obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -334,7 +336,7 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
             e.printStackTrace();
         }
 
-        String url= ChatApplication.url + Constants.devicemoduledelete;
+        String url= ChatApplication.url + Constants.jetsondelete;
 
         ChatApplication.logDisplay("door sensor " + url + obj);
 

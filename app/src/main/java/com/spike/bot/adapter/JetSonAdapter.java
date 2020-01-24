@@ -51,20 +51,14 @@ public class JetSonAdapter extends RecyclerView.Adapter<JetSonAdapter.SensorView
     public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
         holder.imgView.setImageResource(R.drawable.jetson);
-        holder.txtNameJetson.setText(arrayListLog.get(position).getDeviceName());
-
-        if(arrayListLog.get(position).getIsActive().equals("0")){
-            holder.imgView.setImageResource(R.drawable.camera_off_inactive);
-        }else {
-            holder.imgView.setImageResource(R.drawable.camera_on);
-        }
+        holder.txtNameJetson.setText(arrayListLog.get(position).getJetsonName());
 
         holder.view.setId(position);
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(mContext, SmartCameraActivity.class);
-                intent.putExtra("jetson_id",arrayListLog.get(holder.view.getId()).getDeviceId());
+                intent.putExtra("jetson_id",arrayListLog.get(holder.view.getId()).getJetsonId());
                 mContext.startActivity(intent);
             }
         });

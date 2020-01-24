@@ -123,8 +123,6 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     holder.iv_icon.setImageResource(R.drawable.room_off);
                 }
 
-
-
                 holder.sectionToggleButton.setChecked(section.isExpanded);
 
                 if(section.isExpanded){
@@ -210,7 +208,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                 }
 
                 if (!Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
-                    if(section.getSmart_remote_number().length()==0){
+                    if(section.getSmart_remote_number().length()==0 || section.getSmart_remote_number().equals("null")){
                         holder.txtRemote.setVisibility(GONE);
                         holder.imgRemote.setVisibility(View.VISIBLE);
                     }else {

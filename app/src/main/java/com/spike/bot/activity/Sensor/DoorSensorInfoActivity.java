@@ -395,13 +395,12 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             sensorName.setSelection(sensorName.getText().length());
 
 
-            if(doorSensorResModel.getDevice().getDeviceMeta()!=null &&
-                    doorSensorResModel.getDevice().getDeviceMeta().getSensorBatteryLevel()!=null){
+            if(doorSensorResModel.getDevice().getMeta_battery_level()!=null){
 
                 int perc = 0;
-                if (!TextUtils.isEmpty(""+doorSensorResModel.getDevice().getDeviceMeta().getSensorBatteryLevel())) {
+                if (!TextUtils.isEmpty(""+doorSensorResModel.getDevice().getMeta_battery_level())) {
                     try {
-                        perc = doorSensorResModel.getDevice().getDeviceMeta().getSensorBatteryLevel();
+                        perc = Integer.parseInt(doorSensorResModel.getDevice().getMeta_battery_level());
                     } catch (Exception ex) {
                         perc = 100;
                         ex.printStackTrace();
@@ -409,7 +408,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                 }
                 batteryPercentage.setText(perc + "%");
 
-                imgBattery.setImageResource(Common.getBatteryIcon(""+doorSensorResModel.getDevice().getDeviceMeta().getSensorBatteryLevel()));
+                imgBattery.setImageResource(Common.getBatteryIcon(""+doorSensorResModel.getDevice().getMeta_battery_level()));
             }
 
             if (doorSensorResModel.getAlerts()!=null && doorSensorResModel.getAlerts().size()>0) {

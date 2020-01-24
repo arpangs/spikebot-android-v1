@@ -48,52 +48,39 @@ public class JetSonModel implements Serializable {
 
     public class Datum {
 
-        @SerializedName("panel_device_id")
+        @SerializedName("jetson_id")
         @Expose
-        private String panelDeviceId;
-        @SerializedName("device_id")
+        private String jetsonId;
+        @SerializedName("jetson_name")
         @Expose
-        private String deviceId;
-        @SerializedName("panel_device_meta")
+        private String jetsonName;
+        @SerializedName("jetson_ip")
         @Expose
-        private String panelDeviceMeta;
-        @SerializedName("module_id")
-        @Expose
-        private String moduleId;
-        @SerializedName("device_name")
-        @Expose
-        private String deviceName;
-        @SerializedName("device_icon")
-        @Expose
-        private String deviceIcon;
-        @SerializedName("device_status")
-        @Expose
-        private String deviceStatus;
-        @SerializedName("device_sub_status")
-        @Expose
-        private String deviceSubStatus;
-        @SerializedName("device_type")
-        @Expose
-        private String deviceType;
-        @SerializedName("device_sub_type")
-        @Expose
-        private Object deviceSubType;
-        @SerializedName("device_identifier")
-        @Expose
-        private String deviceIdentifier;
-        @SerializedName("device_meta")
-        @Expose
-        private String deviceMeta;
-        @SerializedName("is_active")
-        @Expose
-        private String isActive;
-        @SerializedName("module_type")
-        @Expose
-        private String moduleType;
-        @SerializedName("module_meta")
-        @Expose
-        private String moduleMeta;
+        private String jetsonIp;
 
+        public String getJetsonId() {
+            return jetsonId;
+        }
+
+        public void setJetsonId(String jetsonId) {
+            this.jetsonId = jetsonId;
+        }
+
+        public String getJetsonName() {
+            return jetsonName;
+        }
+
+        public void setJetsonName(String jetsonName) {
+            this.jetsonName = jetsonName;
+        }
+
+        public String getJetsonIp() {
+            return jetsonIp;
+        }
+
+        public void setJetsonIp(String jetsonIp) {
+            this.jetsonIp = jetsonIp;
+        }
 
 
         @SerializedName("id")
@@ -300,125 +287,6 @@ public class JetSonModel implements Serializable {
 
 
 
-        public String getPanelDeviceId() {
-            return panelDeviceId;
-        }
-
-        public void setPanelDeviceId(String panelDeviceId) {
-            this.panelDeviceId = panelDeviceId;
-        }
-
-        public String getDeviceId() {
-            return deviceId;
-        }
-
-        public void setDeviceId(String deviceId) {
-            this.deviceId = deviceId;
-        }
-
-        public String getPanelDeviceMeta() {
-            return panelDeviceMeta;
-        }
-
-        public void setPanelDeviceMeta(String panelDeviceMeta) {
-            this.panelDeviceMeta = panelDeviceMeta;
-        }
-
-        public String getModuleId() {
-            return moduleId;
-        }
-
-        public void setModuleId(String moduleId) {
-            this.moduleId = moduleId;
-        }
-
-        public String getDeviceName() {
-            return deviceName;
-        }
-
-        public void setDeviceName(String deviceName) {
-            this.deviceName = deviceName;
-        }
-
-        public String getDeviceIcon() {
-            return deviceIcon;
-        }
-
-        public void setDeviceIcon(String deviceIcon) {
-            this.deviceIcon = deviceIcon;
-        }
-
-        public String getDeviceStatus() {
-            return deviceStatus;
-        }
-
-        public void setDeviceStatus(String deviceStatus) {
-            this.deviceStatus = deviceStatus;
-        }
-
-        public String getDeviceSubStatus() {
-            return deviceSubStatus;
-        }
-
-        public void setDeviceSubStatus(String deviceSubStatus) {
-            this.deviceSubStatus = deviceSubStatus;
-        }
-
-        public String getDeviceType() {
-            return deviceType;
-        }
-
-        public void setDeviceType(String deviceType) {
-            this.deviceType = deviceType;
-        }
-
-        public Object getDeviceSubType() {
-            return deviceSubType;
-        }
-
-        public void setDeviceSubType(Object deviceSubType) {
-            this.deviceSubType = deviceSubType;
-        }
-
-        public String getDeviceIdentifier() {
-            return deviceIdentifier;
-        }
-
-        public void setDeviceIdentifier(String deviceIdentifier) {
-            this.deviceIdentifier = deviceIdentifier;
-        }
-
-        public String getDeviceMeta() {
-            return deviceMeta;
-        }
-
-        public void setDeviceMeta(String deviceMeta) {
-            this.deviceMeta = deviceMeta;
-        }
-
-        public String getIsActive() {
-            return isActive;
-        }
-
-        public void setIsActive(String isActive) {
-            this.isActive = isActive;
-        }
-
-        public String getModuleType() {
-            return moduleType;
-        }
-
-        public void setModuleType(String moduleType) {
-            this.moduleType = moduleType;
-        }
-
-        public String getModuleMeta() {
-            return moduleMeta;
-        }
-
-        public void setModuleMeta(String moduleMeta) {
-            this.moduleMeta = moduleMeta;
-        }
 
     }
 }

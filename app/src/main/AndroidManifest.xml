@@ -431,10 +431,10 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-      <!--  <activity android:name=".activity.ir.blaster.WifiBlasterActivity"
+        <activity android:name=".activity.ir.blaster.WifiBlasterActivity"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>-->
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name=".activity.ir.blaster.WifiListActivity"
             android:windowSoftInputMode="stateHidden|stateAlwaysHidden"

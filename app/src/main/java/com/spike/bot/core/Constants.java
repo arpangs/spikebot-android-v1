@@ -166,6 +166,7 @@ public class Constants {
     public static final String deleteTTLockBridge = "/deleteTTLockBridge";
     public static final String updateTTLockActiveStatus = "/updateTTLockActiveStatus";
     public static final String deviceadd = "/device/add";
+    public static final String jetsonadd = "/jetson/add";
     public static final String curtainupdate = "/curtain/update";
     public static final String curtaindelete = "/curtain/delete";
     public static final String curtainupdatestatus = "/curtain/update-status";
@@ -179,6 +180,9 @@ public class Constants {
     public static final String SAVE_EDIT_SWITCH = "/device/edit";
     public static final String configureGasSensorRequest = "/configureGasSensorRequest";
     public static final String devicefind = "/device/find";
+    public static final String jetsonlist = "/jetson/list";
+    public static final String jetsonupdate = "/jetson/update";
+    public static final String jetsondelete = "/jetson/delete";
     public static final String configureRepeatorRequest = "/configureRepeatorRequest";
     public static final String getGasSensorInfo = "/getGasSensorInfo";
     public static final String deleteGasSensor = "/deleteGasSensor";
