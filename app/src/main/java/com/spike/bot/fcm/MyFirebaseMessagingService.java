@@ -143,7 +143,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(R.drawable.ic_push)
+                .setSmallIcon(R.mipmap.ic_launcher_round)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(messageBody))
                 .setContentTitle("Spike Bot")
                 .setContentText(messageBody)
