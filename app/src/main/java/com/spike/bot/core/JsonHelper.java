@@ -71,12 +71,17 @@ public class JsonHelper {
                     room.setDevice_count("0");
                 }
 
-                if(roomObj.has("meta")){
-                    JSONObject object=new JSONObject(roomObj.optString("meta"));
-                    room.setSmart_remote_number(object.optString("smart_remote_no"));
-                }else {
+//                if(roomObj.has("meta")){
+//                    JSONObject object=new JSONObject(roomObj.optString("meta"));
+                if(roomObj.optString("meta_smart_remote_no")==null){
                     room.setSmart_remote_number("0");
+                }else {
+                    room.setSmart_remote_number(roomObj.optString("meta_smart_remote_no"));
                 }
+
+//                }else {
+//                    room.setSmart_remote_number("0");
+//                }
 
                 if(roomObj.has("is_original")){
                     room.setIs_original(roomObj.optInt("is_original"));
@@ -560,7 +565,7 @@ public class JsonHelper {
 
                 d1.setIs_unread(hasObject(deviceObj,"is_unread") ? deviceObj.optString("is_unread") : "");
                 d1.setCreated_date(hasObject(deviceObj,"created_date") ? deviceObj.optString("created_date") : "");
-                d1.setTemp_in_c(hasObject(deviceObj,"temp_in_C") ? deviceObj.optString("temp_in_C") : "");
+                d1.setTemp_in_c(hasObject(deviceObj,"meta_unit") ? deviceObj.optString("meta_unit") : "");
                 d1.setTemp_in_f(hasObject(deviceObj,"temp_in_F") ? deviceObj.optString("temp_in_F") : "");
                 d1.setIs_in_c(hasObject(deviceObj,"is_in_C") ? deviceObj.optString("is_in_C") : "");
                 d1.setTo_use(hasObject(deviceObj,"to_use") ? deviceObj.optString("to_use") : "");
@@ -735,13 +740,10 @@ public class JsonHelper {
                 d1.setHumidity(deviceObj.optString("humidity"));
                 d1.setTo_use(hasObject(deviceObj,"to_use") ? deviceObj.optString("to_use") : "");
 
-                if(deviceObj.has("device_meta")){
-                    JSONObject object=deviceObj.optJSONObject("device_meta");
-                    if(object!=null){
-                        d1.setTemp_in_c(object.optString("unit"));
+                    if(deviceObj.optString("meta_unit")!=null){
+                        d1.setTemp_in_c(deviceObj.optString("meta_unit"));
                     }
 
-                }
 
                 if(!TextUtils.isEmpty(is_original)){
                     d1.setIs_original(Integer.parseInt(is_original));
@@ -792,7 +794,7 @@ public class JsonHelper {
                 d1.setSensor(false);
                 d1.setRoomDeviceId(deviceObj.optString("room_device_id"));
                 d1.setDeviceId(deviceObj.optString("device_id"));
-                d1.setDeviceStatus(deviceObj.optInt("device_status"));
+                d1.setDeviceStatus(Integer.parseInt(deviceObj.optString("device_status")));
                 d1.setDevice_icon(deviceObj.optString("device_icon"));
                 d1.setDeviceSpecificValue(deviceObj.has("device_specific_value")?deviceObj.optString("device_specific_value"):"");
                 /*is_active means y(1) means active & n(-1) means inactive */
@@ -933,6 +935,8 @@ public class JsonHelper {
         }
         return  cameraList;
     }
+
+
 
 
     public static ArrayList<CameraVO> parseJetSOnArray(JSONArray cameraArray){

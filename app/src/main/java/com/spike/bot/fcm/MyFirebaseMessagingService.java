@@ -71,7 +71,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 String title = remoteMessage.getData().get("title");
                 String body = remoteMessage.getData().get("body");
                 String attachment = remoteMessage.getData().get("attachment");
+                String payload = remoteMessage.getData().get("payload");
                 badge = remoteMessage.getData().get("badge");
+
+                ChatApplication.logDisplay("fcm is "+payload);
+                ChatApplication.logDisplay("fcm is data "+remoteMessage.getData().toString());
 
                 if(!TextUtils.isEmpty(attachment)){
                     scheduleJob(title,body,attachment);
@@ -93,9 +97,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             sendNotification(remoteMessage.getNotification().getBody());
         }
 
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
-    }
+
+//        if (remoteMessage.getNotification()!=null) {
+//
+//            ChatApplication.logDisplay("Message Notification Body link : " + remoteMessage.getNotification().getLink());
+//        }
+//
+//        // Check if message contains a notification payload.
+//        if (remoteMessage.getNotification() != null) {
+//            ChatApplication.logDisplay("Message Notification Body: " + remoteMessage.getNotification());
+//            sendNotification(remoteMessage.getNotification().getBody());
+//        }
+
+        }
     // [END receive_message]
 
     /**

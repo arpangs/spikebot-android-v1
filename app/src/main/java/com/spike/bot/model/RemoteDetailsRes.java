@@ -329,7 +329,23 @@ public class RemoteDetailsRes implements Serializable {
 
         }
 
+        public class irBlaster{
+            public String getDevice_name() {
+                return device_name;
+            }
+
+            public void setDevice_name(String device_name) {
+                this.device_name = device_name;
+            }
+
+            @SerializedName("device_name")
+            @Expose
+            private String device_name;
+
+        }
+
         public class Device implements Serializable {
+
 
             public String getDevice_id() {
                 return device_id;
@@ -367,9 +383,46 @@ public class RemoteDetailsRes implements Serializable {
             @SerializedName("device_identifier")
             @Expose
             private String deviceIdentifier;
-            @SerializedName("device_meta")
+            @SerializedName("meta_unit")
             @Expose
-            private DeviceMeta deviceMeta;
+            private String meta_unit;
+
+            public irBlaster getIr_blaster() {
+                return ir_blaster;
+            }
+
+            public void setIr_blaster(irBlaster ir_blaster) {
+                this.ir_blaster = ir_blaster;
+            }
+
+            @SerializedName("ir_blaster")
+            @Expose
+            private irBlaster ir_blaster;
+
+            public String getMeta_device_brand() {
+                return meta_device_brand;
+            }
+
+            public void setMeta_device_brand(String meta_device_brand) {
+                this.meta_device_brand = meta_device_brand;
+            }
+
+            @SerializedName("meta_device_brand")
+            @Expose
+            private String meta_device_brand;
+
+            public String getMeta_battery_level() {
+                return meta_battery_level;
+            }
+
+            public void setMeta_battery_level(String meta_battery_level) {
+                this.meta_battery_level = meta_battery_level;
+            }
+
+            @SerializedName("meta_battery_level")
+            @Expose
+            private String meta_battery_level;
+
             @SerializedName("is_active")
             @Expose
             private String isActive;
@@ -382,6 +435,42 @@ public class RemoteDetailsRes implements Serializable {
             @SerializedName("module_meta")
             @Expose
             private String moduleMeta;
+
+            public Room getRoom() {
+                return room;
+            }
+
+            public void setRoom(Room room) {
+                this.room = room;
+            }
+
+            @SerializedName("room")
+            @Expose
+            public Room room;
+
+            public String getMeta_device_default_status() {
+                return meta_device_default_status;
+            }
+
+            public void setMeta_device_default_status(String meta_device_default_status) {
+                this.meta_device_default_status = meta_device_default_status;
+            }
+
+            @SerializedName("meta_device_default_status")
+            @Expose
+            private String meta_device_default_status;
+
+            public String getMeta_device_model() {
+                return meta_device_model;
+            }
+
+            public void setMeta_device_model(String meta_device_model) {
+                this.meta_device_model = meta_device_model;
+            }
+
+            @SerializedName("meta_device_model")
+            @Expose
+            private String meta_device_model;
 
             public String getFahrenheitvalue() {
                 return fahrenheitvalue;
@@ -457,12 +546,12 @@ public class RemoteDetailsRes implements Serializable {
                 this.deviceIdentifier = deviceIdentifier;
             }
 
-            public DeviceMeta getDeviceMeta() {
-                return deviceMeta;
+            public String getmeta_unit() {
+                return meta_unit;
             }
 
-            public void setDeviceMeta(DeviceMeta deviceMeta) {
-                this.deviceMeta = deviceMeta;
+            public void setmeta_unit(String deviceMeta) {
+                this.meta_unit = meta_unit;
             }
 
             public String getIsActive() {
@@ -497,6 +586,21 @@ public class RemoteDetailsRes implements Serializable {
                 this.moduleMeta = moduleMeta;
             }
 
+        }
+
+        public class Room{
+
+            public String getRoom_name() {
+                return room_name;
+            }
+
+            public void setRoom_name(String room_name) {
+                this.room_name = room_name;
+            }
+
+            @SerializedName("room_name")
+            @Expose
+            private String room_name;
         }
 
         public class DeviceMeta {

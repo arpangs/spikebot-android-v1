@@ -262,7 +262,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
 //  {"room_device_id":"1561365773929_OvHzT5WcFU","real_power":25}
-                            ChatApplication.logDisplay("object  heavyLoadValue " + object);
+                            ChatApplication.logDisplay("object  heavyLoadValue socket " + object);
                             if(device_id.equals(object.optString("device_id"))){
                                 String real_power=object.optString("real_power");
                                 if(Integer.parseInt(object.optString("real_power"))>0){

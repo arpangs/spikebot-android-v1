@@ -167,7 +167,7 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
      */
     private void showAddSensorDialog(String door_module_id,String module_type) {
 
-        final Dialog dialog = new Dialog(this);
+        final Dialog dialog = new Dialog(SmartRemoteActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_add_sensordoor);
         dialog.setCanceledOnTouchOutside(false);
@@ -216,9 +216,9 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
             }
         });
 
-        if (!dialog.isShowing()) {
+//        if (!dialog.isShowing()) {
             dialog.show();
-        }
+//        }
 
     }
 

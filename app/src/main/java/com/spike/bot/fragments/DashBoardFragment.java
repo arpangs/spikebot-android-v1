@@ -1703,9 +1703,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                                 ArrayList<CameraVO> cameraList = JsonHelper.parseCameraArray(object.optJSONArray("cameraList"));
 
                                 RoomVO section = new RoomVO();
-                                section.setRoomName(object.optString("device_name"));
+                                section.setRoomName(object.optString("jetson_name"));
 //                                section.setRoomName("Camera");
-                                section.setRoomId(object.optString("device_id"));
+                                section.setRoomId(object.optString("jetson_id"));
 //                                section.setRoomId("Camera");
                                 section.setDevice_count("0");
 

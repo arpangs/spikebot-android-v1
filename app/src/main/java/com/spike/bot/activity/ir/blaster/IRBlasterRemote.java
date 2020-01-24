@@ -180,7 +180,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         moodName = modeType;
         setPowerOnOff(mRemoteCommandList.getDevice().getDeviceStatus());
         mRemoteName.setText(mRemoteCommandList.getDevice().getDeviceName());
-        mBrandBottom.setText(mRemoteCommandList.getDevice().getDeviceMeta().getDeviceBrand() + "{" + mRemoteCommandList.getDevice().getDeviceMeta().getDeviceModel() + "}");
+        mBrandBottom.setText(mRemoteCommandList.getDevice().getMeta_device_brand() + "{" + mRemoteCommandList.getDevice().getMeta_device_model() + "}");
 
         tempMinus = 16;
         tempPlus = 30;
@@ -409,8 +409,8 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
         String modeDefult="";
         try {
-            if(!TextUtils.isEmpty(mRemoteCommandList.getDevice().getDeviceMeta().getDeviceDefaultStatus())){
-                String[] spiltarray=mRemoteCommandList.getDevice().getDeviceMeta().getDeviceDefaultStatus().split("-");
+            if(!TextUtils.isEmpty(mRemoteCommandList.getDevice().getMeta_device_default_status())){
+                String[] spiltarray=mRemoteCommandList.getDevice().getMeta_device_default_status().split("-");
                 mRemoteDefaultTemp.setText("" + spiltarray[1]);
                 modeDefult=spiltarray[0];
             }
@@ -435,7 +435,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         mSpinnerBlaster.setAdapter(roomAdapter);
 
         for (int i = 0; i < arrayList.size(); i++) {
-            if (arrayList.get(i).equalsIgnoreCase(mRemoteCommandList.getDevice().getDeviceName())) {
+            if (arrayList.get(i).equalsIgnoreCase(mRemoteCommandList.getDevice().getIr_blaster().getDevice_name())) {
                 mSpinnerBlaster.setSelection(i);
             }
         }
@@ -443,7 +443,11 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         mSpinnerBlaster.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                remote_room_txt.setText("" + mIRDeviceList.get(position).getRoom().getRoomName());
+                if(mIRDeviceList.get(position).getRoom()!=null){
+                    remote_room_txt.setText("" + mIRDeviceList.get(position).getRoom().getRoomName());
+                }else {
+                    remote_room_txt.setText("");
+                }
             }
 
             @Override
@@ -573,10 +577,9 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
+                    ChatApplication.showToast(IRBlasterRemote.this,message);
                     if (code == 200) {
                         getRemoteInfo();
-                    } else {
-                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     }
 
                 } catch (JSONException e) {

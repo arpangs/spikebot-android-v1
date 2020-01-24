@@ -743,23 +743,27 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         String tempInCF = "";
                         String cf = "";
 
-                        if (item.getTemp_in_c().equalsIgnoreCase("C")) {
-                            if (TextUtils.isEmpty("" + item.getDeviceStatus())) {
-                                tempInCF = "-- ";
-                            } else {
-                                tempInCF = String.valueOf(item.getDeviceStatus());
-                            }
-                            cf = Common.getC();
+                        if(item.getTemp_in_c()!=null){
+                            if (item.getTemp_in_c().equalsIgnoreCase("C")) {
+                                if (TextUtils.isEmpty("" + item.getDeviceStatus())) {
+                                    tempInCF = "-- ";
+                                } else {
+                                    tempInCF = String.valueOf(item.getDeviceStatus());
+                                }
+                                cf = Common.getC();
 
-                        } else {
-                            if (TextUtils.isEmpty(item.getTemp_in_c())) {
-                                tempInCF = "-- ";
                             } else {
-                                tempInCF = "" + Constants.getFTemp("" + item.getDeviceStatus());
-                                ChatApplication.logDisplay("tem pis " + Constants.getFTemp("" + item.getDeviceStatus()));
+                                if (TextUtils.isEmpty(item.getTemp_in_c())) {
+                                    tempInCF = "-- ";
+                                } else {
+                                    tempInCF = "" + Constants.getFTemp("" + item.getDeviceStatus());
+
+                                }
+                                cf = Common.getF();
                             }
-                            cf = Common.getF();
                         }
+
+                        ChatApplication.logDisplay("tem pis " + tempInCF);
 
                         String humility = "";
 

@@ -366,7 +366,6 @@
                         android:clickable="false"
                         android:enabled="false"
                         android:gravity="center"
-                        android:text="Carrier"
                         android:textAllCaps="false"
                         android:textColor="@color/sensor_button" />
 

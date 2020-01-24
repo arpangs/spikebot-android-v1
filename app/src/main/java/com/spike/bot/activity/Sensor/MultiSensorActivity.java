@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -77,7 +78,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     private TempMultiSensorAdapter tempSensorInfoAdapter;
     private HumiditySensorAdapter humiditySensorAdapter;
 
-    public ScrollView scrollviewMulti;
+    public NestedScrollView scrollviewMulti;
     private EditText sensorName;
     public View viewEditSensor;
     private ImageView view_rel_badge, iv_icon_edit, imgLog;
@@ -558,6 +559,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             e.printStackTrace();
         }
 
+        ChatApplication.logDisplay("url is "+webUrl+" "+jsonNotification);
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
@@ -1010,7 +1012,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             e.printStackTrace();
         }
 
-        ChatApplication.logDisplay("json : " + jsonNotification.toString());
+        ChatApplication.logDisplay("json : "+webUrl+"  " + jsonNotification.toString());
 
         new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
             @Override
@@ -1583,7 +1585,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         sensorName.setText(sensorResModel.getDevice().getDeviceName());
         sensorName.setSelection(sensorName.getText().toString().length());
 
-        if (sensorResModel.getDevice().getDeviceMeta().getUnit().equalsIgnoreCase("C") && !isCFDone) {
+        if (sensorResModel.getDevice().getmeta_unit().equalsIgnoreCase("C") && !isCFDone) {
             isCFSelected = 1;
             setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_yellow, R.drawable.txt_background_white, Color.parseColor("#FFFFFF"), Color.parseColor("#111111"));
             tempCFValue.setText(sensorResModel.getDevice().getDeviceStatus() + " ");

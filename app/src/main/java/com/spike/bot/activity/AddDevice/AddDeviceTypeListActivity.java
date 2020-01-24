@@ -123,7 +123,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         arrayList.add("Repeaters");
         arrayList.add("Camera");
         arrayList.add("Smart Camera");
-        arrayList.add("Add Beacon");
+//        arrayList.add("Add Beacon");
     }
 
     /*item click */
