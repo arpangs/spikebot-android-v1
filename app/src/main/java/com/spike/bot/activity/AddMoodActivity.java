@@ -240,9 +240,6 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                                 roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("door_sensor")) {
                             roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
 //                            roomList.get(i).getPanelList().get(j).setActivePanel(false);
-                        }else if(roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_type().equalsIgnoreCase("remote")){
-                            roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(true);
-//                            roomList.get(i).getPanelList().get(j).setActivePanel(true);
                         }
                     }
                 }
@@ -432,7 +429,13 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         JSONObject moodObj = new JSONObject();
         try {
             if(editMode){
-                moodObj.put("room_id",moodVO.getRoomId());
+                /*old_mood_id : last mood_id
+                mood_id select latest mood_id send
+                * */
+                moodObj.put("mood_id",select_mood_id);
+                moodObj.put("old_mood_id",moodVO.getRoomId());
+            }else {
+                moodObj.put("mood_name_id", select_mood_id);
             }
                 moodObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
                 moodObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -446,7 +449,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
                 JSONArray array = new JSONArray(deviceIdList);
                 moodObj.put("panel_device_ids", array);
-                moodObj.put("mood_name_id", select_mood_id);
+//
         } catch (JSONException e) {
             e.printStackTrace();
         }

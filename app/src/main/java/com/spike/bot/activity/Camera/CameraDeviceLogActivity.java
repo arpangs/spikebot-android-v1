@@ -244,16 +244,26 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         JSONObject object = new JSONObject();
         try {
             /*"camera_id":"",	"start_date":"",	"end_date":""*/
-            object.put("camera_id", "" + camera_id);
-            object.put("start_date", "" + start_date);
-            object.put("end_date", "" + end_date);
-            object.put("notification_number", "" + notification_number);
+//            object.put("camera_id", "" + camera_id);
+//            object.put("start_date", "" + start_date);
+//            object.put("end_date", "" + end_date);
+//            object.put("notification_number", "" + notification_number);
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            object.put("filter_type", "camera");
+            object.put("start_date", ""+start_date);
+            object.put("end_date", ""+end_date);
+            object.put("camera_id", ""+camera_id);
+            object.put("notification_number", ""+notification_number);
+            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         ActivityHelper.showProgressDialog(CameraDeviceLogActivity.this, "Please wait...", false);
-        String url = ChatApplication.url + Constants.getCameraLogs;
+        String url = ChatApplication.url + Constants.logsfind;
+        ChatApplication.logDisplay("camera is "+url+" "+object);
         new GetJsonTask(CameraDeviceLogActivity.this, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -267,15 +277,15 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
                             arrayList.clear();
                         }
                         arrayListTemp.clear();
-                        JSONObject object1 = result.getJSONObject("data");
-                        JSONArray jsonArray = object1.optJSONArray("notificationList");
+                        ChatApplication.logDisplay("json is " + result);
+                        JSONArray jsonArray = result.optJSONArray("data");
 
-                        ChatApplication.logDisplay("json is " + jsonArray);
+                        if(jsonArray!=null && jsonArray.length()>0){
+                            arrayListTemp = (ArrayList<NotificationList>) Common.fromJson(jsonArray.toString(), new TypeToken<ArrayList<NotificationList>>() {}.getType());
 
-                        arrayListTemp = (ArrayList<NotificationList>) Common.fromJson(jsonArray.toString(), new TypeToken<ArrayList<NotificationList>>() {
-                        }.getType());
+                            arrayList.addAll(arrayListTemp);
+                        }
 
-                        arrayList.addAll(arrayListTemp);
 
 
                         if (arrayList.size() > 0) {

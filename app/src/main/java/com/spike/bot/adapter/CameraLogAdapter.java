@@ -15,6 +15,8 @@ import com.bumptech.glide.Glide;
 import com.kp.core.DateHelper;
 import com.spike.bot.R;
 import com.spike.bot.activity.Camera.ImageZoomActivity;
+import com.spike.bot.core.Common;
+import com.spike.bot.core.Constants;
 import com.spike.bot.model.NotificationList;
 
 import java.text.ParseException;
@@ -49,20 +51,13 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
     public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
         if (!TextUtils.isEmpty(arrayListLog.get(position).getActivityTime())) {
-            Date today = null;//2018-01-12 19:40:07
-            try {
-                today = DateHelper.parseDateSimple(arrayListLog.get(position).getActivityTime(), DateHelper.DATE_YYYY_MM_DD_HH_MM_SS);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            String dateString = Constants.logConverterDate(Long.parseLong(arrayListLog.get(position).getActivityTime()));
+            strDateOfTimeTemp  =dateString.split(" ");
 
-            strDateOfTime = DateHelper.getDayString(today);
-            strDateOfTimeTemp = strDateOfTime.split(" ");
-
-            if (strDateOfTimeTemp.length > 2) {
-                dateTime = strDateOfTimeTemp[1] + " " + strDateOfTimeTemp[2] + System.getProperty("line.separator") + strDateOfTimeTemp[0];
-            } else {
-                dateTime = strDateOfTimeTemp[0] + " " + strDateOfTimeTemp[1];
+            if(strDateOfTimeTemp[0].equalsIgnoreCase(Constants.getCurrentDate())){
+                dateTime = strDateOfTimeTemp[1]+" "+strDateOfTimeTemp[2];
+            }else {
+                dateTime = strDateOfTimeTemp[1]+ strDateOfTimeTemp[2]+ System.getProperty("line.separator") + strDateOfTimeTemp[0] ;
             }
 
             holder.tv_device_log_date.setText(dateTime);
@@ -73,7 +68,7 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
         holder.tv_device_log_type.setText(arrayListLog.get(position).getActivityAction());
 
 
-        if (arrayListLog.get(position).getIs_unread().equalsIgnoreCase("1")) {
+        if (!arrayListLog.get(position).getSeen_by().replace("|","").equalsIgnoreCase(Common.getPrefValue(mContext, Constants.USER_ID))) {
             holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_red));
             holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
             holder.tv_device_log_type.setTextColor(mContext.getResources().getColor(R.color.automation_red));
@@ -83,7 +78,7 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
             holder.tv_device_log_type.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
         }
         Glide.with(mContext)
-                .load(arrayListLog.get(position).getImage_url())
+                .load(arrayListLog.get(position).getImageUrl())
                 .fitCenter()
                 .error(R.drawable.cam_defult)
                 .skipMemoryCache(true)
@@ -94,7 +89,7 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
             public void onClick(View v) {
 
                 Intent intent = new Intent(mContext, ImageZoomActivity.class);
-                intent.putExtra("imgUrl", "" + arrayListLog.get(position).getImage_url());
+                intent.putExtra("imgUrl", "" + arrayListLog.get(position).getImageUrl());
                 intent.putExtra("imgName", "" + arrayListLog.get(position).getActivityDescription());
                 intent.putExtra("imgDate", "" + arrayListLog.get(position).getActivityTime());
                 mContext.startActivity(intent);

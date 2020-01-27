@@ -263,8 +263,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 startActivity(intent);
             }
         });
-
-
     }
 
 

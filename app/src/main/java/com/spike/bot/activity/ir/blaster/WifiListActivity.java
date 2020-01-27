@@ -292,7 +292,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
                 } else if (!Patterns.IP_ADDRESS.matcher(edWifiIP.getText()).matches()) {
                     ChatApplication.showToast(WifiListActivity.this, "Please enter valid ip address");
                 } else {
-                    setViewButton(txtSave,false);
+//                    setViewButton(txtSave,false);
 //                    txtWait.setVisibility(View.VISIBLE);
                     InputMethodManager imm = (InputMethodManager) WifiListActivity.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(edWifiPassword.getWindowToken(), 0);
@@ -338,7 +338,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
                             Constants.isWifiConnectSave = true;
                             moduleId = result.optString("moduleId");
                             if (moduleId.length() > 1) {
-                                setViewButton(txtSave,false);
+//                                setViewButton(txtSave,false);
                                 setSaveView(txtSave,txtWait,dialog);
                             }
                         } else {
@@ -347,7 +347,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
                             ChatApplication.showToast(WifiListActivity.this, "" + result.optString("response"));
                         }
                     } else {
-                        setViewButton(txtSave,true);
+//                        setViewButton(txtSave,true);
                         ActivityHelper.dismissProgressDialog();
                         ChatApplication.showToast(WifiListActivity.this, "Please try again later.");
                     }

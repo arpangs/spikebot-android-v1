@@ -103,6 +103,7 @@ public class Constants {
 
     //room
     public static final String GET_DEVICES_LIST = "/device/list";
+    public static final String moodList = "/mood/list";
     public static final String roomsget = "/rooms/get";
     public static final String roomslist = "/rooms/list";
     public static final String getMoodName = "/mood/names/list";
@@ -122,6 +123,7 @@ public class Constants {
     public static final String assignNumberToMood = "/assignNumberToMood";
     public static final String deleteSmartRemote = "/deleteSmartRemote";
     public static final String DELETE_ROOM = "/rooms/delete";
+    public static final String mooddelete = "/mood/delete";
     public static final String validatecamerakey = "/validatecamerakey";
     public static final String addHueLight = "/addHueLight";
     public static final String getHueRouterDetails = "/getHueRouterDetails";
@@ -255,6 +257,7 @@ public class Constants {
     //panel
     public static final String ADD_CUSTOM_PANEL = "/addCustomPanel";
     public static final String CHANGE_ROOM_PANELMOOD_STATUS_NEW = "/room/status";
+    public static final String mood_status = "/mood/status";
     public static final String CHANGE_PANELSTATUS = "/panel/status";
     public static final String CONFIGURE_NEW_PANEL = "/configureNewPanel";
 

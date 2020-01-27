@@ -546,7 +546,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             return;
         }
 
-        String url = ChatApplication.url + Constants.GET_DEVICES_LIST;
+        String url = ChatApplication.url + Constants.moodList;
         if(!token_id.equalsIgnoreCase("")){
             url = url +"/" + token_id;
         }
@@ -628,14 +628,14 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
             obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
-            obj.put("room_id",roomId);
+            obj.put("mood_id",roomId);
 
         }catch (Exception e){
             e.printStackTrace();
         }
 
         ActivityHelper.showProgressDialog(getActivity(),"Please Wait.",false);
-        String url =  ChatApplication.url + Constants.DELETE_ROOM;
+        String url =  ChatApplication.url + Constants.mooddelete;
         new GetJsonTask(getActivity(),url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
 
@@ -681,14 +681,15 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
             obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
-            obj.put("room_id", moodVO.getRoomId());
-            obj.put("panel_id",panel_id);
-            obj.put("room_status",moodVO.getRoom_status());
+            obj.put("mood_id", moodVO.getRoomId());
+          /*  obj.put("panel_id",panel_id);*/
+            obj.put("mood_status",moodVO.getRoom_status());
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-            String url =  ChatApplication.url + Constants.CHANGE_ROOM_PANELMOOD_STATUS_NEW;
+            String url =  ChatApplication.url + Constants.mood_status;
+        ChatApplication.logDisplay("status is "+url+" "+obj);
             new GetJsonTask(getActivity(),url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
                 @Override
                 public void onSuccess(JSONObject result) {

@@ -6,85 +6,105 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 public class NotificationList implements Serializable{
-
-@SerializedName("id")
-@Expose
-private Integer id;
-@SerializedName("activity_action")
-@Expose
-private String activityAction;
-@SerializedName("activity_type")
-@Expose
-private String activityType;
-@SerializedName("activity_description")
-@Expose
-private String activityDescription;
-@SerializedName("activity_time")
-@Expose
-private String activityTime;
-
-    public String getIs_unread() {
-        return is_unread;
-    }
-
-    public void setIs_unread(String is_unread) {
-        this.is_unread = is_unread;
-    }
-
-    @SerializedName("is_unread")
-@Expose
-private String is_unread;
-
-    public String getImage_url() {
-        return image_url;
-    }
-
-    public void setImage_url(String image_url) {
-        this.image_url = image_url;
-    }
-
+    @SerializedName("id")
+    @Expose
+    private String id;
     @SerializedName("image_url")
-@Expose
-private String image_url;
+    @Expose
+    private Object imageUrl;
+    @SerializedName("log_type")
+    @Expose
+    private String logType;
+    @SerializedName("activity_action")
+    @Expose
+    private String activityAction;
+    @SerializedName("activity_type")
+    @Expose
+    private String activityType;
+    @SerializedName("activity_description")
+    @Expose
+    private String activityDescription;
+    @SerializedName("activity_time")
+    @Expose
+    private String activityTime;
+    @SerializedName("user_name")
+    @Expose
+    private String userName;
 
-public Integer getId() {
-return id;
-}
+    public String getSeen_by() {
+        return seen_by;
+    }
 
-public void setId(Integer id) {
-this.id = id;
-}
+    public void setSeen_by(String seen_by) {
+        this.seen_by = seen_by;
+    }
 
-public String getActivityAction() {
-return activityAction;
-}
+    @SerializedName("seen_by")
+    @Expose
+    private String seen_by;
 
-public void setActivityAction(String activityAction) {
-this.activityAction = activityAction;
-}
+    public String getId() {
+        return id;
+    }
 
-public String getActivityType() {
-return activityType;
-}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-public void setActivityType(String activityType) {
-this.activityType = activityType;
-}
+    public Object getImageUrl() {
+        return imageUrl;
+    }
 
-public String getActivityDescription() {
-return activityDescription;
-}
+    public void setImageUrl(Object imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
-public void setActivityDescription(String activityDescription) {
-this.activityDescription = activityDescription;
-}
+    public String getLogType() {
+        return logType;
+    }
 
-public String getActivityTime() {
-return activityTime;
-}
+    public void setLogType(String logType) {
+        this.logType = logType;
+    }
 
-public void setActivityTime(String activityTime) {
-this.activityTime = activityTime;
-}
+    public String getActivityAction() {
+        return activityAction;
+    }
+
+    public void setActivityAction(String activityAction) {
+        this.activityAction = activityAction;
+    }
+
+    public String getActivityType() {
+        return activityType;
+    }
+
+    public void setActivityType(String activityType) {
+        this.activityType = activityType;
+    }
+
+    public String getActivityDescription() {
+        return activityDescription;
+    }
+
+    public void setActivityDescription(String activityDescription) {
+        this.activityDescription = activityDescription;
+    }
+
+    public String getActivityTime() {
+        return activityTime;
+    }
+
+    public void setActivityTime(String activityTime) {
+        this.activityTime = activityTime;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
 }

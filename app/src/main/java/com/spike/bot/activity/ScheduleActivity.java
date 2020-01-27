@@ -1375,7 +1375,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 deviceObj.put("schedule_device_type", isSelectMode ? "room" : "mood");
 
                 if(!isSelectMode){
-                    deviceObj.put("room_id",moodListAdd.get(sp_mood_selection.getSelectedItemPosition()).getRoomId());
+                    deviceObj.put("mood_id",moodListAdd.get(sp_mood_selection.getSelectedItemPosition()).getRoomId());
                 }
 
 
@@ -1504,7 +1504,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
                     if (isEdit || isEditOpen) {
 
-                        int typeId = rg_schedule_type.getCheckedRadioButtonId();
                         if (isSelectMode) {
                             rb_schedule_type_mood.setEnabled(false);
                             setBackGroundColorButton(true);
@@ -1558,7 +1557,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
     public void getMoodListAdd() {
         ChatApplication.logDisplay("getMoodList");
 
-        String url = webUrl + Constants.GET_DEVICES_LIST;
+        String url = webUrl + Constants.moodList;
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
         JSONObject jsonObject = new JSONObject();
         try {
@@ -1570,11 +1569,12 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        ChatApplication.logDisplay("mood list "+url+" "+jsonObject);
 
         new GetJsonTask(ScheduleActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                ChatApplication.logDisplay(" getMoodList onSuccess " + result.toString());
+                ChatApplication.logDisplay("mood list " + result.toString());
                 try {
                     moodListAdd = new ArrayList<>();
                     JSONObject dataObject = result.getJSONObject("data");

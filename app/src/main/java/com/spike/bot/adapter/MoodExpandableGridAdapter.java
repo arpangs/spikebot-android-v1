@@ -395,7 +395,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
             }
         });
 
-        if(section.getSmart_remote_number()!=null){
+        if(section.getSmart_remote_number()!=null && !section.getSmart_remote_number().equals("null")){
             editKeyValue.setText(section.getSmart_remote_number());
             editKeyValue.setSelection(editKeyValue.getText().length());
         }else {
@@ -437,7 +437,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
         JSONObject obj = new JSONObject();
         try {
 
-            obj.put("room_id", module_id);
+            obj.put("mood_id", module_id);
             obj.put("user_id", Common.getPrefValue(mContext, Constants.USER_ID) );
             obj.put("smart_remote_no",""+value);
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -448,6 +448,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
         }
 
         String url =  ChatApplication.url + Constants.moodsmartremote;
+        ChatApplication.logDisplay("remote is "+url+" "+obj);
         new GetJsonTask(mContext,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {

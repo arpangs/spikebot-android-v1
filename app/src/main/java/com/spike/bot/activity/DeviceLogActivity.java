@@ -2206,12 +2206,14 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             e.printStackTrace();
         }
 
+        ChatApplication.logDisplay("log is "+webUrl+" "+jsonObject);
         new GetJsonTask(this, webUrl, "POST", jsonObject.toString(), new
 
                 ICallBack() {
                     @Override
                     public void onSuccess(JSONObject result) {
 
+                        ChatApplication.logDisplay("log is "+result);
                         if (b) {
                             isMultiSensor = false;
 //                            callFilterData(0);

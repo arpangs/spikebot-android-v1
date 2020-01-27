@@ -207,7 +207,10 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
     public void onIRDeviceClick(IRDeviceDetailsRes.Data devicelist) {
         //call listing all device on off screen
 
-        if (roomId.equalsIgnoreCase("")) {
+        if (roomId==null) {
+            ChatApplication.showToast(IRRemoteAdd.this, "No Room found Please select another IR Blaster.");
+            return;
+        }else if ( roomId.equalsIgnoreCase("")) {
             ChatApplication.showToast(IRRemoteAdd.this, "Please select Ir Blaster");
             return;
         }
