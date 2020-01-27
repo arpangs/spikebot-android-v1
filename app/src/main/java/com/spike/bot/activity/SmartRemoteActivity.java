@@ -167,17 +167,17 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
      */
     private void showAddSensorDialog(String door_module_id,String module_type) {
 
-        final Dialog dialog = new Dialog(SmartRemoteActivity.this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_add_sensordoor);
-        dialog.setCanceledOnTouchOutside(false);
+        final Dialog dialogtemp = new Dialog(SmartRemoteActivity.this);
+        dialogtemp.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogtemp.setContentView(R.layout.dialog_add_sensordoor);
+        dialogtemp.setCanceledOnTouchOutside(false);
 
-        final EditText edt_door_name =  dialog.findViewById(R.id.txt_door_sensor_name);
-        final TextView edt_door_module_id =  dialog.findViewById(R.id.txt_module_id);
+        final EditText edt_door_name =  dialogtemp.findViewById(R.id.txt_door_sensor_name);
+        final TextView edt_door_module_id =  dialogtemp.findViewById(R.id.txt_module_id);
 
-        TextView dialogTitle =  dialog.findViewById(R.id.tv_title);
-        TextView txt_sensor_name =  dialog.findViewById(R.id.txt_sensor_name);
-        LinearLayout linearListRoom = dialog.findViewById(R.id.linearListRoom);
+        TextView dialogTitle =  dialogtemp.findViewById(R.id.tv_title);
+        TextView txt_sensor_name =  dialogtemp.findViewById(R.id.txt_sensor_name);
+        LinearLayout linearListRoom = dialogtemp.findViewById(R.id.linearListRoom);
         linearListRoom.setVisibility(View.GONE);
 
         dialogTitle.setText("Add Smart Remote");
@@ -186,22 +186,22 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
         edt_door_module_id.setText(door_module_id);
         edt_door_module_id.setFocusable(false);
 
-        Button btn_cancel =  dialog.findViewById(R.id.btn_door_cancel);
-        Button btn_save =  dialog.findViewById(R.id.btn_door_save);
-        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
+        Button btn_cancel =  dialogtemp.findViewById(R.id.btn_door_cancel);
+        Button btn_save =  dialogtemp.findViewById(R.id.btn_door_save);
+        ImageView iv_close =  dialogtemp.findViewById(R.id.iv_close);
 
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ChatApplication.keyBoardHideForce(SmartRemoteActivity.this);
-                dialog.dismiss();
+                dialogtemp.dismiss();
             }
         });
 
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
+                dialogtemp.dismiss();
             }
         });
         btn_save.setOnClickListener(new View.OnClickListener() {
@@ -211,13 +211,13 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
                     ChatApplication.showToast(SmartRemoteActivity.this, "Please enter Smart remote name");
                 } else {
                     ChatApplication.keyBoardHideForce(SmartRemoteActivity.this);
-                    saveSensor(dialog, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), module_type);
+                    saveSensor(dialogtemp, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), module_type);
                 }
             }
         });
 
 //        if (!dialog.isShowing()) {
-            dialog.show();
+        dialogtemp.show();
 //        }
 
     }

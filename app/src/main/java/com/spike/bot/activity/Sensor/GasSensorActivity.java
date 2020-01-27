@@ -150,7 +150,7 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
                         try {
                             //{"room_id":"1568962984563_I4dhDWr54","gas_sensor_id":"1568968977282_uG3YUsQ1I","gas_value":"Normal","gas_current_value":2,"threshold_value":10}
                             JSONObject object = new JSONObject(args[0].toString());
-                            ChatApplication.logDisplay("gas socket is update :-" + object);
+                            ChatApplication.logDisplay("gas socket is update :-" +device_id+"  "+ object);
 
                             if (device_id.equals(object.optString("device_id"))) {
                                 setLevel(object.optString("device_status"));
