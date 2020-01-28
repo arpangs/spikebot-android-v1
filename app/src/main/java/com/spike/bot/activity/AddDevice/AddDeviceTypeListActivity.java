@@ -220,7 +220,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
             holder.txtUserName.setText(arrayList.get(position));
 
-            if (position == 0 || position == 3 || position == 4 || position == 6 || position == 7 || position == 11) {
+            if (position == 0 || position == 3 || position == 4 || position == 6 || position == 7 || position == 11 || position == 13) {
                 holder.imgAdd.setVisibility(View.INVISIBLE);
             } else {
                 holder.imgAdd.setVisibility(View.VISIBLE);

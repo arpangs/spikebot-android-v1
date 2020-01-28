@@ -430,7 +430,7 @@ public class Common {
                 resource = R.drawable.ac_remote_off_inactive;
                 break;
             case "gas_sensor":
-                resource = R.drawable.heavuload_inactive;
+                resource = R.drawable.fire_and_gas_gray_with_red_cross;
                 break;
             case "camera":
                 resource = R.drawable.camera_off_inactive;
