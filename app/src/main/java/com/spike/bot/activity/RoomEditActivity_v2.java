@@ -202,12 +202,15 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
 
         String url = ChatApplication.url + Constants.DELETE_ROOM;
 
+        ChatApplication.logDisplay("url is "+url+" "+object);
+
         new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
 
                 ActivityHelper.dismissProgressDialog();
                 try {
+                    ChatApplication.logDisplay("url is "+result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {

@@ -331,7 +331,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
                     for (int i = 0; i < moodNamesArray.length(); i++) {
                         JSONObject moodObject = moodNamesArray.getJSONObject(i);
-                        String moodId = moodObject.getString("id");
+                        String moodId = moodObject.getString("mood_id");
                         String moodName = moodObject.getString("mood_name");
 
                         RoomVO roomVO = new RoomVO();
