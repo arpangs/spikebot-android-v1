@@ -105,8 +105,6 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         view_rel_badge = (ImageView) findViewById(R.id.view_rel_badge);
 
         view_rel_badge.setOnClickListener(this);
-
-
     }
 
     @Override
@@ -199,7 +197,6 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                         getCameraList.get(i).setIsSelect(false);
                     }
 
-                    ArrayList<CameraViewModel> arrayList = new ArrayList<>();
                     for (int j = 0; j < myList.size(); j++) {
                         for (int i = 0; i < getCameraList.size(); i++) {
                             if (getCameraList.get(i).getCamera_id().equalsIgnoreCase(myList.get(j))) {

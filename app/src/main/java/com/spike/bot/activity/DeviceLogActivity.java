@@ -1482,8 +1482,10 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                 object.put("start_date", "");
                 object.put("end_date", "");
 //                if (isCheckActivity.equals("room") || isCheckActivity.equals("mood")) {
-                if (isCheckActivity.equals("room") || isCheckActivity.equals("mode")) {
+                if (isCheckActivity.equals("room")) {
                     object.put("room_id", "" + mRoomId);
+                }else if (isCheckActivity.equals("mode")) {
+                    object.put("mood_id", "" + mRoomId);
                 }else if(isCheckActivity.equalsIgnoreCase("schedule")){
                     object.put("schedule_id", "" + mRoomId);
                 }
@@ -1569,8 +1571,18 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                             }
 
                         } else {
+
                             if (roomVO != null && !roomVO.getRoomId().equalsIgnoreCase("0")) {
-                                object.put("room_id", "" + roomVO.getRoomId());
+
+                                if(mSpinnerRoomMood != null){
+                                    if( mSpinnerRoomMood.getSelectedItem().toString().toLowerCase().equals("mood")){
+                                        object.put("mood_id", "" + roomVO.getRoomId());
+                                    }else {
+                                        object.put("room_id", "" + roomVO.getRoomId());
+                                    }
+                                }else {
+                                    object.put("room_id", "" + roomVO.getRoomId());
+                                }
                             }
 
                             if (!TextUtils.isEmpty(strDeviceId) && strDeviceId.length() > 0) {
@@ -1609,7 +1621,11 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                     if (roomVO != null) {
                         object.put("room_id", "" + roomVO.getRoomId());
                     } else if (isCheckActivity.equals("room") || isCheckActivity.equalsIgnoreCase("mode")) {
-                        object.put("room_id", "" + mRoomId);
+                        if(isCheckActivity.equalsIgnoreCase("mode")){
+                            object.put("mood_id", "" + mRoomId);
+                        }else {
+                            object.put("room_id", "" + mRoomId);
+                        }
                     }else if(isCheckActivity.equalsIgnoreCase("schedule")){
                         object.put("schedule_id", "" + mRoomId);
                     } else if (isCheckActivity.equals("AllType")) {

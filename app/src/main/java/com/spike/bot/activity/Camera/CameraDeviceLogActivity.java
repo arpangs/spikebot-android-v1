@@ -287,7 +287,6 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
                         }
 
 
-
                         if (arrayList.size() > 0) {
                             rvDeviceLog.setVisibility(View.VISIBLE);
                             isLoading = false;
