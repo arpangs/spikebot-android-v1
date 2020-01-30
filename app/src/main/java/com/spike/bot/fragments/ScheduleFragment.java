@@ -166,11 +166,14 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
     @Override
     public void onRefresh() {
-        isRefreshonScroll = true;
-        swipeRefreshLayout.setRefreshing(true);
-        scheduleRoomAdapter.setClickable(false);
-
-        getDeviceList();
+        try {
+            isRefreshonScroll = true;
+            swipeRefreshLayout.setRefreshing(true);
+            scheduleRoomAdapter.setClickable(false);
+            getDeviceList();
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
 
     }
 
@@ -1032,7 +1035,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             intent.putExtra("isMap", true);
             intent.putExtra("isEdit", true);
 
-
             if (isMoodAdapter) {
                 intent.putExtra("isMoodAdapter", isMoodAdapter);
             } else {
@@ -1045,6 +1047,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                 public void onConfirmDialogYesClick() {
                     deleteSchedule(scheduleVO.getSchedule_id(), scheduleVO.getIs_timer());
                 }
+
 
                 @Override
                 public void onConfirmDialogNoClick() {

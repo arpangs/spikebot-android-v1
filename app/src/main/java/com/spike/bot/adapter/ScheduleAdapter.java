@@ -254,7 +254,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     } else {
                         popup = new PopupMenu(wrapper, v);
                     }
-                    popup.getMenu().add(1, listPosition, 1, scheduleVO.getSchedule_name());
+                    popup.getMenu().add(1, listPosition, 1, scheduleArrayList.get(listPosition).getSchedule_name());
                     popup.show();
 
                 }
@@ -402,6 +402,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                         switch (item.getItemId()) {
                             case R.id.action_edit_dots:
                                 scheduleClickListener.itemClicked(scheduleArrayList.get(holder.iv_schedule_dots.getId()), "edit", isMoodAdapter);
+
                                 break;
                             case R.id.action_delete_dots:
                                 scheduleClickListener.itemClicked(scheduleArrayList.get(holder.iv_schedule_dots.getId()), "delete", isMoodAdapter);

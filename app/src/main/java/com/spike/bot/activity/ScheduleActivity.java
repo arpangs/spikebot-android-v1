@@ -1605,9 +1605,9 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
 
                     //if isEdit true in Scheduer fragment
-                    if (isEdit && !TextUtils.isEmpty(scheduleVO.getRoom_id())) {
+                    if (isEdit && !TextUtils.isEmpty(scheduleVO.getMood_id())) {
                         for (int i = 0; i < moodListSpinner.size(); i++) {
-                            if (moodListSpinner.get(i).getRoomId().equalsIgnoreCase(scheduleVO.getRoom_id())) {
+                            if (moodListSpinner.get(i).getRoomId().equalsIgnoreCase(scheduleVO.getMood_id())) {
                                 sp_mood_selection.setSelection(i);
                                 break;
                             }

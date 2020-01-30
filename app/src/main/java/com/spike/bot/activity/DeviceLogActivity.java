@@ -944,6 +944,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
         if (room.equalsIgnoreCase("Room")) {
             //   url = ChatApplication.url + Constants.GET_DEVICES_LIST + "/" + Constants.DEVICE_TOKEN + "/0/1";
             url = ChatApplication.url + Constants.GET_DEVICES_LIST;
+        } else if (room.equalsIgnoreCase("Mood")) {
+            url = ChatApplication.url + Constants.moodList;
         } else if (room.equalsIgnoreCase("Schedule")) {
             url = ChatApplication.url + Constants.GET_SCHEDULE_LIST;
         } else if (room.equalsIgnoreCase("sensor") || room.equalsIgnoreCase("Gas sensor")

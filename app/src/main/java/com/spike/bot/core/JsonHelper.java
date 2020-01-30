@@ -878,6 +878,7 @@ public class JsonHelper {
                 d1.setSchedule_device_day(deviceObj.optString("schedule_days"));
                 d1.setSchedule_status(deviceObj.optInt("schedule_status"));
                 d1.setRoom_id(deviceObj.optString("room_id"));
+                d1.setMood_id(deviceObj.optString("mood_id"));
                 d1.setUser_id(deviceObj.optString("user_id"));
                 d1.setCreated_by(deviceObj.optString("created_by"));
                 d1.setRoom_name(deviceObj.optString("room_name"));
