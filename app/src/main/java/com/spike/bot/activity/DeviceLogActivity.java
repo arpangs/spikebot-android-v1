@@ -721,7 +721,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
             }
         } else {
-            if (TextUtils.isEmpty(isSelectItem)) {
+            ChatApplication.logDisplay("isSelectItem is "+isSelectItem);
+            if (TextUtils.isEmpty(isSelectItem) || isSelectItem.equals("0")) {
                 if (isFilterType) {
                     if (filterArrayList != null) {
                         filterArrayList.clear();
@@ -747,8 +748,22 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                                 filter.setChecked(true);
                                 filterArrayList.add(filter);
                             }
+                    }else if(isSelectItem.equals("0")){
+                        if (filterArrayList != null) {
+                            filterArrayList.clear();
+                        }
+
+//                        for (int j = 0; j < filterArrayListTemp.size(); j++)
+                            for (int i = 0; i < filterArrayListTemp.get(0).getSubFilters().size(); i++) {
+                                Filter filter = new Filter();
+                                filter.setName(filterArrayListTemp.get(0).getSubFilters().get(i).getName());
+                                filter.setChecked(true);
+                                filterArrayList.add(filter);
+                            }
                     }
                 }
+            }else {
+
             }
 
         }
@@ -838,6 +853,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                         frame_living_room.setVisibility(View.GONE);
                         panel_view.setVisibility(View.GONE);
                         actionType = "";
+                        setAdapterFilterVIew();
                     } else if (mListRoomMood.get(position).equalsIgnoreCase("Room")) {
                         if (isCheckActivity.equals("room")) {
                             panel_view.setVisibility(View.VISIBLE);

@@ -148,7 +148,7 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    /*ggeting curtain status*/
+    /*geting curtain status*/
     private Emitter.Listener updateCurtainStatus = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
