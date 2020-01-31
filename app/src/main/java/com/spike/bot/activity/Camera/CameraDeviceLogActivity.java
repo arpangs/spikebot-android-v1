@@ -466,7 +466,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
     /*check unread count getting than clear count */
     @Override
     public void onBackPressed() {
-        callupdateUnReadCameraLogs(false);
+        //callupdateUnReadCameraLogs(false);
         super.onBackPressed();
     }
 }

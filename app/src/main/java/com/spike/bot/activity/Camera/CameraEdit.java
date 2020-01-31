@@ -261,11 +261,6 @@ public class CameraEdit extends AppCompatActivity {
             return;
         }
 
-        if(!Patterns.IP_ADDRESS.matcher(edt_camera_ip.getText()).matches()){
-            edt_camera_ip.requestFocus();
-            edt_camera_ip.setError("Please enter valid ip address");
-            return;
-        }
         if (TextUtils.isEmpty(edt_video_path.getText().toString().trim())) {
             edt_video_path.setError("Enter Camera Video Path");
             edt_video_path.requestFocus();

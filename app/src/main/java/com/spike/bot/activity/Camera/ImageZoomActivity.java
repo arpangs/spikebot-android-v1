@@ -13,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -112,7 +113,7 @@ public class ImageZoomActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        String strDateOfTime = DateHelper.getDayString(today);
+       /* String strDateOfTime = DateHelper.getDayString(today);
         String[] strDateOfTimeTemp = strDateOfTime.split(" ");
 
         String dateTime = "";
@@ -120,10 +121,24 @@ public class ImageZoomActivity extends AppCompatActivity {
             dateTime = strDateOfTimeTemp[0] + System.getProperty("line.separator") + strDateOfTimeTemp[1] + " " + strDateOfTimeTemp[2];
         } else {
             dateTime = strDateOfTimeTemp[0] + " " + strDateOfTimeTemp[1];
+        }*/
+
+        if (!TextUtils.isEmpty(imgDate)) {
+            String dateString = Constants.logConverterDate(Long.parseLong(imgDate));
+          String [] strDateOfTimeTemp  =dateString.split(" ");
+
+          String dateTime="";
+            if(strDateOfTimeTemp[0].equalsIgnoreCase(Constants.getCurrentDate())){
+                dateTime = strDateOfTimeTemp[1]+" "+strDateOfTimeTemp[2];
+            }else {
+                dateTime = strDateOfTimeTemp[1]+ strDateOfTimeTemp[2]+ System.getProperty("line.separator") + strDateOfTimeTemp[0] ;
+            }
+
+            toolbar.setSubtitle("" + dateTime);
         }
 
         toolbar.setTitle("" + imgName);
-        toolbar.setSubtitle("" + dateTime);
+
         toolbar.setSubtitleTextColor(getResources().getColor(R.color.automation_white));
 
         fabShare.setOnClickListener(new View.OnClickListener() {
@@ -227,6 +242,9 @@ public class ImageZoomActivity extends AppCompatActivity {
                         System.out.println("file not Deleted :" + bmpUri.getPath());
                     }
                 }
+            } else{
+                ChatApplication.showToast(this,"Invalid image url please check again");
+
             }
         }
     }

@@ -173,6 +173,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             getDeviceList();
         }catch (NullPointerException e){
             e.printStackTrace();
+            swipeRefreshLayout.setRefreshing(false);
         }
 
     }

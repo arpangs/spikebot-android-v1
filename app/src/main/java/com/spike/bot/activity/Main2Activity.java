@@ -680,7 +680,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 switch (item.getItemId()) {
                     case R.id.action_device_log:
                         if(linearTab.getVisibility()==View.VISIBLE){
-                            Intent intent = new Intent(Main2Activity.this, DeviceLogActivity.class);
+                            Intent intent = new Intent(Main2Activity.this, DeviceLogNewActivity.class);
                             intent.putExtra("isCheckActivity", "AllType");
                             startActivity(intent);
                         }else {

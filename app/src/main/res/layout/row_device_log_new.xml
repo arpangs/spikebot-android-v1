@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/txt_log_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="15dp"
+        android:textSize="11sp"
+        android:text="16th AUGUST 2019"
+        android:textColor="@color/txtPanal" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/txt_log_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="test1 turned off light 3 "
+            android:textColor="@color/automation_black"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txt_log_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="at 2 PM"
+            android:textColor="@color/automation_black"
+            android:textStyle="bold"
+            android:layout_alignParentRight="true"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/blue_transparent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/_5sdp"
+            android:layout_marginRight="@dimen/_5sdp"
+            android:textSize="11sp"
+            android:text="Light 1 \u2022 panel 2 \u2022 test"
+            android:textColor="@color/automation_black" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="15dp"
+        android:background="@color/device_button" />
+
+</LinearLayout>
