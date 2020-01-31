@@ -433,7 +433,10 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
     @Override
     public void itemClicked(final DeviceVO item, String action, int position) {
         if (action.equalsIgnoreCase("itemclick")) {
-            deviceOnOff(item, position);
+            if(item.getIsActive()!=-1){
+                deviceOnOff(item, position);
+            }
+
         } else if (action.equalsIgnoreCase("philipsClick")) {
             deviceOnOff(item, position);
         } else if (action.equalsIgnoreCase("curtain")) {

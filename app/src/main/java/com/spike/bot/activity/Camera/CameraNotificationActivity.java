@@ -825,11 +825,14 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         }
 
         String url = ChatApplication.url + Constants.updateUnReadCameraLogs;
+
+        ChatApplication.logDisplay("url is "+url+" "+jsonObject);
         new GetJsonTask(CameraNotificationActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
                 try {
+                    ChatApplication.logDisplay("url is "+result);
                     if (b) {
                         Intent intent = new Intent(CameraNotificationActivity.this, CameraDeviceLogActivity.class);
                         intent.putExtra("getCameraList", getCameraList);

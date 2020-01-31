@@ -443,10 +443,12 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         }
 
         String url = ChatApplication.url + Constants.updateUnReadCameraLogs;
+        ChatApplication.logDisplay("url is "+url+" "+jsonObject);
         new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
+                ChatApplication.logDisplay("url is "+result);
                 try {
                     finish();
 

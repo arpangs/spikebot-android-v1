@@ -131,7 +131,7 @@ public class CameraGridActivity extends AppCompatActivity {
      */
 
     public void getAllCameraList() {
-        ActivityHelper.showProgressDialog(CameraGridActivity.this, " Please Wait...", false);
+        ActivityHelper.showProgressDialog(CameraGridActivity.this, "Please Wait...", false);
 
         String url = ChatApplication.url + Constants.getAllCameraToken;
 
