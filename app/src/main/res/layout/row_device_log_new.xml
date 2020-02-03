@@ -26,8 +26,7 @@
             android:id="@+id/txt_log_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
-            android:text="test1 turned off light 3 "
+            android:text="test1 turned off light 3 at"
             android:textColor="@color/automation_black"
             android:textStyle="bold" />
 
@@ -35,30 +34,75 @@
             android:id="@+id/txt_log_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="at 2 PM"
+            android:text="2 PM"
             android:textColor="@color/automation_black"
             android:textStyle="bold"
             android:layout_alignParentRight="true"/>
     </RelativeLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        android:gravity="center"
         android:background="@color/blue_transparent">
 
         <TextView
+            android:id="@+id/txt_device_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/_5sdp"
             android:layout_marginRight="@dimen/_5sdp"
             android:textSize="11sp"
-            android:text="Light 1 \u2022 panel 2 \u2022 test"
+            android:text="Light 1"
             android:textColor="@color/automation_black" />
 
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/txt_separator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="\u2022"/>
+
+        <TextView
+            android:id="@+id/txt_panel_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_5sdp"
+            android:layout_marginRight="@dimen/_5sdp"
+            android:textSize="11sp"
+            android:text="panel 2"
+            android:textColor="@color/automation_black" />
+
+        <TextView
+            android:id="@+id/txt_separator1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="\u2022"/>
+
+        <TextView
+            android:id="@+id/txt_room_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_5sdp"
+            android:layout_marginRight="@dimen/_5sdp"
+            android:textSize="11sp"
+            android:text="test"
+            android:textColor="@color/automation_black" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_empty_view"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:padding="14dp"
+        android:layout_gravity="center"
+        android:text="End of Record"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <View
         android:layout_width="match_parent"

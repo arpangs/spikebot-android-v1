@@ -92,7 +92,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toolbar.setTitle("Configuration");
+        toolbar.setTitle("Configure");
 
         recyclerSmartDevice = findViewById(R.id.recyclerSmartDevice);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -120,6 +120,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         arrayList.add("Door Sensor");
         arrayList.add("Gas / Smoke Sensor");
         arrayList.add("Temperature Sensor");
+        arrayList.add("Curtain");
         arrayList.add("Repeaters");
         arrayList.add("Camera");
         arrayList.add("Smart Camera");
@@ -155,17 +156,20 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         } else if (position == 10) {
             showOptionDialog(SENSOR_TYPE_TEMP);
         } else if (position == 11) {
+            showOptionDialog(Curtain);
+        }
+        else if (position == 12) {
             startActivity(new Intent(this, RepeaterActivity.class));
-        } else if (position == 12) {
+        } else if (position == 13) {
             if (Common.getPrefValue(this, Common.camera_key).equalsIgnoreCase("0")) {
                 addKeyCamera();
             } else {
                 addCamera();
             }
-        }else if (position == 13) {
+        }else if (position == 14) {
             Intent intent=new Intent(this, AddJetSonActivity.class);
             startActivity(intent);
-        }else if (position == 14) {
+        }else if (position == 15) {
             Intent intent=new Intent(this, AddBeaconActivity.class);
             startActivity(intent);
         }
@@ -220,7 +224,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
             holder.txtUserName.setText(arrayList.get(position));
 
-            if (position == 0 || position == 3 || position == 4 || position == 6 || position == 7 || position == 11 || position == 13) {
+            if (position == 0 || position == 3 || position == 4 || position == 6 || position == 7 || position == 12 || position == 14) {
                 holder.imgAdd.setVisibility(View.INVISIBLE);
             } else {
                 holder.imgAdd.setVisibility(View.VISIBLE);

@@ -96,7 +96,7 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
                 if(strDateOfTimeTemp[0].equalsIgnoreCase(Constants.getCurrentDate())){
                     dateTime = strDateOfTimeTemp[1]+" "+strDateOfTimeTemp[2];
                 }else {
-                    dateTime = strDateOfTimeTemp[1]+ strDateOfTimeTemp[2]+ System.getProperty("line.separator") + strDateOfTimeTemp[0] ;
+                    dateTime = strDateOfTimeTemp[1]+ strDateOfTimeTemp[2]+ System.getProperty("line.separator") + strDateOfTimeTemp[0];
                 }
 
                 holder.tv_device_log_date.setText(dateTime);
