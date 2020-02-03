@@ -271,7 +271,15 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                         holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(),item.getDevice_icon()));
                     }
                 }else{
-                    holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(),item.getDevice_icon()));
+                    if (item.getDevice_icon().equalsIgnoreCase("heavyload")) {
+                        if (item.getIsActive() == 1) {
+                            holder.iv_icon.setImageResource(item.getDeviceStatus() == 1 ? R.drawable.on : R.drawable.off);
+                        } else {
+                            holder.iv_icon.setImageResource(R.drawable.headload_inactive);
+                        }
+                    } else {
+                        holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(), item.getDevice_icon()));
+                    }
                 }
 
                     holder.iv_icon_text.setVisibility(View.VISIBLE);

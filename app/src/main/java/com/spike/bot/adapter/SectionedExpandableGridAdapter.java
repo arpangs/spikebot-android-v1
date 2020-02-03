@@ -311,7 +311,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             }
                         }
                     });
-                    holder.sectionTextView.setOnClickListener(new View.OnClickListener() {
+                  /*  holder.sectionTextView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if (!isClickable)
@@ -327,8 +327,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                         }
                     });
-
-                    holder.linearRowRoom.setOnClickListener(new View.OnClickListener() {
+*/
+                   /* holder.linearRowRoom.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if (!isClickable)
@@ -342,7 +342,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                             mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded);
                         }
-                    });
+                    });*/
 
                     holder.ll_root_view_section.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -366,7 +366,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             if (!isClickable)
                                 return;
 
-                            mSectionStateChangeListener.onSectionStateChanged(section, isChecked);
+                            mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded);
                             if (section.isExpanded) {
                                 mItemClickListener.itemClicked(section, "heavyloadSocketon");
                             } else {
@@ -531,7 +531,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 });
 
                 //5 for curtain
-                if (panel1.getType().equalsIgnoreCase("camera") || panel1.getPanel_type() == 5) {
+
+                if (panel1.getType().equalsIgnoreCase("camera")|| panel1.getType().equalsIgnoreCase("JETSON-") || panel1.getPanel_type() == 5) {
                     holder.txt_recording.setVisibility(View.GONE);
                     holder.txt_recording.setText(Html.fromHtml("<font color=\"red\">◉</font> <font color=\"#FFFFFF\">RECORDINGS</font>"));
                     holder.iv_room_panel_onoff.setVisibility(View.GONE);//INVISIBLE

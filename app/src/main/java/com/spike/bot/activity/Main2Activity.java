@@ -246,7 +246,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     openSettingPopup(toolbar);
             }
         }
-
     }
 
     Fragment fragment=null;

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.os.SystemClock;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -483,6 +484,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         for (RoomVO roomVO : ListUtils.arrayListRoom) {
             if (roomVO.isExpanded && roomVO.getRoomId().equalsIgnoreCase(section.getRoomId())) {
                 section.isExpanded = true;
+                section.setExpanded(true);
             }
         }
 
@@ -510,12 +512,13 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
 
 
     private void generateDataList() {
-        // Log.d("CallAPI"," generateDataList =  " + mSectionDataMap.size());
+
         mDataArrayList.clear();
 
         for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
-            RoomVO key = entry.getKey();
-            //  mDataArrayList.add((key = entry.getKey()));
+//            RoomVO key = entry.getKey();
+            RoomVO key ;
+
             mDataArrayList.add((key = entry.getKey()));
             if (key.isExpanded) {
                 //mDataArrayList.add(new PanelVO("Panel1"));
@@ -526,25 +529,33 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                     //add panel
                     mDataArrayList.add(panelList.get(i));
                     //add all device switch
-                    if (panelList.get(i).getType().equalsIgnoreCase("")) {
-                        //Log.d("isExpanded","generateDataList if isKey : " + key.isExpanded());
-                        mDataArrayList.addAll(panelList.get(i).getDeviceList());
-                    } else {
-                        //Log.d("isExpanded","generateDataList else isKey : " + key.isExpanded());
+                    ChatApplication.logDisplay("panel name is "+panelList.get(i).getType());
+                    if (panelList.get(i).getType().equalsIgnoreCase("camera") || panelList.get(i).getType().equals("JETSON-")) {
                         mDataArrayList.addAll(panelList.get(i).getCameraList());
+                    } else {
+                        mDataArrayList.addAll(panelList.get(i).getDeviceList());
                     }
                 }
             }
         }
     }
 
+    // variable to track event time
+    private long mLastClickTime = 0;
     @Override
     public void onSectionStateChanged(RoomVO section, boolean isOpen) {
+        if (SystemClock.elapsedRealtime() - mLastClickTime < 700) {
+            return;
+        }
+        mLastClickTime = SystemClock.elapsedRealtime();
+
         this.section = section;
         ListUtils.sectionRoom = section;
         ListUtils.sectionRoom.setExpanded(isOpen);
 
         section.isExpanded = isOpen;
+
+        ChatApplication.logDisplay("room id is calling "+section.getRoomId());
 
 
         if (!isOpen) {
@@ -552,10 +563,12 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
             if (ListUtils.arrayListRoom.size() > 0) {
 
                 for (int i = 0; i < ListUtils.arrayListRoom.size(); i++) {
-                    if (section.getRoomId().equalsIgnoreCase(ListUtils.arrayListRoom.get(i).getRoomId())) {
+                    if (section.getRoomId().equals(ListUtils.arrayListRoom.get(i).getRoomId())) {
+                        ChatApplication.logDisplay("room id is same "+section.getRoomId()+" "+ListUtils.arrayListRoom.get(i).getRoomId());
                         section.isExpanded = false;
                         section.setExpanded(false);
                         ListUtils.arrayListRoom.set(i, section);
+                        break;
                     }
                 }
             }
@@ -567,14 +580,16 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
 
         if (!mRecyclerView.isComputingLayout()) {
             section.isExpanded = isOpen;
-
-            for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
-                RoomVO key = entry.getKey();
-                if (key.equals(section)) {
-                    key.setExpanded(isOpen);
-                }
-            }
+            ListUtils.arrayListMood.add(section);
             notifyDataSetChanged();
+
+//            for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
+//                RoomVO key = entry.getKey();
+//                if (key.equals(section)) {
+//                    key.setExpanded(isOpen);
+//                }
+//            }
+//            notifyDataSetChanged();
         }
     }
 

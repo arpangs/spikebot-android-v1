@@ -369,6 +369,9 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
     // Panel buttons click
     @Override
     public void itemClicked(final DeviceVO item,String action) {
+        if(item.getIsActive()==-1){
+            return;
+        }
        if(action.equalsIgnoreCase("itemOnOffclick")){
             deviceOnOff(item);
         }else if(action.equalsIgnoreCase("heavyloadlongClick")){
