@@ -622,4 +622,12 @@ public class Constants {
     }
 
 
+    public static int getCurentMonth(){
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat month_date = new SimpleDateFormat("MM");
+        int row_index = Integer.parseInt(month_date.format(cal.getTime()))-1;
+        return row_index;
+    }
+
+
 }

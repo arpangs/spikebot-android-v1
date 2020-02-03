@@ -12,6 +12,7 @@ public class DeviceLog {
     public String activity_description;
     public String activity_time;
     public String activity_state;
+    public String message;
 
     public String getIs_unread() {
         return is_unread;
@@ -42,7 +43,7 @@ public class DeviceLog {
         user_name = "";
     }
 
-    public DeviceLog(String activity_action, String activity_type, String activity_description, String activity_time, String activity_state,String user_name,String is_unread) {
+    public DeviceLog(String activity_action, String activity_type, String activity_description, String activity_time, String activity_state,String user_name,String is_unread,String message) {
         this.activity_action = activity_action;
         this.activity_type = activity_type;
         this.activity_description = activity_description;
@@ -50,6 +51,7 @@ public class DeviceLog {
         this.activity_state = activity_state;
         this.user_name = user_name;
         this.is_unread = is_unread;
+        this.message = message;
     }
 
     public String getActivity_action() {
@@ -90,5 +92,13 @@ public class DeviceLog {
 
     public void setActivity_state(String activity_state) {
         this.activity_state = activity_state;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

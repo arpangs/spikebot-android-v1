@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,9 +20,11 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -28,6 +33,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -42,6 +48,7 @@ import com.kp.core.ICallBack2;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.DeviceLogAdapter;
+import com.spike.bot.adapter.DeviceLogNewAdapter;
 import com.spike.bot.adapter.filter.FilterRootAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
@@ -76,11 +83,13 @@ import static android.widget.NumberPicker.OnScrollListener.SCROLL_STATE_IDLE;
 public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreListener, SwipeRefreshLayout.OnRefreshListener, FilterMarkAll {
     Activity activity;
     RecyclerView rv_device_log;
+    RecyclerView rv_month_list;
     Toolbar toolbar;
 
     public CardView cardViewBtn;
     private LinearLayout ll_empty;
-    DeviceLogAdapter deviceLogAdapter;
+   // DeviceLogAdapter deviceLogAdapter;
+    DeviceLogNewAdapter deviceLogNewAdapter;
     SwipeRefreshLayout swipeRefreshLayout;
     private OnLoadMoreListener onLoadMoreListener;
 
@@ -111,6 +120,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
     private List<RoomVO> mListRoomTemp = new ArrayList<>();
     ArrayList<DeviceVO> arrayListDeviceTemp = new ArrayList<>();
     ArrayList<ScheduleVO> scheduleRoomArrayList = new ArrayList<>();
+    ArrayList monthlist = new ArrayList();
+    int row_index = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +131,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
         activity = this;
         rv_device_log = findViewById(R.id.rv_device_log);
+        rv_month_list = findViewById(R.id.rv_monthlist);
         ll_empty = findViewById(R.id.ll_empty);
         swipeRefreshLayout = findViewById(R.id.swiperefresh);
         ll_empty.setVisibility(View.GONE);
@@ -170,8 +182,11 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
         onLoadMoreListener = this;
         final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) rv_device_log.getLayoutManager();
 
-        deviceLogAdapter = new DeviceLogAdapter(DeviceLogActivity.this, deviceLogList);
-        rv_device_log.setAdapter(deviceLogAdapter);
+      /*  deviceLogAdapter = new DeviceLogAdapter(DeviceLogActivity.this, deviceLogList);
+        rv_device_log.setAdapter(deviceLogAdapter);*/
+
+        deviceLogNewAdapter = new DeviceLogNewAdapter(DeviceLogActivity.this, deviceLogList);
+        rv_device_log.setAdapter(deviceLogNewAdapter);
 
         rv_device_log.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -222,7 +237,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 //        } else {
             callFilterData(0,"");
 //        }
-
+        setMonthList();
+        setMonthAdpater();
     }
 
     private void udpateDailogButton(Button btnDeviceDialog, Button btnSensorDialog) {
@@ -311,9 +327,9 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             invalidateOptionsMenu();
             deviceLogList.clear();
             isDateFilterActive = false;
-            deviceLogAdapter = new DeviceLogAdapter(DeviceLogActivity.this, deviceLogList);
-            rv_device_log.setAdapter(deviceLogAdapter);
-            deviceLogAdapter.notifyDataSetChanged();
+            deviceLogNewAdapter = new DeviceLogNewAdapter(DeviceLogActivity.this, deviceLogList);
+            rv_device_log.setAdapter(deviceLogNewAdapter);
+            deviceLogNewAdapter.notifyDataSetChanged();
             if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor") || isCheckActivity.equals("multisensor")) {
 
                 if (isCheckActivity.equals("multisensor") && isMultiSensor) {
@@ -689,6 +705,38 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             dialog.show();
         }
 
+    }
+
+    private void setMonthAdpater() {
+        rv_month_list.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.HORIZONTAL) {
+            @Override
+            public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
+                // Do not draw the divider
+            }
+        });
+
+        final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+        rv_month_list.setLayoutManager(mLayoutManager);
+        row_index= Constants.getCurentMonth();
+        MonthAdapter adapter = new MonthAdapter(this, monthlist);
+        rv_month_list.setAdapter(adapter);
+        rv_month_list.getLayoutManager().scrollToPosition(row_index);
+        rv_month_list.setHasFixedSize(true);
+    }
+
+    private void setMonthList() {
+        monthlist.add("January");
+        monthlist.add("February");
+        monthlist.add("March");
+        monthlist.add("April");
+        monthlist.add("May");
+        monthlist.add("June");
+        monthlist.add("July");
+        monthlist.add("August");
+        monthlist.add("September");
+        monthlist.add("October");
+        monthlist.add("November");
+        monthlist.add("December");
     }
 
     private void setAdapterFilterVIew() {
@@ -1716,8 +1764,9 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                             String activity_time = jsonObject.getString("activity_time");
                             String user_name = jsonObject.getString("user_name");
                             String is_unread = jsonObject.optString("is_unread");
+                            String logmessage = jsonObject.optString("message");
 
-                            deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "", user_name, is_unread));
+                            deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "", user_name, is_unread,logmessage));
                         }
 
                         if (position == 0) {
@@ -1731,16 +1780,16 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                         if (notificationArray.length() == 0 && isFilterActive && isLoading) {
 
                             if (!isEndOfRecord) {
-                                deviceLogList.add(new DeviceLog("End of Record", "End of Record", "", "", "", "", ""));
-                                deviceLogAdapter.setEOR(true);
+                                deviceLogList.add(new DeviceLog("End of Record", "End of Record", "", "", "", "", "",""));
+                                deviceLogNewAdapter.setEOR(true);
                             }
                             isEndOfRecord = true;
                         } else if (notificationArray.length() == 0 && isFilterActive) {
-                            deviceLogList.add(new DeviceLog("End of Record", "No Record Found", "", "", "", "", ""));
-                            deviceLogAdapter.setEOR(true);
+                            deviceLogList.add(new DeviceLog("End of Record", "No Record Found", "", "", "", "", "",""));
+                            deviceLogNewAdapter.setEOR(true);
                             showAToast("No Record Found...");
                         }
-                        deviceLogAdapter.notifyDataSetChanged();
+                        deviceLogNewAdapter.notifyDataSetChanged();
 
                         ActivityHelper.dismissProgressDialog();
                     } else {
@@ -2093,8 +2142,9 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                                 String activity_time = jsonObject.getString("activity_time");
                                 String user_name = jsonObject.getString("user_name");
                                 String is_unread = jsonObject.optString("is_unread");
+                                String logmessage = jsonObject.optString("message");
 
-                                deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "", user_name, is_unread));
+                                deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "", user_name, is_unread,logmessage));
                             }
 
                             if (position == 0) {
@@ -2108,16 +2158,16 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                             if (notificationArray.length() == 0 && isFilterActive && isLoading) {
 
                                 if (!isEndOfRecord) {
-                                    deviceLogList.add(new DeviceLog("End of Record", "End of Record", "", "", "", "", ""));
-                                    deviceLogAdapter.setEOR(true);
+                                    deviceLogList.add(new DeviceLog("End of Record", "End of Record", "", "", "", "", "",""));
+                                    deviceLogNewAdapter.setEOR(true);
                                 }
                                 isEndOfRecord = true;
                             } else if (notificationArray.length() == 0 && isFilterActive) {
-                                deviceLogList.add(new DeviceLog("End of Record", "No Record Found", "", "", "", "", ""));
-                                deviceLogAdapter.setEOR(true);
+                                deviceLogList.add(new DeviceLog("End of Record", "No Record Found", "", "", "", "", "",""));
+                                deviceLogNewAdapter.setEOR(true);
                                 showAToast("No Record Found...");
                             }
-                            deviceLogAdapter.notifyDataSetChanged();
+                            deviceLogNewAdapter.notifyDataSetChanged();
 
                         }
 
@@ -2159,7 +2209,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             isScrollDown = false;
             deviceLogList.clear();
             isFilterType = false;
-            deviceLogAdapter.notifyDataSetChanged();
+            deviceLogNewAdapter.notifyDataSetChanged();
 //            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor") || isCheckActivity.equals("multisensor")) {
 //                getSensorLog(0);
 //            } else {
@@ -2177,9 +2227,9 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             invalidateOptionsMenu();
             deviceLogList.clear();
             isDateFilterActive = false;
-            deviceLogAdapter = new DeviceLogAdapter(DeviceLogActivity.this, deviceLogList);
-            rv_device_log.setAdapter(deviceLogAdapter);
-            deviceLogAdapter.notifyDataSetChanged();
+            deviceLogNewAdapter = new DeviceLogNewAdapter(DeviceLogActivity.this, deviceLogList);
+            rv_device_log.setAdapter(deviceLogNewAdapter);
+            deviceLogNewAdapter.notifyDataSetChanged();
 //            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor") || isCheckActivity.equals("multisensor")) {
 //                getSensorLog(0);
 //            } else {
@@ -2267,5 +2317,62 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                     }
                 }).
                 executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public class MonthAdapter extends RecyclerView.Adapter<MonthAdapter.MonthViewHolder> {
+
+        private Context context;
+        public MonthAdapter(Context context, ArrayList months) {
+            this.context = context;
+            monthlist = months;
+        }
+
+        @Override
+        public MonthViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new MonthViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_month, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(MonthViewHolder holder, final int position) {
+            holder.txtmonth.setText(monthlist.get(position).toString());
+            holder.linearlayout_month.setId(position);
+
+            holder.linearlayout_month.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    row_index = holder.linearlayout_month.getId();
+                    notifyDataSetChanged();
+                }
+            });
+
+            if (row_index == position) {
+                holder.txtmonth.setTextColor(getResources().getColor(R.color.automation_black));
+                holder.imgdots.setVisibility(View.VISIBLE);
+            } else {
+                holder.txtmonth.setTextColor(getResources().getColor(R.color.device_button));
+                holder.imgdots.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return monthlist.size();
+        }
+
+        class MonthViewHolder extends RecyclerView.ViewHolder {
+
+            private TextView txtmonth;
+            private ImageView imgdots;
+            private LinearLayout linearlayout_month;
+
+            MonthViewHolder(View itemView) {
+                super(itemView);
+                txtmonth = itemView.findViewById(R.id.txt_month_name);
+                imgdots = itemView.findViewById(R.id.img_dots_month);
+                linearlayout_month = itemView.findViewById(R.id.linearlayout_month);
+                itemView.setTag(this);
+            }
+        }
+
     }
 }

@@ -6,27 +6,15 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.ScaleAnimation;
 import android.widget.TextView;
 
 import com.spike.bot.R;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.DeviceLog;
-import com.kp.core.DateHelper;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
-/**
- * Created by kaushal on 27/12/17.
- */
-
-public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.ViewHolder> {
+public class DeviceLogNewAdapter extends RecyclerView.Adapter<DeviceLogNewAdapter.ViewHolder> {
 
     Activity mContext;
     List<DeviceLog> deviceLogs;
@@ -40,14 +28,14 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
     }
 
 
-    public DeviceLogAdapter(Activity context, List<DeviceLog> deviceLogList) {
+    public DeviceLogNewAdapter(Activity context, List<DeviceLog> deviceLogList) {
 
         this.mContext   = context;
         this.deviceLogs = deviceLogList;
     }
     @Override
     public int getItemViewType(int position) {
-        return R.layout.row_device_log;
+        return R.layout.row_device_log_new;
     }
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -59,6 +47,96 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
     public void onBindViewHolder(final ViewHolder holder, final int listPosition) {
 
         deviceLog = deviceLogs.get(listPosition);
+
+        try{
+
+
+            if(!TextUtils.isEmpty(deviceLog.getActivity_time())){
+
+                String dateString = Constants.logConverterDate(Long.parseLong(deviceLog.getActivity_time()));
+
+                strDateOfTimeTemp  =dateString.split(" ");
+
+                if(strDateOfTimeTemp[0].equalsIgnoreCase(Constants.getCurrentDate())){
+                    dateTime = strDateOfTimeTemp[1]+" "+strDateOfTimeTemp[2];
+                }else {
+                    dateTime = strDateOfTimeTemp[1]+ strDateOfTimeTemp[2]+ System.getProperty("line.separator") + strDateOfTimeTemp[0];
+                }
+
+                holder.tv_device_log_date.setText(dateTime);
+                holder.tv_device_log_time.setText(dateTime);
+            }
+
+            if(deviceLog.getIs_unread().equalsIgnoreCase("1")){
+                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_room_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_separator.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_separator1.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+            }else {
+                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+                holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+                holder.tv_device_name.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+                holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+                holder.tv_room_name.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+                holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+                holder.tv_separator.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+                holder.tv_separator1.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+            }
+
+         //   holder.tv_device_log_type.setText(deviceLog.getActivity_action() + " - " + deviceLog.getActivity_type());
+            holder.tv_device_description.setText(deviceLog.getMessage() + " " + "at");
+            actionList = deviceLog.getActivity_description().split("\\|");
+
+            if(actionList[0]!=null){
+                holder.tv_device_name.setVisibility(View.VISIBLE);
+                holder.tv_separator.setVisibility(View.VISIBLE);
+                holder.tv_device_name.setText(actionList[0].trim());
+            }else{
+                holder.tv_device_name.setVisibility(View.GONE);
+                holder.tv_separator.setVisibility(View.GONE);
+            }
+
+
+            if(actionList.length > 1 && actionList[1]!=null){
+                holder.tv_panel_name.setVisibility(View.VISIBLE);
+                holder.tv_separator1.setVisibility(View.VISIBLE);
+                holder.tv_panel_name.setText(actionList[1].trim());
+            }else{
+                holder.tv_panel_name.setVisibility(View.GONE);
+                holder.tv_separator1.setVisibility(View.GONE);
+            }
+
+            if(actionList.length > 2 && actionList[2]!=null){
+                holder.tv_room_name.setVisibility(View.VISIBLE);
+                holder.tv_separator1.setVisibility(View.VISIBLE);
+                holder.tv_room_name.setText(actionList[2]);
+            }else{
+                holder.tv_room_name.setVisibility(View.GONE);
+                holder.tv_separator1.setVisibility(View.GONE);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+       /* if(deviceLog.getActivity_action().equalsIgnoreCase("End of Record")){
+            holder.txt_empty_view.setVisibility(View.GONE);
+            holder.txt_empty_view.setText(deviceLog.getActivity_type());
+            holder.tv_device_log_date.setVisibility(View.GONE);
+            holder.tv_device_log_type.setVisibility(View.GONE);
+            holder.tv_device_description.setVisibility(View.GONE);
+        }else{
+            holder.txt_empty_view.setVisibility(View.GONE);
+            holder.tv_device_log_date.setVisibility(View.VISIBLE);
+            holder.tv_device_log_type.setVisibility(View.VISIBLE);
+            holder.tv_device_description.setVisibility(View.VISIBLE);
+        }*/
+
+       /* deviceLog = deviceLogs.get(listPosition);
         try {
 
             if(listPosition==0){
@@ -96,7 +174,7 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
                 if(strDateOfTimeTemp[0].equalsIgnoreCase(Constants.getCurrentDate())){
                     dateTime = strDateOfTimeTemp[1]+" "+strDateOfTimeTemp[2];
                 }else {
-                    dateTime = strDateOfTimeTemp[1]+ strDateOfTimeTemp[2]+ System.getProperty("line.separator") + strDateOfTimeTemp[0];
+                    dateTime = strDateOfTimeTemp[1]+ strDateOfTimeTemp[2]+ System.getProperty("line.separator") + strDateOfTimeTemp[0] ;
                 }
 
                 holder.tv_device_log_date.setText(dateTime);
@@ -145,7 +223,7 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     @Override
@@ -159,6 +237,7 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
         super.onDetachedFromRecyclerView(recyclerView);
     }
 
+
     @Override
     public int getItemCount() {
         return deviceLogs.size();
@@ -167,11 +246,11 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
         //common
         View view,view_header;
         int viewType;
-        TextView tv_device_log_type, tv_device_log_date,tv_device_description,tv_device_description2,tv_device_description3,txt_empty_view,tvUserName;
+        TextView tv_device_log_date,tv_device_description,tv_device_log_time,tv_device_name,tv_panel_name,tv_room_name,txt_empty_view,tv_separator,tv_separator1;
 
         public ViewHolder(View view, int viewType) {
             super(view);
-            this.viewType = viewType;
+           /* this.viewType = viewType;
             this.view = view;
             view_header = (View) view.findViewById(R.id.view_header );
             tv_device_log_type = (TextView) view.findViewById(R.id.tv_device_log_type );
@@ -180,7 +259,18 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
             tv_device_description2 = (TextView) view.findViewById(R.id.tv_device_description2);
             tv_device_description3 = (TextView) view.findViewById(R.id.tv_device_description3);
             txt_empty_view = (TextView) view.findViewById(R.id.txt_empty_view);
-            tvUserName = (TextView) view.findViewById(R.id.tvUserName);
+            tvUserName = (TextView) view.findViewById(R.id.tvUserName);*/
+            this.viewType = viewType;
+            this.view = view;
+            tv_device_log_date = view.findViewById(R.id.txt_log_date);
+            tv_device_description = view.findViewById(R.id.txt_log_description);
+            tv_device_log_time = view.findViewById(R.id.txt_log_time);
+            tv_device_name =  view.findViewById(R.id.txt_device_name);
+            tv_panel_name =  view.findViewById(R.id.txt_panel_name);
+            tv_room_name =  view.findViewById(R.id.txt_room_name);
+            txt_empty_view = view.findViewById(R.id.txt_empty_view);
+            tv_separator = view.findViewById(R.id.txt_separator);
+            tv_separator1 = view.findViewById(R.id.txt_separator1);
         }
         public void clearAnimation() {
             view.clearAnimation();
