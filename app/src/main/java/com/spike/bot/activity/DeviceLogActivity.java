@@ -7,6 +7,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -73,10 +74,17 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.YearMonth;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import static android.widget.NumberPicker.OnScrollListener.SCROLL_STATE_IDLE;
 
@@ -187,6 +195,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
         deviceLogNewAdapter = new DeviceLogNewAdapter(DeviceLogActivity.this, deviceLogList);
         rv_device_log.setAdapter(deviceLogNewAdapter);
+        deviceLogNewAdapter.notifyDataSetChanged();
 
         rv_device_log.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -596,6 +605,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             public void onClick(View v) {
                 start_date = "";
                 datePicker(edt_start_date, false);
+
             }
         });
         edt_end_date.setOnClickListener(new View.OnClickListener() {
@@ -1424,6 +1434,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                         tiemPicker(editText, isEndDate);
                     }
                 }, mYear, mMonth, mDay);
+        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         datePickerDialog.show();
     }
 
@@ -1493,6 +1504,12 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
         return end_date.after(start_date);
     }
 
+    public static boolean compareCurrentDate(String startdate, String enddate){
+        Date start_date = getDate(startdate);
+        Date end_date = getDate(enddate);
+        return end_date.before(start_date);
+    }
+
     /*
      * convert string format to date format
      * @return date
@@ -1543,8 +1560,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 //            }
 
             if(typeofFilter.equalsIgnoreCase("refresh")){
-                object.put("start_date", "");
-                object.put("end_date", "");
+                object.put("start_date", start_date);
+                object.put("end_date", end_date);
 //                if (isCheckActivity.equals("room") || isCheckActivity.equals("mood")) {
                 if (isCheckActivity.equals("room")) {
                     object.put("room_id", "" + mRoomId);
@@ -2216,6 +2233,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                 callFilterData(0,"refresh");
 //            }
             swipeRefreshLayout.setRefreshing(true);
+            deviceLogNewAdapter.notifyDataSetChanged();
         } else {
             dialog = null;
             isFilterActive = false;

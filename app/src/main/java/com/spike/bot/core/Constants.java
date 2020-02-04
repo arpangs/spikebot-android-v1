@@ -40,6 +40,7 @@ import java.net.InetAddress;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -621,6 +622,21 @@ public class Constants {
         return sdf.format(currenTimeZone);
     }
 
+    public static String formatcurrentdate(String date) throws ParseException {
+     /*   Date c = Calendar.getInstance().getTime();
+        SimpleDateFormat df = new SimpleDateFormat("dd MMMM yyyy");
+        String formattedDate = df.format(c);
+
+        SimpleDateFormat newformat = new SimpleDateFormat("dd MMMM yyyy");
+        date = newformat.format(formattedDate);
+*/
+
+        SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
+        Date date1 = fmt.parse(date);
+
+        SimpleDateFormat fmtOut = new SimpleDateFormat("dd MMMM yyyy");
+        return fmtOut.format(date1);
+    }
 
     public static int getCurentMonth(){
         Calendar cal = Calendar.getInstance();

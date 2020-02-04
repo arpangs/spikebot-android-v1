@@ -55,16 +55,19 @@ public class DeviceLogNewAdapter extends RecyclerView.Adapter<DeviceLogNewAdapte
 
                 String dateString = Constants.logConverterDate(Long.parseLong(deviceLog.getActivity_time()));
 
-                strDateOfTimeTemp  =dateString.split(" ");
+                strDateOfTimeTemp  = dateString.split(" ");
+                holder.tv_device_log_date.setText(Constants.formatcurrentdate(strDateOfTimeTemp[0]));
+                holder.tv_device_log_time.setText(strDateOfTimeTemp[1] + " " + strDateOfTimeTemp[2]);
 
-                if(strDateOfTimeTemp[0].equalsIgnoreCase(Constants.getCurrentDate())){
+              /*  if(strDateOfTimeTemp[0].equalsIgnoreCase(Constants.getCurrentDate())){
                     dateTime = strDateOfTimeTemp[1]+" "+strDateOfTimeTemp[2];
+
                 }else {
                     dateTime = strDateOfTimeTemp[1]+ strDateOfTimeTemp[2]+ System.getProperty("line.separator") + strDateOfTimeTemp[0];
                 }
 
                 holder.tv_device_log_date.setText(dateTime);
-                holder.tv_device_log_time.setText(dateTime);
+                holder.tv_device_log_time.setText(dateTime);*/
             }
 
             if(deviceLog.getIs_unread().equalsIgnoreCase("1")){
@@ -87,44 +90,49 @@ public class DeviceLogNewAdapter extends RecyclerView.Adapter<DeviceLogNewAdapte
                 holder.tv_separator1.setTextColor(mContext.getResources().getColor(R.color.automation_black));
             }
 
-         //   holder.tv_device_log_type.setText(deviceLog.getActivity_action() + " - " + deviceLog.getActivity_type());
-            holder.tv_device_description.setText(deviceLog.getMessage() + " " + "at");
-            actionList = deviceLog.getActivity_description().split("\\|");
+                //   holder.tv_device_log_type.setText(deviceLog.getActivity_action() + " - " + deviceLog.getActivity_type());
+                holder.tv_device_description.setText(deviceLog.getMessage().trim() + " " + "at");
+                actionList = deviceLog.getActivity_description().split("\\|");
 
-            if(actionList[0]!=null){
-                holder.tv_device_name.setVisibility(View.VISIBLE);
-                holder.tv_separator.setVisibility(View.VISIBLE);
-                holder.tv_device_name.setText(actionList[0].trim());
-            }else{
-                holder.tv_device_name.setVisibility(View.GONE);
-                holder.tv_separator.setVisibility(View.GONE);
-            }
+                if (actionList[0] != null) {
+                    holder.tv_device_name.setVisibility(View.VISIBLE);
+                    holder.tv_separator.setVisibility(View.GONE);
+                    holder.tv_device_name.setText(actionList[0].trim() + " " + " " + "\u2022");
+                } else {
+                    holder.tv_device_name.setVisibility(View.GONE);
+                    holder.tv_separator.setVisibility(View.GONE);
+                    holder.tv_separator1.setVisibility(View.GONE);
+                }
 
+                if (actionList.length > 1 && actionList[1] != null) {
+                    holder.tv_panel_name.setVisibility(View.VISIBLE);
+                    holder.tv_separator1.setVisibility(View.GONE);
+                    holder.tv_panel_name.setText(actionList[1].trim() + " " + " " + "\u2022" + " ");
+                } else {
+                    holder.tv_device_name.setText(actionList[0].trim());
+                    holder.tv_panel_name.setVisibility(View.GONE);
+                    holder.tv_separator1.setVisibility(View.GONE);
+                    holder.tv_separator.setVisibility(View.GONE);
+                }
 
-            if(actionList.length > 1 && actionList[1]!=null){
-                holder.tv_panel_name.setVisibility(View.VISIBLE);
-                holder.tv_separator1.setVisibility(View.VISIBLE);
-                holder.tv_panel_name.setText(actionList[1].trim());
-            }else{
-                holder.tv_panel_name.setVisibility(View.GONE);
-                holder.tv_separator1.setVisibility(View.GONE);
-            }
+                if (actionList.length > 2 && actionList[2] != null) {
+                    holder.tv_room_name.setVisibility(View.VISIBLE);
+                    holder.tv_separator1.setVisibility(View.GONE);
+                    holder.tv_room_name.setText(actionList[2]);
+                } else {
 
-            if(actionList.length > 2 && actionList[2]!=null){
-                holder.tv_room_name.setVisibility(View.VISIBLE);
-                holder.tv_separator1.setVisibility(View.VISIBLE);
-                holder.tv_room_name.setText(actionList[2]);
-            }else{
-                holder.tv_room_name.setVisibility(View.GONE);
-                holder.tv_separator1.setVisibility(View.GONE);
-            }
+                    holder.tv_room_name.setVisibility(View.GONE);
+                    holder.tv_separator1.setVisibility(View.GONE);
+                    holder.tv_separator.setVisibility(View.GONE);
+                }
 
         }catch (Exception e){
             e.printStackTrace();
-        }
+         }
+
 
        /* if(deviceLog.getActivity_action().equalsIgnoreCase("End of Record")){
-            holder.txt_empty_view.setVisibility(View.GONE);
+            holder.txt_empty_view.setVisibility(View.GONE);http://192.168.175.121/device/add
             holder.txt_empty_view.setText(deviceLog.getActivity_type());
             holder.tv_device_log_date.setVisibility(View.GONE);
             holder.tv_device_log_type.setVisibility(View.GONE);
@@ -242,6 +250,12 @@ public class DeviceLogNewAdapter extends RecyclerView.Adapter<DeviceLogNewAdapte
     public int getItemCount() {
         return deviceLogs.size();
     }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
     protected static class ViewHolder extends RecyclerView.ViewHolder {
         //common
         View view,view_header;
