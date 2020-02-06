@@ -11,7 +11,8 @@
         android:layout_marginTop="15dp"
         android:layout_marginLeft="15dp"
         android:textSize="11sp"
-        android:text="16th AUGUST 2019"
+        android:text=""
+        android:textAllCaps="true"
         android:textColor="@color/txtPanal" />
 
     <RelativeLayout
@@ -26,7 +27,7 @@
             android:id="@+id/txt_log_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="test1 turned off light 3 at"
+            android:text=""
             android:textColor="@color/automation_black"
             android:layout_alignParentLeft="true"
             android:layout_marginRight="60dp"
@@ -36,7 +37,7 @@
             android:id="@+id/txt_log_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2 PM"
+            android:text=""
             android:textColor="@color/automation_black"
             android:textStyle="bold"
             android:layout_alignParentRight="true"/>
@@ -59,29 +60,35 @@
             android:layout_marginRight="@dimen/_5sdp"
             android:textSize="11sp"
             android:text=""
+            android:textStyle="bold"
+            android:textAllCaps="true"
             android:textColor="@color/automation_black" />
 
-        <TextView
+    <!--    <TextView
             android:id="@+id/txt_separator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:text="\u2022"/>
+            android:textSize="11sp"
+            android:text="\u2022"/>-->
 
         <TextView
             android:id="@+id/txt_panel_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="11sp"
+            android:textStyle="bold"
+            android:textAllCaps="true"
             android:text=""
             android:textColor="@color/automation_black" />
 
-        <TextView
+      <!--  <TextView
             android:id="@+id/txt_separator1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:text="\u2022"/>
+            android:textSize="11sp"
+            android:text="\u2022"/>-->
 
         <TextView
             android:id="@+id/txt_room_name"
@@ -91,6 +98,8 @@
             android:layout_marginLeft="@dimen/_2sdp"
             android:layout_marginRight="@dimen/_5sdp"
             android:text=""
+            android:textStyle="bold"
+            android:textAllCaps="true"
             android:textColor="@color/automation_black" />
 
     </LinearLayout>
@@ -107,6 +116,7 @@
         android:layout_height="match_parent" />
 
     <View
+        android:id="@+id/view_header"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginLeft="15dp"

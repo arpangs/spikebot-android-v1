@@ -3,13 +3,17 @@ package com.spike.bot.activity.Camera;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,6 +47,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -53,11 +58,12 @@ import java.util.Calendar;
 public class CameraDeviceLogActivity extends AppCompatActivity {
 
     public RecyclerView rvDeviceLog;
+    public RecyclerView rv_month_list;
     public LinearLayout ll_empty;
     public Toolbar toolbar;
     public TextView et_schedule_on_time, et_schedule_off_time;
 
-    public boolean isLoading = false, isCompareDateValid = true;
+    public boolean isLoading = false, isCompareDateValid = true, isFilterActive = false;
     public int notification_number = 0;
     public String camera_id = "", end_date = "", start_date = "", date_time = "", cameraIdTemp = "";
     public int mYear, mMonth, mDay;
@@ -70,25 +76,33 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
     public ArrayList<NotificationList> arrayList = new ArrayList<>();
     public ArrayList<NotificationList> arrayListTemp = new ArrayList<>();
     public static ArrayList<CameraVO> getCameraList = new ArrayList<>();
+    ArrayList datelist = new ArrayList();
+    ArrayList monthlist = new ArrayList();
+    int row_index = -1;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_device_log);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         setUi();
+
+        setMonthList();
+        setMonthAdpater();
     }
 
     private void setUi() {
         camera_id = getIntent().getStringExtra("cameraId");
         toolbar.setTitle("Camera Logs");
-        rvDeviceLog = (RecyclerView) findViewById(R.id.rv_device_log);
-        ll_empty = (LinearLayout) findViewById(R.id.ll_empty);
+        rvDeviceLog = findViewById(R.id.rv_device_log);
+        rv_month_list = findViewById(R.id.rv_monthlist);
+        ll_empty = findViewById(R.id.ll_empty);
 
         linearLayoutManager = new LinearLayoutManager(CameraDeviceLogActivity.this);
         rvDeviceLog.setLayoutManager(linearLayoutManager);
@@ -100,6 +114,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         }
         callCameraLog(camera_id, "", "", notification_number);
     }
+
     /*reset data when refresh page */
     public void resetData() {
         isLoading = false;
@@ -129,8 +144,8 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_filter, menu);
         MenuItem menuItem = menu.findItem(R.id.action_filter);
         MenuItem menuItemReset = menu.findItem(R.id.action_reset);
-        menuItemReset.setIcon(R.drawable.icn_filter);
-        menuItem.setIcon(R.drawable.icn_reset);
+        menuItemReset.setIcon(R.drawable.icn_reset);
+        menuItem.setIcon(R.drawable.icn_filter);
         return true;
     }
 
@@ -138,18 +153,18 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_filter) {
-            resetData();
+            openDialogFilter();
             return true;
         } else if (id == R.id.action_reset) {
-            openDialogFilter();
+            rv_month_list.setVisibility(View.VISIBLE);
+            resetData();
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     /*filter
-    * interval user for camera detection time interval
-    * show all camera list  */
+     * interval user for camera detection time interval
+     * show all camera list  */
     private void openDialogFilter() {
         dialog = new Dialog(CameraDeviceLogActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -157,11 +172,11 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         dialog.setContentView(R.layout.dialog_filter_camera);
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
-        et_schedule_on_time =  dialog.findViewById(R.id.et_schedule_on_time);
-        et_schedule_off_time =  dialog.findViewById(R.id.et_schedule_off_time);
-        TextView txtSave =  dialog.findViewById(R.id.txtSave);
-        Spinner spinnerCamera =  dialog.findViewById(R.id.spinnerCamera);
+        ImageView iv_close = dialog.findViewById(R.id.iv_close);
+        et_schedule_on_time = dialog.findViewById(R.id.et_schedule_on_time);
+        et_schedule_off_time = dialog.findViewById(R.id.et_schedule_off_time);
+        TextView txtSave = dialog.findViewById(R.id.txtSave);
+        Spinner spinnerCamera = dialog.findViewById(R.id.spinnerCamera);
 
         final ArrayList<String> stringArrayList = new ArrayList<>();
         stringArrayList.add("All");
@@ -225,6 +240,10 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
                 } else {
                     dialog.cancel();
                     notification_number = 0;
+                    isFilterActive = true;
+                    if (isFilterActive) {
+                        rv_month_list.setVisibility(View.GONE);
+                    }
                     callCameraLog(camera_id, start_date, end_date, notification_number);
                 }
             }
@@ -250,10 +269,10 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
 //            object.put("notification_number", "" + notification_number);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             object.put("filter_type", "camera");
-            object.put("start_date", ""+start_date);
-            object.put("end_date", ""+end_date);
-            object.put("camera_id", ""+camera_id);
-            object.put("notification_number", ""+notification_number);
+            object.put("start_date", "" + start_date);
+            object.put("end_date", "" + end_date);
+            object.put("camera_id", "" + camera_id);
+            object.put("notification_number", "" + notification_number);
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -263,7 +282,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
 
         ActivityHelper.showProgressDialog(CameraDeviceLogActivity.this, "Please wait...", false);
         String url = ChatApplication.url + Constants.logsfind;
-        ChatApplication.logDisplay("camera is "+url+" "+object);
+        ChatApplication.logDisplay("camera is " + url + " " + object);
         new GetJsonTask(CameraDeviceLogActivity.this, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -280,25 +299,30 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
                         ChatApplication.logDisplay("json is " + result);
                         JSONArray jsonArray = result.optJSONArray("data");
 
-                        if(jsonArray!=null && jsonArray.length()>0){
-                            arrayListTemp = (ArrayList<NotificationList>) Common.fromJson(jsonArray.toString(), new TypeToken<ArrayList<NotificationList>>() {}.getType());
+                        if(jsonArray.length() == 0){
+                            Toast.makeText(CameraDeviceLogActivity.this.getApplicationContext(), "No Record Found...", Toast.LENGTH_SHORT).show();
+                        } else{
+                            if (jsonArray != null && jsonArray.length() > 0) {
+                                arrayListTemp = (ArrayList<NotificationList>) Common.fromJson(jsonArray.toString(), new TypeToken<ArrayList<NotificationList>>() {
+                                }.getType());
 
-                            arrayList.addAll(arrayListTemp);
-                        }
-
-
-                        if (arrayList.size() > 0) {
-                            rvDeviceLog.setVisibility(View.VISIBLE);
-                            isLoading = false;
-                            setAdapter();
-                        } else {
-                            if (notification_number == 0) {
-                                rvDeviceLog.setVisibility(View.GONE);
+                                arrayList.addAll(arrayListTemp);
                             }
-                            isLoading = true;
-                        }
-                        if (arrayListTemp.size() == 0) {
-                            isLoading = true;
+
+
+                            if (arrayList.size() > 0) {
+                                rvDeviceLog.setVisibility(View.VISIBLE);
+                                isLoading = false;
+                                setAdapter();
+                            } else {
+                                if (notification_number == 0) {
+                                    rvDeviceLog.setVisibility(View.GONE);
+                                }
+                                isLoading = true;
+                            }
+                            if (arrayListTemp.size() == 0) {
+                                isLoading = true;
+                            }
                         }
                     } else {
                         isLoading = true;
@@ -426,6 +450,120 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         });
     }
 
+    private void setMonthAdpater() {
+        rv_month_list.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.HORIZONTAL) {
+            @Override
+            public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
+                // Do not draw the divider
+            }
+        });
+
+        final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+        rv_month_list.setLayoutManager(mLayoutManager);
+        row_index = Constants.getCurentMonth();
+        MonthAdapter adapter = new MonthAdapter(this, monthlist);
+        rv_month_list.setAdapter(adapter);
+        rv_month_list.getLayoutManager().scrollToPosition(row_index);
+        rv_month_list.setHasFixedSize(true);
+    }
+
+    private void setMonthList() {
+        monthlist.add("January");
+        monthlist.add("February");
+        monthlist.add("March");
+        monthlist.add("April");
+        monthlist.add("May");
+        monthlist.add("June");
+        monthlist.add("July");
+        monthlist.add("August");
+        monthlist.add("September");
+        monthlist.add("October");
+        monthlist.add("November");
+        monthlist.add("December");
+    }
+
+    public void getDatesInMonth(int year, int month) {
+        SimpleDateFormat format = new SimpleDateFormat(Constants.LOG_DATE_FORMAT_1);
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(year, month, 1);
+        int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        for (int i = 0; i < daysInMonth; i++) {
+            System.out.println(format.format(cal.getTime()));
+            datelist.add(format.format(cal.getTime()));
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+        }
+        start_date = datelist.get(0).toString();
+        end_date = datelist.get(datelist.size() - 1).toString();
+        ChatApplication.logDisplay("current_start_date " + start_date);
+        ChatApplication.logDisplay("current_end_date " + end_date);
+        callCameraLog(camera_id, start_date, end_date, 0);
+    }
+
+    public class MonthAdapter extends RecyclerView.Adapter<MonthAdapter.MonthViewHolder> {
+
+        private Context context;
+
+        public MonthAdapter(Context context, ArrayList months) {
+            this.context = context;
+            monthlist = months;
+        }
+
+        @Override
+        public MonthAdapter.MonthViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new MonthAdapter.MonthViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_month, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(MonthAdapter.MonthViewHolder holder, final int position) {
+            holder.txtmonth.setText(monthlist.get(position).toString());
+            holder.linearlayout_month.setId(position);
+            holder.linearlayout_month.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    row_index = holder.linearlayout_month.getId();
+
+                  /*  if(row_index > Calendar.getInstance().get(Calendar.MONTH))
+                    {
+                        Toast.makeText(getApplicationContext(), "End date is not less than Start Date", Toast.LENGTH_SHORT).show();
+                    }*/
+                    datelist.clear();
+                    getDatesInMonth(Calendar.getInstance().get(Calendar.YEAR), row_index);
+                    notifyDataSetChanged();
+                }
+            });
+            if (row_index == position) {
+                getDatesInMonth(Calendar.getInstance().get(Calendar.YEAR), row_index);
+                holder.txtmonth.setTextColor(getResources().getColor(R.color.automation_black));
+                holder.imgdots.setVisibility(View.VISIBLE);
+            } else {
+                holder.txtmonth.setTextColor(getResources().getColor(R.color.device_button));
+                holder.imgdots.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return monthlist.size();
+        }
+
+        class MonthViewHolder extends RecyclerView.ViewHolder {
+
+            private TextView txtmonth;
+            private ImageView imgdots;
+            private LinearLayout linearlayout_month;
+
+            MonthViewHolder(View itemView) {
+                super(itemView);
+                txtmonth = itemView.findViewById(R.id.txt_month_name);
+                imgdots = itemView.findViewById(R.id.img_dots_month);
+                linearlayout_month = itemView.findViewById(R.id.linearlayout_month);
+                itemView.setTag(this);
+            }
+        }
+
+    }
+
     /*use for camera unread count clear */
     private void callupdateUnReadCameraLogs(final boolean b) {
 
@@ -443,12 +581,12 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         }
 
         String url = ChatApplication.url + Constants.updateUnReadCameraLogs;
-        ChatApplication.logDisplay("url is "+url+" "+jsonObject);
+        ChatApplication.logDisplay("url is " + url + " " + jsonObject);
         new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay("url is "+result);
+                ChatApplication.logDisplay("url is " + result);
                 try {
                     finish();
 
@@ -464,6 +602,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
             }
         }).execute();
     }
+
 
     /*check unread count getting than clear count */
     @Override

@@ -96,7 +96,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
     public CardView cardViewBtn;
     private LinearLayout ll_empty;
-   // DeviceLogAdapter deviceLogAdapter;
+    // DeviceLogAdapter deviceLogAdapter;
     DeviceLogNewAdapter deviceLogNewAdapter;
     SwipeRefreshLayout swipeRefreshLayout;
     private OnLoadMoreListener onLoadMoreListener;
@@ -106,7 +106,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
     private String isSelectItem = "", isSelectItemSub = "", isSelectItemSubTemp = "", isRoomName = "", strDeviceId = "", strpanelId = "", mRoomId, Schedule_id = "", activity_type = "", tabSelect = "", Mood_Id = "",
             actionType = "", isCheckActivity = "";
-//    private Button btnDevice, btnSensor;
+    //    private Button btnDevice, btnSensor;
     CheckBox checkBoxMark;
 
     ArrayAdapter<RoomVO> adapterRoom;
@@ -128,9 +128,11 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
     private List<RoomVO> mListRoomTemp = new ArrayList<>();
     ArrayList<DeviceVO> arrayListDeviceTemp = new ArrayList<>();
     ArrayList<ScheduleVO> scheduleRoomArrayList = new ArrayList<>();
+    ArrayList datelist = new ArrayList();
     ArrayList monthlist = new ArrayList();
     int row_index = -1;
 
+    MenuItem menuItem,menuItemReset;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -244,7 +246,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 //        if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor") || isCheckActivity.equals("multisensor")) {
 //            getSensorLog(0);
 //        } else {
-            callFilterData(0,"");
+        callFilterData(0, "");
 //        }
         setMonthList();
         setMonthAdpater();
@@ -269,7 +271,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
     @Override
     public void onLoadMore(int lastVisibleItem) {
         isScrollview = true;
-        callFilterData(lastVisibleItem,"");
+        callFilterData(lastVisibleItem, "");
 
     }
 
@@ -281,8 +283,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
     @Override
     public void onBackPressed() {
-        start_date="";
-        end_date="";
+        start_date = "";
+        end_date = "";
         ListUtils.start_date_filter = "";
         ListUtils.end_date_filter = "";
         if (isMultiSensor) {
@@ -298,15 +300,18 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_filter, menu);
-        MenuItem menuItem = menu.findItem(R.id.action_filter);
-        MenuItem menuItemReset = menu.findItem(R.id.action_reset);
+         menuItem = menu.findItem(R.id.action_filter);
+         menuItemReset = menu.findItem(R.id.action_reset);
         menuItemReset.setVisible(false);
         menuItem.setVisible(true);
         if (isFilterActive) {
-            menuItemReset.setVisible(false);
-            menuItem.setIcon(R.drawable.icn_filter_on);
+            rv_month_list.setVisibility(View.GONE);
+            menuItemReset.setVisible(true);
+            menuItem.setVisible(false);
+            menuItemReset.setIcon(R.drawable.icn_reset);
         } else {
             menuItemReset.setVisible(false);
+            menuItem.setVisible(true);
             menuItem.setIcon(R.drawable.icn_filter);
         }
 
@@ -329,9 +334,14 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             openDialogFilter();
             return true;
         } else if (id == R.id.action_reset) {
+            rv_month_list.setVisibility(View.VISIBLE);
+            menuItemReset.setVisible(false) ;
+            menuItem.setVisible(true);
 
-            isFilterActive = false;
+            callFilterData(0,"refresh");
+           /* isFilterActive = false;
             isEndOfRecord = false;
+
 
             invalidateOptionsMenu();
             deviceLogList.clear();
@@ -353,7 +363,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                     isFilterActive = false;
                 }
                 getDeviceLog(0);
-            }
+            }*/
         }
 
         return super.onOptionsItemSelected(item);
@@ -508,6 +518,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                isFilterActive =false;
             }
         });
         btnSave.setOnClickListener(new View.OnClickListener() {
@@ -537,11 +548,14 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                 isEndOfRecord = false;
 
                 isFilterActive = true;
+                swipeRefreshLayout.setRefreshing(false);
+                menuItem.setVisible(false);
+                menuItemReset.setVisible(true);
                 invalidateOptionsMenu();
                 deviceLogList.clear();
                 dialog.dismiss();
 //                getDeviceLog(0);
-                callFilterData(0,"");
+                callFilterData(0, "");
             }
         });
 
@@ -605,7 +619,6 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             public void onClick(View v) {
                 start_date = "";
                 datePicker(edt_start_date, false);
-
             }
         });
         edt_end_date.setOnClickListener(new View.OnClickListener() {
@@ -727,7 +740,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
         final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
         rv_month_list.setLayoutManager(mLayoutManager);
-        row_index= Constants.getCurentMonth();
+        row_index = Constants.getCurentMonth();
         MonthAdapter adapter = new MonthAdapter(this, monthlist);
         rv_month_list.setAdapter(adapter);
         rv_month_list.getLayoutManager().scrollToPosition(row_index);
@@ -779,7 +792,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
             }
         } else {
-            ChatApplication.logDisplay("isSelectItem is "+isSelectItem);
+            ChatApplication.logDisplay("isSelectItem is " + isSelectItem);
             if (TextUtils.isEmpty(isSelectItem) || isSelectItem.equals("0")) {
                 if (isFilterType) {
                     if (filterArrayList != null) {
@@ -806,21 +819,21 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                                 filter.setChecked(true);
                                 filterArrayList.add(filter);
                             }
-                    }else if(isSelectItem.equals("0")){
+                    } else if (isSelectItem.equals("0")) {
                         if (filterArrayList != null) {
                             filterArrayList.clear();
                         }
 
 //                        for (int j = 0; j < filterArrayListTemp.size(); j++)
-                            for (int i = 0; i < filterArrayListTemp.get(0).getSubFilters().size(); i++) {
-                                Filter filter = new Filter();
-                                filter.setName(filterArrayListTemp.get(0).getSubFilters().get(i).getName());
-                                filter.setChecked(true);
-                                filterArrayList.add(filter);
-                            }
+                        for (int i = 0; i < filterArrayListTemp.get(0).getSubFilters().size(); i++) {
+                            Filter filter = new Filter();
+                            filter.setName(filterArrayListTemp.get(0).getSubFilters().get(i).getName());
+                            filter.setChecked(true);
+                            filterArrayList.add(filter);
+                        }
                     }
                 }
-            }else {
+            } else {
 
             }
 
@@ -1051,11 +1064,11 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             //    "device_type": "ir_blaster"
 
             try {
-                if(room.equalsIgnoreCase("Gas sensor")){
+                if (room.equalsIgnoreCase("Gas sensor")) {
                     jsonObject.put("device_type", "gas_sensor");
-                }else if(room.equalsIgnoreCase("Temp sensor")){
+                } else if (room.equalsIgnoreCase("Temp sensor")) {
                     jsonObject.put("device_type", "temp_sensor");
-                }else if(room.equalsIgnoreCase("Door sensor")){
+                } else if (room.equalsIgnoreCase("Door sensor")) {
                     jsonObject.put("device_type", "door_sensor");
                 }
                 jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -1108,7 +1121,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                                 mListRoom.add(0, oneRoom);
                             }
 
-                            if (mSensorLogRes.getData()!= null) {
+                            if (mSensorLogRes.getData() != null) {
                                 for (int i = 0; i < mSensorLogRes.getData().size(); i++) {
                                     RoomVO roomVO = new RoomVO();
                                     roomVO.setRoomName(mSensorLogRes.getData().get(i).getDeviceName());
@@ -1245,7 +1258,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
                     if (ChatApplication.checkActivity(isCheckActivity) != -1) {
                         for (int i = 0; i < roomVOSList.size(); i++) {
-                            ChatApplication.logDisplay("room id is "+roomVOSList.get(i).getRoomId()+" "+mRoomId);
+                            ChatApplication.logDisplay("room id is " + roomVOSList.get(i).getRoomId() + " " + mRoomId);
                             if (roomVOSList.get(i).getRoomId().equals(mRoomId)) {
                                 mSpinnerRoomList.setSelection(i);
                                 break;
@@ -1383,8 +1396,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
-                    strDeviceId="";
-                }else {
+                    strDeviceId = "";
+                } else {
                     strDeviceId = arrayListDeviceTemp.get(position).getDeviceId();
                 }
             }
@@ -1395,10 +1408,10 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             }
         });
 
-        countDownTimer=new CountDownTimer(1500, 1000) {
+        countDownTimer = new CountDownTimer(1500, 1000) {
 
             public void onTick(long millisUntilFinished) {
-                ChatApplication.logDisplay("strDeviceId is "+strDeviceId);
+                ChatApplication.logDisplay("strDeviceId is " + strDeviceId);
             }
 
             public void onFinish() {
@@ -1407,6 +1420,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
         };
         countDownTimer.start();
     }
+
     CountDownTimer countDownTimer;
 
     /*
@@ -1504,7 +1518,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
         return end_date.after(start_date);
     }
 
-    public static boolean compareCurrentDate(String startdate, String enddate){
+    public static boolean compareCurrentDate(String startdate, String enddate) {
         Date start_date = getDate(startdate);
         Date end_date = getDate(enddate);
         return end_date.before(start_date);
@@ -1527,7 +1541,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
     }
 
 
-    public void callFilterData(final int position,String typeofFilter) {
+    public void callFilterData(final int position, String typeofFilter) {
 
         if (!ActivityHelper.isConnectingToInternet(activity)) {
             Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -1559,38 +1573,37 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 //                object.put("is_room", 0);
 //            }
 
-            if(typeofFilter.equalsIgnoreCase("refresh")){
-                object.put("start_date", start_date);
-                object.put("end_date", end_date);
+            if (typeofFilter.equalsIgnoreCase("refresh")) {
+                object.put("start_date", "");
+                object.put("end_date", "");
 //                if (isCheckActivity.equals("room") || isCheckActivity.equals("mood")) {
                 if (isCheckActivity.equals("room")) {
                     object.put("room_id", "" + mRoomId);
-                }else if (isCheckActivity.equals("mode")) {
+                } else if (isCheckActivity.equals("mode")) {
                     object.put("mood_id", "" + mRoomId);
-                }else if(isCheckActivity.equalsIgnoreCase("schedule")){
+                } else if (isCheckActivity.equalsIgnoreCase("schedule")) {
                     object.put("schedule_id", "" + mRoomId);
                 }
 
                 if (isCheckActivity.equals("room")) {
                     object.put("filter_type", "room");
-                }else if( isCheckActivity.equalsIgnoreCase("mode")){
+                } else if (isCheckActivity.equalsIgnoreCase("mode")) {
                     object.put("filter_type", "mood");
-                }else if( isCheckActivity.equals("schedule")){
+                } else if (isCheckActivity.equals("schedule")) {
                     object.put("filter_type", "schedule");
-                }else if(isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor")){
+                } else if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor")) {
                     object.put("filter_type", "device");
-                    object.put("device_id", ""+mRoomId);
-                }else {
+                    object.put("device_id", "" + mRoomId);
+                } else {
                     object.put("filter_type", "all");
                 }
-
 
 
                 object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
                 object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
                 object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
-            }else {
+            } else {
                 object.put("start_date", start_date);
                 object.put("end_date", end_date);
                 RoomVO roomVO = null;
@@ -1619,16 +1632,16 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
                             if (actionType.equalsIgnoreCase("Door sensor")) {
                                 object.put("filter_type", "door_sensor");
-                            }else if (actionType.equalsIgnoreCase("Gas sensor")) {
+                            } else if (actionType.equalsIgnoreCase("Gas sensor")) {
                                 object.put("filter_type", "gas_sensor");
-                            } else if (actionType.equalsIgnoreCase("Temp sensor")){
+                            } else if (actionType.equalsIgnoreCase("Temp sensor")) {
                                 object.put("filter_type", "temp_sensor");
-                            }else {
+                            } else {
                                 object.put("filter_type", "all-sensor");
                             }
 
                             if (roomVO != null) {
-                                object.put("device_id",  roomVO.getRoomId());
+                                object.put("device_id", roomVO.getRoomId());
                             }
                         }
 
@@ -1639,29 +1652,29 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
                             if (actionType.equalsIgnoreCase("Door sensor")) {
                                 object.put("filter_type", "door_sensor");
-                            }else if (actionType.equalsIgnoreCase("Gas sensor")) {
+                            } else if (actionType.equalsIgnoreCase("Gas sensor")) {
                                 object.put("filter_type", "gas_sensor");
-                            } else if (actionType.equalsIgnoreCase("Temp sensor")){
+                            } else if (actionType.equalsIgnoreCase("Temp sensor")) {
                                 object.put("filter_type", "temp_sensor");
-                            }else {
+                            } else {
                                 object.put("filter_type", "all-sensor");
                             }
 
                             if (roomVO != null) {
-                                object.put("device_id",  roomVO.getRoomId());
+                                object.put("device_id", roomVO.getRoomId());
                             }
 
                         } else {
 
                             if (roomVO != null && !roomVO.getRoomId().equalsIgnoreCase("0")) {
 
-                                if(mSpinnerRoomMood != null){
-                                    if( mSpinnerRoomMood.getSelectedItem().toString().toLowerCase().equals("mood")){
+                                if (mSpinnerRoomMood != null) {
+                                    if (mSpinnerRoomMood.getSelectedItem().toString().toLowerCase().equals("mood")) {
                                         object.put("mood_id", "" + roomVO.getRoomId());
-                                    }else {
+                                    } else {
                                         object.put("room_id", "" + roomVO.getRoomId());
                                     }
-                                }else {
+                                } else {
                                     object.put("room_id", "" + roomVO.getRoomId());
                                 }
                             }
@@ -1702,12 +1715,12 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                     if (roomVO != null) {
                         object.put("room_id", "" + roomVO.getRoomId());
                     } else if (isCheckActivity.equals("room") || isCheckActivity.equalsIgnoreCase("mode")) {
-                        if(isCheckActivity.equalsIgnoreCase("mode")){
+                        if (isCheckActivity.equalsIgnoreCase("mode")) {
                             object.put("mood_id", "" + mRoomId);
-                        }else {
+                        } else {
                             object.put("room_id", "" + mRoomId);
                         }
-                    }else if(isCheckActivity.equalsIgnoreCase("schedule")){
+                    } else if (isCheckActivity.equalsIgnoreCase("schedule")) {
                         object.put("schedule_id", "" + mRoomId);
                     } else if (isCheckActivity.equals("AllType")) {
                         object.put("filter_type", "all");
@@ -1717,23 +1730,23 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                 }
 
                 if (mSpinnerRoomMood != null) {
-                    if(mSpinnerRoomMood.getSelectedItemPosition()==0 && isFilterType){
+                    if (mSpinnerRoomMood.getSelectedItemPosition() == 0 && isFilterType) {
                         object.put("filter_type", "all-sensor");
-                    }else {
+                    } else {
                         object.put("filter_type", mSpinnerRoomMood.getSelectedItem().toString().toLowerCase());
                     }
 
                 } else {
                     if (isCheckActivity.equals("room")) {
                         object.put("filter_type", "room");
-                    }else if( isCheckActivity.equalsIgnoreCase("mode")){
+                    } else if (isCheckActivity.equalsIgnoreCase("mode")) {
                         object.put("filter_type", "mood");
-                    }else if( isCheckActivity.equals("schedule")){
+                    } else if (isCheckActivity.equals("schedule")) {
                         object.put("filter_type", "schedule");
-                    }else if( isCheckActivity.equals("doorSensor")  || isCheckActivity.equals("tempsensor")){
+                    } else if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor")) {
                         object.put("filter_type", "device");
-                        object.put("device_id", ""+mRoomId);
-                    }else {
+                        object.put("device_id", "" + mRoomId);
+                    } else {
                         object.put("filter_type", "all");
                     }
 
@@ -1747,7 +1760,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             e.printStackTrace();
         }
 
-        ChatApplication.logDisplay("object is " + url+"  "+object.toString());
+        ChatApplication.logDisplay("object is " + url + "  " + object.toString());
         new GetJsonTask(activity, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -1783,12 +1796,13 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                             String is_unread = jsonObject.optString("is_unread");
                             String logmessage = jsonObject.optString("message");
 
-                            deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "", user_name, is_unread,logmessage));
+                            deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "", user_name, is_unread, logmessage));
                         }
 
                         if (position == 0) {
                             if (!TextUtils.isEmpty(notificationArray.toString())) {
                                 if (notificationArray.toString().equals("[]")) {
+                                    swipeRefreshLayout.setRefreshing(false);
                                     showAToast("No Record Found...");
                                 }
                             }
@@ -1797,20 +1811,23 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                         if (notificationArray.length() == 0 && isFilterActive && isLoading) {
 
                             if (!isEndOfRecord) {
-                                deviceLogList.add(new DeviceLog("End of Record", "End of Record", "", "", "", "", "",""));
+                                deviceLogList.add(new DeviceLog("End of Record", "End of Record", "", "", "", "", "", ""));
                                 deviceLogNewAdapter.setEOR(true);
                             }
                             isEndOfRecord = true;
                         } else if (notificationArray.length() == 0 && isFilterActive) {
-                            deviceLogList.add(new DeviceLog("End of Record", "No Record Found", "", "", "", "", "",""));
+                            swipeRefreshLayout.setRefreshing(false);
+                            deviceLogList.add(new DeviceLog("End of Record", "No Record Found", "", "", "", "", "", ""));
                             deviceLogNewAdapter.setEOR(true);
                             showAToast("No Record Found...");
+
                         }
                         deviceLogNewAdapter.notifyDataSetChanged();
 
                         ActivityHelper.dismissProgressDialog();
                     } else {
                         Toast.makeText(activity.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                        swipeRefreshLayout.setRefreshing(false);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1999,11 +2016,11 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                 object.put("panel_id", "");
                 if (isCheckActivity.equals("mode")) {
                     object.put("filter_type", "mood");
-                } else if(isCheckActivity.equalsIgnoreCase("mood")){
+                } else if (isCheckActivity.equalsIgnoreCase("mood")) {
                     object.put("filter_type", "room");
-                }else if(isCheckActivity.equalsIgnoreCase("schedule")){
+                } else if (isCheckActivity.equalsIgnoreCase("schedule")) {
                     object.put("filter_type", "schedule");
-                }else{
+                } else {
                     object.put("filter_type", "");
                 }
             }
@@ -2130,8 +2147,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                                     JSONObject object = logJsonArray.getJSONObject(i);
 
                                     String logName = object.getString("filter_name");
-                                    logName=logName.substring(0,1).toUpperCase() + logName.substring(1);
-                                    logName=logName.replace("_"," ");
+                                    logName = logName.substring(0, 1).toUpperCase() + logName.substring(1);
+                                    logName = logName.replace("_", " ");
                                     String action_name = object.getString("action_name");
                                     ArrayList<Filter.SubFilter> subFilterArrayList = new ArrayList<Filter.SubFilter>();
                                     for (String subLog : action_name.split(",")) {
@@ -2150,7 +2167,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                         } else {
                             isScrollDown = false;
                         }
-                        if(notificationArray!=null){
+                        if (notificationArray != null) {
                             for (int i = 0; i < notificationArray.length(); i++) {
                                 JSONObject jsonObject = notificationArray.getJSONObject(i);
                                 String activity_action = jsonObject.getString("activity_action");
@@ -2161,7 +2178,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                                 String is_unread = jsonObject.optString("is_unread");
                                 String logmessage = jsonObject.optString("message");
 
-                                deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "", user_name, is_unread,logmessage));
+                                deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "", user_name, is_unread, logmessage));
                             }
 
                             if (position == 0) {
@@ -2175,12 +2192,12 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                             if (notificationArray.length() == 0 && isFilterActive && isLoading) {
 
                                 if (!isEndOfRecord) {
-                                    deviceLogList.add(new DeviceLog("End of Record", "End of Record", "", "", "", "", "",""));
+                                    deviceLogList.add(new DeviceLog("End of Record", "End of Record", "", "", "", "", "", ""));
                                     deviceLogNewAdapter.setEOR(true);
                                 }
                                 isEndOfRecord = true;
                             } else if (notificationArray.length() == 0 && isFilterActive) {
-                                deviceLogList.add(new DeviceLog("End of Record", "No Record Found", "", "", "", "", "",""));
+                                deviceLogList.add(new DeviceLog("End of Record", "No Record Found", "", "", "", "", "", ""));
                                 deviceLogNewAdapter.setEOR(true);
                                 showAToast("No Record Found...");
                             }
@@ -2230,7 +2247,11 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 //            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor") || isCheckActivity.equals("multisensor")) {
 //                getSensorLog(0);
 //            } else {
-                callFilterData(0,"refresh");
+
+                getDatesInMonth(Calendar.getInstance().get(Calendar.YEAR), row_index);
+                callFilterData(0, "");
+
+     //       callFilterData(0, "refresh");
 //            }
             swipeRefreshLayout.setRefreshing(true);
             deviceLogNewAdapter.notifyDataSetChanged();
@@ -2251,11 +2272,13 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 //            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor") || isCheckActivity.equals("multisensor")) {
 //                getSensorLog(0);
 //            } else {
-                if (isCheckActivity.equals("AllType")) {
-                    isFilterType = false;
-                    isFilterActive = false;
-                }
-                callFilterData(0,"refresh");
+            if (isCheckActivity.equals("AllType")) {
+                isFilterType = false;
+                isFilterActive = false;
+            }
+                getDatesInMonth(Calendar.getInstance().get(Calendar.YEAR), row_index);
+                callFilterData(0, "");
+
 //            }
         }
 
@@ -2308,14 +2331,14 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             e.printStackTrace();
         }
 
-        ChatApplication.logDisplay("log is "+webUrl+" "+jsonObject);
+        ChatApplication.logDisplay("log is " + webUrl + " " + jsonObject);
         new GetJsonTask(this, webUrl, "POST", jsonObject.toString(), new
 
                 ICallBack() {
                     @Override
                     public void onSuccess(JSONObject result) {
 
-                        ChatApplication.logDisplay("log is "+result);
+                        ChatApplication.logDisplay("log is " + result);
                         if (b) {
                             isMultiSensor = false;
 //                            callFilterData(0);
@@ -2337,9 +2360,28 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                 executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    public void getDatesInMonth(int year, int month) {
+        SimpleDateFormat format = new SimpleDateFormat(Constants.LOG_DATE_FORMAT_1);
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(year, month, 1);
+        int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        for (int i = 0; i < daysInMonth; i++) {
+            System.out.println(format.format(cal.getTime()));
+            datelist.add(format.format(cal.getTime()));
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+        }
+        start_date = datelist.get(0).toString();
+        end_date = datelist.get(datelist.size() - 1).toString();
+        ChatApplication.logDisplay("current_start_date " + start_date);
+        ChatApplication.logDisplay("current_end_date " + end_date);
+        callFilterData(0, "");
+    }
+
     public class MonthAdapter extends RecyclerView.Adapter<MonthAdapter.MonthViewHolder> {
 
         private Context context;
+
         public MonthAdapter(Context context, ArrayList months) {
             this.context = context;
             monthlist = months;
@@ -2354,16 +2396,22 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
         public void onBindViewHolder(MonthViewHolder holder, final int position) {
             holder.txtmonth.setText(monthlist.get(position).toString());
             holder.linearlayout_month.setId(position);
-
             holder.linearlayout_month.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     row_index = holder.linearlayout_month.getId();
+
+                  /*  if(row_index > Calendar.getInstance().get(Calendar.MONTH))
+                    {
+                        Toast.makeText(getApplicationContext(), "End date is not less than Start Date", Toast.LENGTH_SHORT).show();
+                    }*/
+                    datelist.clear();
+                    getDatesInMonth(Calendar.getInstance().get(Calendar.YEAR), row_index);
                     notifyDataSetChanged();
                 }
             });
-
             if (row_index == position) {
+                getDatesInMonth(Calendar.getInstance().get(Calendar.YEAR), row_index);
                 holder.txtmonth.setTextColor(getResources().getColor(R.color.automation_black));
                 holder.imgdots.setVisibility(View.VISIBLE);
             } else {

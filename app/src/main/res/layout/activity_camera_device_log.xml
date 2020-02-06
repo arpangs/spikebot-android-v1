@@ -36,6 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:orientation="horizontal"
+            android:visibility="gone"
             android:paddingTop="@dimen/_3sdp"
             android:paddingLeft="@dimen/_5sdp"
             android:paddingRight="@dimen/_5sdp">
@@ -102,6 +103,15 @@
             android:id="@+id/swiperefresh"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">-->
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_monthlist"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:visibility="visible"
+            android:layout_marginLeft="@dimen/_3sdp"
+            android:layout_marginRight="@dimen/_3sdp"
+            android:layout_marginTop="@dimen/_5sdp" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_device_log"

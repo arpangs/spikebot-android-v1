@@ -50,52 +50,62 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
     @Override
     public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
-        if (!TextUtils.isEmpty(arrayListLog.get(position).getActivityTime())) {
-            String dateString = Constants.logConverterDate(Long.parseLong(arrayListLog.get(position).getActivityTime()));
-            strDateOfTimeTemp  =dateString.split(" ");
+        try {
+            if (!TextUtils.isEmpty(arrayListLog.get(position).getActivityTime())) {
+                String dateString = Constants.logConverterDate(Long.parseLong(arrayListLog.get(position).getActivityTime()));
+                strDateOfTimeTemp = dateString.split(" ");
 
-            if(strDateOfTimeTemp[0].equalsIgnoreCase(Constants.getCurrentDate())){
-                dateTime = strDateOfTimeTemp[1]+" "+strDateOfTimeTemp[2];
-            }else {
-                dateTime = strDateOfTimeTemp[1]+ strDateOfTimeTemp[2]+ System.getProperty("line.separator") + strDateOfTimeTemp[0] ;
+                if (strDateOfTimeTemp[0].equalsIgnoreCase(Constants.getCurrentDate())) {
+                    dateTime = strDateOfTimeTemp[1] + " " + strDateOfTimeTemp[2];
+                } else {
+                    dateTime = strDateOfTimeTemp[1] + strDateOfTimeTemp[2] + System.getProperty("line.separator") + strDateOfTimeTemp[0];
+                }
+
+                holder.tv_device_log_date.setText(Constants.formatcurrentdate(strDateOfTimeTemp[0]));
+                holder.tv_device_log_time.setText(strDateOfTimeTemp[1] + " " + strDateOfTimeTemp[2]);
+
+                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
             }
 
-            holder.tv_device_log_date.setText(dateTime);
-            holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
-        }
-
-        holder.tv_device_description.setText(arrayListLog.get(position).getActivityDescription());
-        holder.tv_device_log_type.setText(arrayListLog.get(position).getActivityAction());
+            holder.tv_device_description.setText(arrayListLog.get(position).getMessage());
+            holder.tv_device_camera_name.setText(arrayListLog.get(position).getActivityDescription());
+           // holder.tv_device_log_type.setText(arrayListLog.get(position).getActivityAction());
 
 
-        if (!arrayListLog.get(position).getSeen_by().replace("|","").equalsIgnoreCase(Common.getPrefValue(mContext, Constants.USER_ID))) {
-            holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_red));
-            holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
-            holder.tv_device_log_type.setTextColor(mContext.getResources().getColor(R.color.automation_red));
-        } else {
-            holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
-            holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
-            holder.tv_device_log_type.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
-        }
-        Glide.with(mContext)
-                .load(arrayListLog.get(position).getImageUrl())
-                .fitCenter()
-                .error(R.drawable.cam_defult)
-                .skipMemoryCache(true)
-                .into(holder.txtImage);
+            if (!arrayListLog.get(position).getSeen_by().replace("|", "").equalsIgnoreCase(Common.getPrefValue(mContext, Constants.USER_ID))) {
+                holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_camera_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+            } else {
+                holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+                holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+                holder.tv_device_camera_name.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
 
-        holder.linearAlert.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent intent = new Intent(mContext, ImageZoomActivity.class);
-                intent.putExtra("imgUrl", "" + arrayListLog.get(position).getImageUrl());
-                intent.putExtra("imgName", "" + arrayListLog.get(position).getActivityDescription());
-                intent.putExtra("imgDate", "" + arrayListLog.get(position).getActivityTime());
-                mContext.startActivity(intent);
             }
-        });
+            Glide.with(mContext)
+                    .load(arrayListLog.get(position).getImageUrl())
+                    .fitCenter()
+                    .error(R.drawable.cam_defult)
+                    .skipMemoryCache(true)
+                    .into(holder.txtImage);
 
+            holder.linearAlert.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    Intent intent = new Intent(mContext, ImageZoomActivity.class);
+                    intent.putExtra("imgUrl", "" + arrayListLog.get(position).getImageUrl());
+                    intent.putExtra("imgName", "" + arrayListLog.get(position).getActivityDescription());
+                    intent.putExtra("imgDate", "" + arrayListLog.get(position).getActivityTime());
+                    mContext.startActivity(intent);
+                }
+            });
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
 
@@ -114,16 +124,18 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
     public class SensorViewHolder extends RecyclerView.ViewHolder {
 
         public View view_header;
-        public TextView tv_device_log_date, tv_device_log_type, tv_device_description;
+        public TextView tv_device_log_date, tv_device_camera_name, tv_device_description,tv_device_log_time;
         public ImageView txtImage;
         LinearLayout linearAlert;
 
         public SensorViewHolder(View view) {
             super(view);
             tv_device_description =  itemView.findViewById(R.id.tv_device_description);
-            tv_device_log_type =  itemView.findViewById(R.id.tv_device_log_type);
+           // tv_device_log_type =  itemView.findViewById(R.id.tv_device_log_type);
             txtImage =  itemView.findViewById(R.id.txtImage);
             tv_device_log_date =  itemView.findViewById(R.id.tv_device_log_date);
+            tv_device_log_time = itemView.findViewById(R.id.tv_device_log_time);
+            tv_device_camera_name = itemView.findViewById(R.id.tv_device_camera_name);
             view_header =  itemView.findViewById(R.id.view_header);
             linearAlert =  itemView.findViewById(R.id.linearAlert);
         }

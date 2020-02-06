@@ -30,6 +30,9 @@ public class NotificationList implements Serializable{
     @SerializedName("user_name")
     @Expose
     private String userName;
+    @SerializedName("message")
+    @Expose
+    private String message;
 
     public String getSeen_by() {
         return seen_by;
@@ -107,4 +110,11 @@ public class NotificationList implements Serializable{
         this.userName = userName;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

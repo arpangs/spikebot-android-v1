@@ -4,17 +4,17 @@
     tools:context="com.spike.bot.MainActivity">
 
     <item
-        android:id="@+id/action_reset"
-        android:icon="@drawable/icn_reset"
-        android:orderInCategory="100"
-        android:title="Reset"
-        app:showAsAction="always" />
-
-    <item
         android:id="@+id/action_filter"
         android:icon="@drawable/icn_filter"
         android:orderInCategory="100"
         android:title="Filter"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_reset"
+        android:icon="@drawable/icn_reset"
+        android:orderInCategory="100"
+        android:title="Reset"
         app:showAsAction="always" />
 
 </menu>

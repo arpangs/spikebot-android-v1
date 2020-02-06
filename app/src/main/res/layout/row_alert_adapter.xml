@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
-
 
 
     <LinearLayout
@@ -16,67 +15,130 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
             android:background="@color/automation_white"
             android:orientation="horizontal"
             android:paddingLeft="@dimen/_5sdp"
+            android:paddingTop="8dp"
             android:paddingRight="@dimen/_5sdp">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.21"
-                android:layout_gravity="center_vertical"
-                android:orientation="vertical"
-                android:layout_marginRight="@dimen/_3sdp"
-                android:paddingBottom="@dimen/_4sdp">
+            <!--  <LinearLayout
+                  android:layout_width="0dp"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="center_vertical"
+                  android:layout_marginRight="@dimen/_3sdp"
+                  android:layout_weight="0.21"
+                  android:orientation="vertical"
+                  android:paddingBottom="@dimen/_4sdp">-->
 
-                <ImageView
-                    android:id="@+id/txtImage"
-                    android:layout_width="@dimen/_35sdp"
-                    android:layout_height="@dimen/_30sdp"
-                    android:src="@drawable/cam_defult"/>
+            <ImageView
+                android:id="@+id/txtImage"
+                android:layout_width="@dimen/_35sdp"
+                android:layout_height="@dimen/_30sdp"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:src="@drawable/cam_defult" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/_15sdp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_device_log_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="06 february 2020"
+                    android:textColor="@color/automation_red"
+                    android:textSize="10sp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_device_description"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.4"
+                        android:text="Person detected on camera at "
+                        android:textColor="@color/automation_red"
+                        android:textStyle="bold"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tv_device_log_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:text="12:40 PM"
+                        android:textColor="@color/automation_red"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:background="@color/blue_transparent">
+                    <TextView
+                        android:id="@+id/tv_device_camera_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/blue_transparent"
+                        android:text="cam hr"
+                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:layout_marginRight="@dimen/_5sdp"
+
+                        android:textColor="@color/automation_red"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/tv_device_log_date"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="0.25"
-                android:paddingBottom="@dimen/_4sdp"
-                android:textColor="@color/automation_red"
-                android:textSize="12sp" />
 
-            <TextView
-                android:id="@+id/tv_device_log_type"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="0.3"
-                android:paddingBottom="@dimen/_4sdp"
-                android:gravity="center|left"
-                android:paddingRight="5dp"
-                android:paddingLeft="5dp"
-                android:textColor="@color/automation_red"
-                android:textSize="12sp" />
+            <!-- </LinearLayout>-->
 
 
-            <TextView
-                android:id="@+id/tv_device_description"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="0.4"
-                android:paddingBottom="@dimen/_4sdp"
-                android:textColor="@color/automation_red"
-                android:textSize="12sp" />
+            <!--  <TextView
+                  android:id="@+id/tv_device_log_date"
+                  android:layout_width="0dp"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="center_vertical"
+                  android:layout_weight="0.25"
+                  android:paddingBottom="@dimen/_4sdp"
+                  android:textColor="@color/automation_red"
+                  android:textSize="12sp" />
+
+              <TextView
+                  android:id="@+id/tv_device_log_type"
+                  android:layout_width="0dp"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="center_vertical"
+                  android:layout_weight="0.3"
+                  android:gravity="center|left"
+                  android:paddingLeft="5dp"
+                  android:paddingRight="5dp"
+                  android:paddingBottom="@dimen/_4sdp"
+                  android:textColor="@color/automation_red"
+                  android:textSize="12sp" />
+
+
+              <TextView
+                  android:id="@+id/tv_device_description"
+                  android:layout_width="0dp"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="center_vertical"
+                  android:layout_weight="0.4"
+                  android:paddingBottom="@dimen/_4sdp"
+                  android:textColor="@color/automation_red"
+                  android:textSize="12sp" />-->
 
         </LinearLayout>
-
-
-
 
     </LinearLayout>
 
@@ -84,7 +146,7 @@
         android:id="@+id/view_header"
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:layout_marginTop="@dimen/_5sdp"
         android:background="@color/automation_dark_gray" />
-
 
 </LinearLayout>

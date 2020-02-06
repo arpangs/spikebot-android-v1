@@ -13,7 +13,7 @@
             android:id="@+id/txt_month_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/_18sdp"
+            android:layout_marginLeft="@dimen/_12sdp"
             android:layout_marginRight="@dimen/_18sdp"
             android:textStyle="bold"
             android:textSize="18sp"
