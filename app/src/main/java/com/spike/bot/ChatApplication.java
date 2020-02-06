@@ -146,6 +146,7 @@ public class ChatApplication extends Application  {
 
             mSocket = IO.socket(url,opts);
             mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
+            ChatApplication.logDisplay("chat onDisconnect callll connect done ");
         } catch (URISyntaxException e) {
             ChatApplication.logDisplay("erro is "+e.toString());
             throw new RuntimeException(e);

@@ -1,6 +1,7 @@
 package com.spike.bot.adapter;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -85,12 +86,13 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
                         if (devicesList.get(i).getDeviceId().equalsIgnoreCase(deviceId)) {
                             devicesList.get(i).setDeviceStatus(Integer.parseInt(deviceStatus));
                             reloadDeviceList(devicesList.get(i));
+                            break;
                         }
 //                    }
                 }
             }
         }
-        mSectionedExpandableGridAdapter.notifyDataSetChanged();
+//        mSectionedExpandableGridAdapter.notifyDataSetChanged();
 
     }
 
@@ -285,8 +287,15 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
         }
     }
     public static RoomVO section;
+
+    // variable to track event time
+    private long mLastClickTime = 0;
     @Override
     public void onSectionStateChanged(RoomVO section, boolean isOpen) {
+        if (SystemClock.elapsedRealtime() - mLastClickTime < 500) {
+            return;
+        }
+        mLastClickTime = SystemClock.elapsedRealtime();
         this.section = section;
         section.isExpanded = isOpen;
         if(!isOpen){
@@ -305,8 +314,17 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
         }
 
         if (!mRecyclerView.isComputingLayout()) {
+//            section.isExpanded = isOpen;
+//            ListUtils.arrayListMood.add(section);
+//            notifyDataSetChanged();
             section.isExpanded = isOpen;
-            ListUtils.arrayListMood.add(section);
+
+            for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
+                RoomVO key = entry.getKey();
+                if(key.equals(section)) {
+                    key.setExpanded(isOpen);
+                }
+            }
             notifyDataSetChanged();
         }
     }

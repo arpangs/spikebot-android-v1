@@ -616,7 +616,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
     }
 
-    public void startSocketConnection() { //◉
+    public void startSocketConnection() {
 
         ChatApplication app = ChatApplication.getInstance();
 
@@ -889,7 +889,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
 
     private void doorOpenCLose(DeviceVO item) {
-
         if (mSocket != null) {
             JSONObject object = new JSONObject();
             try {
@@ -903,7 +902,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             ChatApplication.logDisplay("door json " + object);
             mSocket.emit("changeLockStatus", object);
         }
-
     }
 
     private void callDoorRemotly(DeviceVO item) {

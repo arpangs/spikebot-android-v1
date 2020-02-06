@@ -545,7 +545,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
     private long mLastClickTime = 0;
     @Override
     public void onSectionStateChanged(RoomVO section, boolean isOpen) {
-        if (SystemClock.elapsedRealtime() - mLastClickTime < 400) {
+        if (SystemClock.elapsedRealtime() - mLastClickTime < 500) {
             return;
         }
         mLastClickTime = SystemClock.elapsedRealtime();

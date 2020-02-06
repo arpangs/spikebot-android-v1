@@ -344,7 +344,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         }
                     });*/
 
-                    holder.ll_root_view_section.setOnClickListener(new View.OnClickListener() {
+                    holder.rel_main_view.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if (!isClickable)
@@ -360,18 +360,31 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         }
                     });
 
+                    /*click to expanded view */
+                    holder.linearClickExpanded.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (!isClickable)
+                                return;
+
+                            holder.rel_main_view.performClick();
+                        }
+                    });
+
+
                     holder.sectionToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                             if (!isClickable)
                                 return;
 
-                            mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded);
-                            if (section.isExpanded) {
-                                mItemClickListener.itemClicked(section, "heavyloadSocketon");
-                            } else {
-                                mItemClickListener.itemClicked(section, "heavyloadSocketoff");
-                            }
+                            holder.rel_main_view.performClick();
+//                            mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded);
+//                            if (section.isExpanded) {
+//                                mItemClickListener.itemClicked(section, "heavyloadSocketon");
+//                            } else {
+//                                mItemClickListener.itemClicked(section, "heavyloadSocketoff");
+//                            }
                         }
                     });
 
@@ -1054,7 +1067,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
         TextView sectionTextView, text_section_on_off, text_section_edit, iv_icon_badge_room, img_setting_badge_count,
                 itemTextView, iv_icon_badge, txt_temp_in_cf, txtTotalDevices, txtCameraCount, txt_recording, textRefreshCamera, textShowCamera;
         RelativeLayout rel_main_view;
-        LinearLayout ll_background, ll_room_item, linearRowRoom, linearPanelList, ll_root_view_section;
+        LinearLayout ll_background, ll_room_item, linearRowRoom, linearPanelList, ll_root_view_section,linearClickExpanded;
 
         public ViewHolder(View view, int viewType) {
             super(view);
@@ -1111,6 +1124,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 img_setting_badge = view.findViewById(R.id.img_setting_badge);
                 img_setting_badge_count = view.findViewById(R.id.img_setting_badge_count);
                 txtTotalDevices = view.findViewById(R.id.txtTotalDevices);
+                linearClickExpanded = view.findViewById(R.id.linearClickExpanded);
 
             }
         }
