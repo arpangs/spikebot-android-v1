@@ -285,10 +285,11 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                             String device_status = object.getString("device_status");
                             int device_sub_status = object.optInt("device_sub_status");
 
-                            if(device_id.equalsIgnoreCase(doorSensorResModel.getDevice().getDevice_id())){
+                            if(device_id.equalsIgnoreCase(door_sensor_id)){
                                 doorSensorResModel.getDevice().setDeviceStatus(device_status);
                                 inActivieStatusDoor(1);
                             }
+
 
 //                            if (door_sensorid.equals(door_sensor_id)) {
 //                                if (!TextUtils.isEmpty(door_lock_status) && !door_lock_status.equals("null") && door_lock_status.length() > 0) {
@@ -340,6 +341,8 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         if (!ChatApplication.url.startsWith("http")) {
             ChatApplication.url = "http://" + ChatApplication.url;
         }
+
+        ActivityHelper.showProgressDialog(this, "Please wait.", false);
         String url = ChatApplication.url + Constants.deviceinfo;
 
         ChatApplication.logDisplay("door " + url + " ");
@@ -355,8 +358,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         }
         ChatApplication.logDisplay("door " + url + " " + object);
 
-
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
         new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
             @Override

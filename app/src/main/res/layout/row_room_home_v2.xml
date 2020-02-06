@@ -129,8 +129,8 @@
                         android:layout_width="38dp"
                         android:layout_height="38dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginTop="2dp"
-                        android:layout_marginLeft="5dp"
+                        android:paddingTop="2dp"
+                        android:paddingLeft="5dp"
                         android:layout_marginBottom="2dp"
                         android:background="@drawable/room_off"
                         android:gravity="center"
@@ -271,6 +271,14 @@
                         android:text=""
                         android:textColor="@color/sky_blue"
                         android:textSize="15sp" />
+
+
+                <LinearLayout
+                    android:id="@+id/linearClickExpanded"
+                    android:layout_marginTop="@dimen/_3sdp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"/>
 
 
                 <!--</LinearLayout>-->

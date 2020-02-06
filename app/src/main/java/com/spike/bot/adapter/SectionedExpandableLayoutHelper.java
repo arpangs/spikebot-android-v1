@@ -483,6 +483,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
 
         for (RoomVO roomVO : ListUtils.arrayListRoom) {
             if (roomVO.isExpanded && roomVO.getRoomId().equalsIgnoreCase(section.getRoomId())) {
+                ChatApplication.logDisplay("room id is same "+section.getRoomId());
                 section.isExpanded = true;
                 section.setExpanded(true);
             }
@@ -544,7 +545,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
     private long mLastClickTime = 0;
     @Override
     public void onSectionStateChanged(RoomVO section, boolean isOpen) {
-        if (SystemClock.elapsedRealtime() - mLastClickTime < 700) {
+        if (SystemClock.elapsedRealtime() - mLastClickTime < 500) {
             return;
         }
         mLastClickTime = SystemClock.elapsedRealtime();
@@ -568,7 +569,6 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                         section.isExpanded = false;
                         section.setExpanded(false);
                         ListUtils.arrayListRoom.set(i, section);
-                        break;
                     }
                 }
             }
@@ -580,16 +580,15 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
 
         if (!mRecyclerView.isComputingLayout()) {
             section.isExpanded = isOpen;
-            ListUtils.arrayListMood.add(section);
+
+            for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
+                RoomVO key = entry.getKey();
+                if(key.equals(section)) {
+                    key.setExpanded(isOpen);
+                }
+            }
             notifyDataSetChanged();
 
-//            for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
-//                RoomVO key = entry.getKey();
-//                if (key.equals(section)) {
-//                    key.setExpanded(isOpen);
-//                }
-//            }
-//            notifyDataSetChanged();
         }
     }
 

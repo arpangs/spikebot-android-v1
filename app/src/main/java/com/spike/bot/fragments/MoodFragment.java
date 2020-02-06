@@ -136,7 +136,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
         if(mSocket!=null) {
             mSocket.off("changeDeviceStatus", changeDeviceStatus);
             mSocket.off("updateChildUser", updateChildUser);
-            mSocket.off("changeRoomStatus", roomStatus);
+            mSocket.off("changeMoodStatus", roomStatus);
         }
         super.onPause();
     }
@@ -369,12 +369,13 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
     // Panel buttons click
     @Override
     public void itemClicked(final DeviceVO item,String action) {
-        if(item.getIsActive()==-1){
-            return;
-        }
+
        if(action.equalsIgnoreCase("itemOnOffclick")){
             deviceOnOff(item);
         }else if(action.equalsIgnoreCase("heavyloadlongClick")){
+           if(item.getIsActive()==-1){
+               return;
+           }
             Intent intent=new Intent(getActivity(), HeavyLoadDetailActivity.class);
             intent.putExtra("getRoomDeviceId",item.getOriginal_room_device_id());
             intent.putExtra("getRoomName",item.getRoomName());
@@ -536,7 +537,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
         if(mSocket!=null && mSocket.connected()){
             mSocket.on("changeDeviceStatus", changeDeviceStatus);
             mSocket.on("updateChildUser", updateChildUser);
-            mSocket.on("changeRoomStatus", roomStatus);
+            mSocket.on("changeMoodStatus", roomStatus);
 
            ChatApplication.logDisplay("mSocket.connect()= "  + mSocket.id() );
         }
@@ -840,8 +841,8 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
                             ChatApplication.logDisplay("status update room mood " + object.toString());
-                            String room_id = object.getString("room_id");
-                            String room_status = object.getString("room_status");
+                            String room_id = object.getString("mood_id");
+                            String room_status = object.getString("mood_status");
                             sectionedExpandableLayoutHelper.updateMood(room_id, room_status);
 
                         } catch (Exception e) {

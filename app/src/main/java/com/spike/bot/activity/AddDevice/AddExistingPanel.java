@@ -247,7 +247,6 @@ public class AddExistingPanel extends AppCompatActivity {
         if (Common.isConnected()) {
             getDeviceList();
         }
-
     }
 
     @Override

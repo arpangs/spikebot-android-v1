@@ -616,7 +616,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
     }
 
-    public void startSocketConnection() { //◉
+    public void startSocketConnection() {
 
         ChatApplication app = ChatApplication.getInstance();
 
@@ -889,7 +889,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
 
     private void doorOpenCLose(DeviceVO item) {
-
         if (mSocket != null) {
             JSONObject object = new JSONObject();
             try {
@@ -903,7 +902,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             ChatApplication.logDisplay("door json " + object);
             mSocket.emit("changeLockStatus", object);
         }
-
     }
 
     private void callDoorRemotly(DeviceVO item) {
@@ -1450,47 +1448,35 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         JSONArray jetsonList=dataObject.optJSONArray("jetsonList");
 
                         if(jetsonList!=null && jetsonList.length()>0) {
-                            for (int i = 0; i < jetsonList.length(); i++) {
 
+                            for (int i = 0; i < jetsonList.length(); i++) {
+//
                                 JSONObject object = jetsonList.optJSONObject(i);
 
-                                ArrayList<CameraVO> cameraList = JsonHelper.parseCameraArray(object.optJSONArray("cameraList"));
+                                ArrayList<CameraVO> jetsonlist = JsonHelper.parseCameraArray(object.optJSONArray("cameraList"));
 
-                                RoomVO section = new RoomVO();
-                                section.setRoomName(object.optString("jetson_name"));
-//                                section.setRoomName("Camera");
-                                section.setRoomId(object.optString("jetson_id"));
-//                                section.setRoomId("Camera");
-                                section.setDevice_count("0");
+                                RoomVO section1 = new RoomVO();
+                                section1.setRoomName(object.optString("jetson_name"));
+                                section1.setRoomId(object.optString("jetson_id"));
 
-                                ArrayList<PanelVO> panelList = new ArrayList<>();
-                                PanelVO panel = new PanelVO();
-                                panel.setPanelName("Devices");
-                                panel.setType("JETSON-");
-                                panel.setCameraList(cameraList);
 
-                                panelList.add(panel);
+                                ArrayList<PanelVO> panelList1 = new ArrayList<>();
+                                PanelVO panel1 = new PanelVO();
+                                panel1.setType("JETSON-");
+                                panel1.setPanelName("Devices");
+                                panel1.setCameraList(jetsonlist);
 
-                                section.setPanelList(panelList);
-//                                section.setIs_unread(""+cameraList.get(i).getTotal_unread());
-                                section.setIs_unread("0");
+                                panelList1.add(panel1);
 
-                                roomList.add(section);
+                                section1.setPanelList(panelList1);
+                                section1.setIs_unread(jetsonlist.get(0).getTotal_unread());
 
+                                roomList.add(section1);
                             }
-
-//                                /*camera device counting*/
-                            for (int j = 0; j < roomList.size(); j++) {
-                                if (roomList.get(j).getRoomId().equalsIgnoreCase("JETSON-")) {
-                                    roomList.get(j).setDevice_count("" + roomList.get(j).getPanelList().get(0).getCameraList().size());
-                                }
-                            }
-
-                            sectionedExpandableLayoutHelper.addSectionList(roomList);
                         }
 
-                        //JSONArray userList = dataObject.getJSONArray("userList");
-
+                        sectionedExpandableLayoutHelper.addSectionList(roomList);
+                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
                         ((Main2Activity)activity).changestatus();
                         if (roomArray.length() == 0) {
                             mMessagesView.setVisibility(View.GONE);
@@ -1666,7 +1652,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                             for (User user : userList1) {
                                 if (user.isActive()) {
                                     if (user.getUser_id().equalsIgnoreCase(userId) && !user.getPassword().equalsIgnoreCase(userPassword)) {
-//                                        showLogoutAlert();
                                         ChatApplication.showToast(activity, "Password has been changed!");
                                         ((Main2Activity) activity).logoutCloudUser();
                                     }
@@ -1731,8 +1716,8 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                                 }
                             }
                         }
-                        sectionedExpandableLayoutHelper.addSectionList(roomList);
-                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
+//                        sectionedExpandableLayoutHelper.addSectionList(roomList);
+//                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
 
                         //for jetson
                         JSONArray jetsonList=dataObject.optJSONArray("jetsonList");
@@ -1767,7 +1752,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                             /*camera device counting*/
                             for (int i = 0; i < roomList.size(); i++) {
                                 if (roomList.get(i).getRoomId().startsWith("JETSON-")) {
-//                                    if (roomList.get(i).getRoomId().startsWith("Camera")) {
                                     roomList.get(i).setDevice_count("" + roomList.get(i).getPanelList().get(0).getCameraList().size());
                                 }
                             }
