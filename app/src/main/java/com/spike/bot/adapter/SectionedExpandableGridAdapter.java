@@ -208,7 +208,9 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 //                        holder.text_section_on_off.setTextColor(mContext.getResources().getColor(R.color.sky_blue));
                     }
 
-                    holder.sectionToggleButton.setChecked(section.isExpanded);
+                    holder.sectionToggleButton.setChecked(section.isExpanded());
+
+                    ChatApplication.logDisplay("is expanded is "+section.getRoomId()+" "+section.isExpanded());
 
 
                     if (section.getRoomId().equalsIgnoreCase("camera") || section.getRoomId().startsWith("JETSON-")) {
@@ -240,7 +242,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         holder.linearPanelList.setVisibility(View.VISIBLE);
                         holder.mImgSch.setImageResource(R.drawable.icn_schedule_v2);
 
-                        if (section.isExpanded && !Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
+                        if (section.isExpanded() && !Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
                             holder.text_section_edit.setVisibility(View.VISIBLE);
                             holder.img_room_delete.setVisibility(View.VISIBLE);
                         } else {
@@ -248,7 +250,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             holder.img_room_delete.setVisibility(View.GONE);
                         }
 
-                        if (section.isExpanded) {
+                        if (section.isExpanded()) {
                             mItemClickListener.itemClicked(section, "heavyloadSocketon");
                         } else {
                             mItemClickListener.itemClicked(section, "heavyloadSocketoff");
@@ -356,7 +358,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                             mItemClickListener.itemClicked(section, "expandclick");
 
-                            mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded);
+                            mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded());
                         }
                     });
 
@@ -494,7 +496,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     }
 
 
-                    if (section.isExpanded) {
+                    if (section.isExpanded()) {
                         holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side));
                     } else {
                         holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow));

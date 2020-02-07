@@ -145,7 +145,7 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                 holder.rel_main_view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded);
+                        mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded());
                     }
                 });
 
@@ -158,7 +158,7 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                         mSectionStateChangeListener.onSectionStateChanged(section, isChecked);
                     }
                 });
-                holder.sectionToggleButton.setChecked(section.isExpanded);
+                holder.sectionToggleButton.setChecked(section.isExpanded());
 
                 break;
             case VIEW_TYPE_PANEL:

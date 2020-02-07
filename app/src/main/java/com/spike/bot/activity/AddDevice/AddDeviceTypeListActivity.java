@@ -45,6 +45,7 @@ import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.dialog.AddRoomDialog;
 import com.spike.bot.dialog.ICallback;
+import com.spike.bot.listener.DeviceListRefreshView;
 import com.spike.bot.model.RoomVO;
 
 import org.json.JSONArray;
