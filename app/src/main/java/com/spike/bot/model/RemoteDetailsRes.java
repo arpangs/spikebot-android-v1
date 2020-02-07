@@ -110,6 +110,9 @@ public class RemoteDetailsRes implements Serializable {
             @SerializedName("created_at")
             @Expose
             private String createdAt;
+            @SerializedName("message")
+            @Expose
+            private String message;
 
             public String getId() {
                 return id;
@@ -167,6 +170,13 @@ public class RemoteDetailsRes implements Serializable {
                 this.createdAt = createdAt;
             }
 
+            public String getMessage() {
+                return message;
+            }
+
+            public void setMessage(String message) {
+                this.message = message;
+            }
         }
 
         public class Alert implements Serializable{

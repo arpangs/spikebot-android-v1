@@ -107,7 +107,7 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
         ActivityHelper.showProgressDialog(getActivity(), "Please Wait...", false);
         String url = ChatApplication.url + Constants.getChildUsers;
 
-        ChatApplication.logDisplay("url is "+url);
+        ChatApplication.logDisplay("url is "+ url);
         new GetJsonTask2(getActivity(), url, "GET", "", new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -219,6 +219,7 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
 
         JSONObject object=new JSONObject();
         try {
+            object.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
             object.put("child_user_id",user.getUser_id());
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -226,7 +227,7 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
             e.printStackTrace();
         }
 
-        ChatApplication.logDisplay("url is "+url);
+        ChatApplication.logDisplay("url is " + url + object.toString());
         new GetJsonTask2(getActivity(), url, "POST", object.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {

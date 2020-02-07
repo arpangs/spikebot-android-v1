@@ -13,7 +13,7 @@
         android:textSize="11sp"
         android:text=""
         android:textAllCaps="true"
-        android:textColor="@color/txtPanal" />
+        android:textColor="@color/automation_black" />
 
     <RelativeLayout
         android:layout_width="match_parent"

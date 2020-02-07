@@ -818,13 +818,15 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("camera_id", "");
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonObject.put("log_type","camera");
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        String url = ChatApplication.url + Constants.updateUnReadCameraLogs;
+        String url = ChatApplication.url + Constants.logsfind;
 
         ChatApplication.logDisplay("url is "+url+" "+jsonObject);
         new GetJsonTask(CameraNotificationActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
@@ -856,7 +858,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
     @Override
     public void onBackPressed() {
-        //callupdateUnReadCameraLogs(false);
+        callupdateUnReadCameraLogs(false);
         super.onBackPressed();
     }
 }

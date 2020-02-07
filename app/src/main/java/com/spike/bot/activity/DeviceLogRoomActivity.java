@@ -1,19 +1,26 @@
 package com.spike.bot.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -35,7 +42,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static android.widget.NumberPicker.OnScrollListener.SCROLL_STATE_IDLE;
@@ -47,7 +56,7 @@ import static android.widget.NumberPicker.OnScrollListener.SCROLL_STATE_IDLE;
 public class DeviceLogRoomActivity extends AppCompatActivity {
 
     public String isNotification = "", room_name = "", ROOM_ID = "", IS_SENSOR = "", typeSelection = "1";
-    public int mStartIndex = 0,lastVisibleItem;
+    public int mStartIndex = 0,lastVisibleItem,row_index=-1;
     private int mScrollState = AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
 
     Toolbar toolbar;
@@ -60,6 +69,8 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
     public boolean isScrollDown = false, isLoading = false;
     private ArrayList<Filter> filterArrayList = new ArrayList<>();
     private ArrayList<Filter> filterArrayListTemp = new ArrayList<>();
+    private ArrayList datelist = new ArrayList();
+    private ArrayList monthlist = new ArrayList();
     public List<DeviceLog> deviceLogList = new ArrayList<>();
 
     @Override
@@ -172,6 +183,8 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
             }
         });
     }
+
+
     /*geting unseen log*/
     public void getDeviceList(final int position) {
 
@@ -205,7 +218,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
-                        ChatApplication.logDisplay("reult is "+result);
+                        ChatApplication.logDisplay("result is "+result);
                         JSONArray dataObj = result.optJSONArray("data");
                         Gson gson=new Gson();
                         List<DeviceLog> deviceLogs = gson.fromJson(dataObj.toString(), new TypeToken<List<DeviceLog>>(){}.getType());;

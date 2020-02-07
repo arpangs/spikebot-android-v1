@@ -12,6 +12,7 @@ public class DeviceLog {
     public String activity_description;
     public String activity_time;
     public String activity_state;
+    public String seen_by;
     public String message;
 
     public String getIs_unread() {
@@ -32,6 +33,14 @@ public class DeviceLog {
         this.user_name = user_name;
     }
 
+    public String getSeen_by() {
+        return seen_by;
+    }
+
+    public void setSeen_by(String seen_by) {
+        this.seen_by = seen_by;
+    }
+
     public String user_name;
 
     public DeviceLog(){
@@ -41,9 +50,10 @@ public class DeviceLog {
         activity_time = "";
         activity_state = "";
         user_name = "";
+        seen_by = "";
     }
 
-    public DeviceLog(String activity_action, String activity_type, String activity_description, String activity_time, String activity_state,String user_name,String is_unread,String message) {
+    public DeviceLog(String activity_action, String activity_type, String activity_description, String activity_time, String activity_state,String user_name,String is_unread,String message,String seen_by) {
         this.activity_action = activity_action;
         this.activity_type = activity_type;
         this.activity_description = activity_description;
@@ -52,6 +62,7 @@ public class DeviceLog {
         this.user_name = user_name;
         this.is_unread = is_unread;
         this.message = message;
+        this.seen_by =seen_by;
     }
 
     public String getActivity_action() {

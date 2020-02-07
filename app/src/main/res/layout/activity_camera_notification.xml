@@ -244,6 +244,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="8dp"
+                                    android:visibility="gone"
                                     android:background="@color/automation_white"
                                     android:orientation="horizontal"
                                     android:paddingLeft="@dimen/_5sdp"

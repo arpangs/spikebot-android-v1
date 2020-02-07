@@ -3,46 +3,27 @@ package com.spike.bot.core;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.StateListDrawable;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
-import android.util.DisplayMetrics;
-import android.util.LruCache;
 import android.view.View;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.model.User;
-import com.ttlock.bl.sdk.util.DigitUtil;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.net.UnknownHostException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -55,7 +36,7 @@ public class Constants {
     //device type =3 - philip
     // device type = 2 = Ac
 
-//        public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
+    //        public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
 //    public static  String CLOUD_SERVER_URL = "http://api.spikebot.io"; //222
     public static String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //wifi / 123
 //    public static String CLOUD_SERVER_URL =  "http://192.168.75.169:3000";
@@ -114,10 +95,10 @@ public class Constants {
     public static final String DeleteChildUser = "/DeleteChildUser";
     public static final String getRoomCameraList = "/getRoomCameraList";
     public static final String AddChildUser = "/AddChildUser";
-    public static final String updateChildUser = "/updateChildUser";
+    public static final String updateChildUser = "/UpdateChildUser";
     public static final String ADD_CUSTOME_ROOM = "/rooms/add";
     public static final String SAVE_ROOM_AND_PANEL_NAME = "/rooms/edit";
-//    public static final String CONFIGURE_NEWROOM = "/configureNewRoom";
+    //    public static final String CONFIGURE_NEWROOM = "/configureNewRoom";
     public static final String GET_EDIT_ROOM_INFO = "/getEditRoomInfo";
     public static final String CONFIGURE_DEVICE_REQUEST = "/configureDeviceRequest";
     public static final String configuresmartRemoteRequest = "/configuresmartRemoteRequest";
@@ -344,7 +325,8 @@ public class Constants {
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {}.getType();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
             List<User> userList = gson.fromJson(jsonText, type);
             if (userList.size() > 0) {
                 for (int i = 0; i < userList.size(); i++) {
@@ -364,7 +346,8 @@ public class Constants {
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {}.getType();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
             List<User> userList = gson.fromJson(jsonText, type);
             if (userList.size() > 0) {
                 for (int i = 0; i < userList.size(); i++) {
@@ -385,7 +368,8 @@ public class Constants {
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {}.getType();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
             List<User> userList = gson.fromJson(jsonText, type);
             if (userList.size() > 0) {
                 for (int i = 0; i < userList.size(); i++) {
@@ -426,7 +410,8 @@ public class Constants {
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
         if (!TextUtils.isEmpty(jsonText)) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<User>>() {}.getType();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
             List<User> userList = gson.fromJson(jsonText, type);
             if (userList.size() > 0) {
                 for (int i = 0; i < userList.size(); i++) {
@@ -588,37 +573,37 @@ public class Constants {
         return bitmap;
     }
 
-    public static String getFTemp(String value){
-        double a=Double.parseDouble(value);
-        double b=a*9/5+32;
-        int c=(int)b;
-        String r=String.valueOf(c);
+    public static String getFTemp(String value) {
+        double a = Double.parseDouble(value);
+        double b = a * 9 / 5 + 32;
+        int c = (int) b;
+        String r = String.valueOf(c);
         return r;
     }
 
-    public static String getCTemp(String value){
-        double a=Double.parseDouble(value);
-        double b=a-32;
-        double c=b*5/9;
-        int c1=(int)c;
-        String r=String.valueOf(c1);
-        ChatApplication.logDisplay("ff is "+value+"  "+r);
+    public static String getCTemp(String value) {
+        double a = Double.parseDouble(value);
+        double b = a - 32;
+        double c = b * 5 / 9;
+        int c1 = (int) c;
+        String r = String.valueOf(c1);
+        ChatApplication.logDisplay("ff is " + value + "  " + r);
         return r;
     }
 
-    public static String getCurrentDate(){
+    public static String getCurrentDate() {
         Date c = Calendar.getInstance().getTime();
         SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         String formattedDate = df.format(c);
-        return  formattedDate;
+        return formattedDate;
     }
 
-    public static String logConverterDate(long activity_time){
+    public static String logConverterDate(long activity_time) {
         Calendar calendar = Calendar.getInstance();
         TimeZone tz = TimeZone.getDefault();
         calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault());
-        java.util.Date currenTimeZone=new java.util.Date((long)activity_time);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy h:mm a", Locale.getDefault());
+        java.util.Date currenTimeZone = new java.util.Date((long) activity_time);
         return sdf.format(currenTimeZone);
     }
 
@@ -634,16 +619,29 @@ public class Constants {
         SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
         Date date1 = fmt.parse(date);
 
-        SimpleDateFormat fmtOut = new SimpleDateFormat("dd MMMM yyyy");
+        SimpleDateFormat fmtOut = new SimpleDateFormat("d MMM yyyy");
         return fmtOut.format(date1);
     }
 
-    public static int getCurentMonth(){
+    public static int getCurentMonth() {
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat month_date = new SimpleDateFormat("MM");
-        int row_index = Integer.parseInt(month_date.format(cal.getTime()))-1;
+        int row_index = Integer.parseInt(month_date.format(cal.getTime())) - 1;
         return row_index;
     }
 
-
+    public static String getNextDate(String curDate) {
+        String nextDate = "";
+        try {
+            Calendar today = Calendar.getInstance();
+            DateFormat format = new SimpleDateFormat(Constants.LOG_DATE_FORMAT_1);
+            Date date = format.parse(curDate);
+            today.setTime(date);
+            today.add(Calendar.DAY_OF_YEAR, 1);
+            nextDate = format.format(today.getTime());
+        } catch (Exception e) {
+            return nextDate;
+        }
+        return nextDate;
+    }
 }

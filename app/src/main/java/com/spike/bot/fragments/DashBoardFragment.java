@@ -485,6 +485,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
             if (item.getSensor_type().equalsIgnoreCase("temp_sensor")) {
                 Intent intent = new Intent(activity, MultiSensorActivity.class);
+                intent.putExtra("temp_sensor_name",item.getSensor_name());
                 intent.putExtra("temp_sensor_id", item.getSensor_id());
                 intent.putExtra("temp_room_name", item.getRoomName());
                 intent.putExtra("temp_room_id", item.getRoomId());

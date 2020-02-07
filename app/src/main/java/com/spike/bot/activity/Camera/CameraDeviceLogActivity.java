@@ -47,9 +47,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+
+import static com.spike.bot.core.Constants.getNextDate;
 
 /**
  * Created by Sagar on 26/11/18.
@@ -112,7 +116,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         } else {
             cameraIdTemp = camera_id;
         }
-        callCameraLog(camera_id, "", "", notification_number);
+        //callCameraLog(camera_id, "", "", notification_number);
     }
 
     /*reset data when refresh page */
@@ -127,8 +131,6 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         end_date = "";
         notification_number = 0;
         camera_id = "" + cameraIdTemp;
-
-
         callCameraLog(camera_id, start_date, end_date, notification_number);
     }
 
@@ -291,38 +293,37 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
 
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    if (code == 200) {
-                        if (notification_number == 0) {
+                    if (code == 200)
+                    {
+                        if (notification_number == 0)
+                        {
                             arrayList.clear();
                         }
                         arrayListTemp.clear();
                         ChatApplication.logDisplay("json is " + result);
                         JSONArray jsonArray = result.optJSONArray("data");
 
-                        if(jsonArray.length() == 0){
-                            Toast.makeText(CameraDeviceLogActivity.this.getApplicationContext(), "No Record Found...", Toast.LENGTH_SHORT).show();
+                        if (jsonArray != null && jsonArray.length() > 0) {
+                            arrayListTemp = (ArrayList<NotificationList>) Common.fromJson(jsonArray.toString(), new TypeToken<ArrayList<NotificationList>>() {
+                            }.getType());
+                            arrayList.addAll(arrayListTemp);
                         } else{
-                            if (jsonArray != null && jsonArray.length() > 0) {
-                                arrayListTemp = (ArrayList<NotificationList>) Common.fromJson(jsonArray.toString(), new TypeToken<ArrayList<NotificationList>>() {
-                                }.getType());
-
-                                arrayList.addAll(arrayListTemp);
-                            }
+                            Toast.makeText(CameraDeviceLogActivity.this.getApplicationContext(), "No Record Found...", Toast.LENGTH_SHORT).show();
+                        }
 
 
-                            if (arrayList.size() > 0) {
-                                rvDeviceLog.setVisibility(View.VISIBLE);
-                                isLoading = false;
-                                setAdapter();
-                            } else {
-                                if (notification_number == 0) {
-                                    rvDeviceLog.setVisibility(View.GONE);
-                                }
-                                isLoading = true;
+                        if (arrayList.size() > 0) {
+                            rvDeviceLog.setVisibility(View.VISIBLE);
+                            isLoading = false;
+                            setAdapter();
+                        } else {
+                            if (notification_number == 0) {
+                                rvDeviceLog.setVisibility(View.GONE);
                             }
-                            if (arrayListTemp.size() == 0) {
-                                isLoading = true;
-                            }
+                            isLoading = true;
+                        }
+                        if (arrayListTemp.size() == 0) {
+                            isLoading = true;
                         }
                     } else {
                         isLoading = true;
@@ -365,14 +366,15 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
 
                         date_time = year + "-" + ActivityHelper.hmZero(monthOfYear + 1) + "-" + ActivityHelper.hmZero(dayOfMonth);
                         //*************Call Time Picker Here ********************
-                        tiemPicker(editText, isEndDate);
+                        timePicker(editText, isEndDate);
                     }
                 }, mYear, mMonth, mDay);
+        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         datePickerDialog.show();
     }
 
     /*time picker dialog*/
-    private void tiemPicker(final TextView editText, final boolean isEndDate) {
+    private void timePicker(final TextView editText, final boolean isEndDate) {
         // Get Current Time
         final Calendar c = Calendar.getInstance();
         mHour = c.get(Calendar.HOUR_OF_DAY);
@@ -497,8 +499,10 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         end_date = datelist.get(datelist.size() - 1).toString();
         ChatApplication.logDisplay("current_start_date " + start_date);
         ChatApplication.logDisplay("current_end_date " + end_date);
-        callCameraLog(camera_id, start_date, end_date, 0);
+        callCameraLog(camera_id, start_date, getNextDate(end_date), notification_number);
     }
+
+
 
     public class MonthAdapter extends RecyclerView.Adapter<MonthAdapter.MonthViewHolder> {
 
@@ -522,11 +526,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     row_index = holder.linearlayout_month.getId();
-
-                  /*  if(row_index > Calendar.getInstance().get(Calendar.MONTH))
-                    {
-                        Toast.makeText(getApplicationContext(), "End date is not less than Start Date", Toast.LENGTH_SHORT).show();
-                    }*/
+                    notification_number = 0;
                     datelist.clear();
                     getDatesInMonth(Calendar.getInstance().get(Calendar.YEAR), row_index);
                     notifyDataSetChanged();
@@ -573,6 +573,8 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         }
         JSONObject jsonObject = new JSONObject();
         try {
+            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonObject.put("log_type","camera");
             jsonObject.put("camera_id", "" + cameraIdTemp);
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -580,7 +582,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        String url = ChatApplication.url + Constants.updateUnReadCameraLogs;
+        String url = ChatApplication.url + Constants.logsfind;
         ChatApplication.logDisplay("url is " + url + " " + jsonObject);
         new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
             @Override
@@ -607,7 +609,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
     /*check unread count getting than clear count */
     @Override
     public void onBackPressed() {
-        //callupdateUnReadCameraLogs(false);
+        callupdateUnReadCameraLogs(false);
         super.onBackPressed();
     }
 }

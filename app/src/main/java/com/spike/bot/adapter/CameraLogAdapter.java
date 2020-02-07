@@ -72,7 +72,7 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
            // holder.tv_device_log_type.setText(arrayListLog.get(position).getActivityAction());
 
 
-            if (!arrayListLog.get(position).getSeen_by().replace("|", "").equalsIgnoreCase(Common.getPrefValue(mContext, Constants.USER_ID))) {
+            if (!arrayListLog.get(position).getSeen_by().replace("|", "").contains(Common.getPrefValue(mContext, Constants.USER_ID))) {
                 holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_red));
                 holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
                 holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_red));
@@ -84,12 +84,24 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
                 holder.tv_device_camera_name.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
 
             }
-            Glide.with(mContext)
-                    .load(arrayListLog.get(position).getImageUrl())
-                    .fitCenter()
-                    .error(R.drawable.cam_defult)
-                    .skipMemoryCache(true)
-                    .into(holder.txtImage);
+
+            if(arrayListLog.get(position).getLogType().contains("camera_persor_detected"))
+            {
+                Glide.with(mContext)
+                        .load(arrayListLog.get(position).getImageUrl())
+                        .fitCenter()
+                        .error(R.drawable.cam_defult)
+                        .skipMemoryCache(true)
+                        .into(holder.txtImage);
+            }else{
+                Glide.with(mContext)
+                        .load("")
+                        .fitCenter()
+                        .error(R.drawable.camera_on)
+                        .skipMemoryCache(true)
+                        .into(holder.txtImage);
+            }
+
 
             holder.linearAlert.setOnClickListener(new View.OnClickListener() {
                 @Override

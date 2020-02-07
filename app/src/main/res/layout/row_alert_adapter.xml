@@ -40,7 +40,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="65dp"
                 android:layout_marginLeft="@dimen/_15sdp"
                 android:orientation="vertical">
 
@@ -64,8 +64,8 @@
                         android:layout_weight="0.4"
                         android:text="Person detected on camera at "
                         android:textColor="@color/automation_red"
-                        android:textStyle="bold"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tv_device_log_time"
@@ -78,24 +78,25 @@
                         android:textStyle="bold" />
                 </RelativeLayout>
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="@dimen/_20sdp"
                     android:layout_marginTop="@dimen/_4sdp"
                     android:background="@color/blue_transparent">
+
                     <TextView
                         android:id="@+id/tv_device_camera_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/_8sdp"
+                        android:layout_marginRight="@dimen/_8sdp"
                         android:background="@color/blue_transparent"
                         android:text="cam hr"
-                        android:layout_marginLeft="@dimen/_5sdp"
-                        android:layout_marginRight="@dimen/_5sdp"
-
                         android:textColor="@color/automation_red"
                         android:textSize="12sp" />
 
-                </LinearLayout>
+                </RelativeLayout>
 
 
             </LinearLayout>
@@ -146,7 +147,6 @@
         android:id="@+id/view_header"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="@dimen/_5sdp"
         android:background="@color/automation_dark_gray" />
 
 </LinearLayout>

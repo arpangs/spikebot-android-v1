@@ -89,7 +89,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     private LinearLayout linearAlertExpand, linearAlertDown, linearAlertExpand_temp, linearAlertDown_temp, linearMultisensor;
     private boolean flagAlert = false, flagAlertTemp = false, flagEditSensor = false, flagSensorNoti = false;
 
-    private String temp_room_name, temp_room_id, temp_module_id;
+    private String temp_room_name, temp_room_id, temp_module_id, temp_sensor_name;
     private int isCFSelected = -1;
     private Socket mSocket;
 
@@ -125,11 +125,12 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        temp_sensor_name = getIntent().getStringExtra("temp_sensor_name");
         temp_room_name = getIntent().getStringExtra("temp_room_name");
         temp_room_id = getIntent().getStringExtra("temp_room_id");
         temp_module_id = getIntent().getStringExtra("temp_module_id");
 
-        toolbar.setTitle(temp_room_name);
+        toolbar.setTitle(temp_sensor_name);
     }
 
     @Override
@@ -515,7 +516,15 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_save) {
-            hideSoftKeyboard();
+
+
+            viewEditSensor.setVisibility(View.GONE);
+            flagEditSensor = false;
+            sensorName.setCursorVisible(false);
+            sensorName.setFocusableInTouchMode(false);
+            sensorName.setClickable(false);
+            ChatApplication.closeKeyboard(this);
+
             updateTempSensor();
         } else if (id == R.id.action_log) {
             checkIntent(true);

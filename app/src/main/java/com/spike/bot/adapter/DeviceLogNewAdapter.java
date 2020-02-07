@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.spike.bot.R;
+import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.DeviceLog;
 
@@ -62,7 +63,7 @@ public class DeviceLogNewAdapter extends RecyclerView.Adapter<DeviceLogNewAdapte
                 holder.tv_device_log_time.setText(strDateOfTimeTemp[1] + " " + strDateOfTimeTemp[2]);
             }
 
-            if (deviceLog.getIs_unread().equalsIgnoreCase("1")) {
+            if (!deviceLogs.get(listPosition).getSeen_by().replace("|", "").contains(Common.getPrefValue(mContext, Constants.USER_ID))) {
                 holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
                 holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_red));
                 holder.tv_device_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
@@ -78,7 +79,8 @@ public class DeviceLogNewAdapter extends RecyclerView.Adapter<DeviceLogNewAdapte
                 holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_black));
             }
 
-            if (deviceLog.getActivity_type().contains("No Record Found")) {
+            if (deviceLog.getActivity_type().contains("No Record Found"))
+            {
                 holder.tv_device_description.setVisibility(View.GONE);
                 holder.tv_device_log_date.setVisibility(View.GONE);
                 holder.tv_device_log_time.setVisibility(View.GONE);

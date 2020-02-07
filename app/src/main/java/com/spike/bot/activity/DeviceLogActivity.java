@@ -68,6 +68,8 @@ import com.spike.bot.model.RoomVO;
 import com.spike.bot.model.ScheduleVO;
 import com.spike.bot.model.SensorLogRes;
 
+import static com.spike.bot.core.Constants.getNextDate;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -132,7 +134,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
     ArrayList monthlist = new ArrayList();
     int row_index = -1;
 
-    MenuItem menuItem,menuItemReset;
+    MenuItem menuItem, menuItemReset;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -246,7 +249,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 //        if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor") || isCheckActivity.equals("multisensor")) {
 //            getSensorLog(0);
 //        } else {
-        callFilterData(0, "");
+        // callFilterData(0, "");
 //        }
         setMonthList();
         setMonthAdpater();
@@ -300,8 +303,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_filter, menu);
-         menuItem = menu.findItem(R.id.action_filter);
-         menuItemReset = menu.findItem(R.id.action_reset);
+        menuItem = menu.findItem(R.id.action_filter);
+        menuItemReset = menu.findItem(R.id.action_reset);
         menuItemReset.setVisible(false);
         menuItem.setVisible(true);
         if (isFilterActive) {
@@ -335,10 +338,10 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             return true;
         } else if (id == R.id.action_reset) {
             rv_month_list.setVisibility(View.VISIBLE);
-            menuItemReset.setVisible(false) ;
+            menuItemReset.setVisible(false);
             menuItem.setVisible(true);
 
-            callFilterData(0,"refresh");
+            callFilterData(0, "refresh");
            /* isFilterActive = false;
             isEndOfRecord = false;
 
@@ -518,7 +521,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                isFilterActive =false;
+                isFilterActive = false;
             }
         });
         btnSave.setOnClickListener(new View.OnClickListener() {
@@ -1445,7 +1448,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
                         date_time = year + "-" + ActivityHelper.hmZero(monthOfYear + 1) + "-" + ActivityHelper.hmZero(dayOfMonth);
                         //*************Call Time Picker Here ********************
-                        tiemPicker(editText, isEndDate);
+                        timePicker(editText, isEndDate);
                     }
                 }, mYear, mMonth, mDay);
         datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
@@ -1453,7 +1456,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
     }
 
 
-    private void tiemPicker(final CustomEditText editText, final boolean isEndDate) {
+    private void timePicker(final CustomEditText editText, final boolean isEndDate) {
         // Get Current Time
         final Calendar c = Calendar.getInstance();
         mHour = c.get(Calendar.HOUR_OF_DAY);
@@ -1518,11 +1521,6 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
         return end_date.after(start_date);
     }
 
-    public static boolean compareCurrentDate(String startdate, String enddate) {
-        Date start_date = getDate(startdate);
-        Date end_date = getDate(enddate);
-        return end_date.before(start_date);
-    }
 
     /*
      * convert string format to date format
@@ -1605,7 +1603,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
             } else {
                 object.put("start_date", start_date);
-                object.put("end_date", end_date);
+                object.put("end_date", getNextDate(end_date));
                 RoomVO roomVO = null;
                 if (mSpinnerRoomList != null) {
                     roomVO = (RoomVO) mSpinnerRoomList.getSelectedItem();
@@ -1794,9 +1792,10 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                             String activity_time = jsonObject.getString("activity_time");
                             String user_name = jsonObject.getString("user_name");
                             String is_unread = jsonObject.optString("is_unread");
+                            String seen_by = jsonObject.optString("seen_by");
                             String logmessage = jsonObject.optString("message");
 
-                            deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "", user_name, is_unread, logmessage));
+                            deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "", user_name, is_unread, logmessage, seen_by));
                         }
 
                         if (position == 0) {
@@ -1811,13 +1810,13 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                         if (notificationArray.length() == 0 && isFilterActive && isLoading) {
 
                             if (!isEndOfRecord) {
-                                deviceLogList.add(new DeviceLog("End of Record", "End of Record", "", "", "", "", "", ""));
+                                deviceLogList.add(new DeviceLog("End of Record", "End of Record", "", "", "", "", "", "",""));
                                 deviceLogNewAdapter.setEOR(true);
                             }
                             isEndOfRecord = true;
                         } else if (notificationArray.length() == 0 && isFilterActive) {
                             swipeRefreshLayout.setRefreshing(false);
-                            deviceLogList.add(new DeviceLog("End of Record", "No Record Found", "", "", "", "", "", ""));
+                            deviceLogList.add(new DeviceLog("End of Record", "No Record Found", "", "", "", "", "", "",""));
                             deviceLogNewAdapter.setEOR(true);
                             showAToast("No Record Found...");
 
@@ -1842,6 +1841,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                 swipeRefreshLayout.setRefreshing(false);
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+
             }
         }).execute();
     }
@@ -2177,8 +2177,9 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                                 String user_name = jsonObject.getString("user_name");
                                 String is_unread = jsonObject.optString("is_unread");
                                 String logmessage = jsonObject.optString("message");
+                                String seen_by = jsonObject.optString("seen_by");
 
-                                deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "", user_name, is_unread, logmessage));
+                                deviceLogList.add(new DeviceLog(activity_action, activity_type, activity_description, activity_time, "", user_name, is_unread, logmessage,seen_by));
                             }
 
                             if (position == 0) {
@@ -2192,12 +2193,12 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                             if (notificationArray.length() == 0 && isFilterActive && isLoading) {
 
                                 if (!isEndOfRecord) {
-                                    deviceLogList.add(new DeviceLog("End of Record", "End of Record", "", "", "", "", "", ""));
+                                    deviceLogList.add(new DeviceLog("End of Record", "End of Record", "", "", "", "", "", "",""));
                                     deviceLogNewAdapter.setEOR(true);
                                 }
                                 isEndOfRecord = true;
                             } else if (notificationArray.length() == 0 && isFilterActive) {
-                                deviceLogList.add(new DeviceLog("End of Record", "No Record Found", "", "", "", "", "", ""));
+                                deviceLogList.add(new DeviceLog("End of Record", "No Record Found", "", "", "", "", "", "",""));
                                 deviceLogNewAdapter.setEOR(true);
                                 showAToast("No Record Found...");
                             }
@@ -2248,10 +2249,10 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 //                getSensorLog(0);
 //            } else {
 
-                getDatesInMonth(Calendar.getInstance().get(Calendar.YEAR), row_index);
-                callFilterData(0, "");
+            getDatesInMonth(Calendar.getInstance().get(Calendar.YEAR), row_index);
+            callFilterData(0, "");
 
-     //       callFilterData(0, "refresh");
+            //       callFilterData(0, "refresh");
 //            }
             swipeRefreshLayout.setRefreshing(true);
             deviceLogNewAdapter.notifyDataSetChanged();
@@ -2276,8 +2277,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                 isFilterType = false;
                 isFilterActive = false;
             }
-                getDatesInMonth(Calendar.getInstance().get(Calendar.YEAR), row_index);
-                callFilterData(0, "");
+            getDatesInMonth(Calendar.getInstance().get(Calendar.YEAR), row_index);
+            callFilterData(0, "");
 
 //            }
         }
@@ -2311,7 +2312,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
     public void unreadApiCall(final boolean b) {
 
-        String webUrl = ChatApplication.url + Constants.UPDATE_UNREAD_LOGS;
+        String webUrl = ChatApplication.url + Constants.logsfind;
 
         JSONObject jsonObject = new JSONObject();
         try {
@@ -2319,13 +2320,13 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             JSONArray jsonArray = new JSONArray();
 
             JSONObject object = new JSONObject();
-            object.put("sensor_type", "temp");
-            object.put("module_id", "" + Mood_Id);
+            object.put("log_type", "room");
+         //   object.put("module_id", "" + Mood_Id);
             object.put("room_id", "" + mRoomId);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonArray.put(object);
+           // jsonArray.put(object);
 
-            jsonObject.put("update_logs", jsonArray);
+       //     jsonObject.put("update_logs", jsonArray);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -2400,11 +2401,6 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                 @Override
                 public void onClick(View v) {
                     row_index = holder.linearlayout_month.getId();
-
-                  /*  if(row_index > Calendar.getInstance().get(Calendar.MONTH))
-                    {
-                        Toast.makeText(getApplicationContext(), "End date is not less than Start Date", Toast.LENGTH_SHORT).show();
-                    }*/
                     datelist.clear();
                     getDatesInMonth(Calendar.getInstance().get(Calendar.YEAR), row_index);
                     notifyDataSetChanged();
