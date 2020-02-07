@@ -84,6 +84,7 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
 //                    }else {
 
                         if (devicesList.get(i).getDeviceId().equalsIgnoreCase(deviceId)) {
+                            ChatApplication.logDisplay("device is same "+deviceId);
                             devicesList.get(i).setDeviceStatus(Integer.parseInt(deviceStatus));
                             reloadDeviceList(devicesList.get(i));
                             break;

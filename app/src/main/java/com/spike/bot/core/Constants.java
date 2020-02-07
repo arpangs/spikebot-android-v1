@@ -238,7 +238,7 @@ public class Constants {
     public static final String deletePhilipsHue = "/deletePhilipsHue";
 
     //panel
-    public static final String ADD_CUSTOM_PANEL = "/addCustomPanel";
+    public static final String ADD_CUSTOM_PANEL = "/panel/add-existing";
     public static final String CHANGE_ROOM_PANELMOOD_STATUS_NEW = "/room/status";
     public static final String mood_status = "/mood/status";
     public static final String CHANGE_PANELSTATUS = "/panel/status";

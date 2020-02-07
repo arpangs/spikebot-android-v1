@@ -322,7 +322,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
             return;
         }
 
-//        ActivityHelper.showProgressDialog(WifiListActivity.this, "Please wait... ", true);
+        ActivityHelper.showProgressDialog(WifiListActivity.this, "Please wait... ", true);
         String url = "http://" + wifiIP + "/wifisave?s=" + wiFiList.getNetworkName() + "&p=" + s + "&$=" + edWifiIP;
 
         ChatApplication.logDisplay("url is " + url);
@@ -388,31 +388,6 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
             }
 
         }.start();
-
-//        new CountDownTimer(30000, 1000) {
-//            public void onTick(long millisUntilFinished) {
-//                txtWait.setText("Please wait "+ TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished)+" sec");
-//
-//            }
-//
-//            public void onFinish() {
-//                ChatApplication.logDisplay("wifi is "+ NetworkUtil.getWifiSSid(WifiListActivity.this));
-//                if(NetworkUtil.getWifiSSid(WifiListActivity.this).toString().startsWith("Spike")){
-//                    setViewButton(txtSave,true);
-//                    ChatApplication.showToast(WifiListActivity.this,getResources().getString(R.string.something_wrong1));
-//                    ActivityHelper.dismissProgressDialog();
-//                }else {
-//                    dialog.dismiss();
-//                    ActivityHelper.dismissProgressDialog();
-//                    ChatApplication.showToast(WifiListActivity.this,"Ir blaster successfully add.");
-//                    isNetworkChange = true;
-//                    showIRSensorDialog();
-//                }
-//
-//            }
-//
-//        }.start();
-
     }
 
     @Override

@@ -100,7 +100,7 @@ public class DeviceListLayoutHelper implements SectionStateChangeListener {
         for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
             RoomVO key;
             mDataArrayList.add((key = entry.getKey()));
-            if (key.isExpanded) {
+            if (key.isExpanded()) {
                 panelList = entry.getValue();
                 for (int i = 0; i < panelList.size(); i++) {
                     //add panel

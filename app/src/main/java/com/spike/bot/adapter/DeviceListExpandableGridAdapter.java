@@ -145,14 +145,14 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
                 holder.rel_main_view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded);
+                        mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded());
                     }
                 });
 
                 holder.txtSelectDevice.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded);
+                        mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded());
                     }
                 });
 
@@ -165,7 +165,7 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
                         mSectionStateChangeListener.onSectionStateChanged(section, isChecked);
                     }
                 });
-                holder.sectionToggleButton.setChecked(section.isExpanded);
+                holder.sectionToggleButton.setChecked(section.isExpanded());
 
                 holder.txtSelectDevice.setVisibility(View.VISIBLE);
                 if (!section.getSelectDevice().equalsIgnoreCase("0")) {
