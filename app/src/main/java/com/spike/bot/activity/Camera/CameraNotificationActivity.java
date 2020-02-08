@@ -122,7 +122,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
     @Override
     public void onClick(View v) {
         if (v == view_rel_badge) {
-            //callupdateUnReadCameraLogs(true);
+            callupdateUnReadCameraLogs(true);
 
         }
     }
