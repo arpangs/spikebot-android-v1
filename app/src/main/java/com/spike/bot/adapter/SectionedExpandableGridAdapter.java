@@ -168,6 +168,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         holder.txtTotalDevices.setText("" + section.getDevice_count() + " devices");
                     }
 
+                    ChatApplication.logDisplay("expanded is or not "+section.isExpanded()+" "+section.getRoomName()+" "+section.getRoomId());
                     if (section.isExpanded()) {
                         holder.mImgIcnLog.setVisibility(View.VISIBLE);
                         holder.sectionTextView.setMaxLines(2);
@@ -194,6 +195,12 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             roomName += "...";
                         }
                         holder.sectionTextView.setMaxLines(1);
+                    }
+
+                    if (section.isExpanded()) {
+                        holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side));
+                    } else {
+                        holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow));
                     }
 
 
@@ -273,6 +280,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                                 section.setOld_room_status(section.getRoom_status());
                                 section.setRoom_status(section.getRoom_status() == 0 ? 1 : 0);
                                 notifyItemChanged(position);
+
                             }
                             mItemClickListener.itemClicked(section, "onoffclick");
                         }
@@ -358,6 +366,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                             mItemClickListener.itemClicked(section, "expandclick");
 
+//                            mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded());
                             mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded());
                         }
                     });
@@ -493,13 +502,6 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     } else {
                         holder.img_setting_badge_count.setVisibility(View.GONE);
                         holder.img_setting_badge.setVisibility(View.GONE);
-                    }
-
-
-                    if (section.isExpanded()) {
-                        holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side));
-                    } else {
-                        holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow));
                     }
 
                 } catch (Exception ex) {

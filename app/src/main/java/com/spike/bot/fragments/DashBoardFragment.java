@@ -744,7 +744,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                     int code = result.getInt("code"); //message
                     String message = result.getString("message");
                     if (code == 200) {
-                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
+//                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
                     } else {
                         updateDeviceOfflineMode(deviceVO);
                         ChatApplication.showToast(activity, message);
@@ -813,7 +813,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                     int code = result.getInt("code"); //message
                     String message = result.getString("message");
                     if (code == 200) {
-                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
+//                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
                     } else {
                         ChatApplication.showToast(activity, message);
                     }
@@ -1745,7 +1745,8 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                                 panelList1.add(panel1);
 
                                 section1.setPanelList(panelList1);
-                                section1.setIs_unread(jetsonlist.get(0).getTotal_unread());
+//                                section1.setIs_unread(jetsonlist.get(0).getTotal_unread());
+                                section1.setIs_unread("0");
 
                                 roomList.add(section1);
                             }
@@ -1777,6 +1778,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    ChatApplication.logDisplay(e.getMessage());
                 } finally {
                     dismissProgressDialog();
                     showDialog = 0;

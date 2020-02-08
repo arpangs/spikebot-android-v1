@@ -87,7 +87,7 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
                             ChatApplication.logDisplay("device is same "+deviceId);
                             devicesList.get(i).setDeviceStatus(Integer.parseInt(deviceStatus));
                             reloadDeviceList(devicesList.get(i));
-                            break;
+//                            break;
                         }
 //                    }
                 }
@@ -108,8 +108,9 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
                     if (deviceVO1.getDeviceId().equals(deviceId)) {
                         ChatApplication.logDisplay("status update panel adapter match");
                         ((DeviceVO) mDataArrayList.get(k)).setDevice_sub_status(deviceStatus);
-                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
-                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
+                        reloadDeviceList(mDataArrayList.get(k));
+//                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
+//                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
                         break;
                     }
 
@@ -131,9 +132,10 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
                     if (deviceVO1.getDeviceId().equals(deviceId)) {
                         ChatApplication.logDisplay("status update panel adapter match");
                         ((DeviceVO) mDataArrayList.get(k)).setDeviceStatus(Integer.parseInt(deviceStatus));
-                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
-                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
-                        break;
+                        reloadDeviceList(mDataArrayList.get(k));
+//                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
+//                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
+//                        break;
                     }
 
                 }
@@ -219,7 +221,7 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
             if(room_id.equals(key.getRoomId())){
                 key.setRoom_status(Integer.parseInt(mood_status));
                 reloadDeviceList(key);
-                break;
+//                break;
             }
         }
     }
@@ -298,12 +300,12 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
         }
         mLastClickTime = SystemClock.elapsedRealtime();
         this.section = section;
-        section.isExpanded = isOpen;
+        section.setExpanded(isOpen);
         if(!isOpen){
             if(ListUtils.arrayListMood.size()>0){
                 for(int i=0;i<ListUtils.arrayListMood.size();i++){
                     if(section.getRoomId().equalsIgnoreCase(ListUtils.arrayListMood.get(i).getRoomId())){
-                        section.isExpanded = false;
+//                        section.isExpanded = false;
                         section.setExpanded(false);
                         ListUtils.arrayListMood.set(i,section);
                     }
@@ -318,7 +320,7 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
 //            section.isExpanded = isOpen;
 //            ListUtils.arrayListMood.add(section);
 //            notifyDataSetChanged();
-            section.isExpanded = isOpen;
+            section.setExpanded(isOpen);
 
             for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
                 RoomVO key = entry.getKey();
