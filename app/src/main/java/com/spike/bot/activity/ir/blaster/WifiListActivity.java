@@ -310,10 +310,6 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
         dialog.show();
     }
 
-    public void setViewButton(TextView txtSave,boolean isflag){
-        txtSave.setVisibility(isflag==true ? View.GONE:View.GONE);
-    }
-
     /*blaster wifi connection request
     * */
     private void callWifiPasswordCheck(TextView txtSave,TextView txtWait,String s, WifiModel.WiFiList wiFiList, String edWifiIP, final Dialog dialog) {
@@ -338,23 +334,19 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
                             Constants.isWifiConnectSave = true;
                             moduleId = result.optString("moduleId");
                             if (moduleId.length() > 1) {
-//                                setViewButton(txtSave,false);
                                 setSaveView(txtSave,txtWait,dialog);
                             }
                         } else {
-                            setViewButton(txtSave,true);
                             ActivityHelper.dismissProgressDialog();
                             ChatApplication.showToast(WifiListActivity.this, "" + result.optString("response"));
                         }
                     } else {
-//                        setViewButton(txtSave,true);
                         ActivityHelper.dismissProgressDialog();
                         ChatApplication.showToast(WifiListActivity.this, "Please try again later.");
                     }
 
 
                 } catch (Exception e) {
-                    setViewButton(txtSave,true);
                     e.printStackTrace();
                     ActivityHelper.dismissProgressDialog();
                 } finally {
@@ -364,7 +356,6 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                setViewButton(txtSave,true);
                 ChatApplication.showToast(WifiListActivity.this, "Please try again later.");
                 ChatApplication.logDisplay("ir blaster is found result error " + error.toString());
                 //found

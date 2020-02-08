@@ -423,6 +423,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             }
                         }
                     });
+                    holder.mImgSch.setId(position);
                     holder.mImgSch.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -431,7 +432,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                                     return;
                                 mItemClickListener.itemClicked(new RoomVO(), "cameraopen");
                             } else {
-                                mItemClickListener.itemClicked(section, "icnSch");
+                                mItemClickListener.itemClicked((RoomVO) mDataArrayList.get(holder.mImgSch.getId()), "icnSch");
                             }
                         }
                     });

@@ -370,8 +370,8 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         }
 
         for (RoomVO roomVO : ListUtils.arrayListRoom) {
+            ChatApplication.logDisplay("room id is same check "+roomVO.getRoomName()+"  "+roomVO.isExpanded());
             if (roomVO.isExpanded && roomVO.getRoomId().equalsIgnoreCase(section.getRoomId())) {
-                ChatApplication.logDisplay("room id is same "+section.getRoomId());
 //                section.isExpanded = true;
                 section.setExpanded(true);
             }
@@ -447,11 +447,8 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
 
         section.setExpanded(isOpen);
 
-        ChatApplication.logDisplay("room id is calling "+section.getRoomId());
-
-
         if (!isOpen) {
-
+            ChatApplication.logDisplay("room id is calling!! "+section.getRoomName()+"  " +isOpen);
             if (ListUtils.arrayListRoom.size() > 0) {
 
                 for (int i = 0; i < ListUtils.arrayListRoom.size(); i++) {
@@ -465,6 +462,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
             }
 
         } else {
+            ChatApplication.logDisplay("room id is calling "+section.getRoomName()+"  " +isOpen);
             ListUtils.arrayListRoom.add(section);
         }
 

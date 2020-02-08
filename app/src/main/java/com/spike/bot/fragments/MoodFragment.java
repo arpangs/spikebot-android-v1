@@ -225,7 +225,6 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             }
             onLoadFragment();
         }
-
     }
 
     @Override
@@ -303,9 +302,17 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             startActivity(intent);
         }else if(action.equalsIgnoreCase("imgSch")){
             Intent intent = new Intent(getActivity(), ScheduleListActivity.class);
+//            intent.putExtra("moodName",roomVO.getRoomName());
+//            intent.putExtra("moodId",roomVO.getRoomId());
+//            intent.putExtra("isMoodAdapter",true); //added in last call
+//            intent.putExtra("isActivityType","2");
+
             intent.putExtra("moodName",roomVO.getRoomName());
+            intent.putExtra("roomName",roomVO.getRoomName());
             intent.putExtra("moodId",roomVO.getRoomId());
             intent.putExtra("isMoodAdapter",true); //added in last call
+            intent.putExtra("moodId2",roomVO.getRoomId());
+            intent.putExtra("moodId3",roomVO.getRoomId());
             intent.putExtra("isActivityType","2");
             startActivity(intent);
 

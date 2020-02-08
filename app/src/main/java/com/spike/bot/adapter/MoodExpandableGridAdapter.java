@@ -199,10 +199,11 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     }
                 });
 
+                holder.icnSchedule.setId(position);
                 holder.icnSchedule.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mItemClickListener.itemClicked(section,"imgSch");
+                        mItemClickListener.itemClicked((RoomVO) mDataArrayList.get(holder.icnSchedule.getId()),"imgSch");
                     }
                 });
 
