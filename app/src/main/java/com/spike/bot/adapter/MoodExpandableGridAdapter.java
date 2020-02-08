@@ -123,9 +123,9 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     holder.iv_icon.setImageResource(R.drawable.room_off);
                 }
 
-                holder.sectionToggleButton.setChecked(section.isExpanded);
+                holder.sectionToggleButton.setChecked(section.isExpanded());
 
-                if(section.isExpanded){
+                if(section.isExpanded()){
                     holder.iv_mood_delete.setVisibility(View.VISIBLE);
                     holder.iv_mood_edit.setVisibility(View.VISIBLE);
                 }
@@ -153,7 +153,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                         if(!isClickable)
                             return;
                         mItemClickListener.itemClicked(section,"expandclick");
-                        mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded);
+                        mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded());
                     }
                 });
 
@@ -208,7 +208,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
 
                 holder.txtTotalDevices.setText(""+section.getDevice_count() + " devices");
 
-                if(section.isExpanded){
+                if(section.isExpanded()){
                     holder.ll_top_section.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side));
                 }else {
                     holder.ll_top_section.setBackground(mContext.getDrawable(R.drawable.background_shadow));
