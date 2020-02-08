@@ -13,9 +13,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -110,6 +112,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
 
         linearLayoutManager = new LinearLayoutManager(CameraDeviceLogActivity.this);
         rvDeviceLog.setLayoutManager(linearLayoutManager);
+
 
         if (TextUtils.isEmpty(camera_id)) {
             camera_id = "";
@@ -466,7 +469,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         MonthAdapter adapter = new MonthAdapter(this, monthlist);
         rv_month_list.setAdapter(adapter);
         rv_month_list.getLayoutManager().scrollToPosition(row_index);
-        rv_month_list.setHasFixedSize(true);
+       // rv_month_list.setHasFixedSize(true);
     }
 
     private void setMonthList() {
@@ -501,7 +504,6 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         ChatApplication.logDisplay("current_end_date " + end_date);
         callCameraLog(camera_id, start_date, getNextDate(end_date), notification_number);
     }
-
 
 
     public class MonthAdapter extends RecyclerView.Adapter<MonthAdapter.MonthViewHolder> {
