@@ -85,16 +85,6 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         mSectionedExpandableGridAdapter.notifyDataSetChanged();
     }
 
-    //reload the row item in recycle
-    public void reloadDeviceList1(Object obj) {
-        int position = mDataArrayList.indexOf(obj);
-
-        if (position != -1) {
-            mDataArrayList.set(position, obj);
-            mSectionedExpandableGridAdapter.notifyItemChanged(position);
-        }
-    }
-
     public void updateFanDevice(String deviceId, String deviceStatus) {
 
         for (int k = 0; k < mDataArrayList.size(); k++) {
@@ -106,8 +96,8 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                     if (deviceVO1.getDeviceId().equals(deviceId)) {
                         ChatApplication.logDisplay("status update panel adapter match");
                         ((DeviceVO) mDataArrayList.get(k)).setDevice_sub_status(deviceStatus);
-//                        reloadDeviceList(((DeviceVO) mDataArrayList.get(k)));
-                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
+                        reloadDeviceList(((DeviceVO) mDataArrayList.get(k)));
+//                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
 //                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
                         break;
                     }
@@ -130,8 +120,8 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                         ChatApplication.logDisplay("status update panel adapter match");
                         ((DeviceVO) mDataArrayList.get(k)).setDeviceStatus(Integer.parseInt(deviceStatus));
                         ((DeviceVO) mDataArrayList.get(k)).setDevice_sub_status(String.valueOf(device_sub_status));
-//                        reloadDeviceList(((DeviceVO) mDataArrayList.get(k)));
-                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
+                        reloadDeviceList(((DeviceVO) mDataArrayList.get(k)));
+//                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
                         break;
                     }
 
@@ -162,29 +152,6 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
 //        mSectionedExpandableGridAdapter.notifyDataSetChanged();
     }
 
-    public void updateModuleItem(String module_id, String module_status) {
-
-        for (int k = 0; k < mDataArrayList.size(); k++) {
-
-            if(mDataArrayList.get(k) instanceof DeviceVO){
-                DeviceVO deviceVO1 = (DeviceVO) mDataArrayList.get(k);
-                if (deviceVO1 != null && deviceVO1.isSensor()) {
-
-                    if (deviceVO1.getModuleId().equals(module_id)) {
-                        ((DeviceVO) mDataArrayList.get(k)).setIsActive(module_status.equals("y")?1:-1);
-                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
-//                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
-                        break;
-                    }
-
-                }
-            }
-        }
-//        mSectionedExpandableGridAdapter.notifyDataSetChanged();
-
-    }
-
-
     public void updateModuleActiveItem(String module_id, String module_status) {
 
         for (int k = 0; k < mDataArrayList.size(); k++) {
@@ -206,56 +173,6 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
 
     }
 
-    public void updateItem(String moduleId, String deviceId, String deviceStatus, int is_locked) {
-
-        for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
-
-            RoomVO key = entry.getKey();
-
-            ArrayList<PanelVO> panelsList = entry.getValue();
-
-            for (int i1 = 0; i1 < panelsList.size(); i1++) {
-                PanelVO panel = panelsList.get(i1);
-
-                ArrayList<DeviceVO> devicesList = panel.getDeviceList();
-                //            ChatApplication.logDisplay("panel status update is "+panel.getPanel_name_sub());
-                //Device Loop
-
-                //if (devicesList.contains(item)) {
-                for (int i = 0; i < devicesList.size(); i++) {
-
-                    devicesList.get(i).setIs_locked(is_locked);
-                    if (devicesList.get(i).getDeviceType().equalsIgnoreCase("2")) {
-
-                        if (devicesList.get(i).getRemote_device_id().equalsIgnoreCase(deviceId) &&
-                                devicesList.get(i).getModuleId().equalsIgnoreCase(moduleId)) {
-
-                            devicesList.get(i).setRemote_status(Integer.parseInt(deviceStatus) == 1 ? "ON" : "OFF");
-                        }
-
-                    }else {
-                        if (devicesList.get(i).getModuleId().equalsIgnoreCase(moduleId) && devicesList.get(i)
-                                .getDeviceId().equalsIgnoreCase(deviceId)) {
-                            if (devicesList.get(i).getSensor_type() != null &&
-                                    (devicesList.get(i).getSensor_type().equalsIgnoreCase("irblaster"))) {
-                                devicesList.get(i).setRemote_status(Integer.parseInt(deviceStatus) == 1 ? "ON" : "OFF");
-                            } else {
-                                devicesList.get(i).setDeviceStatus(Integer.parseInt(deviceStatus));
-                            }
-
-                            //  reloadDeviceList(devicesList.get(i));
-
-                            //   mSectionedExpandableGridAdapter.notifyItemChanged(i1,devicesList.get(i));
-
-                        }
-                    }
-                }
-            }
-        }
-        mSectionedExpandableGridAdapter.notifyDataSetChanged();
-
-    }
-
     public void updatePanel(String id, String deviceStatus, String room_panel_id) {
         for (int k = 0; k < mDataArrayList.size(); k++) {
 
@@ -264,35 +181,15 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                 if (deviceVO1 != null) {
                     if (deviceVO1.getPanelId().equals(id)) {
                         ((PanelVO) mDataArrayList.get(k)).setPanel_status(Integer.parseInt(deviceStatus));
-//                        reloadDeviceList(((PanelVO) mDataArrayList.get(k)));
-                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
+                        reloadDeviceList(((PanelVO) mDataArrayList.get(k)));
+//                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
 //                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
-                        break;
+//                        break;
                     }
 
                 }
             }
         }
-//        PanelVO item = new PanelVO();
-//        item.setPanelId(id);
-//        item.setPanel_status(Integer.parseInt(deviceStatus));
-//
-//        for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
-//            RoomVO key = entry.getKey();
-//
-//            ArrayList<PanelVO> panelsList = entry.getValue();
-//            if (panelsList.contains(item)) {
-//
-//                for (int i = 0; i < panelsList.size(); i++) {
-//
-//                    if (panelsList.get(i).equals(item)) {
-//                        panelsList.get(i).setPanel_status(Integer.parseInt(deviceStatus));
-//
-//                        reloadDeviceList(panelsList.get(i));
-//                    }
-//                }
-//            }
-//        }
     }
 
     public String getPanelName(String roomPanelId) {
@@ -315,17 +212,6 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
     }
 
     public void updateRoom(String id, String deviceStatus) {
-//        RoomVO item = new RoomVO();
-//        item.setRoomId(id);
-//
-//        for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
-//            RoomVO key = entry.getKey();
-//            if (id.equals(key.getRoomId())) {
-//                key.setRoom_status(Integer.parseInt(deviceStatus));
-//                reloadDeviceList(key);
-//            }
-//        }
-
         for (int k = 0; k < mDataArrayList.size(); k++) {
 
             if(mDataArrayList.get(k) instanceof RoomVO){
@@ -334,10 +220,10 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                     if (deviceVO1.getRoomId().equals(id)) {
                         ChatApplication.logDisplay("room refreesh is ");
                         ((RoomVO) mDataArrayList.get(k)).setRoom_status(Integer.parseInt(deviceStatus));
-//                        reloadDeviceList(((RoomVO) mDataArrayList.get(k)));
-                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
+                        reloadDeviceList(((RoomVO) mDataArrayList.get(k)));
+//                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
 //                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
-                        break;
+//                        break;
                     }
 
                 }
@@ -456,7 +342,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         if (position != -1) {
             mDataArrayList.set(position, obj);
             mSectionedExpandableGridAdapter.notifyItemChanged(position);
-            //   mSectionedExpandableGridAdapter.notifyDataSetChanged();
+//               mSectionedExpandableGridAdapter.notifyDataSetChanged();
 
         }
     }
@@ -486,7 +372,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         for (RoomVO roomVO : ListUtils.arrayListRoom) {
             if (roomVO.isExpanded && roomVO.getRoomId().equalsIgnoreCase(section.getRoomId())) {
                 ChatApplication.logDisplay("room id is same "+section.getRoomId());
-                section.isExpanded = true;
+//                section.isExpanded = true;
                 section.setExpanded(true);
             }
         }
@@ -559,7 +445,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         ListUtils.sectionRoom = section;
         ListUtils.sectionRoom.setExpanded(isOpen);
 
-        section.isExpanded = isOpen;
+        section.setExpanded(isOpen);
 
         ChatApplication.logDisplay("room id is calling "+section.getRoomId());
 
@@ -571,7 +457,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                 for (int i = 0; i < ListUtils.arrayListRoom.size(); i++) {
                     if (section.getRoomId().equals(ListUtils.arrayListRoom.get(i).getRoomId())) {
                         ChatApplication.logDisplay("room id is same "+section.getRoomId()+" "+ListUtils.arrayListRoom.get(i).getRoomId());
-                        section.isExpanded = false;
+//                        section.isExpanded = false;
                         section.setExpanded(false);
                         ListUtils.arrayListRoom.set(i, section);
                     }
@@ -584,7 +470,8 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
 
 
         if (!mRecyclerView.isComputingLayout()) {
-            section.isExpanded = isOpen;
+//            section.isExpanded = isOpen;
+            section.setExpanded(isOpen);
 
             for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
                 RoomVO key = entry.getKey();
