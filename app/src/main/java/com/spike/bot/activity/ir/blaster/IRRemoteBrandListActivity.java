@@ -223,6 +223,7 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
         ActivityHelper.showProgressDialog(IRRemoteBrandListActivity.this, "Please Wait...", false);
 
         String url = ChatApplication.url + Constants.getDeviceBrandRemoteList + "/" + brandList.getBrandId();
+
         new GetJsonTask(this, url, "GET", "", new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
@@ -230,7 +231,7 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
                 try {
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    ChatApplication.logDisplay("ir result is " + result.toString());
+                    ChatApplication.logDisplay("ir result is " + url+" "+result.toString());
                     if (code == 200) {
 
                         if (arrayList != null) {

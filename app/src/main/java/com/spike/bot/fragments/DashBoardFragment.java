@@ -1653,8 +1653,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                             String jsonTextTemp1 = Common.getPrefValue(getContext(), Common.USER_JSON);
                             List<User> userList1 = new ArrayList<User>();
                             if (!TextUtils.isEmpty(jsonTextTemp1)) {
-                                Type type = new TypeToken<List<User>>() {
-                                }.getType();
+                                Type type = new TypeToken<List<User>>() {}.getType();
                                 userList1 = gson.fromJson(jsonTextTemp1, type);
                             }
 

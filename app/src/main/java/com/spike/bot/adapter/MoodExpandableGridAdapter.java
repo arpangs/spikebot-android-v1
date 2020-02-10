@@ -176,15 +176,20 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     }
                 });
 
-
-                holder.sectionToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                holder.sectionToggleButton.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    public void onClick(View v) {
                         holder.sectionTextView.performClick();
-//                        mSectionStateChangeListener.onSectionStateChanged(section, isChecked);
                     }
                 });
 
+               /* holder.sectionToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        holder.sectionTextView.performClick();
+                    }
+                });
+*/
                 holder.txtTotalDevices.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -199,10 +204,11 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     }
                 });
 
+                holder.icnSchedule.setId(position);
                 holder.icnSchedule.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mItemClickListener.itemClicked(section,"imgSch");
+                        mItemClickListener.itemClicked((RoomVO) mDataArrayList.get(holder.icnSchedule.getId()),"imgSch");
                     }
                 });
 

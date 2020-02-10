@@ -370,8 +370,8 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         }
 
         for (RoomVO roomVO : ListUtils.arrayListRoom) {
-            if (roomVO.isExpanded && roomVO.getRoomId().equalsIgnoreCase(section.getRoomId())) {
-                ChatApplication.logDisplay("room id is same "+section.getRoomId());
+//            ChatApplication.logDisplay("room id is same check "+roomVO.getRoomName()+"  "+roomVO.isExpanded());
+            if (roomVO.isExpanded()==true && roomVO.getRoomId().equalsIgnoreCase(section.getRoomId())) {
 //                section.isExpanded = true;
                 section.setExpanded(true);
             }
@@ -410,7 +410,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
 
             mDataArrayList.add((key = entry.getKey()));
 
-            ChatApplication.logDisplay("room id is same key is  "+key.getRoomId()+" "+key.isExpanded());
+            ChatApplication.logDisplay("room id is same key is  "+key.getRoomName()+" "+key.isExpanded());
             if (key.isExpanded()) {
 
                 //mDataArrayList.add(new PanelVO("Panel1"));
@@ -436,7 +436,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
     private long mLastClickTime = 0;
     @Override
     public void onSectionStateChanged(RoomVO section, boolean isOpen) {
-        if (SystemClock.elapsedRealtime() - mLastClickTime < 500) {
+        if (SystemClock.elapsedRealtime() - mLastClickTime < 500 ) {
             return;
         }
         mLastClickTime = SystemClock.elapsedRealtime();
@@ -444,14 +444,12 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         this.section = section;
         ListUtils.sectionRoom = section;
         ListUtils.sectionRoom.setExpanded(isOpen);
-
         section.setExpanded(isOpen);
 
-        ChatApplication.logDisplay("room id is calling "+section.getRoomId());
-
+        ChatApplication.logDisplay("room id is callingcheck!! "+section.getRoomName()+"  " +isOpen);
 
         if (!isOpen) {
-
+            ChatApplication.logDisplay("room id is calling!! "+section.getRoomName()+"  " +isOpen);
             if (ListUtils.arrayListRoom.size() > 0) {
 
                 for (int i = 0; i < ListUtils.arrayListRoom.size(); i++) {
@@ -465,6 +463,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
             }
 
         } else {
+            ChatApplication.logDisplay("room id is calling "+section.getRoomName()+"  " +isOpen);
             ListUtils.arrayListRoom.add(section);
         }
 
