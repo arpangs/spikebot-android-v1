@@ -135,7 +135,6 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
                         reloadDeviceList(mDataArrayList.get(k));
 //                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
 //                        mSectionedExpandableGridAdapter.notifyDataSetChanged();
-//                        break;
                     }
 
                 }
@@ -221,7 +220,6 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
             if(room_id.equals(key.getRoomId())){
                 key.setRoom_status(Integer.parseInt(mood_status));
                 reloadDeviceList(key);
-//                break;
             }
         }
     }
@@ -248,8 +246,7 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
         }
 
         for(RoomVO moodVO : ListUtils.arrayListMood){
-            if(moodVO.isExpanded && section.getRoomId().equalsIgnoreCase(moodVO.getRoomId())){
-                section.isExpanded = true;
+            if(moodVO.isExpanded() && section.getRoomId().equalsIgnoreCase(moodVO.getRoomId())){
                 section.setExpanded(true);
             }
         }
@@ -278,7 +275,7 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
             RoomVO key;
 
             mDataArrayList.add((key = entry.getKey()));
-            if (key.isExpanded ) {
+            if (key.isExpanded()) {
                 ArrayList<PanelVO> panelList = entry.getValue();
                 for(int i=0;i<panelList.size();i++){
                     //add panel

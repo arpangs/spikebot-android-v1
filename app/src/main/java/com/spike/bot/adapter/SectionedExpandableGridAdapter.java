@@ -360,12 +360,12 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             if (!isClickable)
                                 return;
 
+                            ChatApplication.logDisplay("room id is callingclick fire !! "+section.getRoomName());
                             if (section.getRoomId().equalsIgnoreCase("camera")|| section.getRoomId().startsWith("JETSON-")) {
                                 onSmoothScrollList.onPoisitionClick(sectionPosition);
                             }
 
-                            mItemClickListener.itemClicked(section, "expandclick");
-
+//                            mItemClickListener.itemClicked(section, "expandclick");
 //                            mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded());
                             mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded());
                         }
@@ -383,6 +383,14 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     });
 
 
+                    holder.sectionToggleButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            holder.rel_main_view.performClick();
+                        }
+                    });
+
+/*
                     holder.sectionToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -390,14 +398,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                                 return;
 
                             holder.rel_main_view.performClick();
-//                            mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded);
-//                            if (section.isExpanded) {
-//                                mItemClickListener.itemClicked(section, "heavyloadSocketon");
-//                            } else {
-//                                mItemClickListener.itemClicked(section, "heavyloadSocketoff");
-//                            }
                         }
-                    });
+                    });*/
 
                     holder.img_room_delete.setOnClickListener(new View.OnClickListener() {
                         @Override
