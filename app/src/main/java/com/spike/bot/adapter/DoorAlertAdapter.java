@@ -84,7 +84,7 @@ public class DoorAlertAdapter extends RecyclerView.Adapter<DoorAlertAdapter.Sens
                 holder.tv_device_log_date.setText(Constants.formatcurrentdate(strDateOfTimeTemp[0]));
                 holder.tv_device_log_time.setText(strDateOfTimeTemp[1] + " " + strDateOfTimeTemp[2]);
             }
-            holder.tv_device_description.setText( arrayListLog.get(position).getMessage().trim() + " " + "at");
+            holder.tv_device_description.setText( arrayListLog.get(position).getMessage().trim() + " " + "@");
             actionList = arrayListLog.get(position).getActivityDescription().split("\\|");
 
             if (actionList[0] != null) {

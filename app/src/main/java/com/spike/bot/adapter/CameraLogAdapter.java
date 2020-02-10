@@ -67,41 +67,42 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
                 holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
             }
 
-            holder.tv_device_description.setText(arrayListLog.get(position).getMessage());
+            holder.tv_device_description.setText(arrayListLog.get(position).getMessage() + " " + "@");
             holder.tv_device_camera_name.setText(arrayListLog.get(position).getActivityDescription());
-           // holder.tv_device_log_type.setText(arrayListLog.get(position).getActivityAction());
+            // holder.tv_device_log_type.setText(arrayListLog.get(position).getActivityAction());
 
+            if (arrayListLog.get(position).getSeen_by() != null)
+            {
 
-            if (!arrayListLog.get(position).getSeen_by().replace("|", "").contains(Common.getPrefValue(mContext, Constants.USER_ID))) {
-                holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_red));
-                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
-                holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_red));
-                holder.tv_device_camera_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
-            } else {
-                holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
-                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
-                holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
-                holder.tv_device_camera_name.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+                if (!arrayListLog.get(position).getSeen_by().replace("|", "").contains(Common.getPrefValue(mContext, Constants.USER_ID))) {
+                    holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                    holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                    holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                    holder.tv_device_camera_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                } else {
+                    holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+                    holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+                    holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+                    holder.tv_device_camera_name.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
 
+                }
             }
 
-            if(arrayListLog.get(position).getLogType().contains("camera_persor_detected"))
-            {
+            if (arrayListLog.get(position).getLogType().contains("camera_persor_detected")) {
                 Glide.with(mContext)
                         .load(arrayListLog.get(position).getImageUrl())
                         .fitCenter()
                         .error(R.drawable.cam_defult)
                         .skipMemoryCache(true)
                         .into(holder.txtImage);
-            }else{
+            } else {
                 Glide.with(mContext)
-                        .load("")
+                        .load(R.drawable.camera_on)
                         .fitCenter()
-                        .error(R.drawable.camera_on)
+                        .error(R.drawable.cam_defult)
                         .skipMemoryCache(true)
                         .into(holder.txtImage);
             }
-
 
             holder.linearAlert.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -115,8 +116,24 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
                 }
             });
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
+
+            if (arrayListLog.get(position).getLogType().contains("camera_persor_detected")) {
+                Glide.with(mContext)
+                        .load(arrayListLog.get(position).getImageUrl())
+                        .fitCenter()
+                        .error(R.drawable.cam_defult)
+                        .skipMemoryCache(true)
+                        .into(holder.txtImage);
+            } else {
+                Glide.with(mContext)
+                        .load(R.drawable.camera_on)
+                        .fitCenter()
+                        .error(R.drawable.cam_defult)
+                        .skipMemoryCache(true)
+                        .into(holder.txtImage);
+            }
         }
 
     }
@@ -136,20 +153,20 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
     public class SensorViewHolder extends RecyclerView.ViewHolder {
 
         public View view_header;
-        public TextView tv_device_log_date, tv_device_camera_name, tv_device_description,tv_device_log_time;
+        public TextView tv_device_log_date, tv_device_camera_name, tv_device_description, tv_device_log_time;
         public ImageView txtImage;
         LinearLayout linearAlert;
 
         public SensorViewHolder(View view) {
             super(view);
-            tv_device_description =  itemView.findViewById(R.id.tv_device_description);
-           // tv_device_log_type =  itemView.findViewById(R.id.tv_device_log_type);
-            txtImage =  itemView.findViewById(R.id.txtImage);
-            tv_device_log_date =  itemView.findViewById(R.id.tv_device_log_date);
+            tv_device_description = itemView.findViewById(R.id.tv_device_description);
+            // tv_device_log_type =  itemView.findViewById(R.id.tv_device_log_type);
+            txtImage = itemView.findViewById(R.id.txtImage);
+            tv_device_log_date = itemView.findViewById(R.id.tv_device_log_date);
             tv_device_log_time = itemView.findViewById(R.id.tv_device_log_time);
             tv_device_camera_name = itemView.findViewById(R.id.tv_device_camera_name);
-            view_header =  itemView.findViewById(R.id.view_header);
-            linearAlert =  itemView.findViewById(R.id.linearAlert);
+            view_header = itemView.findViewById(R.id.view_header);
+            linearAlert = itemView.findViewById(R.id.linearAlert);
         }
     }
 }

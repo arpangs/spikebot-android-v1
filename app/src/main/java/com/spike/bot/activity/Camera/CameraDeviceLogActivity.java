@@ -425,10 +425,10 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
             cameraLogAdapter = new CameraLogAdapter(CameraDeviceLogActivity.this, arrayList);
             rvDeviceLog.setAdapter(cameraLogAdapter);
         } else {
+
             cameraLogAdapter.notifyDataSetChanged();
         }
         notification_number = notification_number + 20;
-
         rvDeviceLog.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -438,7 +438,8 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
                 int totalItemCount = linearLayoutManager.getItemCount();
                 int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
 
-                if (!isLoading && notification_number != 0) {
+                if (!isLoading && notification_number != 0)
+                {
                     if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                             && firstVisibleItemPosition >= 0) {
                         isLoading = true;

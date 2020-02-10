@@ -292,8 +292,10 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         public void onClick(View v) {
                             if (!isClickable)
                                 return;
-                            if (section.getRoomId().equalsIgnoreCase("camera") || section.getRoomId().startsWith("JETSON-")) {
+                            if (section.getRoomId().equalsIgnoreCase("camera")) {
                                 mItemClickListener.itemClicked(section, "showGridCamera");
+                            } else if(section.getRoomId().startsWith("JETSON-")){
+                                mItemClickListener.itemClicked(section, "showGridJetsonCamera");
                             }
                         }
                     });

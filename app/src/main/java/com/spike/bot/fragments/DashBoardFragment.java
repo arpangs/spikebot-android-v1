@@ -143,6 +143,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
     private ArrayList<RoomVO> roomList = new ArrayList<>();
     ArrayList<CameraVO> cameraList = new ArrayList<CameraVO>();
+    ArrayList<CameraVO> jetsonlist = new ArrayList<>();
 
     private String userId = "0",webUrl="";
     private int SIGN_IP_REQUEST_CODE = 204,countFlow = 0;
@@ -340,10 +341,15 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
     public void itemClicked(final RoomVO roomVO, String action) {
         if (action.equalsIgnoreCase("showGridCamera")) {
             Intent intent = new Intent(activity, CameraGridActivity.class);
-            intent.putExtra("cameraList", cameraList);
+            intent.putExtra("isshowGridCamera",true);
             startActivity(intent);
 
-        } else if (action.equalsIgnoreCase("refreshCamera")) {
+        } else if(action.equalsIgnoreCase("showGridJetsonCamera")){
+            Intent intent = new Intent(activity, CameraGridActivity.class);
+            intent.putExtra("jetsonList", jetsonlist);
+            startActivity(intent);
+        }
+        else if (action.equalsIgnoreCase("refreshCamera")) {
             getDeviceList(1);
 
         } else if (action.equalsIgnoreCase("onoffclick")) {
@@ -569,6 +575,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             callCameraToken(item, action);
         }
     }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -1454,7 +1461,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 //
                                 JSONObject object = jetsonList.optJSONObject(i);
 
-                                ArrayList<CameraVO> jetsonlist = JsonHelper.parseCameraArray(object.optJSONArray("cameraList"));
+                                jetsonlist = JsonHelper.parseCameraArray(object.optJSONArray("cameraList"));
 
                                 RoomVO section1 = new RoomVO();
                                 section1.setRoomName(object.optString("jetson_name"));
@@ -1474,6 +1481,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
                                 roomList.add(section1);
                             }
+
                         }
 
                         sectionedExpandableLayoutHelper.addSectionList(roomList);
@@ -1729,7 +1737,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 //
                                 JSONObject object=jetsonList.optJSONObject(i);
 
-                                ArrayList<CameraVO> jetsonlist = JsonHelper.parseCameraArray(object.optJSONArray("cameraList"));
+                                jetsonlist = JsonHelper.parseCameraArray(object.optJSONArray("cameraList"));
 
                                 RoomVO section1 = new RoomVO();
                                 section1.setRoomName(object.optString("jetson_name"));

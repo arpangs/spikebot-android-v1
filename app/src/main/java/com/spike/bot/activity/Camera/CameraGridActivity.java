@@ -48,6 +48,9 @@ public class CameraGridActivity extends AppCompatActivity {
     public TabLayout tabLayout;
     public ViewPager recyclerDvr;
     private ArrayList<CameraVO> cameraVOArrayList = new ArrayList<>();
+    private ArrayList<CameraVO> jetsonArrayList = new ArrayList<>();
+    String jetson_id;
+    public static boolean isCamera=false;
 
     toolBarImageCapture toolBarImageCapture;
     CameraListFragment cameraListFragment;
@@ -63,6 +66,22 @@ public class CameraGridActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        // roomVO = (RoomVO) getIntent().getExtras().getSerializable("room");
+        try {
+            isCamera = getIntent().getExtras().getBoolean("isshowGridCamera");
+            jetsonArrayList = (ArrayList<CameraVO>) getIntent().getExtras().getSerializable("jetsonList");
+
+            // jetson_id = new ArrayList<>();
+
+            if (!jetsonArrayList.isEmpty()) {
+                for (CameraVO cameraVO : jetsonArrayList) {
+                    jetson_id = cameraVO.getJetson_device_id();
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         setUi();
 
@@ -139,6 +158,12 @@ public class CameraGridActivity extends AppCompatActivity {
         try {
             object.put("admin", Integer.parseInt(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE)));
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            if(isCamera){
+                object.put("jetson_id","");
+            } else{
+                object.put("jetson_id",jetson_id);
+            }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
