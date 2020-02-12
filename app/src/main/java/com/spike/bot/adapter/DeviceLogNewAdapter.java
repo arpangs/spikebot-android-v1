@@ -79,7 +79,8 @@ public class DeviceLogNewAdapter extends RecyclerView.Adapter<DeviceLogNewAdapte
                 holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_black));
             }
 
-            if (deviceLog.getActivity_type().contains("No Record Found"))
+            if (deviceLog.getActivity_type().contains("No Record Found") || deviceLogs.size() == 0)
+
             {
                 holder.tv_device_description.setVisibility(View.GONE);
                 holder.tv_device_log_date.setVisibility(View.GONE);

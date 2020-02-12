@@ -658,7 +658,7 @@ public class Common {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        spf= new SimpleDateFormat("hh:mm a");
+        spf= new SimpleDateFormat("hh:mm");
         String date = spf.format(newDate);
         return date;
     }

@@ -70,6 +70,10 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         mSectionedExpandableGridAdapter.setCameraClickListener(mCameraClickListener);
     }
 
+    public void setjetsonClick(SectionedExpandableGridAdapter.JetsonClickListener jestonClickListener){
+        mSectionedExpandableGridAdapter.setJetsonClickListener(jestonClickListener);
+    }
+
     public void setClickable(boolean clickable) {
         mSectionedExpandableGridAdapter.setClickable(clickable);
     }

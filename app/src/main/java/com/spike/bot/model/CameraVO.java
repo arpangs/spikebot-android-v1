@@ -16,7 +16,7 @@ public class CameraVO implements Serializable,Cloneable {
     private String userName;
     private String password;
     private String camera_icon;
-    private int isActive;
+    private int is_active;
     private String camera_vpn_port;
 
     public String getUser_name() {
@@ -155,7 +155,7 @@ public class CameraVO implements Serializable,Cloneable {
         userName="";
         password="";
         camera_icon="";
-        isActive = 1;
+        is_active = 1;
     }
 
     public String getCamera_icon() {
@@ -231,11 +231,11 @@ public class CameraVO implements Serializable,Cloneable {
     }
 
     public int getIsActive() {
-        return isActive;
+        return is_active;
     }
 
-    public void setIsActive(int isActive) {
-        this.isActive = isActive;
+    public void setIsActive(int is_active) {
+        this.is_active = is_active;
     }
 
     @Override public CameraVO clone() {

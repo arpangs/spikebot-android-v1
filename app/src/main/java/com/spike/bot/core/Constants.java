@@ -39,7 +39,7 @@ public class Constants {
     //        public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
 //    public static  String CLOUD_SERVER_URL = "http://api.spikebot.io"; //222
     public static String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //wifi / 123
-//    public static String CLOUD_SERVER_URL =  "http://192.168.75.169:3000";
+ //   public static String CLOUD_SERVER_URL =  "http://34.212.76.50:3000";
 //    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
 //    public static  String CLOUD_SERVER_URL = "http://api.spikebot.io"; //222
 

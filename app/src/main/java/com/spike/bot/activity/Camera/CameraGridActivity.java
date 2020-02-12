@@ -70,15 +70,15 @@ public class CameraGridActivity extends AppCompatActivity {
         // roomVO = (RoomVO) getIntent().getExtras().getSerializable("room");
         try {
             isCamera = getIntent().getExtras().getBoolean("isshowGridCamera");
-            jetsonArrayList = (ArrayList<CameraVO>) getIntent().getExtras().getSerializable("jetsonList");
+            jetson_id =  getIntent().getExtras().getString("jetson_device_id");
 
             // jetson_id = new ArrayList<>();
-
+/*
             if (!jetsonArrayList.isEmpty()) {
                 for (CameraVO cameraVO : jetsonArrayList) {
                     jetson_id = cameraVO.getJetson_device_id();
                 }
-            }
+            }*/
         }catch (Exception e){
             e.printStackTrace();
         }

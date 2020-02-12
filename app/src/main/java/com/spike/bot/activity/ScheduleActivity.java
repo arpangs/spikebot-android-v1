@@ -389,107 +389,109 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         });
 
 
-        if (isEdit) {
-            if (scheduleVO != null) {
+        if (isEdit)
+        {
+            try {
+                if (scheduleVO != null) {
 
-                if (scheduleVO.getSchedule_device_type().equalsIgnoreCase("room")) {
-                    rb_schedule_type_room.setChecked(true);
-                    setBackGroundColorButton(true);
-                    btnMoodSchedule.setVisibility(View.GONE);
+                    if (scheduleVO.getSchedule_device_type().equalsIgnoreCase("room")) {
+                        rb_schedule_type_room.setChecked(true);
+                        setBackGroundColorButton(true);
+                        btnMoodSchedule.setVisibility(View.GONE);
 
-                } else {
-                    rb_schedule_type_mood.setChecked(true);
-                    setBackGroundColorButton(false);
-                    btnRoomSchedule.setVisibility(View.GONE);
-                }
-                et_schedule_name.setText(scheduleVO.getSchedule_name());
-                et_schedule_name.setSelection(et_schedule_name.getText().length());
-
-                if (!scheduleVO.getSchedule_device_on_time().equalsIgnoreCase("")) {
-                    try {
-                        if(scheduleVO.getSchedule_type()==1){
-                            et_schedule_on_time.setText(DateHelper.formateDate(DateHelper.parseTimeSimple(scheduleVO.getSchedule_device_on_time(), DateHelper.DATE_FROMATE_H_M_AMPM1), DateHelper.DATE_FROMATE_H_M_AMPM12));
-                        }else {
-                            et_schedule_on_time.setText(Common.getConvertDateForScheduleHour(scheduleVO.getSchedule_device_on_time()));
-                        }
-
-                    } catch (ParseException e) {
-                        e.printStackTrace();
+                    } else {
+                        rb_schedule_type_mood.setChecked(true);
+                        setBackGroundColorButton(false);
+                        btnRoomSchedule.setVisibility(View.GONE);
                     }
-                }
-                if (!scheduleVO.getSchedule_device_off_time().equalsIgnoreCase("")) {
-                    try {
-                        if(scheduleVO.getSchedule_type()==1){
-                            et_schedule_off_time.setText(DateHelper.formateDate(DateHelper.parseTimeSimple(scheduleVO.getSchedule_device_off_time(), DateHelper.DATE_FROMATE_H_M_AMPM1), DateHelper.DATE_FROMATE_H_M_AMPM12));
-                        }else {
-                            et_schedule_off_time.setText(Common.getConvertDateForScheduleHour(scheduleVO.getSchedule_device_off_time()));
-                        }
+                    et_schedule_name.setText(scheduleVO.getSchedule_name());
+                    et_schedule_name.setSelection(et_schedule_name.getText().length());
 
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                }
-                repeatDayString = scheduleVO.getSchedule_device_day();
-                if (repeatDayString.contains("0")) {
-                    Common.setBackground(this, text_schedule_1, true);
-                }
-                if (repeatDayString.contains("1")) {
-                    Common.setBackground(this, text_schedule_2, true);
-                }
-                if (repeatDayString.contains("2")) {
-                    Common.setBackground(this, text_schedule_3, true);
-                }
-                if (repeatDayString.contains("3")) {
-                    Common.setBackground(this, text_schedule_4, true);
-                }
-                if (repeatDayString.contains("4")) {
-                    Common.setBackground(this, text_schedule_5, true);
-                }
-                if (repeatDayString.contains("5")) {
-                    Common.setBackground(this, text_schedule_6, true);
-                }
-                if (repeatDayString.contains("6")) {
-                    Common.setBackground(this, text_schedule_7, true);
-                }
-                repeatDayString = "";
+                    if (!scheduleVO.getSchedule_device_on_time().equalsIgnoreCase("")) {
+                        try {
+                            if (scheduleVO.getSchedule_type() == 1) {
+                                et_schedule_on_time.setText(DateHelper.formateDate(DateHelper.parseTimeSimple(scheduleVO.getSchedule_device_on_time(), DateHelper.DATE_FROMATE_H_M_AMPM1), DateHelper.DATE_FROMATE_H_M_AMPM12));
+                            } else {
+                                et_schedule_on_time.setText(Common.getConvertDateForScheduleHour(scheduleVO.getSchedule_device_on_time()));
+                            }
 
-                if (isSelectMode) {
-                    rb_schedule_type_mood.setEnabled(false);
-                    setBackGroundColorButton(true);
-
-                } else {
-                    rb_schedule_type_room.setEnabled(false);
-                    setBackGroundColorButton(false);
-                }
-
-                rb_schedule_select_auto.setClickable(false);
-                rb_schedule_select_schedule.setClickable(false);
-
-                /*check schedule type*/
-                if (scheduleVO.getSchedule_type() == 1) {
-
-                    rb_schedule_select_auto.setChecked(true);
-                    rb_schedule_select_schedule.setEnabled(false);
-
-                    String on_after = scheduleVO.getSchedule_device_on_time();
-                    if (!TextUtils.isEmpty(on_after)) {
-                        //2019-11-09 23:15:00
-                        ChatApplication.logDisplay("after on is "+on_after);
-                        if (on_after.split(":").length > 0) {
-                            on_after=Common.getHH(on_after);
-                            ChatApplication.logDisplay("after on is "+on_after);
-                            int hOn = Integer.parseInt(on_after.split(":")[0]);
-                            int mOn = Integer.parseInt(on_after.split(":")[1]);
-                            et_on_time_hours.setText(ActivityHelper.hmZero(hOn));
-                            et_on_time_min.setText(ActivityHelper.hmZero(mOn));
-                        } else {
-                            et_on_time_hours.setText("");
-                            et_on_time_min.setText("");
+                        } catch (ParseException e) {
+                            e.printStackTrace();
                         }
                     }
+                    if (!scheduleVO.getSchedule_device_off_time().equalsIgnoreCase("")) {
+                        try {
+                            if (scheduleVO.getSchedule_type() == 1) {
+                                et_schedule_off_time.setText(DateHelper.formateDate(DateHelper.parseTimeSimple(scheduleVO.getSchedule_device_off_time(), DateHelper.DATE_FROMATE_H_M_AMPM1), DateHelper.DATE_FROMATE_H_M_AMPM12));
+                            } else {
+                                et_schedule_off_time.setText(Common.getConvertDateForScheduleHour(scheduleVO.getSchedule_device_off_time()));
+                            }
 
-                    if (!TextUtils.isEmpty(scheduleVO.getSchedule_device_on_time())) {
-                        et_on_time_bottom_header.setText(scheduleVO.getSchedule_device_on_time());
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    repeatDayString = scheduleVO.getSchedule_device_day();
+                    if (repeatDayString.contains("0")) {
+                        Common.setBackground(this, text_schedule_1, true);
+                    }
+                    if (repeatDayString.contains("1")) {
+                        Common.setBackground(this, text_schedule_2, true);
+                    }
+                    if (repeatDayString.contains("2")) {
+                        Common.setBackground(this, text_schedule_3, true);
+                    }
+                    if (repeatDayString.contains("3")) {
+                        Common.setBackground(this, text_schedule_4, true);
+                    }
+                    if (repeatDayString.contains("4")) {
+                        Common.setBackground(this, text_schedule_5, true);
+                    }
+                    if (repeatDayString.contains("5")) {
+                        Common.setBackground(this, text_schedule_6, true);
+                    }
+                    if (repeatDayString.contains("6")) {
+                        Common.setBackground(this, text_schedule_7, true);
+                    }
+                    repeatDayString = "";
+
+                    if (isSelectMode) {
+                        rb_schedule_type_mood.setEnabled(false);
+                        setBackGroundColorButton(true);
+
+                    } else {
+                        rb_schedule_type_room.setEnabled(false);
+                        setBackGroundColorButton(false);
+                    }
+
+                    rb_schedule_select_auto.setClickable(false);
+                    rb_schedule_select_schedule.setClickable(false);
+
+                    /*check schedule type*/
+                    if (scheduleVO.getSchedule_type() == 1) {
+
+                        rb_schedule_select_auto.setChecked(true);
+                        rb_schedule_select_schedule.setEnabled(false);
+
+                        String on_after = scheduleVO.getSchedule_device_on_time();
+                        if (!TextUtils.isEmpty(on_after)) {
+                            //2019-11-09 23:15:00
+                            ChatApplication.logDisplay("after on is " + on_after);
+                            if (on_after.split(":").length > 0) {
+                                on_after = Common.getHH(on_after);
+                                ChatApplication.logDisplay("after on is " + on_after);
+                                int hOn = Integer.parseInt(on_after.split(":")[0]);
+                                int mOn = Integer.parseInt(on_after.split(":")[1]);
+                                et_on_time_hours.setText(ActivityHelper.hmZero(hOn));
+                                et_on_time_min.setText(ActivityHelper.hmZero(mOn));
+                            } else {
+                                et_on_time_hours.setText("");
+                                et_on_time_min.setText("");
+                            }
+                        }
+
+                        if (!TextUtils.isEmpty(scheduleVO.getSchedule_device_on_time())) {
+                            et_on_time_bottom_header.setText(scheduleVO.getSchedule_device_on_time());
 
 //                        Calendar calendar = Calendar.getInstance();
 //                        calendar.setTime(new Date());
@@ -510,30 +512,30 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 //                        sendCalendar.setTime(sendDate);
 //
 //                        String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
-                        et_on_hour_ampm_12 = on_after;
-                        et_on_time_bottom_header_at_time.setText(Common.getTimeHH(scheduleVO.getSchedule_device_on_time()));
-                    }
-
-                    String off_after = scheduleVO.getSchedule_device_off_time();
-
-                    if (!TextUtils.isEmpty(off_after) && !off_after.equalsIgnoreCase("null")) {
-                        off_after=Common.getHH(off_after);
-                        if (off_after.split(":").length > 0) {
-
-                            int hFn = Integer.parseInt(off_after.split(":")[0]);
-                            int mFn = Integer.parseInt(off_after.split(":")[1]);
-
-                            et_off_time_hours.setText(ActivityHelper.hmZero(hFn));
-                            et_off_time_min.setText(ActivityHelper.hmZero(mFn));
-
-                        } else {
-                            et_off_time_hours.setText("");
-                            et_off_time_min.setText("");
+                            et_on_hour_ampm_12 = on_after;
+                            et_on_time_bottom_header_at_time.setText(Common.getTimeHH(scheduleVO.getSchedule_device_on_time()));
                         }
-                    }
 
-                    if (!TextUtils.isEmpty(scheduleVO.getTimer_off_date())) {
-                        et_off_time_bottom_header.setText(scheduleVO.getTimer_off_date());
+                        String off_after = scheduleVO.getSchedule_device_off_time();
+
+                        if (!TextUtils.isEmpty(off_after) && !off_after.equalsIgnoreCase("null")) {
+                            off_after = Common.getHH(off_after);
+                            if (off_after.split(":").length > 0) {
+
+                                int hFn = Integer.parseInt(off_after.split(":")[0]);
+                                int mFn = Integer.parseInt(off_after.split(":")[1]);
+
+                                et_off_time_hours.setText(ActivityHelper.hmZero(hFn));
+                                et_off_time_min.setText(ActivityHelper.hmZero(mFn));
+
+                            } else {
+                                et_off_time_hours.setText("");
+                                et_off_time_min.setText("");
+                            }
+                        }
+
+                        if (!TextUtils.isEmpty(scheduleVO.getTimer_off_date())) {
+                            et_off_time_bottom_header.setText(scheduleVO.getTimer_off_date());
 
 //                        Calendar calendar = Calendar.getInstance();
 //                        calendar.setTime(new Date());
@@ -554,250 +556,252 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 //                        sendCalendar.setTime(sendDate);
 //
 //                        String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
-                        et_off_hour_ampm_12 = off_after;
+                            et_off_hour_ampm_12 = off_after;
 
-                        et_off_time_bottom_header_at_time.setText(Common.getTimeHH(scheduleVO.getSchedule_device_on_time()));
+                            et_off_time_bottom_header_at_time.setText(Common.getTimeHH(scheduleVO.getSchedule_device_on_time()));
+                        }
+
+                        off_time_date = scheduleVO.getTimer_off_date();
+                        off_at_time = scheduleVO.getSchedule_device_off_time();
+
+                        /*on time*/
+                        on_time_date = Common.getDateTime(scheduleVO.getSchedule_device_on_time());
+                        on_at_time = Common.getTimeHH(scheduleVO.getSchedule_device_on_time());
+                        setEtOnTimeHeader(on_time_date, on_at_time, Common.getTimeAM(scheduleVO.getSchedule_device_on_time()));
+
+                        /*off time*/
+
+                        if (!scheduleVO.getSchedule_device_off_time().equalsIgnoreCase("null")) {
+                            off_time_date = Common.getDateTime(scheduleVO.getSchedule_device_off_time());
+                            off_at_time = Common.getTimeHH(scheduleVO.getSchedule_device_off_time());
+                            setEtOffTimeHeader(off_time_date, off_at_time, Common.getTimeAM(scheduleVO.getSchedule_device_off_time()));
+                        } else {
+                            Date c = Calendar.getInstance().getTime();
+                            SimpleDateFormat df = new SimpleDateFormat("MMM dd, yyyy hh:mm aa");
+                            SimpleDateFormat df1 = new SimpleDateFormat("hh:mm aa");
+                            SimpleDateFormat df2 = new SimpleDateFormat("aa");
+                            String formattedDate = df.format(c);
+                            String formattedDate1 = df1.format(c);
+                            String formattedDate2 = df2.format(c);
+
+                            et_off_time_bottom_header.setText(formattedDate);
+                            et_off_time_bottom_header_at_time.setText(formattedDate1);
+                            et_off_time_bottom_header_at_ampm.setText(formattedDate2);
+                        }
+
+                    } else {
+                        rb_schedule_select_auto.setEnabled(false);
+                        rb_schedule_select_schedule.setChecked(true);
                     }
-
-                    off_time_date = scheduleVO.getTimer_off_date();
-                    off_at_time = scheduleVO.getSchedule_device_off_time();
-
-                    /*on time*/
-                    on_time_date = Common.getDateTime(scheduleVO.getSchedule_device_on_time());
-                    on_at_time = Common.getTimeHH(scheduleVO.getSchedule_device_on_time());
-                    setEtOnTimeHeader(on_time_date, on_at_time, Common.getTimeAM(scheduleVO.getSchedule_device_on_time()));
-
-                    /*off time*/
-
-                    if(!scheduleVO.getSchedule_device_off_time().equalsIgnoreCase("null")){
-                        off_time_date = Common.getDateTime(scheduleVO.getSchedule_device_off_time());
-                        off_at_time = Common.getTimeHH(scheduleVO.getSchedule_device_off_time());
-                        setEtOffTimeHeader(off_time_date, off_at_time, Common.getTimeAM(scheduleVO.getSchedule_device_off_time()));
-                    }else{
-                        Date c = Calendar.getInstance().getTime();
-                        SimpleDateFormat df = new SimpleDateFormat("MMM dd, yyyy hh:mm aa");
-                        SimpleDateFormat df1 = new SimpleDateFormat("hh:mm aa");
-                        SimpleDateFormat df2 = new SimpleDateFormat("aa");
-                        String formattedDate = df.format(c);
-                        String formattedDate1 = df1.format(c);
-                        String formattedDate2 = df2.format(c);
-
-                        et_off_time_bottom_header.setText(formattedDate);
-                        et_off_time_bottom_header_at_time.setText(formattedDate1);
-                        et_off_time_bottom_header_at_ampm.setText(formattedDate2);
-                    }
-
-                } else {
-                    rb_schedule_select_auto.setEnabled(false);
-                    rb_schedule_select_schedule.setChecked(true);
+                    btnRoomSchedule.setClickable(false);
+                    btnMoodSchedule.setClickable(false);
                 }
-                btnRoomSchedule.setClickable(false);
-                btnMoodSchedule.setClickable(false);
+
+                int rId = rg_schedule_select.getCheckedRadioButtonId();
+                if (rId == R.id.rb_schedule_select_schedule) {
+                    showScheduleUI();
+                    rb_schedule_select_auto.setVisibility(View.GONE);
+                } else if (rId == R.id.rb_schedule_select_timer) {
+                    showTimerUI();
+                    rb_schedule_select_schedule.setVisibility(View.GONE);
+                }
+
+
+                final Date currentDate = new Date();
+                et_on_time_hours.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        String hours = et_on_time_hours.getText().toString().trim();
+                        String minutes = et_on_time_min.getText().toString().trim();
+
+                        if (TextUtils.isEmpty(minutes)) {
+                            minutes = "00";
+                        }
+
+                        if (!TextUtils.isEmpty(hours) && !TextUtils.isEmpty(minutes)) {
+
+                            Calendar calendar = Common.getCalendarHourMinute(currentDate, hours, minutes);
+
+                            String ampm = DateUtils.getAMPMString(calendar.get(Calendar.AM_PM));
+                            String finalJustDate = Common.getConvertDateString(calendar);
+
+                            String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
+                            et_on_hour_ampm_12 = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
+
+                            on_time_date = finalJustDate;
+                            on_at_time = hourMinute;
+
+
+                            et_on_time_bottom_header.setVisibility(View.VISIBLE);
+                            setEtOnTimeHeader(finalJustDate, hourMinute, ampm);
+                        }
+
+                        if (et_on_time_hours.getText().toString().length() == 2) {
+                            et_on_time_min.requestFocus();
+                        }
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                    }
+                });
+
+
+                et_on_time_min.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        String hours = et_on_time_hours.getText().toString().trim();
+                        String minutes = et_on_time_min.getText().toString().trim();
+
+                        if (TextUtils.isEmpty(hours)) {
+                            hours = "00";
+                        }
+
+                        if (!TextUtils.isEmpty(hours) && !TextUtils.isEmpty(minutes)) {
+
+                            Calendar calendar = Common.getCalendarHourMinute(currentDate, hours, minutes);
+
+                            String finalJustDate = Common.getConvertDateString(calendar);
+
+                            String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
+                            et_on_hour_ampm_12 = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
+
+                            on_time_date = finalJustDate;
+                            on_at_time = hourMinute;
+
+                            String ampm = DateUtils.getAMPMString(calendar.get(Calendar.AM_PM));
+                            et_on_time_bottom_header.setVisibility(View.VISIBLE);
+                            setEtOnTimeHeader(finalJustDate, hourMinute, ampm);
+                        }
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+
+
+                    }
+                });
+
+                et_off_time_hours.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        String hours = et_off_time_hours.getText().toString().trim();
+                        String minutes = et_off_time_min.getText().toString().trim();
+
+                        if (TextUtils.isEmpty(minutes)) {
+                            minutes = "00";
+                        }
+
+                        if (!TextUtils.isEmpty(hours) && !TextUtils.isEmpty(minutes)) {
+
+                            Calendar calendar = Common.getCalendarHourMinute(currentDate, hours, minutes);
+                            String finalJustDate = Common.getConvertDateString(calendar);
+                            String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
+                            et_off_hour_ampm_12 = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
+
+                            off_time_date = finalJustDate;
+                            off_at_time = hourMinute;
+
+                            String ampm = DateUtils.getAMPMString(calendar.get(Calendar.AM_PM));
+
+                            et_off_time_bottom_header.setVisibility(View.VISIBLE);
+                            setEtOffTimeHeader(finalJustDate, hourMinute, ampm);
+                        }
+                        if (et_off_time_hours.getText().toString().length() == 2) {
+                            et_off_time_min.requestFocus();
+                        }
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+
+
+                    }
+                });
+
+
+                et_off_time_min.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        String hours = et_off_time_hours.getText().toString().trim();
+                        String minutes = et_off_time_min.getText().toString().trim();
+
+                        if (TextUtils.isEmpty(hours)) {
+                            hours = "00";
+                        }
+                        if (!TextUtils.isEmpty(hours) && !TextUtils.isEmpty(minutes)) {
+
+                            Calendar calendar = Common.getCalendarHourMinute(currentDate, hours, minutes);
+
+                            String finalJustDate = Common.getConvertDateString(calendar);
+                            String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
+                            et_off_hour_ampm_12 = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
+
+                            off_time_date = finalJustDate;
+                            off_at_time = hourMinute;
+
+                            String ampm = DateUtils.getAMPMString(calendar.get(Calendar.AM_PM));
+
+                            et_off_time_bottom_header.setVisibility(View.VISIBLE);
+                            setEtOffTimeHeader(finalJustDate, hourMinute, ampm);
+
+                        }
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                    }
+                });
+
+                //   String outputPattern2 = "MMM dd, yyyy";//:ss
+                String outputPattern2 = Constants.SIMPLE_DATE_FORMAT_1;
+                SimpleDateFormat outputFormat2 = new SimpleDateFormat(outputPattern2);
+                String finalJustDate = outputFormat2.format(new Date().getTime());
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(new Date());
+
+                String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
+                if (TextUtils.isEmpty(et_on_hour_ampm_12)) {
+                    et_on_hour_ampm_12 = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
+                }
+
+
+                String ampm = DateUtils.getAMPMString(calendar.get(Calendar.AM_PM));
+
+                if (TextUtils.isEmpty(off_time_date)) {
+                    setEtOffTimeHeader(finalJustDate, hourMinute, ampm);
+                }
+                if (TextUtils.isEmpty(on_time_date)) {
+                    setEtOnTimeHeader(finalJustDate, hourMinute, ampm);
+                }
+
+                sp_mood_selection.setEnabled(false);
+
+            } catch (Exception e){
+                e.printStackTrace();
             }
-
-            int rId = rg_schedule_select.getCheckedRadioButtonId();
-            if (rId == R.id.rb_schedule_select_schedule) {
-                showScheduleUI();
-                rb_schedule_select_auto.setVisibility(View.GONE);
-            } else if (rId == R.id.rb_schedule_select_timer) {
-                showTimerUI();
-                rb_schedule_select_schedule.setVisibility(View.GONE);
-            }
-
-
-            final Date currentDate = new Date();
-            et_on_time_hours.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    String hours = et_on_time_hours.getText().toString().trim();
-                    String minutes = et_on_time_min.getText().toString().trim();
-
-                    if (TextUtils.isEmpty(minutes)) {
-                        minutes = "00";
-                    }
-
-                    if (!TextUtils.isEmpty(hours) && !TextUtils.isEmpty(minutes)) {
-
-                        Calendar calendar = Common.getCalendarHourMinute(currentDate, hours, minutes);
-
-                        String ampm = DateUtils.getAMPMString(calendar.get(Calendar.AM_PM));
-                        String finalJustDate = Common.getConvertDateString(calendar);
-
-                        String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
-                        et_on_hour_ampm_12 = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
-
-                        on_time_date = finalJustDate;
-                        on_at_time = hourMinute;
-
-
-                        et_on_time_bottom_header.setVisibility(View.VISIBLE);
-                        setEtOnTimeHeader(finalJustDate, hourMinute, ampm);
-                    }
-
-                    if (et_on_time_hours.getText().toString().length() == 2) {
-                        et_on_time_min.requestFocus();
-                    }
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                }
-            });
-
-
-            et_on_time_min.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    String hours = et_on_time_hours.getText().toString().trim();
-                    String minutes = et_on_time_min.getText().toString().trim();
-
-                    if (TextUtils.isEmpty(hours)) {
-                        hours = "00";
-                    }
-
-                    if (!TextUtils.isEmpty(hours) && !TextUtils.isEmpty(minutes)) {
-
-                        Calendar calendar = Common.getCalendarHourMinute(currentDate, hours, minutes);
-
-                        String finalJustDate = Common.getConvertDateString(calendar);
-
-                        String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
-                        et_on_hour_ampm_12 = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
-
-                        on_time_date = finalJustDate;
-                        on_at_time = hourMinute;
-
-                        String ampm = DateUtils.getAMPMString(calendar.get(Calendar.AM_PM));
-                        et_on_time_bottom_header.setVisibility(View.VISIBLE);
-                        setEtOnTimeHeader(finalJustDate, hourMinute, ampm);
-                    }
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-
-
-                }
-            });
-
-            et_off_time_hours.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    String hours = et_off_time_hours.getText().toString().trim();
-                    String minutes = et_off_time_min.getText().toString().trim();
-
-                    if (TextUtils.isEmpty(minutes)) {
-                        minutes = "00";
-                    }
-
-                    if (!TextUtils.isEmpty(hours) && !TextUtils.isEmpty(minutes)) {
-
-                        Calendar calendar = Common.getCalendarHourMinute(currentDate, hours, minutes);
-                        String finalJustDate = Common.getConvertDateString(calendar);
-                        String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
-                        et_off_hour_ampm_12 = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
-
-                        off_time_date = finalJustDate;
-                        off_at_time = hourMinute;
-
-                        String ampm = DateUtils.getAMPMString(calendar.get(Calendar.AM_PM));
-
-                        et_off_time_bottom_header.setVisibility(View.VISIBLE);
-                        setEtOffTimeHeader(finalJustDate, hourMinute, ampm);
-                    }
-                    if (et_off_time_hours.getText().toString().length() == 2) {
-                        et_off_time_min.requestFocus();
-                    }
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-
-
-                }
-            });
-
-
-            et_off_time_min.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    String hours = et_off_time_hours.getText().toString().trim();
-                    String minutes = et_off_time_min.getText().toString().trim();
-
-                    if (TextUtils.isEmpty(hours)) {
-                        hours = "00";
-                    }
-                    if (!TextUtils.isEmpty(hours) && !TextUtils.isEmpty(minutes)) {
-
-                        Calendar calendar = Common.getCalendarHourMinute(currentDate, hours, minutes);
-
-                        String finalJustDate = Common.getConvertDateString(calendar);
-                        String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
-                        et_off_hour_ampm_12 = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
-
-                        off_time_date = finalJustDate;
-                        off_at_time = hourMinute;
-
-                        String ampm = DateUtils.getAMPMString(calendar.get(Calendar.AM_PM));
-
-                        et_off_time_bottom_header.setVisibility(View.VISIBLE);
-                        setEtOffTimeHeader(finalJustDate, hourMinute, ampm);
-
-                    }
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                }
-            });
-
-            //   String outputPattern2 = "MMM dd, yyyy";//:ss
-            String outputPattern2 = Constants.SIMPLE_DATE_FORMAT_1;
-            SimpleDateFormat outputFormat2 = new SimpleDateFormat(outputPattern2);
-            String finalJustDate = outputFormat2.format(new Date().getTime());
-
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(new Date());
-
-            String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
-            if (TextUtils.isEmpty(et_on_hour_ampm_12)) {
-                et_on_hour_ampm_12 = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
-            }
-
-
-            String ampm = DateUtils.getAMPMString(calendar.get(Calendar.AM_PM));
-
-            if (TextUtils.isEmpty(off_time_date)) {
-                setEtOffTimeHeader(finalJustDate, hourMinute, ampm);
-            }
-            if (TextUtils.isEmpty(on_time_date)) {
-                setEtOnTimeHeader(finalJustDate, hourMinute, ampm);
-            }
-
-            sp_mood_selection.setEnabled(false);
-
-
         } else {
 
             /*
@@ -1121,6 +1125,8 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         et_on_time_bottom_header_at_ampm.setText(_ampm);
 
         startCheckDate = _finalJustDate + " " + _hourMinute +" "+ _ampm;
+
+        ChatApplication.logDisplay("Date " + startCheckDate);
 
     }
 
