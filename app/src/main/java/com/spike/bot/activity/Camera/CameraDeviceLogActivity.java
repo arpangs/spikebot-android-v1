@@ -298,8 +298,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
                     String message = result.getString("message");
                     if (code == 200)
                     {
-                        if (notification_number == 0)
-                        {
+                        if (notification_number == 0) {
                             arrayList.clear();
                         }
                         arrayListTemp.clear();

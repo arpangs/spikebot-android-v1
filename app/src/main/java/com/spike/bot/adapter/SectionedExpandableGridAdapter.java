@@ -162,7 +162,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.txtTotalDevices.setVisibility(View.GONE);
 
                     /*99 + notification than show */
-                    if (Integer.parseInt(section.getDevice_count()) > 99) {
+                    if (!TextUtils.isEmpty(section.getDevice_count()) && Integer.parseInt(section.getDevice_count()) > 99) {
                         holder.txtTotalDevices.setText("" + "99+ devices");
                     } else {
                         holder.txtTotalDevices.setText("" + section.getDevice_count() + " devices");
