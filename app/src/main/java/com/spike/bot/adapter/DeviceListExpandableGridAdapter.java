@@ -190,37 +190,41 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
                 break;
             case VIEW_TYPE_ITEM:
                 final DeviceVO item = (DeviceVO) mDataArrayList.get(position);
-                if (item.isSensor() || item.getDeviceType().equalsIgnoreCase("2")) {
+//                if (item.isSensor() || item.getDeviceType().equalsIgnoreCase("2")) {
+//
+//                    if (TextUtils.isEmpty(item.getSensor_icon())) {
+//
+//                        holder.itemTextView.setText(item.getDeviceName());
+//
+//                        if (item.getIsActive() == 0) {
+//                                holder.iv_icon.setImageResource(Common.getIconInActive(1, item.getSensor_icon()));//item.getDeviceStatus()
+//                        } else {
+//                                holder.iv_icon.setImageResource(Common.getIcon(0, item.getSensor_icon()));//item.getDeviceStatus()
+//                        }
+//                    } else {
+//
+//                        holder.itemTextView.setText(item.getSensor_name());
+//
+//                        if (item.getDevice_icon().equalsIgnoreCase("2") && item.getIsActive() == 0) {
+//                            if (item.getSensor_icon() != null) {
+//                                holder.iv_icon.setImageResource(Common.getIconInActive(1, item.getSensor_icon()));//item.getDeviceStatus()
+//                            }
+//                        } else {
+//                            if (item.getSensor_icon() != null) {
+//                                holder.iv_icon.setImageResource(Common.getIcon(0, item.getSensor_icon()));//item.getDeviceStatus()
+//                            }
+//                        }
+//                    }
+//                } else {
+//                    holder.itemTextView.setText(item.getDeviceName());
+//                    if (item.getDevice_icon() != null) {
+//                        holder.iv_icon.setImageResource(Common.getIcon(0, item.getDevice_icon()));//item.getDeviceStatus()
+//                    }
+//                }
 
-                    if (TextUtils.isEmpty(item.getSensor_icon())) {
+                holder.iv_icon.setImageResource(Common.getIcon(0, item.getDevice_icon()));//item.getDeviceStatus()
 
-                        holder.itemTextView.setText(item.getDeviceName());
 
-                        if (item.getIsActive() == 0) {
-                                holder.iv_icon.setImageResource(Common.getIconInActive(1, item.getSensor_icon()));//item.getDeviceStatus()
-                        } else {
-                                holder.iv_icon.setImageResource(Common.getIcon(0, item.getSensor_icon()));//item.getDeviceStatus()
-                        }
-                    } else {
-
-                        holder.itemTextView.setText(item.getSensor_name());
-
-                        if (item.getDevice_icon().equalsIgnoreCase("2") && item.getIsActive() == 0) {
-                            if (item.getSensor_icon() != null) {
-                                holder.iv_icon.setImageResource(Common.getIconInActive(1, item.getSensor_icon()));//item.getDeviceStatus()
-                            }
-                        } else {
-                            if (item.getSensor_icon() != null) {
-                                holder.iv_icon.setImageResource(Common.getIcon(0, item.getSensor_icon()));//item.getDeviceStatus()
-                            }
-                        }
-                    }
-                } else {
-                    holder.itemTextView.setText(item.getDeviceName());
-                    if (item.getDevice_icon() != null) {
-                        holder.iv_icon.setImageResource(Common.getIcon(0, item.getDevice_icon()));//item.getDeviceStatus()
-                    }
-                }
                 if (item.isSelected()) {
                     String type = "";
                     if (!TextUtils.isEmpty(item.getSensor_type())) {
@@ -239,6 +243,10 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
                 holder.view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if(item.getIsActive()== -1){
+                            return;
+                        }
 
                         String isUse = "";
                         if (!TextUtils.isEmpty(item.getTo_use())) {
@@ -294,11 +302,11 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
 
 
                 //If found duplicate device then set alpha in devices
-//                if (item.getIs_original() == 0 && !item.getDeviceType().equalsIgnoreCase("2")) {
-//                    holder.view.setAlpha(0.50f);
-//                } else {
+                if (item.getIsActive()==-1) {
+                    holder.view.setAlpha(0.50f);
+                } else {
                     holder.view.setAlpha(1);
-//                }
+                }
 
                 holder.iv_icon_text.setVisibility(View.GONE);
                 holder.ll_room_item.setOnClickListener(null);

@@ -172,7 +172,8 @@
 
 
         <activity android:name="com.spike.bot.camera.CameraPlayer"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
 
 
         <activity
@@ -382,13 +383,16 @@
 
         <activity android:name="com.spike.bot.activity.Camera.CameraPlayBack"
             android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name="com.spike.bot.activity.Camera.VideoViewPLayer"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            />
 
         <activity android:name="com.spike.bot.activity.Camera.CameraEdit"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
 
         <activity android:name="com.spike.bot.activity.SignUp"
             android:theme="@style/AppTheme.NoActionBar"
@@ -405,12 +409,14 @@
 -->
         <activity android:name="com.spike.bot.activity.Sensor.MultiSensorActivity"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
 
         <activity android:name="com.spike.bot.activity.Sensor.DoorSensorInfoActivity"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden|adjustResize"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
 
         <activity android:name="com.spike.bot.activity.Sensor.SensorUnassignedActivity"
             android:windowSoftInputMode="stateHidden"
@@ -469,6 +475,7 @@
 
         <activity android:name=".activity.ir.blaster.IRBlasterEditActivity"
             android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name=".activity.ir.blaster.IRBlasterAddActivity"
