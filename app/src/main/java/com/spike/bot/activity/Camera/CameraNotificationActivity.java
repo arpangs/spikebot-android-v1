@@ -720,10 +720,11 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             url = ChatApplication.url + Constants.deleteCameraNotification;
         }
 
+        ChatApplication.logDisplay("switch alert is :" + url + " " + deviceObj);
         new GetJsonTask(CameraNotificationActivity.this, url, "POST", deviceObj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                ActivityHelper.hideKeyboard(CameraNotificationActivity.this);
+             //   ActivityHelper.hideKeyboard(CameraNotificationActivity.this);
                 ChatApplication.isScheduleNeedResume = true;
                 try {
                     int code = result.getInt("code");

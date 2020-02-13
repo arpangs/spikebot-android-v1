@@ -89,9 +89,11 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
         }
 
 
-        if (arrayListLog.get(position).getCameraIds() != null) {
+        if (arrayListLog.get(position).getCameraIds() != null)
+        {
             myList = new ArrayList<String>(Arrays.asList(arrayListLog.get(position).getCameraIds().split(",")));
-            if (myList.size() > 0) {
+            if (myList.size() > 0)
+            {
                 arrayList = new ArrayList<>();
                 for (int j = 0; j < myList.size(); j++) {
                     for (int i = 0; i < getCameraList.size(); i++) {

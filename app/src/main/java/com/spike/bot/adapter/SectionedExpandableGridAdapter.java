@@ -45,6 +45,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
     //listeners
     private final ItemClickListener mItemClickListener;
     private CameraClickListener mCameraClickListener;
+    private JetsonClickListener jetsonClickListener;
     private final SectionStateChangeListener mSectionStateChangeListener;
     private OnSmoothScrollList onSmoothScrollList;
     private TempClickListener tempClickListener;
@@ -56,9 +57,14 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
     private static final int VIEW_TYPE_CAMERA = R.layout.row_camera_listview;
 
     public GridLayoutManager gridLayoutManager;
+    CameraVO cameraVO = new CameraVO();
 
     public void setCameraClickListener(CameraClickListener mCameraClickListener) {
         this.mCameraClickListener = mCameraClickListener;
+    }
+
+    public void setJetsonClickListener(JetsonClickListener jetsonClickListener){
+        this.jetsonClickListener = jetsonClickListener;
     }
 
    public SectionedExpandableGridAdapter(Context context, ArrayList<Object> dataArrayList,
@@ -285,15 +291,24 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             mItemClickListener.itemClicked(section, "onoffclick");
                         }
                     });
-
+                //    final CameraVO cameraVO = (CameraVO) mDataArrayList.get(position);
                     //all camera list
                     holder.textShowCamera.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if (!isClickable)
                                 return;
-                            if (section.getRoomId().equalsIgnoreCase("camera") || section.getRoomId().startsWith("JETSON-")) {
+                            if (section.getRoomId().equalsIgnoreCase("camera")) {
                                 mItemClickListener.itemClicked(section, "showGridCamera");
+                            } else if(section.getRoomId().startsWith("JETSON-")){
+                               // mItemClickListener.itemClicked(section, "showGridJetsonCamera");
+
+
+                                if (jetsonClickListener != null) {
+                                    jetsonClickListener.jetsonClicked("showGridJetsonCamera",section.getRoomId());
+
+                                    ChatApplication.logDisplay("Clicked jetson id "+section.getRoomId());
+                                }
                             }
                         }
                     });
@@ -1046,6 +1061,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
         }
     }
 
+
     @Override
     public int getItemCount() {
         return mDataArrayList.size();
@@ -1139,5 +1155,9 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
     public interface CameraClickListener {
         void itemClicked(CameraVO item, String action);
+    }
+
+    public interface JetsonClickListener{
+        void jetsonClicked(String action,String jetsonid);
     }
 }

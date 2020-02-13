@@ -167,6 +167,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
                             if ((deviceLogList.size() - 1) == lastVisibleItem) {
                                 if ( !isScrollDown) {
                                     isLoading = true;
+
                                     isScrollDown = true;
                                     getDeviceList(mStartIndex);
                                 }

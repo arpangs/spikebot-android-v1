@@ -647,13 +647,12 @@
                                 android:id="@+id/et_on_time_bottom_header_at_ampm"
                                 android:layout_width="wrap_content"
                                 android:visibility="visible"
-                                android:layout_marginLeft="4dp"
                                 android:textSize="12sp"
                                 android:layout_marginRight="4dp"
                                 android:layout_height="wrap_content"
                                 android:focusable="false"
                                 android:inputType="textPersonName"
-                                android:text="AM" />
+                                android:text="" />
 
                         </LinearLayout>
 
@@ -663,7 +662,7 @@
                     <!--auto select off botton header-->
                     <LinearLayout
                         android:visibility="gone"
-                        android:layout_marginLeft="@dimen/_12sdp"
+                        android:layout_marginLeft="@dimen/_25sdp"
                         android:id="@+id/ll_off_time_bottom"
                         android:layout_weight="1"
                         android:layout_width="0dp"
@@ -725,7 +724,7 @@
                                 android:focusable="false"
                                 android:textSize="12sp"
                                 android:inputType="textPersonName"
-                                android:text="AM" />
+                                android:text="" />
 
                         </LinearLayout>
 
