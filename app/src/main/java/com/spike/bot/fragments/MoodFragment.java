@@ -336,6 +336,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
                 obj.put("room_device_id",deviceVO.getRoomDeviceId());
             }else {
                 obj.put("device_id", deviceVO.getDeviceId());
+                obj.put("panel_id",deviceVO.getPanel_id());
                 obj.put("device_status", deviceVO.getOldStatus()==0 ? "1":"0");
             }
         } catch (JSONException e) {

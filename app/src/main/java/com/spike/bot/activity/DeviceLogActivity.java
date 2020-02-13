@@ -1097,14 +1097,16 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             @Override
             public void onSuccess(JSONObject result) {
 
-                try {
+                try
+                {
 
                     if (mListRoom != null) {
                         mListRoom.clear();
                         mListRoomTemp.clear();
                     }
                     int code = result.getInt("code");
-                    if (code == 200) {
+                    if (code == 200)
+                    {
                         scheduleRoomArrayList.clear();
 
 //                        ChatApplication.logDisplay("json is  data  " + result);
@@ -1608,7 +1610,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                 if (mSpinnerRoomList != null) {
                     roomVO = (RoomVO) mSpinnerRoomList.getSelectedItem();
                     if (mSpinnerRoomMood.getSelectedItem().toString().equals("All")) {
-                        if (isFilterType) {
+                        if (isFilterType)
+                        {
                             String actionname = "";
                             ArrayList<String> stringArrayList = new ArrayList<>();
                             if (filterArrayList.size() > 0) {
@@ -2241,10 +2244,11 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
     @Override
     public void onRefresh() {
         if (!isFilterActive) {
+
             isScrollDown = false;
             deviceLogList.clear();
             isFilterType = false;
-            deviceLogNewAdapter.notifyDataSetChanged();
+       /*     deviceLogNewAdapter.notifyDataSetChanged();*/
 //            if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor") || isCheckActivity.equals("multisensor")) {
 //                getSensorLog(0);
 //            } else {
@@ -2255,6 +2259,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             //       callFilterData(0, "refresh");
 //            }
             swipeRefreshLayout.setRefreshing(true);
+            rv_month_list.setVisibility(View.VISIBLE);
             deviceLogNewAdapter.notifyDataSetChanged();
         } else {
             dialog = null;
@@ -2277,6 +2282,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                 isFilterType = false;
                 isFilterActive = false;
             }
+            rv_month_list.setVisibility(View.VISIBLE);
             getDatesInMonth(Calendar.getInstance().get(Calendar.YEAR), row_index);
             callFilterData(0, "");
 

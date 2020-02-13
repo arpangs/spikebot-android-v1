@@ -895,6 +895,11 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         if (!isClickable)
                             return;
                         ChatApplication.logDisplay("postion click is " + item.getDeviceType());
+                        if(item.getIsActive() == 1){
+                            holder.iv_icon.setClickable(true);
+                        } else{
+                            holder.iv_icon.setClickable(false);
+                        }
                         if (item.getDeviceType().equals(mContext.getResources().getString(R.string.curtain))) {
 
                         } else if (item.getDeviceType().equalsIgnoreCase("door_sensor") || item.getDeviceType().equalsIgnoreCase("temp_sensor")) {

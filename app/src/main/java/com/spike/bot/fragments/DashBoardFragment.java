@@ -717,6 +717,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 //	"device_status": "0n"  on means = 1,  off means 0
                 //}
                 obj.put("device_id", deviceVO.getDeviceId());
+                obj.put("panel_id",deviceVO.getPanel_id());
                 obj.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
             }
 
