@@ -871,7 +871,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                ChatApplication.logDisplay("logout is " + object.toString());
+                ChatApplication.logDisplay("logout is " + url  + object.toString());
                 ActivityHelper.showProgressDialog(Main2Activity.this, "Please wait...", false);
 
                 new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {

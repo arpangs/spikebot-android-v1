@@ -200,7 +200,7 @@
                         </LinearLayout>
                     </android.support.v7.widget.CardView>
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -209,16 +209,31 @@
 
                         <TextView
                             android:id="@+id/remote_temp"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:gravity="center"
+                            android:layout_centerVertical="true"
+                            android:layout_centerHorizontal="true"
                             android:textAllCaps="false"
+                            android:layout_weight="0.50"
                             android:textColor="@color/sensor_button"
                             android:textSize="70sp" />
 
 
-                    </LinearLayout>
+                        <TextView
+                            android:id="@+id/remote_default_temp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAllCaps="false"
+                            android:text=""
+                            android:layout_below="@+id/remote_temp"
+                            android:layout_centerVertical="true"
+                            android:layout_centerHorizontal="true"
+                            android:textColor="@color/sensor_button"
+                            android:textSize="15sp" />
+
+
+                    </RelativeLayout>
 
 
                 </LinearLayout>

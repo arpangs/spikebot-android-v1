@@ -1112,10 +1112,9 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 //                        ChatApplication.logDisplay("json is  data  " + result);
 
                         if (isFilterType) {
-                            frame_living_room.setVisibility(View.VISIBLE);
                             panel_view.setVisibility(View.GONE);
                             SensorLogRes mSensorLogRes = Common.jsonToPojo(result.toString(), SensorLogRes.class);
-
+                            frame_living_room.setVisibility(View.VISIBLE);
                             RoomVO oneRoom = new RoomVO();
                             oneRoom.setRoomId("0");
                             if (room.equalsIgnoreCase("Temp sensor") || room.equalsIgnoreCase("Gas sensor") || room.equalsIgnoreCase("Temp sensor")) {

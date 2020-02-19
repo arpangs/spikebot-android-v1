@@ -2,11 +2,13 @@ package com.spike.bot.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -14,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.spike.bot.ChatApplication;
@@ -63,13 +66,13 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
         this.mCameraClickListener = mCameraClickListener;
     }
 
-    public void setJetsonClickListener(JetsonClickListener jetsonClickListener){
+    public void setJetsonClickListener(JetsonClickListener jetsonClickListener) {
         this.jetsonClickListener = jetsonClickListener;
     }
 
-   public SectionedExpandableGridAdapter(Context context, ArrayList<Object> dataArrayList,
-                                   final GridLayoutManager gridLayout, ItemClickListener itemClickListener,
-                                   OnSmoothScrollList onSmoothScroll, TempClickListener tempClickListener, SectionStateChangeListener sectionStateChangeListener) {
+    public SectionedExpandableGridAdapter(Context context, ArrayList<Object> dataArrayList,
+                                          final GridLayoutManager gridLayout, ItemClickListener itemClickListener,
+                                          OnSmoothScrollList onSmoothScroll, TempClickListener tempClickListener, SectionStateChangeListener sectionStateChangeListener) {
         mContext = context;
         mItemClickListener = itemClickListener;
         mSectionStateChangeListener = sectionStateChangeListener;
@@ -148,7 +151,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
     @SuppressLint("ResourceType")
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
 
         switch (holder.viewType) {
             case VIEW_TYPE_SECTION:
@@ -174,7 +177,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         holder.txtTotalDevices.setText("" + section.getDevice_count() + " devices");
                     }
 
-                    ChatApplication.logDisplay("expanded is or not "+section.isExpanded()+" "+section.getRoomName()+" "+section.getRoomId());
+                    ChatApplication.logDisplay("expanded is or not " + section.isExpanded() + " " + section.getRoomName() + " " + section.getRoomId());
                     if (section.isExpanded()) {
                         holder.mImgIcnLog.setVisibility(View.VISIBLE);
                         holder.sectionTextView.setMaxLines(2);
@@ -223,11 +226,11 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                     holder.sectionToggleButton.setChecked(section.isExpanded());
 
-                    ChatApplication.logDisplay("is expanded is "+section.getRoomId()+" "+section.isExpanded());
+                    ChatApplication.logDisplay("is expanded is " + section.getRoomId() + " " + section.isExpanded());
 
 
                     if (section.getRoomId().equalsIgnoreCase("camera") || section.getRoomId().startsWith("JETSON-")) {
-                        ChatApplication.logDisplay("start is "+section.getRoomId().startsWith("JETSON-"));
+                        ChatApplication.logDisplay("start is " + section.getRoomId().startsWith("JETSON-"));
                         holder.textShowCamera.setVisibility(View.VISIBLE);
                         holder.textRefreshCamera.setVisibility(View.VISIBLE);
                         holder.text_section_edit.setVisibility(View.GONE);
@@ -244,7 +247,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             public void onClick(View v) {
                                 if (!isClickable)
                                     return;
-                                mItemClickListener.itemClicked(section, "cameraopen");
+                                mItemClickListener.itemClicked(section, "c");
                             }
                         });
                     } else {
@@ -291,7 +294,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             mItemClickListener.itemClicked(section, "onoffclick");
                         }
                     });
-                //    final CameraVO cameraVO = (CameraVO) mDataArrayList.get(position);
+                    //    final CameraVO cameraVO = (CameraVO) mDataArrayList.get(position);
                     //all camera list
                     holder.textShowCamera.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -300,14 +303,14 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                                 return;
                             if (section.getRoomId().equalsIgnoreCase("camera")) {
                                 mItemClickListener.itemClicked(section, "showGridCamera");
-                            } else if(section.getRoomId().startsWith("JETSON-")){
-                               // mItemClickListener.itemClicked(section, "showGridJetsonCamera");
+                            } else if (section.getRoomId().startsWith("JETSON-")) {
+                                // mItemClickListener.itemClicked(section, "showGridJetsonCamera");
 
 
                                 if (jetsonClickListener != null) {
-                                    jetsonClickListener.jetsonClicked("showGridJetsonCamera",section.getRoomId());
+                                    jetsonClickListener.jetsonClicked("showGridJetsonCamera", section.getRoomId());
 
-                                    ChatApplication.logDisplay("Clicked jetson id "+section.getRoomId());
+                                    ChatApplication.logDisplay("Clicked jetson id " + section.getRoomId());
                                 }
                             }
                         }
@@ -329,7 +332,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         public void onClick(View v) {
                             if (!isClickable)
                                 return;
-                            if (section.getRoomId().equalsIgnoreCase("camera")|| section.getRoomId().startsWith("JETSON-")) {
+                            if (section.getRoomId().equalsIgnoreCase("camera") || section.getRoomId().startsWith("JETSON-")) {
                                 mItemClickListener.itemClicked(section, "editclick_true");
                             } else {
                                 mItemClickListener.itemClicked(section, "editclick_false");
@@ -375,8 +378,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             if (!isClickable)
                                 return;
 
-                            ChatApplication.logDisplay("room id is callingclick fire !! "+section.getRoomName());
-                            if (section.getRoomId().equalsIgnoreCase("camera")|| section.getRoomId().startsWith("JETSON-")) {
+                            ChatApplication.logDisplay("room id is callingclick fire !! " + section.getRoomName());
+                            if (section.getRoomId().equalsIgnoreCase("camera") || section.getRoomId().startsWith("JETSON-")) {
                                 onSmoothScrollList.onPoisitionClick(sectionPosition);
                             }
 
@@ -432,7 +435,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.mImgIcnLog.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (section.getRoomId().equalsIgnoreCase("Camera")|| section.getRoomId().startsWith("JETSON-")) {
+                            if (section.getRoomId().equalsIgnoreCase("Camera") || section.getRoomId().startsWith("JETSON-")) {
                                 /*camera device log*/
                                 mItemClickListener.itemClicked(section, "cameraDevice");
                             } else {
@@ -444,7 +447,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.mImgSch.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (section.getRoomId().equalsIgnoreCase("Camera")|| section.getRoomId().startsWith("JETSON-")) {
+                            if (section.getRoomId().equalsIgnoreCase("Camera") || section.getRoomId().startsWith("JETSON-")) {
                                 if (!isClickable)
                                     return;
                                 mItemClickListener.itemClicked(new RoomVO(), "cameraopen");
@@ -456,7 +459,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.img_setting_badge.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (section.getRoomId().equalsIgnoreCase("camera")|| section.getRoomId().startsWith("JETSON-")) {
+                            if (section.getRoomId().equalsIgnoreCase("camera") || section.getRoomId().startsWith("JETSON-")) {
                                 mItemClickListener.itemClicked(section, "cameraNotification");
                             } else {
                                 mItemClickListener.itemClicked(section, "icnSensorLog");
@@ -471,7 +474,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                                 if (section.getPanelList().get(i).getDeviceList().get(j).getDeviceType().equalsIgnoreCase("temp_sensor") ||
                                         section.getPanelList().get(i).getDeviceList().get(j).getDeviceType().equalsIgnoreCase("remote") ||
                                         section.getPanelList().get(i).getDeviceList().get(j).getDeviceType().equalsIgnoreCase("gas_sensor") ||
-                                        section.getPanelList().get(i).getDeviceList().get(j).getDeviceType().equalsIgnoreCase("door_sensor")) {
+                                        section.getPanelList().get(i).getDeviceList().get(j).getDeviceType().equalsIgnoreCase("door_sensor") ||
+                                        section.getPanelList().get(i).getDeviceList().get(j).getDeviceType().equalsIgnoreCase("water_detector")) {
 
                                     flag = true;
                                 }
@@ -544,30 +548,75 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.sectionTextView.setText(panel1.getPanelName());
                 }
 
+
                 if (panel1.getPanel_status() == 1) {
                     holder.iv_room_panel_onoff.setImageResource(R.drawable.room_on);
                 } else {
                     holder.iv_room_panel_onoff.setImageResource(R.drawable.room_off);
                 }
 
+                for (int i = 0; i < panel1.getDeviceList().size(); i++) {
+                   holder.iv_room_panel_onoff.setTag(panel1.getDeviceList().get(i).getIsActive());
+                    if (panel1.getDeviceList().get(i).getIsActive() == -1) {
+                        holder.iv_room_panel_onoff.setImageResource(R.drawable.room_off);
+                        holder.iv_room_panel_onoff.setActivated(false);
+                        holder.iv_room_panel_onoff.setClickable(false);
+                    }/* else {
+                        holder.iv_room_panel_onoff.setImageResource(R.drawable.room_on);
+                    //    Toast.makeText(mContext, "No active devices found in" + " " + panel1.getPanelName(), Toast.LENGTH_SHORT).show();
+                        holder.iv_room_panel_onoff.setActivated(true);
+                        holder.iv_room_panel_onoff.setClickable(true);
+
+                    }*/
+                }
+                Drawable myDrawable =  holder.iv_room_panel_onoff.getDrawable();
+
                 holder.iv_room_panel_onoff.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (!isClickable)
                             return;
+                        int position = (int) holder.iv_room_panel_onoff.getTag();
 
+                        ChatApplication.logDisplay("position" + position);
+                        if(position == -1){
+                            holder.iv_room_panel_onoff.setImageResource(R.drawable.room_off);
+                            Toast.makeText(mContext, "No active devices found in" + " " + panel1.getPanelName(), Toast.LENGTH_SHORT).show();
+                        }/* else{
+
+                            if(myDrawable== mContext.getResources().getDrawable(R.drawable.room_on))
+                            {
+                                holder.iv_room_panel_onoff.setImageResource(R.drawable.room_off);
+                            }
+                            else{
+                                holder.iv_room_panel_onoff.setImageResource(R.drawable.room_off);
+                            }
+
+                        }*/
+
+
+                     /*   for (int i = 0; i < panel1.getDeviceList().size(); i++) {
+
+                            if (panel1.getDeviceList().get(i).getIsActive() == 1) {
+                                holder.iv_room_panel_onoff.setImageResource(R.drawable.room_on);
+                            } else {
+                                holder.iv_room_panel_onoff.setImageResource(R.drawable.room_off);
+                                Toast.makeText(mContext, "No active devices found in" + " " + panel1.getPanelName(), Toast.LENGTH_SHORT).show();
+                            }
+                        }*/
                         if (panel1.isActivePanel()) {
                             panel1.setOldStatus(panel1.getPanel_status());
                             panel1.setPanel_status(panel1.getPanel_status() == 0 ? 1 : 0);
                             notifyItemChanged(position);
                             mItemClickListener.itemClicked(panel1, "onOffclick");
+
                         }
                     }
                 });
 
                 //5 for curtain
 
-                if (panel1.getType().equalsIgnoreCase("camera")|| panel1.getType().equalsIgnoreCase("JETSON-") || panel1.getPanel_type() == 5) {
+                if (panel1.getType().equalsIgnoreCase("camera") || panel1.getType().equalsIgnoreCase("JETSON-") || panel1.getPanel_type() == 5) {
                     holder.txt_recording.setVisibility(View.GONE);
                     holder.txt_recording.setText(Html.fromHtml("<font color=\"red\">◉</font> <font color=\"#FFFFFF\">RECORDINGS</font>"));
                     holder.iv_room_panel_onoff.setVisibility(View.GONE);//INVISIBLE
@@ -771,6 +820,43 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             holder.iv_icon_badge.setVisibility(View.GONE);
                         }
 
+                    } else if (item.getSensor_type().equals("water_detector")) {
+                        holder.txt_temp_in_cf.setVisibility(View.GONE);
+                        holder.iv_icon.setVisibility(View.VISIBLE);
+
+                        if (item.getIsActive() == -1) {
+                            itemIcon = Common.getIconInActive(item.getDeviceStatus(), item.getDevice_icon());
+                        } else {
+                            itemIcon = Common.getIcon(1, item.getDevice_icon());
+                        }
+
+
+                        holder.itemTextView.setVisibility(View.VISIBLE);
+                        holder.itemTextView.setText(item.getSensor_name());
+
+                        itemDeviceName = item.getSensor_name();
+
+                        if (!TextUtils.isEmpty(item.getIs_unread())) {
+                            if (Integer.parseInt(item.getIs_unread()) > 0) {
+                                holder.iv_icon_badge.setVisibility(View.VISIBLE);
+                                holder.iv_icon_badge.setText(item.getIs_unread());
+
+                                if (Integer.parseInt(item.getIs_unread()) > 99) {
+                                    holder.iv_icon_badge.setText("99+");
+                                    holder.iv_icon_badge.getLayoutParams().width = Common.dpToPx(mContext, 27);
+                                    holder.iv_icon_badge.getLayoutParams().height = Common.dpToPx(mContext, 27);
+                                } else {
+                                    holder.iv_icon_badge.getLayoutParams().width = Common.dpToPx(mContext, 27);
+                                    holder.iv_icon_badge.getLayoutParams().height = Common.dpToPx(mContext, 27);
+                                }
+
+                            } else {
+                                holder.iv_icon_badge.setVisibility(View.GONE);
+                            }
+                        } else {
+                            holder.iv_icon_badge.setVisibility(View.GONE);
+                        }
+
                     } else {
 
                         holder.iv_icon_badge.setVisibility(View.VISIBLE);
@@ -779,7 +865,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         String tempInCF = "";
                         String cf = "";
 
-                        if(item.getTemp_in_c()!=null){
+                        if (item.getTemp_in_c() != null) {
                             if (item.getTemp_in_c().equalsIgnoreCase("C")) {
                                 if (TextUtils.isEmpty("" + item.getDeviceStatus())) {
                                     tempInCF = "-- ";
@@ -888,18 +974,19 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 }
 
                 holder.iv_icon.setImageResource(itemIcon);
-
+                holder.view.setId(position);
                 holder.iv_icon.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (!isClickable)
                             return;
                         ChatApplication.logDisplay("postion click is " + item.getDeviceType());
-                        if(item.getIsActive() == 1){
+                        if (item.getIsActive() == 1) {
                             holder.iv_icon.setClickable(true);
-                        } else{
+                        } else {
                             holder.iv_icon.setClickable(false);
                         }
+
                         if (item.getDeviceType().equals(mContext.getResources().getString(R.string.curtain))) {
 
                         } else if (item.getDeviceType().equalsIgnoreCase("door_sensor") || item.getDeviceType().equalsIgnoreCase("temp_sensor")) {
@@ -940,7 +1027,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         if (!isClickable)
                             return false;
 
-                        if(item.getIsActive()!=1){
+                        if (item.getIsActive() != 1) {
                             return false;
                         }
                         item.setOldStatus(item.getDeviceStatus());
@@ -982,7 +1069,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 //                            if(item.getIs_locked()==1){
 //                                Toast.makeText(mContext,mContext.getResources().getString(R.string.fan_error),Toast.LENGTH_LONG).show();
 //                            }else {
-                            if(item.getDeviceStatus()==1){
+                            if (item.getDeviceStatus() == 1) {
                                 mItemClickListener.itemClicked(item, "longclick", position);
                             }
 //                            }
@@ -1095,7 +1182,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
         TextView sectionTextView, text_section_on_off, text_section_edit, iv_icon_badge_room, img_setting_badge_count,
                 itemTextView, iv_icon_badge, txt_temp_in_cf, txtTotalDevices, txtCameraCount, txt_recording, textRefreshCamera, textShowCamera;
         RelativeLayout rel_main_view;
-        LinearLayout ll_background, ll_room_item, linearRowRoom, linearPanelList, ll_root_view_section,linearClickExpanded;
+        LinearLayout ll_background, ll_room_item, linearRowRoom, linearPanelList, ll_root_view_section, linearClickExpanded;
 
         public ViewHolder(View view, int viewType) {
             super(view);
@@ -1162,7 +1249,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
         void itemClicked(CameraVO item, String action);
     }
 
-    public interface JetsonClickListener{
-        void jetsonClicked(String action,String jetsonid);
+    public interface JetsonClickListener {
+        void jetsonClicked(String action, String jetsonid);
     }
 }

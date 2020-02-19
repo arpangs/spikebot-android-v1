@@ -214,6 +214,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         Fabric.with(activity, new Crashlytics());
         view = inflater.inflate(R.layout.fragment_main, container, false);
 
+
         //for callback network change
         ((Main2Activity) activity).setCallBack(this);
 

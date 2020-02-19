@@ -221,6 +221,11 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
 //                        holder.iv_icon.setImageResource(Common.getIcon(0, item.getDevice_icon()));//item.getDeviceStatus()
 //                    }
 //                }
+                if (item.isSensor()) {
+                    holder.itemTextView.setText(item.getSensor_name());
+                } else {
+                    holder.itemTextView.setText(item.getDeviceName());
+                }
 
                 holder.iv_icon.setImageResource(Common.getIcon(0, item.getDevice_icon()));//item.getDeviceStatus()
 

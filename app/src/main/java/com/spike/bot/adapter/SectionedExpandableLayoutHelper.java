@@ -371,9 +371,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         //mSectionMap.put(section.getRoomName(), section);
         if (this.section != null && this.section.equals(section)) {
 
-
         }
-
         for (RoomVO roomVO : ListUtils.arrayListRoom) {
 //            ChatApplication.logDisplay("room id is same check "+roomVO.getRoomName()+"  "+roomVO.isExpanded());
             if (roomVO.isExpanded()==true && roomVO.getRoomId().equalsIgnoreCase(section.getRoomId())) {

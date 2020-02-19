@@ -167,7 +167,7 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        ChatApplication.logDisplay("result is "+webUrl);
+        ChatApplication.logDisplay("result is "+ webUrl + dataObject);
 
         new GetJsonTask(this, webUrl, "POST", dataObject.toString(), new ICallBack() {
             @Override

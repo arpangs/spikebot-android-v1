@@ -29,7 +29,6 @@ import android.widget.TextView;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
-import com.spike.bot.Beacon.AddBeaconActivity;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Repeatar.RepeaterActivity;
@@ -45,7 +44,6 @@ import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.dialog.AddRoomDialog;
 import com.spike.bot.dialog.ICallback;
-import com.spike.bot.listener.DeviceListRefreshView;
 import com.spike.bot.model.RoomVO;
 
 import org.json.JSONArray;
@@ -78,7 +76,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
     Dialog dialog;
 
     boolean addRoom = false, addTempSensor = false;
-    public static int SENSOR_TYPE_PANAL = 0, SENSOR_TYPE_DOOR = 1, SENSOR_TYPE_TEMP = 2, SENSOR_GAS = 5, Curtain = 6, typeSync = 0;
+    public static int SENSOR_TYPE_PANAL = 0, SENSOR_TYPE_DOOR = 1, SENSOR_TYPE_TEMP = 2, SENSOR_GAS = 5, Curtain = 6, typeSync = 0, SENSOR_WATER = 7;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -125,13 +123,14 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         arrayList.add("Repeaters");
         arrayList.add("Camera");
         arrayList.add("Smart Camera");
+        arrayList.add("Water Detector");
 //        arrayList.add("Add Beacon");
     }
 
     /*item click */
     private void setIntent(int position) {
         if (position == 0) {
-           unassignIntent("all");
+            unassignIntent("all");
         } else if (position == 1) {
             addCustomRoom();
         } else if (position == 2) {
@@ -158,8 +157,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             showOptionDialog(SENSOR_TYPE_TEMP);
         } else if (position == 11) {
             showOptionDialog(Curtain);
-        }
-        else if (position == 12) {
+        } else if (position == 12) {
             startActivity(new Intent(this, RepeaterActivity.class));
         } else if (position == 13) {
             if (Common.getPrefValue(this, Common.camera_key).equalsIgnoreCase("0")) {
@@ -167,18 +165,21 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             } else {
                 addCamera();
             }
-        }else if (position == 14) {
-            Intent intent=new Intent(this, AddJetSonActivity.class);
+        } else if (position == 14) {
+            Intent intent = new Intent(this, AddJetSonActivity.class);
             startActivity(intent);
-        }else if (position == 15) {
+        }/*else if (position == 15) {
             Intent intent=new Intent(this, AddBeaconActivity.class);
             startActivity(intent);
+        }*/ else if (position == 15) {
+            showOptionDialog(SENSOR_WATER);
         }
     }
+
     /*unassign list*/
-    public void unassignIntent(String type){
-        Intent intent=new Intent(this, AllUnassignedPanel.class);
-        intent.putExtra("type",type);
+    public void unassignIntent(String type) {
+        Intent intent = new Intent(this, AllUnassignedPanel.class);
+        intent.putExtra("type", type);
         startActivity(intent);
     }
 
@@ -387,6 +388,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
     /**
      * show Panel option for sync panel
+     *
      * @param position
      */
     private void showPanelOption(int position) {
@@ -440,6 +442,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             dialog.show();
         }
     }
+
     /*dialog for sensor type selection*/
     private void showOptionDialog(final int sensor_type) {
 
@@ -468,11 +471,11 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                if(sensor_type==1){
+                if (sensor_type == 1) {
                     unassignIntent("door_sensor");
-                }else  if(sensor_type==2){
+                } else if (sensor_type == 2) {
                     unassignIntent("temp_sensor");
-                }else {
+                } else {
                     unassignIntent("gas_sensor");
                 }
 
@@ -511,6 +514,8 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             ActivityHelper.showProgressDialog(AddDeviceTypeListActivity.this, "Searching for new temperature sensor", false);
         } else if (type == SENSOR_TYPE_DOOR) {
             ActivityHelper.showProgressDialog(AddDeviceTypeListActivity.this, "Searching for new door sensor", false);
+        } else if (type == SENSOR_WATER) {
+            ActivityHelper.showProgressDialog(AddDeviceTypeListActivity.this, "Searching for new water detector", false);
         } else {
             ActivityHelper.showProgressDialog(AddDeviceTypeListActivity.this, "Searching for new panel", false);
         }
@@ -527,6 +532,8 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             url = url + "temp_sensor";
         } else if (type == SENSOR_TYPE_DOOR) {
             url = url + "door_sensor";
+        } else if (type == SENSOR_WATER) {
+            url = url + "water_detector";
         } else {
             url = url + "5";
         }
@@ -654,7 +661,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onFailure(Throwable throwable, String error) {
                 dismissProgressDialog();
-                ChatApplication.showToast(AddDeviceTypeListActivity.this,getResources().getString(R.string.something_wrong1));
+                ChatApplication.showToast(AddDeviceTypeListActivity.this, getResources().getString(R.string.something_wrong1));
             }
         }).execute();
     }
@@ -790,11 +797,12 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             public void onFailure(Throwable throwable, String error) {
                 dismissProgressDialog();
                 ChatApplication.logDisplay("onFailure " + error);
-                ChatApplication.showToast(AddDeviceTypeListActivity.this,getResources().getString(R.string.something_wrong1));
+                ChatApplication.showToast(AddDeviceTypeListActivity.this, getResources().getString(R.string.something_wrong1));
             }
         }).execute();
 
     }
+
     /*count down for 7 sec after finish*/
     CountDownTimer countDownTimer = new CountDownTimer(7000, 4000) {
         public void onTick(long millisUntilFinished) {
@@ -868,6 +876,9 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         } else if (typeSync == SENSOR_TYPE_DOOR) {
             dialogTitle.setText("Add Door Sensor");
             txt_sensor_name.setText("Door Name");
+        } else if (typeSync == SENSOR_WATER) {
+            dialogTitle.setText("Add Water Detector");
+            txt_sensor_name.setText("Detector Name");
         } else {
             dialogTitle.setText("Add Panel");
             txt_sensor_name.setText("Panel Name");
@@ -915,7 +926,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
     }
 
     /*add device comman service */
-    private void addCurtain(final Dialog dialog, String door_name, String door_module_id, Spinner sp_room_list, String  module_type) {
+    private void addCurtain(final Dialog dialog, String door_name, String door_module_id, Spinner sp_room_list, String module_type) {
 
 
         ActivityHelper.showProgressDialog(AddDeviceTypeListActivity.this, "Please wait.", false);
@@ -1030,7 +1041,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                                     addRoomDialog.show();
                                 }
                             } else {
-                                showGasSensor(object.optString("module_id"),object.optString("module_type"));
+                                showGasSensor(object.optString("module_id"), object.optString("module_type"));
                             }
                         } else {
                             showConfigAlert(object.getString("message"));

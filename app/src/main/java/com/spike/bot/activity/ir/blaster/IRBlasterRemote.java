@@ -60,7 +60,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
     private LinearLayout mPowerButton;
     private Button mBrandBottom, mTempMinus, mTempPlus;
     private ImageView mImageAuto, mToolbarBack, imgRemoteStatus, mImageEdit, mImageDelete;
-    private TextView mTemp, mImageAutoText,mRemoteName, txtRemoteState, txtAcState;
+    private TextView mTemp, mDefaultTemp, mImageAutoText,mRemoteName, txtRemoteState, txtAcState;
 
     private String mRemoteId, moodName = "", mRoomDeviceId,module_id="",modeType="";
     private boolean isPowerOn = false;
@@ -117,6 +117,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         mRemoteName = findViewById(R.id.remote_name);
         txtAcState = findViewById(R.id.txtAcState);
         mTemp = findViewById(R.id.remote_temp);
+        mDefaultTemp = findViewById(R.id.remote_default_temp);
         mImageAuto =  findViewById(R.id.remote_speed_img);
         imgRemoteStatus =  findViewById(R.id.imgRemoteStatus);
         mImageAutoText =  findViewById(R.id.remote_speed_text);
@@ -149,7 +150,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             arrayListMood.add(remoteMoodModel);
         }
 
-        String value[]=mRemoteCommandList.getDevice().getDeviceSubStatus().split("-");
+        String value[]=mRemoteCommandList.getDevice().getMeta_device_default_status().split("-");
         modeType=value[0];
         tempCurrent= Integer.parseInt(value[1]);
         for (int i = 0; i < arrayListMood.size(); i++) {
@@ -171,6 +172,11 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         tempCurrent= Integer.parseInt(value[1]);
         isRemoteActive= Integer.parseInt(mRemoteCommandList.getDevice().getDeviceStatus());
         mTemp.setText("" + tempCurrent+ Common.getC());
+
+        String value1[]=mRemoteCommandList.getDevice().getMeta_device_default_status().split("-");
+        modeType=value1[0];
+        tempCurrent= Integer.parseInt(value1[1]);
+        mDefaultTemp.setText("Default Temp. -" + " " + tempCurrent+ Common.getC()  +  " " + modeType);
         if(mRemoteCommandList.getDevice().getDeviceStatus().equalsIgnoreCase("0")){
             txtAcState.setText("Ac state : OFF");
         }else {

@@ -218,13 +218,22 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
 //                if(item.getIsActive()==-1){
 //                    holder.iv_icon.setImageResource(Common.getIcon(0, item.getDevice_icon()));//item.getDeviceStatus()
 //                }else {
-                    holder.iv_icon.setImageResource(Common.getIcon(0, item.getDevice_icon()));//item.getDeviceStatus()
+                holder.iv_icon.setImageResource(Common.getIcon(0, item.getDevice_icon()));//item.getDeviceStatus()
 //                }
 
+                if (item.isSensor()) {
+
+                    holder.itemTextView.setText(item.getSensor_name());
+
+                } else {
+                    holder.itemTextView.setText(item.getDeviceName());
+                }
+
+
                 /*check is device active or not*/
-                if(item.getIsActive()==-1){
+                if (item.getIsActive() == -1) {
                     holder.view.setAlpha(0.50f);
-                }else{
+                } else {
                     holder.view.setAlpha(1);
                 }
 
@@ -233,7 +242,6 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                 } else {
                     holder.iv_icon_select.setVisibility(View.GONE);
                 }
-
 
 
 //                if (item.getSensor_icon() != null && item.getSensor_icon().equalsIgnoreCase("Remote_AC") && item.getIsActive() == 0) {
@@ -257,7 +265,7 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                 holder.view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(item.getIsActive()!=-1){
+                        if (item.getIsActive() != -1) {
                             ChatApplication.logDisplay("item is " + item.isSelected());
                             item.setSelected(!item.isSelected());
                             notifyItemChanged(v.getId(), item);
