@@ -83,10 +83,10 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     public View viewEditSensor;
     private ImageView view_rel_badge, iv_icon_edit, imgLog;
     private TextView txtAlertCount, txtEmpty, txtEmpty_temp, txtHumity, txtTempCount, tempCFValue,
-            txtTempAlertCount, txtCButton, txtFButton, txtTempAlertCount_temp, txtTempCount_temp, txtAddButton, txtAddButtonTemp;
+            txtTempAlertCount, txtCButton, txtFButton, txtTempAlertCount_temp, txtTempCount_temp, txtAddButton, txtAddButtonTemp,txt_battery_level;
     private Button btn_delete;
     private ToggleButton toggleAlert, toggleAlert_temp, toggleAlertSensor;
-    private LinearLayout linearAlertExpand, linearAlertDown, linearAlertExpand_temp, linearAlertDown_temp, linearMultisensor;
+    private LinearLayout linearAlertExpand, linearAlertDown, linearAlertExpand_temp, linearAlertDown_temp, linearMultisensor,edt_txt_layout2,edt_txt_layout_temp;
     private boolean flagAlert = false, flagAlertTemp = false, flagEditSensor = false, flagSensorNoti = false;
 
     private String temp_room_name, temp_room_id, temp_module_id, temp_sensor_name;
@@ -241,6 +241,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         linearAlertDown_temp = findViewById(R.id.linearAlertDown_temp);
         linearAlertExpand = findViewById(R.id.linearAlertExpand);
         linearAlertExpand_temp = findViewById(R.id.linearAlertExpand_temp);
+        edt_txt_layout_temp = findViewById(R.id.edt_txt_layout_temp);
+        edt_txt_layout2 = findViewById(R.id.edt_txt_layout2);
         toggleAlert = findViewById(R.id.toggleAlert);
         toggleAlert_temp = findViewById(R.id.toggleAlert_temp);
         txtAlertCount = findViewById(R.id.txtAlertCount);
@@ -248,6 +250,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         txtEmpty_temp = findViewById(R.id.txtEmpty_temp);
         txtTempAlertCount = findViewById(R.id.txtTempAlertCount);
         txtTempAlertCount_temp = findViewById(R.id.txtTempAlertCount_temp);
+        txt_battery_level = findViewById(R.id.txt_battery_level);
         txtHumity = findViewById(R.id.txtHumity);
         iv_icon_edit = findViewById(R.id.iv_icon_edit);
         viewEditSensor = findViewById(R.id.viewEditSensor);
@@ -312,10 +315,12 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                     flagAlert = false;
                     toggleAlert.setChecked(flagAlert);
                     linearAlertExpand.setVisibility(View.GONE);
+                    edt_txt_layout2.setBackground(getResources().getDrawable(R.drawable.background_shadow));
                 } else {
                     flagAlert = true;
                     toggleAlert.setChecked(flagAlert);
                     linearAlertExpand.setVisibility(View.VISIBLE);
+                    edt_txt_layout2.setBackground(getResources().getDrawable(R.drawable.background_shadow_bottom_side));
                 }
             }
         });
@@ -327,10 +332,12 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                     flagAlertTemp = false;
                     toggleAlert_temp.setChecked(flagAlertTemp);
                     linearAlertExpand_temp.setVisibility(View.GONE);
+                    edt_txt_layout_temp.setBackground(getResources().getDrawable(R.drawable.background_shadow));
                 } else {
                     flagAlertTemp = true;
                     toggleAlert_temp.setChecked(flagAlertTemp);
                     linearAlertExpand_temp.setVisibility(View.VISIBLE);
+                    edt_txt_layout_temp.setBackground(getResources().getDrawable(R.drawable.background_shadow_bottom_side));
                 }
             }
         });
@@ -1217,20 +1224,25 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                 flagAlert = false;
                 toggleAlert.setChecked(flagAlert);
                 linearAlertExpand.setVisibility(View.GONE);
+                edt_txt_layout2.setBackground(getResources().getDrawable(R.drawable.background_shadow));
             } else {
                 flagAlert = true;
                 toggleAlert.setChecked(flagAlert);
                 linearAlertExpand.setVisibility(View.VISIBLE);
+                edt_txt_layout2.setBackground(getResources().getDrawable(R.drawable.background_shadow_bottom_side));
+
             }
         } else if (id == R.id.linearAlertDown_temp) {
             if (flagAlertTemp) {
                 flagAlertTemp = false;
                 toggleAlert_temp.setChecked(flagAlertTemp);
                 linearAlertExpand_temp.setVisibility(View.GONE);
+                edt_txt_layout_temp.setBackground(getResources().getDrawable(R.drawable.background_shadow));
             } else {
                 flagAlertTemp = true;
                 toggleAlert_temp.setChecked(flagAlertTemp);
                 linearAlertExpand_temp.setVisibility(View.VISIBLE);
+                edt_txt_layout_temp.setBackground(getResources().getDrawable(R.drawable.background_shadow_bottom_side));
             }
         } else if (v == iv_icon_edit || v == sensorName) {
             if (flagEditSensor) {
@@ -1609,6 +1621,36 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             sensorResModel.getDevice().setFahrenheitvalue(Constants.getFTemp(sensorResModel.getDevice().getDeviceStatus()));
 
             tempCFValue.setText(sensorResModel.getDevice().getFahrenheitvalue() + " ");
+        }
+
+        if(sensorResModel.getDevice().getMeta_battery_level()!=null)
+        {
+
+            int perc = 0;
+            if (!TextUtils.isEmpty(""+sensorResModel.getDevice().getMeta_battery_level())) {
+                try {
+                    perc = Integer.parseInt(sensorResModel.getDevice().getMeta_battery_level());
+                } catch (Exception ex) {
+                    perc = 100;
+                    ex.printStackTrace();
+                }
+            }
+
+
+            txt_battery_level.setText(perc + " %");
+            if (perc >= 0 && perc <= 25)
+                txt_battery_level.setTextColor(getResources().getColor(R.color.battery_low));
+            else if (perc >= 26 && perc <= 50)
+                txt_battery_level.setTextColor(getResources().getColor(R.color.battery_low1));
+            else if (perc >= 51 && perc <= 75)
+                txt_battery_level.setTextColor(getResources().getColor(R.color.battery_medium));
+            else if (perc >= 76 && perc <= 100)
+                txt_battery_level.setTextColor(getResources().getColor(R.color.battery_high));
+
+            if(perc > 100){
+                txt_battery_level.setText("100" + "%");
+                txt_battery_level.setTextColor(getResources().getColor(R.color.battery_high));
+            }
         }
 
         /*sub_status is humidity*/

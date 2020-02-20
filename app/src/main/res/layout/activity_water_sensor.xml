@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/new_screen_resolution"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/sky_blue"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_margin="@dimen/_5sdp"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:visibility="visible"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/_10sdp"
+                    android:layout_weight="1.2"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/edt_txt_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/background_shadow"
+                            android:padding="@dimen/_5sdp"
+                            android:orientation="horizontal">
+
+                            <EditText
+                                android:id="@+id/edSensorName"
+                                android:singleLine="true"
+                                android:maxLength="30"
+                                android:paddingLeft="@dimen/_5sdp"
+                                android:paddingRight="@dimen/_50sdp"
+                                android:textSize="@dimen/_14sdp"
+                                android:background="@null"
+                                android:imeOptions="actionDone"
+                                android:hint="Water detector name"
+                                android:clickable="false"
+                                android:focusableInTouchMode="false"
+                                android:textColor="@color/automation_black"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:inputType="text" />
+
+                            <ImageView
+                                android:id="@+id/imgEdit"
+                                android:layout_width="@dimen/_32sdp"
+                                android:layout_height="@dimen/_32sdp"
+                                android:padding="@dimen/_3sdp"
+                                android:src="@drawable/edit_blue" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/background_shadow"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="217dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/_10sdp"
+                                android:layout_weight="1"
+                                android:text="@string/batter_level"
+                                android:textColor="@color/automation_black"
+                                android:textSize="@dimen/_12sdp" />
+
+                            <TextView
+                                android:id="@+id/txt_battery_level"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="@dimen/_12sdp"
+                                android:text=""
+                                android:textColor="@color/automation_black"
+                                android:layout_margin="@dimen/_10sdp" />
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_gravity="center"
+                        android:padding="12dp"
+                        android:background="@drawable/background_shadow"
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="0.90"
+                            android:textColor="@color/automation_black"
+                            android:text="Notification On/Off"
+                            android:textSize="@dimen/_12sdp" />
+
+                        <LinearLayout
+                            android:id="@+id/ll_switch_temp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="right"
+                            android:gravity="right"
+                            android:orientation="horizontal">
+
+                            <android.support.v7.widget.SwitchCompat
+                                android:id="@+id/switch_temp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                app:theme="@style/Color1SwitchStyle" />
+
+
+                        </LinearLayout>
+
+                     <!--   <TextView
+                            android:id="@+id/notification_title"
+                            android:text="Water Detector"
+                            android:layout_marginRight="16dp"
+                            android:layout_weight="0.7"
+                            android:layout_width="0dp"
+                            android:textSize="@dimen/_12sdp"
+                            android:textColor="@color/automation_black"
+                            android:layout_height="wrap_content" />
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/switch_temp"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.3"
+                            app:theme="@style/Color1SwitchStyle" />-->
+
+                    </LinearLayout>
+
+
+                  <!--  <android.support.v7.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_20sdp"
+                        android:layout_gravity="center"
+                        android:orientation="vertical"
+                        app:cardCornerRadius="2dp"
+                        app:cardElevation="5dp"
+                        app:elevation="@dimen/_10sdp">-->
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="@drawable/background_shadow"
+                            android:orientation="vertical">
+
+                            <android.support.v7.widget.AppCompatTextView
+                                android:singleLine="true"
+                                android:maxLength="25"
+                                android:padding="@dimen/_12sdp"
+                                android:textSize="@dimen/_15sdp"
+                                android:textColor="@color/sensor_button"
+                                android:imeOptions="actionDone"
+                                android:gravity="center"
+                                android:text="Water Detection"
+                                android:textStyle="bold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:inputType="textEmailAddress" />
+
+
+                            <android.support.v7.widget.AppCompatTextView
+                                android:id="@+id/txtSpeedCount"
+                                android:singleLine="true"
+                                android:maxLength="25"
+                                android:textSize="@dimen/_22sdp"
+                                android:layout_marginTop="@dimen/_40sdp"
+                                android:paddingBottom="@dimen/_55sdp"
+                                android:textColor="@color/greenDark"
+                                android:imeOptions="actionDone"
+                                android:gravity="center"
+                                android:textStyle="bold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="textEmailAddress" />
+
+
+                        </LinearLayout>
+
+                  <!--  </android.support.v7.widget.CardView>-->
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_60sdp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <!--
+                                            <com.github.anastr.speedviewlib.SpeedView
+                                                android:id="@+id/speedView"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                app:sv_withTremble="false"
+                                                app:sv_maxSpeed="20"
+                                                app:sv_markColor="@color/automation_white"
+                                                app:sv_unitTextColor="@color/automation_white"
+                                                app:sv_tickTextFormat="INTEGER"
+                                                app:sv_textColor="@color/automation_white"
+                                                app:sv_speedTextColor="@color/automation_white"
+                                                app:sv_indicator="LineIndicator"
+                                                app:sv_withIndicatorLight="false"
+                                                app:sv_indicatorColor="@color/sensor_button"
+                                                app:sv_centerCircleColor="@color/automation_white"
+                                                android:layout_gravity="center"
+                                                android:layout_marginTop="@dimen/_20sdp"/>-->
+
+
+                </LinearLayout>
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    android:gravity="center"
+                    android:textColor="@color/automation_black"
+                    android:textSize="@dimen/_30sdp"
+                    android:text="5" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearDelete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/_5sdp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="16dp"
+            android:text="DELETE"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/button_red_border_white_bg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+    </LinearLayout>
+
+</LinearLayout>

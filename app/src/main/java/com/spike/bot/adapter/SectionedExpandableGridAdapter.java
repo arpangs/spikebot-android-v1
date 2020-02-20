@@ -485,7 +485,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                     String isunRead = section.getIs_unread();
                     ChatApplication.logDisplay("isunRead is " + isunRead);
-                    if (!TextUtils.isEmpty(isunRead) && Integer.parseInt(isunRead) > 0) {
+                    if (!TextUtils.isEmpty(isunRead) && Integer.parseInt(isunRead) > 0)
+                    {
                         holder.img_setting_badge_count.setVisibility(View.VISIBLE);
                         if (Integer.parseInt(isunRead) > 99) {
                             holder.img_setting_badge_count.setText("99+");
@@ -821,7 +822,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         }
 
                     } else if (item.getSensor_type().equals("water_detector")) {
-                        holder.txt_temp_in_cf.setVisibility(View.GONE);
+                        holder.txt_temp_in_cf.setVisibility(View.INVISIBLE);
                         holder.iv_icon.setVisibility(View.VISIBLE);
 
                         if (item.getIsActive() == -1) {
@@ -832,7 +833,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
 
                         holder.itemTextView.setVisibility(View.VISIBLE);
-                        holder.itemTextView.setText(item.getSensor_name());
+                        holder.itemTextView.setText(item.getSensor_name().trim());
 
                         itemDeviceName = item.getSensor_name();
 

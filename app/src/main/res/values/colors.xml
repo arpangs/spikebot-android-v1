@@ -33,4 +33,9 @@
     <color name="green">#00c1A4</color>
     <color name="greenDark">#007f00</color>
     <color name="blue_transparent">#DFF2FE</color>
+
+    <color name="battery_low">#BB0000</color>
+    <color name="battery_low1">#FF9000</color>
+    <color name="battery_medium">#FFC600</color>
+    <color name="battery_high">#4CD864</color>
 </resources>

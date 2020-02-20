@@ -94,7 +94,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
     public Toolbar toolbar;
 
     private EditText sensorName;
-    private TextView txt_empty_notification, txt_empty_notificationALert, txtTempCount, txtAlertTempCount;
+    private TextView txt_empty_notification, txt_empty_notificationALert, txtTempCount, txtAlertTempCount,txt_battery_level;
     private ImageView img_door_on, imgBattery, view_rel_badge, imgLock, imgLockDelete, imgDoorDelete, doorAddButton, imgLockBattery;
     private TextView batteryPercentage;
     private LinearLayout linearAlertDown, linearAlertExpand, linearLock, linearAddlockOptin, linearLockDoor;
@@ -396,7 +396,8 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             sensorName.setSelection(sensorName.getText().length());
 
 
-            if(doorSensorResModel.getDevice().getMeta_battery_level()!=null){
+            if(doorSensorResModel.getDevice().getMeta_battery_level()!=null)
+            {
 
                 int perc = 0;
                 if (!TextUtils.isEmpty(""+doorSensorResModel.getDevice().getMeta_battery_level())) {
@@ -409,7 +410,23 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                 }
                 batteryPercentage.setText(perc + "%");
 
+
+                txt_battery_level.setText(perc + " %");
                 imgBattery.setImageResource(Common.getBatteryIcon(""+doorSensorResModel.getDevice().getMeta_battery_level()));
+
+                if (perc >= 0 && perc <= 25)
+                    txt_battery_level.setTextColor(getResources().getColor(R.color.battery_low));
+                else if (perc >= 26 && perc <= 50)
+                    txt_battery_level.setTextColor(getResources().getColor(R.color.battery_low1));
+                else if (perc >= 51 && perc <= 75)
+                    txt_battery_level.setTextColor(getResources().getColor(R.color.battery_medium));
+                else if (perc >= 76 && perc <= 100)
+                    txt_battery_level.setTextColor(getResources().getColor(R.color.battery_high));
+
+                if(perc > 100){
+                    txt_battery_level.setText("100" + "%");
+                    txt_battery_level.setTextColor(getResources().getColor(R.color.battery_high));
+                }
             }
 
             if (doorSensorResModel.getAlerts()!=null && doorSensorResModel.getAlerts().size()>0) {
@@ -1280,6 +1297,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         txt_empty_notificationALert =  findViewById(R.id.txt_empty_notification);
         txtAlertCount =  findViewById(R.id.txtAlertCount);
         txtAddLock = findViewById(R.id.txtAddLock);
+        txt_battery_level = findViewById(R.id.txt_battery_level);
         linearLock = findViewById(R.id.linearLock);
         imgLock = findViewById(R.id.imgLock);
         linearLockDoor = findViewById(R.id.linearLockDoor);

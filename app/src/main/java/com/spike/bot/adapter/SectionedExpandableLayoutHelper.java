@@ -299,6 +299,25 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         }
     }
 
+    public void updateBadgeCountnew(String roomid, String counter) {
+
+        for (int k = 0; k < mDataArrayList.size(); k++) {
+
+            if(mDataArrayList.get(k) instanceof RoomVO){
+                RoomVO roomVO1 = (RoomVO) mDataArrayList.get(k);
+                if (roomVO1 != null) {
+                    if (roomVO1.getRoomId().equals(roomid)) {
+                        ChatApplication.logDisplay("room refreesh is ");
+                        ((RoomVO) mDataArrayList.get(k)).setIs_unread(counter);
+                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
+                        break;
+                    }
+
+                }
+            }
+        }
+    }
+
 
     public void updateBadgeCount1(String sensor_type, String sensor_unread, String module_id, String room_id, String room_unread) {
 

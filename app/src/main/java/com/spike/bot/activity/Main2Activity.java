@@ -32,6 +32,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.CloudAdapter;
@@ -828,7 +829,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         //clear pref and open login screen
         Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "false");
         Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, "");
-
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(Constants.LOCAL + Common.getPrefValue(Main2Activity.this, Constants.USER_ID));
         ///start//
 
         final Gson gson = new Gson();
@@ -854,7 +855,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     logOutUser = user;
                 }
             }
-
             if (isFoundUser) {
                 //logoutUser();
                 //TODO code for logout api call

@@ -1039,7 +1039,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
         } else if (room.equalsIgnoreCase("Schedule")) {
             url = ChatApplication.url + Constants.GET_SCHEDULE_LIST;
         } else if (room.equalsIgnoreCase("sensor") || room.equalsIgnoreCase("Gas sensor")
-                || room.equalsIgnoreCase("Temp sensor") || room.equalsIgnoreCase("Door sensor")) {
+                || room.equalsIgnoreCase("Temp sensor") || room.equalsIgnoreCase("Door sensor") || room.equalsIgnoreCase("Water detector")) {
             urlType = "sensor";
             url = ChatApplication.url + Constants.devicefind;
         } else {
@@ -1073,6 +1073,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                     jsonObject.put("device_type", "temp_sensor");
                 } else if (room.equalsIgnoreCase("Door sensor")) {
                     jsonObject.put("device_type", "door_sensor");
+                } else if (room.equalsIgnoreCase("Water detector")){
+                    jsonObject.put("device_type", "water_detector");
                 }
                 jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
                 jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -1117,7 +1119,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                             frame_living_room.setVisibility(View.VISIBLE);
                             RoomVO oneRoom = new RoomVO();
                             oneRoom.setRoomId("0");
-                            if (room.equalsIgnoreCase("Temp sensor") || room.equalsIgnoreCase("Gas sensor") || room.equalsIgnoreCase("Temp sensor")) {
+                            if (room.equalsIgnoreCase("Temp sensor") || room.equalsIgnoreCase("Gas sensor") || room.equalsIgnoreCase("Temp sensor")
+                            || room.equalsIgnoreCase("Water detector")) {
                                 oneRoom.setRoomName("All");
                                 mListRoom.add(0, oneRoom);
                             } else {
@@ -1636,6 +1639,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                                 object.put("filter_type", "gas_sensor");
                             } else if (actionType.equalsIgnoreCase("Temp sensor")) {
                                 object.put("filter_type", "temp_sensor");
+                            } else if (actionType.equalsIgnoreCase("Water detector")) {
+                                object.put("filter_type", "water_detector");
                             } else {
                                 object.put("filter_type", "all-sensor");
                             }
@@ -1656,6 +1661,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
                                 object.put("filter_type", "gas_sensor");
                             } else if (actionType.equalsIgnoreCase("Temp sensor")) {
                                 object.put("filter_type", "temp_sensor");
+                            } else if (actionType.equalsIgnoreCase("Water detector")) {
+                                object.put("filter_type", "water_detector");
                             } else {
                                 object.put("filter_type", "all-sensor");
                             }

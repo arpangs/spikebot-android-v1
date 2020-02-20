@@ -199,7 +199,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
 
         JSONObject object = new JSONObject();
         try {
-            object.put("filter_action","door_open,door_close,temp_alert,gas_detected");
+            object.put("filter_action","door_open,door_close,temp_alert,gas_detected,water_detected");
             object.put("filter_type","room");
             object.put("room_id",""+ROOM_ID);
             object.put("unseen",1);

@@ -201,6 +201,10 @@ public class Common {
                         resource = R.drawable.fire_and_gas_gray;
                         break;
 
+                    case "water_detector":
+                        resource = R.drawable.drop_gray;
+                        break;
+
                     case "curtain":
                         resource = R.drawable.curtain_closed;
                         break;
@@ -304,6 +308,10 @@ public class Common {
 
                     case "gassensor":
                         resource = R.drawable.fire_and_gas;
+                        break;
+
+                    case "water_detector":
+                        resource = R.drawable.drop;
                         break;
                     case "curtain":
                         resource = R.drawable.curtain_open;
@@ -431,6 +439,9 @@ public class Common {
                 break;
             case "gas_sensor":
                 resource = R.drawable.fire_and_gas_gray_with_red_cross;
+                break;
+            case "water_detector":
+                resource = R.drawable.drop_disabled;
                 break;
             case "camera":
                 resource = R.drawable.camera_off_inactive;

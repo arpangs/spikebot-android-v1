@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +30,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
@@ -62,6 +68,7 @@ import com.spike.bot.activity.ScheduleListActivity;
 import com.spike.bot.activity.Sensor.DoorSensorInfoActivity;
 import com.spike.bot.activity.Sensor.GasSensorActivity;
 import com.spike.bot.activity.Sensor.MultiSensorActivity;
+import com.spike.bot.activity.Sensor.WaterSensorActivity;
 import com.spike.bot.activity.SmartColorPickerActivity;
 import com.spike.bot.activity.ir.blaster.IRBlasterRemote;
 import com.spike.bot.adapter.CloudAdapter;
@@ -102,6 +109,8 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.spike.bot.core.Common.TAG;
 
 /**
  * DashBoard fragment / Room
@@ -328,6 +337,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             mSocket.off("changeModuleStatus", changeModuleStatus);
             mSocket.off("updateDeviceBadgeCounter", unReadCount);
             mSocket.off("updateChildUser", updateChildUser);
+            mSocket.off("updateRoomAlertCounter",updateRoomAlertCounter);
         }
         super.onPause();
     }
@@ -499,7 +509,8 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 intent.putExtra("temp_module_id", item.getDeviceId());
                 startActivity(intent);
 
-            } else if (item.getSensor_type().equalsIgnoreCase("gas_sensor")) {
+            } else if (item.getSensor_type().equalsIgnoreCase("gas_sensor"))
+            {
                 if (item.getIsActive() == -1) {
                     return;
                 }
@@ -519,6 +530,17 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 intent.putExtra("door_unread_count", item.getIs_unread());
                 intent.putExtra("door_module_id", item.getModuleId());
                 intent.putExtra("door_subtype", "" + item.getDoor_subtype());
+                startActivity(intent);
+            } else if(item.getSensor_type().equalsIgnoreCase("water_detector")){
+                if (item.getIsActive() == -1) {
+                    return;
+                }
+                ChatApplication.logDisplay("water is intent " + mSocket.connected());
+                Intent intent = new Intent(activity, WaterSensorActivity.class);
+                intent.putExtra("sensor_id", item.getSensor_id());
+                intent.putExtra("room_name", item.getRoomName());
+                intent.putExtra("room_id", item.getRoomId());
+                intent.putExtra("device_id", item.getDeviceId());
                 startActivity(intent);
             }
         } else if (action.equalsIgnoreCase("heavyloadlongClick")) {
@@ -673,6 +695,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         mSocket.on("changeModuleStatus", changeModuleStatus);
         mSocket.on("updateDeviceBadgeCounter", unReadCount);
         mSocket.on("updateChildUser", updateChildUser);
+        mSocket.on("updateRoomAlertCounter",updateRoomAlertCounter);
     }
 
     public void onLoadFragment() {
@@ -1281,6 +1304,8 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
     /*cloud connect*/
     public void getDeviceCloud(int isShow) {
 
+        FirebaseMessaging.getInstance().subscribeToTopic(Constants.LOCAL + Common.getPrefValue(activity, Constants.USER_ID));
+
         if (swipeRefreshLayout != null) {
             if (swipeRefreshLayout.isRefreshing()) {
                 showDialog = 1;
@@ -1558,6 +1583,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
     /*local connect*/
     public void getDeviceLocal(int isShow) {
+
+        FirebaseMessaging.getInstance().subscribeToTopic(Constants.LOCAL + Common.getPrefValue(activity, Constants.USER_ID));
+        ChatApplication.logDisplay(Constants.LOCAL + Common.getPrefValue(activity, Constants.USER_ID));
 
         if (swipeRefreshLayout != null) {
             if (swipeRefreshLayout.isRefreshing()) {
@@ -2213,6 +2241,35 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                                 showDialog = 1;
                                 getDeviceList(showDialog);
                             }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
+
+    /*update alert socket to display badgecount */
+    private Emitter.Listener updateRoomAlertCounter = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (activity == null) {
+                return;
+            }
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+
+                            String unseen_alert_counter = object.optString("unseen_alert_counter");
+                            String room_id = object.optString("room_id");
+                            sectionedExpandableLayoutHelper.updateBadgeCountnew(room_id, unseen_alert_counter);
+                            ChatApplication.logDisplay("update room alert socket is " + object.toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

@@ -50,6 +50,9 @@ public class Constants {
     public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";
     public static final String CAMERA_PATH = "/static/storage/volume/pi/";
 
+    public static final String LIVE = "LIVE-";     // live for notification subscribe/unsubscribe topic
+    public static final String LOCAL = "LOCAL-";   // local for notification subscribe/unsubscribe topic
+
     public static String startUrl = "http://home.d";
 
     public static final int ACK_TIME_OUT = 5000;
