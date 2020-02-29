@@ -500,6 +500,8 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
             resetConfig();
             showRemoteSaveDialog();
             return;
+        } else{
+            setPowerValue(Power.OFF);
         }
         RESPOND_CONST = 2; //send next request for off command
         hideRespondView();

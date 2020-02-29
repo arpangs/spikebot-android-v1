@@ -435,10 +435,15 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.mImgIcnLog.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (section.getRoomId().equalsIgnoreCase("Camera") || section.getRoomId().startsWith("JETSON-")) {
+                            if (section.getRoomId().equalsIgnoreCase("Camera")) {
                                 /*camera device log*/
                                 mItemClickListener.itemClicked(section, "cameraDevice");
-                            } else {
+
+                            } else if(section.getRoomId().startsWith("JETSON-"))
+                            {
+                                jetsonClickListener.jetsonClicked("jetsonlog", section.getRoomId());
+                            }
+                            else {
                                 mItemClickListener.itemClicked(section, "icnLog");
                             }
                         }
@@ -459,9 +464,12 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.img_setting_badge.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (section.getRoomId().equalsIgnoreCase("camera") || section.getRoomId().startsWith("JETSON-")) {
+                            if (section.getRoomId().equalsIgnoreCase("camera")) {
                                 mItemClickListener.itemClicked(section, "cameraNotification");
-                            } else {
+                            } else if (section.getRoomId().startsWith("JETSON-")){
+                                jetsonClickListener.jetsonClicked("jetsoncameraNotification",section.getRoomId());
+                            }
+                            else {
                                 mItemClickListener.itemClicked(section, "icnSensorLog");
                             }
                         }
@@ -580,10 +588,10 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         int position = (int) holder.iv_room_panel_onoff.getTag();
 
                         ChatApplication.logDisplay("position" + position);
-                        if(position == -1){
+                     /*   if(position == -1){
                             holder.iv_room_panel_onoff.setImageResource(R.drawable.room_off);
                             Toast.makeText(mContext, "No active devices found in" + " " + panel1.getPanelName(), Toast.LENGTH_SHORT).show();
-                        }/* else{
+                        }*//* else{
 
                             if(myDrawable== mContext.getResources().getDrawable(R.drawable.room_on))
                             {
@@ -606,10 +614,15 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             }
                         }*/
                         if (panel1.isActivePanel()) {
-                            panel1.setOldStatus(panel1.getPanel_status());
-                            panel1.setPanel_status(panel1.getPanel_status() == 0 ? 1 : 0);
-                            notifyItemChanged(position);
-                            mItemClickListener.itemClicked(panel1, "onOffclick");
+                            if(position == -1){
+                                holder.iv_room_panel_onoff.setImageResource(R.drawable.room_off);
+                                Toast.makeText(mContext, "No active devices found in" + " " + panel1.getPanelName(), Toast.LENGTH_SHORT).show();
+                            }else {
+                                panel1.setOldStatus(panel1.getPanel_status());
+                                panel1.setPanel_status(panel1.getPanel_status() == 0 ? 1 : 0);
+                                notifyItemChanged(position);
+                                mItemClickListener.itemClicked(panel1, "onOffclick");
+                            }
 
                         }
                     }
@@ -666,6 +679,13 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     } else {
                         itemIcon = Common.getIcon(item.getDeviceStatus(), item.getDevice_icon());
                     }
+
+                    /*if(item.getIsActive() == -1){
+                        holder.iv_room_panel_onoff.setImageResource(R.drawable.room_off);
+                        Toast.makeText(mContext,  item.getDeviceName() + " " +"is inactive", Toast.LENGTH_SHORT).show();
+                    }*/
+
+
                 } else {
                     /*--Sensor type start--*/
 
@@ -988,6 +1008,15 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             holder.iv_icon.setClickable(false);
                         }
 
+                        if (item.getIsActive() == -1) {
+                          //  itemIcon =  Common.getIcon(item.getDeviceStatus(), item.getDevice_icon());
+                            Toast.makeText(mContext,  item.getDeviceName() + " " + "is inactive", Toast.LENGTH_SHORT).show();
+                        } else {
+                           // itemIcon = Common.getIcon(item.getDeviceStatus(), item.getDevice_icon()); //AC off icon  itemIcon = Common.getDoorIcon(item.getDeviceStatus());
+                        }
+
+
+
                         if (item.getDeviceType().equals(mContext.getResources().getString(R.string.curtain))) {
 
                         } else if (item.getDeviceType().equalsIgnoreCase("door_sensor") || item.getDeviceType().equalsIgnoreCase("temp_sensor")) {
@@ -1146,7 +1175,13 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 holder.imgLogCamera.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mItemClickListener.itemClicked(cameraVO, "cameraLog");
+                        if(cameraVO.getJetson_device_id().startsWith("JETSON-"))
+                        {
+                            jetsonClickListener.jetsonClicked("showjetsoncameraLog",cameraVO.getJetson_device_id());
+                        } else {
+                            mItemClickListener.itemClicked(cameraVO, "cameraLog");
+                        }
+
                     }
                 });
 

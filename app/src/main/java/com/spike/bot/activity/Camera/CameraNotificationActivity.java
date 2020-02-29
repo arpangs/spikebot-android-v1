@@ -49,6 +49,7 @@ import com.spike.bot.model.CameraAlertList;
 import com.spike.bot.model.CameraPushLog;
 import com.spike.bot.model.CameraVO;
 import com.spike.bot.model.CameraViewModel;
+import com.spike.bot.model.NotificationList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,6 +78,9 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
     ArrayList<CameraAlertList> arrayListLog = new ArrayList<>();
     ArrayList<CameraPushLog> arrayListAlert = new ArrayList<>();
 
+    private String homecontroller_id = "", jetson_id = "";
+    public static boolean jetsoncameranotification = false;
+
     public int countCamera = 0;
     Dialog dialog;
 
@@ -93,10 +97,15 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         setUi();
+        callCameraUnseenLog();
+
     }
 
     private void setUi() {
         toolbar.setTitle("Camera Alerts");
+        homecontroller_id = getIntent().getStringExtra("homecontrollerId");
+        jetson_id = getIntent().getStringExtra("jetson_device_id");
+        jetsoncameranotification = getIntent().getExtras().getBoolean("jetsoncameraNotification");
         recyclerView = (RecyclerView) findViewById(R.id.sensor_list);
         recyclerAlert = (RecyclerView) findViewById(R.id.recyclerAlert);
         txtAlertCount = (TextView) findViewById(R.id.txtAlertCount);
@@ -496,6 +505,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                         Toast.makeText(getApplicationContext().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                         getconfigureData();
 
+                        callCameraUnseenLog();
                     } else {
                         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
                     }
@@ -604,6 +614,105 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                     e.printStackTrace();
                 } finally {
                 }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(CameraNotificationActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+        }).execute();
+    }
+
+    /**
+     * Get camera unseen log
+     */
+    private void callCameraUnseenLog() {
+        if (!ActivityHelper.isConnectingToInternet(CameraNotificationActivity.this)) {
+            Toast.makeText(CameraNotificationActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        //{"home_controller_device_id":"b8:27:eb:fe:b8:0e", "notification_number": "0", "camera_id":"" ,
+        // "phone_id": "DD50935F-D564-4676-A678-52878E99AEE7", "jetson_id":"" , "admin": 1, "phone_type": "android", "user_id": "1578660700344_goCIb6AP6"}
+        JSONObject object = new JSONObject();
+        try {
+
+
+            object.put("home_controller_device_id", homecontroller_id);
+            object.put("notification_number", "" + 0);
+            if (jetsoncameranotification) {
+                object.put("jetson_id", "" + jetson_id);
+            } else {
+                object.put("camera_id", "" + "");
+                object.put("jetson_id", "" + "");
+            }
+            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            object.put("admin", Integer.parseInt(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE)));
+            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ActivityHelper.showProgressDialog(CameraNotificationActivity.this, "Please wait...", false);
+        String url = Constants.CLOUD_SERVER_URL + Constants.getUnseenCameraLog;
+
+        ChatApplication.logDisplay("camera is " + url + " " + object);
+        new GetJsonTask(CameraNotificationActivity.this, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                ActivityHelper.dismissProgressDialog();
+                try {
+
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+
+                     //   JSONObject object = result.optJSONObject("data");
+
+                        if (object == null) {
+                            recyclerView.setVisibility(View.GONE);
+                            txtEmptyAlert.setVisibility(View.VISIBLE);
+                            recyclerAlert.setVisibility(View.GONE);
+                            txt_empty_notification.setVisibility(View.VISIBLE);
+                            txtAlertCount.setVisibility(View.GONE);
+                            return;
+                        }
+
+                        JSONArray jsonArray = result.optJSONArray("data");
+
+                    /*    for(int i = 0; i < jsonArray .length(); i++)
+                        {
+                            JSONObject object3 = jsonArray.getJSONObject(i);
+                            String comp_id = object3.getString("companyid");
+                            String username = object3.getString("username");
+                            String date = object3.getString("date");
+                            String report_id = object3.getString("reportid");
+                        }
+*/
+                        arrayListLog.clear();
+                        arrayListAlert.clear();
+
+
+                        if (jsonArray != null) {
+                            arrayListAlert = (ArrayList<CameraPushLog>) Common.fromJson(jsonArray.toString(),
+                                    new TypeToken<ArrayList<CameraPushLog>>() {
+                                    }.getType());
+                        }
+
+                        if (arrayListAlert.size() > 0) {
+                            setAlert();
+                        } else {
+                            recyclerAlert.setVisibility(View.GONE);
+                            txt_empty_notification.setVisibility(View.VISIBLE);
+                        }
+
+
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                }
+
             }
 
             @Override
@@ -724,7 +833,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         new GetJsonTask(CameraNotificationActivity.this, url, "POST", deviceObj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-             //   ActivityHelper.hideKeyboard(CameraNotificationActivity.this);
+                //   ActivityHelper.hideKeyboard(CameraNotificationActivity.this);
                 ChatApplication.isScheduleNeedResume = true;
                 try {
                     int code = result.getInt("code");
@@ -733,6 +842,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                         if (!strFlag.equalsIgnoreCase("switch")) {
                             Toast.makeText(getApplicationContext().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                             getconfigureData();
+                            callCameraUnseenLog();
                         } else {
                             if (cameraAlertList.getIsActive() == 1) {
                                 arrayListLog.get(position).setIsActive(0);
@@ -803,6 +913,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             if (b) {
                 Intent intent = new Intent(CameraNotificationActivity.this, CameraDeviceLogActivity.class);
                 intent.putExtra("getCameraList", getCameraList);
+                intent.putExtra("homecontrollerId",homecontroller_id);
                 startActivity(intent);
             } else {
                 CameraNotificationActivity.this.finish();
@@ -820,7 +931,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         try {
             jsonObject.put("camera_id", "");
             jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put("log_type","camera");
+            jsonObject.put("log_type", "camera");
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
         } catch (JSONException e) {
@@ -829,16 +940,17 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
         String url = ChatApplication.url + Constants.logsfind;
 
-        ChatApplication.logDisplay("url is "+url+" "+jsonObject);
+        ChatApplication.logDisplay("url is " + url + " " + jsonObject);
         new GetJsonTask(CameraNotificationActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-                    ChatApplication.logDisplay("url is "+result);
+                    ChatApplication.logDisplay("url is " + result);
                     if (b) {
                         Intent intent = new Intent(CameraNotificationActivity.this, CameraDeviceLogActivity.class);
                         intent.putExtra("getCameraList", getCameraList);
+                        intent.putExtra("homecontrollerId",homecontroller_id);
                         startActivity(intent);
                     } else {
                         CameraNotificationActivity.this.finish();

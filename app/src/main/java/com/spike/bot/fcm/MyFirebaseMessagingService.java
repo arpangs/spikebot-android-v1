@@ -67,7 +67,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             if(!TextUtils.isEmpty(message)){
                 sendNotification(message);
             }else{
-
+                //remoteMessage.getNotification().
                 String title = remoteMessage.getData().get("title");
                 String body = remoteMessage.getData().get("body");
                 String attachment = remoteMessage.getData().get("attachment");

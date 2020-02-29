@@ -865,8 +865,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     String device_push_token = Common.getPrefValue(getApplicationContext(), Constants.DEVICE_PUSH_TOKEN);
                     object.put("user_id", "" + logOutUser.getUser_id());
                     object.put("device_push_token", "" + device_push_token);
-                    object.put("device_id", APIConst.PHONE_ID_VALUE);
-                    object.put("device_type", APIConst.PHONE_TYPE_VALUE);
+                    object.put("phone_id", APIConst.PHONE_ID_VALUE);
+                    object.put("phone_type", APIConst.PHONE_TYPE_VALUE);
 
                 } catch (JSONException e) {
                     e.printStackTrace();

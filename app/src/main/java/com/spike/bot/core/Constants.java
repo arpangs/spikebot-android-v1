@@ -36,7 +36,8 @@ public class Constants {
     //device type =3 - philip
     // device type = 2 = Ac
 
- //           public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
+   // public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
+ //   public static  String CLOUD_SERVER_URL = "http://52.24.23.7:3000";
 //    public static  String CLOUD_SERVER_URL = "http://api.spikebot.io"; //222
 //    public static String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //wifi / 123
     public static String CLOUD_SERVER_URL =  "http://34.212.76.50:3000";
@@ -208,6 +209,7 @@ public class Constants {
     public static final String panelDelete = "/panel/delete";
     public static final String deleteMultiSensor = "/deleteMultiSensor";
     public static final String getCameraLogs = "/getCameraLogs";
+    public static final String getUnseenCameraLog = "/getUnseenCameraLog";
     public static final String reportFalseImage = "/reportFalseImage";
     public static final String changeTempSensorNotificationStatus = "/changeTempSensorNotificationStatus";
 

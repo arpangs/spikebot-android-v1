@@ -323,6 +323,8 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
                 RoomVO key = entry.getKey();
                 if(key.equals(section)) {
                     key.setExpanded(isOpen);
+                } else{
+                    key.setExpanded(false);
                 }
             }
             notifyDataSetChanged();

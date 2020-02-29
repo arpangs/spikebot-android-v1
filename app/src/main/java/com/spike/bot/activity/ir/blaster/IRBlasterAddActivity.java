@@ -675,7 +675,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
 
     @Override
     public void onEdit(int position, IRBlasterAddRes.Datum ir) {
-        showBlasterEditDialog(ir);
+        showBlasterEditDialog(position,ir);
     }
 
     @Override
@@ -761,7 +761,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
     /**
      * @param ir
      */
-    private void showBlasterEditDialog(final IRBlasterAddRes.Datum ir) {
+    private void showBlasterEditDialog(int position,final IRBlasterAddRes.Datum ir) {
 
         mDialog = getDialogContext();
         mBlasterName = mDialog.findViewById(R.id.edt_blaster_name);
@@ -778,7 +778,10 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         ImageView btnClose = mDialog.findViewById(R.id.iv_close);
 
 
-        mBlasterName.setText(ir.getDeviceName());
+        String irblastername =  irList.get(position).getDeviceName();
+        ChatApplication.logDisplay("BLaster name" + " " + irblastername);
+
+        mBlasterName.setText(irblastername);
         mBlasterName.setSelection(mBlasterName.getText().length());
         final ArrayAdapter roomAdapter = new ArrayAdapter(this, R.layout.spinner, roomListString);
         mRoomSpinner.setAdapter(roomAdapter);

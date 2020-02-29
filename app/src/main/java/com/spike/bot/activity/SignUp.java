@@ -90,11 +90,11 @@ public class SignUp extends AppCompatActivity {
             Type type = new TypeToken<List<User>>() {}.getType();
             tempList = gson.fromJson(jsonText, type);
         }
-        if(tempList.size() > 0){
+       /* if(tempList.size() > 0){
             btn_sign_up_cancel.setVisibility(View.VISIBLE);
         }else{
             btn_sign_up_cancel.setVisibility(View.INVISIBLE);
-        }
+        }*/
 
         btn_signup.setOnClickListener(new View.OnClickListener() {
             @Override

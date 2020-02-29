@@ -155,7 +155,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
     ArrayList<CameraVO> cameraList = new ArrayList<CameraVO>();
     ArrayList<CameraVO> jetsonlist = new ArrayList<>();
 
-    private String userId = "0", webUrl = "";
+    private String userId = "0", webUrl = "",camera_id="",homecontrollerid="";
     private int SIGN_IP_REQUEST_CODE = 204, countFlow = 0;
     public boolean isCloudConnected = false;
 
@@ -245,6 +245,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         sectionedExpandableLayoutHelper = new SectionedExpandableLayoutHelper(activity, mMessagesView, DashBoardFragment.this, DashBoardFragment.this, DashBoardFragment.this, Constants.SWITCH_NUMBER);
         sectionedExpandableLayoutHelper.setCameraClick(DashBoardFragment.this);
         sectionedExpandableLayoutHelper.setjetsonClick(DashBoardFragment.this);
+
+        FirebaseMessaging.getInstance().subscribeToTopic(Constants.LOCAL + Common.getPrefValue(activity, Constants.USER_ID));
+        ChatApplication.logDisplay(Constants.LOCAL + Common.getPrefValue(activity, Constants.USER_ID));
 
         clickListerFolatingBtn();
 
@@ -427,9 +430,13 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             startActivity(intent);
         } else if (action.equalsIgnoreCase("cameraDevice")) {
             Intent intent = new Intent(activity, CameraDeviceLogActivity.class);
+            intent.putExtra("cameraId", "" + camera_id);
+            intent.putExtra("homecontrollerId", homecontrollerid);
             startActivity(intent);
         } else if (action.equalsIgnoreCase("cameraNotification")) {
             Intent intent = new Intent(activity, CameraNotificationActivity.class);
+            intent.putExtra("Cameraunseenlog","Cameraunseenlog");
+            intent.putExtra("homecontrollerId", homecontrollerid);
             startActivity(intent);
         }
     }
@@ -469,17 +476,22 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             startActivity(intent);
         }
         if (action.equalsIgnoreCase("longclick")) {
-            int getDeviceSpecificValue = 0;
-            if (!TextUtils.isEmpty(item.getDevice_sub_status())) {
-                getDeviceSpecificValue = Integer.parseInt(item.getDevice_sub_status());
-            }
-            FanDialog fanDialog = new FanDialog(activity, item.getDeviceId(), getDeviceSpecificValue, new ICallback() {
-                @Override
-                public void onSuccess(String str) {
-                    sectionedExpandableLayoutHelper.updateFanDevice(item.getDeviceId(), str);
+            try {
+                int getDeviceSpecificValue = 0;
+                ChatApplication.logDisplay("fan speed is" + item.getDevice_sub_status());
+                if (!TextUtils.isEmpty(item.getDevice_sub_status())) {
+                    getDeviceSpecificValue = Integer.parseInt(item.getDevice_sub_status());
                 }
-            });
-            fanDialog.show();
+                FanDialog fanDialog = new FanDialog(activity, item.getDeviceId(), getDeviceSpecificValue, new ICallback() {
+                    @Override
+                    public void onSuccess(String str) {
+                        sectionedExpandableLayoutHelper.updateFanDevice(item.getDeviceId(), str);
+                    }
+                });
+                fanDialog.show();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
 
     }
@@ -591,18 +603,40 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             startActivity(intent);
         } else if (action.equalsIgnoreCase("cameraLog")) {
             Intent intent = new Intent(activity, CameraDeviceLogActivity.class);
+            intent.putExtra("cameralog","cameralog");
             intent.putExtra("cameraId", "" + item.getCamera_id());
+            intent.putExtra("homecontrollerId", item.getHomeControllerDeviceId());
             startActivity(intent);
-        } else {
+        }
+        else {
             callCameraToken(item, action);
         }
     }
 
     @Override
     public void jetsonClicked(String action, String jetsonid) {
-        if (action.equalsIgnoreCase("showGridJetsonCamera")) {
+        if (action.equalsIgnoreCase("showGridJetsonCamera"))
+        {
             Intent intent = new Intent(activity, CameraGridActivity.class);
             intent.putExtra("jetson_device_id", jetsonid);
+            startActivity(intent);
+        } else if (action.equalsIgnoreCase("jetsonlog")){
+            Intent intent = new Intent(activity, CameraDeviceLogActivity.class);
+            intent.putExtra("isshowJestonCameraLog", true);
+            intent.putExtra("jetson_device_id", jetsonid);
+            intent.putExtra("homecontrollerId", homecontrollerid);
+            startActivity(intent);
+        } else if (action.equalsIgnoreCase("showjetsoncameraLog")){
+            Intent intent = new Intent(activity, CameraDeviceLogActivity.class);
+            intent.putExtra("jetsoncameralog","jetsoncameralog");
+            intent.putExtra("jetson_device_id", jetsonid);
+            intent.putExtra("homecontrollerId", homecontrollerid);
+            startActivity(intent);
+        } else if (action.equalsIgnoreCase("jetsoncameraNotification")) {
+            Intent intent = new Intent(activity, CameraNotificationActivity.class);
+            intent.putExtra("jetsoncameraNotification",true);
+            intent.putExtra("jetson_device_id", jetsonid);
+            intent.putExtra("homecontrollerId", homecontrollerid);
             startActivity(intent);
         }
 
@@ -740,9 +774,23 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 //	"device_id": "1571407908196_uEVHoQJNR",
                 //	"device_status": "0n"  on means = 1,  off means 0
                 //}
-                obj.put("device_id", deviceVO.getDeviceId());
+
+                if(deviceVO.getDeviceType().equalsIgnoreCase("fan")){
+                    obj.put("device_id", deviceVO.getDeviceId());
+                    obj.put("panel_id",deviceVO.getPanel_id());
+                    obj.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
+                    obj.put("device_sub_status", deviceVO.getDevice_sub_status());
+                } else {
+                    obj.put("device_id", deviceVO.getDeviceId());
+                    obj.put("panel_id",deviceVO.getPanel_id());
+                    obj.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
+                }
+
+
+           /*     obj.put("device_id", deviceVO.getDeviceId());
                 obj.put("panel_id",deviceVO.getPanel_id());
                 obj.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
+*/
             }
 
         } catch (JSONException e) {
@@ -1226,9 +1274,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
                     if (jsonObject != null && countFlow != 2) {
                         if (jsonObject.optString("mac_address").equalsIgnoreCase(Constants.getMacAddress(activity))) {
-                            callColud(true);
+                            callCloud(true);
                         } else {
-                            callColud(false);
+                            callCloud(false);
                         }
                     }
 
@@ -1241,7 +1289,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             public void onFailure(Throwable throwable, String error) {
                 if (countFlow != 2) {
                     countFlow = 1;
-                    callColud(false);
+                    callCloud(false);
                 }
 
 
@@ -1263,7 +1311,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         mSocket.disconnect();
                         mSocket = null;
                     }
-                    callColud(false);
+                    callCloud(false);
                 }
 
             }
@@ -1276,7 +1324,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
     /* isflag is true means connect to local
      *   another cloud connect*/
-    private void callColud(boolean isflag) {
+    private void callCloud(boolean isflag) {
         ChatApplication.logDisplay("show is call 11  " + activity);
         if (isflag) {
             //local
@@ -1289,10 +1337,10 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             getDeviceLocal(0);
         } else {
             ChatApplication.logDisplay("get fragment " + activity);
-            String colud = Constants.getuserCloudIP(activity);
-            ChatApplication.url = colud;
+            String cloud = Constants.getuserCloudIP(activity);
+            ChatApplication.url = cloud;
             Constants.startUrlset();
-            ((Main2Activity) activity).webUrl = colud;
+            ((Main2Activity) activity).webUrl = cloud;
             ((Main2Activity) activity).callSocket();
             ((Main2Activity) activity).invalidateToolbarCloudImage();
 
@@ -1304,7 +1352,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
     /*cloud connect*/
     public void getDeviceCloud(int isShow) {
 
-        FirebaseMessaging.getInstance().subscribeToTopic(Constants.LOCAL + Common.getPrefValue(activity, Constants.USER_ID));
+
 
         if (swipeRefreshLayout != null) {
             if (swipeRefreshLayout.isRefreshing()) {
@@ -1579,13 +1627,11 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             }
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
+
     }
 
     /*local connect*/
     public void getDeviceLocal(int isShow) {
-
-        FirebaseMessaging.getInstance().subscribeToTopic(Constants.LOCAL + Common.getPrefValue(activity, Constants.USER_ID));
-        ChatApplication.logDisplay(Constants.LOCAL + Common.getPrefValue(activity, Constants.USER_ID));
 
         if (swipeRefreshLayout != null) {
             if (swipeRefreshLayout.isRefreshing()) {
@@ -1761,6 +1807,12 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                             for (int i = 0; i < roomList.size(); i++) {
                                 if (roomList.get(i).getRoomId().equalsIgnoreCase("Camera")) {
                                     roomList.get(i).setDevice_count("" + roomList.get(i).getPanelList().get(0).getCameraList().size());
+
+                                    homecontrollerid = roomList.get(i).getPanelList().get(0).getCameraList().get(i).getHomeControllerDeviceId();
+                                    camera_id = roomList.get(i).getPanelList().get(0).getCameraList().get(i).getCamera_id();
+
+                                    ChatApplication.logDisplay("Camera___Id"+camera_id);
+                                    ChatApplication.logDisplay("Controller__Id" + homecontrollerid);
                                 }
                             }
                         }
@@ -1868,7 +1920,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         mSocket.disconnect();
                     }
                     ((Main2Activity) activity).tabShow(false);
-                    callColud(false);
+                    callCloud(false);
                 }
             }
 
@@ -1936,7 +1988,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 ((Main2Activity) activity).tabShow(false);
                 getMacAddress(Constants.getuserIp(activity));
             } else {
-                callColud(false);
+                callCloud(false);
             }
         } else {
             ((Main2Activity) activity).invalidateToolbarCloudImage();

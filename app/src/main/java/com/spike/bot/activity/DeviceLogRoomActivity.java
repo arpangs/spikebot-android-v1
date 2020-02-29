@@ -186,7 +186,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
     }
 
 
-    /*geting unseen log*/
+    /*geting   log*/
     public void getDeviceList(final int position) {
 
         if (!ActivityHelper.isConnectingToInternet(DeviceLogRoomActivity.this)) {

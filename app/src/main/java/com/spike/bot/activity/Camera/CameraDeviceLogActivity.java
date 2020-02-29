@@ -71,7 +71,8 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
 
     public boolean isLoading = false, isCompareDateValid = true, isFilterActive = false;
     public int notification_number = 0;
-    public String camera_id = "", end_date = "", start_date = "", date_time = "", cameraIdTemp = "";
+    public String camera_id = "", homecontroller_id = "", end_date = "", start_date = "", date_time = "", cameraIdTemp = "", jetson_id = "", cameralog = "",
+            jetsoncameralog = "";
     public int mYear, mMonth, mDay;
     public int mHour, mMinute, mSecond;
 
@@ -85,7 +86,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
     ArrayList datelist = new ArrayList();
     ArrayList monthlist = new ArrayList();
     int row_index = -1;
-
+    public static boolean isJetsonCameralog = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -105,6 +106,11 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
 
     private void setUi() {
         camera_id = getIntent().getStringExtra("cameraId");
+        homecontroller_id = getIntent().getStringExtra("homecontrollerId");
+        jetson_id = getIntent().getStringExtra("jetson_device_id");
+        cameralog = getIntent().getStringExtra("cameralog");
+        jetsoncameralog = getIntent().getStringExtra("jetsoncameralog");
+        isJetsonCameralog = getIntent().getExtras().getBoolean("isshowJestonCameraLog");
         toolbar.setTitle("Camera Logs");
         rvDeviceLog = findViewById(R.id.rv_device_log);
         rv_month_list = findViewById(R.id.rv_monthlist);
@@ -119,6 +125,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         } else {
             cameraIdTemp = camera_id;
         }
+
         //callCameraLog(camera_id, "", "", notification_number);
     }
 
@@ -272,21 +279,37 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
 //            object.put("start_date", "" + start_date);
 //            object.put("end_date", "" + end_date);
 //            object.put("notification_number", "" + notification_number);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            object.put("filter_type", "camera");
-            object.put("start_date", "" + start_date);
-            object.put("end_date", "" + end_date);
-            object.put("camera_id", "" + camera_id);
+            //    object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            //    object.put("filter_type", "camera");
+                object.put("start_date", "" + start_date);
+                 object.put("end_date", "" + end_date);
+
+
+            object.put("home_controller_device_id", homecontroller_id);
             object.put("notification_number", "" + notification_number);
+            if (isJetsonCameralog) {
+                object.put("jetson_id", "" + jetson_id);
+            } else {
+                if (!TextUtils.isEmpty(cameralog)) {
+                    object.put("camera_id", "" + camera_id);
+                } else if (!TextUtils.isEmpty(jetsoncameralog)) {
+                    object.put("jetson_id", "" + jetson_id);
+                } else {
+                    object.put("camera_id", "" + "");
+                    object.put("jetson_id", "" + "");
+                }
+
+            }
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            object.put("admin", Integer.parseInt(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE)));
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         ActivityHelper.showProgressDialog(CameraDeviceLogActivity.this, "Please wait...", false);
-        String url = ChatApplication.url + Constants.logsfind;
+        String url = Constants.CLOUD_SERVER_URL + Constants.getCameraLogs;
+
         ChatApplication.logDisplay("camera is " + url + " " + object);
         new GetJsonTask(CameraDeviceLogActivity.this, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
@@ -296,8 +319,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
 
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    if (code == 200)
-                    {
+                    if (code == 200) {
                         if (notification_number == 0) {
                             arrayList.clear();
                         }
@@ -309,7 +331,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
                             arrayListTemp = (ArrayList<NotificationList>) Common.fromJson(jsonArray.toString(), new TypeToken<ArrayList<NotificationList>>() {
                             }.getType());
                             arrayList.addAll(arrayListTemp);
-                        } else{
+                        } else {
                             Toast.makeText(CameraDeviceLogActivity.this.getApplicationContext(), "No Record Found...", Toast.LENGTH_SHORT).show();
                         }
 
@@ -437,8 +459,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
                 int totalItemCount = linearLayoutManager.getItemCount();
                 int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
 
-                if (!isLoading && notification_number != 0)
-                {
+                if (!isLoading && notification_number != 0) {
                     if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                             && firstVisibleItemPosition >= 0) {
                         isLoading = true;
@@ -469,7 +490,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         MonthAdapter adapter = new MonthAdapter(this, monthlist);
         rv_month_list.setAdapter(adapter);
         rv_month_list.getLayoutManager().scrollToPosition(row_index);
-       // rv_month_list.setHasFixedSize(true);
+        // rv_month_list.setHasFixedSize(true);
     }
 
     private void setMonthList() {
@@ -576,7 +597,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put("log_type","camera");
+            jsonObject.put("log_type", "camera");
             jsonObject.put("camera_id", "" + cameraIdTemp);
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);

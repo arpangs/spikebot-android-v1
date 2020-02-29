@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import com.spike.bot.core.ListUtils;
 import com.spike.bot.customview.recycle.ItemClickListener;
 import com.spike.bot.customview.recycle.SectionStateChangeListener;
 import com.spike.bot.model.DeviceVO;
@@ -101,12 +102,58 @@ public class MoodDeviceListLayoutHelper implements SectionStateChangeListener {
         }
         mSectionedExpandableGridAdapter.setSelection(room_device_id);
     }
-    MoodVO section;
 
-    @Override
+    // MoodVO section;
+
+    public static RoomVO section;
+
+   /* @Override
     public void onSectionStateChanged(RoomVO section, boolean isOpen) {
         if (!mRecyclerView.isComputingLayout()) {
             section.isExpanded = isOpen;
+            notifyDataSetChanged();
+        }
+    }*/
+
+    @Override
+    public void onSectionStateChanged(RoomVO section, boolean isOpen) {
+        this.section = section;
+        ListUtils.sectionRoom = section;
+        ListUtils.sectionRoom.setExpanded(isOpen);
+
+        section.isExpanded = isOpen;
+
+
+        if(!isOpen){
+
+            if(ListUtils.arrayListRoom.size()>0){
+
+                for(int i=0;i<ListUtils.arrayListRoom.size();i++){
+                    if(section.getRoomId().equalsIgnoreCase(ListUtils.arrayListRoom.get(i).getRoomId())){
+                        section.isExpanded = false;
+                        section.setExpanded(false);
+                        ListUtils.arrayListRoom.set(i,section);
+                    }
+                }
+            }
+
+        }else{
+            ListUtils.arrayListRoom.add(section);
+        }
+
+
+
+        if (!mRecyclerView.isComputingLayout()) {
+            section.isExpanded = isOpen;
+
+            for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {
+                RoomVO key = entry.getKey();
+                if(key.equals(section)) {
+                    key.setExpanded(isOpen);
+                }else{
+                    key.setExpanded(false);
+                }
+            }
             notifyDataSetChanged();
         }
     }

@@ -88,7 +88,7 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
                 }
             }
 
-            if (arrayListLog.get(position).getLogType().contains("camera_persor_detected")) {
+            if (arrayListLog.get(position).getLogType().contains("camera_person_detected")) {
                 Glide.with(mContext)
                         .load(arrayListLog.get(position).getImageUrl())
                         .fitCenter()
@@ -104,6 +104,13 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
                         .into(holder.txtImage);
             }
 
+        /*    Glide.with(mContext)
+                    .load(R.drawable.camera_on)
+                    .fitCenter()
+                    .error(R.drawable.cam_defult)
+                    .skipMemoryCache(true)
+                    .into(holder.txtImage);*/
+
             holder.linearAlert.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -116,23 +123,28 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
                 }
             });
 
+            
         } catch (Exception e) {
             e.printStackTrace();
 
-            if (arrayListLog.get(position).getLogType().contains("camera_persor_detected")) {
-                Glide.with(mContext)
-                        .load(arrayListLog.get(position).getImageUrl())
-                        .fitCenter()
-                        .error(R.drawable.cam_defult)
-                        .skipMemoryCache(true)
-                        .into(holder.txtImage);
-            } else {
-                Glide.with(mContext)
-                        .load(R.drawable.camera_on)
-                        .fitCenter()
-                        .error(R.drawable.cam_defult)
-                        .skipMemoryCache(true)
-                        .into(holder.txtImage);
+            try {
+                if (arrayListLog.get(position).getLogType().contains("camera_person_detected")) {
+                    Glide.with(mContext)
+                            .load(arrayListLog.get(position).getImageUrl())
+                            .fitCenter()
+                            .error(R.drawable.cam_defult)
+                            .skipMemoryCache(true)
+                            .into(holder.txtImage);
+                } else {
+                    Glide.with(mContext)
+                            .load(R.drawable.camera_on)
+                            .fitCenter()
+                            .error(R.drawable.cam_defult)
+                            .skipMemoryCache(true)
+                            .into(holder.txtImage);
+                }
+            }catch (Exception e1){
+                e1.printStackTrace();
             }
         }
 

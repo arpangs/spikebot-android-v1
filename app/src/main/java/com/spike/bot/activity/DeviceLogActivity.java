@@ -461,6 +461,10 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
         if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor")) {
             isSensorLog = true;
             isFilterType = true;
+
+            btnDeviceDialog.setEnabled(false);
+        } else{
+            btnDeviceDialog.setEnabled(true);
         }
 
         udpateDailogButton(btnDeviceDialog, btnSensorDialog);

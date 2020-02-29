@@ -498,6 +498,9 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                 RoomVO key = entry.getKey();
                 if(key.equals(section)) {
                     key.setExpanded(isOpen);
+                } else
+                {
+                    key.setExpanded(false);
                 }
             }
 
