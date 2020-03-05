@@ -574,7 +574,7 @@
         <!--camera key spike123-->
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="c0d1eedb6db67baf3bc4ceedbe67ac87f6fc95a2" />
+            android:value="b5a4b8890f9a237b26054ed7a0422a23e27f6f60" />
     </application>
 
 </manifest>

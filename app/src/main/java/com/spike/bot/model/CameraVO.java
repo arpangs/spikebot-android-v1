@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class CameraVO implements Serializable,Cloneable {
     private String camera_id;
     private String userId;
-    private String homeControllerDeviceId;
+    private String home_controller_device_id;
     private String camera_name;
     private String camera_ip;
     private String camera_videopath;
@@ -148,7 +148,7 @@ public class CameraVO implements Serializable,Cloneable {
     public CameraVO(){
         camera_id="";
         userId="";
-        homeControllerDeviceId="";
+        home_controller_device_id="";
         camera_name="";
         camera_ip="";
         camera_videopath="";
@@ -183,11 +183,11 @@ public class CameraVO implements Serializable,Cloneable {
     }
 
     public String getHomeControllerDeviceId() {
-        return homeControllerDeviceId;
+        return home_controller_device_id;
     }
 
     public void setHomeControllerDeviceId(String homeControllerDeviceId) {
-        this.homeControllerDeviceId = homeControllerDeviceId;
+        this.home_controller_device_id = homeControllerDeviceId;
     }
 
     public String getCamera_name() {

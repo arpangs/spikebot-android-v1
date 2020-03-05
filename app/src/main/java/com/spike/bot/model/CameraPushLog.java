@@ -9,7 +9,7 @@ public class CameraPushLog implements Serializable {
 
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private String id;
     @SerializedName("activity_action")
     @Expose
     private String activityAction;
@@ -28,12 +28,15 @@ public class CameraPushLog implements Serializable {
     @SerializedName("image_url")
     @Expose
     private String imageUrl;
+    @SerializedName("message")
+    @Expose
+    private String message;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -85,4 +88,11 @@ public class CameraPushLog implements Serializable {
         this.imageUrl = imageUrl;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

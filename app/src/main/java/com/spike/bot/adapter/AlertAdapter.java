@@ -13,8 +13,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.kp.core.DateHelper;
+import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Camera.ImageZoomActivity;
+import com.spike.bot.core.Constants;
 import com.spike.bot.model.CameraPushLog;
 
 import java.text.ParseException;
@@ -48,7 +50,7 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.SensorViewHo
     @Override
     public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
-        if (!TextUtils.isEmpty(arrayListLog.get(position).getActivityTime())) {
+       /* if (!TextUtils.isEmpty(arrayListLog.get(position).getActivityTime())) {
             Date today = null;//2018-01-12 19:40:07
             try {
                 today = DateHelper.parseDateSimple(arrayListLog.get(position).getActivityTime(), DateHelper.DATE_YYYY_MM_DD_HH_MM_SS);
@@ -56,7 +58,9 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.SensorViewHo
                 e.printStackTrace();
             }
 
+
             strDateOfTime = DateHelper.getDayString(today);
+            ChatApplication.logDisplay("strDateOfTime is " + strDateOfTime);
             strDateOfTimeTemp = strDateOfTime.split(" ");
 
             if (strDateOfTimeTemp.length > 2) {
@@ -66,14 +70,35 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.SensorViewHo
             }
 
             holder.tv_device_log_date.setText(dateTime);
+
+        }*/
+
+        try {
+            if (!TextUtils.isEmpty(arrayListLog.get(position).getActivityTime())) {
+                String dateString = Constants.logConverterDate(Long.parseLong(arrayListLog.get(position).getActivityTime()));
+                strDateOfTimeTemp = dateString.split(" ");
+
+                if (strDateOfTimeTemp[0].equalsIgnoreCase(Constants.getCurrentDate())) {
+                    dateTime = strDateOfTimeTemp[1] + " " + strDateOfTimeTemp[2];
+                } else {
+                    dateTime = strDateOfTimeTemp[1] + strDateOfTimeTemp[2] + System.getProperty("line.separator") + strDateOfTimeTemp[0];
+                }
+
+                holder.tv_device_log_date.setText(Constants.formatcurrentdate(strDateOfTimeTemp[0]));
+                holder.tv_device_log_time.setText(strDateOfTimeTemp[1] + " " + strDateOfTimeTemp[2]);
+
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
 
-        holder.tv_device_description.setText(arrayListLog.get(position).getActivityDescription());
-        holder.tv_device_log_type.setText(arrayListLog.get(position).getActivityAction());
+        holder.tv_device_description.setText(arrayListLog.get(position).getMessage());
+        holder.tv_device_camera_name.setText(arrayListLog.get(position).getActivityDescription());
 
         Glide.with(mContext)
                 .load(arrayListLog.get(position).getImageUrl())
                 .fitCenter()
+                .placeholder(R.drawable.cam_defult)
                 .error(R.drawable.cam_defult)
                 .skipMemoryCache(true)
                 .into(holder.txtImage);
@@ -104,7 +129,7 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.SensorViewHo
 
     public class SensorViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView tv_device_log_date, tv_device_log_type, tv_device_description;
+        public TextView tv_device_log_date, tv_device_log_type, tv_device_description, tv_device_log_time, tv_device_camera_name;
         public ImageView txtImage;
         LinearLayout linearAlert;
 
@@ -114,6 +139,8 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.SensorViewHo
             tv_device_log_type = (TextView) itemView.findViewById(R.id.tv_device_log_type);
             txtImage = (ImageView) itemView.findViewById(R.id.txtImage);
             tv_device_log_date = (TextView) itemView.findViewById(R.id.tv_device_log_date);
+            tv_device_log_time = itemView.findViewById(R.id.tv_device_log_time);
+            tv_device_camera_name = itemView.findViewById(R.id.tv_device_camera_name);
             linearAlert = (LinearLayout) itemView.findViewById(R.id.linearAlert);
         }
     }

@@ -46,7 +46,8 @@ public class IRBlasterInfoRes implements Serializable{
         this.data = data;
     }
 
-    public class Data implements Serializable{
+    public class Data implements Serializable
+    {
 
         @SerializedName("irBlasterList")
         @Expose

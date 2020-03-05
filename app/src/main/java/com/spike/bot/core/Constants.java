@@ -36,11 +36,19 @@ public class Constants {
     //device type =3 - philip
     // device type = 2 = Ac
 
-   // public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
- //   public static  String CLOUD_SERVER_URL = "http://52.24.23.7:3000";
+      public static  String CLOUD_SERVER_URL = "http://52.24.23.7:3000"; //222 live
+   //public static String CLOUD_SERVER_URL = "http://34.212.76.50:3000";  // local
+
+    public static String CAMERA_CLOUD_SERVER_URL = "http://52.24.23.7:3000"; // live
+    //public static String CAMERA_CLOUD_SERVER_URL = "http://34.212.76.50:3000"; // local
+
+    public static final String LIVE = "LIVE-";     // live for notification subscribe/unsubscribe topic
+    public static final String LOCAL = "LOCAL-";   // local for notification subscribe/unsubscribe topic
+
+    //   public static  String CLOUD_SERVER_URL = "http://52.24.23.7:3000";
 //    public static  String CLOUD_SERVER_URL = "http://api.spikebot.io"; //222
 //    public static String CLOUD_SERVER_URL = "http://34.212.76.50:8079"; //wifi / 123
-    public static String CLOUD_SERVER_URL =  "http://34.212.76.50:3000";
+    //   public static String CLOUD_SERVER_URL =  "http://34.212.76.50:3000";
 //    public static  String CLOUD_SERVER_URL = "http://52.24.23.7:8079"; //222
 //    public static  String CLOUD_SERVER_URL = "http://api.spikebot.io"; //222
 
@@ -50,9 +58,6 @@ public class Constants {
     public static String IP_END = "222";
     public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";
     public static final String CAMERA_PATH = "/static/storage/volume/pi/";
-
-    public static final String LIVE = "LIVE-";     // live for notification subscribe/unsubscribe topic
-    public static final String LOCAL = "LOCAL-";   // local for notification subscribe/unsubscribe topic
 
     public static String startUrl = "http://home.d";
 
@@ -208,8 +213,6 @@ public class Constants {
     public static final String DELETE_MODULE = "/device/delete";
     public static final String panelDelete = "/panel/delete";
     public static final String deleteMultiSensor = "/deleteMultiSensor";
-    public static final String getCameraLogs = "/getCameraLogs";
-    public static final String getUnseenCameraLog = "/getUnseenCameraLog";
     public static final String reportFalseImage = "/reportFalseImage";
     public static final String changeTempSensorNotificationStatus = "/changeTempSensorNotificationStatus";
 
@@ -283,6 +286,9 @@ public class Constants {
     public static final String GET_CAMERA_INFO = "/editCamera";
     public static final String DELETE_CAMERA = "/deleteCamera";
     public static final String GET_CAMERA_RECORDING_BY_DATE = "/getCameraRecordingByDate";
+    public static final String GET_CAMERA_NOTIFICATION_COUNTER = "/getNotificationCounter";
+    public static final String getCameraLogs = "/getCameraLogs";
+    public static final String getUnseenCameraLog = "/getUnseenCameraLog";
 
     //others
     public static final String getScheduleNotification = "/getScheduleNotification";

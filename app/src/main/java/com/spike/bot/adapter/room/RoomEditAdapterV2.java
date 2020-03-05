@@ -39,7 +39,7 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
     private Context context;
     private Activity activity;
     PanelVO item1;
-    String key;
+    String key,value;
     boolean isSFlag = false;
 
     public RoomEditAdapterV2(ArrayList<PanelVO> panelVOs, ItemClickRoomEditListener itemClickRoomEditListener, Activity activity) {
@@ -125,6 +125,7 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
                             item1.setPanelName(holder.et_panel.getText().toString());
                         }
                     }
+
                 }
 
                 if (holder.et_panel.getText().length() == 0) {
@@ -183,15 +184,16 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
     }
 
     public void getPanelEditValue() {
-
+        txtValueMap.clear();
         if (txtValueMap != null) {
             Iterator myVeryOwnIterator = txtValueMap.keySet().iterator();
             while (myVeryOwnIterator.hasNext()) {
-                String key = (String) myVeryOwnIterator.next();
-                String value = (String) txtValueMap.get(key);
+                 key = (String) myVeryOwnIterator.next();
+                 value = (String) txtValueMap.get(key);
                 for (int i = 0; i < panelVOs.size(); i++) {
                     if (panelVOs.get(i) != null) {
-                        if (((PanelVO) panelVOs.get(i)).getPanelId().equalsIgnoreCase(key)) {
+                        if (((PanelVO) panelVOs.get(i)).getPanelId().equalsIgnoreCase(key))
+                        {
                             ((PanelVO) panelVOs.get(i)).setPanelName(value);
                             notifyItemChanged(i, panelVOs.get(i));
                         }

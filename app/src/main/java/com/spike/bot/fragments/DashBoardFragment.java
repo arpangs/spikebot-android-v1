@@ -88,8 +88,11 @@ import com.spike.bot.listener.OnSmoothScrollList;
 import com.spike.bot.listener.ResponseErrorCode;
 import com.spike.bot.listener.SocketListener;
 import com.spike.bot.listener.TempClickListener;
+import com.spike.bot.model.CameraCounterModel;
+import com.spike.bot.model.CameraPushLog;
 import com.spike.bot.model.CameraVO;
 import com.spike.bot.model.DeviceVO;
+import com.spike.bot.model.IRBlasterInfoRes;
 import com.spike.bot.model.PanelVO;
 import com.spike.bot.model.RoomVO;
 import com.spike.bot.model.User;
@@ -145,7 +148,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
     ResponseErrorCode responseErrorCode;
     LoginPIEvent loginPIEvent;
     SocketListener socketListener;
-    private Socket mSocket;
+    private Socket mSocket,cloudsocket;
     private NestedScrollView main_scroll;
     public CloudAdapter.CloudClickListener cloudClickListener;
     public SectionedExpandableLayoutHelper sectionedExpandableLayoutHelper;
@@ -154,8 +157,10 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
     private ArrayList<RoomVO> roomList = new ArrayList<>();
     ArrayList<CameraVO> cameraList = new ArrayList<CameraVO>();
     ArrayList<CameraVO> jetsonlist = new ArrayList<>();
+    List<CameraCounterModel.Data.CameraCounterList> cameracounterlist;
+    CameraCounterModel.Data totalcount = new CameraCounterModel.Data();
 
-    private String userId = "0", webUrl = "",camera_id="",homecontrollerid="";
+    private String userId = "0", webUrl = "", cloudurl = "",camera_id="",homecontrollerid="";
     private int SIGN_IP_REQUEST_CODE = 204, countFlow = 0;
     public boolean isCloudConnected = false;
 
@@ -246,11 +251,10 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         sectionedExpandableLayoutHelper.setCameraClick(DashBoardFragment.this);
         sectionedExpandableLayoutHelper.setjetsonClick(DashBoardFragment.this);
 
-        FirebaseMessaging.getInstance().subscribeToTopic(Constants.LOCAL + Common.getPrefValue(activity, Constants.USER_ID));
-        ChatApplication.logDisplay(Constants.LOCAL + Common.getPrefValue(activity, Constants.USER_ID));
+        FirebaseMessaging.getInstance().subscribeToTopic(Constants.LIVE + Common.getPrefValue(activity, Constants.USER_ID));
+        ChatApplication.logDisplay(Constants.LIVE + Common.getPrefValue(activity, Constants.USER_ID));
 
         clickListerFolatingBtn();
-
         return view;
     }
 
@@ -341,6 +345,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             mSocket.off("updateDeviceBadgeCounter", unReadCount);
             mSocket.off("updateChildUser", updateChildUser);
             mSocket.off("updateRoomAlertCounter",updateRoomAlertCounter);
+            cloudsocket.off("camera-"+Common.getPrefValue(activity, Constants.USER_ID),updateCameraCounter);
         }
         super.onPause();
     }
@@ -430,7 +435,8 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             startActivity(intent);
         } else if (action.equalsIgnoreCase("cameraDevice")) {
             Intent intent = new Intent(activity, CameraDeviceLogActivity.class);
-            intent.putExtra("cameraId", "" + camera_id);
+       //     ChatApplication.logDisplay("Camera Id" + " "+ camera_id);
+         //   intent.putExtra("cameraId", "" + camera_id);
             intent.putExtra("homecontrollerId", homecontrollerid);
             startActivity(intent);
         } else if (action.equalsIgnoreCase("cameraNotification")) {
@@ -722,6 +728,36 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         }
     }
 
+    public void startLiveSocketConnection() {
+
+        ChatApplication app = ChatApplication.getInstance();
+
+        if (cloudsocket != null && cloudsocket.connected()) {
+        } else {
+
+            cloudurl = "http://52.24.23.7:3000/";
+            cloudsocket = app.getSocket();
+
+            if (cloudsocket != null) {
+                if (cloudsocket.connected() == false) {
+                    cloudsocket = null;
+                }
+            }
+
+            if (cloudsocket == null) {
+                cloudsocket = app.openSocket(cloudurl);
+                cloudsocket.on(Socket.EVENT_CONNECT, onConnect);
+                cloudsocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
+                cloudsocket.connect();
+            }
+            try {
+                socketOn();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
     private void socketOn() {
         mSocket.on("changeDeviceStatus", changeDeviceStatus);  // ac on off
         mSocket.on("changeRoomStatus", roomStatus);
@@ -730,7 +766,10 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         mSocket.on("updateDeviceBadgeCounter", unReadCount);
         mSocket.on("updateChildUser", updateChildUser);
         mSocket.on("updateRoomAlertCounter",updateRoomAlertCounter);
+        cloudsocket.on("camera-"+Common.getPrefValue(activity, Constants.USER_ID),updateCameraCounter);
     }
+
+
 
     public void onLoadFragment() {
         if (activity != null) {
@@ -775,12 +814,18 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 //	"device_status": "0n"  on means = 1,  off means 0
                 //}
 
-                if(deviceVO.getDeviceType().equalsIgnoreCase("fan")){
+                if(deviceVO.getDeviceType().equalsIgnoreCase("fan") && deviceVO.getDevice_sub_type().equalsIgnoreCase("normal")){
+                    obj.put("device_id", deviceVO.getDeviceId());
+                    obj.put("panel_id",deviceVO.getPanel_id());
+                    obj.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
+                    obj.put("device_sub_status", "5");
+                } else if(deviceVO.getDeviceType().equalsIgnoreCase("fan") && deviceVO.getDevice_sub_type().equalsIgnoreCase("dimmer")) {
                     obj.put("device_id", deviceVO.getDeviceId());
                     obj.put("panel_id",deviceVO.getPanel_id());
                     obj.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
                     obj.put("device_sub_status", deviceVO.getDevice_sub_status());
-                } else {
+                }
+                else {
                     obj.put("device_id", deviceVO.getDeviceId());
                     obj.put("panel_id",deviceVO.getPanel_id());
                     obj.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
@@ -810,7 +855,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                sectionedExpandableLayoutHelper.updateDeviceItem(deviceVO.getDeviceType(), String.valueOf(deviceVO.getDeviceId()), String.valueOf(deviceVO.getOldStatus()), deviceVO.getDoor_subtype());
+                sectionedExpandableLayoutHelper.updateDeviceItem(deviceVO.getDeviceType(), String.valueOf(deviceVO.getDeviceId()), String.valueOf(deviceVO.getOldStatus()), deviceVO.getDevice_sub_status());
             }
         });
     }
@@ -1403,6 +1448,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 if (ChatApplication.isPushFound) {
                     getBadgeClear(activity);
                 }
+
                 mMessagesView.setClickable(true);
                 responseErrorCode.onSuccess();
                 swipeRefreshLayout.setRefreshing(false);
@@ -1414,6 +1460,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                     Main2Activity.isCloudConnected = true;
                     webUrl = ChatApplication.url;
                     startSocketConnection();
+                    startLiveSocketConnection();
                     dismissProgressDialog();
                     if (result.getInt("code") == 200) {
                         Constants.socketIp = ChatApplication.url;
@@ -1442,6 +1489,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         String userLastName = userObject.getString("last_name");
                         String camera_key = userObject.optString("camera_key");
                         String is_active = userObject.optString("is_active");
+                        homecontrollerid = userObject.optString("mac_address");
 
                         /*is_active ==0 than user logout means delete this user*/
                         if (is_active.equalsIgnoreCase("0")) {
@@ -1496,6 +1544,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         /* user name*/
                         mCallback.onArticleSelected("" + userFirstName);
 
+
                         JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
                         roomList = JsonHelper.parseRoomArray(roomArray, false);
                         sectionedExpandableLayoutHelper.addSectionList(roomList);
@@ -1517,7 +1566,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                             panelList.add(panel);
 
                             section.setPanelList(panelList);
-                            section.setIs_unread(cameraList.get(0).getTotal_unread());
+                     //       section.setIs_unread(cameraList.get(0).getTotal_unread());
 
                             roomList.add(section);
 
@@ -1560,7 +1609,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                                 panelList1.add(panel1);
 
                                 section1.setPanelList(panelList1);
-                                section1.setIs_unread(jetsonlist.get(0).getTotal_unread());
+                            //    section1.setIs_unread(jetsonlist.get(0).getTotal_unread());
 
                                 roomList.add(section1);
                             }
@@ -1579,6 +1628,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         }
 
                         setUserTypeValue();
+
                     }
 
 
@@ -1598,6 +1648,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         mMessagesView.setVisibility(View.VISIBLE);
                         txt_empty_schedule.setVisibility(View.GONE);
                     }
+                    getCameraBadgeCount();
                     dismissProgressDialog();
                 }
             }
@@ -1688,6 +1739,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                     ((Main2Activity) activity).tabShow(true);
                     webUrl = ChatApplication.url;
                     startSocketConnection();
+                    startLiveSocketConnection();
                     if (result.getInt("code") == 200) {
                         if (gsonType == null) {
                             gsonType = new Gson();
@@ -1717,6 +1769,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         String userFirstName = userObject.optString("first_name");
                         String camera_key = userObject.optString("camera_key");
                         String is_active = userObject.optString("is_active");
+                        homecontrollerid = userObject.optString("mac_address");
 
                         if (is_active.equalsIgnoreCase("0")) {
                             ((Main2Activity) activity).logoutCloudUser();
@@ -1798,7 +1851,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                             panelList.add(panel);
 
                             section.setPanelList(panelList);
-                            section.setIs_unread(cameraList.get(0).getTotal_unread());
+                         //   section.setIs_unread(cameraList.get(0).getTotal_unread());
 
                             roomList.add(section);
 
@@ -1808,8 +1861,8 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                                 if (roomList.get(i).getRoomId().equalsIgnoreCase("Camera")) {
                                     roomList.get(i).setDevice_count("" + roomList.get(i).getPanelList().get(0).getCameraList().size());
 
-                                    homecontrollerid = roomList.get(i).getPanelList().get(0).getCameraList().get(i).getHomeControllerDeviceId();
-                                    camera_id = roomList.get(i).getPanelList().get(0).getCameraList().get(i).getCamera_id();
+                                 //   homecontrollerid = roomList.get(i).getPanelList().get(0).getCameraList().get(i).getHomeControllerDeviceId();
+                              //      camera_id = roomList.get(i).getPanelList().get(0).getCameraList().get(0).getCamera_id();
 
                                     ChatApplication.logDisplay("Camera___Id"+camera_id);
                                     ChatApplication.logDisplay("Controller__Id" + homecontrollerid);
@@ -1859,7 +1912,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                             }
                         }
                         sectionedExpandableLayoutHelper.addSectionList(roomList);
-
                         sectionedExpandableLayoutHelper.notifyDataSetChanged();
                         ((Main2Activity) activity).invalidateToolbarCloudImage();
 
@@ -1873,12 +1925,13 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         }
 
                         setUserTypeValue();
+
                     }
 
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    ChatApplication.logDisplay(e.getMessage());
+                    ChatApplication.logDisplay("json Exception==========================" + e.getMessage());
                 } finally {
                     dismissProgressDialog();
                     showDialog = 0;
@@ -1894,6 +1947,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         mMessagesView.setVisibility(View.VISIBLE);
                         txt_empty_schedule.setVisibility(View.GONE);
                     }
+                    getCameraBadgeCount();
                 }
             }
 
@@ -1901,7 +1955,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             public void onFailure(Throwable throwable, String error) {
                 swipeRefreshLayout.setRefreshing(false);
                 ChatApplication.logDisplay("show is call local error" + error);
-                if (!TextUtils.isEmpty(error)) {
+                ChatApplication.logDisplay("On Failure=========================="+ " " + error);
+                if (!TextUtils.isEmpty(error))
+                {
                     ChatApplication.logDisplay("show is call local error22 " + error);
                     sectionedExpandableLayoutHelper = new SectionedExpandableLayoutHelper(activity, mMessagesView, DashBoardFragment.this, DashBoardFragment.this, DashBoardFragment.this, Constants.SWITCH_NUMBER);
                     sectionedExpandableLayoutHelper.setCameraClick(DashBoardFragment.this);
@@ -1926,6 +1982,102 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
+    }
+
+    /**
+     * Get camera badge count
+     */
+    private void getCameraBadgeCount() {
+        if (!ActivityHelper.isConnectingToInternet(getActivity())) {
+            Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        JSONObject object = new JSONObject();
+        try {
+
+            object.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
+            object.put("home_controller_device_id", homecontrollerid);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+     //   ActivityHelper.showProgressDialog(getActivity(), "Please wait...", false);
+        String url = Constants.CAMERA_CLOUD_SERVER_URL + Constants.GET_CAMERA_NOTIFICATION_COUNTER;
+
+        ChatApplication.logDisplay("camera counter is " + url + " " + object);
+        new GetJsonTask(getActivity(), url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+         //       ActivityHelper.dismissProgressDialog();
+                try {
+
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        ChatApplication.logDisplay("Camera Badge onSuccess " + result.toString());
+
+                        JSONObject object = result.optJSONObject("data");
+                        JSONArray jsonArray = object.optJSONArray("camera_counter_list");
+
+                        CameraCounterModel counterres = Common.jsonToPojo(result.toString(),CameraCounterModel.class);
+                        cameracounterlist = counterres.getData().getCameraCounterList();
+
+                    /*    RoomVO section1 = new RoomVO();
+                        section1.setIs_unread(String.valueOf(object.optInt(String.valueOf(counterres.getData().getTotalCameraNotification()))));
+                        roomList.add(section1);*/
+
+                     /*   String roomid = "";
+                        String cameras_id = "";
+                        int total_unread = 0;
+                        ArrayList<CameraVO> roomcameralist= new ArrayList<>();
+                        for (int i = 0; i < cameracounterlist.size(); i++){
+                            cameras_id = cameracounterlist.get(i).getCameraId();
+                            String jetson_device_id = cameracounterlist.get(i).getJetsonDeviceId();
+                            total_unread = cameracounterlist.get(i).getTotalUnread();
+
+                          *//*  ChatApplication.logDisplay("camera_id" + " " + cameras_id);
+                            ChatApplication.logDisplay("jetson_device_id " + " " + jetson_device_id);
+                            ChatApplication.logDisplay("total_unread " + " " + total_unread);*//*
+                            boolean found = false;
+                            *//*camera device counting*//*
+                            for (int j = 0; j < roomList.size(); j++) {
+
+
+                                if (roomList.get(j).getRoomId().equalsIgnoreCase("Camera"))
+                                {
+
+                                    roomcameralist = roomList.get(j).getPanelList().get(0).getCameraList();
+                                    for (int k = 0; k < roomcameralist.size(); k++) {
+                                        if(cameracounterlist.get(i).getCameraId().equals(roomcameralist.get(k).getCamera_id()))
+                                        {
+                                            found = true;
+                                          //  ChatApplication.logDisplay("camera total unread" + " " + cameracounterlist.get(i).getTotalUnread());
+                                        }
+                                    }
+
+                                }
+                            }
+
+                        }*/
+                        sectionedExpandableLayoutHelper.setCounterlist(cameracounterlist);
+                        sectionedExpandableLayoutHelper.setCounterres(counterres.getData());
+                        //sectionedExpandableLayoutHelper.getCameracounter();
+                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
+                        ChatApplication.logDisplay("total_camera_list " + cameracounterlist.size());
+                        ChatApplication.logDisplay("total_camera_notification " + counterres.getData().getTotalCameraNotification());
+                    }
+                } catch (Exception e) {
+                    ChatApplication.logDisplay("total_camera_list Exception " + e.getMessage());
+                } finally {
+                }
+
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(getActivity(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+        }).execute();
     }
 
     public void hideAdapter(boolean isflag) {
@@ -2130,7 +2282,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                             String device_type = object.getString("device_type");
                             String device_id = object.getString("device_id");
                             String device_status = object.getString("device_status");
-                            int device_sub_status = object.optInt("device_sub_status");
+                            String device_sub_status = object.getString("device_sub_status");
 
 //                            sectionedExpandableLayoutHelper.updateItem(module_id, device_id, device_status, is_locked);
                             sectionedExpandableLayoutHelper.updateDeviceItem(device_type, device_id, device_status, device_sub_status);
@@ -2322,6 +2474,34 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                             String room_id = object.optString("room_id");
                             sectionedExpandableLayoutHelper.updateBadgeCountnew(room_id, unseen_alert_counter);
                             ChatApplication.logDisplay("update room alert socket is " + object.toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener updateCameraCounter = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (activity == null) {
+                return;
+            }
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+                            String user_id = object.getString("user_id");
+                            String camera_id = object.getString("user_id");
+                            int  unseen_log = object.getInt("unseen_log");
+                            ChatApplication.logDisplay("camera counter socket" + object.toString());
+                            getCameraBadgeCount();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

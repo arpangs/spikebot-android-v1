@@ -101,7 +101,7 @@ public class GetJsonTask2 extends AsyncTask<String, Void, String> {
 			}
 
 
-			Log.d("System out","result is "+result);
+			Log.d("System out","result is " + " " + url + " " +result);
 			activity.onFailure(e, error,500);
 		}
 	}

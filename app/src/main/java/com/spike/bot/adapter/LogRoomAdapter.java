@@ -94,7 +94,7 @@ public class LogRoomAdapter extends RecyclerView.Adapter<LogRoomAdapter.ViewHold
                 holder.tv_room_name.setVisibility(View.VISIBLE);
                 holder.view_header.setVisibility(View.VISIBLE);
 
-                holder.tv_device_description.setText(deviceLog.getMessage().trim() + " " + "@");
+                holder.tv_device_description.setText(deviceLog.getMessage().trim());
                 actionList = deviceLog.getActivity_description().split("\\|");
 
                 if (actionList[0] != null) {

@@ -8,7 +8,7 @@ import java.util.ArrayList;
  */
 
 public class RoomVO implements Serializable{
-    private String roomId;
+    private String room_id;
 
     public String getTotalDevice() {
         return totalDevice;
@@ -30,7 +30,7 @@ public class RoomVO implements Serializable{
 
     private String sensor_panel;
     private String roomName;
-    private String homeControllerDeviceId;
+    private String home_controller_device_id;
     private int room_status;
     public boolean isExpanded=false;
     private String type;
@@ -222,9 +222,9 @@ public class RoomVO implements Serializable{
     private ArrayList<CameraVO> cameraList= new ArrayList<CameraVO>();
 
     public RoomVO(){
-        roomId="";
+        room_id="";
         roomName="";
-        homeControllerDeviceId="";
+        home_controller_device_id="";
         type="";
         panel_id ="";
         panel_name = "";
@@ -360,11 +360,11 @@ public class RoomVO implements Serializable{
     }
 
     public String getRoomId() {
-        return roomId;
+        return room_id;
     }
 
     public void setRoomId(String roomId) {
-        this.roomId = roomId;
+        this.room_id = roomId;
     }
 
     public String getRoomName() {
@@ -376,11 +376,11 @@ public class RoomVO implements Serializable{
     }
 
     public String getHomeControllerDeviceId() {
-        return homeControllerDeviceId;
+        return home_controller_device_id;
     }
 
     public void setHomeControllerDeviceId(String homeControllerDeviceId) {
-        this.homeControllerDeviceId = homeControllerDeviceId;
+        this.home_controller_device_id = homeControllerDeviceId;
     }
 
     public String getType() {
@@ -404,7 +404,7 @@ public class RoomVO implements Serializable{
             return false;
         }
         final RoomVO other = (RoomVO) obj;
-        if (this.roomId.equalsIgnoreCase(other.roomId )) {
+        if (this.room_id.equalsIgnoreCase(other.room_id )) {
             return true;
         }
         return false;
@@ -413,7 +413,7 @@ public class RoomVO implements Serializable{
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 53 * hash + (this.roomId != null ? this.roomId.hashCode() : 0);
+        hash = 53 * hash + (this.room_id != null ? this.room_id.hashCode() : 0);
         return hash;
     }
 

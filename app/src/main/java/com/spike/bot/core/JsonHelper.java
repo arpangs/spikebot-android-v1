@@ -41,7 +41,7 @@ public class JsonHelper {
                 ArrayList<String> roomDeviceList = new ArrayList<>();
                 if(roomObj.has("roomDeviceId")){
 
-                    jsonArrayRoomList = roomObj.getJSONArray("roomDeviceId");
+                    jsonArrayRoomList = roomObj.getJSONArray("roochat onDisconnect callmDeviceId");
 
                     for(int r=0; r < jsonArrayRoomList.length(); r ++){
                         roomDeviceList.add(""+jsonArrayRoomList.get(r).toString());
@@ -60,7 +60,7 @@ public class JsonHelper {
                 /*room list */
                 RoomVO room = new RoomVO();
                 room.setRoomName(roomObj.optString("room_name"));
-                room.setRoom_order(roomObj.optInt("room_order"));
+               // room.setRoom_order(roomObj.optInt("room_order"));
                 room.setRoomId(roomObj.optString("room_id"));
                 room.setRoom_status(roomObj.optInt("room_status"));
                 room.setSensor_panel(roomObj.optString("sensor_panel"));
@@ -167,7 +167,7 @@ public class JsonHelper {
                 RoomVO room = new RoomVO();
                 room.setSmart_remote_number(roomObj.optString("smart_remote_number"));
                 room.setRoomName(roomObj.optString("room_name"));
-                room.setRoom_order(roomObj.optInt("room_order"));
+            //    room.setRoom_order(roomObj.optInt("room_order"));
                 room.setRoomId(roomObj.optString("room_id"));
                 room.setRoom_status(roomObj.optInt("room_status"));
                 room.setSensor_panel(roomObj.optString("sensor_panel"));

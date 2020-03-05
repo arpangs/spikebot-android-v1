@@ -308,7 +308,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         ActivityHelper.showProgressDialog(CameraDeviceLogActivity.this, "Please wait...", false);
-        String url = Constants.CLOUD_SERVER_URL + Constants.getCameraLogs;
+        String url = Constants.CAMERA_CLOUD_SERVER_URL + Constants.getCameraLogs;
 
         ChatApplication.logDisplay("camera is " + url + " " + object);
         new GetJsonTask(CameraDeviceLogActivity.this, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL

@@ -208,11 +208,11 @@ public class ChatApplication extends Application  {
         Fabric.with(this, new Crashlytics());
         mInstance = this;
         context = this;
-        ACRA.init(this);
-        ACRA.getErrorReporter().removeAllReportSenders();
-        ACRA.getErrorReporter().setReportSender(new CustomReportSender(this.getApplicationContext()));
+      //  ACRA.init(this);
+       // ACRA.getErrorReporter().removeAllReportSenders();
+        //ACRA.getErrorReporter().setReportSender(new CustomReportSender(this.getApplicationContext()));
 // Install the application crash handler
-        ApplicationCrashHandler.installHandler();
+       // ApplicationCrashHandler.installHandler();
 
         //beacon
 //        mDeviceStore = new BluetoothLeDeviceStore();

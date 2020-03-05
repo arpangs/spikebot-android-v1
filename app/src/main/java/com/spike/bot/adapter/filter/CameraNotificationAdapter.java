@@ -42,6 +42,7 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
     private TempSensorInfoAdapter.OnNotificationContextMenu onNotificationContextMenu;
     private Context mContext;
     ArrayList<CameraAlertList> arrayListLog = new ArrayList<>();
+    ArrayList<CameraAlertList> temparrayListLog = new ArrayList<>();
     ArrayList<CameraVO> getCameraList = new ArrayList<>();
     ArrayList<CameraViewModel> arrayList;
     List<String> myList;
@@ -50,8 +51,7 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
     public UpdateCameraAlert updateCameraAlert;
 
 
-    public CameraNotificationAdapter(Context context, GridLayoutManager gridLayoutManager
-            , ArrayList<CameraAlertList> arrayListLog, ArrayList<CameraVO> getCameraList, UpdateCameraAlert updateCameraAlert) {
+    public CameraNotificationAdapter(Context context, GridLayoutManager gridLayoutManage, ArrayList<CameraAlertList> arrayListLog, ArrayList<CameraVO> getCameraList, UpdateCameraAlert updateCameraAlert) {
         this.onNotificationContextMenu = onNotificationContextMenu;
         this.mContext = context;
         this.arrayListLog = arrayListLog;
@@ -157,6 +157,7 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
             }
         }
 
+        holder.imgMore.setId(position);
         holder.imgMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -176,6 +177,7 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.action_edit_dots:
+                                holder.imgMore.getId();
                                 updateCameraAlert.updatecameraALert("update", arrayListLog.get(position), holder.switchAlert, position);
                                 break;
                             case R.id.action_delete_dots:

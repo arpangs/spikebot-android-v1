@@ -64,10 +64,10 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
                 holder.tv_device_log_date.setText(Constants.formatcurrentdate(strDateOfTimeTemp[0]));
                 holder.tv_device_log_time.setText(strDateOfTimeTemp[1] + " " + strDateOfTimeTemp[2]);
 
-                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+                //holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
             }
 
-            holder.tv_device_description.setText(arrayListLog.get(position).getMessage() + " " + "@");
+            holder.tv_device_description.setText(arrayListLog.get(position).getMessage());
             holder.tv_device_camera_name.setText(arrayListLog.get(position).getActivityDescription());
             // holder.tv_device_log_type.setText(arrayListLog.get(position).getActivityAction());
 
@@ -80,10 +80,10 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
                     holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_red));
                     holder.tv_device_camera_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
                 } else {
-                    holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
-                    holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
-                    holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
-                    holder.tv_device_camera_name.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+                    holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+                    holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+                    holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+                    holder.tv_device_camera_name.setTextColor(mContext.getResources().getColor(R.color.automation_black));
 
                 }
             }
@@ -92,6 +92,7 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
                 Glide.with(mContext)
                         .load(arrayListLog.get(position).getImageUrl())
                         .fitCenter()
+                        .placeholder(R.drawable.cam_defult)
                         .error(R.drawable.cam_defult)
                         .skipMemoryCache(true)
                         .into(holder.txtImage);

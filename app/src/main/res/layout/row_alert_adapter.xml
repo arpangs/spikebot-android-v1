@@ -18,29 +18,20 @@
             android:background="@color/automation_white"
             android:orientation="horizontal"
             android:paddingLeft="@dimen/_5sdp"
-            android:paddingTop="8dp"
             android:paddingRight="@dimen/_5sdp">
 
-            <!--  <LinearLayout
-                  android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:layout_gravity="center_vertical"
-                  android:layout_marginRight="@dimen/_3sdp"
-                  android:layout_weight="0.21"
-                  android:orientation="vertical"
-                  android:paddingBottom="@dimen/_4sdp">-->
 
             <ImageView
                 android:id="@+id/txtImage"
-                android:layout_width="@dimen/_35sdp"
-                android:layout_height="@dimen/_30sdp"
-                android:layout_marginTop="@dimen/_15sdp"
-                android:layout_marginBottom="@dimen/_10sdp" />
+                android:layout_width="@dimen/_65sdp"
+                android:layout_height="@dimen/_60sdp"
+                android:layout_marginTop="10.00dp" />
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="85dp"
-                android:layout_marginLeft="@dimen/_15sdp"
+                android:layout_height="80dp"
+                android:layout_marginTop="12.00dp"
+                android:layout_marginLeft="@dimen/_10sdp"
                 android:orientation="vertical">
 
                 <TextView
@@ -51,10 +42,22 @@
                     android:textColor="@color/automation_red"
                     android:textSize="10sp" />
 
+                <TextView
+                    android:id="@+id/tv_device_log_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="55:22 PM"
+                    android:textSize="10sp"
+                    android:textColor="@color/automation_red"
+                    android:textStyle="bold"
+                    android:layout_alignParentRight="true"/>
+
                 <RelativeLayout
+                    android:id="@+id/relative_device_desc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+
+                    android:layout_below="@+id/tv_device_log_date"
                     android:layout_marginRight="15dp"
                     android:orientation="horizontal">
 
@@ -62,51 +65,18 @@
                         android:id="@+id/tv_device_description"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Person detected on camera at "
+                        android:text="Person detected on camera at"
                         android:textColor="@color/automation_red"
                         android:layout_alignParentLeft="true"
                         android:layout_marginRight="70dp"
                         android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tv_device_log_time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="55:22 PM"
-                        android:textColor="@color/automation_red"
-                        android:textStyle="bold"
-                        android:layout_alignParentRight="true"/>
                 </RelativeLayout>
-
-               <!-- <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tv_device_description"
-                        android:layout_width="250dp"
-                        android:layout_height="wrap_content"
-                        android:text="Person detected on camera at "
-                        android:textColor="@color/automation_red"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tv_device_log_time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:text="12:40 PM"
-                        android:textColor="@color/automation_red"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </RelativeLayout>-->
 
                 <RelativeLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/_20sdp"
-                    android:layout_marginTop="@dimen/_4sdp"
+                    android:layout_height="25dp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_below="@+id/relative_device_desc"
                     android:background="@color/blue_transparent">
 
                     <TextView
@@ -118,51 +88,13 @@
                         android:layout_marginRight="@dimen/_8sdp"
                         android:background="@color/blue_transparent"
                         android:text="cam hr"
+                        android:textStyle="bold"
+                        android:textAllCaps="true"
                         android:textColor="@color/automation_red"
-                        android:textSize="12sp" />
+                        android:textSize="10sp" />
 
                 </RelativeLayout>
-
-
-            </LinearLayout>
-
-
-            <!-- </LinearLayout>-->
-
-
-            <!--  <TextView
-                  android:id="@+id/tv_device_log_date"
-                  android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:layout_gravity="center_vertical"
-                  android:layout_weight="0.25"
-                  android:paddingBottom="@dimen/_4sdp"
-                  android:textColor="@color/automation_red"
-                  android:textSize="12sp" />
-
-              <TextView
-                  android:id="@+id/tv_device_log_type"
-                  android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:layout_gravity="center_vertical"
-                  android:layout_weight="0.3"
-                  android:gravity="center|left"
-                  android:paddingLeft="5dp"
-                  android:paddingRight="5dp"
-                  android:paddingBottom="@dimen/_4sdp"
-                  android:textColor="@color/automation_red"
-                  android:textSize="12sp" />
-
-
-              <TextView
-                  android:id="@+id/tv_device_description"
-                  android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:layout_gravity="center_vertical"
-                  android:layout_weight="0.4"
-                  android:paddingBottom="@dimen/_4sdp"
-                  android:textColor="@color/automation_red"
-                  android:textSize="12sp" />-->
+            </RelativeLayout>
 
         </LinearLayout>
 

@@ -97,7 +97,6 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         setUi();
-        callCameraUnseenLog();
 
     }
 
@@ -132,7 +131,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
     public void onClick(View v) {
         if (v == view_rel_badge) {
             callupdateUnReadCameraLogs(true);
-
+            callCameraUnseenLog();
         }
     }
 
@@ -495,7 +494,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         new GetJsonTask(CameraNotificationActivity.this, url, "POST", deviceObj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
-                ActivityHelper.hideKeyboard(CameraNotificationActivity.this);
+//                ActivityHelper.hideKeyboard(CameraNotificationActivity.this);
                 ChatApplication.isScheduleNeedResume = true;
                 try {
                     int code = result.getInt("code");
@@ -504,8 +503,6 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                         dialog.dismiss();
                         Toast.makeText(getApplicationContext().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                         getconfigureData();
-
-                        callCameraUnseenLog();
                     } else {
                         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
                     }
@@ -550,7 +547,6 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
-
                         JSONObject object = result.optJSONObject("data");
 
                         if (object == null) {
@@ -595,7 +591,6 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                             recyclerView.setVisibility(View.GONE);
                             txtEmptyAlert.setVisibility(View.VISIBLE);
                         }
-
                         if (arrayListAlert.size() > 0) {
                             setAlert();
                         } else {
@@ -606,7 +601,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                         if (unreadCount.equalsIgnoreCase("0")) {
                             txtAlertCount.setVisibility(View.GONE);
                         }
-
+                        callCameraUnseenLog();
                     }
 
 
@@ -654,7 +649,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             e.printStackTrace();
         }
         ActivityHelper.showProgressDialog(CameraNotificationActivity.this, "Please wait...", false);
-        String url = Constants.CLOUD_SERVER_URL + Constants.getUnseenCameraLog;
+        String url = Constants.CAMERA_CLOUD_SERVER_URL + Constants.getUnseenCameraLog;
 
         ChatApplication.logDisplay("camera is " + url + " " + object);
         new GetJsonTask(CameraNotificationActivity.this, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
@@ -689,7 +684,6 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                             String report_id = object3.getString("reportid");
                         }
 */
-                        arrayListLog.clear();
                         arrayListAlert.clear();
 
 
@@ -842,7 +836,6 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                         if (!strFlag.equalsIgnoreCase("switch")) {
                             Toast.makeText(getApplicationContext().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                             getconfigureData();
-                            callCameraUnseenLog();
                         } else {
                             if (cameraAlertList.getIsActive() == 1) {
                                 arrayListLog.get(position).setIsActive(0);

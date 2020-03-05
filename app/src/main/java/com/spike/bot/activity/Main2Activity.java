@@ -829,7 +829,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         //clear pref and open login screen
         Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "false");
         Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, "");
-        FirebaseMessaging.getInstance().unsubscribeFromTopic(Constants.LOCAL + Common.getPrefValue(Main2Activity.this, Constants.USER_ID));
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(Constants.LIVE + Common.getPrefValue(Main2Activity.this, Constants.USER_ID));
         ///start//
 
         final Gson gson = new Gson();
