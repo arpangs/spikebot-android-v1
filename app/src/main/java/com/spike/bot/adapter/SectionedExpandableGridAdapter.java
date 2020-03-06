@@ -999,9 +999,21 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.itemTextView.setText(itemData);
                 }
 
+                if (item.getDeviceType().equals(mContext.getResources().getString(R.string.curtain)))
+                {
+                    if (item.getDeviceStatus() == 1) {
+                        itemIcon = Common.getIcon(1, item.getDevice_icon());
+                    } else if(item.getDeviceStatus() == 2){
+                        itemIcon = Common.getIcon(1, item.getDevice_icon());
+                    } else{
+                        itemIcon = Common.getIcon(0, item.getDevice_icon());
+                    }
+                }
+
                 holder.iv_icon.setImageResource(itemIcon);
                 holder.view.setId(position);
-                holder.iv_icon.setOnClickListener(new View.OnClickListener() {
+                holder.iv_icon.setOnClickListener(new View.OnClickListener()
+                {
                     @Override
                     public void onClick(View v) {
                         if (!isClickable)
@@ -1015,13 +1027,14 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                         if (item.getIsActive() == -1) {
                             //  itemIcon =  Common.getIcon(item.getDeviceStatus(), item.getDevice_icon());
-                            Toast.makeText(mContext, item.getDeviceName() + " " + "is inactive", Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(mContext, item.getDeviceName() + " " + "is inactive", Toast.LENGTH_SHORT).show();
                         } else {
                             // itemIcon = Common.getIcon(item.getDeviceStatus(), item.getDevice_icon()); //AC off icon  itemIcon = Common.getDoorIcon(item.getDeviceStatus());
                         }
 
 
-                        if (item.getDeviceType().equals(mContext.getResources().getString(R.string.curtain))) {
+                        if (item.getDeviceType().equals(mContext.getResources().getString(R.string.curtain)))
+                        {
 
                         } else if (item.getDeviceType().equalsIgnoreCase("door_sensor") || item.getDeviceType().equalsIgnoreCase("temp_sensor")) {
 
@@ -1097,31 +1110,35 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 //                if (!TextUtils.isEmpty(item.getDeviceId()) && Integer.parseInt(item.getDeviceId()) == 1 && Integer.parseInt(item.getDeviceType()) == 1) {
 
 //                ChatApplication.logDisplay("device type is "+item.getDeviceName()+" "+item.getDeviceType());
-                if ((!TextUtils.isEmpty(item.getDeviceType()) && item.getDeviceType().equals(mContext.getResources().getString(R.string.fan))
-                        && item.getDevice_sub_type().equals("normal"))) {
-                    holder.imgLongClick.setVisibility(View.GONE);
-                    holder.view.setOnLongClickListener(null);
-                } else if ((!TextUtils.isEmpty(item.getDeviceType()) && item.getDeviceType().equals(mContext.getResources().getString(R.string.fan)))) {
-                    holder.iv_icon.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View view) {
+                try {
+                    if(item.getDevice_sub_type() !=null) {
+                        if ((!TextUtils.isEmpty(item.getDeviceType()) && item.getDeviceType().equals(mContext.getResources().getString(R.string.fan)) && item.getDevice_sub_type().equals("normal"))) {
+                            holder.imgLongClick.setVisibility(View.GONE);
+                            holder.view.setOnLongClickListener(null);
+                        } else if ((!TextUtils.isEmpty(item.getDeviceType()) && item.getDeviceType().equals(mContext.getResources().getString(R.string.fan)))) {
+                            holder.iv_icon.setOnLongClickListener(new View.OnLongClickListener() {
+                                @Override
+                                public boolean onLongClick(View view) {
 //                            if(item.getIs_locked()==1){
 //                                Toast.makeText(mContext,mContext.getResources().getString(R.string.fan_error),Toast.LENGTH_LONG).show();
 //                            }else {
-                            if (item.getDeviceStatus() == 1) {
-                                mItemClickListener.itemClicked(item, "longclick", position);
-                            }
+                                    if (item.getDeviceStatus() == 1) {
+                                        mItemClickListener.itemClicked(item, "longclick", position);
+                                    }
 //                            }
-                            return true;
+                                    return true;
+                                }
+                            });
+                        } else {
+                            holder.view.setOnLongClickListener(null);
                         }
-                    });
-                } else {
-                    holder.view.setOnLongClickListener(null);
+                    }
+
+                    holder.iv_icon_text.setVisibility(View.GONE);
+                    holder.ll_room_item.setOnClickListener(null);
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
-
-
-                holder.iv_icon_text.setVisibility(View.GONE);
-                holder.ll_room_item.setOnClickListener(null);
 
                 break;
             case VIEW_TYPE_CAMERA:

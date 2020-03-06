@@ -23,13 +23,14 @@
 
             <ImageView
                 android:id="@+id/txtImage"
-                android:layout_width="@dimen/_65sdp"
-                android:layout_height="@dimen/_60sdp"
+                android:layout_width="@dimen/_55sdp"
+                android:layout_height="@dimen/_50sdp"
+
                 android:layout_marginTop="10.00dp" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="60dp"
                 android:layout_marginTop="12.00dp"
                 android:layout_marginLeft="@dimen/_10sdp"
                 android:orientation="vertical">
@@ -40,14 +41,14 @@
                     android:layout_height="wrap_content"
                     android:text="06 february 2020"
                     android:textColor="@color/automation_red"
-                    android:textSize="10sp" />
+                    android:textSize="9sp" />
 
                 <TextView
                     android:id="@+id/tv_device_log_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="55:22 PM"
-                    android:textSize="10sp"
+                    android:textSize="9sp"
                     android:textColor="@color/automation_red"
                     android:textStyle="bold"
                     android:layout_alignParentRight="true"/>
@@ -68,14 +69,15 @@
                         android:text="Person detected on camera at"
                         android:textColor="@color/automation_red"
                         android:layout_alignParentLeft="true"
+                        android:textSize="12sp"
                         android:layout_marginRight="70dp"
                         android:textStyle="bold" />
                 </RelativeLayout>
 
                 <RelativeLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="25dp"
-                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="@dimen/_2sdp"
                     android:layout_below="@+id/relative_device_desc"
                     android:background="@color/blue_transparent">
 
@@ -91,7 +93,7 @@
                         android:textStyle="bold"
                         android:textAllCaps="true"
                         android:textColor="@color/automation_red"
-                        android:textSize="10sp" />
+                        android:textSize="8sp" />
 
                 </RelativeLayout>
             </RelativeLayout>

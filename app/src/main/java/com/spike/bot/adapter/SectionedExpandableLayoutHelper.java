@@ -530,7 +530,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
 //               mSectionedExpandableGridAdapter.notifyDataSetChanged();
             getCameracounter();
             mSectionedExpandableGridAdapter.notifyDataSetChanged();
-
+            ChatApplication.logDisplay("Relaod Device list ");
         }
     }
 

@@ -345,6 +345,10 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             mSocket.off("updateDeviceBadgeCounter", unReadCount);
             mSocket.off("updateChildUser", updateChildUser);
             mSocket.off("updateRoomAlertCounter",updateRoomAlertCounter);
+
+        }
+
+        if(cloudsocket!=null){
             cloudsocket.off("camera-"+Common.getPrefValue(activity, Constants.USER_ID),updateCameraCounter);
         }
         super.onPause();
@@ -736,7 +740,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         } else {
 
             cloudurl = "http://52.24.23.7:3000/";
-            cloudsocket = app.getSocket();
+            cloudsocket = app.getCloudSocket();
 
             if (cloudsocket != null) {
                 if (cloudsocket.connected() == false) {
@@ -745,13 +749,13 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             }
 
             if (cloudsocket == null) {
-                cloudsocket = app.openSocket(cloudurl);
+                cloudsocket = app.openCloudSocket(cloudurl);
                 cloudsocket.on(Socket.EVENT_CONNECT, onConnect);
                 cloudsocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
                 cloudsocket.connect();
             }
             try {
-                socketOn();
+                cloudsocket();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -766,6 +770,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         mSocket.on("updateDeviceBadgeCounter", unReadCount);
         mSocket.on("updateChildUser", updateChildUser);
         mSocket.on("updateRoomAlertCounter",updateRoomAlertCounter);
+    }
+
+    private void cloudsocket(){
         cloudsocket.on("camera-"+Common.getPrefValue(activity, Constants.USER_ID),updateCameraCounter);
     }
 
@@ -813,24 +820,27 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 //	"device_id": "1571407908196_uEVHoQJNR",
                 //	"device_status": "0n"  on means = 1,  off means 0
                 //}
-
-                if(deviceVO.getDeviceType().equalsIgnoreCase("fan") && deviceVO.getDevice_sub_type().equalsIgnoreCase("normal")){
-                    obj.put("device_id", deviceVO.getDeviceId());
-                    obj.put("panel_id",deviceVO.getPanel_id());
-                    obj.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
-                    obj.put("device_sub_status", "5");
-                } else if(deviceVO.getDeviceType().equalsIgnoreCase("fan") && deviceVO.getDevice_sub_type().equalsIgnoreCase("dimmer")) {
-                    obj.put("device_id", deviceVO.getDeviceId());
-                    obj.put("panel_id",deviceVO.getPanel_id());
-                    obj.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
-                    obj.put("device_sub_status", deviceVO.getDevice_sub_status());
+                try {
+                    if(deviceVO.getDevice_sub_type() != null) {
+                        if (deviceVO.getDeviceType().equalsIgnoreCase("fan") && deviceVO.getDevice_sub_type().equalsIgnoreCase("normal")) {
+                            obj.put("device_id", deviceVO.getDeviceId());
+                            obj.put("panel_id", deviceVO.getPanel_id());
+                            obj.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
+                            obj.put("device_sub_status", "5");
+                        } else if (deviceVO.getDeviceType().equalsIgnoreCase("fan") && deviceVO.getDevice_sub_type().equalsIgnoreCase("dimmer")) {
+                            obj.put("device_id", deviceVO.getDeviceId());
+                            obj.put("panel_id", deviceVO.getPanel_id());
+                            obj.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
+                            obj.put("device_sub_status", deviceVO.getDevice_sub_status());
+                        } else {
+                            obj.put("device_id", deviceVO.getDeviceId());
+                            obj.put("panel_id", deviceVO.getPanel_id());
+                            obj.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
+                        }
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
-                else {
-                    obj.put("device_id", deviceVO.getDeviceId());
-                    obj.put("panel_id",deviceVO.getPanel_id());
-                    obj.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
-                }
-
 
            /*     obj.put("device_id", deviceVO.getDeviceId());
                 obj.put("panel_id",deviceVO.getPanel_id());
@@ -1351,10 +1361,16 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                     countFlow = 2;
                     ChatApplication app = ChatApplication.getInstance();
                     app.closeSocket(webUrl);
+                    app.closecloudSocket(cloudurl);
 
                     if (mSocket != null) {
                         mSocket.disconnect();
                         mSocket = null;
+                    }
+
+                    if(cloudsocket !=null){
+                        cloudsocket.disconnect();
+                        cloudsocket =  null;
                     }
                     callCloud(false);
                 }
@@ -1566,7 +1582,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                             panelList.add(panel);
 
                             section.setPanelList(panelList);
-                     //       section.setIs_unread(cameraList.get(0).getTotal_unread());
+                          section.setIs_unread(cameraList.get(0).getTotal_unread());
 
                             roomList.add(section);
 
@@ -1627,7 +1643,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                             txt_empty_schedule.setVisibility(View.GONE);
                         }
 
-                        setUserTypeValue();
+
 
                     }
 
@@ -1649,6 +1665,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         txt_empty_schedule.setVisibility(View.GONE);
                     }
                     getCameraBadgeCount();
+                    setUserTypeValue();
                     dismissProgressDialog();
                 }
             }
@@ -1851,7 +1868,8 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                             panelList.add(panel);
 
                             section.setPanelList(panelList);
-                         //   section.setIs_unread(cameraList.get(0).getTotal_unread());
+                            section.setIs_unread(cameraList.get(0).getTotal_unread());
+                            section.setIs_unread(cameraList.get(0).getTotal_unread());
 
                             roomList.add(section);
 
@@ -1924,7 +1942,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                             txt_empty_schedule.setVisibility(View.GONE);
                         }
 
-                        setUserTypeValue();
+
 
                     }
 
@@ -1948,6 +1966,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         txt_empty_schedule.setVisibility(View.GONE);
                     }
                     getCameraBadgeCount();
+                    setUserTypeValue();
                 }
             }
 
@@ -1988,8 +2007,8 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
      * Get camera badge count
      */
     private void getCameraBadgeCount() {
-        if (!ActivityHelper.isConnectingToInternet(getActivity())) {
-            Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+        if (!ActivityHelper.isConnectingToInternet(activity)) {
+            Toast.makeText(activity, R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
         JSONObject object = new JSONObject();
@@ -2124,12 +2143,19 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         Constants.startUrlset();
 
         /*check is wifi or mobile network*/
-        if (ChatApplication.isCallDeviceList) {
+        if (ChatApplication.isCallDeviceList)
+        {
             ChatApplication app = ChatApplication.getInstance();
             app.closeSocket(webUrl);
+            app.closecloudSocket(cloudurl);
             if (mSocket != null) {
                 mSocket.disconnect();
                 mSocket = null;
+            }
+
+            if (cloudsocket != null) {
+                cloudsocket.disconnect();
+                cloudsocket = null;
             }
             ((Main2Activity) activity).tabShow(false);
             hideAdapter(false);

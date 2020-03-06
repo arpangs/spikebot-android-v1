@@ -933,7 +933,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
         String url = ChatApplication.url + Constants.logsfind;
 
-        ChatApplication.logDisplay("url is " + url + " " + jsonObject);
+        ChatApplication.logDisplay("update unread cameralog url is " + url + " " + jsonObject);
         new GetJsonTask(CameraNotificationActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
             @Override
             public void onSuccess(JSONObject result) {
@@ -964,7 +964,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
     @Override
     public void onBackPressed() {
-        callupdateUnReadCameraLogs(false);
         super.onBackPressed();
+        callupdateUnReadCameraLogs(false);
     }
 }

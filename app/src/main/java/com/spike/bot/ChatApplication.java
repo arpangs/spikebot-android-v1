@@ -82,8 +82,8 @@ import uk.co.alt236.bluetoothlelib.device.beacon.BeaconUtils;
         resToastText = R.string.crash_toast_text)
 public class ChatApplication extends Application  {
 
-    private Socket mSocket;
-    public static String url="";
+    private Socket mSocket,cloudsocket;
+    public static String url="",CloudUrl="";
     public static String http="http://";
     public static boolean isRefreshDashBoard=false;
     public static boolean isRefreshSchedule=true;
@@ -154,6 +154,24 @@ public class ChatApplication extends Application  {
         return mSocket;
     }
 
+
+    public Socket openCloudSocket(String url) {
+        this.CloudUrl = url;
+        try {
+            IO.Options opts = new IO.Options();
+            opts.reconnection = true;
+//            opts.reconnectionDelay=200;
+
+            cloudsocket = IO.socket(url,opts);
+            cloudsocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
+            ChatApplication.logDisplay("chat onDisconnect callll connect done ");
+        } catch (URISyntaxException e) {
+            ChatApplication.logDisplay("erro is "+e.toString());
+            throw new RuntimeException(e);
+        }
+        return cloudsocket;
+    }
+
     /**
      *
      */
@@ -169,6 +187,10 @@ public class ChatApplication extends Application  {
         ChatApplication.logDisplay("onterminal is call");
         if(mSocket!=null){
             mSocket.disconnect();
+        }
+
+        if(cloudsocket!=null){
+            cloudsocket.disconnect();
         }
         super.onTerminate();
     }
@@ -195,6 +217,30 @@ public class ChatApplication extends Application  {
 
     public Socket getSocket() {
         return mSocket;
+    }
+
+    public void closecloudSocket(String url) {
+        // this.url = url;
+        try {
+            //IO.Options options = new IO.Options();
+            // options.forceNew=true;
+            //IO.Options opts = new IO.Options();
+            //opts.forceNew = true;
+//            opts.query = "auth_token=" + authToken;
+            if(cloudsocket!=null) {
+                cloudsocket.disconnect();
+                cloudsocket.close();
+                cloudsocket = null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // return mSocket;
+    }
+
+    public Socket getCloudSocket() {
+        return cloudsocket;
     }
 
 
@@ -238,6 +284,11 @@ public class ChatApplication extends Application  {
                 ChatApplication.logDisplay("chat onDisconnect callll "+url);
                 openSocket(url);
             }
+            if(Constants.socketIp.length()>0){
+                ChatApplication.logDisplay("chat onDisconnect callll "+url);
+                openCloudSocket(CloudUrl);
+            }
+
         }
     };
 

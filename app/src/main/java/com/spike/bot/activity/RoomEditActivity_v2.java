@@ -504,7 +504,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        ChatApplication.logDisplay("icon list "+url);
+        ChatApplication.logDisplay("icon list "+ " " + url + " " + obj.toString());
 
         new GetJsonTask(this, url, "POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override

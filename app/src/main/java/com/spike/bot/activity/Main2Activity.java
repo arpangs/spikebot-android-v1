@@ -830,6 +830,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "false");
         Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, "");
         FirebaseMessaging.getInstance().unsubscribeFromTopic(Constants.LIVE + Common.getPrefValue(Main2Activity.this, Constants.USER_ID));
+        ChatApplication.logDisplay("unsubscribeFromTopic" + " " + Constants.LIVE + Common.getPrefValue(Main2Activity.this, Constants.USER_ID));
         ///start//
 
         final Gson gson = new Gson();

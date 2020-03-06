@@ -161,6 +161,7 @@ public class Constants {
     public static final String updateTTLockActiveStatus = "/updateTTLockActiveStatus";
     public static final String deviceadd = "/device/add";
     public static final String jetsonadd = "/jetson/add";
+    public static final String curtainconfigure = "/configure/curtain";
     public static final String curtainupdate = "/curtain/update";
     public static final String curtaindelete = "/curtain/delete";
     public static final String curtainupdatestatus = "/curtain/update-status";
@@ -184,7 +185,7 @@ public class Constants {
     public static final String deleteRepeator = "/deleteRepeator";
     public static final String reassignRepeater = "/reassignRepeater";
     public static final String getUnassignedRepeaterList = "/getUnassignedRepeaterList";
-    public static final String curtainconfigure = "/curtain/configure";
+  //  public static final String curtainconfigure = "/curtain/configure";
     public static final String deviceconfigure = "/device/configure/";
     public static final String alertlist = "/alert/list";
     public static final String deviceinfo = "/device/info";
