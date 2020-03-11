@@ -513,7 +513,8 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                 ActivityHelper.dismissProgressDialog();
                 try {
 
-                    deviceEditDialog = new DeviceEditDialog(RoomEditActivity_v2.this, deviceVO, result, new ICallback() {
+                    deviceEditDialog = new DeviceEditDialog(RoomEditActivity_v2.this, deviceVO, result, new ICallback()
+                    {
                         @Override
                         public void onSuccess(String str) {
                             ChatApplication.isRefreshDashBoard = true;

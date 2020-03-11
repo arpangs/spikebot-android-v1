@@ -356,13 +356,13 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        ChatApplication.logDisplay("door " + url + " " + object);
+        ChatApplication.logDisplay("door sensor" + url + " " + object);
 
 
         new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
-                ChatApplication.logDisplay("door is " + result);
+                ChatApplication.logDisplay("door sensor is " + result);
                 doorSensorResModelData = Common.jsonToPojo(result.toString(), RemoteDetailsRes.class);
                 doorSensorResModel = doorSensorResModelData.getData();
 

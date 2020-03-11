@@ -393,6 +393,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                 deviceObj.put("start_time", onTime);
                 deviceObj.put("end_time", offTime);
                 deviceObj.put("alert_interval", edIntervalTime);
+                deviceObj.put("jetson_id", jetson_id);
                 deviceObj.put("camera_notification_id", cameraAlertList.getCameraNotificationId());
                 deviceObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
                 deviceObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -490,7 +491,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             url = ChatApplication.url + Constants.addCameraNotification;
         }
 
-
+        ChatApplication.logDisplay("Add camera alert " + " " + url +  " " + deviceObj.toString());
         new GetJsonTask(CameraNotificationActivity.this, url, "POST", deviceObj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -530,8 +531,15 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         ActivityHelper.showProgressDialog(CameraNotificationActivity.this, "Please wait... ", false);
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE)));
+            if(jetsoncameranotification){
+                jsonObject.put("jetson_id",jetson_id);
+                jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+                jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE)));
+            } else{
+                jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+                jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE)));
+            }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -793,18 +801,35 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         * */
         JSONObject deviceObj = new JSONObject();
         try {
-            deviceObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            deviceObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            deviceObj.put("camera_notification_id", cameraAlertList.getCameraNotificationId());
-            deviceObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            if (strFlag.equalsIgnoreCase("switch")) {
-                if (cameraAlertList.getIsActive() == 1) {
-                    deviceObj.put("is_active", "0");
-                } else {
-                    deviceObj.put("is_active", "1");
-                }
+            if(jetsoncameranotification){
+                deviceObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+                deviceObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+                deviceObj.put("jetson_id", jetson_id);
+                deviceObj.put("camera_notification_id", cameraAlertList.getCameraNotificationId());
+                deviceObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+                if (strFlag.equalsIgnoreCase("switch")) {
+                    if (cameraAlertList.getIsActive() == 1) {
+                        deviceObj.put("is_active", "0");
+                    } else {
+                        deviceObj.put("is_active", "1");
+                    }
 
+                }
+            } else{
+                deviceObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+                deviceObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+                deviceObj.put("camera_notification_id", cameraAlertList.getCameraNotificationId());
+                deviceObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+                if (strFlag.equalsIgnoreCase("switch")) {
+                    if (cameraAlertList.getIsActive() == 1) {
+                        deviceObj.put("is_active", "0");
+                    } else {
+                        deviceObj.put("is_active", "1");
+                    }
+
+                }
             }
+
         } catch (Exception e) {
 
         }
@@ -905,8 +930,17 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         } else {
             if (b) {
                 Intent intent = new Intent(CameraNotificationActivity.this, CameraDeviceLogActivity.class);
-                intent.putExtra("getCameraList", getCameraList);
-                intent.putExtra("homecontrollerId",homecontroller_id);
+                if(jetsoncameranotification) {
+                    intent.putExtra("getCameraList", getCameraList);
+                    intent.putExtra("jetson_device_id", jetson_id);
+                    intent.putExtra("jetsonnotification",true);
+                    intent.putExtra("homecontrollerId", homecontroller_id);
+                } else
+                {
+                    intent.putExtra("getCameraList", getCameraList);
+                    intent.putExtra("jetson_device_id", jetson_id);
+                    intent.putExtra("homecontrollerId", homecontroller_id);
+                }
                 startActivity(intent);
             } else {
                 CameraNotificationActivity.this.finish();
@@ -942,8 +976,17 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                     ChatApplication.logDisplay("url is " + result);
                     if (b) {
                         Intent intent = new Intent(CameraNotificationActivity.this, CameraDeviceLogActivity.class);
-                        intent.putExtra("getCameraList", getCameraList);
-                        intent.putExtra("homecontrollerId",homecontroller_id);
+                        if(jetsoncameranotification) {
+                            intent.putExtra("getCameraList", getCameraList);
+                            intent.putExtra("jetson_device_id", jetson_id);
+                            intent.putExtra("jetsonnotification",true);
+                            intent.putExtra("homecontrollerId", homecontroller_id);
+                        } else
+                        {
+                            intent.putExtra("getCameraList", getCameraList);
+                            intent.putExtra("jetson_device_id", jetson_id);
+                            intent.putExtra("homecontrollerId", homecontroller_id);
+                        }
                         startActivity(intent);
                     } else {
                         CameraNotificationActivity.this.finish();

@@ -624,7 +624,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
     }
 
     @Override
-    public void jetsonClicked(String action, String jetsonid) {
+    public void jetsonClicked(String action, String jetsonid,String camera_id) {
         if (action.equalsIgnoreCase("showGridJetsonCamera"))
         {
             Intent intent = new Intent(activity, CameraGridActivity.class);
@@ -640,6 +640,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             Intent intent = new Intent(activity, CameraDeviceLogActivity.class);
             intent.putExtra("jetsoncameralog","jetsoncameralog");
             intent.putExtra("jetson_device_id", jetsonid);
+            intent.putExtra("cameraId", camera_id);
             intent.putExtra("homecontrollerId", homecontrollerid);
             startActivity(intent);
         } else if (action.equalsIgnoreCase("jetsoncameraNotification")) {
@@ -2498,8 +2499,13 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
                             String unseen_alert_counter = object.optString("unseen_alert_counter");
                             String room_id = object.optString("room_id");
-                            sectionedExpandableLayoutHelper.updateBadgeCountnew(room_id, unseen_alert_counter);
-                            ChatApplication.logDisplay("update room alert socket is " + object.toString());
+                            String user_id = object.optString("user_id");
+
+                            if (Common.getPrefValue(activity, Constants.USER_ID).equalsIgnoreCase(user_id)) {
+                                sectionedExpandableLayoutHelper.updateBadgeCountnew(room_id, unseen_alert_counter);
+                                ChatApplication.logDisplay("update room alert socket is " + object.toString());
+                            }
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

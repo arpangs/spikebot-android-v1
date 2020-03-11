@@ -85,6 +85,7 @@ public class DeviceVO implements Serializable,Cloneable {
     private String created_date;
     private String temp_in_c;
     private String temp_in_f;
+    private String module_type;
 
     public String getHumidity() {
         return humidity;
@@ -668,6 +669,14 @@ public class DeviceVO implements Serializable,Cloneable {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public String getModule_type() {
+        return module_type;
+    }
+
+    public void setModule_type(String module_type) {
+        this.module_type = module_type;
     }
 
     @Override

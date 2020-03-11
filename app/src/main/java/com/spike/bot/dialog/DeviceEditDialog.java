@@ -98,7 +98,8 @@ public class DeviceEditDialog extends Dialog implements View.OnClickListener {
         spinner_arrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!deviceVO.getDeviceType().equals("3")) {
+                if (!deviceVO.getDeviceType().equals("3"))
+                {
                     sp_device_type.performClick();
                 }
             }
@@ -109,6 +110,12 @@ public class DeviceEditDialog extends Dialog implements View.OnClickListener {
             sp_device_type.setClickable(false);
             btn_Delete.setVisibility(View.VISIBLE);
             sp_device_type.setEnabled(false);
+        }
+
+        if(deviceVO.getDeviceType().equals("curtain")){
+            sp_device_type.setEnabled(false);
+        } else{
+            sp_device_type.setEnabled(true);
         }
         getSwitchDetails();
     }
@@ -176,7 +183,7 @@ public class DeviceEditDialog extends Dialog implements View.OnClickListener {
 
         new GetJsonTask(activity, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onSuccess(JSONObject result) {;
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -223,7 +230,11 @@ public class DeviceEditDialog extends Dialog implements View.OnClickListener {
             obj.put("user_id", Common.getPrefValue(activity.getApplicationContext(), Constants.USER_ID));
             obj.put("device_id", deviceVO.getDeviceId());
             obj.put("device_name", name);
-            obj.put("device_icon", flags.get(sp_device_type.getSelectedItemPosition()).toString());
+            if(deviceVO.getDeviceType().equalsIgnoreCase("curtain")){
+                obj.put("device_icon", "");
+            }else {
+                obj.put("device_icon", flags.get(sp_device_type.getSelectedItemPosition()).toString());
+            }
 
             if (deviceVO.getDeviceType().equals("fan")) {
                 obj.put("device_sub_type", rg_auto_mode_type.getCheckedRadioButtonId() == R.id.rb_auto_mode_type_normal ? "normal" : "dimmer");
@@ -242,6 +253,7 @@ public class DeviceEditDialog extends Dialog implements View.OnClickListener {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
                     String message = result.getString("message");
+                    ChatApplication.logDisplay("save switch result is" + " " + message);
                     if (code == 200) {
                         if (!TextUtils.isEmpty(message)) {
                             ChatApplication.showToast(getContext(), message);

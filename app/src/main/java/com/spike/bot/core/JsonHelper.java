@@ -346,6 +346,7 @@ public class JsonHelper {
                 panelVO.setRoom_panel_id(hasObject(objPanel,"room_panel_id") ? objPanel.optString("room_panel_id") : "");
                 panelVO.setPanel_name_sub(hasObject(objPanel,"panel_name") ? objPanel.optString("panel_name") : "");
 
+
                 /*device panel list*/
                 if(objPanel.has("deviceList")){
 
@@ -478,6 +479,8 @@ public class JsonHelper {
                 d1.setAuto_on_off_value(deviceObj.has("auto_on_off_value")? deviceObj.optInt("auto_on_off_value"):0);
                 d1.setOriginal_room_device_id(deviceObj.has("device_id") ? deviceObj.optString("device_id") : "");
                 d1.setRoomName(roomName);
+                d1.setModule_type(deviceObj.optString("module_type"));
+                d1.setDeviceType(deviceObj.optString("device_type"));
                 d1.setPanel_name(panel_name);
                 d1.setIs_original(deviceObj.optInt("is_original"));
                 d1.setDevice_sub_status(deviceObj.optString("device_sub_status"));
@@ -803,6 +806,7 @@ public class JsonHelper {
                 d1.setAuto_on_off_value(deviceObj.has("auto_on_off_value")? deviceObj.optInt("auto_on_off_value"):0);
                 d1.setSchedule_value(deviceObj.has("schedule_value")? deviceObj.optInt("schedule_value"):0);
                 d1.setDeviceType(deviceObj.has("device_type")?deviceObj.optString("device_type"):"");
+                d1.setModule_type(deviceObj.has("module_type")?deviceObj.optString("module_type"):"");
                 d1.setOriginal_room_device_id(deviceObj.has("original_room_device_id") ? deviceObj.optString("original_room_device_id") : "");
                 d1.setTemperature(""+temperature) ;
                 d1.setMode(""+mode); ;

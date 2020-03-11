@@ -89,6 +89,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         //TODO : handle this condition such that these functions won't be called if the recycler view is on scroll
         generateDataList();
         getCameracounter();
+        gettotalnotification();
         mSectionedExpandableGridAdapter.notifyDataSetChanged();
     }
 
@@ -263,25 +264,25 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
                 if (mDataArrayList.get(k) instanceof RoomVO) {
                     RoomVO counterVO = (RoomVO) mDataArrayList.get(k);
                     if (counterVO != null) {
-                        if (counterVO.getRoomId().equalsIgnoreCase("Camera")) {
+                        if (counterVO.getRoomId().equalsIgnoreCase("Camera"))
+                        {
                             ((RoomVO) mDataArrayList.get(k)).setIs_unread(String.valueOf(counterres.getTotalCameraNotification()));
                         } else if (counterVO.getRoomId().startsWith("JETSON-")) {
-                            for (int j = 0; j < counterres.getTotalCounterList().size(); j++) {
+                            for (int j = 0; j < counterres.getTotalCounterList().size(); j++)
+                            {
 
                                 String counter_jetson_device_id = counterres.getTotalCounterList().get(j).getJetsonDeviceId();
                                 String total_counter_list = String.valueOf(counterres.getTotalCounterList().get(j).getTotalUnread());
+                              //  counterVO.setIs_unread(total_counter_list);
 
-                                counterVO.setIs_unread(total_counter_list);
-
-                               /* if(jetson_device_id != null && !TextUtils.isEmpty(jetson_device_id))
+                                if(jetson_device_id != null && !TextUtils.isEmpty(jetson_device_id))
                                 {
-                                    if(jetson_device_id.equalsIgnoreCase(counter_jetson_device_id)){
+                                    if(counterVO.getRoomId().equals(counter_jetson_device_id)){
 
-
-                                      //  counterVO.setIs_unread(total_counter_list);
-                                        ChatApplication.logDisplay("getCameracounter total_counter_list " + " " + total_counter_list);
+                                        ((RoomVO) mDataArrayList.get(k)).setIs_unread(total_counter_list);
+                                        ChatApplication.logDisplay("getCameracounter jetson__id  " + " " + counter_jetson_device_id);
                                     }
-                                }*/
+                                }
                             }
                         }
                     }
@@ -294,7 +295,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
 
 
     public void getCameracounter() {
-        gettotalnotification();
+
         for (int i = 0; i < counterlist.size(); i++) {
             String cameras_id = counterlist.get(i).getCameraId();
             String jetson_device_id = counterlist.get(i).getJetsonDeviceId();
@@ -529,6 +530,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
             mSectionedExpandableGridAdapter.notifyItemChanged(position);
 //               mSectionedExpandableGridAdapter.notifyDataSetChanged();
             getCameracounter();
+            gettotalnotification();
             mSectionedExpandableGridAdapter.notifyDataSetChanged();
             ChatApplication.logDisplay("Relaod Device list ");
         }

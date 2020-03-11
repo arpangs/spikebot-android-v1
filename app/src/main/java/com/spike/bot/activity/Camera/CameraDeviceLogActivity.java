@@ -87,6 +87,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
     ArrayList monthlist = new ArrayList();
     int row_index = -1;
     public static boolean isJetsonCameralog = false;
+    public static boolean isjetsonnotification = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -110,6 +111,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         jetson_id = getIntent().getStringExtra("jetson_device_id");
         cameralog = getIntent().getStringExtra("cameralog");
         jetsoncameralog = getIntent().getStringExtra("jetsoncameralog");
+        isjetsonnotification = getIntent().getExtras().getBoolean("jetsonnotification");
         isJetsonCameralog = getIntent().getExtras().getBoolean("isshowJestonCameraLog");
         toolbar.setTitle("Camera Logs");
         rvDeviceLog = findViewById(R.id.rv_device_log);
@@ -287,13 +289,14 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
 
             object.put("home_controller_device_id", homecontroller_id);
             object.put("notification_number", "" + notification_number);
-            if (isJetsonCameralog) {
+            if (isJetsonCameralog || isjetsonnotification) {
                 object.put("jetson_id", "" + jetson_id);
             } else {
                 if (!TextUtils.isEmpty(cameralog)) {
                     object.put("camera_id", "" + camera_id);
                 } else if (!TextUtils.isEmpty(jetsoncameralog)) {
                     object.put("jetson_id", "" + jetson_id);
+                    object.put("camera_id", "" + camera_id);
                 } else {
                     object.put("camera_id", "" + "");
                     object.put("jetson_id", "" + "");
