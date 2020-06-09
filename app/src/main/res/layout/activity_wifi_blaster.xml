@@ -1,116 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.design.widget.AppBarLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:theme="@style/AppTheme.AppBarOverlay">
 
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/actionBarSize"
-                android:background="@color/sky_blue"
+                android:background="@color/solid_blue"
                 app:popupTheme="@style/AppTheme.PopupOverlay">
 
-            </android.support.v7.widget.Toolbar>
+            </androidx.appcompat.widget.Toolbar>
 
-        </android.support.design.widget.AppBarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="@dimen/_5sdp"
-            android:background="@color/automation_white"
-            android:orientation="vertical">
+            android:fitsSystemWindows="true">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/automation_black"
-                android:textStyle="bold"
-                android:textSize="@dimen/_16sdp"
-                android:text="First disable your mobile data"/>
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:background="@color/automation_white"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:paddingLeft="10dp"
+                    android:text="First disable your mobile data"
+                    android:textColor="@color/automation_black"
+                    android:textSize="@dimen/_16sdp"
+                    android:textStyle="bold" />
 
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/automation_black"
-                android:textStyle="bold"
-                android:textSize="@dimen/_16sdp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:text="Connect to your device in Wi-Fi settings for setup"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="Connect to your device in Wi-Fi settings for setup"
+                    android:textColor="@color/automation_black"
+                    android:textSize="@dimen/_16sdp"
+                    android:textStyle="bold" />
 
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/txtPanal"
-                android:textSize="@dimen/_14sdp"
-                android:paddingTop="@dimen/_7sdp"
-                android:text="Your device has created a temporary Wi-Fi hotspot. To set it up, connect to it in the Wi-Fi settinds by the following the instructions below."/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="Your device has created a temporary Wi-Fi hotspot. To set it up, connect to it in the Wi-Fi settinds by the following the instructions below."
+                    android:textColor="@color/txtPanal"
+                    android:textSize="@dimen/_14sdp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="1. Go to Settings> Wi-Fi"
+                    android:textColor="@color/automation_black"
+                    android:textSize="@dimen/_15sdp"
+                    android:textStyle="bold" />
 
 
+                <TextView
+                    android:id="@+id/txtWifi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text=""
+                    android:textColor="@color/automation_black"
+                    android:textSize="@dimen/_14sdp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/automation_black"
-                android:textStyle="bold"
-                android:paddingTop="@dimen/_10sdp"
-                android:textSize="@dimen/_15sdp"
-                android:text="1. Go to Settings> Wi-Fi"/>
-
-
-            <TextView
-                android:id="@+id/txtWifi"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/automation_black"
-                android:textSize="@dimen/_14sdp"
-                android:paddingTop="@dimen/_7sdp"
-                android:text=""/>
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/automation_black"
-                android:textStyle="bold"
-                android:paddingTop="@dimen/_10sdp"
-                android:textSize="@dimen/_15sdp"
-                android:text="2. Come back to the app to proceed with set up."/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="Password is : password"
+                    android:textColor="@color/automation_black"
+                    android:textSize="@dimen/_14sdp"
+                    android:textStyle="bold" />
 
 
-            <Button
-                android:id="@+id/btnNext"
-                android:layout_width="@dimen/_120sdp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/_15sdp"
-                android:background="@drawable/drawable_blue_schedule"
-                android:text="Next"
-                android:textAllCaps="false"
-                android:textColor="@color/automation_white" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="2. Come back to the app to proceed with set up."
+                    android:textColor="@color/automation_black"
+                    android:textSize="@dimen/_15sdp"
+                    android:textStyle="bold" />
 
 
+                <Button
+                    android:id="@+id/btnNext"
+                    android:layout_width="@dimen/_120sdp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_45sdp"
+                    android:background="@drawable/background_button_login"
+                    android:gravity="center"
+                    android:text="Next"
+                    android:layout_marginBottom="16dp"
+                    android:textAllCaps="false"
+                    android:textColor="@color/automation_white" />
 
 
-
-        </LinearLayout>
-
+            </LinearLayout>
+        </ScrollView>
 
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

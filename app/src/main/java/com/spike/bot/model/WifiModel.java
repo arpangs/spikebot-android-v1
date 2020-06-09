@@ -24,6 +24,7 @@ public class WifiModel implements Serializable{
         this.wiFiList = wiFiList;
     }
 
+
     public class WiFiList implements Serializable{
 
         @SerializedName("Network_Name")
@@ -32,6 +33,28 @@ public class WifiModel implements Serializable{
         @SerializedName("Network_Strength")
         @Expose
         private String networkStrength;
+        @SerializedName("SSID")
+        @Expose
+        private String sSID;
+        @SerializedName("RSSI")
+        @Expose
+        private String rSSI;
+
+        public String getSSID() {
+            return sSID;
+        }
+
+        public void setSSID(String sSID) {
+            this.sSID = sSID;
+        }
+
+        public String getRSSI() {
+            return rSSI;
+        }
+
+        public void setRSSI(String rSSI) {
+            this.rSSI = rSSI;
+        }
 
         public String getNetworkName() {
             return networkName;

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="5dp"
+            android:orientation="horizontal"
+            android:paddingLeft="8dp">
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="Beacon Scanner Details"
+                android:textColor="@color/signupblack"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/iv_close"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:padding="3dp"
+                android:backgroundTint="@color/sensor_button"
+                app:srcCompat="@drawable/cross" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/automation_dark" />
+
+        <TextView
+            android:text="Beacon Scanner Name"
+            android:layout_width="wrap_content"
+            android:textColor="@color/txtPanal"
+            android:textSize="@dimen/_12sdp"
+            android:layout_marginTop="26dp"
+            android:layout_marginLeft="16dp"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/edt_scanner_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"/>
+
+       <!-- <com.google.android.material.textfield.TextInputLayout
+            android:layout_marginTop="26dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_scanner_name"
+                android:hint="Beacon Scanner Name"
+                android:singleLine="true"
+                android:inputType="text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>-->
+
+        <!--   <LinearLayout
+               android:background="@drawable/view_border_bottom_spinner"
+               android:layout_marginTop="@dimen/_15sdp"
+               android:layout_marginLeft="16dp"
+               android:layout_marginRight="16dp"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+
+               <Spinner
+                   android:id="@+id/blaster_room_spinner"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"/>
+
+           </LinearLayout>
+   -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:visibility="gone"
+            android:background="@drawable/drawable_gray_schedule">
+
+            <Spinner
+                android:id="@+id/scanner_room_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:layout_marginLeft="5dp" />
+
+            <ImageView
+                android:id="@+id/spinner_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_arrow_drop_down_blue" />
+
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:text="Room Name"
+                android:layout_width="wrap_content"
+                android:textColor="@color/txtPanal"
+                android:textSize="@dimen/_12sdp"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/txt_scanner_room_name"
+                android:padding="5dp"
+                android:textColor="@color/signupblack"
+                android:background="#60808080"
+                android:textSize="@dimen/_12sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_width="match_parent"
+                android:singleLine="true"
+                android:text=""
+                android:layout_height="wrap_content">
+
+            </TextView>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_cancel"
+                android:gravity="center"
+                style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
+                android:layout_gravity="right"
+                android:text="CANCEL"
+                android:visibility="gone"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+            <Button
+                android:id="@+id/btn_save"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:textAllCaps="false"
+                android:text="@string/save"
+                android:textSize="@dimen/_14sdp"
+                android:layout_marginBottom="@dimen/_16sdp"
+                android:textColor="@color/automation_white"
+                android:background="@drawable/drawable_blue_schedule" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

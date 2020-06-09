@@ -6,12 +6,13 @@ import android.graphics.Bitmap;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.v7.widget.RecyclerView;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.View;
+
+import androidx.annotation.RequiresApi;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -37,7 +38,7 @@ public class Constants {
     // device type = 2 = Ac
 
       public static  String CLOUD_SERVER_URL = "http://52.24.23.7:3000"; //222 live
-   //public static String CLOUD_SERVER_URL = "http://34.212.76.50:3000";  // local
+  // public static String CLOUD_SERVER_URL = "http://34.212.76.50:3000";  // local
 
     public static String CAMERA_CLOUD_SERVER_URL = "http://52.24.23.7:3000"; // live
     //public static String CAMERA_CLOUD_SERVER_URL = "http://34.212.76.50:3000"; // local
@@ -63,6 +64,7 @@ public class Constants {
 
     public static final int ACK_TIME_OUT = 5000;
     public static final int REMOTE_REQUEST_CODE = 10;
+    public static final int BEACON_REQUEST_CODE = 11;
 
     public static final int SWITCH_NUMBER = 4;
     public static final int SWITCH_NUMBER_EXIST_PANEL = 5;
@@ -75,6 +77,7 @@ public class Constants {
     public static final String USER_ROOM_TYPE = "user_room_type";
     public static final String lock_exe = "lock_exe";
     public static final String lock_token = "lock_token";
+    public static final String home_controller_id = "home_controller_id";
     public static int lockDate = 0;
     public static String socketIp = "";
     public static int adminType = 1;
@@ -85,6 +88,7 @@ public class Constants {
 
     public static final String SIMPLE_DATE_FORMAT_1 = "MMM dd, yyyy";
     public static final String LOG_DATE_FORMAT_1 = "yyyy-MM-dd HH:mm:ss";
+    public static final String DATE_D_MMM_YY_H_MM_AMPM = "dd-MMM-yy hh:mm a";
     public static final String LOG_DATE_FORMAT_2 = "dd-MMM yyyy h:mm a";
 
     /*---------------------------Add new api v2-----------------------------*/
@@ -172,12 +176,14 @@ public class Constants {
     public static final String GET_UNASSIGNED_SENSORS = "/getUnassignedSensors";
     public static final String SAVE_UNCONFIGURED_SENSOR = "/saveUnconfiguredSensor";
     public static final String UPDATE_UNREAD_LOGS = "/updateUnReadLogs";
+    public static final String MARK_SEEN =  "/logs/seen";
     public static final String SAVE_EDIT_SWITCH = "/device/edit";
     public static final String configureGasSensorRequest = "/configureGasSensorRequest";
     public static final String devicefind = "/device/find";
     public static final String jetsonlist = "/jetson/list";
     public static final String jetsonupdate = "/jetson/update";
     public static final String jetsondelete = "/jetson/delete";
+    public static final String camerarecording = "/getCameraVideo";
     public static final String configureRepeatorRequest = "/configureRepeatorRequest";
     public static final String getGasSensorInfo = "/getGasSensorInfo";
     public static final String deleteGasSensor = "/deleteGasSensor";
@@ -214,7 +220,7 @@ public class Constants {
     public static final String DELETE_MODULE = "/device/delete";
     public static final String panelDelete = "/panel/delete";
     public static final String deleteMultiSensor = "/deleteMultiSensor";
-    public static final String reportFalseImage = "/reportFalseImage";
+    public static final String reportFalseImage = "/false_image";
     public static final String changeTempSensorNotificationStatus = "/changeTempSensorNotificationStatus";
 
     //IR Blaster
@@ -619,6 +625,15 @@ public class Constants {
         return sdf.format(currenTimeZone);
     }
 
+    public static String logConverterDateImagezoom(long activity_time) {
+        Calendar calendar = Calendar.getInstance();
+        TimeZone tz = TimeZone.getDefault();
+        calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
+        SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy h:mm a", Locale.getDefault());
+        java.util.Date currenTimeZone = new java.util.Date((long) activity_time);
+        return sdf.format(currenTimeZone);
+    }
+
     public static String formatcurrentdate(String date) throws ParseException {
      /*   Date c = Calendar.getInstance().getTime();
         SimpleDateFormat df = new SimpleDateFormat("dd MMMM yyyy");
@@ -639,6 +654,20 @@ public class Constants {
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat month_date = new SimpleDateFormat("MM");
         int row_index = Integer.parseInt(month_date.format(cal.getTime())) - 1;
+        return row_index;
+    }
+
+    public static int getCurentYear() {
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int row_index = year;
+        return row_index;
+    }
+
+    public static int getCurentMonthheavyload() {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat month_date = new SimpleDateFormat("MM");
+        int row_index = Integer.parseInt(month_date.format(cal.getTime()));
         return row_index;
     }
 

@@ -1,13 +1,11 @@
 package com.spike.bot.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.os.SystemClock;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.core.ListUtils;
@@ -47,7 +45,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
     private OnSmoothScrollList onSmoothScrollList;
 
     public Context context;
-    //recycler view
+    //recycler view`
     RecyclerView mRecyclerView;
 
     public SectionedExpandableLayoutHelper(final Context context, RecyclerView recyclerView, ItemClickListener itemClickListener, OnSmoothScrollList onSmoothScrollList, TempClickListener tempClickListener,
@@ -93,7 +91,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         mSectionedExpandableGridAdapter.notifyDataSetChanged();
     }
 
-    public void updateFanDevice(String deviceId, String deviceStatus) {
+    public void updateFanDevice(String deviceId, int deviceStatus) {
 
         for (int k = 0; k < mDataArrayList.size(); k++) {
 
@@ -103,7 +101,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
 
                     if (deviceVO1.getDeviceId().equals(deviceId)) {
                         ChatApplication.logDisplay("status update panel adapter match");
-                        ((DeviceVO) mDataArrayList.get(k)).setDevice_sub_status(deviceStatus);
+                        ((DeviceVO) mDataArrayList.get(k)).setDevice_sub_status(String.valueOf(deviceStatus));
                         reloadDeviceList(((DeviceVO) mDataArrayList.get(k)));
 //                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
 //                        mSectionedExpandableGridAdapter.notifyDataSetChanged();

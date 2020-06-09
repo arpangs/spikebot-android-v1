@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/edt_txt_layout"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_marginLeft="15dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginRight="15dp"
+    android:layout_marginBottom="10dp"
+    android:orientation="vertical"
+    android:visibility="visible"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="5dp"
+    app:elevation="5dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -10,16 +20,15 @@
         android:layout_margin="@dimen/_5sdp"
         android:padding="@dimen/_5sdp"
         android:gravity="center"
-        android:background="@drawable/background_shadow"
         android:orientation="horizontal">
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgView"
             android:layout_width="@dimen/_45sdp"
             android:layout_height="@dimen/_45sdp"
             android:src="@drawable/camera_on"/>
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtNameJetson"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -32,13 +41,13 @@
             android:padding="@dimen/_5sdp"
             android:singleLine="true"/>
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgMoreJetjson"
-            android:layout_width="@dimen/_30sdp"
-            android:layout_height="@dimen/_30sdp"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
             android:layout_marginRight="@dimen/_7sdp"
-            android:src="@drawable/more"/>
+            android:src="@drawable/edit_blue"/>
 
     </LinearLayout>
 
-</LinearLayout>
+</androidx.cardview.widget.CardView>

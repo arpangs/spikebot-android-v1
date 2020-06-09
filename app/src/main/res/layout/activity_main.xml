@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.22"
                 android:adjustViewBounds="true"
-                app:srcCompat="@drawable/bulb_on" />
+                app:srcCompat="@drawable/oncfl" />
 
             <ImageView
                 android:id="@+id/imageView3"
@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.22"
                 android:adjustViewBounds="true"
-                app:srcCompat="@drawable/bulb_on" />
+                app:srcCompat="@drawable/oncfl" />
 
             <ImageView
                 android:id="@+id/imageView12"
@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.12"
                 android:adjustViewBounds="true"
-                app:srcCompat="@drawable/bulb_on" />
+                app:srcCompat="@drawable/oncfl" />
 
             <ImageView
                 android:id="@+id/imageView4"
@@ -56,7 +56,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.22"
                 android:adjustViewBounds="true"
-                app:srcCompat="@drawable/bulb_on" />
+                app:srcCompat="@drawable/oncfl" />
 
             <ImageView
                 android:id="@+id/imageView5"
@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.22"
                 android:adjustViewBounds="true"
-                app:srcCompat="@drawable/bulb_on" />
+                app:srcCompat="@drawable/oncfl" />
         </LinearLayout>
 
         <ImageView
@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:adjustViewBounds="true"
-            app:srcCompat="@drawable/bulb_off" />
+            app:srcCompat="@drawable/offcfl" />
 
     </FrameLayout>
 

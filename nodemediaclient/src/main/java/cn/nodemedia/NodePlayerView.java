@@ -9,7 +9,7 @@ import android.graphics.Color;
 import android.graphics.SurfaceTexture;
 import android.os.Build;
 import android.os.Handler;
-import android.support.annotation.NonNull;
+
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.Surface;
@@ -18,6 +18,8 @@ import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.FrameLayout;
+
+import androidx.annotation.NonNull;
 
 import static cn.nodemedia.NodePlayerView.RenderType.SURFACEVIEW;
 import static cn.nodemedia.NodePlayerView.RenderType.TEXTUREVIEW;

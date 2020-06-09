@@ -5,16 +5,15 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputEditText;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
 import android.text.TextUtils;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,12 +22,28 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.google.android.material.textfield.TextInputEditText;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
+import com.spike.bot.Beacon.AddBeaconActivity;
+import com.spike.bot.Beacon.BeaconScannerAddActivity;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Repeatar.RepeaterActivity;
@@ -44,6 +59,7 @@ import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.dialog.AddRoomDialog;
 import com.spike.bot.dialog.ICallback;
+import com.spike.bot.model.DeviceList;
 import com.spike.bot.model.RoomVO;
 
 import org.json.JSONArray;
@@ -55,6 +71,8 @@ import java.util.ArrayList;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
+import static com.spike.bot.core.Common.dpToPx;
+
 /**
  * Created by Sagar on 15/10/19.
  * Gmail : vipul patel
@@ -64,10 +82,9 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
     Toolbar toolbar;
     RecyclerView recyclerSmartDevice;
     DeviceListAdapter deviceListAdapter;
-    ArrayList<String> arrayList = new ArrayList<>();
+    ArrayList<DeviceList> arrayList = new ArrayList<>();
     ArrayList<String> roomIdList = new ArrayList<>();
     ArrayList<String> roomNameList = new ArrayList<>();
-
     ProgressDialog m_progressDialog;
     RoomVO room;
     private Socket mSocket;
@@ -91,23 +108,113 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toolbar.setTitle("Configure");
+        toolbar.setTitle("Add device");
 
         recyclerSmartDevice = findViewById(R.id.recyclerSmartDevice);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        recyclerSmartDevice.setLayoutManager(linearLayoutManager);
+      /*  LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        recyclerSmartDevice.setLayoutManager(linearLayoutManager);*/
+
+        arrayList = new ArrayList<>();
+        deviceListAdapter = new DeviceListAdapter(this, arrayList);
+
+       /* deviceListAdapter = new DeviceListAdapter(this, arrayList);
+        recyclerSmartDevice.setAdapter(deviceListAdapter);
+        deviceListAdapter.notifyDataSetChanged();*/
+
+
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
+        recyclerSmartDevice.setLayoutManager(mLayoutManager);
+        recyclerSmartDevice.addItemDecoration(new GridSpacingItemDecoration(3, dpToPixel(10), true));
+        recyclerSmartDevice.setItemAnimator(new DefaultItemAnimator());
+        recyclerSmartDevice.setAdapter(deviceListAdapter);
 
         getArraylist();
-
-        deviceListAdapter = new DeviceListAdapter(this, arrayList);
-        recyclerSmartDevice.setAdapter(deviceListAdapter);
-        deviceListAdapter.notifyDataSetChanged();
         startSocketConnection();
 
     }
 
+    public int dpToPixel(int dp) {
+        Resources r = getResources();
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
+    }
+
     /*add arraylist static data*/
     public void getArraylist() {
+        int[] covers = new int[]{
+                R.drawable.unassigned,
+                R.drawable.room,
+                R.drawable.switchboard,
+               /* R.drawable.smartdevice,*/
+                R.drawable.irblaster,
+                R.drawable.remote_ac,
+                R.drawable.remote,
+                R.drawable.lock_only,
+                R.drawable.dooron,
+                R.drawable.fire_and_gas,
+                R.drawable.on_temperature,
+                R.drawable.curtains_on,
+                R.drawable.repeaters,
+                R.drawable.camera,
+                R.drawable.smart_camera,
+                R.drawable.drop,
+                R.drawable.beaconsearch,
+                R.drawable.beaconscanner,};
+
+
+        DeviceList list = new DeviceList("Unassigned List", covers[0]);
+        arrayList.add(list);
+
+        list = new DeviceList("Room", covers[1]);
+        arrayList.add(list);
+
+        list = new DeviceList("Switch Board", covers[2]);
+        arrayList.add(list);
+
+      /*  list = new DeviceList("Smart Device", covers[3]);
+        arrayList.add(list);*/
+
+        list = new DeviceList("IR Blaster", covers[3]);
+        arrayList.add(list);
+
+        list = new DeviceList("IR Remote", covers[4]);
+        arrayList.add(list);
+
+        list = new DeviceList("Smart Remote", covers[5]);
+        arrayList.add(list);
+
+        list = new DeviceList("Door Lock", covers[6]);
+        arrayList.add(list);
+
+        list = new DeviceList("Door Sensor",covers[7]);
+        arrayList.add(list);
+
+        list = new DeviceList("Gas / Smoke Sensor",covers[8]);
+        arrayList.add(list);
+
+        list = new DeviceList("Temperature Sensor",covers[9]);
+        arrayList.add(list);
+
+        list = new DeviceList("Curtain",covers[10]);
+        arrayList.add(list);
+
+        list = new DeviceList("Repeaters", covers[11]);
+        arrayList.add(list);
+
+        list = new DeviceList("Camera", covers[12]);
+        arrayList.add(list);
+
+        list = new DeviceList("Smart Camera",covers[13]);
+        arrayList.add(list);
+
+        list = new DeviceList("Water Detector",covers[14]);
+        arrayList.add(list);
+
+        list = new DeviceList("Beacon", covers[15]);
+        arrayList.add(list);
+
+        list = new DeviceList("Beacon Scanner", covers[16]);
+        arrayList.add(list);
+/*
         arrayList.add("Unassigned List");
         arrayList.add("Room");
         arrayList.add("Switch Board");
@@ -124,55 +231,87 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         arrayList.add("Camera");
         arrayList.add("Smart Camera");
         arrayList.add("Water Detector");
-//        arrayList.add("Add Beacon");
+//        arrayList.add("Add Beacon");*/
     }
 
     /*item click */
     private void setIntent(int position) {
+      /*  if (position == 0) {
+            addCustomRoom();
+        } else if (position == 1) {
+            if (Common.getPrefValue(this, Common.camera_key).equalsIgnoreCase("0")) {
+                addKeyCamera();
+            } else {
+                addCamera();
+            }
+        } else if (position == 2) {
+            startActivity(new Intent(this, IRBlasterAddActivity.class));
+        } else if (position == 3) {
+            Intent intent = new Intent(AddDeviceTypeListActivity.this, IRRemoteAdd.class);
+            //         intent.putExtra("roomName", "" + room.getRoomName());
+            //          intent.putExtra("roomId", "" + room.getRoomId());
+            startActivity(intent);
+        } else if (position == 4) {
+            Intent intent = new Intent(this, BrandListActivity.class);
+            startActivity(intent);
+        } else if (position == 5) {
+            startActivity(new Intent(this, LockBrandActivity.class));
+        } else if (position == 6) {
+            startActivity(new Intent(this, RepeaterActivity.class));
+        } else if (position == 7) {
+            unassignIntent("all");
+        } else if (position == 8) {
+
+        }*/
+
+
         if (position == 0) {
             unassignIntent("all");
         } else if (position == 1) {
             addCustomRoom();
         } else if (position == 2) {
             showPanelOption(position);
-        } else if (position == 3) {
+        }/* else if (position == 3) {
             Intent intent = new Intent(this, BrandListActivity.class);
             startActivity(intent);
-        } else if (position == 4) {
+        }*/ else if (position == 3) {
             startActivity(new Intent(this, IRBlasterAddActivity.class));
-        } else if (position == 5) {
+        } else if (position == 4) {
             Intent intent = new Intent(AddDeviceTypeListActivity.this, IRRemoteAdd.class);
             //         intent.putExtra("roomName", "" + room.getRoomName());
             //          intent.putExtra("roomId", "" + room.getRoomId());
             startActivity(intent);
-        } else if (position == 6) {
+        } else if (position == 5) {
             startActivity(new Intent(this, SmartRemoteActivity.class));
-        } else if (position == 7) {
+        } else if (position == 6) {
             startActivity(new Intent(this, LockBrandActivity.class));
-        } else if (position == 8) {
+        } else if (position == 7) {
             showOptionDialog(SENSOR_TYPE_DOOR);
-        } else if (position == 9) {
+        } else if (position == 8) {
             showOptionDialog(SENSOR_GAS);
-        } else if (position == 10) {
+        } else if (position == 9) {
             showOptionDialog(SENSOR_TYPE_TEMP);
-        } else if (position == 11) {
+        } else if (position == 10) {
             showOptionDialog(Curtain);
-        } else if (position == 12) {
+        } else if (position == 11) {
             startActivity(new Intent(this, RepeaterActivity.class));
-        } else if (position == 13) {
+        } else if (position == 12) {
             if (Common.getPrefValue(this, Common.camera_key).equalsIgnoreCase("0")) {
                 addKeyCamera();
             } else {
                 addCamera();
             }
-        } else if (position == 14) {
+        } else if (position == 13) {
             Intent intent = new Intent(this, AddJetSonActivity.class);
             startActivity(intent);
-        }/*else if (position == 15) {
-            Intent intent=new Intent(this, AddBeaconActivity.class);
-            startActivity(intent);
-        }*/ else if (position == 15) {
+        }else if (position == 14) {
             showOptionDialog(SENSOR_WATER);
+        } else if (position == 15) {
+              Intent intent=new Intent(this, AddBeaconActivity.class);
+                startActivity(intent);
+        } else if (position == 16){
+            Intent intent = new Intent(this, BeaconScannerAddActivity.class);
+            startActivity(intent);
         }
     }
 
@@ -190,9 +329,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             return;
         }
         mSocket = app.getSocket();
-        if (mSocket != null) {
-            mSocket.on("configureDevice", configureDevice);
-        }
+
     }
 
     @Override
@@ -203,14 +340,22 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mSocket != null) {
+            mSocket.off("configureDevice", configureDevice);
+        }
+    }
+
     /*device list adapter*/
     public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.SensorViewHolder> {
 
         private Context mContext;
-        ArrayList<String> arrayListLog = new ArrayList<>();
+        ArrayList<DeviceList> arrayListLog = new ArrayList<>();
 
 
-        public DeviceListAdapter(Context context, ArrayList<String> arrayListLog1) {
+        public DeviceListAdapter(Context context, ArrayList<DeviceList> arrayListLog1) {
             this.mContext = context;
             this.arrayListLog = arrayListLog1;
         }
@@ -224,13 +369,17 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final DeviceListAdapter.SensorViewHolder holder, final int position) {
 
-            holder.txtUserName.setText(arrayList.get(position));
+            DeviceList devielist = arrayList.get(position);
 
-            if (position == 0 || position == 3 || position == 4 || position == 6 || position == 7 || position == 12 || position == 14) {
+            // loading album cover using Glide library
+            Glide.with(mContext).load(devielist.getThumbnail()).into(holder.imgAdd);
+            holder.txtUserName.setText(devielist.getDevicename());
+
+           /* if (position == 0 || position == 3 || position == 4 || position == 6 || position == 7 || position == 12 || position == 14) {
                 holder.imgAdd.setVisibility(View.INVISIBLE);
             } else {
                 holder.imgAdd.setVisibility(View.VISIBLE);
-            }
+            }*/
 
             holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -406,6 +555,9 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                if (mSocket != null) {
+                    mSocket.on("configureDevice", configureDevice);
+                }
                 getgasConfigData(SENSOR_TYPE_PANAL);
             }
         });
@@ -413,7 +565,6 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-
                 unassignIntent("panel");
             }
         });
@@ -452,7 +603,21 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         dialog.setContentView(R.layout.dialog_panel_option);
 
         TextView txtDialogTitle = dialog.findViewById(R.id.txt_dialog_title);
-        txtDialogTitle.setText("Select Sensor Type");
+       // txtDialogTitle.setText("Select Sensor Type");
+
+        if (sensor_type == SENSOR_GAS) {
+            txtDialogTitle.setText("Gas Sensor");
+        } else if (sensor_type == Curtain) {
+            txtDialogTitle.setText("Curtain");
+        } else if (sensor_type == SENSOR_TYPE_TEMP) {
+            txtDialogTitle.setText("Temperature Sensor");
+        } else if (sensor_type == SENSOR_TYPE_DOOR) {
+            txtDialogTitle.setText("Door Sensor");
+        } else if (sensor_type == SENSOR_WATER) {
+            txtDialogTitle.setText("Water Detector");
+        } else {
+            txtDialogTitle.setText("Panel");
+        }
 
         Button btn_sync = dialog.findViewById(R.id.btn_panel_sync);
         Button btn_unaasign = dialog.findViewById(R.id.btn_panel_unasigned);
@@ -464,6 +629,9 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                if (mSocket != null) {
+                    mSocket.on("configureDevice", configureDevice);
+                }
                 getgasConfigData(sensor_type);
             }
         });
@@ -471,6 +639,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+
                 if (sensor_type == 1) {
                     unassignIntent("door_sensor");
                 } else if (sensor_type == 2) {
@@ -675,15 +844,40 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         dialog.setContentView(R.layout.dialog_add_camera);
         dialog.setCanceledOnTouchOutside(false);
 
-        final TextInputEditText camera_name = dialog.findViewById(R.id.txt_camera_name);
-        final TextInputEditText camera_ip = dialog.findViewById(R.id.txt_camera_ip);
-        final TextInputEditText video_path = dialog.findViewById(R.id.txt_video_path);
-        final TextInputEditText user_name = dialog.findViewById(R.id.txt_user_name);
-        final TextInputEditText password = dialog.findViewById(R.id.txt_password);
+        final AppCompatEditText camera_name = dialog.findViewById(R.id.txt_camera_name);
+        final AppCompatEditText camera_ip = dialog.findViewById(R.id.txt_camera_ip);
+        final AppCompatEditText video_path = dialog.findViewById(R.id.txt_video_path);
+        final AppCompatEditText user_name = dialog.findViewById(R.id.txt_user_name);
+        LinearLayout linear_day = dialog.findViewById(R.id.linear_day);
+        LinearLayout linear_night = dialog.findViewById(R.id.linear_night);
+       // final TextInputEditText password = dialog.findViewById(R.id.txt_password);
+        ImageView img_passcode = dialog.findViewById(R.id.img_show_passcode);
 
+        EditText password  = dialog.findViewById(R.id.txt_password);
         Button btnSave = dialog.findViewById(R.id.btn_save);
-        Button btn_cancel = dialog.findViewById(R.id.btn_cancel);
+     //   Button btn_cancel = dialog.findViewById(R.id.btn_cancel);
         ImageView iv_close = dialog.findViewById(R.id.iv_close);
+
+        linear_day.setVisibility(View.GONE);
+        linear_night.setVisibility(View.GONE);
+        img_passcode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(password.getTransformationMethod().equals(PasswordTransformationMethod.getInstance())){
+                    img_passcode.setImageResource(R.drawable.eyeclosed);
+                    //Show Password
+                    password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                }
+                else{
+                    img_passcode.setImageResource(R.drawable.eye);
+                    //Hide Password
+                    password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                }
+            }
+        });
+
+
+
 
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -693,13 +887,13 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             }
         });
 
-        btn_cancel.setOnClickListener(new View.OnClickListener() {
+        /*btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             }
-        });
+        });*/
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -767,7 +961,6 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             obj.put("video_path", video_path);
             obj.put("user_name", user_name);
             obj.put("password", password);
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -812,6 +1005,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             addRoom = false;
             ActivityHelper.dismissProgressDialog();
             ChatApplication.showToast(getApplicationContext(), "No New Device detected!");
+            mSocket.off("configureDevice", configureDevice);
         }
 
     };
@@ -829,6 +1023,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         onBackPressed();
         return true;
     }
+
 
     public void showProgressDialog(Context context, String message, boolean iscancle) {
         m_progressDialog = new ProgressDialog(this);
@@ -899,6 +1094,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             public void onClick(View v) {
                 dialog.dismiss();
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                mSocket.off("configureDevice", configureDevice);
             }
         });
 
@@ -907,6 +1103,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             public void onClick(View v) {
                 dialog.dismiss();
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                mSocket.off("configureDevice", configureDevice);
             }
         });
         btn_save.setOnClickListener(new View.OnClickListener() {
@@ -917,6 +1114,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                     ChatApplication.showToast(AddDeviceTypeListActivity.this, "Please enter name");
                 } else {
                     addCurtain(dialog, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list, module_type);
+                    mSocket.off("configureDevice", configureDevice);
                     dialog.dismiss();
 
                 }
@@ -1022,11 +1220,11 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                         }
 
                         ActivityHelper.dismissProgressDialog();
-
+                        String total_devices = object.optString("total_devices");
                         ChatApplication.logDisplay("typeSync is " + typeSync);
                         if (TextUtils.isEmpty(object.getString("message"))) {
                             if (typeSync == 0) {
-                                addRoomDialog = new AddRoomDialog(AddDeviceTypeListActivity.this, roomIdList, roomNameList, object.getString("module_id"), "" + 5, object.getString("module_type"), new ICallback() {
+                                addRoomDialog = new AddRoomDialog(AddDeviceTypeListActivity.this, roomIdList, roomNameList, object.getString("module_id"), total_devices, object.getString("module_type"), new ICallback() {
                                     @Override
                                     public void onSuccess(String str) {
                                         if (str.equalsIgnoreCase("yes")) {
@@ -1064,7 +1262,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
      */
     private void showConfigAlert(String alertMessage) {
 
-        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(AddDeviceTypeListActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(AddDeviceTypeListActivity.this);
         builder.setMessage(alertMessage);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
@@ -1075,4 +1273,49 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         builder.create().show();
     }
 
+    /**
+     * RecyclerView item decoration - give equal margin around grid item
+     */
+    public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
+
+        private int spanCount;
+        private int spacing;
+        private boolean includeEdge;
+
+        public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
+            this.spanCount = spanCount;
+            this.spacing = spacing;
+            this.includeEdge = includeEdge;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            int position = parent.getChildAdapterPosition(view); // item position
+            int column = position % spanCount; // item column
+
+            if (includeEdge) {
+                outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+                outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+
+                if (position < spanCount) { // top edge
+                    outRect.top = spacing;
+                }
+                outRect.bottom = spacing; // item bottom
+            } else {
+                outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
+                outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
+                if (position >= spanCount) {
+                    outRect.top = spacing; // item top
+                }
+            }
+        }
+
+        /**
+         * Converting dp to pixel
+         */
+        public int dpToPixel(int dp) {
+            Resources r = getResources();
+            return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
+        }
+    }
 }

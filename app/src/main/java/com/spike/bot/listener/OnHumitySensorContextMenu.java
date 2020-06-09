@@ -1,6 +1,6 @@
 package com.spike.bot.listener;
 
-import android.support.v7.widget.SwitchCompat;
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.spike.bot.model.RemoteDetailsRes;
 

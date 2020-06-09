@@ -3,98 +3,129 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/background_shadow"
     android:layout_marginTop="8dp"
     android:orientation="vertical"
     app:cardCornerRadius="0dp"
     app:cardElevation="0dp"
     app:elevation="0dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
 
 
-    <View
-        android:id="@+id/view_panel_line"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:visibility="gone"
-        android:background="@color/automation_dark" />
-
-        <LinearLayout
-            android:id="@+id/ll_panel_edit"
+        <androidx.cardview.widget.CardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/edt_txt_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:paddingBottom="10dp"
-            android:paddingEnd="10dp"
-            android:paddingStart="10dp">
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/automation_white"
+            android:orientation="vertical"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="10dp"
+            app:elevation="10dp">
 
-            <TextView
-                android:id="@+id/heading"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:padding="7dp"
-                android:text="panel"
-                android:textSize="19sp"
-                android:visibility="gone" />
+                android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/et_panel"
-                android:layout_width="wrap_content"
+
+            <View
+                android:id="@+id/view_panel_line"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:visibility="gone"
+                android:background="@color/automation_dark" />
+
+            <LinearLayout
+                android:id="@+id/ll_panel_edit"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:imeOptions="actionDone"
-                android:layout_marginRight="8dp"
-                android:layout_weight="1"
-                android:padding="10dp"
-                android:text=""
-                android:textSize="19sp" />
+                android:layout_marginTop="4dp"
+                android:paddingBottom="10dp"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp">
 
-            <ImageView
-                android:id="@+id/iv_room_panel_info"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_gravity="center_vertical"
-                android:adjustViewBounds="true"
-                android:padding="3dp"
-                android:src="@drawable/info_blue"
-                android:visibility="gone" />
+                <TextView
+                    android:id="@+id/heading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:padding="7dp"
+                    android:text="panel"
+                    android:textSize="19sp"
+                    android:visibility="gone" />
 
-            <ImageView
-                android:id="@+id/iv_room_panel_add"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_gravity="center_vertical"
-                android:adjustViewBounds="true"
-                android:padding="2dp"
-                android:src="@drawable/edit_blue"
-                android:visibility="visible" />
+                <EditText
+                    android:id="@+id/et_panel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:imeOptions="actionDone"
+                    android:textStyle="bold"
+                    android:layout_marginRight="8dp"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:text=""
+                    android:background="@null"
+                    android:textSize="19sp" />
+
+                <ImageView
+                    android:id="@+id/iv_room_panel_info"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_gravity="center_vertical"
+                    android:adjustViewBounds="true"
+                    android:padding="3dp"
+                    android:src="@drawable/info_blue"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/iv_room_panel_add"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_vertical"
+                    android:adjustViewBounds="true"
+                    android:padding="2dp"
+                    android:src="@drawable/edit_blue"
+                    android:visibility="visible" />
 
 
-            <ImageView
-                android:id="@+id/iv_room_panel_delete"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_gravity="center_vertical"
-                android:adjustViewBounds="true"
-                android:padding="1dp"
-                android:layout_marginLeft="5dp"
-                android:src="@drawable/delete_blue" />
-        </LinearLayout>
+                <ImageView
+                    android:id="@+id/iv_room_panel_delete"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_vertical"
+                    android:adjustViewBounds="true"
+                    android:padding="1dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/delete_blue" />
+            </LinearLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/list_edit_device"
-        android:nestedScrollingEnabled="false"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/gray">
+            </View>
+            </LinearLayout>
 
-    </android.support.v7.widget.RecyclerView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_edit_device"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:layout_marginTop="85dp">
+
+            </androidx.recyclerview.widget.RecyclerView>
 
 
-    </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+
 </LinearLayout>

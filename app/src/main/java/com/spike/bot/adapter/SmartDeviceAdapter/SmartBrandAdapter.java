@@ -3,14 +3,15 @@ package com.spike.bot.adapter.SmartDeviceAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
@@ -89,7 +90,7 @@ public class SmartBrandAdapter extends RecyclerView.Adapter<SmartBrandAdapter.Se
             super(view);
             this.view = view;
             txtBrandName = itemView.findViewById(R.id.txtBrandName);
-            imgBrand = itemView.findViewById(R.id.imgBrand);
+            imgBrand = itemView.findViewById(R.id.img_Brand);
         }
     }
 }

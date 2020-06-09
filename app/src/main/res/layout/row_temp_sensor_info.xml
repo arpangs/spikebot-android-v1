@@ -20,7 +20,7 @@
         android:layout_marginRight="12dp"
         android:orientation="horizontal">
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txt_min"
             android:text="30 \u2103"
             android:textSize="16sp"
@@ -29,7 +29,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txt_max"
             android:text="40 \u2103"
             android:textSize="16sp"
@@ -38,7 +38,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txt_days"
             android:layout_gravity="center"
             android:text="S M T W T F S"
@@ -55,24 +55,30 @@
             android:layout_gravity="center|left"
             android:orientation="vertical">
 
-            <android.support.v7.widget.SwitchCompat
+
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/switch_onoff"
-                android:layout_gravity="center|left"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:theme="@style/Color1SwitchStyle"/>
+                android:layout_gravity="center"
+                android:background="@drawable/selector_section_onoff"
+                android:button="@null"
+                android:thumb="@null"
+                app:track="@null"
+                app:theme="@style/Color1SwitchStyle" />
+
 
 
         </LinearLayout>
 
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/img_options"
             android:layout_gravity="center|right"
-            android:src="@drawable/more"
+            android:src="@drawable/edit_blue"
             android:layout_weight="0.5"
             android:layout_width="0dp"
-            android:layout_height="35dp" />
+            android:layout_height="24dp" />
 
     </LinearLayout>
 

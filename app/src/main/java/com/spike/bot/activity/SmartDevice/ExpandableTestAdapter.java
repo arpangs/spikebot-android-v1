@@ -1,12 +1,13 @@
 package com.spike.bot.activity.SmartDevice;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.R;
 import com.spike.bot.model.CameraSearchModel;
@@ -69,7 +70,7 @@ public class ExpandableTestAdapter extends ExpandableRecyclerView.Adapter<Expand
     @Override
     public void onBindGroupViewHolder(ExpandableRecyclerView.SimpleGroupViewHolder holder, int group) {
         super.onBindGroupViewHolder(holder, group);
-        String styledText = "<u><font color='#0098C0'>" + arrayList.get(group).getCamera_name() + "</font></u>";
+        String styledText = "<font color='#0279e1'>" + arrayList.get(group).getCamera_name() + "</font>";
         holder.txtUserName.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
     }
 

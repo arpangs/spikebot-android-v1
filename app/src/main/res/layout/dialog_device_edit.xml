@@ -22,7 +22,7 @@
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:text="Edit Switch"
-            android:textColor="@color/automation_blue"
+            android:textColor="@color/signupblack"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -32,14 +32,14 @@
             android:layout_height="35dp"
             android:backgroundTint="@color/sensor_button"
             android:padding="3dp"
-            app:srcCompat="@drawable/close_blue2" />
+            app:srcCompat="@drawable/cross" />
 
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/sky_blue" />
+        android:background="@color/automation_dark" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -61,6 +61,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
             android:gravity="bottom"
             android:orientation="horizontal"
@@ -70,16 +71,44 @@
             <EditText
                 android:id="@+id/et_switch_name"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:ems="10"
+                android:text=""
                 android:hint="Switch Name"
                 android:imeOptions="actionDone"
-                android:inputType="textPersonName"
-                android:maxLength="8" />
+                android:inputType="textPersonName" />
 
-            <LinearLayout
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/drawable_gray_schedule">
+
+                <Spinner
+                    android:id="@+id/sp_device_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:gravity="center"
+                    android:layout_marginLeft="5dp" />
+
+                <ImageView
+                    android:id="@+id/spinner_arrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_arrow_drop_down_blue" />
+
+
+            </RelativeLayout>
+
+            <!--<LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginRight="3dp"
@@ -111,7 +140,7 @@
                     android:layout_weight="0.2"
                     android:src="@drawable/icn_arrow_down_spinner2" />
 
-            </LinearLayout>
+            </LinearLayout>-->
 
         </LinearLayout>
 
@@ -171,11 +200,11 @@
             <Button
                 android:id="@+id/btn_save"
                 android:layout_width="0dp"
-                android:layout_height="35dp"
+                android:layout_height="40dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginRight="10dp"
                 android:layout_weight="0.30"
-                android:background="@drawable/button_radius"
+                android:background="@drawable/drawable_blue_schedule"
                 android:clickable="true"
                 android:text="Save"
                 android:textColor="@color/automation_white"

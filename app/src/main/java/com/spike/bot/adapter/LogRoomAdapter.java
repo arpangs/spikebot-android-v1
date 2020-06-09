@@ -1,7 +1,6 @@
 package com.spike.bot.adapter;
 
 import android.app.Activity;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -9,13 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.kp.core.DateHelper;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.spike.bot.R;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.DeviceLog;
 
-import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 
 /**

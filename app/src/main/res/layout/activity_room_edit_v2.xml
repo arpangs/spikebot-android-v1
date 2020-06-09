@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator_view"
@@ -10,138 +10,163 @@
     android:focusableInTouchMode="true"
     tools:context="com.spike.bot.activity.RoomEditActivity_v2">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
             android:background="@color/sky_blue"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <RelativeLayout
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/new_screen_resolution"
+        android:background="@color/automation_white"
         tools:context="com.spike.bot.activity.RoomEditActivity_v2"
         tools:showIn="@layout/activity_room_edit">
 
-        <android.support.v7.widget.CardView
-            xmlns:android="http://schemas.android.com/apk/res/android"
+        <!--<LinearLayout
+            android:id="@+id/edt_txt_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_shadow"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="2dp"
+            android:elevation="2dp"
+            android:padding="5dp">
+
+            <EditText
+                android:id="@+id/et_toolbar_title"
+                android:padding="12dp"
+                android:layout_margin="10dp"
+                android:singleLine="true"
+                android:maxLength="25"
+                android:background="@drawable/edt_border"
+                android:imeOptions="actionDone"
+                android:hint="Room Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"/>
+        </LinearLayout>-->
+
+
+        <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/edt_txt_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:layout_marginBottom="2dp"
-            android:background="@color/automation_white"
             android:orientation="vertical"
-            app:cardCornerRadius="2dp"
-            app:cardElevation="5dp"
-            app:elevation="5dp">
+            android:visibility="visible"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="10dp"
+            app:elevation="10dp">
 
-                <EditText
-                    android:id="@+id/et_toolbar_title"
-                    android:padding="12dp"
-                    android:layout_marginTop="@dimen/_12sdp"
-                    android:layout_marginBottom="@dimen/_12sdp"
-                    android:layout_marginLeft="@dimen/_12sdp"
-                    android:layout_marginRight="@dimen/_12sdp"
-                    android:singleLine="true"
-                    android:maxLength="25"
-                    android:background="@drawable/edt_border"
-                    android:imeOptions="actionDone"
-                    android:hint="Room Name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPassword"/>
+            <EditText
+                android:id="@+id/et_toolbar_title"
+                android:padding="12dp"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:layout_marginBottom="@dimen/_12sdp"
+                android:layout_marginLeft="@dimen/_12sdp"
+                android:layout_marginRight="@dimen/_12sdp"
+                android:singleLine="true"
+                android:maxLength="25"
+                android:background="@drawable/edt_border"
+                android:imeOptions="actionDone"
+                android:hint="Room Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-            <RelativeLayout
-                android:id="@+id/relativeRoom"
-                android:layout_below="@+id/edt_txt_layout"
-                android:layout_above="@+id/vv_delete_button"
+        <RelativeLayout
+            android:id="@+id/relativeRoom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_below="@+id/edt_txt_layout"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_header"
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:layout_gravity="right"
+                android:visibility="invisible"
+                android:gravity="right" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_room_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="2dp"
+                android:scrollbarStyle="outsideOverlay"
+                android:scrollbars="vertical" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:visibility="gone"
+                android:layout_below="@+id/list_room_edit"
+                android:orientation="vertical"></LinearLayout>
+
+
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/txt_empty_room"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="120dp"
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tv_header"
-                    android:layout_width="wrap_content"
-                    android:layout_height="1dp"
-                    android:layout_gravity="right"
-                    android:visibility="invisible"
-                    android:gravity="right" />
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/list_room_edit"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginTop="2dp"
-                    android:scrollbarStyle="outsideOverlay"
-                    android:scrollbars="vertical" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:layout_below="@+id/list_room_edit"
-                    android:orientation="vertical">
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:visibility="gone"
-                    android:id="@+id/txt_empty_room"
+                    android:id="@+id/txt_empty_text"
+                    android:visibility="visible"
                     android:layout_gravity="center"
                     android:gravity="center"
+                    android:textSize="24dp"
+                    android:textColor="#808080"
+                    android:text="Add Panel"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="120dp"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content" />
 
-                    <TextView
-                        android:id="@+id/txt_empty_text"
-                        android:visibility="visible"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:textSize="24dp"
-                        android:textColor="#808080"
-                        android:text="Add Panel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                <ImageView
+                    android:id="@+id/empty_add_image"
+                    android:src="@drawable/icn_empty_plus"
+                    android:layout_marginTop="16dp"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
-                    <ImageView
-                        android:id="@+id/empty_add_image"
-                        android:src="@drawable/icn_empty_plus"
-                        android:layout_marginTop="16dp"
-                        android:layout_gravity="center"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+            </LinearLayout>
 
-                </LinearLayout>
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp" />
-
-            </RelativeLayout>
+            <!--   <Space
+                   android:layout_width="match_parent"
+                   android:layout_height="40dp" />
+-->
+        </RelativeLayout>
 
 
         <LinearLayout
@@ -149,8 +174,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_alignParentBottom="true"
-            android:background="@color/automation_dark_gray">
+            android:visibility="gone"
+            android:layout_alignParentBottom="true">
 
             <Button
                 android:id="@+id/btn_edit_room_delete"
@@ -166,4 +191,4 @@
         </LinearLayout>
     </RelativeLayout>
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

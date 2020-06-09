@@ -18,6 +18,8 @@ public class CameraVO implements Serializable,Cloneable {
     private String camera_icon;
     private int is_active;
     private String camera_vpn_port;
+    private String confidence_score_day;
+    private String confidence_score_night;
 
     public String getUser_name() {
         return user_name;
@@ -236,6 +238,22 @@ public class CameraVO implements Serializable,Cloneable {
 
     public void setIsActive(int is_active) {
         this.is_active = is_active;
+    }
+
+    public String getConfidence_score_day() {
+        return confidence_score_day;
+    }
+
+    public void setConfidence_score_day(String confidence_score_day) {
+        this.confidence_score_day = confidence_score_day;
+    }
+
+    public String getConfidence_score_night() {
+        return confidence_score_night;
+    }
+
+    public void setConfidence_score_night(String confidence_score_night) {
+        this.confidence_score_night = confidence_score_night;
     }
 
     @Override public CameraVO clone() {

@@ -3,24 +3,20 @@ package com.spike.bot.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.view.ContextThemeWrapper;
-import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.spike.bot.R;
-import com.spike.bot.activity.SmartCam.AddJetSonActivity;
 import com.spike.bot.activity.SmartCam.SmartCameraActivity;
-import com.spike.bot.core.Common;
-import com.spike.bot.listener.SelectCamera;
-import com.spike.bot.model.CameraVO;
 import com.spike.bot.model.JetSonModel;
 
 import java.util.ArrayList;
@@ -50,7 +46,7 @@ public class JetSonAdapter extends RecyclerView.Adapter<JetSonAdapter.SensorView
     @Override
     public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
-        holder.imgView.setImageResource(R.drawable.jetson);
+        holder.imgView.setImageResource(R.drawable.smart_camera);
         holder.txtNameJetson.setText(arrayListLog.get(position).getJetsonName());
 
         holder.view.setId(position);
@@ -67,7 +63,9 @@ public class JetSonAdapter extends RecyclerView.Adapter<JetSonAdapter.SensorView
         holder.imgMoreJetjson.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PopupMenu popup = new PopupMenu(mContext, v);
+                jetsonAction.action(holder.imgMoreJetjson.getId(),"edit");
+
+               /* PopupMenu popup = new PopupMenu(mContext, v);
                 @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(mContext, R.style.PopupMenu);
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
                     popup = new PopupMenu(wrapper, v, Gravity.RIGHT);
@@ -93,7 +91,7 @@ public class JetSonAdapter extends RecyclerView.Adapter<JetSonAdapter.SensorView
                     }
                 });
 
-                popup.show();
+                popup.show();*/
             }
         });
 

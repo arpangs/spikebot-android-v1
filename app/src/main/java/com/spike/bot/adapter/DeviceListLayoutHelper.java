@@ -1,8 +1,9 @@
 package com.spike.bot.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.customview.recycle.ItemClickListener;
 import com.spike.bot.customview.recycle.SectionStateChangeListener;

@@ -2,9 +2,6 @@ package com.spike.bot.activity.SmartCam;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.v7.view.ContextThemeWrapper;
-import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -13,10 +10,13 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.spike.bot.R;
 import com.spike.bot.adapter.JetSonAdapter;
 import com.spike.bot.model.CameraVO;
-import com.spike.bot.model.JetSonModel;
 
 import java.util.ArrayList;
 
@@ -48,16 +48,18 @@ public class SmartCamAdapter extends RecyclerView.Adapter<SmartCamAdapter.Sensor
         holder.txtNameJetson.setText(arrayListLog.get(position).getCamera_name());
 
         if(arrayListLog.get(position).getIsActive()==0){
-            holder.imgView.setImageResource(R.drawable.camera_off_inactive);
+            holder.imgView.setImageResource(R.drawable.smart_camera_inactive);
         }else {
-            holder.imgView.setImageResource(R.drawable.camera_on);
+            holder.imgView.setImageResource(R.drawable.smart_camera);
         }
 
         holder.imgMoreJetjson.setId(position);
         holder.imgMoreJetjson.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PopupMenu popup = new PopupMenu(mContext, v);
+
+                jetsonAction.action(holder.imgMoreJetjson.getId(),"edit");
+                /*PopupMenu popup = new PopupMenu(mContext, v);
                 @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(mContext, R.style.PopupMenu);
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
                     popup = new PopupMenu(wrapper, v, Gravity.RIGHT);
@@ -83,7 +85,7 @@ public class SmartCamAdapter extends RecyclerView.Adapter<SmartCamAdapter.Sensor
                     }
                 });
 
-                popup.show();
+                popup.show();*/
             }
         });
 

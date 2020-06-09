@@ -129,7 +129,7 @@
                     android:layout_margin="5dp"
                     android:adjustViewBounds="true"
                     android:gravity="center_horizontal"
-                    android:src="@drawable/bulb_off" />
+                    android:src="@drawable/offcfl" />
             </LinearLayout>
 
 

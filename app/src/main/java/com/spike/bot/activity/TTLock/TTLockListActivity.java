@@ -2,17 +2,18 @@ package com.spike.bot.activity.TTLock;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
@@ -89,13 +90,15 @@ public class TTLockListActivity extends AppCompatActivity {
         menu.findItem(R.id.action_save).setTitle("Add Bridge").setVisible(false);
 
         menu.findItem(R.id.action_log).setVisible(false);
+        menu.findItem(R.id.action_add).setVisible(false);
+        menu.findItem(R.id.action_add_text).setVisible(true);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_add) {
+        if (id == R.id.action_add_text) {
             Intent intent = new Intent(this, AddDeviceConfirmActivity.class);
             intent.putExtra("isViewType", "ttLock");
             intent.putExtra("lockObjs", lockObjs);

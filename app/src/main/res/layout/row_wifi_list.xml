@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -21,7 +21,8 @@
                 android:id="@+id/txtWifiName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/txtPanal"
+                android:textColor="@color/signupblack"
+                android:text="home's wifi"
                 android:textSize="@dimen/_14sdp"
                 android:singleLine="true"
                 android:gravity="center|left"/>
@@ -33,9 +34,9 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
-            android:background="@color/automation_black"></View>
+            android:background="@color/solid_blue"></View>
 
 
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

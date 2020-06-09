@@ -4,102 +4,169 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/automation_gray_2"
     android:orientation="vertical"
+    android:background="@color/automation_white"
     tools:context="com.spike.bot.activity.AddMoodActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
             android:background="?android:attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
+        android:id="@+id/linear_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_horizontal_margin"
-        android:layout_marginBottom="@dimen/activity_horizontal_margin"
-        android:orientation="horizontal">
+        android:layout_below="@id/appbar"
+        android:orientation="vertical">
 
-
-        <AutoCompleteTextView
-            android:id="@+id/et_switch_name"
-            android:visibility="gone"
-            android:layout_marginTop="10dp"
-            android:imeOptions="actionDone"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.60"
-            android:ems="10"
-            android:inputType="textCapSentences|textAutoCorrect|textMultiLine|textShortMessage"
-            android:text=""
-            android:hint="Mood Name"
-            android:completionThreshold="1"
-            android:layout_gravity="center_horizontal" />
-
-        <!--Spinner START-->
-
-        <RelativeLayout
-            android:id="@+id/rel_spinner"
-            android:visibility="visible"
+        <TextView
             android:layout_width="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/custome_spinner"
+            android:layout_marginLeft="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:text="Select a mood"
+            android:textColor="@color/signupblack"
+            android:textStyle="bold">
+
+        </TextView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:orientation="horizontal">
 
-            <Spinner
-                android:id="@+id/spinner_mood_icon"
+
+            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/et_switch_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:dropDownVerticalOffset="38dp"
-                android:background="@android:color/transparent"
-                android:gravity="center"
-                android:layout_marginLeft="5dp"
-                android:spinnerMode="dialog" />
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:completionThreshold="1"
+                android:typeface="serif"
+                android:drawableRight="@drawable/icn_arrow_down_spinner2"
+                android:ems="10"
+                android:hint="Mood Name"
+                android:imeOptions="actionDone"
+                android:inputType="textCapSentences|textAutoCorrect|textMultiLine|textShortMessage"
+                android:text=""
+                android:visibility="visible" />
 
-            <ImageView
-                android:id="@+id/spinner_mood_icon_img"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginLeft="8dp"
-                android:layout_alignParentRight="true"
-                android:layout_toRightOf="@+id/spinner_room_list"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center"
-                android:src="@drawable/icn_arrow_down_spinner2" />
+            <!--Spinner START-->
 
-        </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/rel_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:background="@drawable/custome_spinner"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+
+                <Spinner
+                    android:id="@+id/spinner_mood_icon"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="5dp"
+                    android:background="@android:color/transparent"
+                    android:dropDownVerticalOffset="38dp"
+                    android:gravity="center"
+                    android:spinnerMode="dialog" />
+
+                <ImageView
+                    android:id="@+id/spinner_mood_icon_img"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="8dp"
+                    android:layout_toRightOf="@+id/spinner_room_list"
+                    android:src="@drawable/icn_arrow_down_spinner2" />
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/redminus"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:textStyle="bold"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:text="CHOOSE YOUR DEVICES FROM THIS MOOD"/>
 
     </LinearLayout>
 
-
-
-    <!--<include layout="@layout/content_device_list" />-->
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/messages"
+   <!-- <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/camera_list"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_horizontal_margin"
-        android:layout_marginBottom="@dimen/activity_horizontal_margin"
-        android:background="@color/automation_white"
-        android:padding="0dp"
-        android:scrollbarStyle="outsideOverlay"
-        android:scrollbars="none" />
+        android:layout_height="match_parent"
+        android:layout_below="@+id/linear_header">
+-->
+      <!--  <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">-->
+
+
+
+                <!--<include layout="@layout/content_device_list" />-->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/messages"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/activity_horizontal_margin"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:layout_marginRight="@dimen/activity_horizontal_margin"
+                    android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                    android:background="@color/automation_white"
+                    android:padding="0dp"
+                    android:scrollbarStyle="outsideOverlay"
+                    android:scrollbars="none" />
+
+            <RelativeLayout
+                android:id="@+id/relative_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginBottom="@dimen/activity_horizontal_margin">
+
+                <Button
+                    android:id="@+id/btn_mood_save"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:background="@drawable/background_button_login"
+                    android:text="SAVE"
+                    android:textColor="@color/automation_white"
+                    android:textSize="15sp" />
+            </RelativeLayout>
+
+        <!--</LinearLayout>-->
+
+
+ <!--   </androidx.core.widget.NestedScrollView>-->
 
 </LinearLayout>

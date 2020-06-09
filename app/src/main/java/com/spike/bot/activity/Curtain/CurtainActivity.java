@@ -3,31 +3,34 @@ package com.spike.bot.activity.Curtain;
 import android.app.Dialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.ir.blaster.IRBlasterAddActivity;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
-import com.spike.bot.model.DoorSensorResModel;
+import com.spike.bot.model.IRBlasterAddRes;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,7 +49,7 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
     Toolbar toolbar;
     ImageView imgClose, imgOpen, imgPause;
    // Button btn_delete;
-    String curtain_id = "", module_id = "", curtain_name = "", curtain_status = "";
+    String curtain_id = "", module_id = "", curtain_name = "", curtain_status = "", panel_id = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,6 +60,7 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
         curtain_id = getIntent().getStringExtra("curtain_id");
         curtain_name = getIntent().getStringExtra("curtain_name");
         curtain_status = getIntent().getStringExtra("curtain_status");
+        panel_id = getIntent().getStringExtra("panel_id");
         setUIId();
     }
 
@@ -171,9 +175,9 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
                             ChatApplication.logDisplay("curtain socket is " + object);
                             String device_id = object.optString("device_id");
                             curtain_status = object.optString("device_status");
-                            setView();
-
-
+                            if(device_id.equalsIgnoreCase(curtain_id)) {
+                                setView();
+                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -190,6 +194,38 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
         imgOpen.setImageResource(open ? R.drawable.open_enabled : R.drawable.open_disabled);
         imgClose.setImageResource(close ? R.drawable.close_enabled : R.drawable.close_disabled);
         imgPause.setImageResource(pause ? R.drawable.puse_enabled : R.drawable.puse_disabled);
+    }
+
+    public void showBottomSheetDialog() {
+        View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
+
+        TextView txt_bottomsheet_title = view.findViewById(R.id.txt_bottomsheet_title);
+        LinearLayout linear_bottom_edit = view.findViewById(R.id.linear_bottom_edit);
+        LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
+
+        TextView txt_edit = view.findViewById(R.id.txt_edit);
+
+        BottomSheetDialog dialog = new BottomSheetDialog(CurtainActivity.this,R.style.AppBottomSheetDialogTheme);
+        dialog.setContentView(view);
+        dialog.show();
+
+
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + curtain_name + " " +"?");
+        linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                dialogEditName();
+            }
+        });
+
+        linear_bottom_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                callDialog();
+            }
+        });
     }
 
     /*dialog for add room*/
@@ -232,7 +268,7 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
             public void onClick(View v) {
                 dialog.dismiss();
                // ChatApplication.keyBoardHideForce(CurtainActivity.this);
-                callDialog();
+
             }
         });
 
@@ -312,6 +348,7 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
         try {
             //pass curtain_id and curtain_name
             object.put("device_id", curtain_id);
+            object.put("panel_id", panel_id);
             object.put("device_status", Integer.parseInt(curtain_status));
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);

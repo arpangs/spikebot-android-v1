@@ -5,14 +5,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
-import android.support.v7.widget.Toolbar;
+
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -22,9 +15,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
 import com.kp.core.DateHelper;
@@ -33,6 +37,7 @@ import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.Sensor.DoorSensorInfoActivity;
 import com.spike.bot.adapter.AddCameraAdapter;
 import com.spike.bot.adapter.AlertAdapter;
 import com.spike.bot.adapter.filter.CameraNotificationAdapter;
@@ -48,8 +53,6 @@ import com.spike.bot.listener.UpdateCameraAlert;
 import com.spike.bot.model.CameraAlertList;
 import com.spike.bot.model.CameraPushLog;
 import com.spike.bot.model.CameraVO;
-import com.spike.bot.model.CameraViewModel;
-import com.spike.bot.model.NotificationList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,13 +80,14 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
     ArrayList<CameraVO> getCameraList = new ArrayList<>();
     ArrayList<CameraAlertList> arrayListLog = new ArrayList<>();
     ArrayList<CameraPushLog> arrayListAlert = new ArrayList<>();
+    ArrayList<CameraVO> cameraVOArrayList = new ArrayList<>();
 
     private String homecontroller_id = "", jetson_id = "";
     public static boolean jetsoncameranotification = false;
 
     public int countCamera = 0;
     Dialog dialog;
-
+    View view_starttime,view_header;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,7 +105,8 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
     }
 
     private void setUi() {
-        toolbar.setTitle("Camera Alerts");
+        toolbar.setTitle("Camera Notifications");
+        cameraVOArrayList = (ArrayList<CameraVO>) getIntent().getExtras().getSerializable("cameraList");
         homecontroller_id = getIntent().getStringExtra("homecontrollerId");
         jetson_id = getIntent().getStringExtra("jetson_device_id");
         jetsoncameranotification = getIntent().getExtras().getBoolean("jetsoncameraNotification");
@@ -111,6 +116,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         txt_empty_notification = (TextView) findViewById(R.id.txt_empty_notification);
         txtEmptyAlert = (TextView) findViewById(R.id.txtEmptyAlert);
         view_rel_badge = (ImageView) findViewById(R.id.view_rel_badge);
+        view_header = findViewById(R.id.view_header);
 
         view_rel_badge.setOnClickListener(this);
     }
@@ -491,7 +497,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             url = ChatApplication.url + Constants.addCameraNotification;
         }
 
-        ChatApplication.logDisplay("Add camera alert " + " " + url +  " " + deviceObj.toString());
+        ChatApplication.logDisplay("Add camera alert " + " " + url + " " + deviceObj.toString());
         new GetJsonTask(CameraNotificationActivity.this, url, "POST", deviceObj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -531,11 +537,11 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         ActivityHelper.showProgressDialog(CameraNotificationActivity.this, "Please wait... ", false);
         JSONObject jsonObject = new JSONObject();
         try {
-            if(jetsoncameranotification){
-                jsonObject.put("jetson_id",jetson_id);
+            if (jetsoncameranotification) {
+                jsonObject.put("jetson_id", jetson_id);
                 jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
                 jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE)));
-            } else{
+            } else {
                 jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
                 jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE)));
             }
@@ -559,6 +565,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
                         if (object == null) {
                             recyclerView.setVisibility(View.GONE);
+                            view_starttime.setVisibility(View.GONE);
                             txtEmptyAlert.setVisibility(View.VISIBLE);
                             recyclerAlert.setVisibility(View.GONE);
                             txt_empty_notification.setVisibility(View.VISIBLE);
@@ -603,6 +610,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                             setAlert();
                         } else {
                             recyclerAlert.setVisibility(View.GONE);
+                            view_header.setVisibility(View.GONE);
                             txt_empty_notification.setVisibility(View.VISIBLE);
                         }
 
@@ -670,7 +678,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                     String message = result.getString("message");
                     if (code == 200) {
 
-                     //   JSONObject object = result.optJSONObject("data");
+                        //   JSONObject object = result.optJSONObject("data");
 
                         if (object == null) {
                             recyclerView.setVisibility(View.GONE);
@@ -734,7 +742,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(CameraNotificationActivity.this);
         recyclerAlert.setLayoutManager(linearLayoutManager);
 
-        alertAdapter = new AlertAdapter(CameraNotificationActivity.this, arrayListAlert);
+        alertAdapter = new AlertAdapter(CameraNotificationActivity.this, arrayListAlert, homecontroller_id);
         recyclerAlert.setAdapter(alertAdapter);
         alertAdapter.notifyDataSetChanged();
     }
@@ -766,28 +774,56 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
     @Override
     public void updatecameraALert(final String strFlag, final CameraAlertList cameraAlertList, final SwitchCompat switchAlert, final int position) {
-        if (strFlag.equalsIgnoreCase("delete")) {
-            ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
-                @Override
-                public void onConfirmDialogYesClick() {
-                    deleteCamera(cameraAlertList, strFlag, switchAlert, position);
-                }
-
-                @Override
-                public void onConfirmDialogNoClick() {
-                }
-
-            });
-            newFragment.show(CameraNotificationActivity.this.getFragmentManager(), "dialog");
-        } else if (strFlag.equalsIgnoreCase("switch")) {
+         if (strFlag.equalsIgnoreCase("switch")) {
             showAlertDialog(cameraAlertList, strFlag, switchAlert, position);
-        } else {
+        } else if(strFlag.equalsIgnoreCase("update")){
             if (cameraAlertList.getCameraIds() != null) {
-                addCameraNew(strFlag, cameraAlertList);
+                showBottomSheetDialog(strFlag, cameraAlertList,switchAlert, position);
             }
 
         }
 
+    }
+
+    public void showBottomSheetDialog(final String strFlag, final CameraAlertList cameraAlertList, final SwitchCompat switchAlert, final int position) {
+        View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
+
+        TextView txt_bottomsheet_title = view.findViewById(R.id.txt_bottomsheet_title);
+        LinearLayout linear_bottom_edit = view.findViewById(R.id.linear_bottom_edit);
+        LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
+
+
+        BottomSheetDialog dialog = new BottomSheetDialog(CameraNotificationActivity.this,R.style.AppBottomSheetDialogTheme);
+        dialog.setContentView(view);
+        dialog.show();
+
+        txt_bottomsheet_title.setText("What would you like to do in camera notification?");
+        linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                addCameraNew(strFlag, cameraAlertList);
+            }
+        });
+
+        linear_bottom_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
+                    @Override
+                    public void onConfirmDialogYesClick() {
+                        deleteCamera(cameraAlertList, strFlag, switchAlert, position);
+                    }
+
+                    @Override
+                    public void onConfirmDialogNoClick() {
+                    }
+
+                });
+                newFragment.show(CameraNotificationActivity.this.getFragmentManager(), "dialog");
+            }
+        });
     }
 
     /*delete camera */
@@ -801,7 +837,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         * */
         JSONObject deviceObj = new JSONObject();
         try {
-            if(jetsoncameranotification){
+            if (jetsoncameranotification) {
                 deviceObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
                 deviceObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
                 deviceObj.put("jetson_id", jetson_id);
@@ -815,7 +851,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                     }
 
                 }
-            } else{
+            } else {
                 deviceObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
                 deviceObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
                 deviceObj.put("camera_notification_id", cameraAlertList.getCameraNotificationId());
@@ -894,7 +930,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
         builder1.setTitle("Notification Alert");
-        builder1.setMessage("Do you want " + (cameraAlertList.getIsActive().toString().equalsIgnoreCase("1") ? "disable " : "enable") + " notificaiton ?");
+        builder1.setMessage("Do you want to " + (cameraAlertList.getIsActive().toString().equalsIgnoreCase("1") ? "disable " : "enable") + " notificaiton ?");
         builder1.setCancelable(true);
 
         builder1.setPositiveButton(
@@ -926,18 +962,32 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
     /*clear unread count*/
     private void callupdateUnReadCameraLogs(final boolean b) {
         if (arrayListAlert.size() > 0) {
-
+            if (b) {
+                Intent intent = new Intent(CameraNotificationActivity.this, CameraDeviceLogActivity.class);
+                if (jetsoncameranotification) {
+                    intent.putExtra("getCameraList", cameraVOArrayList);
+                    intent.putExtra("jetson_device_id", jetson_id);
+                    intent.putExtra("jetsonnotification", true);
+                    intent.putExtra("homecontrollerId", homecontroller_id);
+                } else {
+                    intent.putExtra("getCameraList", cameraVOArrayList);
+                    intent.putExtra("jetson_device_id", jetson_id);
+                    intent.putExtra("homecontrollerId", homecontroller_id);
+                }
+                startActivity(intent);
+            } else {
+                CameraNotificationActivity.this.finish();
+            }
         } else {
             if (b) {
                 Intent intent = new Intent(CameraNotificationActivity.this, CameraDeviceLogActivity.class);
-                if(jetsoncameranotification) {
-                    intent.putExtra("getCameraList", getCameraList);
+                if (jetsoncameranotification) {
+                    intent.putExtra("getCameraList", cameraVOArrayList);
                     intent.putExtra("jetson_device_id", jetson_id);
-                    intent.putExtra("jetsonnotification",true);
+                    intent.putExtra("jetsonnotification", true);
                     intent.putExtra("homecontrollerId", homecontroller_id);
-                } else
-                {
-                    intent.putExtra("getCameraList", getCameraList);
+                } else {
+                    intent.putExtra("getCameraList", cameraVOArrayList);
                     intent.putExtra("jetson_device_id", jetson_id);
                     intent.putExtra("homecontrollerId", homecontroller_id);
                 }
@@ -976,14 +1026,13 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                     ChatApplication.logDisplay("url is " + result);
                     if (b) {
                         Intent intent = new Intent(CameraNotificationActivity.this, CameraDeviceLogActivity.class);
-                        if(jetsoncameranotification) {
-                            intent.putExtra("getCameraList", getCameraList);
+                        if (jetsoncameranotification) {
+                            intent.putExtra("cameraList", cameraVOArrayList);
                             intent.putExtra("jetson_device_id", jetson_id);
-                            intent.putExtra("jetsonnotification",true);
+                            intent.putExtra("jetsonnotification", true);
                             intent.putExtra("homecontrollerId", homecontroller_id);
-                        } else
-                        {
-                            intent.putExtra("getCameraList", getCameraList);
+                        } else {
+                            intent.putExtra("getCameraList", cameraVOArrayList);
                             intent.putExtra("jetson_device_id", jetson_id);
                             intent.putExtra("homecontrollerId", homecontroller_id);
                         }

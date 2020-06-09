@@ -17,7 +17,10 @@
             <stroke
                 android:width="2dp"
                 android:color="@color/automation_yellow" />
-            <corners android:radius="0dp" />
+            <corners android:radius="4dp" />
+            <corners
+                android:topLeftRadius="0dp"
+                android:bottomLeftRadius="0dp"/>
         </shape>
 
     </item>

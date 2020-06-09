@@ -17,7 +17,7 @@ public class DoorSensorResModel {
     @SerializedName("message")
     private String mMessage;
     @SerializedName("data")
-    private DATA mDate;
+    private DATA mData;
 
     public static  class DATA{
 
@@ -410,8 +410,8 @@ public class DoorSensorResModel {
         }
     }
 
-    public DATA getDate() {
-        return mDate;
+    public DATA getData() {
+        return mData;
     }
 
 

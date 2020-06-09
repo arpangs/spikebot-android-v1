@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/ir_rrot_click"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/view_border_all"
+    android:layout_width="match_parent"
+    android:layout_height="132dp">
+
+    <ImageView
+        android:id="@+id/ir_add_remote_img"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:src="@drawable/beaconsearch"
+        android:layout_width="wrap_content"
+        android:layout_height="80dp" />
+
+    <TextView
+        android:id="@+id/ir_add_remote_name"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/ir_add_remote_img"
+        android:textColor="#111"
+        android:paddingLeft="@dimen/_3sdp"
+        android:paddingRight="@dimen/_3sdp"
+        android:singleLine="true"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>

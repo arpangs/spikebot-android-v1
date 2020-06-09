@@ -20,25 +20,29 @@ public class BluetoothLeScanner {
     }
 
     public void scanLeDevice(final int duration, final boolean enable) {
-        if (enable) {
-            if (mScanning) {
-                return;
+        try {
+            if (enable) {
+                if (mScanning) {
+                    return;
+                }
+                // Stops scanning after a pre-defined scan period.
+                if (duration > 0) {
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mScanning = false;
+                            mBluetoothUtils.getBluetoothAdapter().stopLeScan(mLeScanCallback);
+                        }
+                    }, duration);
+                }
+                mScanning = true;
+                mBluetoothUtils.getBluetoothAdapter().startLeScan(mLeScanCallback);
+            } else {
+                mScanning = false;
+                mBluetoothUtils.getBluetoothAdapter().stopLeScan(mLeScanCallback);
             }
-            // Stops scanning after a pre-defined scan period.
-            if (duration > 0) {
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mScanning = false;
-                        mBluetoothUtils.getBluetoothAdapter().stopLeScan(mLeScanCallback);
-                    }
-                }, duration);
-            }
-            mScanning = true;
-            mBluetoothUtils.getBluetoothAdapter().startLeScan(mLeScanCallback);
-        } else {
-            mScanning = false;
-            mBluetoothUtils.getBluetoothAdapter().stopLeScan(mLeScanCallback);
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 }

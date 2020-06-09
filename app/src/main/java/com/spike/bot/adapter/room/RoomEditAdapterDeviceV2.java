@@ -1,13 +1,14 @@
 package com.spike.bot.adapter.room;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.R;
 import com.spike.bot.core.Common;
@@ -69,7 +70,11 @@ public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapte
         }
 
         if (item.getDevice_icon().equalsIgnoreCase(context.getResources().getString(R.string.heavyload))) {
-            itemIcon = R.drawable.off;
+            itemIcon = R.drawable.high_wolt_off;
+        }
+
+        if (item.getDevice_icon().equalsIgnoreCase("lock")) {
+            itemIcon = R.drawable.lock_only;
         }
 
         holder.itemTextView.setText(itemDeviceName);

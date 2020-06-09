@@ -27,7 +27,7 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text="Note"
-                android:textColor="@color/automation_blue"
+                android:textColor="@color/signupblack"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -37,21 +37,21 @@
                 android:layout_height="35dp"
                 android:padding="3dp"
                 android:backgroundTint="@color/sensor_button"
-                app:srcCompat="@drawable/close_blue2" />
+                app:srcCompat="@drawable/cross" />
 
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/sky_blue" />
+            android:background="@color/automation_dark" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtMessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -75,19 +75,21 @@
         <LinearLayout
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:layout_width="match_parent"
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
 
             <Button
                 android:id="@+id/btn_save"
-                android:gravity="center"
                 style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
-                android:layout_gravity="right"
                 android:text="OK"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/automation_white"
+                android:background="@drawable/drawable_blue_schedule"
+                android:layout_width="130dp"
                 android:layout_height="wrap_content" />
 
         </LinearLayout>

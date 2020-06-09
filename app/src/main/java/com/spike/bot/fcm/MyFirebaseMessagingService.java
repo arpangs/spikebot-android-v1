@@ -9,17 +9,15 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 
+import androidx.core.app.NotificationCompat;
+
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Main2Activity;
-import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import me.leolin.shortcutbadger.ShortcutBadger;
 
@@ -60,42 +58,45 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             String message = remoteMessage.getData().get("default");
 //            badge = remoteMessage.getData().get("badge");
-            if(TextUtils.isEmpty(badge)){
-                badge="0";
-            }
+
 
             if(!TextUtils.isEmpty(message)){
                 sendNotification(message);
             }else{
                 //remoteMessage.getNotification().
-                String title = remoteMessage.getData().get("title");
                 String body = remoteMessage.getData().get("body");
                 String attachment = remoteMessage.getData().get("attachment");
                 String payload = remoteMessage.getData().get("payload");
                 badge = remoteMessage.getData().get("badge");
 
+                if(TextUtils.isEmpty(badge)){
+                    badge="0";
+                }
                 ChatApplication.logDisplay("fcm is "+payload);
                 ChatApplication.logDisplay("fcm is data "+remoteMessage.getData().toString());
 
                 if(!TextUtils.isEmpty(attachment)){
-                    scheduleJob(title,body,attachment);
+                    ChatApplication.logDisplay("fcm is data notification schedulejob :-" + " " + body + " " + attachment);
+                    scheduleJob(body,attachment);
                 }else {
+                    ChatApplication.logDisplay("fcm is data notification :-" + " " + body + " " + attachment);
                     sendNotification(body);
                 }
             }
 
             String dataPayloadMessage = remoteMessage.getData().get("message");
             if(!TextUtils.isEmpty(dataPayloadMessage)){
+                ChatApplication.logDisplay("Message Notification Body: " + dataPayloadMessage);
                 sendNotification(dataPayloadMessage);
             }
 
         }
 
-        // Check if message contains a notification payload.
+      /*  // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
-            ChatApplication.logDisplay("Message Notification Body: " + remoteMessage.getNotification());
+            ChatApplication.logDisplay("Message Notification Body: " + remoteMessage.getNotification().getBody());
             sendNotification(remoteMessage.getNotification().getBody());
-        }
+        }*/
 
 
 //        if (remoteMessage.getNotification()!=null) {
@@ -114,11 +115,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     /**
      *
-     * @param title
      * @param body
      * @param attachment
      */
-    private void scheduleJob(String title, String body, String attachment) {
+    private void scheduleJob(String body, String attachment) {
         new SendNotificationAsync(getApplicationContext(),badge).execute(body, "", attachment);
     }
 
@@ -139,7 +139,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 , intent,PendingIntent.FLAG_ONE_SHOT);
 
-        String channelId = "1";
+        String channelId = getResources().getString(R.string.app_name);
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)

@@ -2,7 +2,6 @@ package com.spike.bot.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,17 +10,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
-import com.kp.core.DateHelper;
 import com.spike.bot.R;
 import com.spike.bot.activity.Camera.ImageZoomActivity;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.NotificationList;
 
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by Sagar on 28/11/18.
@@ -32,12 +30,13 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
     private TempSensorInfoAdapter.OnNotificationContextMenu onNotificationContextMenu;
     private Context mContext;
     ArrayList<NotificationList> arrayListLog = new ArrayList<>();
-    String strDateOfTime, dateTime = "";
+    String strDateOfTime, dateTime = "",homecontroller_id = "";
     String[] strDateOfTimeTemp;
 
-    public CameraLogAdapter(Context context, ArrayList<NotificationList> arrayListLog1) {
+    public CameraLogAdapter(Context context, ArrayList<NotificationList> arrayListLog1,String homecontroller_id1) {
         this.mContext = context;
         this.arrayListLog = arrayListLog1;
+        this.homecontroller_id = homecontroller_id1;
     }
 
     @Override
@@ -98,7 +97,7 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
                         .into(holder.txtImage);
             } else {
                 Glide.with(mContext)
-                        .load(R.drawable.camera_on)
+                        .load(R.drawable.camera)
                         .fitCenter()
                         .error(R.drawable.cam_defult)
                         .skipMemoryCache(true)
@@ -115,12 +114,23 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
             holder.linearAlert.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (arrayListLog.get(position).getLogType().contains("camera_person_detected")) {
+                        Intent intent = new Intent(mContext, ImageZoomActivity.class);
+                      /*  intent.putExtra("imgUrl", "" + arrayListLog.get(position).getImageUrl());
+                        intent.putExtra("imgName", "" + arrayListLog.get(position).getActivityDescription());
+                        intent.putExtra("imgDate", "" + arrayListLog.get(position).getActivityTime());
+                        intent.putExtra("home_controller_id", "" + homecontroller_id);*/
 
-                    Intent intent = new Intent(mContext, ImageZoomActivity.class);
-                    intent.putExtra("imgUrl", "" + arrayListLog.get(position).getImageUrl());
-                    intent.putExtra("imgName", "" + arrayListLog.get(position).getActivityDescription());
-                    intent.putExtra("imgDate", "" + arrayListLog.get(position).getActivityTime());
-                    mContext.startActivity(intent);
+
+                        intent.putExtra("camera_url", "" + arrayListLog.get(position).getImageUrl());
+                        intent.putExtra("imgName", "" + arrayListLog.get(position).getActivityDescription());
+                        intent.putExtra("imgDate", "" + arrayListLog.get(position).getActivityTime());
+                        //  intent.putExtra("home_controller_id", "" + homecontroller_id);
+                        intent.putExtra("camera_id",arrayListLog.get(position).getLog_object_id());
+
+                        Common.savePrefValue(mContext, Constants.home_controller_id, "" + homecontroller_id);
+                        mContext.startActivity(intent);
+                    }
                 }
             });
 
@@ -138,7 +148,7 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
                             .into(holder.txtImage);
                 } else {
                     Glide.with(mContext)
-                            .load(R.drawable.camera_on)
+                            .load(R.drawable.camera)
                             .fitCenter()
                             .error(R.drawable.cam_defult)
                             .skipMemoryCache(true)

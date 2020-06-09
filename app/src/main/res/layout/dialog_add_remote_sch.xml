@@ -25,7 +25,7 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text="Add Schedule"
-                android:textColor="@color/automation_blue"
+                android:textColor="@color/signupblack"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -35,7 +35,7 @@
                 android:layout_height="35dp"
                 android:padding="3dp"
                 android:backgroundTint="@color/sensor_button"
-                app:srcCompat="@drawable/close_blue2" />
+                app:srcCompat="@drawable/cross" />
 
         </LinearLayout>
 
@@ -44,20 +44,20 @@
             android:layout_height="1dp"
             android:background="@color/sky_blue" />
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_marginTop="16dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/tv_sch_name"
                 android:hint="Schedule Name"
                 android:singleLine="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:layout_marginTop="4dp"
@@ -76,12 +76,12 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/tv_sch_start_time"
                     android:hint="Time"
                     android:ems="5"
@@ -91,7 +91,7 @@
                     android:singleLine="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
 
             <LinearLayout
@@ -102,7 +102,7 @@
                 android:layout_height="36dp"
                 android:orientation="horizontal">
 
-                <android.support.v7.widget.AppCompatSpinner
+                <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/dg_mode_start"
                     android:background="@null"
                     android:layout_gravity="center"
@@ -125,12 +125,12 @@
             </LinearLayout>
 
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_marginLeft="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/tv_sch_start_temp"
                     android:hint="Temp"
                     android:inputType="number"
@@ -141,7 +141,7 @@
                     android:singleLine="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <ImageView
                 android:id="@+id/img_start_clear"
@@ -170,12 +170,12 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_marginLeft="2dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/tv_sch_end_time"
                     android:hint="Time"
                     android:ems="5"
@@ -185,7 +185,7 @@
                     android:singleLine="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
 
             <LinearLayout
@@ -196,7 +196,7 @@
                 android:layout_height="36dp"
                 android:orientation="horizontal">
 
-                <android.support.v7.widget.AppCompatSpinner
+                <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/dg_mode_end"
                     android:background="@null"
                     android:layout_gravity="center"
@@ -218,12 +218,12 @@
 
             </LinearLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_marginLeft="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/tv_sch_end_temp"
                     android:hint="Temp"
                     android:ems="4"
@@ -234,7 +234,7 @@
                     android:singleLine="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <ImageView
                 android:id="@+id/img_end_clear"

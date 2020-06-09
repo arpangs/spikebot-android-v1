@@ -2,7 +2,6 @@ package com.spike.bot.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,17 +10,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
-import com.kp.core.DateHelper;
-import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Camera.ImageZoomActivity;
+import com.spike.bot.activity.LoginActivity;
+import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.CameraPushLog;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by Sagar on 27/11/18.
@@ -32,12 +32,13 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.SensorViewHo
     private TempSensorInfoAdapter.OnNotificationContextMenu onNotificationContextMenu;
     private Context mContext;
     ArrayList<CameraPushLog> arrayListLog = new ArrayList<>();
-    String strDateOfTime, dateTime = "";
+    String strDateOfTime, dateTime = "",homecontroller_id = "";
     String[] strDateOfTimeTemp;
 
-    public AlertAdapter(Context context, ArrayList<CameraPushLog> arrayListLog1) {
+    public AlertAdapter(Context context, ArrayList<CameraPushLog> arrayListLog1,String homecontroller_id1) {
         this.mContext = context;
         this.arrayListLog = arrayListLog1;
+        this.homecontroller_id = homecontroller_id1;
     }
 
     @Override
@@ -107,9 +108,13 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.SensorViewHo
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, ImageZoomActivity.class);
-                intent.putExtra("imgUrl", "" + arrayListLog.get(position).getImageUrl());
+                intent.putExtra("camera_url", "" + arrayListLog.get(position).getImageUrl());
                 intent.putExtra("imgName", "" + arrayListLog.get(position).getActivityDescription());
                 intent.putExtra("imgDate", "" + arrayListLog.get(position).getActivityTime());
+              //  intent.putExtra("home_controller_id", "" + homecontroller_id);
+                intent.putExtra("camera_id",arrayListLog.get(position).getLog_object_id());
+
+                Common.savePrefValue(mContext, Constants.home_controller_id, "" + homecontroller_id);
                 mContext.startActivity(intent);
             }
         });

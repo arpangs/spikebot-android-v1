@@ -36,27 +36,31 @@
                 <ImageView
                     android:id="@+id/imgArrow"
                     android:layout_gravity="center|left"
+                    android:layout_marginLeft="@dimen/_10sdp"
                     android:layout_width="15dp"
                     android:layout_height="15dp" />
 
             </LinearLayout>
 
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtStartTime"
                 android:textSize="16sp"
                 android:layout_gravity="center"
                 android:layout_weight="1.5"
                 android:layout_width="0dp"
+                android:text="12:05 AM"
+                android:textColor="@color/signupblack"
                 android:layout_height="wrap_content" />
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtEndTime"
                 android:layout_gravity="center"
                 android:textSize="16sp"
                 android:layout_weight="1.6"
                 android:layout_width="0dp"
                 android:gravity="center|left"
+                android:textColor="@color/signupblack"
                 android:layout_height="wrap_content" />
 
             <LinearLayout
@@ -66,32 +70,44 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <android.support.v7.widget.SwitchCompat
+             <!--   <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/switchAlert"
                     android:layout_gravity="center|left"
                     android:layout_width="wrap_content"
                     android:gravity="center"
                     app:theme="@style/Color1SwitchStyle"
                     android:layout_marginTop="@dimen/_3sdp"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent" />-->
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switchAlert"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/selector_section_onoff"
+                    android:button="@null"
+                    android:thumb="@null"
+                    app:theme="@style/Color1SwitchStyle"
+                    app:track="@null" />
 
             </LinearLayout>
 
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgMore"
-                android:layout_gravity="center"
-                android:src="@drawable/more"
-                android:layout_weight="0.5"
                 android:layout_width="0dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
                 android:layout_marginRight="@dimen/_7sdp"
-                android:layout_height="35dp" />
+                android:layout_weight="0.5"
+                android:src="@drawable/edit_blue" />
 
         </LinearLayout>
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerCamera"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:layout_marginLeft="@dimen/_15sdp"
             tools:listitem="@layout/row_room_camera_item" />
     </LinearLayout>

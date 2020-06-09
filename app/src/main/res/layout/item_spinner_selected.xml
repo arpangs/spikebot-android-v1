@@ -4,6 +4,7 @@
     style="?attr/spinnerDropDownItemStyle"
     android:singleLine="true"
     android:textSize="14sp"
+    android:textColor="@color/signupblack"
     android:gravity="center|start"
     android:layout_width="match_parent"
     android:layout_height="?attr/dropdownListPreferredItemHeight"

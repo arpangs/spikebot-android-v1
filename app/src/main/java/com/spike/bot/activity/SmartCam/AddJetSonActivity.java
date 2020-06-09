@@ -2,55 +2,47 @@ package com.spike.bot.activity.SmartCam;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatButton;
-import android.support.v7.widget.AppCompatEditText;
-import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.AppCompatTextView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.text.InputType;
-import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
-import com.kp.core.DateHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.AddDevice.AddDeviceTypeListActivity;
-import com.spike.bot.activity.Sensor.DoorSensorInfoActivity;
+import com.spike.bot.activity.Repeatar.RepeaterActivity;
 import com.spike.bot.adapter.JetSonAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
-import com.spike.bot.model.DeviceLog;
 import com.spike.bot.model.JetSonModel;
+import com.spike.bot.model.RepeaterModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 
 /**
  * Created by vipul on 10/1/20.
@@ -82,7 +74,7 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toolbar.setTitle("Jetson");
+        toolbar.setTitle("Smart Camera");
         recyclerview = findViewById(R.id.recyclerRemoteList);
         linearNodataFound = findViewById(R.id.linearNodataFound);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -108,7 +100,9 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
         MenuItem menuAdd = menu.findItem(R.id.action_add);
         MenuItem actionEdit = menu.findItem(R.id.actionEdit);
         MenuItem action_save = menu.findItem(R.id.action_save);
-        menuAdd.setVisible(true);
+        MenuItem menuaddtext = menu.findItem(R.id.action_add_text);
+        menuaddtext.setVisible(true);
+        menuAdd.setVisible(false);
         action_save.setVisible(false);
         actionEdit.setVisible(false);
         return super.onCreateOptionsMenu(menu);
@@ -117,7 +111,7 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_add) {
+        if (id == R.id.action_add_text) {
             AddJetsonDialog(false,0);
             return true;
         }
@@ -371,22 +365,49 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
     @Override
     public void action(int position, String action) {
         if(action.equalsIgnoreCase("edit")){
-            AddJetsonDialog(true,position);
-        }else {
-            ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
-                @Override
-                public void onConfirmDialogYesClick() {
-                    deleteJetson(position);
-                }
-
-                @Override
-                public void onConfirmDialogNoClick() {
-                }
-            });
-            newFragment.show(getFragmentManager(), "dialog");
+            showBottomSheetDialog(position);
         }
 
     }
 
+    public void showBottomSheetDialog( int postion) {
+        View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
 
+        TextView txt_bottomsheet_title = view.findViewById(R.id.txt_bottomsheet_title);
+        LinearLayout linear_bottom_edit = view.findViewById(R.id.linear_bottom_edit);
+        LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
+
+        TextView txt_edit = view.findViewById(R.id.txt_edit);
+
+        BottomSheetDialog dialog = new BottomSheetDialog(AddJetSonActivity.this,R.style.AppBottomSheetDialogTheme);
+        dialog.setContentView(view);
+        dialog.show();
+
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + arrayList.get(postion).getJetsonName() + " " +"?");
+        linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                AddJetsonDialog(true,postion);
+            }
+        });
+
+        linear_bottom_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
+                    @Override
+                    public void onConfirmDialogYesClick() {
+                        deleteJetson(postion);
+                    }
+
+                    @Override
+                    public void onConfirmDialogNoClick() {
+                    }
+                });
+                newFragment.show(getFragmentManager(), "dialog");
+            }
+        });
+    }
 }

@@ -1,15 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:layout_margin="@dimen/_5sdp"
     android:background="@color/automation_white"
     android:orientation="vertical"
     app:cardCornerRadius="5dp"
     app:cardElevation="0dp"
     app:elevation="0dp">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/edt_txt_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="@dimen/_5sdp"
+        android:layout_below="@+id/appbar_smartremote"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="5dp"
+        app:elevation="5dp">
 
     <LinearLayout
         android:id="@+id/ll_sensor_view"
@@ -19,36 +33,39 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="wrap_content"
+            android:layout_width="35dp"
             android:layout_height="35dp"
             android:src="@drawable/remote"/>
 
         <TextView
             android:id="@+id/txtNameRemote"
             android:layout_gravity="center"
-            android:layout_weight="0.65"
+            android:layout_weight="1.50"
             android:textSize="18sp"
             android:maxLength="15"
             android:layout_width="0dp"
+            android:layout_marginLeft="@dimen/_10sdp"
             android:layout_height="wrap_content" />
 
         <ImageView
             android:id="@+id/imgEditRemote"
-            android:src="@drawable/edit_blue"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_gravity="center"
-            android:layout_weight="0.15"
-            android:layout_width="0dp"
-            android:layout_height="35dp" />
+            android:layout_weight="0.10"
+            android:src="@drawable/edit_blue" />
 
         <ImageView
             android:id="@+id/imgDeleteRemote"
             android:src="@drawable/delete_blue"
             android:layout_gravity="center"
-            android:layout_weight="0.15"
+            android:layout_weight="0.10"
             android:layout_width="0dp"
+            android:visibility="gone"
             android:layout_height="35dp" />
 
 
     </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
-</android.support.v7.widget.CardView>
+</androidx.cardview.widget.CardView>

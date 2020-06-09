@@ -6,12 +6,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+
 import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -31,6 +26,14 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
@@ -103,6 +106,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
 
         setMonthList();
         setMonthAdpater();
+        callGetSmarCamera();
     }
 
     private void setUi() {
@@ -113,6 +117,8 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         jetsoncameralog = getIntent().getStringExtra("jetsoncameralog");
         isjetsonnotification = getIntent().getExtras().getBoolean("jetsonnotification");
         isJetsonCameralog = getIntent().getExtras().getBoolean("isshowJestonCameraLog");
+       // getCameraList = (ArrayList<CameraVO>) getIntent().getExtras().getSerializable("cameraList");
+
         toolbar.setTitle("Camera Logs");
         rvDeviceLog = findViewById(R.id.rv_device_log);
         rv_month_list = findViewById(R.id.rv_monthlist);
@@ -193,10 +199,15 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         Spinner spinnerCamera = dialog.findViewById(R.id.spinnerCamera);
 
         final ArrayList<String> stringArrayList = new ArrayList<>();
-        stringArrayList.add("All");
-        for (int i = 0; i < getCameraList.size(); i++) {
-            stringArrayList.add(getCameraList.get(i).getCamera_name());
+      //  stringArrayList.add("All");
+        try {
+            for (int i = 0; i < getCameraList.size(); i++) {
+                stringArrayList.add(getCameraList.get(i).getCamera_name());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, stringArrayList);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -208,7 +219,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
                 if (position == 0) {
                     camera_id = "";
                 } else {
-                    camera_id = getCameraList.get(position - 1).getCamera_id();
+                    camera_id = getCameraList.get(position).getCamera_id();
                 }
             }
 
@@ -265,6 +276,63 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    /*call smart camera */
+    private void callGetSmarCamera() {
+        ActivityHelper.showProgressDialog(this, "Please wait.", false);
+
+        JSONObject obj = new JSONObject();
+        try {
+
+            obj.put("jetson_device_id", jetson_id);
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String url = ChatApplication.url + Constants.cameralistbyjetson;
+
+        ChatApplication.logDisplay("jetson camera list" + url + obj);
+
+        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+                try {
+                    int code = result.getInt("code");
+                    ChatApplication.logDisplay("response is "+result);
+                    String message = result.getString("message");
+
+                    if (code == 200) {
+                        Gson gson=new Gson();
+                        getCameraList.clear();
+
+                        JSONObject  object= new JSONObject(String.valueOf(result));
+                        JSONArray jsonArray= object.optJSONArray("data");
+
+                        if(jsonArray!=null && jsonArray.length()>0){
+                            getCameraList = gson.fromJson(jsonArray.toString(), new TypeToken<ArrayList<CameraVO>>(){}.getType());
+                        }
+                        ChatApplication.logDisplay("jetson camera list response is "+result);
+                    }else {
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+
+            }
+        }).execute();
+    }
+
 
     /**
      * Get camera log
@@ -286,7 +354,9 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
                 object.put("start_date", "" + start_date);
                  object.put("end_date", "" + end_date);
 
-
+            /*object.put("jetson_id", "" + jetson_id);
+            object.put("camera_id", "" + camera_id);*/
+            object.put("camera_id", "" + camera_id);
             object.put("home_controller_device_id", homecontroller_id);
             object.put("notification_number", "" + notification_number);
             if (isJetsonCameralog || isjetsonnotification) {
@@ -446,7 +516,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
     private void setAdapter() {
 
         if (notification_number == 0) {
-            cameraLogAdapter = new CameraLogAdapter(CameraDeviceLogActivity.this, arrayList);
+            cameraLogAdapter = new CameraLogAdapter(CameraDeviceLogActivity.this, arrayList,homecontroller_id);
             rvDeviceLog.setAdapter(cameraLogAdapter);
         } else {
 
@@ -554,7 +624,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
                     row_index = holder.linearlayout_month.getId();
                     notification_number = 0;
                     datelist.clear();
-                    getDatesInMonth(Calendar.getInstance().get(Calendar.YEAR), row_index);
+                 //   getDatesInMonth(Calendar.getInstance().get(Calendar.YEAR), row_index);
                     notifyDataSetChanged();
                 }
             });

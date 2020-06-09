@@ -1,20 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
 
         <item
             android:id="@+id/navigationDashboard"
-            android:icon="@drawable/dasboard_drey"
-            android:title="@string/menu_dashboard1" />
+            android:enabled="true"
+            android:icon="@drawable/ic_home_white"
+            android:title="@string/menu_home"
+            app:cnb_backgroundColor="@color/automation_white"
+            app:cnb_iconColor="@color/solid_blue"
+            app:cnb_iconTintMode="src_in"
+            app:cnb_textColor="@color/solid_blue" />
 
         <item
             android:id="@+id/navigationMood"
-            android:icon="@drawable/mood_grey"
-            android:title="@string/menu_mood1" />
+            android:icon="@drawable/mood_transparent"
+            android:title="@string/menu_mood"
+            app:cnb_backgroundColor="@color/automation_white"
+            app:cnb_iconColor="@color/solid_blue"
+            app:cnb_iconTintMode="src_in"
+            app:cnb_textColor="@color/solid_blue"/>
 
         <item
             android:id="@+id/navigationSchedule"
-            android:icon="@drawable/schedule_grey"
-            android:title="@string/menu_schedule1" />
-
+            android:icon="@drawable/schedule_transparent"
+            android:title="@string/menu_schedule"
+            app:cnb_backgroundColor="@color/automation_white"
+            app:cnb_iconColor="@color/solid_blue"
+            app:cnb_iconTintMode="src_in"
+            app:cnb_textColor="@color/solid_blue"/>
 
 </menu>

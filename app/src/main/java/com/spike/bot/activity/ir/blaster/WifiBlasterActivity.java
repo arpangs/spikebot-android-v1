@@ -8,13 +8,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.format.Formatter;
@@ -22,6 +18,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
@@ -34,7 +35,6 @@ import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.UnassignedListRes;
 import com.spike.bot.model.WifiModel;
-import com.ttlock.bl.sdk.util.NetworkUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,7 +43,6 @@ import org.json.JSONObject;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.spike.bot.core.Common.showToast;
 
@@ -88,7 +87,7 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toolbar.setTitle("Wi-Fi");
+        toolbar.setTitle("Steps to configure");
 
         String s = "Connect to the Wi-Fi hotspot for the SpikeBot device that you are settings up. It will have <b>SpikeBot_xxxxxxx</b> on the end.";
         txtWifi.setText(Html.fromHtml(s));
@@ -253,6 +252,8 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
 
         ActivityHelper.showProgressDialog(WifiBlasterActivity.this, "Please wait... ", false);
         String url = "http://" + wifiIP + "/wifi?";
+
+        ChatApplication.logDisplay("WIFI LIST" + " " + url);
         new GetJsonTask(WifiBlasterActivity.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL //POST
             @Override
             public void onSuccess(JSONObject result) {
@@ -303,7 +304,7 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
 
     private void showConfigAlert(String alertMessage) {
 
-        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(alertMessage);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override

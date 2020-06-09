@@ -1,20 +1,17 @@
 package com.spike.bot.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.spike.bot.R;
-import com.spike.bot.activity.ir.blaster.IRBlasterRemote;
-import com.spike.bot.core.Common;
 import com.spike.bot.listener.MoodEvent;
 import com.spike.bot.model.RemoteMoodModel;
-import com.spike.bot.model.UnassignedListRes;
 
 import java.util.List;
 
@@ -50,7 +47,7 @@ public class MoodRemoteAdapter extends RecyclerView.Adapter<MoodRemoteAdapter.Un
             holder.txtMoodName.setTextColor(context.getResources().getColor(R.color.automation_white));
             holder.linearMood.setBackground(context.getResources().getDrawable(R.drawable.drawable_mood_unselect));
         }else {
-            holder.txtMoodName.setTextColor(context.getResources().getColor(R.color.device_button));
+            holder.txtMoodName.setTextColor(context.getResources().getColor(R.color.signupblack));
             holder.linearMood.setBackground(context.getResources().getDrawable(R.drawable.drawable_black_boader));
         }
 

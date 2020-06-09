@@ -6,13 +6,14 @@
 
 
     <LinearLayout
+        android:id="@+id/view_beacon"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_10sdp"
         android:orientation="vertical">
 
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -21,7 +22,7 @@
             android:textColor="@color/automation_black"/>
 
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtMacAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -29,7 +30,7 @@
             android:padding="@dimen/_2sdp"
             android:textColor="@color/automation_black"/>
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtRss"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -37,7 +38,7 @@
             android:padding="@dimen/_2sdp"
             android:textColor="@color/automation_black"/>
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtPower"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

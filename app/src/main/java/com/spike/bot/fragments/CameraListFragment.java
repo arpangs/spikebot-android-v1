@@ -5,9 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +15,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
@@ -43,7 +45,7 @@ public class CameraListFragment extends Fragment implements CameraGridActivity.t
     int height=0,width=0;
     NodePlayer nodePlayer;
     DVRADAapter dvradAapter;
-    public   RecyclerView recyclerView;
+    public RecyclerView recyclerView;
     ArrayList<CameraVO> cameraVOArrayListTemp = new ArrayList<>();
 
     @Override
@@ -187,6 +189,19 @@ public class CameraListFragment extends Fragment implements CameraGridActivity.t
                         startActivity(intent);
                     }
                 });
+
+                holder.txtCameraName.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getActivity(), CameraPlayer.class);
+                        intent.putExtra("videoUrl", arrayListLog.get(position).getLoadingUrl());
+                        intent.putExtra("name", arrayListLog.get(position).getCamera_name());
+                        intent.putExtra("isCloudConnect", Main2Activity.isCloudConnected);
+                        startActivity(intent);
+                    }
+                });
+
+
                 holder.view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

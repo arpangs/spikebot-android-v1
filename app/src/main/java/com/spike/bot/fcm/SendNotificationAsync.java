@@ -12,12 +12,14 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
+
+import androidx.core.app.NotificationCompat;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Camera.CameraImagePush;
+import com.spike.bot.activity.Camera.ImageZoomActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,9 +76,10 @@ public class SendNotificationAsync extends AsyncTask<String, Void, Bitmap> {
                     badge="0";
                 }
                 ChatApplication.isPushFound=true;
-                Intent intent = new Intent(ctx, CameraImagePush.class); //{@link Main2Activity}
+                Intent intent = new Intent(ctx, ImageZoomActivity.class); //{@link Main2Activity}
                 intent.putExtra("camera_url",camera_url);
                 intent.putExtra("camera_body",camera_body);
+                intent.putExtra("notification",true);
 
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 PendingIntent pendingIntent = PendingIntent.getActivity(ctx, 0 , intent,PendingIntent.FLAG_UPDATE_CURRENT);

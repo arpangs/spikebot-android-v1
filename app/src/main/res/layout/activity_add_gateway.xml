@@ -5,12 +5,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
@@ -18,9 +18,9 @@
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
 
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
 
     <LinearLayout
@@ -177,10 +177,10 @@
                     android:layout_marginLeft="@dimen/_50sdp"
                     android:layout_marginRight="@dimen/_50sdp"
                     android:textColor="@color/automation_white"
-                    android:background="@color/sensor_button"
+                    android:background="@drawable/drawable_blue_schedule"
                     android:text="Next" />
 
-            </LinearLayout>
+    </LinearLayout>
 
     </LinearLayout>
 

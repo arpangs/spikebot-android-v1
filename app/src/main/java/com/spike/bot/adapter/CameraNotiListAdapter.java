@@ -1,22 +1,16 @@
 package com.spike.bot.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.AppCompatTextView;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.spike.bot.R;
-import com.spike.bot.adapter.filter.CameraNotificationAdapter;
 import com.spike.bot.core.Common;
-import com.spike.bot.model.CameraAlertList;
 import com.spike.bot.model.CameraViewModel;
 
 import java.util.ArrayList;

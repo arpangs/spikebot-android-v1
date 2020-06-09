@@ -6,25 +6,27 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.kp.core.ActivityHelper;
+import com.kp.core.GetJsonTask;
+import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.spike.bot.model.User;
 
 import org.json.JSONException;
@@ -48,7 +50,7 @@ public class SignUp extends AppCompatActivity {
 
     private Button btn_signup,btn_sign_up_cancel;
     private EditText edt_first_name,edt_last_name,edt_email_id,edt_user_name,edt_password,edt_con_password,edt_phone_no,edtIPAddress;
-
+    private ImageView btn_signupback;
     String webUrl = "";
     private Socket mSocket;
     private  List<User> tempList;
@@ -71,6 +73,7 @@ public class SignUp extends AppCompatActivity {
 
         btn_signup =  findViewById(R.id.btn_sign_up);
         btn_sign_up_cancel =  findViewById(R.id.btn_sign_up_cancel);
+        btn_signupback = findViewById(R.id.btn_signupback);
 
         edt_first_name = findViewById(R.id.edt_first_name_su);
         edt_last_name = findViewById(R.id.edt_last_name_su);
@@ -115,6 +118,13 @@ public class SignUp extends AppCompatActivity {
                 Intent resultIntent = new Intent();
                 setResult(Activity.RESULT_CANCELED, resultIntent);
                 finish();
+            }
+        });
+
+        btn_signupback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
             }
         });
 

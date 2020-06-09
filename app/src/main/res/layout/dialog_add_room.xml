@@ -21,7 +21,7 @@
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:text="Add Room "
-            android:textColor="@color/automation_blue"
+            android:textColor="@color/signupblack"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -31,14 +31,14 @@
             android:layout_height="35dp"
             android:padding="3dp"
             android:backgroundTint="@color/sensor_button"
-            app:srcCompat="@drawable/close_blue2" />
+            app:srcCompat="@drawable/cross" />
 
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/sky_blue" />
+        android:background="@color/automation_dark" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -66,20 +66,46 @@
                 android:gravity="center_vertical"
                 android:text="Room List" />
 
-          <!--  <EditText
-                android:id="@+id/et_room_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.65"
-                android:hint="" />-->
 
-            <Spinner
+            <!--<Spinner
                 android:id="@+id/sp_no_of_rooms"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.65"
                 android:gravity="right"
-                android:textAlignment="gravity" />
+                android:textAlignment="gravity" />-->
+
+            <LinearLayout
+                android:layout_weight="0.6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="3dp"
+                android:background="@drawable/custome_spinner"
+                android:orientation="horizontal">
+
+                <Spinner
+                    android:id="@+id/sp_no_of_rooms"
+                    android:layout_weight="0.8"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:dropDownVerticalOffset="48dp"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:spinnerMode="dropdown" />
+
+                <ImageView
+                    android:id="@+id/sp_drop_down"
+                    android:layout_weight="0.2"
+                    android:layout_width="0dp"
+                    android:layout_height="24dp"
+                    android:visibility="visible"
+                    android:layout_gravity="center"
+                    android:src="@drawable/icn_arrow_down_spinner2" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -142,6 +168,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_marginTop="@dimen/_10sdp"
             android:orientation="horizontal"
             android:paddingLeft="8dp">
 
@@ -149,7 +176,7 @@
                 android:id="@+id/tv_no_of_devices"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.35"
+                android:layout_weight="0.50"
                 android:gravity="center_vertical"
                 android:text="No.of Devices" />
 
@@ -169,6 +196,7 @@
                 android:entries="@array/device_array"
                 android:gravity="right"
                 android:textAlignment="gravity" />
+
 
         </LinearLayout>
 

@@ -39,6 +39,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="0.35"
                         android:gravity="center_vertical"
+                        android:textColor="@color/signupblack"
                         android:text="First Name" />
 
                     <EditText
@@ -64,6 +65,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.35"
+                        android:textColor="@color/signupblack"
                         android:gravity="center_vertical"
                         android:text="Last Name" />
 
@@ -90,8 +92,9 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.35"
+                        android:textColor="@color/signupblack"
                         android:gravity="center_vertical"
-                        android:text="Contact No" />
+                        android:text="Contact No." />
 
                     <EditText
                         android:id="@+id/et_profile_contact_no"
@@ -119,6 +122,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.35"
+                        android:textColor="@color/signupblack"
                         android:gravity="center_vertical"
                         android:text="Email" />
 
@@ -149,6 +153,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="0.35"
                         android:gravity="center_vertical"
+                        android:textColor="@color/signupblack"
                         android:text="Username" />
 
                     <EditText
@@ -165,10 +170,10 @@
 
                 <Button
                     android:id="@+id/btnChangePassword"
-                    android:text="Change Password"
+                    android:text="Change password"
                     android:textColor="@color/automation_white"
                     android:layout_margin="@dimen/_7sdp"
-                    android:background="@drawable/drawable_blue_schedule"
+                    android:background="@drawable/background_button_change_password"
                     android:layout_width="match_parent"
                     android:textAllCaps="false"
                     android:layout_height="wrap_content" />
@@ -259,8 +264,9 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.30"
                         android:layout_margin="@dimen/_5sdp"
-                        android:background="@drawable/button_radius"
+                        android:background="@drawable/background_button_change_password"
                         android:clickable="true"
+                        android:textAllCaps="false"
                         android:text="Save"
                         android:textColor="@color/automation_white"
                         android:textStyle="bold" />

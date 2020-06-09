@@ -3,15 +3,10 @@ package com.spike.bot.activity.SmartCam;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TextInputEditText;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
 import android.text.TextUtils;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,8 +17,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
@@ -38,13 +43,11 @@ import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.CameraVO;
-import com.spike.bot.model.JetSonModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -58,11 +61,13 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
     TextView txt_empty_text;
     LinearLayout linearNodataFound;
     public RecyclerView recyclerview;
+    private TextView txt_daythreashvalue,txt_nightthreashvalue;
+    private SeekBar sb_daythresh,sb_nightthresh;
 
     public SmartCamAdapter jetSonAdapter;
     public ArrayList<CameraVO> arrayList=new ArrayList<>();
 
-    String jetson_id="";
+    String jetson_id="" , confidence_score_day="40",confidence_score_night="28";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -123,16 +128,18 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
         MenuItem menuAdd = menu.findItem(R.id.action_add);
         MenuItem actionEdit = menu.findItem(R.id.actionEdit);
         MenuItem action_save = menu.findItem(R.id.action_save);
-        menuAdd.setVisible(true);
+        MenuItem menuaddtext = menu.findItem(R.id.action_add_text);
+        menuAdd.setVisible(false);
         action_save.setVisible(false);
         actionEdit.setVisible(false);
+        menuaddtext.setVisible(true);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_add) {
+        if (id == R.id.action_add_text) {
             if (Common.getPrefValue(this, Common.camera_key).equalsIgnoreCase("0")) {
                 addKeyCamera();
             } else {
@@ -263,14 +270,20 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
         dialog.setContentView(R.layout.dialog_add_camera);
         dialog.setCanceledOnTouchOutside(false);
 
-        final TextInputEditText camera_name = dialog.findViewById(R.id.txt_camera_name);
-        final TextInputEditText camera_ip = dialog.findViewById(R.id.txt_camera_ip);
-        final TextInputEditText video_path = dialog.findViewById(R.id.txt_video_path);
-        final TextInputEditText user_name = dialog.findViewById(R.id.txt_user_name);
-        final TextInputEditText password = dialog.findViewById(R.id.txt_password);
+        final AppCompatEditText camera_name = dialog.findViewById(R.id.txt_camera_name);
+        final AppCompatEditText camera_ip = dialog.findViewById(R.id.txt_camera_ip);
+        final AppCompatEditText video_path = dialog.findViewById(R.id.txt_video_path);
+        final AppCompatEditText user_name = dialog.findViewById(R.id.txt_user_name);
+        final AppCompatEditText password = dialog.findViewById(R.id.txt_password);
+        ImageView img_passcode = dialog.findViewById(R.id.img_show_passcode);
+        sb_daythresh = dialog.findViewById(R.id.sb_daythresh);
+        sb_nightthresh = dialog.findViewById(R.id.sb_nightthresh);
+
+        txt_daythreashvalue = dialog.findViewById(R.id.txt_daythreashvalue);
+        txt_nightthreashvalue = dialog.findViewById(R.id.txt_nightthreashvalue);
 
         Button btnSave = dialog.findViewById(R.id.btn_save);
-        Button btn_cancel = dialog.findViewById(R.id.btn_cancel);
+  //      Button btn_cancel = dialog.findViewById(R.id.btn_cancel);
         ImageView iv_close = dialog.findViewById(R.id.iv_close);
 
         iv_close.setOnClickListener(new View.OnClickListener() {
@@ -281,13 +294,65 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
             }
         });
 
-        btn_cancel.setOnClickListener(new View.OnClickListener() {
+        img_passcode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(password.getTransformationMethod().equals(PasswordTransformationMethod.getInstance())){
+                    img_passcode.setImageResource(R.drawable.eyeclosed);
+                    //Show Password
+                    password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                }
+                else{
+                    img_passcode.setImageResource(R.drawable.eye);
+                    //Hide Password
+                    password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                }
+            }
+        });
+
+        sb_daythresh.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                confidence_score_day = String.valueOf(i);
+                txt_daythreashvalue.setText(String.valueOf(i));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        sb_nightthresh.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                confidence_score_night = String.valueOf(i);
+                txt_nightthreashvalue.setText(String.valueOf(i));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+       /* btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             }
-        });
+        });*/
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -326,7 +391,7 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
                 }
 
                 addCameraCall(isflag,position,camera_name.getText().toString(), camera_ip.getText().toString(), video_path.getText().toString(), user_name.getText().toString(),
-                        password.getText().toString(), dialog);
+                        password.getText().toString(),confidence_score_day,confidence_score_night, dialog);
             }
         });
 
@@ -344,7 +409,7 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
      * @param password    : 123...
      * @param dialog      : if(response code == 200) dismiss dialog
      */
-    private void addCameraCall(boolean isflag,int position,String camera_name, String camera_ip, String video_path, String user_name, String password, final Dialog dialog) {
+    private void addCameraCall(boolean isflag,int position,String camera_name, String camera_ip, String video_path, String user_name, String password,String confidence_score_day,String confidence_score_night, Dialog dialog) {
 
         if (!ActivityHelper.isConnectingToInternet(SmartCameraActivity.this)) {
             ChatApplication.showToast(SmartCameraActivity.this, getResources().getString(R.string.disconnect));
@@ -362,6 +427,8 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
 
             obj.put("user_name", user_name);
             obj.put("password", password);
+            obj.put("confidence_score_day",confidence_score_day);
+            obj.put("confidence_score_night",confidence_score_night);
 
 //            if(isflag){
 //                obj.put("camera_videopath", video_path);
@@ -440,7 +507,7 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
 
         String url = ChatApplication.url + Constants.cameralistbyjetson;
 
-        ChatApplication.logDisplay("door sensor" + url + obj);
+        ChatApplication.logDisplay("jetson camera list" + url + obj);
 
         new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
@@ -550,26 +617,57 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void action(int position, String action) {
-        if(action.equals("edit")){
+        if(action.equals("edit")) {
 //            addCamera(true,position);
-            Intent intent=new Intent(this, CameraEdit.class);
-            intent.putExtra("cameraSelcet", arrayList.get(position));
-            intent.putExtra("isEditable", false);
-            startActivity(intent);
 
-        }else {
-            ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
-                @Override
-                public void onConfirmDialogYesClick() {
-                    deleteJetsoncamera(position);
-                }
+            showBottomSheetDialog(position);
 
-                @Override
-                public void onConfirmDialogNoClick() {
-                }
-            });
-            newFragment.show(getFragmentManager(), "dialog");
         }
 
+    }
+
+    public void showBottomSheetDialog(int position) {
+        View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
+
+        TextView txt_bottomsheet_title = view.findViewById(R.id.txt_bottomsheet_title);
+        LinearLayout linear_bottom_edit = view.findViewById(R.id.linear_bottom_edit);
+        LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
+
+        TextView txt_edit = view.findViewById(R.id.txt_edit);
+
+        BottomSheetDialog dialog = new BottomSheetDialog(SmartCameraActivity.this,R.style.AppBottomSheetDialogTheme);
+        dialog.setContentView(view);
+        dialog.show();
+
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + arrayList.get(position).getCamera_name() + " " +"?");
+        linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                Intent intent = new Intent(SmartCameraActivity.this, CameraEdit.class);
+                intent.putExtra("cameraSelcet", arrayList.get(position));
+                intent.putExtra("isEditable", false);
+                intent.putExtra("isjetsonedit",true);
+                startActivity(intent);
+            }
+        });
+
+        linear_bottom_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
+                    @Override
+                    public void onConfirmDialogYesClick() {
+                        deleteJetsoncamera(position);
+                    }
+
+                    @Override
+                    public void onConfirmDialogNoClick() {
+                    }
+                });
+                newFragment.show(getFragmentManager(), "dialog");
+            }
+        });
     }
 }

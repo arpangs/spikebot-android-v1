@@ -22,10 +22,11 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="10dp"
                 android:layout_height="wrap_content"
-                android:text="Alert"
+                android:text="Notification"
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:layout_weight="1"
+                android:textColor="@color/signupblack"
                 android:id="@+id/txt_notification_alert" />
             <ImageView
                 android:layout_width="@dimen/_27sdp"
@@ -35,7 +36,7 @@
                 android:layout_gravity="right"
                 android:backgroundTint="@color/sensor_button"
                 android:id="@+id/btn_close_notification"
-                android:src="@drawable/close_blue2"
+                android:src="@drawable/cross"
                 />
         </LinearLayout>
 
@@ -86,7 +87,7 @@
             android:layout_marginBottom="16dp"
             android:layout_marginTop="@dimen/_10sdp"
             android:textColor="@color/automation_white"
-            android:background="@drawable/button_radius"
+            android:background="@drawable/drawable_blue_schedule"
             android:gravity="center"
             android:layout_width="@dimen/_80sdp"
             android:layout_height="@dimen/_32sdp"

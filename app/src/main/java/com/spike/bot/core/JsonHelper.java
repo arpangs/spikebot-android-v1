@@ -931,7 +931,8 @@ public class JsonHelper {
                 cameraVO.setTotal_unread(hasObject(deviceObj,"total_unread") ? deviceObj.optString("total_unread") : "");
                 cameraVO.setIs_unread(hasObject(deviceObj,"is_unread") ? deviceObj.optString("is_unread") : "");
                 cameraVO.setJetson_device_id(hasObject(deviceObj,"jetson_device_id") ? deviceObj.optString("jetson_device_id") : "");
-
+                cameraVO.setConfidence_score_day(hasObject(deviceObj,"confidence_score_day") ? deviceObj.optString("confidence_score_day") : "");
+                cameraVO.setConfidence_score_night(hasObject(deviceObj,"confidence_score_night") ? deviceObj.optString("confidence_score_night") : "");
                 cameraList.add(cameraVO);
 
             } catch (Exception e) {
@@ -986,7 +987,7 @@ public class JsonHelper {
                 cameraVO.setCamera_url(hasObject(deviceObj,"camera_url") ? deviceObj.optString("camera_url") : "");
                 cameraVO.setTotal_unread(hasObject(deviceObj,"total_unread") ? deviceObj.optString("total_unread") : "");
                 cameraVO.setIs_unread(hasObject(deviceObj,"is_unread") ? deviceObj.optString("is_unread") : "");
-
+                cameraVO.setJetson_device_id(hasObject(deviceObj,"jetson_device_id") ? deviceObj.optString("jetson_device_id") : "");
                 cameraList.add(cameraVO);
 
             } catch (Exception e) {

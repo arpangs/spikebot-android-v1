@@ -1,12 +1,14 @@
-<RelativeLayout android:layout_width="match_parent"
+<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/automation_white"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <View
         android:id="@+id/view_top"
         android:visibility="visible"
-        android:background="@color/automation_gray_2"
+        android:background="@color/automation_white"
         android:layout_alignParentTop="true"
         android:layout_width="match_parent"
         android:layout_height="8dp"/>
@@ -34,22 +36,18 @@
 
 
     </LinearLayout>
-    <android.support.v4.widget.SwipeRefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swiperefresh"
         android:layout_above="@+id/view_bottom"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
+        <ScrollView
             android:layout_above="@+id/view_bottom"
             android:id="@+id/main_scroll"
             android:layout_marginTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/new_screen_resolution"
             tools:context="com.spike.bot.fragments.DashBoardFragment">
 
             <RelativeLayout
@@ -87,22 +85,24 @@
                             android:id="@+id/btnRoomSchedule"
                             android:background="@drawable/drawable_blue_schedule"
                             android:text="Room"
-                            android:layout_weight="1"
+                            android:layout_weight="0.60"
                             android:layout_width="0dp"
                             android:textAllCaps="false"
+                            android:layout_marginLeft="@dimen/_5sdp"
                             android:textColor="@color/automation_white"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="@dimen/_40sdp" />
 
                         <Button
                             android:id="@+id/btnMoodSchedule"
-                            android:layout_marginLeft="@dimen/_8sdp"
-                            android:background="@drawable/drawable_gray_schedule"
-                            android:textColor="@color/automation_white"
-                            android:text="Mood"
-                            android:layout_weight="1"
-                            android:textAllCaps="false"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="@dimen/_40sdp"
+                            android:layout_marginLeft="@dimen/_25sdp"
+                            android:layout_weight="0.60"
+                            android:layout_marginRight="@dimen/_5sdp"
+                            android:background="@drawable/drawable_gray_schedule"
+                            android:text="Mood"
+                            android:textAllCaps="false"
+                            android:textColor="@color/solid_blue" />
 
                     </LinearLayout>
 
@@ -152,7 +152,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/_5sdp"/>
 
-                    <android.support.v7.widget.RecyclerView
+                    <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rv_mood"
                         android:layout_width="match_parent"
                         android:nestedScrollingEnabled="false"
@@ -231,7 +231,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_5sdp"/>
 
-                        <android.support.v7.widget.RecyclerView
+                        <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rv_room"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -302,7 +302,7 @@
 
         </ScrollView>
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <!--Fab Menu End-->
 
@@ -317,18 +317,18 @@
         android:layout_gravity="bottom|end">
 
 
-        <android.support.design.widget.FloatingActionButton
+        <com.akhilpatoliya.floating_text_button.FloatingTextButton
             android:id="@+id/fab"
-            app:layout_behavior="com.spike.bot.core.MoveUpwardBehavior"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:background="@color/sky_blue"
-            app:backgroundTint="@color/sky_blue"
-            android:tint="@color/automation_white"
-            android:gravity="center_vertical"
-            app:srcCompat="@drawable/icn_add"
-            app:fabSize="normal"/>
+            android:layout_gravity="center_horizontal|bottom"
+            android:visibility="visible"
+            app:floating_background_color="@color/automation_white"
+            app:floating_left_icon="@drawable/plusbutton"
+            app:floating_title="@string/add_schedule"
+            app:floating_title_color="@color/automation_black">
+
+        </com.akhilpatoliya.floating_text_button.FloatingTextButton>
     </LinearLayout>
 
     <View

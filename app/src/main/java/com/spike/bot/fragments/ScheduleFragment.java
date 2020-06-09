@@ -5,11 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.UnderlineSpan;
@@ -25,11 +20,27 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.akhilpatoliya.floating_text_button.FloatingTextButton;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.kp.core.ActivityHelper;
+import com.kp.core.GetJsonTask;
+import com.kp.core.GetJsonTask2;
+import com.kp.core.ICallBack;
+import com.kp.core.ICallBack2;
+import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.activity.Main2Activity;
+import com.spike.bot.activity.RoomEditActivity_v2;
 import com.spike.bot.activity.ScheduleActivity;
 import com.spike.bot.activity.ScheduleListActivity;
 import com.spike.bot.adapter.ScheduleAdapter;
@@ -40,20 +51,12 @@ import com.spike.bot.core.Constants;
 import com.spike.bot.core.JsonHelper;
 import com.spike.bot.listener.ResponseErrorCode;
 import com.spike.bot.model.Device;
+import com.spike.bot.model.RoomVO;
 import com.spike.bot.model.ScheduleVO;
-import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.GetJsonTask2;
-import com.kp.core.ICallBack;
-import com.kp.core.ICallBack2;
-import com.kp.core.dialog.ConfirmDialog;
-import com.spike.bot.model.User;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -87,7 +90,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
     DashBoardFragment.OnHeadlineSelectedListener mCallback;
     private Socket mSocket;
-    private FloatingActionButton mFab;
+    private FloatingTextButton mFab;
     View view;
 
     // This event fires 1st, before creation of fragment or any views
@@ -179,7 +182,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInartanceState) {
         view = inflater.inflate(R.layout.fragment_schedule, container, false);
         try {
             isMood = getArguments().getBoolean("isMood");
@@ -532,14 +535,14 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         if (isFilterType) {
             btnDeviceDialog.setBackground(getResources().getDrawable(R.drawable.drawable_gray_schedule));
             btnSensorDialog.setBackground(getResources().getDrawable(R.drawable.drawable_blue_schedule));
-            btnDeviceDialog.setTextColor(getResources().getColor(R.color.txtPanal));
+            btnDeviceDialog.setTextColor(getResources().getColor(R.color.solid_blue));
             btnSensorDialog.setTextColor(getResources().getColor(R.color.automation_white));
         } else {
             btnDeviceDialog.setBackground(getResources().getDrawable(R.drawable.drawable_blue_schedule));
             btnSensorDialog.setBackground(getResources().getDrawable(R.drawable.drawable_gray_schedule));
 
             btnDeviceDialog.setTextColor(getResources().getColor(R.color.automation_white));
-            btnSensorDialog.setTextColor(getResources().getColor(R.color.txtPanal));
+            btnSensorDialog.setTextColor(getResources().getColor(R.color.solid_blue));
         }
 
     }
@@ -1017,45 +1020,12 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         ChatApplication.logDisplay(" action " + action);
         if (action.equalsIgnoreCase("active")) {
             changeScheduleStatus(scheduleVO);
-        } else if (action.equalsIgnoreCase("edit")) {
-            String room_device_id = "";
-            Gson gson = new Gson();
-            List<Device> deviceList = gson.fromJson(scheduleVO.getDevicesList(), new TypeToken<List<Device>>() {}.getType());
-
-            for (int i = 0; i < deviceList.size(); i++) {
-                if (i == 0) {
-                    room_device_id = deviceList.get(i).getPanelDeviceId();
-                } else {
-                    room_device_id = room_device_id + "," + deviceList.get(i).getPanelDeviceId();
-                }
-            }
-            scheduleVO.setRoom_device_id(room_device_id);
-            ChatApplication.isScheduleNeedResume = true;
-            Intent intent = new Intent(getActivity(), ScheduleActivity.class);
-            intent.putExtra("scheduleVO", scheduleVO);
-            intent.putExtra("isMap", true);
-            intent.putExtra("isEdit", true);
-
-            if (isMoodAdapter) {
-                intent.putExtra("isMoodAdapter", isMoodAdapter);
-            } else {
-                intent.putExtra("isMoodAdapter", isMood);
-            }
-            startActivity(intent);
+        } else if (action.equalsIgnoreCase("edit"))
+        {
+            showBottomSheetDialog(scheduleVO,isMood);
         } else if (action.equalsIgnoreCase("delete")) {
-            ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
-                @Override
-                public void onConfirmDialogYesClick() {
-                    deleteSchedule(scheduleVO.getSchedule_id(), scheduleVO.getIs_timer());
-                }
+        } else if (action.equalsIgnoreCase("log")){
 
-
-                @Override
-                public void onConfirmDialogNoClick() {
-                }
-
-            });
-            newFragment.show(getActivity().getFragmentManager(), "dialog");
         }
 
     }
@@ -1064,4 +1034,96 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     public void itemClicked(final ScheduleVO scheduleVO, String action) {
 
     }
+
+    public void showBottomSheetDialog(final ScheduleVO scheduleVO, boolean isMood) {
+        View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
+
+        TextView txt_bottomsheet_title = view.findViewById(R.id.txt_bottomsheet_title);
+        LinearLayout linear_bottom_edit = view.findViewById(R.id.linear_bottom_edit);
+        LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
+        LinearLayout linear_bottom_log = view.findViewById(R.id.linear_bottom_log);
+        View view_log = view.findViewById(R.id.view_log);
+
+        view_log.setVisibility(View.VISIBLE);
+        linear_bottom_log.setVisibility(View.VISIBLE);
+
+        BottomSheetDialog dialog = new BottomSheetDialog(getActivity(),R.style.AppBottomSheetDialogTheme);
+        dialog.setContentView(view);
+        dialog.show();
+
+        txt_bottomsheet_title.setText("What would you like to do in" + " " +scheduleVO.getSchedule_name() + "" +" " +"?");
+        linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                String room_device_id = "";
+                Gson gson = new Gson();
+                List<Device> deviceList = gson.fromJson(scheduleVO.getDevicesList(), new TypeToken<List<Device>>() {}.getType());
+
+                for (int i = 0; i < deviceList.size(); i++) {
+                    if (i == 0) {
+                        room_device_id = deviceList.get(i).getPanelDeviceId();
+                    } else {
+                        room_device_id = room_device_id + "," + deviceList.get(i).getPanelDeviceId();
+                    }
+                }
+                scheduleVO.setRoom_device_id(room_device_id);
+                ChatApplication.isScheduleNeedResume = true;
+                Intent intent = new Intent(getActivity(), ScheduleActivity.class);
+                intent.putExtra("scheduleVO", scheduleVO);
+                intent.putExtra("isMap", true);
+                intent.putExtra("isEdit", true);
+
+                if (isMoodAdapter) {
+                    intent.putExtra("isMoodAdapter", isMoodAdapter);
+                } else {
+                    intent.putExtra("isMoodAdapter", isMood);
+                }
+                startActivity(intent);
+            }
+        });
+
+        linear_bottom_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
+                    @Override
+                    public void onConfirmDialogYesClick() {
+                        deleteSchedule(scheduleVO.getSchedule_id(), scheduleVO.getIs_timer());
+                    }
+
+
+                    @Override
+                    public void onConfirmDialogNoClick() {
+                    }
+
+                });
+                newFragment.show(getActivity().getFragmentManager(), "dialog");
+            }
+        });
+
+        linear_bottom_log.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                Intent intent = new Intent(getActivity(), DeviceLogActivity.class);
+                intent.putExtra("Schedule_id", "" + scheduleVO.getSchedule_id());
+                intent.putExtra("ROOM_ID", "" + scheduleVO.getSchedule_id());
+                intent.putExtra("activity_type", "" + scheduleVO.getIs_timer());
+                intent.putExtra("isRoomName", "" + scheduleVO.getSchedule_name());
+//                                if (scheduleArrayList.get(holder.iv_schedule_dots.getId()).getIs_timer() == 0) {
+                intent.putExtra("isCheckActivity", "schedule");
+//                                } else {
+//                                    intent.putExtra("isCheckActivity", "Timer");
+//                                }
+                startActivity(intent);
+            }
+        });
+    }
+
+
+
+
+
 }

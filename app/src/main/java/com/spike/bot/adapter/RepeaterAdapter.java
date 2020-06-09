@@ -2,9 +2,6 @@ package com.spike.bot.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.v7.view.ContextThemeWrapper;
-import android.support.v7.widget.AppCompatTextView;
-import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -12,12 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
-import android.widget.TextView;
+
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.R;
-import com.spike.bot.core.Common;
-import com.spike.bot.listener.SelectCamera;
-import com.spike.bot.model.CameraVO;
 import com.spike.bot.model.RepeaterModel;
 
 import java.util.ArrayList;
@@ -51,7 +48,7 @@ public class RepeaterAdapter extends RecyclerView.Adapter<RepeaterAdapter.Sensor
 
         holder.txtName.setText(arrayListLog.get(position).getRepeator_name());
         if(arrayListLog.get(position).getIs_active().equals("y")){
-            holder.imgRepeatar.setImageResource(R.drawable.repeater);
+            holder.imgRepeatar.setImageResource(R.drawable.repeaters);
         }else {
             holder.imgRepeatar.setImageResource(R.drawable.repeater_with_red_cross);
         }
@@ -61,7 +58,9 @@ public class RepeaterAdapter extends RecyclerView.Adapter<RepeaterAdapter.Sensor
             @Override
             public void onClick(View v) {
 
-                PopupMenu popup = new PopupMenu(mContext, v);
+                moreOption.moreOption(arrayListLog.get(holder.imgEditRepeater.getId()),holder.imgEditRepeater.getId(),1);
+
+              /*  PopupMenu popup = new PopupMenu(mContext, v);
 
                 @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(mContext, R.style.PopupMenu);
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
@@ -88,7 +87,7 @@ public class RepeaterAdapter extends RecyclerView.Adapter<RepeaterAdapter.Sensor
                     }
                 });
 
-                popup.show();
+                popup.show();*/
 
             }
         });

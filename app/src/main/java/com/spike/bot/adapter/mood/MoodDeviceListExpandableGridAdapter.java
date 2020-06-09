@@ -2,11 +2,6 @@ package com.spike.bot.adapter.mood;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.os.Build;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +12,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
@@ -47,7 +45,7 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
     private final SectionStateChangeListener mSectionStateChangeListener;
 
     //view type
-    private static final int VIEW_TYPE_SECTION = R.layout.row_room_home;
+    private static final int VIEW_TYPE_SECTION = R.layout.row_room_moode_edit;
     private static final int VIEW_TYPE_ITEM = R.layout.row_room_switch_item; //TODO : change this
     private static final int VIEW_TYPE_PANEL = R.layout.row_room_panel;
 
@@ -160,11 +158,29 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                 });
                 holder.sectionToggleButton.setChecked(section.isExpanded());
 
+                if (section.isExpanded()) {
+
+                    holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side_mood));
+                    // holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side));
+                } else {
+
+                    holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow));
+
+                }
+
+
                 break;
             case VIEW_TYPE_PANEL:
                 final PanelVO panel1 = (PanelVO) mDataArrayList.get(position);
                 holder.sectionTextView.setText(panel1.getPanelName());
                 holder.iv_room_panel_onoff.setVisibility(View.GONE);
+
+                if (position == 0) {
+                    holder.view_line_top.setVisibility(View.GONE);
+                    holder.view_line_top.setBackgroundResource(R.color.automation_white);
+                } else {
+                    holder.view_line_top.setVisibility(View.VISIBLE);
+                }
 
                 if (panel1.isActivePanel()) {
                     holder.sectionTextView.setVisibility(View.VISIBLE);
@@ -307,7 +323,7 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
         //for section
         ToggleButton sectionToggleButton;
         TextView sectionTextView, text_section_on_off, text_section_edit, itemTextView;
-        LinearLayout ll_room_item;
+        LinearLayout ll_room_item,ll_root_view_section;
         RelativeLayout rel_main_view;
 
         public ViewHolder(View view, int viewType) {
@@ -332,7 +348,7 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
             } else {
                 view_line_top = view.findViewById(R.id.view_line_top);
                 sectionTextView = view.findViewById(R.id.text_section);
-
+                ll_root_view_section= view.findViewById(R.id.ll_root_view_section);
                 text_section_on_off = view.findViewById(R.id.text_section_on_off);
                 text_section_edit = view.findViewById(R.id.text_section_edit);
                 img_room_delete = view.findViewById(R.id.iv_room_delete);

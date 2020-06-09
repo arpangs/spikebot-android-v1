@@ -6,14 +6,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatTextView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +19,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
@@ -40,6 +43,7 @@ import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.RepeaterModel;
+import com.spike.bot.model.UnassignedListRes;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -107,7 +111,9 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
         MenuItem menuAdd = menu.findItem(R.id.action_add);
         MenuItem actionEdit = menu.findItem(R.id.actionEdit);
         MenuItem action_save = menu.findItem(R.id.action_save);
-        menuAdd.setVisible(true);
+        MenuItem menuaddtext = menu.findItem(R.id.action_add_text);
+        menuAdd.setVisible(false);
+        menuaddtext.setVisible(true);
         action_save.setVisible(false);
         actionEdit.setVisible(false);
         return super.onCreateOptionsMenu(menu);
@@ -116,7 +122,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_add) {
+        if (id == R.id.action_add_text) {
             showOptionDialog();
             return true;
         }
@@ -127,9 +133,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
     public void startSocketConnection() {
         ChatApplication app = (ChatApplication) getApplication();
         mSocket = app.getSocket();
-        if (mSocket != null) {
-            mSocket.on("configureDevice", configureDevice);
-        }
+
     }
 
     @Override
@@ -234,7 +238,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
 
     private void showConfigAlert(String alertMessage) {
 
-        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(alertMessage);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
@@ -259,7 +263,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
         dialog.setContentView(R.layout.dialog_panel_option);
 
         TextView txtDialogTitle =  dialog.findViewById(R.id.txt_dialog_title);
-        txtDialogTitle.setText("Select Type");
+        txtDialogTitle.setText("Repeater");
 
         Button btn_sync = dialog.findViewById(R.id.btn_panel_sync);
         Button btn_unaasign = dialog.findViewById(R.id.btn_panel_unasigned);
@@ -271,6 +275,9 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                if (mSocket != null) {
+                    mSocket.on("configureDevice", configureDevice);
+                }
                 getconfigureRepeatorRequest();
             }
         });
@@ -331,6 +338,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                mSocket.off("configureDevice", configureDevice);
             }
         });
 
@@ -338,6 +346,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                mSocket.off("configureDevice", configureDevice);
             }
         });
         btn_save.setOnClickListener(new View.OnClickListener() {
@@ -350,6 +359,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
                     saveRepeater(dialog, module_type, edt_door_name.getText().toString(), edt_door_module_id.getText().toString());
                     dialog.dismiss();
                     ChatApplication.closeKeyboard(RepeaterActivity.this);
+                    mSocket.off("configureDevice", configureDevice);
                 }
             }
         });
@@ -578,11 +588,43 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
 
         //edit name
         if (type == 1) {
-            showEditNameDailog(repeaterModel, postion);
-        } else {
+            showBottomSheetDialog(repeaterModel,postion);
+        } /*else {
             deleteRepaterDialog(repeaterModel, postion);
-        }
+        }*/
     }
+
+    public void showBottomSheetDialog(RepeaterModel repeaterModel, int postion) {
+        View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
+
+        TextView txt_bottomsheet_title = view.findViewById(R.id.txt_bottomsheet_title);
+        LinearLayout linear_bottom_edit = view.findViewById(R.id.linear_bottom_edit);
+        LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
+
+        TextView txt_edit = view.findViewById(R.id.txt_edit);
+
+        BottomSheetDialog dialog = new BottomSheetDialog(RepeaterActivity.this,R.style.AppBottomSheetDialogTheme);
+        dialog.setContentView(view);
+        dialog.show();
+
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + repeaterModel.getRepeator_name() + " " +"?");
+        linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                showEditNameDailog(repeaterModel,postion);
+            }
+        });
+
+        linear_bottom_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                deleteRepaterDialog(repeaterModel, postion);
+            }
+        });
+    }
+
 
     /*delete dialog*/
     private void deleteRepaterDialog(RepeaterModel repeaterModel, int postion) {

@@ -3,6 +3,13 @@
 
     <string name="app_name">Spike Bot</string>
 
+    <string name="welcome">Welcome.</string>
+    <string name="automate">Automate everyting.</string>
+    <string name="login">Login</string>
+    <string name="signup">Sign-up</string>
+    <string name="forgotpassword">Forgot your password?</string>
+    <string name="lbl_password">Forgot Password</string>
+
     <string name="connect_cloud">Connecting to cloud...</string>
     <string name="search_home_controller">Searching for home controller...</string>
 
@@ -29,6 +36,7 @@
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="crash_toast_text">Crash Report automatically sent to server, It will be resolved shortly.</string>
+    <string name="default_notification_channel_id">Spike Bot</string>
 
     <string name="login_success">Login Successfully</string>
     <string name="enter_panel_name">Enter Panel Name</string>
@@ -40,6 +48,7 @@
 
     <string name="menu_dashboard">Dashboard</string>
     <string name="menu_dashboard1">DASHBOARD</string>
+    <string name="menu_home">Home</string>
     <string name="menu_mood">Mood</string>
     <string name="menu_mood1">MOOD</string>
     <string name="menu_schedule">Schedule</string>
@@ -64,10 +73,15 @@
     <string name="curtain">curtain</string>
     <string name="door_sensor">door_sensor</string>
     <string name="temp_sensor">temp_sensor</string>
-    <string name="add_jetson">Add Jetson</string>
-    <string name="add">Add</string>
+    <string name="add_jetson">Add Smart Camera</string>
+    <string name="add">ADD</string>
     <string name="cancel">Cancel</string>
-    <string name="save">Save</string>
+    <string name="save">SAVE</string>
     <string name="batter_level">Battery Level</string>
+    <string name="add_device">ADD A DEVICE</string>
+    <string name="add_mood">ADD A MOOD</string>
+    <string name="add_schedule">ADD A SCHEDULE</string>
+    <string name="add_smartremote">ADD A SMART REMOTE</string>
+    <string name="connected">CONNECTED TO</string>
 
 </resources>

@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <android.support.v7.widget.CardView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <androidx.cardview.widget.CardView
         android:id="@+id/edt_txt_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="4dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="@dimen/_10sdp"
         android:background="@color/automation_white"
         android:orientation="vertical"
         app:cardCornerRadius="8dp"
@@ -26,23 +28,25 @@
 
             <ImageView
                 android:id="@+id/up_device_icon"
-                android:layout_weight="0.2"
-                android:src="@drawable/off_door"
                 android:layout_width="0dp"
-                android:layout_height="52dp" />
+                android:layout_height="52dp"
+                android:layout_weight="0.2"
+                android:src="@drawable/off_door" />
 
             <LinearLayout
                 android:layout_weight="0.6"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:gravity="center_vertical"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/up_device_name"
-                    android:textColor="@color/txtPanal"
+                    android:textColor="@color/signupblack"
                     android:text="Door"
                     android:ellipsize="end"
                     android:maxLines="1"
+                    android:gravity="center"
                     android:singleLine="true"
                     android:textSize="@dimen/_16sdp"
                     android:layout_width="wrap_content"
@@ -53,23 +57,32 @@
                     android:layout_gravity="bottom"
                     android:gravity="bottom"
                     android:singleLine="true"
-                    android:textSize="@dimen/_12sdp"
+                    android:textSize="@dimen/_10sdp"
+                    android:visibility="visible"
+                    android:layout_marginRight="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent" />
 
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/up_save"
-                android:layout_weight="0.2"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:src="@drawable/icn_empty_plus"
-                android:layout_width="0dp"
-                android:layout_height="32dp" />
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/up_save"
+                    android:src="@drawable/edit_gray"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp" />
+
+            </LinearLayout>
+
 
 
         </LinearLayout>
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
 </RelativeLayout>

@@ -91,7 +91,7 @@ public class Common {
     public static String TAG = "isReachableURL";
 
     public static int getDoorIcon(int status) {
-        return status == 0 ? R.drawable.on_door : R.drawable.off_door;
+        return status == 0 ? R.drawable.dooron : R.drawable.dooroff;
     }
 
     /**
@@ -100,26 +100,52 @@ public class Common {
      * @return
      */
     public static int getIcon(int status, String type) {
-        int resource = R.drawable.bulb_on;
+        int resource = R.drawable.oncfl;
         ChatApplication.logDisplay("type is "+type);
         switch (status) {
 
             case -1:
-                switch (type) {
+                switch (type)
+                {
                     case "curtain":
-                        resource = R.drawable.curtain_closed;
+                        resource = R.drawable.curtain_closed_inactive;
+                        break;
+                    case "bulb":
+                        resource = R.drawable.cfl_off_inactive;
+                        break;
+                    case "fan":
+                        resource = R.drawable.fan_off_inactive;
+                        break;
+                    case "ac":
+                        resource = R.drawable.ac_off_inactive;
+                        break;
+                    case "fridge":
+                        resource = R.drawable.fridge_off_inactive;
+                        break;
+                    case "tv":
+                        resource = R.drawable.tv_off_inactive;
+                        break;
+                    case "oven":
+                        resource = R.drawable.microwave_oven_off_inactive;
+                        break;
+                    case "cfl":
+                        resource = R.drawable.cfl_off_inactive;
+                        break;
+                    case "generic":
+                        resource = R.drawable.genericelectricdevice_off_inactive;
                         break;
                 }
+                break;
             case 0:
                 switch (type) {
                     case "bulb":
-                        resource = R.drawable.bulb_off;
+                        resource = R.drawable.offcfl;
                         break;
                     case "ac":
                         resource = R.drawable.ac_off;
                         break;
                     case "fan":
-                        resource = R.drawable.fan_off;
+                        resource = R.drawable.offfan;
                         break;
                     case "fridge":
                         resource = R.drawable.fridge_off;
@@ -131,7 +157,7 @@ public class Common {
                         resource = R.drawable.microwave_oven_off;
                         break;
                     case "cfl":
-                        resource = R.drawable.cfl_off;
+                        resource = R.drawable.offcfl;
                         break;
                     case "generic":
                         resource = R.drawable.genericelectricdevice_off;
@@ -150,11 +176,14 @@ public class Common {
                         resource = R.drawable.off_temperature;
                         break;
                     case "door_sensor":
-                        resource = R.drawable.on_door;
+                        resource = R.drawable.dooroff;
                         break;
 
                     case "doorsensor":
-                        resource = R.drawable.on_door;
+                        resource = R.drawable.dooroff;
+                        break;
+                    case "beacon_scanner":
+                        resource = R.drawable.beaconscanner;
                         break;
                     case "unavailable":
                         resource = R.drawable.icn_dead_temp;
@@ -172,13 +201,13 @@ public class Common {
                         resource = R.drawable.icon_multi_sensor;
                         break;
                     case "heavy_load":
-                        resource = R.drawable.off;
+                        resource = R.drawable.high_wolt_off;
                         break;
                     case "heavyload":
-                        resource = R.drawable.off;
+                        resource = R.drawable.high_wolt_off;
                         break;
                     case "double_heavy_load":
-                        resource = R.drawable.off;
+                        resource = R.drawable.high_wolt_off;
                         break;
 
                     case "Smart Bulb":
@@ -189,7 +218,7 @@ public class Common {
                         resource = R.drawable.door_locked;
                         break;
 
-                    case "lockOnly":
+                    case "lock":
                         resource = R.drawable.lock_only;
                         break;
 
@@ -206,7 +235,7 @@ public class Common {
                         break;
 
                     case "curtain":
-                        resource = R.drawable.curtain_closed;
+                        resource = R.drawable.curtains_off;
                         break;
                     case "repeater":
                         resource = R.drawable.gray_repeater;
@@ -216,20 +245,20 @@ public class Common {
                         break;
 
                     default:
-                        resource = R.drawable.bulb_off;
+                        resource = R.drawable.offcfl;
                         break;
                 }
                 break;
             case 1:
                 switch (type) {
                     case "bulb":
-                        resource = R.drawable.bulb_on;
+                        resource = R.drawable.oncfl;
                         break;
                     case "ac":
-                        resource = R.drawable.ac_on;
+                        resource = R.drawable.ac;
                         break;
                     case "fan":
-                        resource = R.drawable.fan_on;
+                        resource = R.drawable.onfan;
                         break;
                     case "fridge":
                         resource = R.drawable.fridge_on;
@@ -241,13 +270,13 @@ public class Common {
                         resource = R.drawable.microwave_oven_on;
                         break;
                     case "cfl":
-                        resource = R.drawable.cfl_on;
+                        resource = R.drawable.oncfl;
                         break;
                     case "generic":
                         resource = R.drawable.genericelectricdevice_on;
                         break;
                     case "camera":
-                        resource = R.drawable.camera_on;
+                        resource = R.drawable.camera;
                         break;
                     case "work":
                         resource = R.drawable.smily_yello;
@@ -265,10 +294,10 @@ public class Common {
                         resource = R.drawable.on_temperature;
                         break;
                     case "door_sensor":
-                        resource = R.drawable.off_door;
+                        resource = R.drawable.dooron;
                         break;
                     case "doorsensor":
-                        resource = R.drawable.off_door;
+                        resource = R.drawable.dooron;
                         break;
                     case "unavailable":
                         resource = R.drawable.icn_dead_temp;
@@ -284,11 +313,11 @@ public class Common {
                         break;
 
                     case "heavy_load":
-                        resource = R.drawable.on;
+                        resource = R.drawable.high_wolt_on;
                         break;
 
                     case "heavyload":
-                        resource = R.drawable.on;
+                        resource = R.drawable.high_wolt_on;
                         break;
 
                     case "Smart Bulb":
@@ -299,7 +328,7 @@ public class Common {
                         resource = R.drawable.door_unlocked;
                         break;
 
-                    case "lockOnly":
+                    case "lock":
                         resource = R.drawable.unlock_only;
                         break;
                     case "gas_sensor":
@@ -314,10 +343,10 @@ public class Common {
                         resource = R.drawable.drop;
                         break;
                     case "curtain":
-                        resource = R.drawable.curtain_open;
+                        resource = R.drawable.curtains_on;
                         break;
                     default:
-                        resource = R.drawable.bulb_on;
+                        resource = R.drawable.oncfl;
                         break;
                 }
                 break;
@@ -335,18 +364,18 @@ public class Common {
 
 
     public static int getIconForEditRoom(int status, String type) {
-        int resource = R.drawable.bulb_on;
+        int resource = R.drawable.oncfl;
         switch (status) {
             case 0:
                 switch (type) {
                     case "bulb":
-                        resource = R.drawable.bulb_off;
+                        resource = R.drawable.offcfl;
                         break;
                     case "ac":
                         resource = R.drawable.ac_off;
                         break;
                     case "fan":
-                        resource = R.drawable.fan_off;
+                        resource = R.drawable.offfan;
                         break;
                     case "fridge":
                         resource = R.drawable.fridge_off;
@@ -358,7 +387,7 @@ public class Common {
                         resource = R.drawable.microwave_oven_off;
                         break;
                     case "cfl":
-                        resource = R.drawable.cfl_off;
+                        resource = R.drawable.offcfl;
                         break;
                     case "generic":
                         resource = R.drawable.genericelectricdevice_off;
@@ -376,7 +405,7 @@ public class Common {
                         resource = R.drawable.off_temperature;
                         break;
                     case "doorsensor":
-                        resource = R.drawable.off_door;
+                        resource = R.drawable.dooroff;
                         break;
                     case "unavailable":
                         resource = R.drawable.icn_dead_temp;
@@ -391,7 +420,7 @@ public class Common {
                         resource = R.drawable.icon_multi_sensor;
                         break;
                     case "heavyload":
-                        resource = R.drawable.off;
+                        resource = R.drawable.high_wolt_off;
                         break;
 
                     case "Smart Bulb":
@@ -402,15 +431,17 @@ public class Common {
                         resource = R.drawable.door_locked;
                         break;
 
-                    case "lockOnly":
+                    case "lock":
                         resource = R.drawable.lock_only;
                         break;
                     case "curtain":
-                        resource = R.drawable.curtain_closed;
+                        resource = R.drawable.curtains_off;
                         break;
 
+
+
                     default:
-                        resource = R.drawable.bulb_off;
+                        resource = R.drawable.offcfl;
                         break;
                 }
                 break;
@@ -426,7 +457,7 @@ public class Common {
      * @return drawable icon
      */
     public static int getIconInActive(int status, String sensorType) {
-        int resource = R.drawable.bulb_on;
+        int resource = R.drawable.oncfl;
         switch (sensorType) {
             case "remote":
                 resource = R.drawable.ac_remote_off_inactive;
@@ -467,9 +498,18 @@ public class Common {
             case "heavy_load":
                 resource = R.drawable.headload_inactive;
                 break;
-
+            case "curtain":
+               resource = R.drawable.curtain_closed_inactive;
+               break;
+            case "lock":
+                resource = R.drawable.gray_lock_disabled;
+                break;
             case "multisensor":
                 resource = R.drawable.heavuload_inactive;
+                break;
+
+            case "generic":
+                resource = R.drawable.genericelectricdevice_off_inactive;
                 break;
         }
         return resource;
@@ -504,7 +544,7 @@ public class Common {
             textview.setTextColor(mContext.getResources().getColor(R.color.automation_white));
         } else {
             textview.setBackground(mContext.getResources().getDrawable(R.drawable.rounded_blue_circle_border));
-            textview.setTextColor(mContext.getResources().getColor(R.color.sky_blue));
+            textview.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
         }
         textview.setTag(flag);
 
@@ -516,7 +556,60 @@ public class Common {
      */
     public static String getDaysString(String schedule_device_day) {
         String deviceString = "";
-        String start = "<font color=\"#FFBC38\"><b>";//FFBC38 008BE0
+        String start = "<font color=\"#0279e1\"><b>";//FFBC38 008BE0
+        String end = "</b></font>";
+        if (schedule_device_day.contains("0")) {
+            deviceString = deviceString + start + "S " + end;
+        } else {
+            deviceString = deviceString + "S ";
+        }
+
+        if (schedule_device_day.contains("1")) {
+            deviceString = deviceString + start + "&nbsp;M " + end;
+        } else {
+            deviceString = deviceString + "&nbsp;M ";
+        }
+
+        if (schedule_device_day.contains("2")) {
+            deviceString = deviceString + start + "&nbsp;T " + end;
+        } else {
+            deviceString = deviceString + "&nbsp;T ";
+        }
+
+        if (schedule_device_day.contains("3")) {
+            deviceString = deviceString + start + "&nbsp;W " + end;
+        } else {
+            deviceString = deviceString + "&nbsp;W ";
+        }
+
+        if (schedule_device_day.contains("4")) {
+            deviceString = deviceString + start + "&nbsp;T " + end;
+        } else {
+            deviceString = deviceString + "&nbsp;T ";
+        }
+
+        if (schedule_device_day.contains("5")) {
+            deviceString = deviceString + start + "&nbsp;F " + end;
+        } else {
+            deviceString = deviceString + "&nbsp;F ";
+        }
+
+        if (schedule_device_day.contains("6")) {
+            deviceString = deviceString + start + "&nbsp;S " + end;
+        } else {
+            deviceString = deviceString + "&nbsp;S ";
+        }
+        return deviceString;
+    }
+
+
+    /**
+     * @param schedule_device_day
+     * @return
+     */
+    public static String getDaysStringGRay(String schedule_device_day) {
+        String deviceString = "";
+        String start = "<font color=\"#808080\"><b>";//FFBC38 008BE0
         String end = "</b></font>";
         if (schedule_device_day.contains("0")) {
             deviceString = deviceString + start + "S " + end;
@@ -662,14 +755,14 @@ public class Common {
 
     public static String getTimeHH(String value) {
         //Nov 11, 2019 52:52
-        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd H:mm");
         Date newDate= null;
         try {
             newDate = spf.parse(value);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        spf= new SimpleDateFormat("hh:mm");
+        spf= new SimpleDateFormat("h:mm");
         String date = spf.format(newDate);
         return date;
     }
@@ -697,7 +790,7 @@ public class Common {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        spf= new SimpleDateFormat("MMM dd, yyyy");
+        spf= new SimpleDateFormat("dd-MM-yy");
         String date = spf.format(newDate);
         return date;
     }
@@ -705,14 +798,29 @@ public class Common {
 
     public static String getConvertDateForScheduleHour(String value) {
         //Nov 11, 2019 52:52
-        SimpleDateFormat spf=new SimpleDateFormat("HH:mm");
+        SimpleDateFormat spf=new SimpleDateFormat("H:mm");
         Date newDate= null;
         try {
             newDate = spf.parse(value);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        spf= new SimpleDateFormat("hh:mm a");
+        spf= new SimpleDateFormat("h:mm a");
+        String date = spf.format(newDate);
+        return date;
+    }
+
+
+    public static String getConvertDateForScheduleTimer(String value) {
+        //Nov 11, 2019 52:52
+        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date newDate= null;
+        try {
+            newDate = spf.parse(value);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        spf= new SimpleDateFormat("h:mm a");
         String date = spf.format(newDate);
         return date;
     }
@@ -775,7 +883,7 @@ public class Common {
     }
 
     public static String getF() {
-        return "℉";
+        return "F";
     }
 
 

@@ -1,20 +1,9 @@
 package com.spike.bot.activity;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ContextThemeWrapper;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -23,14 +12,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
-import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
@@ -52,9 +45,11 @@ import com.spike.bot.dialog.ICallback;
 import com.spike.bot.model.DeviceVO;
 import com.spike.bot.model.PanelVO;
 import com.spike.bot.model.RoomVO;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 /**
@@ -107,7 +102,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         mMessagesView.setLayoutManager(new LinearLayoutManager(this));
         dialog = new Dialog(this);
 
-        et_toolbar_title.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+       // et_toolbar_title.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         et_toolbar_title.setText(room.getRoomName());
         InputFilter[] filterArray = new InputFilter[1];
         filterArray[0] = new InputFilter.LengthFilter(25); //Set room name max length 25
@@ -169,7 +164,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                 finish();
             }
         });
-
+        btn_edit_room_delete.setVisibility(View.GONE);
         btn_edit_room_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

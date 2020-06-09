@@ -2,8 +2,6 @@ package com.spike.bot.adapter.irblaster;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.v7.view.ContextThemeWrapper;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -14,6 +12,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.kp.core.DateHelper;
 import com.spike.bot.R;

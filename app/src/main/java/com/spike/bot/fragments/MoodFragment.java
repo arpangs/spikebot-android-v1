@@ -6,11 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,16 +14,30 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.akhilpatoliya.floating_text_button.FloatingTextButton;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.kp.core.ActivityHelper;
+import com.kp.core.GetJsonTask;
+import com.kp.core.GetJsonTask2;
 import com.kp.core.GetJsonTaskRemote;
+import com.kp.core.ICallBack;
+import com.kp.core.ICallBack2;
+import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.AddMoodActivity;
 import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.activity.HeavyLoad.HeavyLoadDetailActivity;
-import com.spike.bot.activity.Main2Activity;
+import com.spike.bot.activity.RoomEditActivity_v2;
 import com.spike.bot.activity.ScheduleListActivity;
 import com.spike.bot.activity.SmartColorPickerActivity;
 import com.spike.bot.activity.ir.blaster.IRBlasterRemote;
@@ -40,18 +49,11 @@ import com.spike.bot.core.JsonHelper;
 import com.spike.bot.customview.recycle.ItemClickMoodListener;
 import com.spike.bot.dialog.FanDialog;
 import com.spike.bot.dialog.ICallback;
-import com.spike.bot.listener.FilterMarkAll;
+import com.spike.bot.dialog.onCallback;
 import com.spike.bot.listener.ResponseErrorCode;
 import com.spike.bot.model.DeviceVO;
 import com.spike.bot.model.PanelVO;
 import com.spike.bot.model.RoomVO;
-import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.GetJsonTask2;
-import com.kp.core.ICallBack;
-import com.kp.core.ICallBack2;
-import com.kp.core.dialog.ConfirmDialog;
-import com.spike.bot.model.SendRemoteCommandReq;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -68,9 +70,9 @@ import io.socket.emitter.Emitter;
 public class MoodFragment extends Fragment implements ItemClickMoodListener ,SwipeRefreshLayout.OnRefreshListener {
 
     private RecyclerView mMessagesView;
-    private LinearLayout txt_empty_schedule;
+    private RelativeLayout txt_empty_schedule;
     private ImageView empty_add_image;
-    FloatingActionButton mFab;
+    FloatingTextButton mFab;
     private Socket mSocket;
 
     DashBoardFragment.OnHeadlineSelectedListener mCallback;
@@ -162,7 +164,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
 
         mMessagesView =  view.findViewById(R.id.messages);
         mMessagesView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        txt_empty_schedule = view.findViewById(R.id.txt_empty_schedule);
+        txt_empty_schedule = view.findViewById(R.id.txt_empty_mood);
         empty_add_image =  view.findViewById(R.id.empty_add_image);
         mFab = view.findViewById(R.id.fab);
         txt_empty_schedule.setVisibility(View.GONE);
@@ -263,35 +265,8 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
 
         }else if(action.equalsIgnoreCase("deleteclick")){
 
-          String msg ="";
-            if(roomVO.getIs_schedule()==1){
-                msg = "You have schedule set on this mood.\nAre you sure you want to delete mood ?";
-            }
-            else{
-                msg = "Are you sure you want to delete mood ?";
-            }
-            ConfirmDialog newFragment = new ConfirmDialog("Yes","No" ,"Confirm", msg,new ConfirmDialog.IDialogCallback() {
-                @Override
-                public void onConfirmDialogYesClick() {
-                    deleteMood(roomVO.getRoomId(),panel_id,roomVO.getRoomName());
-                }
-                @Override
-                public void onConfirmDialogNoClick() {
-                }
-
-            });
-            newFragment.show(getActivity().getFragmentManager(), "dialog");
-
         } else if(action.equalsIgnoreCase("editclick")){
-
-            Intent intent = new Intent(getActivity(), AddMoodActivity.class);
-            intent.putExtra("editMode",true);
-            intent.putExtra("moodVO",roomVO);
-            intent.putExtra("panel_id",panel_id);
-            intent.putExtra("panel_name",panel_name);
-            intent.putExtra("isMap",true);
-            intent.putExtra("isMoodAdapter",true);
-            startActivity(intent);//
+            showBottomSheetDialog(roomVO);
 
         }else if(action.equalsIgnoreCase("imgLog")){
             Intent intent = new Intent(getActivity(),DeviceLogActivity.class);
@@ -310,6 +285,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             intent.putExtra("moodName",roomVO.getRoomName());
             intent.putExtra("roomName",roomVO.getRoomName());
             intent.putExtra("moodId",roomVO.getRoomId());
+            intent.putExtra("selection", 2);
             intent.putExtra("isMoodAdapter",true); //added in last call
             intent.putExtra("moodId2",roomVO.getRoomId());
             intent.putExtra("moodId3",roomVO.getRoomId());
@@ -408,9 +384,9 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
             if (!TextUtils.isEmpty(item.getDevice_sub_status())) {
                 getDeviceSpecificValue = Integer.parseInt(item.getDevice_sub_status());
             }
-            FanDialog fanDialog = new FanDialog(getActivity(), item.getDeviceId(),  getDeviceSpecificValue, new ICallback() {
+            FanDialog fanDialog = new FanDialog(getActivity(), item.getDeviceId(), item.getDeviceName() ,getDeviceSpecificValue, new onCallback() {
                 @Override
-                public void onSuccess(String str) {
+                public void onSuccess(int str) {
                     sectionedExpandableLayoutHelper.updateFanDevice(item.getDeviceId(),str);
                 }
             });
@@ -439,6 +415,79 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
     @Override
     public void itemClicked(final PanelVO item, String action) {
     }
+
+    public void showBottomSheetDialog(RoomVO roomVO) {
+        View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
+
+        TextView txt_bottomsheet_title = view.findViewById(R.id.txt_bottomsheet_title);
+        LinearLayout linear_bottom_edit = view.findViewById(R.id.linear_bottom_edit);
+        LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
+        LinearLayout linear_bottom_log = view.findViewById(R.id.linear_bottom_log);
+        View view_log = view.findViewById(R.id.view_log);
+
+        view_log.setVisibility(View.VISIBLE);
+        linear_bottom_log.setVisibility(View.VISIBLE);
+
+        BottomSheetDialog dialog = new BottomSheetDialog(getActivity(),R.style.AppBottomSheetDialogTheme);
+        dialog.setContentView(view);
+        dialog.show();
+
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + roomVO.getRoomName() + "" +" " +"?");
+        linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+
+                Intent intent = new Intent(getActivity(), AddMoodActivity.class);
+                intent.putExtra("editMode",true);
+                intent.putExtra("moodVO",roomVO);
+                intent.putExtra("panel_id",panel_id);
+                intent.putExtra("panel_name",panel_name);
+                intent.putExtra("isMap",true);
+                intent.putExtra("isMoodAdapter",true);
+                startActivity(intent);//
+            }
+        });
+
+        linear_bottom_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String msg ="";
+                if(roomVO.getIs_schedule()==1){
+                    msg = "You have schedule set on this mood.\nAre you sure you want to delete mood ?";
+                }
+                else{
+                    msg = "Are you sure you want to delete mood ?";
+                }
+                dialog.dismiss();
+                ConfirmDialog newFragment = new ConfirmDialog("Yes","No" ,"Confirm", msg,new ConfirmDialog.IDialogCallback() {
+                    @Override
+                    public void onConfirmDialogYesClick() {
+                        deleteMood(roomVO.getRoomId(),panel_id,roomVO.getRoomName());
+                    }
+                    @Override
+                    public void onConfirmDialogNoClick() {
+                    }
+
+                });
+                newFragment.show(getActivity().getFragmentManager(), "dialog");
+            }
+        });
+
+        linear_bottom_log.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                Intent intent = new Intent(getActivity(),DeviceLogActivity.class);
+                intent.putExtra("ROOM_ID",roomVO.getRoomId());
+//            intent.putExtra("isCheckActivity","mood");
+                intent.putExtra("isCheckActivity","mode");
+                intent.putExtra("isRoomName",""+roomVO.getRoomName());
+                startActivity(intent);
+            }
+        });
+    }
+
 
     /**
      * get Room name and Panel name using original_room_device_id
@@ -592,6 +641,8 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
 
                     if(moodList.size()>0){
                         swipeRefreshLayout.setVisibility(View.VISIBLE);
+                        txt_empty_schedule.setVisibility(View.GONE);
+                    } else{
                         txt_empty_schedule.setVisibility(View.VISIBLE);
                     }
 
@@ -604,6 +655,8 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
                     if(moodList.size()==0){
                         swipeRefreshLayout.setVisibility(View.GONE);
                         txt_empty_schedule.setVisibility(View.VISIBLE);
+                    } else{
+                        txt_empty_schedule.setVisibility(View.GONE);
                     }
                 }
             }
@@ -617,6 +670,8 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener ,Swi
                 if(moodList.size()==0){
                     swipeRefreshLayout.setVisibility(View.GONE);
                     txt_empty_schedule.setVisibility(View.VISIBLE);
+                } else{
+                    txt_empty_schedule.setVisibility(View.GONE);
                 }
             }
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

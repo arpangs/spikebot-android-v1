@@ -27,6 +27,15 @@ public class DeviceVO implements Serializable,Cloneable {
     private String deviceTimeDifference;
     private String deviceSync;
     private String deviceType;
+    private String enable_lock_unlock_from_app;
+
+    public String getEnable_lock_unlock_from_app() {
+        return enable_lock_unlock_from_app;
+    }
+
+    public void setEnable_lock_unlock_from_app(String enable_lock_unlock_from_app) {
+        this.enable_lock_unlock_from_app = enable_lock_unlock_from_app;
+    }
 
     public String getDevice_sub_status() {
         return device_sub_status;

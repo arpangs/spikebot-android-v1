@@ -3,11 +3,6 @@ package com.spike.bot.activity.ir.blaster;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuItem;
@@ -15,6 +10,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
@@ -223,7 +224,7 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
         ActivityHelper.showProgressDialog(IRRemoteBrandListActivity.this, "Please Wait...", false);
 
         String url = ChatApplication.url + Constants.getDeviceBrandRemoteList + "/" + brandList.getBrandId();
-
+        ChatApplication.logDisplay("url is "+url);
         new GetJsonTask(this, url, "GET", "", new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {

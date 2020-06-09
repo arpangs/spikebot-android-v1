@@ -1,13 +1,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mood_relative"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/new_screen_resolution"
     android:orientation="vertical"
+    android:background="@color/automation_white"
     tools:context="com.spike.bot.fragments.DashBoardFragment">
 
-    <LinearLayout
+   <!-- <LinearLayout
         android:id="@+id/txt_empty_schedule"
         android:layout_width="match_parent"
         android:layout_marginTop="24dp"
@@ -39,8 +40,8 @@
 
 
     </LinearLayout>
-
-    <android.support.v4.widget.SwipeRefreshLayout
+-->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swiperefresh"
         android:layout_width="match_parent"
@@ -53,27 +54,31 @@
             android:id="@+id/main_scroll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/new_screen_resolution"
             tools:context="com.spike.bot.fragments.DashBoardFragment">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:focusableInTouchMode="true"
+                android:descendantFocusability="blocksDescendants"
                 android:layout_height="match_parent">
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/messages"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/activity_horizontal_margin"
-                    android:nestedScrollingEnabled="false"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/_8sdp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="@dimen/_8sdp"
+                    android:layout_marginBottom="@dimen/_15sdp"
                     android:background="@color/automation_white"
+                    android:nestedScrollingEnabled="false"
                     android:scrollbarStyle="outsideOverlay"
-                    android:scrollbars="none" />
+                    android:scrollbars="none"
+                    android:visibility="visible" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="70dp"
+                    android:layout_height="60dp"
                     android:layout_below="@+id/messages"
                     android:orientation="vertical">
 
@@ -83,7 +88,39 @@
             </RelativeLayout>
 
         </ScrollView>
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <RelativeLayout
+        android:id="@+id/txt_empty_mood"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="24dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+
+        <ImageView
+            android:id="@+id/empty_add_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/mood" />
+
+        <TextView
+            android:id="@+id/txt_empty_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/empty_add_image"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="NO MOODS ADDED YET"
+            android:textColor="#808080"
+            android:textSize="18sp"
+            android:visibility="visible" />
+
+    </RelativeLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -96,18 +133,18 @@
         android:layout_gravity="bottom|end">
 
 
-        <android.support.design.widget.FloatingActionButton
+        <com.akhilpatoliya.floating_text_button.FloatingTextButton
             android:id="@+id/fab"
-            app:layout_behavior="com.spike.bot.core.MoveUpwardBehavior"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:background="@color/sky_blue"
-            app:backgroundTint="@color/sky_blue"
-            android:tint="@color/automation_white"
-            android:gravity="center_vertical"
-            app:srcCompat="@drawable/icn_add"
-            app:fabSize="normal"/>
+            android:layout_gravity="center_horizontal|bottom"
+            android:visibility="visible"
+            app:floating_background_color="@color/automation_white"
+            app:floating_left_icon="@drawable/plusbutton"
+            app:floating_title="@string/add_mood"
+            app:floating_title_color="@color/automation_black">
+
+        </com.akhilpatoliya.floating_text_button.FloatingTextButton>
     </LinearLayout>
 
 

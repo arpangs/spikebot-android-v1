@@ -4,35 +4,33 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.TypefaceSpan;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask2;
-import com.kp.core.ICallBack2;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.fragments.UserChildListFragment;
 import com.spike.bot.fragments.UserProfileFragment;
-import com.spike.bot.model.CameraVO;
-import com.spike.bot.model.RoomVO;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -41,12 +39,12 @@ public class ProfileActivity extends AppCompatActivity {
     boolean isFlagUser = false;
     Activity activity;
     TabLayout tabLayout;
-    private ViewPager mViewPager;
+    public ViewPager mViewPager;
     public TextView txtVersionCode;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     ArrayList<Fragment> fragmentList = new ArrayList<>();
     ArrayList<String> strList = new ArrayList<>();
-    MenuItem menuAdd, menuAddSave;
+    MenuItem menuAdd, menuAddSave, menuaddtext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +57,7 @@ public class ProfileActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         activity = this;
 
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = (ViewPager) findViewById(R.id.profile_container);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         txtVersionCode = findViewById(R.id.txtVersionCode);
@@ -76,9 +74,19 @@ public class ProfileActivity extends AppCompatActivity {
         } else {
             fragmentList.add(UserProfileFragment.newInstance());
         }
+        setCustomFont();
 
         strList.add("User Details");
-        strList.add("Child users");
+        strList.add("Child Users");
+
+
+        SpannableString s = new SpannableString("User Details");
+        s.setSpan(new TypefaceSpan( "Axiforma.ttf"), 0, s.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        SpannableString s1 = new SpannableString("Child Users");
+        s1.setSpan(new TypefaceSpan( "Axiforma.ttf"), 0, s1.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         // Set up the ViewPager with the sections adapter.
@@ -98,9 +106,9 @@ public class ProfileActivity extends AppCompatActivity {
                 //lock second
                 if (isFlagUser && menuAdd!=null) {
                     if (position == 1) {
-                        menuAdd.setVisible(true);
+                        menuaddtext.setVisible(true);
                     } else {
-                        menuAdd.setVisible(false);
+                        menuaddtext.setVisible(false);
                     }
                 }
 
@@ -122,6 +130,27 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
+    public void setCustomFont() {
+
+        ViewGroup vg = (ViewGroup) tabLayout.getChildAt(0);
+        int tabsCount = vg.getChildCount();
+
+        for (int j = 0; j < tabsCount; j++) {
+            ViewGroup vgTab = (ViewGroup) vg.getChildAt(j);
+
+            int tabChildsCount = vgTab.getChildCount();
+
+            for (int i = 0; i < tabChildsCount; i++) {
+                View tabViewChild = vgTab.getChildAt(i);
+                if (tabViewChild instanceof TextView) {
+                    //Put your font in assests folder
+                    //assign name of the font here (Must be case sensitive)
+                    ((TextView) tabViewChild).setTypeface(Typeface.createFromAsset(getAssets(), "Axiforma.ttf"));
+                }
+            }
+        }
+    }
+
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
@@ -133,6 +162,7 @@ public class ProfileActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_room_edit, menu);
         menuAdd = menu.findItem(R.id.action_add);
         menuAddSave = menu.findItem(R.id.action_save);
+        menuaddtext = menu.findItem(R.id.action_add_text);
         menuAddSave.setVisible(false);
         menuAdd.setVisible(false);
         return super.onCreateOptionsMenu(menu);
@@ -141,7 +171,7 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_add) {
+        if (id == R.id.action_add_text) {
             Intent intent = new Intent(this, UserChildActivity.class);
             intent.putExtra("modeType", "add");
             startActivityForResult(intent, 1001);

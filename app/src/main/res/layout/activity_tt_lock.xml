@@ -7,12 +7,12 @@
 
 
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
@@ -20,9 +20,9 @@
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
 
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
 
     <LinearLayout
@@ -38,13 +38,34 @@
             android:textColor="@color/automation_black"
             android:textSize="@dimen/_13sdp"
             android:gravity="center"
+            android:visibility="gone"
             android:padding="@dimen/_12sdp"/>
 
+        <view
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:background="@color/automation_gray">
+
+        </view>
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="@dimen/_280sdp"
-            android:src="@drawable/smart_lock_600x600"/>
+            android:layout_marginTop="50dp"
+            android:src="@drawable/doorlock_icon"/>
+
+        <view
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp">
+
+        </view>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/door_lock_info_new"/>
 
         <TextView
             android:id="@+id/txtDerc"
@@ -57,7 +78,7 @@
             android:padding="@dimen/_12sdp"/>
 
 
-        <android.support.v7.widget.AppCompatButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnStartScan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -72,7 +93,7 @@
     </LinearLayout>
 
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:visibility="gone"
         android:id="@+id/recyclerViewLock"
         android:layout_width="match_parent"

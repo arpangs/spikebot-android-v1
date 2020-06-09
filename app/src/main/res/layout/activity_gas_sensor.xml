@@ -2,16 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/new_screen_resolution"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
@@ -19,15 +18,14 @@
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
 
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:layout_margin="@dimen/_5sdp"
         android:orientation="vertical">
 
 
@@ -39,7 +37,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_10sdp"
+
                     android:gravity="center"
                     android:orientation="horizontal">
 
@@ -47,10 +45,11 @@
                         android:visibility="visible"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/_10sdp"
+                        android:layout_margin="@dimen/_5sdp"
                         android:layout_weight="1.2"
                         android:gravity="center"
                         android:orientation="vertical">
+
 
                         <LinearLayout
                             android:id="@+id/edt_txt_layout"
@@ -59,37 +58,61 @@
                             android:layout_gravity="center"
                             android:orientation="vertical">
 
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="match_parent"
+                                android:layout_height="90dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginRight="5dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_gravity="center_vertical"
+                                android:orientation="vertical"
+                                android:visibility="visible"
+                                app:cardCornerRadius="8dp"
+                                app:cardElevation="8dp"
+                                app:elevation="8dp">
+
+
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:background="@drawable/background_shadow"
                                 android:padding="@dimen/_5sdp"
+                                android:layout_gravity="center_vertical"
                                 android:orientation="horizontal">
+
+                                <ImageView
+                                    android:id="@+id/img_gassensor"
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp">
+
+                                </ImageView>
 
                                 <EditText
                                     android:id="@+id/edSensorName"
-                                    android:singleLine="true"
-                                    android:maxLength="30"
-                                    android:paddingLeft="@dimen/_5sdp"
-                                    android:paddingRight="@dimen/_50sdp"
-                                    android:textSize="@dimen/_14sdp"
-                                    android:background="@null"
-                                    android:imeOptions="actionDone"
-                                    android:hint="Gas sensor name"
-                                    android:clickable="false"
-                                    android:focusableInTouchMode="false"
-                                    android:textColor="@color/automation_black"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:layout_weight="1"
-                                    android:inputType="text"/>
+                                    android:background="@null"
+                                    android:clickable="false"
+                                    android:focusableInTouchMode="false"
+                                    android:hint="Gas sensor name"
+                                    android:imeOptions="actionDone"
+                                    android:inputType="text"
+                                    android:maxLength="30"
+                                    android:layout_marginLeft="5dp"
+                                    android:paddingLeft="@dimen/_5sdp"
+                                    android:paddingRight="@dimen/_50sdp"
+                                    android:singleLine="true"
+                                    android:textStyle="bold"
+                                    android:textColor="#545454"
+                                    android:textSize="@dimen/_14sdp" />
 
                                 <ImageView
                                     android:id="@+id/imgEdit"
-                                    android:layout_width="@dimen/_32sdp"
+                                    android:layout_width="35dp"
                                     android:layout_height="@dimen/_32sdp"
                                     android:padding="@dimen/_3sdp"
-                                    android:src="@drawable/edit_blue"/>
+                                    android:src="@drawable/edit_blue" />
 
                             </LinearLayout>
 
@@ -119,12 +142,14 @@
                                     android:layout_margin="@dimen/_10sdp"/>
 
                             </LinearLayout>-->
+                            </androidx.cardview.widget.CardView>
                         </LinearLayout>
 
 
 
 
-                     <!--   <android.support.v7.widget.CardView
+
+                     <!--   <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -137,46 +162,73 @@
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:background="@drawable/background_shadow"
                                 android:layout_marginTop="@dimen/_5sdp"
                                 android:orientation="vertical">
 
-                                <android.support.v7.widget.AppCompatTextView
+                                <androidx.cardview.widget.CardView
+                                    xmlns:android="http://schemas.android.com/apk/res/android"
+                                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="160dp"
+                                    android:layout_marginTop="10dp"
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_marginRight="5dp"
+                                    android:layout_marginBottom="8dp"
+                                    android:orientation="vertical"
+                                    android:visibility="visible"
+                                    app:cardCornerRadius="8dp"
+                                    app:cardElevation="8dp"
+                                    app:elevation="8dp">
+
+
+                                <androidx.appcompat.widget.AppCompatTextView
                                     android:singleLine="true"
                                     android:maxLength="25"
                                     android:padding="@dimen/_12sdp"
                                     android:textSize="@dimen/_15sdp"
-                                    android:textColor="@color/sensor_button"
+                                    android:textColor="#545454"
                                     android:imeOptions="actionDone"
-                                    android:gravity="center"
                                     android:text="Gas / Smoke Level"
                                     android:textStyle="bold"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
+                                    android:layout_marginTop="10dp"
                                     android:inputType="textEmailAddress"/>
 
 
-                                <android.support.v7.widget.AppCompatTextView
+                                <androidx.appcompat.widget.AppCompatTextView
                                     android:id="@+id/txtSpeedCount"
                                     android:singleLine="true"
                                     android:maxLength="25"
-                                    android:textSize="@dimen/_22sdp"
+                                    android:textSize="@dimen/_30sdp"
+                                    android:padding="@dimen/_12sdp"
                                     android:layout_marginTop="@dimen/_40sdp"
                                     android:paddingBottom="@dimen/_55sdp"
                                     android:textColor="@color/greenDark"
                                     android:imeOptions="actionDone"
-                                    android:gravity="center"
                                     android:textStyle="bold"
+                                    android:text=""
                                     android:longClickable="false"
-                                    android:layout_width="match_parent"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:inputType="textEmailAddress"/>
 
+                                    <ImageView
+                                        android:id="@+id/img_gas_status"
+                                        android:layout_width="@dimen/_100sdp"
+                                        android:layout_height="@dimen/_80sdp"
+                                        android:layout_gravity="end|bottom"
+                                        android:scaleType="fitEnd"
+                                        android:layout_marginBottom="@dimen/_15sdp"
+                                        android:src="@drawable/dry">
 
+                                    </ImageView>
+
+                                </androidx.cardview.widget.CardView>
                             </LinearLayout>
 
-                       <!-- </android.support.v7.widget.CardView>-->
+                       <!-- </androidx.cardview.widget.CardView>-->
 
                     </LinearLayout>
 
@@ -214,7 +266,7 @@
 
                     </LinearLayout>
 
-                    <android.support.v7.widget.AppCompatTextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:visibility="gone"
@@ -235,6 +287,7 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/_5sdp"
         android:gravity="center"
+        android:visibility="gone"
         android:orientation="vertical">
 
         <Button

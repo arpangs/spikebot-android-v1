@@ -25,7 +25,7 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text="Add Door Sensor"
-                android:textColor="@color/automation_blue"
+                android:textColor="@color/signupblack"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -35,14 +35,14 @@
                 android:layout_height="35dp"
                 android:padding="3dp"
                 android:backgroundTint="@color/sensor_button"
-                app:srcCompat="@drawable/close_blue2" />
+                app:srcCompat="@drawable/cross" />
 
         </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/sky_blue" />
+        android:background="@color/automation_dark" />
 
         <LinearLayout
             android:id="@+id/linearListRoom"
@@ -66,7 +66,7 @@
             <LinearLayout
                 android:layout_weight="0.6"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_50sdp"
                 android:layout_marginRight="3dp"
                 android:background="@drawable/custome_spinner"
                 android:orientation="horizontal">
@@ -89,9 +89,8 @@
                     android:layout_weight="0.2"
                     android:layout_width="0dp"
                     android:layout_height="24dp"
-                    android:visibility="invisible"
+                    android:visibility="visible"
                     android:layout_marginLeft="8dp"
-                    android:layout_marginRight="2dp"
                     android:layout_gravity="center"
                     android:src="@drawable/icn_arrow_down_spinner2" />
 
@@ -164,7 +163,7 @@
 
 
         <LinearLayout
-            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_25sdp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_width="match_parent"
@@ -178,6 +177,7 @@
                 style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
                 android:layout_gravity="right"
                 android:text="CANCEL"
+                android:visibility="gone"
                 android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
@@ -185,13 +185,14 @@
 
             <Button
                 android:id="@+id/btn_door_save"
-                android:gravity="center"
-                style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
-                android:layout_gravity="right"
-                android:text="SAVE"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:textAllCaps="false"
+                android:text="@string/save"
+                android:layout_marginBottom="@dimen/_12sdp"
+                android:textSize="@dimen/_14sdp"
+                android:textColor="@color/automation_white"
+                android:background="@drawable/drawable_blue_schedule" />
 
         </LinearLayout>
 

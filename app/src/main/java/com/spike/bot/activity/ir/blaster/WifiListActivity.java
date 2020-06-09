@@ -4,18 +4,12 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -23,14 +17,18 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.GetJsonTaskVideo;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.Retrofit.GetDataService;
-import com.spike.bot.Retrofit.RetrofitAPIManager;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.adapter.WifiAdapter;
 import com.spike.bot.core.APIConst;
@@ -38,24 +36,14 @@ import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.customview.CustomEditText;
 import com.spike.bot.listener.WifiListner;
-import com.spike.bot.model.AccountInfo;
 import com.spike.bot.model.UnassignedListRes;
 import com.spike.bot.model.WifiModel;
 import com.spike.bot.receiver.ConnectivityReceiver;
-import com.ttlock.bl.sdk.util.DigitUtil;
-import com.ttlock.bl.sdk.util.GsonUtil;
-import com.ttlock.bl.sdk.util.NetworkUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by Sagar on 4/12/18.
@@ -125,7 +113,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
         final EditText edt_door_name =  irDialog.findViewById(R.id.txt_door_sensor_name);
         final TextView edt_door_module_id = irDialog.findViewById(R.id.txt_module_id);
         final Spinner sp_room_list =  irDialog.findViewById(R.id.sp_room_list);
-
+        ImageView sp_drop_down = irDialog.findViewById(R.id.sp_drop_down);
         TextView dialogTitle = irDialog.findViewById(R.id.tv_title);
         TextView txt_sensor_name =  irDialog.findViewById(R.id.txt_sensor_name);
         TextView txtSelectRoom = irDialog.findViewById(R.id.txtSelectRoom);
@@ -150,6 +138,13 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
         Button btn_cancel =  irDialog.findViewById(R.id.btn_door_cancel);
         Button btn_save =  irDialog.findViewById(R.id.btn_door_save);
         ImageView iv_close =  irDialog.findViewById(R.id.iv_close);
+
+        sp_drop_down.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sp_room_list.performClick();
+            }
+        });
 
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -1,54 +1,36 @@
 package com.spike.bot.fragments;
 
-import android.app.Activity;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask2;
 import com.kp.core.ICallBack2;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.Main2Activity;
-import com.spike.bot.activity.ProfileActivity;
+import com.spike.bot.activity.AddDevice.AllUnassignedPanel;
 import com.spike.bot.activity.UserChildActivity;
 import com.spike.bot.adapter.ChildUserAdapter;
-import com.spike.bot.adapter.MoodExpandableLayoutHelper;
-import com.spike.bot.adapter.RoomeListAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
-import com.spike.bot.core.JsonHelper;
-import com.spike.bot.customview.recycle.ItemClickMoodListener;
 import com.spike.bot.listener.UserChildAction;
-import com.spike.bot.model.CameraAlertList;
-import com.spike.bot.model.CameraVO;
-import com.spike.bot.model.DeviceVO;
-import com.spike.bot.model.PanelVO;
-import com.spike.bot.model.RoomVO;
+import com.spike.bot.model.UnassignedListRes;
 import com.spike.bot.model.User;
 
 import org.json.JSONArray;
@@ -57,7 +39,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -72,6 +53,7 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
     public RecyclerView recyclerUserList;
     ChildUserAdapter childUserAdapter;
     public ArrayList<User> userArrayList=new ArrayList<>();
+    LinearLayout linear_child_list;
 
     public static UserChildListFragment newInstance() {
         UserChildListFragment fragment = new UserChildListFragment();
@@ -92,6 +74,7 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
 
     private void setUiId() {
         recyclerUserList = view.findViewById(R.id.recyclerUserList);
+        linear_child_list = view.findViewById(R.id.linear_child_list);
         LinearLayoutManager linearLayoutManager=new LinearLayoutManager(getActivity());
         recyclerUserList.setLayoutManager(linearLayoutManager);
         getUserCHildList();
@@ -191,7 +174,7 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
 
     private void setAdapter() {
         if(userArrayList.size()>0){
-            childUserAdapter=new ChildUserAdapter(getActivity(),userArrayList,this);
+            childUserAdapter=new ChildUserAdapter(getActivity(),userArrayList,this,this);
             recyclerUserList.setAdapter(childUserAdapter);
         }
     }
@@ -259,18 +242,55 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    @Override
-    public void actionCHild(String type,int position,User user) {
-        if(type.equalsIgnoreCase("update")){
-            userIdDown=user.getUser_id();
-            Intent intent=new Intent(getActivity(),UserChildActivity.class);
-            intent.putExtra("modeType","update");
-            intent.putExtra("arraylist",user);
-            startActivityForResult(intent,1001);
-        }else {
-            showDeleteDialog(position,user);
-        }
+    public void BackgroundBlurred(){
+        recyclerUserList.setBackgroundResource(R.color.automation_transparent);
+    }
 
+    public void Backgroundwhite(){
+        recyclerUserList.setBackgroundResource(R.color.automation_white);
+    }
+    @Override
+    public void actionCHild(String type,int position,User user,boolean ispopupshow) {
+        if(type.equalsIgnoreCase("update")){
+            showBottomSheetDialog(type,position,user);
+        }
+    }
+
+
+    public void showBottomSheetDialog(String type,int position,User user) {
+        View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
+
+        TextView txt_bottomsheet_title = view.findViewById(R.id.txt_bottomsheet_title);
+        LinearLayout linear_bottom_edit = view.findViewById(R.id.linear_bottom_edit);
+        LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
+
+        TextView txt_edit = view.findViewById(R.id.txt_edit);
+        txt_edit.setText("Edit");
+
+        BottomSheetDialog dialog = new BottomSheetDialog(getActivity(),R.style.AppBottomSheetDialogTheme);
+        dialog.setContentView(view);
+        dialog.show();
+
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + user.getFirstname() + " " +"?");
+        linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                userIdDown=user.getUser_id();
+                Intent intent=new Intent(getActivity(),UserChildActivity.class);
+                intent.putExtra("modeType","update");
+                intent.putExtra("arraylist",user);
+                startActivityForResult(intent,1001);
+            }
+        });
+
+        linear_bottom_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                showDeleteDialog(position,user);
+            }
+        });
     }
 
     @Override

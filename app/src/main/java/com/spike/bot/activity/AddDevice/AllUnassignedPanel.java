@@ -3,12 +3,6 @@ package com.spike.bot.activity.AddDevice;
 import android.app.Dialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -25,6 +19,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
@@ -33,6 +35,7 @@ import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.Sensor.DoorSensorInfoActivity;
 import com.spike.bot.adapter.AddUnassignedPanelAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
@@ -225,7 +228,7 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
         LinearLayoutManager linearLayoutManager=new LinearLayoutManager(this);
         mListPanels.setLayoutManager(linearLayoutManager);
         roomDeviceListArray = gson.fromJson(result, new TypeToken<List<UnassignedListRes.Data>>(){}.getType());
-        addUnassignedPanelAdapter = new AddUnassignedPanelAdapter(roomDeviceListArray, AllUnassignedPanel.this);
+        addUnassignedPanelAdapter = new AddUnassignedPanelAdapter(this,roomDeviceListArray, AllUnassignedPanel.this);
         mListPanels.setAdapter(addUnassignedPanelAdapter);
     }
 
@@ -253,15 +256,66 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
      */
 
     @Override
-    public void onClick(int position, UnassignedListRes.Data roomdeviceList) {
+    public void onClick(int position, UnassignedListRes.Data roomdeviceList,String action) {
 
         if(roomdeviceList.getModuleType().equals("repeater") || roomdeviceList.getModuleType().equals("smart_remote")){
-            repetearAdd(roomdeviceList);
+            showBottomSheetDialog(roomdeviceList);
         }else if(roomdeviceList.getModuleType().equals("door") || roomdeviceList.getModuleType().equals("ttlock")){
 
         }else {
-            showAddDialog(roomdeviceList);
+
+            if(action.equalsIgnoreCase("add")) {
+                showBottomSheetDialog(roomdeviceList);
+            }
         }
+    }
+
+
+    public void showBottomSheetDialog(UnassignedListRes.Data roomdeviceList) {
+        View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
+
+        TextView txt_bottomsheet_title = view.findViewById(R.id.txt_bottomsheet_title);
+        LinearLayout linear_bottom_edit = view.findViewById(R.id.linear_bottom_edit);
+        LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
+
+        TextView txt_edit = view.findViewById(R.id.txt_edit);
+        txt_edit.setText("Add");
+
+        BottomSheetDialog dialog = new BottomSheetDialog(AllUnassignedPanel.this,R.style.AppBottomSheetDialogTheme);
+        dialog.setContentView(view);
+        dialog.show();
+
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + roomdeviceList.getModuleType() + " " +"?");
+        linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                if(roomdeviceList.getModuleType().equals("repeater") || roomdeviceList.getModuleType().equals("smart_remote")){
+                    showBottomSheetDialog(roomdeviceList);
+                } else {
+                    showAddDialog(roomdeviceList);
+                }
+            }
+        });
+
+        linear_bottom_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
+                    @Override
+                    public void onConfirmDialogYesClick() {
+                        DeleteDevice(roomdeviceList.getModuleId());
+                    }
+
+                    @Override
+                    public void onConfirmDialogNoClick() {
+                    }
+
+                });
+                newFragment.show(getFragmentManager(), "dialog");
+            }
+        });
     }
 
     /*delete alert dialog*/
@@ -277,6 +331,54 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
             }
         });
         newFragment.show(this.getFragmentManager(), "dialog");
+    }
+
+    public void DeleteDevice(String module_id) {
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            showToast("" + R.string.disconnect);
+            return;
+        }
+
+        ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        String webUrl = ChatApplication.url + Constants.devicemoduledelete;
+
+        JSONObject jsonNotification = new JSONObject();
+        try {
+
+            jsonNotification.put("module_id", module_id);
+            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ChatApplication.logDisplay("delete device url is " + webUrl + " " + jsonNotification);
+        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+            @Override
+            public void onSuccess(JSONObject result) {
+
+                ActivityHelper.dismissProgressDialog();
+                try {
+                    ChatApplication.logDisplay("delete device success " + result);
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (!TextUtils.isEmpty(message)) {
+                        showToast(message);
+                    }
+                    if (code == 200) {
+                        getRoomList();
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        }).execute();
     }
 
 

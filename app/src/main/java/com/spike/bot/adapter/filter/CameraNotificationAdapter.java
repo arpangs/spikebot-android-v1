@@ -2,12 +2,6 @@ package com.spike.bot.adapter.filter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.v7.view.ContextThemeWrapper;
-import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.AppCompatTextView;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -15,6 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.kp.core.DateHelper;
 import com.spike.bot.R;
@@ -118,10 +119,10 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
                 }
 
                 if (arrayListLog.get(position).getIsOpen()) {
-                    holder.imgArrow.setImageDrawable(mContext.getResources().getDrawable(R.drawable.arrow_down_gray));
+                    holder.imgArrow.setImageDrawable(mContext.getResources().getDrawable(R.drawable.arrow_up2));
                     holder.recyclerCamera.setVisibility(View.VISIBLE);
                 } else {
-                    holder.imgArrow.setImageDrawable(mContext.getResources().getDrawable(R.drawable.arrow_up_gray));
+                    holder.imgArrow.setImageDrawable(mContext.getResources().getDrawable(R.drawable.arrow_down2));
                     holder.recyclerCamera.setVisibility(View.GONE);
                 }
 
@@ -161,7 +162,9 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
         holder.imgMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PopupMenu popup = new PopupMenu(mContext, v);
+                updateCameraAlert.updatecameraALert("update", arrayListLog.get(position), holder.switchAlert, position);
+
+                /*PopupMenu popup = new PopupMenu(mContext, v);
                 @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(mContext, R.style.PopupMenu);
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
                     popup = new PopupMenu(wrapper, v, Gravity.RIGHT);
@@ -189,7 +192,7 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
                     }
                 });
 
-                popup.show();
+                popup.show();*/
             }
         });
 

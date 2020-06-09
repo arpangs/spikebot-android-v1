@@ -14,11 +14,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.kaushalprajapti.util.R;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -27,11 +29,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.DisplayMetrics;
@@ -52,6 +56,12 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import static androidx.core.app.ActivityCompat.requestPermissions;
+import static androidx.core.content.ContextCompat.checkSelfPermission;
+
 /**
  * @author kaushal Prajapati (kaushal2406@gmail.com)
  */
@@ -61,6 +71,7 @@ public class ActivityHelper {
     // Dialog Action
     public static final int NO_ACTION = 1;
     public static final int CLOSE_ACTIVITY = 2;
+    private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
 
     public static void hideKeyboard(final Activity p_context) {
         try {
@@ -84,14 +95,14 @@ public class ActivityHelper {
             // m_progressDialog.isShowing();
             return;
         }
-            Log.d("System out","is showing dialog ss ");
-            m_progressDialog = new ProgressDialog(p_context);
+        Log.d("System out", "is showing dialog ss ");
+        m_progressDialog = new ProgressDialog(p_context);
         m_progressDialog.setMessage(p_loadingMessage);
 //        m_progressDialog.setCancelable(p_isCancelable);
         m_progressDialog.setCanceledOnTouchOutside(p_isCancelable);
         // m_progressDialog.findViewById(android.R.id)
 //        if (!((Activity) p_context).isFinishing()) {
-            m_progressDialog.show();
+        m_progressDialog.show();
 //        }
     }
 
@@ -170,17 +181,49 @@ public class ActivityHelper {
         return false;
     }
 
-    @SuppressLint("MissingPermission")
-    public static String getIMEI(Context context) {
+/*    public static String getIMEI(Context context) {
         String number = "";
         try {
             TelephonyManager tm = (TelephonyManager) context.getSystemService(context.TELEPHONY_SERVICE);
-            number = tm.getDeviceId();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            {
+               *//* if (checkSelfPermission(context,Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                   // requestPermissions(Ac,new String[]{Manifest.permission.READ_PHONE_STATE}, PERMISSIONS_REQUEST_READ_PHONE_STATE);
+                } else {
+
+                }*//*
+
+                int permissionCheck = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE);
+
+                if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.READ_PHONE_STATE}, PERMISSIONS_REQUEST_READ_PHONE_STATE);
+                } else {
+                    number = tm.getDeviceId();
+                }
+            } else {
+                number = tm.getDeviceId();
+            }
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return number;
+    }*/
+
+    public static String getIMEI(Context context) {
+        final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+
+        final String tmDevice, tmSerial, androidId;
+        tmDevice = "" + tm.getDeviceId();
+        tmSerial = "" + tm.getSimSerialNumber();
+        androidId = "" + android.provider.Settings.Secure.getString(context.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+
+        UUID deviceUuid = new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode());
+        String deviceId = deviceUuid.toString();
+
+        return deviceId;
     }
 
     public static String CallJSONService(String url, String json, String method) throws Exception {

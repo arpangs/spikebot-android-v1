@@ -9,12 +9,12 @@
     <color name="username5">#287b00</color>
     <color name="username6">#a8f07a</color>
     <color name="username7">#4ae8c4</color>
-    <color name="username8">#3b88eb</color>
+    <color name="username8">#0279e1</color>
     <color name="username9">#3824aa</color>
     <color name="username10">#a700ff</color>
-    <color name="username11">#d300e7</color>
-
-    <color name="automation_blue">#0098C0</color>
+    <color name="username11">#D598EB</color>
+   <!-- EB6AFF-->
+    <color name="automation_blue">#0279e1</color>
     <color name="automation_white">#FFFFFF</color>
     <color name="automation_black">#111111</color>
     <color name="automation_gray">#F0F0F0</color>
@@ -22,20 +22,46 @@
     <color name="automation_dark">#B9B9B9</color>
     <color name="automation_gray_2">#EEEFF3</color>
   <!--  <color name="sky_blue">#008BE0</color>-->
-    <color name="sky_blue">#0098C0</color>
+    <color name="sky_blue">#0279e1</color>
+    <color name="solid_blue">#0279e1</color>
     <color name="sky_blue_transparent">#90008BE0</color>
     <color name="automation_yellow">#FFBC38</color>
     <color name="automation_red">#e90606</color>
+    <color name="automation_purple">#aeaed6</color>
+    <color name="automation_transparent">#1F000000</color>
+    <color name="automation_transparent1">#D2CFCB</color>
+    <color name="transparent">#00000000</color>
 
     <color name="device_button">#70808080</color>
-    <color name="sensor_button">#0098C0</color>
+    <color name="sensor_button">#0279e1</color>
     <color name="txtPanal">#808080</color>
     <color name="green">#00c1A4</color>
     <color name="greenDark">#007f00</color>
-    <color name="blue_transparent">#DFF2FE</color>
+    <color name="username_green">#0C8E09</color>
+    <color name="blue_transparent">#DAF3FF</color>
 
     <color name="battery_low">#BB0000</color>
     <color name="battery_low1">#FF9000</color>
     <color name="battery_medium">#FFC600</color>
     <color name="battery_high">#4CD864</color>
+
+    <color name="signupblack">#545454</color>
+    <color name="login">#4b74ff</color>
+    <color name="logingray">#c6cbd4</color>
+    <color name="square_background">#EDF5FD</color>
+
+    <color name="shadow_gray">#E3E3E3</color>
+    <color name="shadow_gray_dark">#C0C0C0</color>
+    <color name="blueplus">#62B2F7</color>
+    <color name="redminus">#f3787c</color>
+    <color name="gray">#d8d8d8</color>
+    <color name="shadow_color">#E0E0E0</color>
+    <color name="schedule_shadow">#EEEE53</color>
+    <color name="mood_shadow">#C3FFC3</color>
+    <color name="schedule_shadow_new">#fff86a</color>
+    <color name="shadow_light_yellow">#edff4f</color>
+    <color name="shadow_light_red">#CC6469</color>
+    <color name="shadow_light_black">#545454</color>
+    <color name="light_blue">#DBF3FA</color>
+
 </resources>

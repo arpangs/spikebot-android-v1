@@ -21,7 +21,7 @@
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:text="Add Details"
-            android:textColor="@color/automation_blue"
+            android:textColor="@color/signupblack"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -31,14 +31,14 @@
             android:layout_height="35dp"
             android:padding="3dp"
             android:backgroundTint="@color/sensor_button"
-            app:srcCompat="@drawable/close_blue2" />
+            app:srcCompat="@drawable/cross" />
 
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/sky_blue" />
+        android:background="@color/automation_dark" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -66,12 +66,42 @@
                 android:gravity="center_vertical"
                 android:text="Select Room" />
 
-            <Spinner
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="0.75"
+                android:layout_margin="@dimen/_8sdp"
+                android:background="@drawable/edt_border_blue"
+                android:orientation="horizontal">
+
+                <Spinner
+                    android:id="@+id/spinner_room_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="@dimen/_10sdp"
+                    android:background="@android:color/transparent"
+                    android:textColor="@color/signupblack"
+                    android:textColorHint="@color/signupblack" />
+
+                <ImageView
+                    android:id="@+id/spinner_mood_icon_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="right|center"
+                    android:src="@drawable/ic_arrow_drop_down_blue" />
+
+            </RelativeLayout>
+
+           <!-- <Spinner
                 android:id="@+id/spinner_room_name"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_weight="0.75"
-                android:hint="" />
+                android:hint="" />-->
 
         </LinearLayout>
 
@@ -136,26 +166,22 @@
 
 
         <LinearLayout
-            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_25sdp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:orientation="horizontal"
             android:paddingLeft="8dp"
             android:weightSum="1">
 
             <Button
                 android:id="@+id/btn_save"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/_40sdp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_weight="0.30"
-                android:background="@drawable/button_radius"
-                android:clickable="true"
-                android:text="Save"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:textAllCaps="false"
+                android:text="@string/save"
+                android:textSize="@dimen/_14sdp"
                 android:textColor="@color/automation_white"
-                android:textStyle="bold" />
+                android:background="@drawable/drawable_blue_schedule" />
         </LinearLayout>
     </LinearLayout>
 

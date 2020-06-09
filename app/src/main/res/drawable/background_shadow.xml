@@ -7,11 +7,11 @@
         android:bottom="0px"
         android:left="0px"
         android:right="0px"
-        android:top="9px">
+        android:top="1px">
 
         <shape android:shape="rectangle">
 
-            <solid android:color="#ccc" />
+            <solid android:color="@color/device_button" />
 
             <corners android:radius="10dp" /><!--15dp-->
 
@@ -23,9 +23,9 @@
 
     <item
         android:bottom="8px"
-        android:left="0px"
-        android:right="0px"
-        android:top="5px">
+        android:left="4px"
+        android:right="4px"
+        android:top="3px">
 
         <shape android:shape="rectangle">
 
@@ -39,12 +39,84 @@
 
 </layer-list>
 
-<!--<layer-list  xmlns:android="http://schemas.android.com/apk/res/android">
 
-<item android:drawable="@drawable/shadow"/>
-<item
-    android:drawable="@color/automation_white"
-    android:left="1px"
-    android:bottom="10px" />
+<!--<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    &lt;!&ndash; Bottom 2dp Shadow &ndash;&gt;
+
+    <item
+        android:left="0px"
+        android:right="0px">
+
+        <shape android:shape="rectangle">
+
+            <solid android:color="@color/sky_blue" />
+
+            <corners android:radius="10dp" />&lt;!&ndash;15dp&ndash;&gt;
+
+        </shape>
+
+    </item>
+
+    &lt;!&ndash; White Top color &ndash;&gt;
+
+    <item
+        android:left="8px"
+        android:right="0px"
+        android:top="0px"
+        android:bottom="0px">
+
+        <shape android:shape="rectangle">
+
+            <solid android:color="@color/automation_white" />
+
+            <corners android:radius="10dp" />
+
+        </shape>
+
+    </item>
 
 </layer-list>-->
+
+
+<!--
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    &lt;!&ndash; Bottom 2dp Shadow &ndash;&gt;
+
+    <item
+        android:bottom="0px"
+        android:left="0px"
+        android:right="0px"
+        android:top="9px">
+
+        <shape android:shape="rectangle">
+
+            <solid android:color="#ccc" />
+
+            <corners android:radius="10dp" />&lt;!&ndash;15dp&ndash;&gt;
+
+        </shape>
+
+    </item>
+
+    &lt;!&ndash; White Top color &ndash;&gt;
+
+    <item
+        android:left="0px"
+        android:right="0px"
+        android:top="5px"
+        android:bottom="8px">
+
+        <shape android:shape="rectangle">
+
+            <solid android:color="@color/sky_blue" />
+
+            <corners android:radius="10dp" />
+
+        </shape>
+
+    </item>
+
+</layer-list>
+-->

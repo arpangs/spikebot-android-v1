@@ -15,38 +15,35 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtTitleJetson"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginLeft="@dimen/_5sdp"
-                android:textSize="@dimen/_14sdp"
-                android:textColor="@color/automation_black"
-                android:singleLine="true"
-                android:textStyle="bold"
-                android:text="@string/add_jetson"
+                android:layout_weight="1"
                 android:gravity="center|left"
-                android:padding="@dimen/_10sdp"/>
+                android:padding="@dimen/_10sdp"
+                android:singleLine="true"
+                android:text="@string/add_jetson"
+                android:textColor="@color/signupblack"
+                android:textSize="@dimen/_14sdp"
+                android:textStyle="bold" />
 
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgClose"
-                android:layout_width="@dimen/_30sdp"
-                android:layout_height="@dimen/_30sdp"
+                android:layout_width="@dimen/_25sdp"
+                android:layout_height="@dimen/_25sdp"
                 android:layout_marginRight="@dimen/_5sdp"
                 android:layout_gravity="center"
-                android:src="@drawable/close_blue2"/>
+                android:src="@drawable/cross"/>
 
         </LinearLayout>
 
 
-
-
         <View
             android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/automation_black"/>
-
+            android:layout_height="1dp"
+            android:background="@color/automation_dark"/>
 
 
         <LinearLayout
@@ -54,36 +51,41 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_gravity="center"
-            android:layout_marginLeft="@dimen/_4sdp"
-            android:layout_marginRight="@dimen/_4sdp"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_10sdp"
             android:layout_marginTop="@dimen/_25sdp"
             android:orientation="horizontal">
 
-            <android.support.v7.widget.AppCompatTextView
+
+            <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1.2"
                 android:layout_marginLeft="@dimen/_5sdp"
-                android:textSize="@dimen/_12sdp"
-                android:maxLength="16"
-                android:textColor="@color/automation_black"
-                android:singleLine="true"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:layout_weight="1.2"
+                android:gravity="center|left|bottom"
                 android:hint="Smart Camera Name"
-                android:gravity="center|left|bottom" />
+                android:fontFamily="Avenir-Heavy"
+                android:maxLength="16"
+                android:singleLine="true"
+                android:textColor="@color/signupblack"
+                android:textColorHint="@color/signupblack"
+                android:textSize="@dimen/_10sdp" />
 
-
-            <android.support.v7.widget.AppCompatEditText
+            <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/editDeviceName"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:layout_marginLeft="@dimen/_10sdp"
                 android:layout_marginRight="@dimen/_10sdp"
-                android:textSize="@dimen/_14sdp"
+                android:layout_weight="1"
+                android:gravity="center|left"
                 android:maxLength="16"
-                android:textColor="@color/automation_black"
+                android:paddingBottom="@dimen/_15sdp"
                 android:singleLine="true"
-                android:gravity="center|left" />
+                android:text=""
+                android:textColor="@color/automation_black"
+                android:textSize="@dimen/_14sdp" />
 
         </LinearLayout>
 
@@ -92,35 +94,38 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_gravity="center|bottom"
-            android:layout_marginLeft="@dimen/_4sdp"
-            android:layout_marginRight="@dimen/_4sdp"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_10sdp"
             android:layout_marginTop="@dimen/_15sdp"
             android:orientation="horizontal">
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1.2"
                 android:layout_marginLeft="@dimen/_5sdp"
-                android:textSize="@dimen/_12sdp"
-                android:maxLength="16"
-                android:textColor="@color/automation_black"
-                android:singleLine="true"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:layout_weight="1.2"
+                android:gravity="center|left|bottom"
                 android:hint="IP Address"
-                android:gravity="center|left|bottom" />
+                android:maxLength="16"
+                android:singleLine="true"
+                android:textColor="@color/automation_black"
+                android:textColorHint="@color/signupblack"
+                android:textSize="@dimen/_10sdp" />
 
-            <android.support.v7.widget.AppCompatEditText
+            <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/editIpAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginLeft="@dimen/_10sdp"
                 android:layout_marginRight="@dimen/_10sdp"
-                android:textSize="@dimen/_14sdp"
+                android:layout_weight="1"
+                android:gravity="center|left"
                 android:maxLength="16"
-                android:textColor="@color/automation_black"
+                android:paddingBottom="@dimen/_15sdp"
                 android:singleLine="true"
-                android:gravity="center|left" />
+                android:textColor="@color/automation_black"
+                android:textSize="@dimen/_14sdp" />
 
 
         </LinearLayout>
@@ -129,7 +134,7 @@
 
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/_12sdp"
             android:layout_marginLeft="@dimen/_15sdp"
@@ -137,12 +142,10 @@
             android:layout_marginTop="@dimen/_30sdp"
             android:orientation="horizontal">
 
-            <android.support.v7.widget.AppCompatButton
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnAdd"
-                android:layout_width="@dimen/_120sdp"
+                android:layout_width="130dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/_5sdp"
-                android:layout_weight="1"
                 android:textAllCaps="false"
                 android:text="@string/save"
                 android:textSize="@dimen/_14sdp"

@@ -8,12 +8,12 @@
     android:orientation="vertical"
     tools:context="com.spike.bot.activity.RoomEditActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
@@ -21,9 +21,9 @@
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
 
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
         android:id="@+id/linear_progress"
@@ -53,7 +53,7 @@
 
     <LinearLayout
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:background="@color/automation_gray_2"
+        android:background="@color/automation_white"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -92,7 +92,7 @@
                 android:orientation="horizontal"
                 android:background="@drawable/spinner_background">
 
-                <android.support.v7.widget.AppCompatSpinner
+                <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/spinnerRoom"
                     android:layout_marginLeft="16dp"
                     android:layout_width="match_parent"
@@ -136,7 +136,7 @@
 
         </LinearLayout>
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list_panel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

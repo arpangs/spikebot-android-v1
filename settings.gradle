@@ -1,1 +1,1 @@
-include ':app', ':kaushalUtils', ':nodemediaclient'
+include ':app', ':kaushalUtils', ':nodemediaclient', ':chip-navigation-bar', ':floating-text-button', ':protractorview', ':third-part-color-cardview'

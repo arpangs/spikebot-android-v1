@@ -10,16 +10,6 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ContextThemeWrapper;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -31,8 +21,27 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.akhilpatoliya.chip_navigation_bar.ChipNavigationBar;
 import com.crashlytics.android.Crashlytics;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import com.kp.core.ActivityHelper;
+import com.kp.core.GetJsonTask;
+import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.CloudAdapter;
@@ -49,12 +58,6 @@ import com.spike.bot.listener.ResponseErrorCode;
 import com.spike.bot.listener.SocketListener;
 import com.spike.bot.model.User;
 import com.spike.bot.receiver.ConnectivityReceiver;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,22 +66,24 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import io.fabric.sdk.android.Fabric;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
 public class Main2Activity extends AppCompatActivity implements View.OnClickListener,
         ConnectivityReceiver.ConnectivityReceiverListener, CloudAdapter.CloudClickListener,
-        DashBoardFragment.OnHeadlineSelectedListener, ResponseErrorCode, SocketListener, LoginPIEvent ,BottomNavigationView.OnNavigationItemSelectedListener{
+        DashBoardFragment.OnHeadlineSelectedListener, ResponseErrorCode, SocketListener,
+        LoginPIEvent , BottomNavigationView.OnNavigationItemSelectedListener,
+        ChipNavigationBar.OnItemSelectedListener{
 
     private String ERROR_STRING = "No Internet found.\n" + "Check your connection or try again.";
     public static boolean flagPicheck = false, flagLogin = false,isResumeConnect=false,isCloudConnected=false;
 
     public Toolbar toolbar;
-    public BottomNavigationView tabLayout;
-    public ImageView mToolBarSettings,deepsImage, toolbarImage, mImageCloud;
-    public TextView toolbarTitle,txt_connection, txt_add_acoount;
+  //  public BottomNavigationView tabLayout;
+    ChipNavigationBar navigation_bar;
+    public ImageView mToolBarSettings,deepsImage, mImageCloud,img_profile;
+    public TextView toolbarTitle,toolbarwifiname,txt_connection, txt_add_acoount,toolbarImage;
     public LinearLayout linear_main, linear_progress,linearTab;
     public FrameLayout linearCloud;
     private RecyclerView recyclerView;
@@ -140,7 +145,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
         //first fragment load
         loadFragment(new DashBoardFragment());
-        tabLayout.setOnNavigationItemSelectedListener(this);
+  //      tabLayout.setOnNavigationItemSelectedListener(this);
 
         // check login or not
         if (!Constants.checkLoginAccountCount(this)) {
@@ -176,7 +181,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     private void setViewId() {
         mViewPager = findViewById(R.id.container);
-        tabLayout =  findViewById(R.id.tabs);
+     //   tabLayout =  findViewById(R.id.tabs);
+        navigation_bar = findViewById(R.id.navigation_bar);
         mImageCloud =  findViewById(R.id.toolbar_cloud);
         toolbarImage =  findViewById(R.id.toolbarImage);
         deepsImage =  findViewById(R.id.deepsImage);
@@ -184,15 +190,21 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         linear_main =  findViewById(R.id.linear_main);
         linear_progress =  findViewById(R.id.linear_progress);
         toolbarTitle = findViewById(R.id.toolbarTitle);
+        toolbarwifiname = findViewById(R.id.toolbarwifiname);
+        img_profile = findViewById(R.id.img_profile);
         mToolBarSettings =  findViewById(R.id.toolbar_setting);
         linearCloud =  findViewById(R.id.linear_progress_cloud);
         linearTab = findViewById(R.id.linearTab);
 
-        tabLayout.setOnNavigationItemSelectedListener(this);
+     //   tabLayout.setOnNavigationItemSelectedListener(this);
         toolbarImage.setOnClickListener(this);
         toolbarTitle.setOnClickListener(this);
         mImageCloud.setOnClickListener(this);
         mToolBarSettings.setOnClickListener(this);
+        navigation_bar.setOnItemSelectedListener(this);
+        img_profile.setOnClickListener(this);
+
+        navigation_bar.setItemSelected(R.id.navigationDashboard,true);
 
         //update user fname and lname after updaing the profile activity
         setUserName();
@@ -235,7 +247,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.toolbar_cloud) {
-            showAccountDialog(toolbarTitle);
+          //  showAccountDialog(toolbarTitle);
         } else if (view.getId() == R.id.toolbarImage) {
             showAccountDialog(toolbarTitle);
         } else if (view.getId() == R.id.toolbarTitle) {
@@ -246,6 +258,9 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             } else {
                     openSettingPopup(toolbar);
             }
+        }else if (view.getId() == R.id.img_profile) {
+            Intent i =new Intent(Main2Activity.this,ProfileActivity.class);
+           startActivity(i);
         }
     }
 
@@ -286,6 +301,43 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         }
 
         return loadFragment(fragment);
+    }
+
+    @Override
+    public void onItemSelected(int i) {
+        switch (i) {
+            case R.id.navigationDashboard:
+                tabCount=0;
+                if(dashBoardFragment1 ==null){
+                    dashBoardFragment1 = new DashBoardFragment();
+                    fragment= dashBoardFragment1;
+                }else {
+                    fragment= dashBoardFragment1;
+                }
+
+                break;
+
+            case R.id.navigationMood:
+                tabCount=1;
+                if(moodFragment==null){
+                    moodFragment = new MoodFragment();
+                    fragment=moodFragment;
+                }else {
+                    fragment=moodFragment;
+                }
+                break;
+
+            case R.id.navigationSchedule:
+                tabCount=2;
+                if(scheduleFragment==null){
+                    scheduleFragment = new ScheduleFragment();
+                    fragment=scheduleFragment;
+                }else {
+                    fragment=scheduleFragment;
+                }
+                break;
+        }
+        loadFragment(fragment);
     }
 
 
@@ -432,7 +484,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             mToolBarSettings.setVisibility(View.VISIBLE);
             if (isConnected) {
                 if(tabCount!=0){
-                    tabLayout.setSelectedItemId(R.id.navigationDashboard);
+                  //  tabLayout.setSelectedItemId(R.id.navigationDashboard);
                 }else {
                     ChatApplication.isCallDeviceList = true;
                     deviceListRefreshView.deviceRefreshView(1);
@@ -526,8 +578,10 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 if (!TextUtils.isEmpty(ChatApplication.url)) {
                     if (ChatApplication.url.startsWith(Constants.startUrl)) {
                         mImageCloud.setImageResource(R.drawable.cloud);
+                        toolbarwifiname.setText("Cloud");
                     } else {
                         mImageCloud.setImageResource(R.drawable.wifi);
+                        toolbarwifiname.setText("Wifi");
                     }
                 }
             }
@@ -552,16 +606,17 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     public void setUserTypeValue() {
         if (!TextUtils.isEmpty(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE))) {
             if (Common.getPrefValue(this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
-                toolbarImage.setVisibility(View.VISIBLE);
+                //toolbarImage.setVisibility(View.VISIBLE);
                 toolbarTitle.setClickable(true);
-                toolbarImage.setClickable(true);
-
-                toolbarTitle.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+              //  toolbarImage.setClickable(true);
+                dashBoardFragment1.addDeviceFab.setVisibility(View.GONE);
+                toolbarTitle.setTextColor(getResources().getColor(R.color.username_green));
             } else {
                 toolbarTitle.setClickable(true);
-                toolbarImage.setClickable(true);
-                toolbarImage.setVisibility(View.VISIBLE);
-                toolbarTitle.setTextColor(getResources().getColor(R.color.sky_blue));
+             //   toolbarImage.setClickable(true);
+             //   toolbarImage.setVisibility(View.VISIBLE);
+                dashBoardFragment1.addDeviceFab.setVisibility(View.VISIBLE);
+                toolbarTitle.setTextColor(getResources().getColor(R.color.signupblack));
             }
         }
     }
@@ -636,7 +691,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 dialogUser.dismiss();
                 hideAlertDialog();
 
-                Intent intent=new Intent(Main2Activity.this,LoginActivity.class);
+                Intent intent=new Intent(Main2Activity.this,LoginSplashActivity.class);
                 intent.putExtra("isFlag","true");
                 startActivity(intent);
             }
@@ -650,7 +705,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     /*setting menu dialog*/
     public void openSettingPopup(final View v) {//,final ICallBackAction actionCallBack
         PopupMenu popup = null;
-        @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenu);
+        @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenuHome);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
             popup = new PopupMenu(wrapper, v, Gravity.RIGHT);
         } else {
@@ -971,14 +1026,14 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     /* click lister*/
     public void getUserDialogClick(boolean isClick) {
         if (isClick) {
-            toolbarImage.setClickable(true);
+          //  toolbarImage.setClickable(true);
             toolbarTitle.setClickable(true);
             mToolBarSettings.setClickable(true);
-            toolbarImage.setOnClickListener(this);
+            //toolbarImage.setOnClickListener(this);
             toolbarTitle.setOnClickListener(this);
             mToolBarSettings.setOnClickListener(this);
         } else {
-            toolbarImage.setClickable(false);
+         //   toolbarImage.setClickable(false);
             toolbarTitle.setClickable(false);
         }
     }
@@ -1031,7 +1086,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         mViewPager.setVisibility(View.VISIBLE);
         mToolBarSettings.setVisibility(View.VISIBLE);
         toolbarTitle.setVisibility(View.VISIBLE);
-        tabLayout.setVisibility(View.VISIBLE);
+        //tabLayout.setVisibility(View.VISIBLE);
         flagLogin = true;
         ChatApplication.isRefreshHome = false;
         invalidateToolbarCloudImage();
@@ -1040,7 +1095,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         dashBoardFragment1.showDialog = 1;
         getUserDialogClick(true);
         /* user switch to first tab*/
-        tabLayout.setSelectedItemId(R.id.navigationDashboard);
+       // tabLayout.setSelectedItemId(R.id.navigationDashboard);
         setUserName();
         deviceListRefreshView.deviceRefreshView(1);
     }
@@ -1114,7 +1169,10 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             @Override
             public void run() {
                 doubleBackToExitPressedOnce = false;
+                finish();
             }
         }, 2000);
     }
+
+
 }

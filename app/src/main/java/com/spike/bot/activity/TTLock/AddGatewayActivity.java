@@ -2,22 +2,21 @@ package com.spike.bot.activity.TTLock;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.bluetooth.BluetoothAdapter;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
@@ -26,12 +25,9 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.Retrofit.GetDataService;
 import com.spike.bot.Retrofit.RetrofitAPIManager;
-import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.GatewayObj;
-import com.ttlock.bl.sdk.api.ExtendedBluetoothDevice;
 import com.ttlock.bl.sdk.api.TTLockClient;
-import com.ttlock.bl.sdk.gateway.model.ConfigureGatewayInfo;
 import com.ttlock.bl.sdk.util.GsonUtil;
 import com.ttlock.bl.sdk.util.LogUtil;
 import com.ttlock.bl.sdk.util.NetworkUtil;
@@ -43,7 +39,6 @@ import org.json.JSONObject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by Sagar on 31/8/19.

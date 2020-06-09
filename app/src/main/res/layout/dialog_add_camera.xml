@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
@@ -14,8 +14,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_margin="5dp"
-            android:orientation="horizontal"
-            android:paddingLeft="8dp">
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/tv_title"
@@ -25,7 +24,7 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text="Add Camera"
-                android:textColor="@color/sensor_button"
+                android:textColor="@color/signupblack"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -35,94 +34,194 @@
                 android:layout_height="35dp"
                 android:padding="3dp"
                 android:backgroundTint="@color/sensor_button"
-                app:srcCompat="@drawable/close_blue2" />
+                app:srcCompat="@drawable/cross" />
 
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/sky_blue" />
+            android:background="@color/automation_dark_gray" />
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_marginTop="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/txt_camera_name"
-                android:hint="Camera Name"
-                android:singleLine="true"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="19dp"
+                android:layout_marginLeft="@dimen/_15sdp"
+                android:layout_marginRight="@dimen/_5sdp"
+                android:text="Camera Name">
+            </TextView>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </android.support.design.widget.TextInputLayout>
+                android:layout_height="wrap_content">
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txt_camera_name"
+                    android:singleLine="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/txt_camera_ip"
-                android:hint="Camera IP"
-                android:inputType="textWebEmailAddress"
-                android:singleLine="true"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_15sdp"
+                android:layout_marginRight="@dimen/_22sdp"
+                android:text="Camera IP"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </android.support.design.widget.TextInputLayout>
+                android:layout_height="wrap_content">
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txt_camera_ip"
+                    android:hint=""
+                    android:inputType="textWebEmailAddress"
+                    android:singleLine="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/txt_video_path"
-                android:hint="Video Path"
-                android:singleLine="true"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_15sdp"
+                android:layout_marginRight="@dimen/_19sdp"
+                android:text="Video Path"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </android.support.design.widget.TextInputLayout>
+                android:layout_height="wrap_content">
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txt_video_path"
+                    android:singleLine="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/txt_user_name"
-                android:hint="User Name"
-                android:singleLine="true"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_15sdp"
+                android:layout_marginRight="@dimen/_19sdp"
+                android:text="User Name"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </android.support.design.widget.TextInputLayout>
+                android:layout_height="wrap_content">
 
-        <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txt_user_name"
+                    android:hint=""
+                    android:singleLine="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        &lt;!&ndash;<com.google.android.material.textfield.TextInputLayout
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             app:passwordToggleEnabled="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txt_password"
                 android:hint="Password"
                 android:singleLine="true"
                 android:inputType="textPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>&ndash;&gt;
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginLeft="@dimen/_15sdp"
+                android:layout_marginRight="@dimen/_25sdp"
+                android:text="Password"/>
+
+            <RelativeLayout
+                android:id="@+id/relative_passcode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible">
+
+                <EditText
+                    android:id="@+id/txt_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginRight="16dp"
+                    android:hint=""
+                    android:inputType="textPassword" />
+
+
+                <ImageView
+                    android:id="@+id/img_show_passcode"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="right"
+                    android:layout_marginRight="22dp"
+                    android:src="@drawable/eye" />
+
+            </RelativeLayout>
+        </LinearLayout>
+
 
         <LinearLayout
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_20sdp"
             android:orientation="horizontal">
 
 
@@ -133,6 +232,7 @@
                 android:layout_gravity="right"
                 android:text="CANCEL"
                 android:layout_weight="1"
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -140,15 +240,430 @@
             <Button
                 android:id="@+id/btn_save"
                 android:gravity="center"
-                style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
+                android:background="@drawable/background_button_login"
                 android:layout_gravity="right"
                 android:text="SAVE"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
+                android:textColor="@color/automation_white"
+                android:layout_width="130dp"
+                android:layout_marginBottom="@dimen/_12sdp"
                 android:layout_height="wrap_content" />
 
         </LinearLayout>
 
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>
+
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtTitleJetson"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_weight="1"
+                android:gravity="center|left"
+                android:padding="@dimen/_10sdp"
+                android:singleLine="true"
+                android:fontFamily="Avenir-Heavy"
+                android:text="Add Camera"
+                android:textColor="@color/signupblack"
+                android:textSize="@dimen/_14sdp"
+                android:textStyle="bold" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_close"
+                android:layout_width="@dimen/_25sdp"
+                android:layout_height="@dimen/_25sdp"
+                android:layout_gravity="center"
+                android:layout_marginRight="@dimen/_5sdp"
+                android:src="@drawable/cross" />
+
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/automation_dark" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:layout_weight="1.9"
+                android:gravity="center|left|bottom"
+                android:hint="Camera Name"
+                android:textColor="@color/signupblack"
+                android:textSize="@dimen/_8sdp" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/txt_camera_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:layout_marginRight="@dimen/_10sdp"
+                android:layout_weight="1"
+                android:gravity="center|left"
+                android:maxLength="16"
+                android:paddingBottom="@dimen/_15sdp"
+                android:singleLine="true"
+                android:text=""
+                android:textColor="@color/automation_black"
+                android:textSize="@dimen/_14sdp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:layout_weight="1.9"
+                android:gravity="center|left|bottom"
+                android:hint="Camera IP"
+                android:singleLine="true"
+                android:textSize="@dimen/_8sdp" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/txt_camera_ip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:layout_marginRight="@dimen/_10sdp"
+                android:layout_weight="1"
+                android:gravity="center|left"
+                android:paddingBottom="@dimen/_15sdp"
+                android:singleLine="true"
+                android:textColor="@color/automation_black"
+                android:textSize="@dimen/_14sdp" />
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:layout_weight="1.9"
+                android:gravity="center|left|bottom"
+                android:hint="Video Path"
+                android:singleLine="true"
+                android:textSize="@dimen/_8sdp" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/txt_video_path"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:layout_marginRight="@dimen/_10sdp"
+                android:layout_weight="1"
+                android:gravity="center|left"
+                android:paddingBottom="@dimen/_15sdp"
+                android:singleLine="true"
+                android:textSize="@dimen/_14sdp" />
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:layout_weight="1.9"
+                android:gravity="center|left|bottom"
+                android:hint="User Name"
+                android:maxLength="16"
+                android:singleLine="true"
+                android:textSize="@dimen/_8sdp" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/txt_user_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:layout_marginRight="@dimen/_10sdp"
+                android:layout_weight="1"
+                android:gravity="center|left"
+                android:maxLength="16"
+                android:paddingBottom="@dimen/_15sdp"
+                android:singleLine="true"
+                android:textColor="@color/automation_black"
+                android:textSize="@dimen/_14sdp" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txt_hint_password"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:gravity="center|left|bottom"
+                android:hint="Password"
+                android:singleLine="true"
+                android:textSize="@dimen/_8sdp" />
+
+            <RelativeLayout
+                android:layout_marginLeft="@dimen/_15sdp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <EditText
+                    android:id="@+id/txt_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_weight="1"
+                    android:hint=""
+                    android:inputType="textPassword" />
+
+                <ImageView
+                    android:id="@+id/img_show_passcode"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="right"
+                    android:layout_marginRight="22dp"
+                    android:src="@drawable/eye" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:id="@+id/linear_day"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="0.35"
+                android:gravity="center_vertical"
+                android:layout_gravity="center"
+                android:textSize="@dimen/_10sdp"
+                android:hint="Camera sensitivity threshold (day time)" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/_15sdp">
+
+                <SeekBar
+                    android:id="@+id/sb_daythresh"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:thumb="@drawable/custom_thumb"
+                    android:progressTint="@color/automation_yellow"
+                    android:thumbTint="@color/automation_yellow"
+                    android:max="99"
+                    android:progress="40"
+                    android:layout_weight="1"
+                    android:maxHeight="5dp"
+                    android:minHeight="5dp" />
+
+                <TextView
+                    android:id="@+id/txt_daythreashvalue"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.1"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    android:text="40"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/linear_night"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_10sdp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="0.35"
+                android:gravity="center_vertical"
+                android:layout_gravity="center"
+                android:textSize="@dimen/_10sdp"
+                android:hint="Camera sensitivity threshold (night time)" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/_15sdp">
+
+                <SeekBar
+                    android:id="@+id/sb_nightthresh"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:thumb="@drawable/custom_thumb"
+                    android:layout_weight="1"
+                    android:max="99"
+                    android:progress="28"
+                    android:maxHeight="5dp"
+                    android:minHeight="5dp" />
+
+                <TextView
+                    android:id="@+id/txt_nightthreashvalue"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:visibility="visible"
+                    android:layout_weight="0.1"
+                    android:text="28"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+        <!--  <RelativeLayout
+              android:id="@+id/relative_passcode"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginLeft="@dimen/_10sdp"
+              android:layout_marginRight="@dimen/_10sdp"
+              android:visibility="visible">
+
+              <EditText
+                  android:id="@+id/txt_password"
+                  android:layout_width="@dimen/_170sdp"
+                  android:layout_height="wrap_content"
+                  android:layout_marginLeft="16dp"
+                  android:layout_marginTop="16dp"
+                  android:layout_marginRight="16dp"
+                  android:layout_alignParentRight="true"
+                  android:hint=""
+                  android:inputType="textPassword" />
+
+
+              <ImageView
+                  android:id="@+id/img_show_passcode"
+                  android:layout_width="25dp"
+                  android:layout_height="25dp"
+                  android:layout_alignParentRight="true"
+                  android:layout_centerVertical="true"
+                  android:layout_gravity="right"
+                  android:layout_marginRight="22dp"
+                  android:src="@drawable/eye" />
+
+          </RelativeLayout>-->
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginRight="@dimen/_15sdp"
+            android:layout_marginBottom="@dimen/_12sdp"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_save"
+                android:layout_width="130dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/drawable_blue_schedule"
+                android:text="@string/save"
+                android:textAllCaps="false"
+                android:textColor="@color/automation_white"
+                android:textSize="@dimen/_14sdp" />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</LinearLayout>

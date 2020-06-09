@@ -5,13 +5,6 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputEditText;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +17,14 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.textfield.TextInputEditText;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTaskVideo;
 import com.kp.core.ICallBack;
@@ -199,7 +200,7 @@ public class CameraPlayBack extends AppCompatActivity implements ExpandableTestA
 
         ItemsIntoList = Arrays.asList(alertDialogItems);
 
-        alertdialogbuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        alertdialogbuilder.setPositiveButton("DONE", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 selectedCamera.clear();
@@ -324,6 +325,8 @@ public class CameraPlayBack extends AppCompatActivity implements ExpandableTestA
         String url = webUrl;
 
         url = url + Constants.GET_CAMERA_RECORDING_BY_DATE;
+
+        ChatApplication.logDisplay("Camera recording is " + " " + url + " " + jsonObject.toString());
 
         ActivityHelper.showProgressDialog(CameraPlayBack.this, "Please wait...", false);
 

@@ -1,16 +1,19 @@
 package com.spike.bot.activity;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.kp.core.ActivityHelper;
+import com.kp.core.GetJsonTask;
+import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.NotificationSettingAdapter;
@@ -18,9 +21,6 @@ import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.NotificationListRes;
-import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -117,6 +117,7 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
             e.printStackTrace();
         }
         String webUrl = ChatApplication.url + Constants.SAVE_NOTIFICATION_LIST;
+        ChatApplication.logDisplay("notification result is "+ webUrl + dataObject);
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
         new GetJsonTask(this, webUrl, "POST", dataObject.toString(), new ICallBack() {

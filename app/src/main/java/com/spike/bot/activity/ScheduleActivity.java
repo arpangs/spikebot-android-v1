@@ -2,12 +2,8 @@ package com.spike.bot.activity;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -29,6 +25,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.IdRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.kp.core.ActivityHelper;
 import com.kp.core.DateHelper;
 import com.kp.core.GetJsonTask;
@@ -39,7 +41,6 @@ import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.DeviceListLayoutHelper;
-import com.spike.bot.adapter.ScheduleAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -50,7 +51,6 @@ import com.spike.bot.customview.recycle.ItemClickListener;
 import com.spike.bot.dialog.ICallback;
 import com.spike.bot.dialog.TimePickerFragment;
 import com.spike.bot.listener.SelectDevicesListener;
-import com.spike.bot.model.AutoModeVO;
 import com.spike.bot.model.CameraVO;
 import com.spike.bot.model.DeviceVO;
 import com.spike.bot.model.MoodVO;
@@ -75,24 +75,30 @@ import java.util.List;
 
 import io.socket.client.Socket;
 
+import static com.spike.bot.activity.DeviceLogActivity.getDate;
+
 public class ScheduleActivity extends AppCompatActivity implements View.OnClickListener, Spinner.OnItemSelectedListener, ItemClickListener, SelectDevicesListener {
 
-    EditText et_schedule_name;
-    CustomEditText et_schedule_on_time, et_schedule_off_time;
+    CustomEditText et_schedule_on_time, et_schedule_off_time,et_schedule_name;
     Spinner sp_schedule_list;
     RadioGroup rg_schedule_type,rg_schedule_select;
     RadioButton rb_schedule_type_room, rb_schedule_type_mood,rb_schedule_select_schedule, rb_schedule_select_auto;
 
-    TextView text_schedule_1, text_schedule_2, text_schedule_3, text_schedule_4, text_schedule_5, text_schedule_6, text_schedule_7,txt_empty_sch;
+    TextView text_schedule_1, text_schedule_2, text_schedule_3, text_schedule_4,
+            text_schedule_5, text_schedule_6, text_schedule_7,txt_empty_sch,txtRoomSchedule,txtMoodSchedule;
     ImageView iv_schedule_on_time_clear, iv_schedule_off_time_clear;
     Button btnMoodSchedule, btnRoomSchedule,btn_add_schedule, btn_cancel_schedule;
     ImageView imgArrow, imgArraoTime;
-    LinearLayout ll_schedule, ll_spinner_hide,ll_on_time, ll_off_time, ll_week_title, ll_week_days,ll_on_time_auto, ll_on_time_bottom,ll_off_time_auto, ll_off_time_bottom,ll_spinner_mood,empty_ll_view;
+    LinearLayout ll_schedule, ll_spinner_hide,ll_on_time, ll_off_time, ll_week_title, ll_week_days,
+            ll_on_time_auto, ll_on_time_bottom,ll_off_time_auto, ll_off_time_bottom,ll_spinner_mood,
+            empty_ll_view,linear_header,linear_header_textviews,linear_header_buttons;
     private Spinner sp_mood_selection;
     CustomEditText et_on_time_hours, et_on_time_min,et_off_time_hours, et_off_time_min;
     TextView et_on_time_bottom_header, et_off_time_bottom_header,et_on_time_bottom_header_at, et_on_time_bottom_header_at_time, et_on_time_bottom_header_at_ampm,
             et_off_time_bottom_header_at, et_off_time_bottom_header_at_time, et_off_time_bottom_header_at_ampm,tv_schedule_list;
     RecyclerView rv_auto_mode, rv_schedule;
+
+    View view_header,view_starttime,view_moodlist;
 
     JSONObject deviceObj = new JSONObject();
     ScheduleVO scheduleVO = new ScheduleVO();
@@ -169,6 +175,9 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         ll_on_time_bottom = findViewById(R.id.ll_on_time_bottom);
         ll_off_time_auto = findViewById(R.id.ll_off_time_auto);
         ll_off_time_bottom = findViewById(R.id.ll_off_time_bottom);
+        linear_header = findViewById(R.id.linear_headers);
+        linear_header_textviews = findViewById(R.id.linear_header_textviews);
+        linear_header_buttons = findViewById(R.id.linear_header_buttons);
         imgArrow =  findViewById(R.id.imgArrow);
         imgArraoTime =  findViewById(R.id.imgArraoTime);
         empty_ll_view =  findViewById(R.id.empty_ll_view);
@@ -207,6 +216,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         rv_auto_mode =  findViewById(R.id.rv_auto_mode);
         et_schedule_name =  findViewById(R.id.et_schedule_name);
         et_schedule_name.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        et_schedule_name.setTypeface(et_schedule_name.getTypeface(), Typeface.NORMAL);
 
         et_schedule_on_time = findViewById(R.id.et_schedule_on_time);
         et_schedule_off_time = findViewById(R.id.et_schedule_off_time);
@@ -221,11 +231,17 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         text_schedule_5 =  findViewById(R.id.text_schedule_5);
         text_schedule_6 =  findViewById(R.id.text_schedule_6);
         text_schedule_7 =  findViewById(R.id.text_schedule_7);
+
+        txtRoomSchedule =  findViewById(R.id.txtRoomSchedule);
+        txtMoodSchedule =  findViewById(R.id.txtMoodSchedule);
         rv_schedule = findViewById(R.id.rv_schedule);
         btn_add_schedule =  findViewById(R.id.btn_add_schedule);
         btn_cancel_schedule =  findViewById(R.id.btn_cancel_schedule);
         ll_spinner_hide =  findViewById(R.id.ll_spinner_hide);
         ll_schedule =  findViewById(R.id.ll_schedule);
+        view_header = findViewById(R.id.view_header);
+        view_starttime = findViewById(R.id.view_starttime);
+        view_moodlist = findViewById(R.id.view_moodlist);
 
         btn_add_schedule.setOnClickListener(this);
         btn_cancel_schedule.setOnClickListener(this);
@@ -249,6 +265,12 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         text_schedule_7.setTag(false);
 
         sp_mood_selection.setOnItemSelectedListener(this);
+
+        linear_header.setVisibility(View.GONE);
+        view_header.setVisibility(View.INVISIBLE);
+        view_moodlist.setVisibility(View.GONE);
+        view_starttime.setVisibility(View.GONE);
+        rv_schedule.setVisibility(View.GONE);
 
         et_schedule_on_time.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
         et_schedule_on_time.setDrawableClickListener(new DrawableClickListener() {
@@ -391,6 +413,11 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
         if (isEdit)
         {
+            linear_header.setVisibility(View.VISIBLE);
+            view_header.setVisibility(View.VISIBLE);
+
+            linear_header_textviews.setVisibility(View.VISIBLE);
+            linear_header_buttons.setVisibility(View.GONE);
             try {
                 if (scheduleVO != null) {
 
@@ -398,11 +425,15 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                         rb_schedule_type_room.setChecked(true);
                         setBackGroundColorButton(true);
                         btnMoodSchedule.setVisibility(View.GONE);
+                        txtMoodSchedule.setVisibility(View.GONE);
+                        view_moodlist.setVisibility(View.GONE);
 
                     } else {
+                        view_moodlist.setVisibility(View.VISIBLE);
                         rb_schedule_type_mood.setChecked(true);
                         setBackGroundColorButton(false);
                         btnRoomSchedule.setVisibility(View.GONE);
+                        txtRoomSchedule.setVisibility(View.GONE);
                     }
                     et_schedule_name.setText(scheduleVO.getSchedule_name());
                     et_schedule_name.setSelection(et_schedule_name.getText().length());
@@ -410,7 +441,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     if (!scheduleVO.getSchedule_device_on_time().equalsIgnoreCase("")) {
                         try {
                             if (scheduleVO.getSchedule_type() == 1) {
-                                et_schedule_on_time.setText(DateHelper.formateDate(DateHelper.parseTimeSimple(scheduleVO.getSchedule_device_on_time(), DateHelper.DATE_FROMATE_H_M_AMPM1), DateHelper.DATE_FROMATE_H_M_AMPM12));
+                                et_schedule_on_time.setText(DateHelper.formateDate(DateHelper.parseTimeSimple(scheduleVO.getSchedule_device_on_time(), DateHelper.DATE_FROMATE_H_M_AMPM1), DateHelper.DATE_FROMATE_H_M_AMPM123));
                             } else {
                                 et_schedule_on_time.setText(Common.getConvertDateForScheduleHour(scheduleVO.getSchedule_device_on_time()));
                             }
@@ -422,7 +453,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     if (!scheduleVO.getSchedule_device_off_time().equalsIgnoreCase("")) {
                         try {
                             if (scheduleVO.getSchedule_type() == 1) {
-                                et_schedule_off_time.setText(DateHelper.formateDate(DateHelper.parseTimeSimple(scheduleVO.getSchedule_device_off_time(), DateHelper.DATE_FROMATE_H_M_AMPM1), DateHelper.DATE_FROMATE_H_M_AMPM12));
+                                et_schedule_off_time.setText(DateHelper.formateDate(DateHelper.parseTimeSimple(scheduleVO.getSchedule_device_off_time(), DateHelper.DATE_FROMATE_H_M_AMPM1), DateHelper.DATE_FROMATE_H_M_AMPM123));
                             } else {
                                 et_schedule_off_time.setText(Common.getConvertDateForScheduleHour(scheduleVO.getSchedule_device_off_time()));
                             }
@@ -468,10 +499,11 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     rb_schedule_select_schedule.setClickable(false);
 
                     /*check schedule type*/
-                    if (scheduleVO.getSchedule_type() == 1) {
+                    if (scheduleVO.getSchedule_type() == 1)
+                    {
 
                         rb_schedule_select_auto.setChecked(true);
-                        rb_schedule_select_schedule.setEnabled(false);
+                        rb_schedule_select_schedule.setEnabled(true);
 
                         String on_after = scheduleVO.getSchedule_device_on_time();
                         if (!TextUtils.isEmpty(on_after)) {
@@ -577,8 +609,8 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                             setEtOffTimeHeader(off_time_date, off_at_time, Common.getTimeAM(scheduleVO.getSchedule_device_off_time()));
                         } else {
                             Date c = Calendar.getInstance().getTime();
-                            SimpleDateFormat df = new SimpleDateFormat("MMM dd, yyyy hh:mm aa");
-                            SimpleDateFormat df1 = new SimpleDateFormat("hh:mm aa");
+                            SimpleDateFormat df = new SimpleDateFormat("DD-MM-YY h:mm aa");
+                            SimpleDateFormat df1 = new SimpleDateFormat("h:mm aa");
                             SimpleDateFormat df2 = new SimpleDateFormat("aa");
                             String formattedDate = df.format(c);
                             String formattedDate1 = df1.format(c);
@@ -590,7 +622,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                         }
 
                     } else {
-                        rb_schedule_select_auto.setEnabled(false);
+                        rb_schedule_select_auto.setEnabled(true);
                         rb_schedule_select_schedule.setChecked(true);
                     }
                     btnRoomSchedule.setClickable(false);
@@ -600,10 +632,10 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 int rId = rg_schedule_select.getCheckedRadioButtonId();
                 if (rId == R.id.rb_schedule_select_schedule) {
                     showScheduleUI();
-                    rb_schedule_select_auto.setVisibility(View.GONE);
+                    rb_schedule_select_auto.setVisibility(View.VISIBLE);
                 } else if (rId == R.id.rb_schedule_select_timer) {
                     showTimerUI();
-                    rb_schedule_select_schedule.setVisibility(View.GONE);
+                    rb_schedule_select_schedule.setVisibility(View.VISIBLE);
                 }
 
 
@@ -811,7 +843,8 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
              * moodid : means MoodFragment
              * */
 
-            if (!TextUtils.isEmpty(isActivityType) && !isEdit) {
+            if (!TextUtils.isEmpty(isActivityType) && !isEdit)
+            {
                 if (!TextUtils.isEmpty(roomId) || !TextUtils.isEmpty(moodId)) {
                     btnRoomSchedule.setClickable(false);
                     btnMoodSchedule.setClickable(false);
@@ -850,13 +883,42 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             if (scheduleVO == null) {
                 scheduleVO = new ScheduleVO();
             }
-            if (isScheduleClick) {
+            if (isScheduleClick)
+            {
                 if (selection == 1) {
                     rb_schedule_type_room.setChecked(true);
-                    setBackGroundColorButton(true);
+
+                    btnRoomSchedule.setClickable(true);
+                    btnMoodSchedule.setClickable(true);
+
+                    /*view_moodlist.setVisibility(View.GONE);
+                    ll_spinner_mood.setVisibility(View.GONE);
+                    linear_header.setVisibility(View.VISIBLE);
+                    view_header.setVisibility(View.VISIBLE);
+                    rv_schedule.setVisibility(View.VISIBLE);*/
+
+                  //  view_moodlist.setVisibility(View.GONE);
+                    btnMoodSchedule.setBackground(getResources().getDrawable(R.drawable.drawable_gray_schedule));
+                    btnRoomSchedule.setBackground(getResources().getDrawable(R.drawable.drawable_gray_schedule));
+
+                 //   setBackGroundColorButton(true);
                 } else if (selection == 2) {
                     rb_schedule_type_mood.setChecked(true);
-                    setBackGroundColorButton(false);
+
+                    btnRoomSchedule.setClickable(true);
+                    btnMoodSchedule.setClickable(true);
+
+                   /* view_moodlist.setVisibility(View.VISIBLE);
+                    ll_spinner_mood.setVisibility(View.VISIBLE);
+                    linear_header.setVisibility(View.VISIBLE);
+                    view_header.setVisibility(View.VISIBLE);
+                    rv_schedule.setVisibility(View.VISIBLE);*/
+
+                  //  view_moodlist.setVisibility(View.VISIBLE);
+                    btnMoodSchedule.setBackground(getResources().getDrawable(R.drawable.drawable_gray_schedule));
+                    btnRoomSchedule.setBackground(getResources().getDrawable(R.drawable.drawable_gray_schedule));
+
+                 //   setBackGroundColorButton(false);
                 }
             } else {
                 //add default room checked
@@ -1096,13 +1158,13 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             btnRoomSchedule.setBackground(getResources().getDrawable(R.drawable.drawable_blue_schedule));
             btnRoomSchedule.setTextColor(getResources().getColor(R.color.automation_white));
             btnMoodSchedule.setBackground(getResources().getDrawable(R.drawable.drawable_gray_schedule));
-            btnMoodSchedule.setTextColor(getResources().getColor(R.color.txtPanal));
+            btnMoodSchedule.setTextColor(getResources().getColor(R.color.solid_blue));
         } else {
             isSelectMode = false;
             btnMoodSchedule.setBackground(getResources().getDrawable(R.drawable.drawable_blue_schedule));
             btnMoodSchedule.setTextColor(getResources().getColor(R.color.automation_white));
             btnRoomSchedule.setBackground(getResources().getDrawable(R.drawable.drawable_gray_schedule));
-            btnRoomSchedule.setTextColor(getResources().getColor(R.color.txtPanal));
+            btnRoomSchedule.setTextColor(getResources().getColor(R.color.solid_blue));
         }
 
     }
@@ -1150,6 +1212,18 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         imgArrow.setVisibility(View.VISIBLE);
         imgArraoTime.setVisibility(View.GONE);
 
+        view_starttime.setVisibility(View.VISIBLE);
+
+       /* if (selection == 1){
+            view_starttime.setVisibility(View.VISIBLE);
+            view_moodlist.setVisibility(View.GONE);
+        } else{
+            view_starttime.setVisibility(View.VISIBLE);
+            view_moodlist.setVisibility(View.VISIBLE);
+        }*/
+
+        rb_schedule_select_schedule.setTextColor(getResources().getColor(R.color.signupblack));
+        rb_schedule_select_auto.setTextColor(getResources().getColor(R.color.signupblack));
 
         ll_on_time.setVisibility(View.VISIBLE);
         ll_off_time.setVisibility(View.VISIBLE);
@@ -1164,6 +1238,19 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         ll_week_title.setVisibility(View.GONE);
         ll_week_days.setVisibility(View.GONE);
         imgArrow.setVisibility(View.GONE);
+        view_starttime.setVisibility(View.GONE);
+
+        rb_schedule_select_auto.setTextColor(getResources().getColor(R.color.signupblack));
+        rb_schedule_select_schedule.setTextColor(getResources().getColor(R.color.signupblack));
+
+      /*  if (selection == 2){
+            view_starttime.setVisibility(View.VISIBLE);
+            view_moodlist.setVisibility(View.VISIBLE);
+        } else{
+            view_starttime.setVisibility(View.GONE);
+            view_moodlist.setVisibility(View.GONE);
+        }*/
+
 
         //visible auto layour
         imgArraoTime.setVisibility(View.VISIBLE);
@@ -1217,12 +1304,20 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         } else if (id == R.id.btnRoomSchedule) {
             setBackGroundColorButton(true);
             isMoodAdapter = false;
+            view_moodlist.setVisibility(View.GONE);
             ll_spinner_mood.setVisibility(View.GONE);
+            linear_header.setVisibility(View.VISIBLE);
+            view_header.setVisibility(View.VISIBLE);
+            rv_schedule.setVisibility(View.VISIBLE);
             getDeviceList();
         } else if (id == R.id.btnMoodSchedule) {
             setBackGroundColorButton(false);
             isMoodAdapter = true;
+            view_moodlist.setVisibility(View.VISIBLE);
             ll_spinner_mood.setVisibility(View.VISIBLE);
+            linear_header.setVisibility(View.VISIBLE);
+            view_header.setVisibility(View.VISIBLE);
+            rv_schedule.setVisibility(View.VISIBLE);
             getMoodListAdd();
         }
 
@@ -1325,9 +1420,10 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 }
 
                 if (on_hour == off_hour && on_min == off_min) {
-                    Toast.makeText(this, "Input diffrent On and Off Time", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Input different On and Off Time", Toast.LENGTH_SHORT).show();
                     return false;
                 }
+
             } else {
 
                 if (TextUtils.isEmpty(et_schedule_on_time.getText().toString()) && TextUtils.isEmpty(et_schedule_off_time.getText().toString())) {
@@ -1468,6 +1564,18 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
+    /*
+     *  HH:mm
+     * @return
+     * */
+    private boolean comparetime(String starttime, String endtime) {
+
+        Date start_time = getDate(starttime);
+        Date end_time = getDate(endtime);
+
+        return end_time.after(start_time);
+    }
+
     /// all webservice call below.
     public void getDeviceList() {
 
@@ -1536,8 +1644,13 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     txt_empty_sch.setText("No Room Found");
                     rv_schedule.setVisibility(View.GONE);
                 } else {
-                    empty_ll_view.setVisibility(View.GONE);
-                    rv_schedule.setVisibility(View.VISIBLE);
+                    if(linear_header.getVisibility() == View.VISIBLE) {
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.VISIBLE);
+                    } else{
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.GONE);
+                    }
                 }
             }
 
@@ -1549,8 +1662,13 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     txt_empty_sch.setText("No Room Found");
                     rv_schedule.setVisibility(View.GONE);
                 } else {
-                    empty_ll_view.setVisibility(View.GONE);
-                    rv_schedule.setVisibility(View.VISIBLE);
+                    if(linear_header.getVisibility() == View.VISIBLE) {
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.VISIBLE);
+                    } else{
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.GONE);
+                    }
                 }
                 ActivityHelper.dismissProgressDialog();
             }
@@ -1693,8 +1811,14 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     txt_empty_sch.setText("No Mood Found");
                     rv_schedule.setVisibility(View.GONE);
                 } else {
-                    empty_ll_view.setVisibility(View.GONE);
-                    rv_schedule.setVisibility(View.VISIBLE);
+                    if(linear_header.getVisibility() == View.VISIBLE) {
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.VISIBLE);
+                    } else{
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.GONE);
+                    }
+
                 }
             }
 
@@ -1706,8 +1830,13 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     txt_empty_sch.setText("No Mood Found");
                     rv_schedule.setVisibility(View.GONE);
                 } else {
-                    empty_ll_view.setVisibility(View.GONE);
-                    rv_schedule.setVisibility(View.VISIBLE);
+                    if(linear_header.getVisibility() == View.VISIBLE) {
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.VISIBLE);
+                    } else{
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.GONE);
+                    }
                 }
                 ActivityHelper.dismissProgressDialog();
             }
@@ -1758,7 +1887,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onBackPressed() {
-        nextFalse = 0;
+    //    nextFalse = 0;
         ActivityHelper.hideKeyboard(this);
         super.onBackPressed();
     }
@@ -1894,8 +2023,8 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
 
                                         if (sID.equals(deviceVOList.get(k).getPanel_device_id())) {
-                                                deviceVOList.get(k).setSelected(true);
-                                                roomVO.setExpanded(true);
+                                            deviceVOList.get(k).setSelected(true);
+                                            roomVO.setExpanded(true);
                                         }
                                     }
                                 }

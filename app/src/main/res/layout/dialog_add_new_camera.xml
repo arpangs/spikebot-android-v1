@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -31,7 +31,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_margin="5dp"
+                        android:layout_margin="@dimen/_10sdp"
                         android:orientation="horizontal"
                         android:paddingLeft="8dp">
 
@@ -42,25 +42,25 @@
                             android:layout_marginLeft="5dp"
                             android:layout_weight="1"
                             android:gravity="center_vertical"
-                            android:text="Add Alert"
-                            android:textColor="@color/sensor_button"
+                            android:text="Add Notification"
+                            android:textColor="@color/signupblack"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
                         <ImageView
                             android:id="@+id/iv_close"
-                            android:layout_width="35dp"
+                            android:layout_width="30dp"
                             android:layout_height="35dp"
-                            android:padding="3dp"
                             android:backgroundTint="@color/sensor_button"
-                            app:srcCompat="@drawable/close_blue2" />
+                            android:padding="3dp"
+                            app:srcCompat="@drawable/cross" />
 
                     </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/sky_blue" />
+                        android:background="@color/automation_dark" />
 
 
                     <LinearLayout
@@ -73,6 +73,8 @@
                         <LinearLayout
                             android:layout_marginTop="@dimen/_10sdp"
                             android:layout_marginBottom="@dimen/_10sdp"
+                            android:layout_marginLeft="@dimen/_10sdp"
+                            android:layout_marginRight="@dimen/_10sdp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
@@ -91,15 +93,16 @@
                                     android:id="@+id/et_schedule_on_time"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="0.70"
                                     android:drawableRight="@drawable/icn_close"
                                     android:drawablePadding="8dp"
-                                    android:hint="Start Time"
-                                    android:padding="@dimen/_8sdp"
-                                    android:layout_weight="0.70"
-                                    android:background="@drawable/edt_border"
                                     android:focusable="false"
+                                    android:hint="Start Time"
                                     android:inputType="textPersonName"
-                                    android:text="" />
+                                    android:paddingBottom="@dimen/_15sdp"
+                                    android:text=""
+                                    android:textColor="@color/signupblack"
+                                    android:textColorHint="@color/signupblack" />
 
                                 <ImageView
                                     android:id="@+id/iv_schedule_on_time_clear"
@@ -127,14 +130,15 @@
                                 <com.spike.bot.customview.CustomEditText
                                     android:id="@+id/et_schedule_off_time"
                                     android:layout_width="0dp"
-                                    android:background="@drawable/edt_border"
+                                    android:paddingBottom="@dimen/_15sdp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="0.70"
                                     android:hint="End Time"
-                                    android:padding="@dimen/_8sdp"
                                     android:focusable="false"
                                     android:drawableRight="@drawable/icn_close"
                                     android:drawablePadding="8dp"
+                                    android:textColorHint="@color/signupblack"
+                                    android:textColor="@color/signupblack"
                                     android:inputType="textPersonName"
                                     android:text="" />
 
@@ -158,6 +162,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_10sdp"
+                        android:layout_marginRight="@dimen/_10sdp"
                         android:orientation="horizontal">
 
                         <TextView
@@ -169,7 +175,7 @@
                             android:textSize="@dimen/_12sdp"
                             android:layout_marginTop="@dimen/_10sdp"
                             android:layout_marginLeft="@dimen/_5sdp"
-                            android:textColor="@color/sensor_button"/>
+                            android:textColor="@color/signupblack"/>
 
                         <com.spike.bot.customview.CustomEditText
                             android:id="@+id/edIntervalTime"
@@ -179,9 +185,8 @@
                             android:layout_marginTop="@dimen/_5sdp"
                             android:layout_marginRight="@dimen/_5sdp"
                             android:layout_marginLeft="@dimen/_8sdp"
-                            android:padding="@dimen/_8sdp"
+                            android:paddingBottom="@dimen/_15sdp"
                             android:layout_weight="1"
-                            android:background="@drawable/edt_border"
                             android:inputType="number"
                             android:imeOptions="actionDone"
                             android:maxLength="2"
@@ -194,14 +199,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
                         android:layout_marginTop="@dimen/_10sdp"
-                        android:background="@color/txtPanal"></View>
+                        android:background="@color/automation_dark"></View>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_10sdp"
-                        android:layout_marginRight="5dp"
-                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:layout_marginLeft="@dimen/_10sdp"
+                        android:layout_marginRight="@dimen/_10sdp"
                         android:orientation="vertical">
 
                         <LinearLayout
@@ -213,22 +218,22 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Select Camera"
-                                android:textSize="@dimen/_13sdp"
-                                android:textColor="@color/txtPanal"/>
+                                android:textColor="@color/sensor_button"
+                                android:textSize="@dimen/_13sdp" />
 
                             <TextView
                                 android:id="@+id/txtSDevice"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="0 device"
                                 android:paddingLeft="@dimen/_8sdp"
-                                android:textSize="@dimen/_13sdp"
-                                android:textColor="@color/sensor_button"/>
+                                android:text="0 device"
+                                android:textColor="@color/signupblack"
+                                android:textSize="@dimen/_13sdp" />
 
 
                         </LinearLayout>
 
-                        <android.support.v7.widget.RecyclerView
+                        <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/recyclerCamera"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -247,7 +252,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="@dimen/_5sdp"
-            android:background="@color/sky_blue" />
+            android:background="@color/automation_dark" />
 
 
         <LinearLayout
@@ -262,11 +267,13 @@
                 android:text="Save"
                 android:gravity="center"
                 android:textSize="@dimen/_14sdp"
-                android:textColor="@color/sensor_button"/>
+                android:layout_margin="@dimen/_10sdp"
+                android:background="@drawable/background_button_login"
+                android:textColor="@color/automation_white"/>
 
         </LinearLayout>
 
     </LinearLayout>
 
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -36,8 +36,8 @@
                 android:drawablePadding="7dp"
                 android:padding="@dimen/_9sdp"
                 android:layout_gravity="center|left"
-                android:textColor="@color/automation_black"
-                android:drawableLeft="@drawable/add_blue"
+                android:textColor="@color/automation_white"
+                android:drawableLeft="@drawable/ic_add_blue"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_width="match_parent"
@@ -47,7 +47,7 @@
 
         </LinearLayout>
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/userList"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
@@ -55,7 +55,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        </android.support.v7.widget.RecyclerView>
+        </androidx.recyclerview.widget.RecyclerView>
 
         <TextView
             android:layout_width="match_parent"

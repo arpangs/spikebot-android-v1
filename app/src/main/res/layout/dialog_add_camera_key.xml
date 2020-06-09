@@ -26,7 +26,7 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text="Enter key"
-                android:textColor="@color/automation_blue"
+                android:textColor="@color/signupblack"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -36,33 +36,34 @@
                 android:layout_height="35dp"
                 android:padding="3dp"
                 android:backgroundTint="@color/sensor_button"
-                app:srcCompat="@drawable/close_blue2" />
+                app:srcCompat="@drawable/cross" />
 
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/sky_blue" />
+            android:background="@color/automation_dark" />
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_marginTop="16dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_room_name"
                 android:layout_width="match_parent"
                 android:hint="Key name"
                 android:layout_height="wrap_content" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
+            android:layout_marginTop="15dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -73,6 +74,7 @@
                 style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
                 android:layout_gravity="right"
                 android:text="CANCEL"
+                android:visibility="gone"
                 android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
@@ -84,8 +86,10 @@
                 style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
                 android:layout_gravity="right"
                 android:text="SAVE"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
+                android:textColor="@color/automation_white"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:background="@drawable/drawable_blue_schedule"
+                android:layout_width="@dimen/_130sdp"
                 android:layout_height="wrap_content" />
 
         </LinearLayout>

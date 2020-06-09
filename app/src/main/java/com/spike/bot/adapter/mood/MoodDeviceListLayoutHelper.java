@@ -1,14 +1,14 @@
 package com.spike.bot.adapter.mood;
 
 import android.content.Context;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.core.ListUtils;
 import com.spike.bot.customview.recycle.ItemClickListener;
 import com.spike.bot.customview.recycle.SectionStateChangeListener;
 import com.spike.bot.model.DeviceVO;
-import com.spike.bot.model.MoodVO;
 import com.spike.bot.model.PanelVO;
 import com.spike.bot.model.RoomVO;
 

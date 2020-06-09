@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@drawable/new_screen_resolution"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
@@ -20,291 +18,1070 @@
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
 
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <android.support.v7.widget.CardView
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="15dp"
-        android:orientation="vertical"
-        card_view:cardCornerRadius="3dp">
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="65dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="10dp">
 
-        <RelativeLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/new_screen_resolution">
-
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_above="@+id/btn_delete"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="@dimen/_50sdp"
-                android:orientation="vertical">
-
-                <android.support.v7.widget.CardView
-                    xmlns:android="http://schemas.android.com/apk/res/android"
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/cardViewDoor"
-                    android:visibility="visible"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="@color/automation_white"
-                    android:orientation="vertical"
-                    android:layout_marginBottom="@dimen/_8sdp"
-                    app:cardCornerRadius="2dp"
-                    app:cardElevation="5dp"
-                    app:elevation="5dp">
+                    android:layout_height="match_parent"
+                    android:layout_above="@+id/btn_delete"
+                    android:layout_marginBottom="@dimen/_50sdp"
+                    android:orientation="vertical">
 
-                    <LinearLayout
-                        android:layout_marginBottom="@dimen/_15sdp"
-                        android:layout_marginLeft="@dimen/_2sdp"
-                        android:layout_marginTop="@dimen/_10sdp"
-                        android:layout_marginRight="@dimen/_15sdp"
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardViewDoor"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:layout_marginTop="@dimen/_8sdp"
+                        android:layout_marginRight="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_8sdp"
+                        android:background="@color/automation_white"
+                        android:orientation="vertical"
+                        android:visibility="visible"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="8dp"
+                        app:elevation="8dp">
 
                         <LinearLayout
+                            android:id="@+id/linear_door"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:id="@+id/img_temp_on"
-                                android:src="@drawable/on_door"
-                                android:layout_gravity="top"
-                                android:layout_weight="0.25"
-                                android:layout_width="@dimen/_50sdp"
-                                android:layout_height="@dimen/_60sdp" />
+                            android:layout_marginLeft="@dimen/_2sdp"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:layout_marginRight="@dimen/_2sdp"
+                            android:layout_marginBottom="@dimen/_15sdp"
+                            android:visibility="visible"
+                            android:orientation="vertical">
 
                             <LinearLayout
-                                android:visibility="gone"
-                                android:layout_width="0dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1.2"
-                                android:orientation="vertical">
+                                android:orientation="horizontal">
 
-                                <EditText
-                                    android:id="@+id/sensor_name"
-                                    android:hint="Sensor Name"
-                                    android:focusable="true"
-                                    android:singleLine="true"
-                                    android:textSize="@dimen/_14sdp"
-                                    android:imeOptions="actionDone"
-                                    android:background="@null"
-                                    android:textColorHint="@color/automation_black"
-                                    android:textColor="@color/automation_black"
-                                    android:focusableInTouchMode="true"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content" />
+                                <ImageView
+                                    android:id="@+id/img_temp_on"
+                                    android:layout_width="33dp"
+                                    android:layout_height="40dp"
+                                    android:layout_gravity="center"
+                                    android:layout_marginLeft="5dp"
+                                    android:src="@drawable/dooron" />
 
-                                <View
-                                    android:layout_width="match_parent"
-                                    android:layout_height="0.5dp"
-                                    android:background="@color/txtPanal"/>
-
-                                <android.support.v7.widget.AppCompatTextView
-                                    android:layout_width="match_parent"
+                                <LinearLayout
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="@dimen/_4sdp"
-                                    android:text="Status Open/Close"
-                                    android:textColor="@color/green"
-                                    android:textSize="@dimen/_14sdp"/>
+                                    android:layout_weight="1.2"
+                                    android:orientation="vertical"
+                                    android:visibility="gone">
+
+                                    <EditText
+                                        android:id="@+id/sensor_name"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:background="@null"
+                                        android:focusable="true"
+                                        android:focusableInTouchMode="true"
+                                        android:hint="Sensor Name"
+                                        android:imeOptions="actionDone"
+                                        android:singleLine="true"
+                                        android:textColor="@color/automation_black"
+                                        android:textColorHint="@color/automation_black"
+                                        android:textSize="@dimen/_14sdp" />
+
+                                    <View
+                                        android:layout_width="match_parent"
+                                        android:layout_height="0.5dp"
+                                        android:background="@color/txtPanal" />
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="@dimen/_4sdp"
+                                        android:text="Status Open/Close"
+                                        android:textColor="@color/green"
+                                        android:textSize="@dimen/_14sdp" />
+
+                                </LinearLayout>
+
+                                <RelativeLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="right"
+                                    android:layout_weight="0.40"
+                                    android:gravity="right"
+                                    android:visibility="gone">
+
+                                    <ImageView
+                                        android:id="@+id/iv_icon"
+                                        android:layout_width="34dp"
+                                        android:layout_height="35dp"
+                                        android:layout_gravity="center_horizontal"
+                                        android:layout_marginTop="8dp"
+                                        android:adjustViewBounds="true"
+                                        android:gravity="center_horizontal"
+                                        android:src="@drawable/icn_log" />
+
+                                    <View
+                                        android:id="@+id/vi_test"
+                                        android:layout_width="5dp"
+                                        android:layout_height="58dp"
+                                        android:layout_alignParentTop="true"
+                                        android:layout_toRightOf="@+id/iv_icon" />
+
+                                    <ImageView
+                                        android:id="@+id/img_dummy"
+                                        android:layout_width="8dp"
+                                        android:layout_height="30dp"
+                                        android:layout_toRightOf="@+id/vi_test" />
+
+                                    <TextView
+                                        android:id="@+id/iv_icon_badge"
+                                        android:layout_width="20dp"
+                                        android:layout_height="20dp"
+                                        android:layout_alignRight="@+id/img_dummy"
+                                        android:layout_centerHorizontal="true"
+                                        android:background="@drawable/badge_background"
+                                        android:gravity="center"
+                                        android:text="4"
+                                        android:textColor="#FFF"
+                                        android:textSize="9sp"
+                                        android:textStyle="bold"
+                                        android:visibility="gone" />
+
+
+                                </RelativeLayout>
+
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/txtDoorStatus"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="2.5"
+                                    android:layout_marginLeft="12dp"
+                                    android:gravity="left|center"
+                                    android:paddingTop="@dimen/_7sdp"
+                                    android:text=""
+                                    android:textStyle="bold"
+                                    android:textColor="@color/automation_red"
+                                    android:textSize="@dimen/_11sdp" />
+
+                                <ImageView
+                                    android:id="@+id/imgDoorDelete"
+                                    android:layout_width="@dimen/_25sdp"
+                                    android:layout_height="24dp"
+                                    android:layout_gravity="center"
+                                    android:layout_marginTop="@dimen/_5sdp"
+                                    android:layout_marginRight="@dimen/_10sdp"
+                                    android:src="@drawable/edit_blue"
+                                    android:visibility="visible" />
+
+                               <!-- <ImageView
+                                    android:id="@+id/imgDoorDelete"
+                                    android:layout_width="@dimen/_25sdp"
+                                    android:layout_height="@dimen/_25sdp"
+                                    android:layout_gravity="center"
+                                    android:layout_marginTop="@dimen/_5sdp"
+                                    android:src="@drawable/delete_blue"
+                                    android:visibility="invisible" />-->
 
                             </LinearLayout>
 
-                            <RelativeLayout
-                                android:visibility="gone"
-                                android:layout_weight="0.40"
-                                android:gravity="right"
-                                android:layout_gravity="right"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content">
-
-                                <ImageView
-                                    android:id="@+id/iv_icon"
-                                    android:layout_width="34dp"
-                                    android:layout_height="35dp"
-                                    android:layout_marginTop="8dp"
-                                    android:layout_gravity="center_horizontal"
-                                    android:adjustViewBounds="true"
-                                    android:gravity="center_horizontal"
-                                    android:src="@drawable/icn_log" />
-
-                                <View
-                                    android:id="@+id/vi_test"
-                                    android:layout_width="5dp"
-                                    android:layout_alignParentTop="true"
-                                    android:layout_toRightOf="@+id/iv_icon"
-                                    android:layout_height="58dp"/>
-
-                                <ImageView
-                                    android:id="@+id/img_dummy"
-                                    android:layout_toRightOf="@+id/vi_test"
-                                    android:layout_width="8dp"
-                                    android:layout_height="30dp" />
-
-                                <TextView
-                                    android:id="@+id/iv_icon_badge"
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:gravity="center"
-                                    android:visibility="gone"
-                                    android:textStyle="bold"
-                                    android:layout_centerHorizontal="true"
-                                    android:layout_alignRight="@+id/img_dummy"
-                                    android:background="@drawable/badge_background"
-                                    android:text="4"
-                                    android:textColor="#FFF"
-                                    android:textSize="9sp" />
-
-
-                            </RelativeLayout>
-
-                            <android.support.v7.widget.AppCompatTextView
-                                android:id="@+id/txtDoorStatus"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1.2"
-                                android:paddingTop="@dimen/_7sdp"
-                                android:textColor="@color/automation_red"
-                                android:textSize="@dimen/_16sdp"
-                                android:gravity="left|center"/>
-
-
-                            <ImageView
-                                android:id="@+id/imgDoorDelete"
-                                android:layout_width="@dimen/_25sdp"
-                                android:layout_height="@dimen/_25sdp"
-                                android:layout_marginTop="@dimen/_5sdp"
-                                android:visibility="invisible"
-                                android:layout_gravity="center"
-                                android:src="@drawable/delete_blue"/>
+                            <View
+                                android:id="@+id/view_section"
+                                android:layout_width="wrap_content"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="@dimen/_20sdp"
+                                android:background="@color/automation_dark_gray"
+                                android:visibility="visible" />
 
                             <LinearLayout
-                                android:layout_weight="0.25"
-                                android:layout_width="0dp"
-                                android:gravity="center|bottom"
+                                android:id="@+id/linear_door_batterylvl"
+                                android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:orientation="vertical">
+                                android:layout_marginTop="25dp"
+                                android:gravity="center_vertical|bottom"
+                                android:orientation="horizontal">
 
                                 <ImageView
                                     android:id="@+id/img_battery"
-                                    android:src="@drawable/battery_4"
-                                    android:layout_gravity="center"
                                     android:layout_width="32dp"
-                                    android:layout_height="32dp" />
+                                    android:layout_height="32dp"
+                                    android:layout_gravity="center"
+                                    android:layout_marginLeft="5dp"
+                                    android:src="@drawable/battery_4" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginLeft="@dimen/_12sdp"
+                                    android:layout_weight="1.1"
+                                    android:text="Battery Level"
+                                    android:textColor="@color/signupblack"
+                                    android:textSize="@dimen/_11sdp"
+                                    android:visibility="visible" />
 
                                 <TextView
                                     android:id="@+id/txt_bettery_per"
-                                    android:textSize="@dimen/_11sdp"
-                                    android:textColor="@color/automation_black"
-                                    android:layout_gravity="center"
-                                    android:visibility="visible"
                                     android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" />
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginRight="10dp"
+                                    android:text=""
+                                    android:textColor="@color/signupblack"
+                                    android:textSize="@dimen/_11sdp"
+                                    android:visibility="visible" />
 
                             </LinearLayout>
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/linear_yale_status"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:visibility="gone"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="@dimen/_215sdp"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Status"
+                                        android:layout_margin="20dp"
+                                        android:textColor="#545454"
+                                        android:textSize="20sp"/>
+
+                                        <androidx.appcompat.widget.AppCompatTextView
+                                            android:id="@+id/txtyDooryaleStatus"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text=""
+                                            android:gravity="left|center"
+                                            android:layout_marginLeft="20dp"
+                                            android:layout_marginBottom="30dp"
+                                            android:textColor="@color/automation_red"
+                                            android:textSize="@dimen/_25sdp" />
+
+                                </LinearLayout>
+
+                            <ImageView
+                                android:id="@+id/img_door_on"
+                                android:layout_width="@dimen/_65sdp"
+                                android:layout_height="@dimen/_65sdp"
+                                android:layout_gravity="center">
+
+                            </ImageView>
+
 
                         </LinearLayout>
 
-                    </LinearLayout>
+                    </androidx.cardview.widget.CardView>
 
-                </android.support.v7.widget.CardView>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="#60808080"
+                        android:visibility="gone" />
 
-                <View
-                    android:visibility="gone"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="#60808080"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"/>
-
-                <android.support.v7.widget.CardView
-                    android:id="@+id/cardViewLock"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="@color/automation_white"
-                    android:orientation="vertical"
-                    android:layout_marginBottom="@dimen/_8sdp"
-                    app:cardCornerRadius="2dp"
-                    app:cardElevation="5dp"
-                    app:elevation="5dp">
-
-                    <LinearLayout
-                        android:visibility="visible"
-                        android:id="@+id/linearLock"
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardViewLock"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingLeft="@dimen/_5sdp"
-                        android:orientation="vertical">
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="@dimen/_8sdp"
+                        android:background="@color/automation_white"
+                        android:orientation="vertical"
+                        android:visibility="gone"
+                        app:cardCornerRadius="2dp"
+                        app:cardElevation="5dp"
+                        app:elevation="5dp">
 
                         <LinearLayout
+                            android:id="@+id/linearLock"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingLeft="@dimen/_5sdp"
+                            android:visibility="visible">
+
+                            <LinearLayout
+                                android:id="@+id/linearAddlockOptin"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:visibility="gone">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="@dimen/_8sdp"
+                                    android:layout_marginTop="@dimen/_8sdp"
+                                    android:layout_marginRight="@dimen/_8sdp"
+                                    android:gravity="center"
+                                    android:orientation="horizontal">
+
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:layout_weight="0.50"
+                                        android:text="Add Lock"
+                                        android:textColor="@color/txtPanal"
+                                        android:textSize="16sp" />
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:layout_weight="0.8"
+                                        android:textColor="@color/txtPanal"
+                                        android:textSize="14sp" />
+
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/txtAddLock"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:layout_weight="0.2"
+                                        android:background="@drawable/btn_background_alert"
+                                        android:gravity="center"
+                                        android:padding="5dp"
+                                        android:text="Add"
+                                        android:textColor="@color/sensor_button"
+                                        android:textSize="16sp" />
+
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="@dimen/_5sdp"
+                                    android:background="@color/automation_dark_gray"
+                                    android:visibility="visible" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/linearLockDoor"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginRight="@dimen/_5sdp"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:id="@+id/imgLock"
+                                    android:layout_width="@dimen/_80sdp"
+                                    android:layout_height="@dimen/_80sdp"
+                                    android:layout_gravity="center|left"
+                                    android:padding="@dimen/_10sdp"
+                                    android:src="@drawable/door_locked" />
+
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:orientation="vertical">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal">
+
+                                        <LinearLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1.2"
+                                            android:orientation="vertical">
+
+                                            <androidx.appcompat.widget.AppCompatTextView
+                                                android:id="@+id/txtlockStatus"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:singleLine="true"
+                                                android:textColor="@color/green"
+                                                android:textSize="@dimen/_16sdp"
+                                                android:visibility="visible" />
+
+                                            <LinearLayout
+                                                android:layout_width="match_parent"
+                                                android:layout_height="match_parent"
+                                                android:gravity="center|left"
+                                                android:orientation="horizontal">
+
+                                                <androidx.appcompat.widget.AppCompatTextView
+                                                    android:id="@+id/txtAutoLock"
+                                                    android:layout_width="wrap_content"
+                                                    android:layout_height="wrap_content"
+                                                    android:gravity="center"
+                                                    android:padding="@dimen/_3sdp"
+                                                    android:text="Auto Lock in 10s"
+                                                    android:textColor="@color/txtPanal"
+                                                    android:textSize="@dimen/_11sdp" />
+
+                                                <androidx.appcompat.widget.SwitchCompat
+                                                    android:id="@+id/switchAutoLock"
+                                                    android:layout_width="wrap_content"
+                                                    android:layout_height="wrap_content"
+                                                    android:layout_marginLeft="@dimen/_2sdp"
+                                                    android:text=""
+                                                    android:textSize="@dimen/_11sdp" />
+
+
+                                            </LinearLayout>
+
+                                        </LinearLayout>
+
+                                        <ImageView
+                                            android:id="@+id/imgLockDelete"
+                                            android:layout_width="@dimen/_25sdp"
+                                            android:layout_height="@dimen/_25sdp"
+                                            android:layout_gravity="center|top"
+                                            android:src="@drawable/delete_blue"
+                                            android:visibility="visible" />
+
+
+                                        <LinearLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:layout_weight="3"
+                                            android:orientation="vertical">
+
+                                            <ImageView
+                                                android:id="@+id/imgLockBattery"
+                                                android:layout_width="32dp"
+                                                android:layout_height="32dp"
+                                                android:layout_gravity="center"
+                                                android:layout_marginRight="@dimen/_3sdp"
+                                                android:src="@drawable/battery_4" />
+
+                                            <androidx.appcompat.widget.AppCompatTextView
+                                                android:id="@+id/txtBettrylock"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_gravity="center"
+                                                android:paddingTop="@dimen/_3sdp"
+                                                android:textColor="@color/automation_black"
+                                                android:textSize="@dimen/_11sdp" />
+
+                                        </LinearLayout>
+
+
+                                    </LinearLayout>
+
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardview_yalelook"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="@dimen/_5sdp"
+                            android:layout_marginTop="@dimen/_8sdp"
+                            android:layout_marginRight="@dimen/_5sdp"
+                            android:layout_marginBottom="@dimen/_8sdp"
+                            android:background="@color/automation_white"
+                            android:orientation="vertical"
+                            app:cardCornerRadius="8dp"
+                            app:cardElevation="8dp"
                             android:visibility="gone"
-                            android:id="@+id/linearAddlockOptin"
+                            app:elevation="8dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+
+                                <LinearLayout
+                                    android:id="@+id/linear_battery"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:background="@color/automation_white"
+                                    android:orientation="horizontal"
+                                    android:padding="12dp"
+                                    android:layout_marginLeft="10dp"
+                                    android:visibility="gone">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_vertical"
+                                        android:layout_weight="0.90"
+                                        android:layout_marginTop="5dp"
+                                        android:gravity="center_vertical"
+                                        android:text="@string/batter_level"
+                                        android:textColor="@color/automation_black"
+                                        android:textSize="@dimen/_12sdp" />
+
+                                    <TextView
+                                        android:id="@+id/txt_battery_level"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="@dimen/_15sdp"
+                                        android:layout_marginTop="12dp"
+                                        android:text=""
+                                        android:layout_marginRight="10dp"
+                                        android:textSize="@dimen/_12sdp" />
+
+                                </LinearLayout>
+
+
+                                <View
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="10dp"
+                                    android:background="@color/automation_dark_gray"
+                                    android:visibility="gone" />
+
+                                <LinearLayout
+                                    android:id="@+id/linear_set_passcode"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:background="@color/automation_white"
+                                    android:orientation="horizontal"
+                                    android:padding="12dp"
+                                    android:layout_marginLeft="5dp"
+                                    android:visibility="visible">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_vertical"
+                                        android:layout_weight="1"
+                                        android:layout_marginTop="5dp"
+                                        android:gravity="center_vertical"
+                                        android:text="Admin Password"
+                                        android:textColor="@color/signupblack"
+                                        android:textSize="@dimen/_12sdp" />
+
+                                    <ImageView
+                                        android:id="@+id/img_log_adminpasscode"
+                                        android:layout_width="27dp"
+                                        android:layout_height="32dp"
+                                        android:layout_marginTop="7dp"
+                                        android:layout_gravity="center_vertical"
+                                        android:layout_marginRight="10dp"
+                                        android:src="@drawable/ic_log"/>
+
+                                    <ImageView
+                                        android:id="@+id/img_passcode"
+                                        android:layout_width="25dp"
+                                        android:layout_height="25dp"
+                                        android:layout_marginTop="7dp"
+                                        android:layout_gravity="center_vertical"
+                                        android:layout_marginRight="10dp"
+                                        android:src="@drawable/eye"/>
+
+                                    <TextView
+                                        android:id="@+id/txt_setpasscode"
+                                        android:layout_width="70dp"
+                                        android:layout_height="@dimen/_15sdp"
+                                        android:drawableRight="@drawable/btn_next"
+                                        android:layout_gravity="center_vertical"
+                                        android:layout_marginTop="7dp"
+                                        android:text="1234"
+                                        android:textColor="@color/signupblack"
+                                        android:inputType="textPassword"
+                                        android:textSize="@dimen/_9sdp" />
+
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="10dp"
+                                    android:background="@color/automation_dark_gray"
+                                    android:visibility="visible" />
+
+                                <LinearLayout
+                                    android:id="@+id/linear_set_onetimecode"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:background="@color/automation_white"
+                                    android:orientation="horizontal"
+                                    android:padding="12dp"
+                                    android:layout_marginLeft="5dp"
+                                    android:visibility="visible">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_vertical"
+                                        android:layout_weight="1"
+                                        android:layout_marginTop="5dp"
+                                        android:gravity="center_vertical"
+                                        android:text="Guest Password"
+                                        android:textColor="@color/signupblack"
+                                        android:textSize="@dimen/_12sdp" />
+
+                                    <ImageView
+                                        android:id="@+id/img_log_guestpasscode"
+                                        android:layout_width="27dp"
+                                        android:layout_height="32dp"
+                                        android:layout_marginTop="7dp"
+                                        android:layout_gravity="center_vertical"
+                                        android:layout_marginRight="10dp"
+                                        android:src="@drawable/ic_log"/>
+
+                                    <ImageView
+                                        android:id="@+id/img_onetimecode"
+                                        android:layout_width="25dp"
+                                        android:layout_height="25dp"
+                                        android:layout_marginTop="7dp"
+                                        android:layout_gravity="center_vertical"
+                                        android:layout_marginRight="10dp"
+                                        android:src="@drawable/eye"/>
+
+                                    <TextView
+                                        android:id="@+id/txt_setonetimecode"
+                                        android:layout_width="70dp"
+                                        android:layout_height="@dimen/_15sdp"
+                                        android:drawableRight="@drawable/btn_next"
+                                        android:layout_marginTop="7dp"
+                                        android:layout_gravity="center_vertical"
+                                        android:text="1234"
+                                        android:textColor="@color/signupblack"
+                                        android:inputType="textPassword"
+                                        android:textSize="@dimen/_9sdp" />
+
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="10dp"
+                                    android:background="@color/automation_dark_gray"
+                                    android:visibility="visible" />
+
+                                <LinearLayout
+                                    android:id="@+id/linear_pushnotify"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:background="@color/automation_white"
+                                    android:orientation="horizontal"
+                                    android:padding="12dp"
+                                    android:layout_marginLeft="10dp"
+                                    android:visibility="gone">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:layout_weight="0.90"
+                                        android:layout_marginTop="5dp"
+                                        android:text="Push Notification"
+                                        android:textColor="@color/automation_black"
+                                        android:textSize="@dimen/_12sdp" />
+
+                                       <!-- <androidx.appcompat.widget.SwitchCompat
+                                            android:id="@+id/switch_temp_lock"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_gravity="center"
+                                            app:theme="@style/Color1SwitchStyle" />-->
+
+                                    <androidx.appcompat.widget.SwitchCompat
+                                        android:id="@+id/switch_temp"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:background="@drawable/selector_section_onoff"
+                                        android:button="@null"
+                                        android:thumb="@null"
+                                        android:layout_marginRight="10dp"
+                                        app:track="@null"
+                                        app:theme="@style/Color1SwitchStyle" />
+
+                                </LinearLayout>
+                                <View
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="10dp"
+                                    android:background="@color/automation_dark_gray"
+                                    android:visibility="gone" />
+
+                            <LinearLayout
+                                android:id="@+id/linear_lock_enable_disable"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:background="@color/automation_white"
+                                android:orientation="horizontal"
+                                android:padding="12dp"
+                                android:layout_marginLeft="5dp"
+                                android:visibility="visible">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="0.90"
+                                    android:text="Lock/Unlock from app"
+                                    android:textColor="@color/signupblack"
+                                    android:textSize="@dimen/_12sdp" />
+
+
+                                   <!-- <androidx.appcompat.widget.SwitchCompat
+                                        android:id="@+id/switch_temp_lock"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        app:theme="@style/Color1SwitchStyle" />-->
+
+                                <androidx.appcompat.widget.SwitchCompat
+                                    android:id="@+id/switch_temp_lock"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:background="@drawable/selector_section_onoff"
+                                    android:button="@null"
+                                    android:thumb="@null"
+                                    android:layout_marginRight="10dp"
+                                    app:track="@null"
+                                    app:theme="@style/Color1SwitchStyle" />
+
+
+                            </LinearLayout>
+
+                            </LinearLayout>
+                        </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/edt_txt_layout2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/_8sdp"
+                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:layout_marginRight="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_8sdp"
+                        android:background="@color/automation_white"
+                        android:orientation="vertical"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="8dp"
+                        app:elevation="8dp">
+
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
 
                             <LinearLayout
-                                android:layout_marginLeft="@dimen/_8sdp"
-                                android:layout_marginRight="@dimen/_8sdp"
-                                android:layout_marginTop="@dimen/_8sdp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginLeft="28dp"
+                                android:layout_marginRight="12dp"
+                                android:orientation="horizontal"
+                                android:visibility="gone">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="0.90"
+                                    android:text="Notification On/Off"
+                                    android:textSize="16sp" />
+
+                                <LinearLayout
+                                    android:id="@+id/ll_switch"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:layout_gravity="right"
+                                    android:layout_marginRight="4dp"
+                                    android:layout_weight="0.10"
+                                    android:gravity="right"
+                                    android:orientation="horizontal">
+
+                                    <androidx.appcompat.widget.SwitchCompat
+                                        android:id="@+id/switch_noti_onoff"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        app:theme="@style/Color1SwitchStyle" />
+
+
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/linearAlertDown"
+                                android:layout_width="match_parent"
+                                android:layout_height="60dp"
+                                android:layout_marginLeft="@dimen/_5sdp"
+                                android:layout_marginRight="@dimen/_15sdp"
                                 android:gravity="center"
                                 android:orientation="horizontal">
 
+                                <ToggleButton
+                                    android:id="@+id/toggleAlert"
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginRight="8dp"
+                                    android:background="@drawable/bell"
+                                    android:contentDescription="Change state of section"
+                                    android:textOff=""
+                                    android:textOn="" />
 
                                 <TextView
-                                    android:text="Add Lock"
-                                    android:textSize="16sp"
-                                    android:layout_gravity="center"
+                                    android:id="@+id/txtTempCount"
                                     android:layout_width="0dp"
-                                    android:layout_weight="0.50"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="0.19"
+                                    android:text="Alert"
                                     android:textColor="@color/txtPanal"
-                                    android:layout_height="wrap_content" />
+                                    android:textSize="16sp"
+                                    android:visibility="gone" />
 
                                 <TextView
-                                    android:textSize="14sp"
-                                    android:layout_gravity="center"
+                                    android:id="@+id/txtAlertTempCount"
                                     android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginLeft="@dimen/_5sdp"
+                                    android:layout_marginTop="@dimen/_5sdp"
+                                    android:text=""
                                     android:layout_weight="0.8"
-                                    android:textColor="@color/txtPanal"
-                                    android:layout_height="wrap_content" />
+                                    android:textColor="#545454"
+                                    android:textSize="@dimen/_12sdp"
+                                    android:textStyle="bold" />
 
 
-                                <android.support.v7.widget.AppCompatTextView
-                                    android:id="@+id/txtAddLock"
-                                    android:text="Add"
-                                    android:textSize="16sp"
-                                    android:padding="5dp"
-                                    android:background="@drawable/btn_background_alert"
-                                    android:textColor="@color/sensor_button"
+                                <!--  android:background="@drawable/btn_background_alert"-->
+                                <!--  <ImageView
+                                      android:id="@+id/btnAdd"
+                                      android:layout_width="33dp"
+                                      android:layout_height="@dimen/_30sdp"
+                                      android:gravity="center"
+                                      android:scaleType="fitXY"
+                                      android:src="@drawable/plus"
+                                      android:text="Add" />-->
+
+                                <TextView
+                                    android:id="@+id/btnAdd"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="ADD"
+                                    android:layout_marginTop="@dimen/_5sdp"
+                                    android:textColor="@color/solid_blue"
+                                    android:textStyle="bold">
+
+                                </TextView>
+
+                            </LinearLayout>
+
+                            <View
+                                android:id="@+id/view_line_top"
+                                android:layout_width="wrap_content"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="@dimen/_5sdp"
+                                android:background="@color/automation_dark_gray"
+                                android:visibility="visible" />
+
+                            <LinearLayout
+                                android:id="@+id/linearAlertExpand"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:visibility="gone">
+
+                                <androidx.appcompat.widget.LinearLayoutCompat
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="@dimen/_4sdp"
+                                    android:layout_marginRight="@dimen/_8sdp"
+                                    android:layout_marginBottom="@dimen/_8sdp"
+                                    android:orientation="horizontal">
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="2"
+                                        android:paddingLeft="@dimen/_14sdp"
+                                        android:text="Start Time"
+                                        android:textSize="12sp" />
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:layout_marginLeft="5dp"
+                                        android:text="End Time"
+                                        android:textSize="12sp" />
+
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1" />
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="0.5" />
+
+                                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                                <View
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="0.5dp"
+                                    android:background="@color/automation_dark_gray" />
+
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/sensor_list"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="5dp"
+                                    android:scrollbars="vertical"
+                                    tools:listitem="@layout/row_door_sensor_info">
+
+                                </androidx.recyclerview.widget.RecyclerView>
+
+                                <TextView
+                                    android:id="@+id/txt_empty_notification_alert"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
                                     android:layout_gravity="center"
+                                    android:layout_marginTop="@dimen/_15sdp"
+                                    android:layout_marginBottom="@dimen/_15sdp"
                                     android:gravity="center"
-                                    android:layout_weight="0.2"
+                                    android:text="No record found."
+                                    android:textColor="#50808080"
+                                    android:textSize="20sp"
+                                    android:visibility="gone" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="#60808080"
+                        android:visibility="gone" />
+
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/edt_txt_layout3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:layout_marginTop="@dimen/_8sdp"
+                        android:layout_marginRight="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_8sdp"
+                        android:background="@color/automation_white"
+                        android:orientation="vertical"
+                        android:visibility="visible"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="8dp"
+                        app:elevation="8dp">
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_8sdp"
+                                android:layout_marginRight="@dimen/_8sdp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <RelativeLayout
                                     android:layout_width="0dp"
-                                    android:layout_height="wrap_content" />
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.8">
+
+
+                                    <TextView
+                                        android:id="@+id/txtAlert"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_alignParentTop="true"
+                                        android:layout_gravity="center_vertical"
+                                        android:layout_marginLeft="5dp"
+                                        android:layout_marginTop="3dp"
+                                        android:layout_marginBottom="5dp"
+                                        android:textSize="@dimen/_12sdp"
+                                        android:gravity="center_vertical|left|start"
+                                        android:paddingLeft="@dimen/_5sdp"
+                                        android:text="Notification Logs"
+                                        android:textColor="#545454" />
+
+                                    <TextView
+                                        android:id="@+id/txtAlertCount"
+                                        android:layout_width="28dp"
+                                        android:layout_height="28dp"
+                                        android:layout_centerHorizontal="true"
+                                        android:layout_toRightOf="@+id/txtAlert"
+                                        android:background="@drawable/badge_background"
+                                        android:gravity="center"
+                                        android:text="9"
+                                        android:textColor="#FFF"
+                                        android:textSize="11dp"
+                                        android:textStyle="bold"
+                                        android:visibility="gone" />
+
+                                </RelativeLayout>
+
+                                <ImageView
+                                    android:id="@+id/view_rel_badge"
+                                    android:layout_width="0dp"
+                                    android:layout_height="35dp"
+                                    android:layout_gravity="top"
+                                    android:layout_weight="0.10"
+                                    android:src="@drawable/ic_log" />
 
                             </LinearLayout>
 
@@ -315,548 +1092,99 @@
                                 android:background="@color/automation_dark_gray"
                                 android:visibility="visible" />
 
-                        </LinearLayout>
 
-                        <LinearLayout
-                            android:id="@+id/linearLockDoor"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_marginRight="@dimen/_5sdp"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:id="@+id/imgLock"
-                                android:layout_width="@dimen/_80sdp"
-                                android:layout_height="@dimen/_80sdp"
-                                android:padding="@dimen/_10sdp"
-                                android:layout_gravity="center|left"
-                                android:src="@drawable/door_locked"/>
-
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:orientation="vertical">
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="horizontal">
-
-                                    <LinearLayout
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:layout_weight="1.2"
-                                        android:orientation="vertical">
-
-                                        <android.support.v7.widget.AppCompatTextView
-                                            android:id="@+id/txtlockStatus"
-                                            android:visibility="visible"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:textSize="@dimen/_16sdp"
-                                            android:textColor="@color/green"
-                                            android:singleLine="true" />
-
-                                        <LinearLayout
-                                            android:layout_width="match_parent"
-                                            android:layout_height="match_parent"
-                                            android:gravity="center|left"
-                                            android:orientation="horizontal">
-
-                                            <android.support.v7.widget.AppCompatTextView
-                                                android:id="@+id/txtAutoLock"
-                                                android:layout_width="wrap_content"
-                                                android:layout_height="wrap_content"
-                                                android:gravity="center"
-                                                android:padding="@dimen/_3sdp"
-                                                android:text="Auto Lock in 10s"
-                                                android:textColor="@color/txtPanal"
-                                                android:textSize="@dimen/_11sdp"/>
-
-                                            <android.support.v7.widget.SwitchCompat
-                                                android:id="@+id/switchAutoLock"
-                                                android:layout_width="wrap_content"
-                                                android:layout_height="wrap_content"
-                                                android:layout_marginLeft="@dimen/_2sdp"
-                                                android:textSize="@dimen/_11sdp"
-                                                android:text=""/>
-
-
-                                        </LinearLayout>
-
-                                    </LinearLayout>
-
-                                    <ImageView
-                                        android:id="@+id/imgLockDelete"
-                                        android:layout_width="@dimen/_25sdp"
-                                        android:layout_height="@dimen/_25sdp"
-                                        android:layout_gravity="center|top"
-                                        android:visibility="visible"
-                                        android:src="@drawable/delete_blue"/>
-
-
-                                    <LinearLayout
-                                        android:layout_weight="3"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:orientation="vertical">
-
-                                        <ImageView
-                                            android:id="@+id/imgLockBattery"
-                                            android:src="@drawable/battery_4"
-                                            android:layout_gravity="center"
-                                            android:layout_width="32dp"
-                                            android:layout_marginRight="@dimen/_3sdp"
-                                            android:layout_height="32dp" />
-
-                                        <android.support.v7.widget.AppCompatTextView
-                                            android:id="@+id/txtBettrylock"
-                                            android:paddingTop="@dimen/_3sdp"
-                                            android:textSize="@dimen/_11sdp"
-                                            android:layout_gravity="center"
-                                            android:textColor="@color/automation_black"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content" />
-
-                                    </LinearLayout>
-
-
-
-                                </LinearLayout>
-
-                            </LinearLayout>
-
-                            </LinearLayout>
-
-
-                    </LinearLayout>
-
-                </android.support.v7.widget.CardView>
-
-                <android.support.v7.widget.CardView
-                    xmlns:android="http://schemas.android.com/apk/res/android"
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="@color/automation_white"
-                    android:orientation="vertical"
-                    android:layout_marginBottom="@dimen/_8sdp"
-                    app:cardCornerRadius="2dp"
-                    app:cardElevation="5dp"
-                    app:elevation="5dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/automation_white"
-                    android:visibility="gone"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/batter_level"
-                        android:textSize="@dimen/_12sdp"
-                        android:layout_weight="1"
-                        android:layout_margin="@dimen/_10sdp"
-                        android:textColor="@color/automation_black"/>
-
-                    <TextView
-                        android:id="@+id/txt_battery_level"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/_12sdp"
-                        android:text=""
-                        android:textColor="@color/automation_black"
-                        android:layout_margin="@dimen/_10sdp"/>
-
-                </LinearLayout>
-
-                </android.support.v7.widget.CardView>
-
-                <android.support.v7.widget.CardView
-                    xmlns:android="http://schemas.android.com/apk/res/android"
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/edt_txt_layout2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="@color/automation_white"
-                    android:orientation="vertical"
-                    android:layout_marginBottom="@dimen/_8sdp"
-                    app:cardCornerRadius="2dp"
-                    app:cardElevation="5dp"
-                    app:elevation="5dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <LinearLayout
-                            android:visibility="gone"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="28dp"
-                            android:layout_marginRight="12dp"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:text="Notification On/Off"
-                                android:layout_gravity="center"
-                                android:textSize="16sp"
-                                android:layout_weight="0.90"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content" />
-
-                            <LinearLayout
-                                android:id="@+id/ll_switch"
-                                android:layout_weight="0.10"
-                                android:layout_width="wrap_content"
-                                android:layout_marginRight="4dp"
-                                android:layout_gravity="right"
-                                android:gravity="right"
-                                android:layout_height="40dp"
-                                android:orientation="horizontal">
-
-                                <android.support.v7.widget.SwitchCompat
-                                    android:id="@+id/switch_noti_onoff"
-                                    android:layout_gravity="center"
-                                    app:theme="@style/Color1SwitchStyle"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" />
-
-
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/linearAlertDown"
-                            android:layout_marginLeft="@dimen/_8sdp"
-                            android:layout_marginRight="@dimen/_8sdp"
-                            android:layout_marginTop="@dimen/_8sdp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="horizontal">
-
-                            <ToggleButton
-                                android:id="@+id/toggleAlert"
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
-                                android:layout_marginLeft="5dp"
-                                android:layout_marginRight="10dp"
-                                android:layout_gravity="center_vertical"
-                                android:background="@drawable/selector_section_toggle"
-                                android:contentDescription="Change state of section"
-                                android:textOff=""
-                                android:textOn="" />
-
-                            <TextView
-                                android:id="@+id/txtTempCount"
-                                android:text="Alert"
-                                android:textSize="16sp"
-                                android:layout_gravity="center"
-                                android:layout_width="0dp"
-                                android:layout_weight="0.19"
-                                android:textColor="@color/txtPanal"
-                                android:layout_height="wrap_content" />
-
-                            <TextView
-                                android:id="@+id/txtAlertTempCount"
-                                android:textSize="14sp"
-                                android:layout_gravity="center"
-                                android:layout_width="0dp"
-                                android:layout_weight="0.8"
-                                android:textColor="@color/txtPanal"
-                                android:layout_height="wrap_content" />
-
-
-                            <!--  android:background="@drawable/btn_background_alert"-->
-                            <ImageView
-                                android:id="@+id/btnAdd"
-                                android:text="Add"
-                                android:src="@drawable/plus"
-                                android:gravity="center"
-                                android:scaleType="fitXY"
-                                android:layout_width="@dimen/_30sdp"
-                                android:layout_height="@dimen/_30sdp" />
-
-                        </LinearLayout>
-
-                        <View
-                            android:id="@+id/view_line_top"
-                            android:layout_width="wrap_content"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="@dimen/_5sdp"
-                            android:background="@color/automation_dark_gray"
-                            android:visibility="visible" />
-
-                        <LinearLayout
-                            android:id="@+id/linearAlertExpand"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:visibility="gone"
-                            android:orientation="vertical">
-
-                            <android.support.v7.widget.LinearLayoutCompat
-                                android:layout_marginTop="@dimen/_4sdp"
-                                android:layout_marginLeft="@dimen/_8sdp"
-                                android:layout_marginRight="@dimen/_8sdp"
-                                android:layout_marginBottom="@dimen/_8sdp"
+                            <androidx.appcompat.widget.LinearLayoutCompat
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:orientation="horizontal">
+                                android:layout_marginLeft="@dimen/_8sdp"
+                                android:layout_marginTop="@dimen/_4sdp"
+                                android:layout_marginRight="@dimen/_8sdp"
+                                android:layout_marginBottom="@dimen/_8sdp"
+                                android:orientation="horizontal"
+                                android:visibility="gone">
 
-                                <android.support.v7.widget.AppCompatTextView
-                                    android:text="Start Time"
-                                    android:textSize="16sp"
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
                                     android:layout_weight="2"
-                                    android:layout_width="0dp"
-                                    android:paddingLeft="@dimen/_14sdp"
-                                    android:layout_height="wrap_content" />
+                                    android:text="Date/Time"
+                                    android:textSize="16sp" />
 
-                                <android.support.v7.widget.AppCompatTextView
-                                    android:text="End Time"
-                                    android:textSize="16sp"
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1.5"
+                                    android:text="Action"
+                                    android:textSize="16sp" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
                                     android:layout_weight="2"
+                                    android:text="Details"
+                                    android:textSize="16sp" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
                                     android:layout_width="0dp"
-                                    android:layout_height="wrap_content" />
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1" />
 
-
-                                <android.support.v7.widget.AppCompatTextView
-                                    android:layout_weight="1"
+                                <androidx.appcompat.widget.AppCompatTextView
                                     android:layout_width="0dp"
-                                    android:layout_height="wrap_content" />
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.5" />
 
-                                <android.support.v7.widget.AppCompatTextView
-                                    android:layout_weight="0.5"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content" />
-
-                            </android.support.v7.widget.LinearLayoutCompat>
+                            </androidx.appcompat.widget.LinearLayoutCompat>
 
                             <View
                                 android:layout_width="wrap_content"
-                                android:layout_height="0.5dp"
-                                android:background="@color/automation_dark_gray" />
+                                android:layout_height="1dp"
+                                android:background="@color/automation_dark_gray"
+                                android:visibility="visible" />
 
-                            <android.support.v7.widget.RecyclerView
-                                android:id="@+id/sensor_list"
-                                android:scrollbars="vertical"
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recyclerAlert"
                                 android:layout_width="match_parent"
-                                android:layout_marginTop="5dp"
-                                tools:listitem="@layout/row_door_sensor_info"
-                                android:layout_height="wrap_content">
-
-                            </android.support.v7.widget.RecyclerView>
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginBottom="4dp"
+                                android:scrollbars="vertical"
+                                tools:listitem="@layout/row_door_alert" />
 
                             <TextView
-                                android:id="@+id/txt_empty_notification_alert"
-                                android:textColor="#50808080"
-                                android:textSize="20sp"
-                                android:layout_gravity="center"
-                                android:gravity="center"
+                                android:id="@+id/txt_empty_notification"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
                                 android:layout_marginTop="@dimen/_15sdp"
                                 android:layout_marginBottom="@dimen/_15sdp"
-                                android:visibility="gone"
+                                android:gravity="center"
                                 android:text="No record found."
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent" />
+                                android:textColor="@color/automation_dark"
+                                android:textSize="@dimen/_16sdp"
+                                android:visibility="gone" />
 
                         </LinearLayout>
 
-                    </LinearLayout>
+                    </androidx.cardview.widget.CardView>
 
-                </android.support.v7.widget.CardView>
-
-                <View
-                    android:visibility="gone"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="#60808080"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"/>
-
-
-                <android.support.v7.widget.CardView
-                    xmlns:android="http://schemas.android.com/apk/res/android"
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/edt_txt_layout3"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:background="@color/automation_white"
-                    android:orientation="vertical"
-                    android:layout_marginBottom="@dimen/_8sdp"
-                    app:cardCornerRadius="2dp"
-                    app:cardElevation="5dp"
-                    app:elevation="5dp">
-
-
-                    <LinearLayout
+                    <androidx.legacy.widget.Space
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
+                        android:layout_height="5dp" />
 
-
-                        <LinearLayout
-                            android:layout_marginLeft="@dimen/_8sdp"
-                            android:layout_marginRight="@dimen/_8sdp"
-                            android:layout_marginTop="@dimen/_8sdp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="horizontal">
-
-                            <RelativeLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="0.8"
-                                android:layout_height="wrap_content">
-
-                                <TextView
-                                    android:id="@+id/txtAlert"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:gravity="center_vertical|left|start"
-                                    android:layout_alignParentTop="true"
-                                    android:text="Alert"
-                                    android:layout_marginTop="5dp"
-                                    android:layout_marginBottom="5dp"
-                                    android:paddingLeft="@dimen/_5sdp"/>
-
-
-                                <TextView
-                                    android:id="@+id/txtAlertCount"
-                                    android:visibility="gone"
-                                    android:layout_width="28dp"
-                                    android:layout_height="28dp"
-                                    android:gravity="center"
-                                    android:textStyle="bold"
-                                    android:layout_toRightOf="@+id/txtAlert"
-                                    android:layout_centerHorizontal="true"
-                                    android:background="@drawable/badge_background"
-                                    android:text="9"
-                                    android:textColor="#FFF"
-                                    android:textSize="11dp" />
-
-                            </RelativeLayout>
-
-                            <ImageView
-                                android:id="@+id/view_rel_badge"
-                                android:src="@drawable/ic_log"
-                                android:layout_weight="0.15"
-                                android:layout_gravity="top"
-                                android:layout_width="0dp"
-                                android:layout_height="35dp" />
-
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="wrap_content"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="@dimen/_5sdp"
-                            android:background="@color/automation_dark_gray"
-                            android:visibility="visible" />
-
-
-
-                        <android.support.v7.widget.LinearLayoutCompat
-                            android:layout_marginTop="@dimen/_4sdp"
-                            android:layout_marginLeft="@dimen/_8sdp"
-                            android:layout_marginRight="@dimen/_8sdp"
-                            android:layout_marginBottom="@dimen/_8sdp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:visibility="gone"
-                            android:orientation="horizontal">
-
-                            <android.support.v7.widget.AppCompatTextView
-                                android:text="Date/Time"
-                                android:textSize="16sp"
-                                android:layout_weight="2"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content" />
-
-                            <android.support.v7.widget.AppCompatTextView
-                                android:text="Action"
-                                android:textSize="16sp"
-                                android:layout_weight="1.5"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content" />
-
-                            <android.support.v7.widget.AppCompatTextView
-                                android:text="Details"
-                                android:textSize="16sp"
-                                android:layout_weight="2"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content" />
-
-                            <android.support.v7.widget.AppCompatTextView
-                                android:layout_weight="1"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content" />
-
-                            <android.support.v7.widget.AppCompatTextView
-                                android:layout_weight="0.5"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content" />
-
-                        </android.support.v7.widget.LinearLayoutCompat>
-
-                        <View
-                            android:layout_width="wrap_content"
-                            android:layout_height="1dp"
-                            android:background="@color/automation_dark_gray"
-                            android:visibility="visible" />
-
-                        <android.support.v7.widget.RecyclerView
-                            android:id="@+id/recyclerAlert"
-                            android:scrollbars="vertical"
-                            android:layout_width="match_parent"
-                            android:layout_marginBottom="4dp"
-                            tools:listitem="@layout/row_door_alert"
-                            android:layout_height="wrap_content"/>
-
-                        <TextView
-                            android:id="@+id/txt_empty_notification"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:visibility="gone"
-                            android:layout_marginTop="@dimen/_15sdp"
-                            android:layout_marginBottom="@dimen/_15sdp"
-                            android:text="No record found."
-                            android:gravity="center"
-                            android:textSize="@dimen/_16sdp"
-                            android:textColor="@color/automation_dark" />
-
-                    </LinearLayout>
-
-                </android.support.v7.widget.CardView>
-
-                <android.support.v4.widget.Space
-                    android:layout_width="match_parent"
-                    android:layout_height="5dp" />
+                </LinearLayout>
 
             </LinearLayout>
+        </ScrollView>
 
-            </LinearLayout>
-            </ScrollView>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_delete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/button_red_border"
+            android:text="DELETE"
+            android:textColor="@color/automation_white" />
 
-            <android.support.v7.widget.AppCompatButton
-                android:id="@+id/btn_delete"
-                android:layout_alignParentBottom="true"
-                android:text="DELETE"
-                android:textColor="@color/automation_white"
-                android:background="@drawable/button_red_border"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+    </RelativeLayout>
 
-        </RelativeLayout>
-    </android.support.v7.widget.CardView>
-
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

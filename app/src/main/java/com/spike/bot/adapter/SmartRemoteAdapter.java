@@ -2,8 +2,6 @@ package com.spike.bot.adapter;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.support.v7.widget.AppCompatEditText;
-import android.support.v7.widget.RecyclerView;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -16,17 +14,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.Sensor.DoorSensorInfoActivity;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.IRDeviceDetailsRes;
-import com.spike.bot.model.SmartRemoteModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,7 +68,7 @@ public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.
         holder.imgEditRemote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialogRemoteshow(v.getId());
+                showBottomSheetDialog(arrayListLog.get(v.getId()).getDeviceId(), v.getId(), arrayListLog.get(v.getId()).getDeviceName());
             }
         });
 
@@ -76,6 +78,36 @@ public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.
             @Override
             public void onClick(final View v) {
 
+
+            }
+        });
+    }
+
+    public void showBottomSheetDialog(String module_id, final int id, String smart_remote_name) {
+        View view = mContext.getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
+
+        TextView txt_bottomsheet_title = view.findViewById(R.id.txt_bottomsheet_title);
+        LinearLayout linear_bottom_edit = view.findViewById(R.id.linear_bottom_edit);
+        LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
+
+
+        BottomSheetDialog dialog = new BottomSheetDialog(mContext,R.style.AppBottomSheetDialogTheme);
+        dialog.setContentView(view);
+        dialog.show();
+
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + arrayListLog.get(id).getDeviceName() + " " +"?");
+        linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                dialogRemoteshow(v.getId());
+            }
+        });
+
+        linear_bottom_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
                 ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
                     @Override
                     public void onConfirmDialogYesClick() {
@@ -92,7 +124,6 @@ public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.
             }
         });
     }
-
 
     private void dialogRemoteshow(final int b) {
         final Dialog dialog = new Dialog(mContext);
@@ -111,7 +142,7 @@ public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.
 
         btnCancel.setVisibility(View.GONE);
 
-        txtTitalMood.setText("Please enter Smart Remote name");
+        txtTitalMood.setText("Smart Remote");
         editKeyValue.setFilters(new InputFilter[]{ChatApplication.filter, new InputFilter.LengthFilter(30)});
 
         editKeyValue.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);

@@ -1,0 +1,43 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    xmlns:tools="http://schemas.android.com/tools"
+4    package="com.kaushalprajapti.util"
+5    android:versionCode="1"
+6    android:versionName="1.0" >
+7
+8    <uses-sdk
+9        android:minSdkVersion="14"
+9-->D:\New folder (3)\spike_bot-back-end-change-new-design\kaushalUtils\src\main\AndroidManifest.xml
+10        android:targetSdkVersion="28" />
+10-->D:\New folder (3)\spike_bot-back-end-change-new-design\kaushalUtils\src\main\AndroidManifest.xml
+11
+12    <!--
+13        <uses-sdk
+14        android:minSdkVersion="14"
+15        android:targetSdkVersion="21" />
+16    -->
+17
+18    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+18-->D:\New folder (3)\spike_bot-back-end-change-new-design\kaushalUtils\src\main\AndroidManifest.xml:11:5-79
+18-->D:\New folder (3)\spike_bot-back-end-change-new-design\kaushalUtils\src\main\AndroidManifest.xml:11:22-76
+19    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+19-->D:\New folder (3)\spike_bot-back-end-change-new-design\kaushalUtils\src\main\AndroidManifest.xml:12:5-74
+19-->D:\New folder (3)\spike_bot-back-end-change-new-design\kaushalUtils\src\main\AndroidManifest.xml:12:22-72
+20
+21    <application
+21-->D:\New folder (3)\spike_bot-back-end-change-new-design\kaushalUtils\src\main\AndroidManifest.xml:13:5-20:19
+22        android:allowBackup="true"
+22-->D:\New folder (3)\spike_bot-back-end-change-new-design\kaushalUtils\src\main\AndroidManifest.xml:14:9-35
+23        android:appComponentFactory="whateverString"
+23-->D:\New folder (3)\spike_bot-back-end-change-new-design\kaushalUtils\src\main\AndroidManifest.xml:19:9-53
+24        android:icon="@mipmap/ic_launcher"
+24-->D:\New folder (3)\spike_bot-back-end-change-new-design\kaushalUtils\src\main\AndroidManifest.xml:15:9-43
+25        android:label="@string/app_name"
+25-->D:\New folder (3)\spike_bot-back-end-change-new-design\kaushalUtils\src\main\AndroidManifest.xml:16:9-41
+26        android:theme="@style/AppTheme"
+26-->D:\New folder (3)\spike_bot-back-end-change-new-design\kaushalUtils\src\main\AndroidManifest.xml:17:9-40
+27        tools:replace="android:appComponentFactory" >
+27-->D:\New folder (3)\spike_bot-back-end-change-new-design\kaushalUtils\src\main\AndroidManifest.xml:18:9-52
+28    </application>
+29
+30</manifest>

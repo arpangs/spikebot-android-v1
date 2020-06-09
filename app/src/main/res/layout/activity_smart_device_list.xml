@@ -5,24 +5,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/new_screen_resolution"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.AppBarLayout
+   <!-- android:background="@drawable/new_screen_resolution"-->
+
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
-            android:background="@color/sky_blue"
+            android:background="@color/solid_blue"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <TextView
+        android:id="@+id/label_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_15sdp"
+        android:layout_marginTop="10dp"
+        android:text="What would you like to add?"
+        android:textColor="@color/signupblack"
+        android:textStyle="bold">
+
+    </TextView>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -32,7 +45,7 @@
         android:layout_gravity="bottom|end">
 
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             android:visibility="gone"
             app:layout_behavior="com.spike.bot.core.MoveUpwardBehavior"
@@ -54,22 +67,26 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerSmartDevice"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="visible"
                 android:layout_margin="@dimen/_5sdp"/>
+
+            <TextView
+                android:id="@+id/txtNodataFound"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:gravity="center"
+                android:text="No record found."
+                android:textSize="@dimen/_15sdp"
+                android:textColor="@color/automation_black" />
+
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/txtNodataFound"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            android:gravity="center"
-            android:textSize="@dimen/_15sdp"
-            android:textColor="@color/automation_black" />
+
     </FrameLayout>
 
 </LinearLayout>

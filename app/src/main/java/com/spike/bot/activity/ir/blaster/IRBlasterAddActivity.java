@@ -7,12 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -28,6 +22,15 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
@@ -35,6 +38,7 @@ import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.AddDevice.AllUnassignedPanel;
 import com.spike.bot.activity.Sensor.SensorUnassignedActivity;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.adapter.irblaster.IRBlasterAddAdapter;
@@ -156,9 +160,11 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         MenuItem menuAdd = menu.findItem(R.id.action_add);
         MenuItem actionEdit = menu.findItem(R.id.actionEdit);
         MenuItem action_save = menu.findItem(R.id.action_save);
-        menuAdd.setVisible(true);
+        MenuItem txtmenuadd = menu.findItem(R.id.action_add_text);
+        menuAdd.setVisible(false);
         action_save.setVisible(false);
         actionEdit.setVisible(false);
+        txtmenuadd.setVisible(true);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -168,6 +174,11 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
 
         if (id == R.id.action_edit_dots) {
             showOptionDialog(SENSOR_TYPE_IR);
+            return true;
+        }
+
+        if (id == R.id.action_add_text) {
+            showOptionDialogIr(SENSOR_TYPE_IR);
             return true;
         }
 
@@ -187,7 +198,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         dialog.setContentView(R.layout.dialog_panel_option);
 
         TextView txtDialogTitle =  dialog.findViewById(R.id.txt_dialog_title);
-        txtDialogTitle.setText("Select Sensor Type");
+        txtDialogTitle.setText("IR Blaster");
 
         Button btn_sync =  dialog.findViewById(R.id.btn_panel_sync);
         Button btn_unaasign =  dialog.findViewById(R.id.btn_panel_unasigned);
@@ -209,7 +220,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                isUnassignedDoorSensor(sensorType);
+                unassignIntent("ir_blaster");
 
             }
         });
@@ -224,6 +235,13 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             dialog.show();
         }
 
+    }
+
+    /*unassign list*/
+    public void unassignIntent(String type) {
+        Intent intent = new Intent(this, AllUnassignedPanel.class);
+        intent.putExtra("type", type);
+        startActivity(intent);
     }
 
     /*getting socket fot ir blaster any update & change*/
@@ -290,7 +308,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
      */
     private void showConfigAlert(String alertMessage) {
 
-        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(alertMessage);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
@@ -492,6 +510,8 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         String url = "";
         url = ChatApplication.url + Constants.GET_UNASSIGNED_SENSORS + "/2"; //0 door - 1 ir
 
+        ChatApplication.logDisplay("IR Unassigned" + " " + url);
+
         new GetJsonTask(this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -620,7 +640,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             e.printStackTrace();
         }
 
-        ChatApplication.logDisplay("url is "+url+" "+obj);
+        ChatApplication.logDisplay("IR blaster url is "+url+" "+obj);
         new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -675,23 +695,60 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
 
     @Override
     public void onEdit(int position, IRBlasterAddRes.Datum ir) {
-        showBlasterEditDialog(position,ir);
+        showBottomSheetDialog(position,ir);
     }
+
+
+    public void showBottomSheetDialog(int position, IRBlasterAddRes.Datum ir) {
+        View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
+
+        TextView txt_bottomsheet_title = view.findViewById(R.id.txt_bottomsheet_title);
+        LinearLayout linear_bottom_edit = view.findViewById(R.id.linear_bottom_edit);
+        LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
+
+        TextView txt_edit = view.findViewById(R.id.txt_edit);
+
+        BottomSheetDialog dialog = new BottomSheetDialog(IRBlasterAddActivity.this,R.style.AppBottomSheetDialogTheme);
+        dialog.setContentView(view);
+        dialog.show();
+
+        String irblastername =  irList.get(position).getDeviceName();
+        ChatApplication.logDisplay("BLaster name" + " " + irblastername);
+
+
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + irblastername + " " +"?");
+        linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                showBlasterEditDialog(position,ir);
+            }
+        });
+
+        linear_bottom_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to delete " + ir.getDeviceName() + "?\n\nNote : All Schedules will be affected", new ConfirmDialog.IDialogCallback() {
+                    @Override
+                    public void onConfirmDialogYesClick() {
+                        deleteBlaster(ir.getDeviceId());
+                    }
+
+                    @Override
+                    public void onConfirmDialogNoClick() {
+                    }
+
+                });
+                newFragment.show(getFragmentManager(), "dialog");
+            }
+        });
+    }
+
+
 
     @Override
     public void onDelete(int position, final IRBlasterAddRes.Datum ir) {
-        ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to delete " + ir.getDeviceName() + "?\n Note : All Schedules will be affected", new ConfirmDialog.IDialogCallback() {
-            @Override
-            public void onConfirmDialogYesClick() {
-                deleteBlaster(ir.getDeviceId());
-            }
-
-            @Override
-            public void onConfirmDialogNoClick() {
-            }
-
-        });
-        newFragment.show(getFragmentManager(), "dialog");
     }
 
     /*delete blaster */
@@ -776,6 +833,10 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         Button btnCancel = mDialog.findViewById(R.id.btn_cancel);
         Button btnSave = mDialog.findViewById(R.id.btn_save);
         ImageView btnClose = mDialog.findViewById(R.id.iv_close);
+        TextView txt_blaster_room_name = mDialog.findViewById(R.id.txt_blaster_room_name);
+        txt_blaster_room_name.setFocusable(false);
+        txt_blaster_room_name.setEnabled(false);
+
 
 
         String irblastername =  irList.get(position).getDeviceName();
@@ -786,11 +847,16 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         final ArrayAdapter roomAdapter = new ArrayAdapter(this, R.layout.spinner, roomListString);
         mRoomSpinner.setAdapter(roomAdapter);
 
-        for (int i = 0; i < roomListString.size(); i++) {
-            if (roomListString.get(i).equalsIgnoreCase(ir.getRoom().getRoomName())) {
-                mRoomSpinner.setSelection(i);
-                break;
+        try {
+            for (int i = 0; i < roomListString.size(); i++) {
+                if (roomListString.get(i).equalsIgnoreCase(ir.getRoom().getRoomName())) {
+                    mRoomSpinner.setSelection(i);
+                    txt_blaster_room_name.setText(ir.getRoom().getRoomName());
+                    break;
+                }
             }
+        } catch (Exception e){
+            e.printStackTrace();
         }
 
         btnClose.setOnClickListener(new View.OnClickListener() {

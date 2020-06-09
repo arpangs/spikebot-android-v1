@@ -2,8 +2,9 @@ package com.spike.bot.adapter;
 
 import android.content.Context;
 import android.os.SystemClock;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.core.ListUtils;
@@ -11,8 +12,6 @@ import com.spike.bot.customview.recycle.ItemClickMoodListener;
 import com.spike.bot.customview.recycle.MoodStateChangeListener;
 import com.spike.bot.listener.NotifityData;
 import com.spike.bot.model.DeviceVO;
-import com.spike.bot.model.MoodVO;
-import com.spike.bot.model.NotificationListRes;
 import com.spike.bot.model.PanelVO;
 import com.spike.bot.model.RoomVO;
 
@@ -97,7 +96,7 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
 
     }
 
-    public void updateFanDevice(String deviceId, String deviceStatus) {
+    public void updateFanDevice(String deviceId, int deviceStatus) {
 
         for (int k = 0; k < mDataArrayList.size(); k++) {
 
@@ -107,7 +106,7 @@ public class MoodExpandableLayoutHelper implements MoodStateChangeListener , Not
 
                     if (deviceVO1.getDeviceId().equals(deviceId)) {
                         ChatApplication.logDisplay("status update panel adapter match");
-                        ((DeviceVO) mDataArrayList.get(k)).setDevice_sub_status(deviceStatus);
+                        ((DeviceVO) mDataArrayList.get(k)).setDevice_sub_status(String.valueOf(deviceStatus));
                         reloadDeviceList(mDataArrayList.get(k));
 //                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
 //                        mSectionedExpandableGridAdapter.notifyDataSetChanged();

@@ -17,7 +17,7 @@
             android:layout_marginLeft="15dp"
             android:textSize="11sp"
             android:layout_weight="1"
-            android:text="06 feb 2020"
+            android:text=""
             android:textAllCaps="true"
             android:textColor="@color/automation_black" />
 
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:layout_marginRight="15dp"
-            android:text="55:22 PM"
+            android:text=""
             android:textSize="11sp"
             android:textColor="@color/automation_black"
             android:textStyle="bold"
@@ -57,6 +57,7 @@
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/linear_log_desc"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:layout_marginLeft="15dp"

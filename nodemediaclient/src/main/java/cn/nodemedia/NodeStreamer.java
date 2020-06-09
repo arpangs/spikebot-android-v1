@@ -1,7 +1,8 @@
 package cn.nodemedia;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 /**
  * NodeStreamer 串流器,可用于将RTSP协议直播流串流为RTMP协议直播流,也可用于将本地文件按原始帧率串流为RTMP协议直播流

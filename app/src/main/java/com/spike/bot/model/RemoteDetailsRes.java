@@ -396,6 +396,17 @@ public class RemoteDetailsRes implements Serializable {
             @SerializedName("meta_unit")
             @Expose
             private String meta_unit;
+            @SerializedName("meta_enable_lock_unlock_from_app")
+            @Expose
+            private String meta_enable_lock_unlock_from_app;
+
+            public String getMeta_enable_lock_unlock_from_app() {
+                return meta_enable_lock_unlock_from_app;
+            }
+
+            public void setMeta_enable_lock_unlock_from_app(String meta_enable_lock_unlock_from_app) {
+                this.meta_enable_lock_unlock_from_app = meta_enable_lock_unlock_from_app;
+            }
 
             public irBlaster getIr_blaster() {
                 return ir_blaster;
@@ -464,6 +475,37 @@ public class RemoteDetailsRes implements Serializable {
 
             public void setMeta_device_default_status(String meta_device_default_status) {
                 this.meta_device_default_status = meta_device_default_status;
+            }
+
+            @SerializedName("meta_pass_code")
+            @Expose
+            private String meta_pass_code;
+            @SerializedName("meta_onetime_code")
+            @Expose
+            private String meta_onetime_code;
+
+            public String getMeta_pass_code() {
+                return meta_pass_code;
+            }
+
+            public void setMeta_pass_code(String meta_pass_code) {
+                this.meta_pass_code = meta_pass_code;
+            }
+
+            public String getMeta_onetime_code() {
+                return meta_onetime_code;
+            }
+
+            public void setMeta_onetime_code(String meta_onetime_code) {
+                this.meta_onetime_code = meta_onetime_code;
+            }
+
+            public String getMeta_unit() {
+                return meta_unit;
+            }
+
+            public void setMeta_unit(String meta_unit) {
+                this.meta_unit = meta_unit;
             }
 
             @SerializedName("meta_device_default_status")

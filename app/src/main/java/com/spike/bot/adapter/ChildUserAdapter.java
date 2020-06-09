@@ -2,22 +2,23 @@ package com.spike.bot.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.v7.view.ContextThemeWrapper;
-import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.spike.bot.R;
+import com.spike.bot.fragments.UserChildListFragment;
 import com.spike.bot.listener.UserChildAction;
-import com.spike.bot.model.CameraVO;
-import com.spike.bot.model.RoomVO;
 import com.spike.bot.model.User;
 
 import java.util.ArrayList;
@@ -31,13 +32,13 @@ public class ChildUserAdapter extends RecyclerView.Adapter<ChildUserAdapter.Sens
     private Context mContext;
     ArrayList<User> userArrayList = new ArrayList<>();
     UserChildAction userChildAction;
+    UserChildListFragment fragment;
 
-
-    public ChildUserAdapter(Context activity, ArrayList<User> userArrayList, UserChildAction userChildAction) {
+    public ChildUserAdapter(Context activity, ArrayList<User> userArrayList, UserChildAction userChildAction, UserChildListFragment userchildlistfragment) {
         this.mContext = activity;
         this.userArrayList = userArrayList;
         this.userChildAction = userChildAction;
-
+        this.fragment = userchildlistfragment;
     }
 
     @Override
@@ -54,13 +55,19 @@ public class ChildUserAdapter extends RecyclerView.Adapter<ChildUserAdapter.Sens
         holder.linearChildUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                userChildAction.actionCHild("update", position, userArrayList.get(position));
+                // userChildAction.actionCHild("update", position, userArrayList.get(position));
             }
         });
+        holder.imgMore.setId(position);
         holder.imgMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PopupMenu popup = new PopupMenu(mContext, v);
+             //   fragment.BackgroundBlurred();
+             //   holder.linearChildUser.setAlpha(0.50f);
+
+                userChildAction.actionCHild("update", position, userArrayList.get(position), true);
+
+                /*PopupMenu popup = new PopupMenu(mContext, v);
 
                 @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(mContext, R.style.PopupMenu);
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
@@ -76,10 +83,10 @@ public class ChildUserAdapter extends RecyclerView.Adapter<ChildUserAdapter.Sens
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.action_edit_dots:
-                                userChildAction.actionCHild("update", position, userArrayList.get(position));
+                                userChildAction.actionCHild("update", position, userArrayList.get(position), true);
                                 break;
                             case R.id.action_delete_dots:
-                                userChildAction.actionCHild("delete", position, userArrayList.get(position));
+                                userChildAction.actionCHild("delete", position, userArrayList.get(position), true);
                                 break;
 
                         }
@@ -87,7 +94,7 @@ public class ChildUserAdapter extends RecyclerView.Adapter<ChildUserAdapter.Sens
                     }
                 });
 
-                popup.show();
+                popup.show();*/
             }
         });
     }
@@ -110,10 +117,11 @@ public class ChildUserAdapter extends RecyclerView.Adapter<ChildUserAdapter.Sens
         public ImageView imgMore, imgArrow;
         public RecyclerView recyclerCameraList, recyclerRoomList;
         public LinearLayout linearList, linearChildUser;
+        FrameLayout frameLayout;
 
         public SensorViewHolder(View view) {
             super(view);
-            txtUserName =  itemView.findViewById(R.id.txtUserName);
+            txtUserName = itemView.findViewById(R.id.txtUserName);
             recyclerRoomList = itemView.findViewById(R.id.recyclerRoomList);
             recyclerCameraList = itemView.findViewById(R.id.recyclerCameraList);
             imgArrow = itemView.findViewById(R.id.imgArrow);
@@ -122,6 +130,15 @@ public class ChildUserAdapter extends RecyclerView.Adapter<ChildUserAdapter.Sens
             linearChildUser = itemView.findViewById(R.id.linearChildUser);
             txtNocamera = itemView.findViewById(R.id.txtNocamera);
             txtRoomList = itemView.findViewById(R.id.txtRoomList);
+            frameLayout = itemView.findViewById(R.id.frame_layout);
+
+            imgMore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    itemView.setAlpha(0.5f);
+                }
+            });
+
         }
     }
 }

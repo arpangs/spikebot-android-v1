@@ -1,17 +1,16 @@
 package com.spike.bot.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.kp.core.ActivityHelper;
-import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.User;
 
@@ -49,9 +48,9 @@ public class CloudAdapter extends RecyclerView.Adapter<CloudAdapter.CloudViewHol
         holder.txt_title.setText(user.getFirstname());
 
         if(userid.equalsIgnoreCase(user.getUser_id())){
-            holder.image_cloud.setImageResource(R.drawable.icn_check);
+            holder.image_cloud.setImageResource(R.drawable.ic_check_circle_blue);
         }else{
-            holder.image_cloud.setImageResource(R.drawable.icn_round);
+            holder.image_cloud.setImageResource(R.drawable.ic_circle_blue);
         }
 
         holder.txt_title.setOnClickListener(new View.OnClickListener() {

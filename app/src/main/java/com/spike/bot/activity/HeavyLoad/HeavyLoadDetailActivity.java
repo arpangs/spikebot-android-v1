@@ -1,23 +1,33 @@
 package com.spike.bot.activity.HeavyLoad;
 
+import android.content.Context;
+import android.graphics.Canvas;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.github.mikephil.charting.charts.LineChart;
@@ -35,6 +45,7 @@ import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -44,24 +55,27 @@ import com.spike.bot.receiver.MarkerBoxView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
+import static com.spike.bot.core.Constants.getNextDate;
+
 /**
  * Created by Sagar on 29/6/19.
  * Gmail : vipul patel
  */
-public class HeavyLoadDetailActivity extends AppCompatActivity  {
+public class HeavyLoadDetailActivity extends AppCompatActivity {
 
     public Toolbar toolbar;
     public LineChart barChart;
     public ImageView imgHL,imageShowNext;
     public FrameLayout frameChart;
     public TextView txtGraphType,txtYAxis,txtGraphTital,txtNodataFound;
-    public TextView txtCurrentValue;
+    public TextView txtCurrentValue,label_watts;
     public Spinner spinnerYear, spinnerMonth;
 
     DataHeavyModel heavyModel = new DataHeavyModel();
@@ -77,7 +91,11 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
     ArrayList<Entry> entries = new ArrayList<>();
     final ArrayList<String> arrayDay = new ArrayList<>();
     final ArrayList<String> arrayDayTemp = new ArrayList<>();
-
+    RecyclerView rv_month_list,rv_year_list;
+    ArrayList<String> monthlist = new ArrayList();
+    ArrayList<String> yearlist = new ArrayList();
+    int row_index = 1, mStartIndex = 4,strmonth=0,row_index_year = 1,stryear ;
+    String selectedyear;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,6 +119,8 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
         imageShowNext = findViewById(R.id.imageShowNext);
         frameChart = findViewById(R.id.frameChart);
         txtNodataFound = findViewById(R.id.txtNodataFound);
+        rv_month_list = findViewById(R.id.rv_month_list);
+        rv_year_list = findViewById(R.id.rv_year_list);
         toolbar =  findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -108,6 +128,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setTitle(getRoomName);
         txtCurrentValue = findViewById(R.id.txtCurrentValue);
+        label_watts = findViewById(R.id.label_watts);
 
         Glide.with(this)
                 .load(R.drawable.heavy_load_yellow)
@@ -131,9 +152,11 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
                 .into(imageShowNext);
 
         startSocketConnection();
+        setMonthList();
+        setMonthAdpater();
         setYearlist();
         setSPinner();
-
+        setYearAdpater();
         getHeavyloadDetails();
 
         /*for live data */
@@ -154,8 +177,8 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
             countDownTimerSocket.start();
         }
 
-        RotateAnimation rotate= (RotateAnimation) AnimationUtils.loadAnimation(this,R.anim.rotation_animation);
-        txtYAxis.setAnimation(rotate);
+       /* RotateAnimation rotate= (RotateAnimation) AnimationUtils.loadAnimation(this,R.anim.rotation_animation);
+        txtYAxis.setAnimation(rotate);*/
     }
 
     /*set spinner month & year */
@@ -163,11 +186,12 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
         Calendar c = Calendar.getInstance();
         int month = c.get(Calendar.MONTH) + 1;
 
+
         ArrayAdapter adapterMonth = new ArrayAdapter<String>(this,R.layout.item_spinner_selected_month, Constants.getMonthList());
         spinnerMonth.setAdapter(adapterMonth);
         spinnerMonth.setSelection(month);
 
-        ArrayAdapter adapterYear = new ArrayAdapter<String>(this, R.layout.item_spinner_selected_month, arrayListYearList);
+        ArrayAdapter adapterYear = new ArrayAdapter<String>(this, R.layout.item_spinner_selected_month, yearlist);
         spinnerYear.setAdapter(adapterYear);
 
         spinnerYear.setSelection(1);
@@ -175,9 +199,9 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
         spinnerMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(!isApiStatus){
+               /* if(!isApiStatus){
                     filter();
-                }
+                }*/
 
             }
 
@@ -191,9 +215,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
         spinnerYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(!isApiStatus){
-                    filter();
-                }
+
             }
 
             @Override
@@ -204,13 +226,65 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
 
     }
 
+    private void setMonthAdpater() {
+        rv_month_list.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.HORIZONTAL) {
+            @Override
+            public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
+                // Do not draw the divider
+            }
+        });
+
+        final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+        rv_month_list.setLayoutManager(mLayoutManager);
+        row_index = Constants.getCurentMonth();
+        MonthAdapter adapter = new MonthAdapter(this, monthlist);
+        rv_month_list.setAdapter(adapter);
+        rv_month_list.getLayoutManager().scrollToPosition(row_index);
+        rv_month_list.setHasFixedSize(true);
+    }
+
+    private void setYearAdpater() {
+        rv_year_list.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.HORIZONTAL) {
+            @Override
+            public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
+                // Do not draw the divider
+            }
+        });
+
+        final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+        rv_year_list.setLayoutManager(mLayoutManager);
+        row_index_year = Constants.getCurentYear();
+        ChatApplication.logDisplay("ROW INDEX YEAR" + row_index_year);
+        YearAdapter adapter = new YearAdapter(this, yearlist);
+        rv_year_list.setAdapter(adapter);
+        rv_year_list.getLayoutManager().scrollToPosition(yearlist.size());
+        ChatApplication.logDisplay("ROW INDEX year" + yearlist.size());
+        rv_year_list.setHasFixedSize(true);
+    }
+
+
+    private void setMonthList() {
+        monthlist.add("January");
+        monthlist.add("February");
+        monthlist.add("March");
+        monthlist.add("April");
+        monthlist.add("May");
+        monthlist.add("June");
+        monthlist.add("July");
+        monthlist.add("August");
+        monthlist.add("September");
+        monthlist.add("October");
+        monthlist.add("November");
+        monthlist.add("December");
+    }
+
     /*set year dynamically */
     private void setYearlist() {
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
 
-        for(int i=2018; i<=year; i++){
-            arrayListYearList.add(""+i);
+        for(int i=2016; i<=year; i++){
+            yearlist.add(""+i);
         }
     }
 
@@ -267,10 +341,12 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
                                 String real_power=object.optString("real_power");
                                 if(Integer.parseInt(object.optString("real_power"))>0){
                                     imgHL.setVisibility(View.VISIBLE);
-                                    real_power=object.optString("real_power")+" W";
+                                    label_watts.setVisibility(View.VISIBLE);
+                                    real_power=object.optString("real_power");
                                 }else {
                                     real_power="--";
                                     imgHL.setVisibility(View.GONE);
+                                    label_watts.setVisibility(View.GONE);
                                 }
                                 txtCurrentValue.setText(real_power);
 
@@ -349,7 +425,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
         }
 
         String url = ChatApplication.url + Constants.getHeavyLoadDetails;
-        ChatApplication.logDisplay("json filter is first " + jsonObject.toString()+" "+url);
+        ChatApplication.logDisplay("json filter is first " +" "+ url +" " + jsonObject.toString());
         new GetJsonTask(HeavyLoadDetailActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
@@ -396,8 +472,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
         Calendar c = Calendar.getInstance();
         int month = c.get(Calendar.MONTH)+1;
         int year = c.get(Calendar.YEAR);
-        int strmonth = spinnerMonth.getSelectedItemPosition();
-        int strYear =  Integer.parseInt(String.valueOf(spinnerYear.getSelectedItem()));
+        int strYear =  stryear;
 
         if(strYear== year && strmonth > month){
 
@@ -415,16 +490,16 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
 
             if (spinnerMonth.getSelectedItem().equals("All")) {
                 jsonObject.put("filter_type", "year");
-                jsonObject.put("filter_value", spinnerYear.getSelectedItem());
+                jsonObject.put("filter_value", strYear);
             } else {
-                int value = spinnerMonth.getSelectedItemPosition();
+                int value = row_index+1;
                 String strLess = "";
                 if (value < 10) {
                     strLess = "0";
                 }
 
                 jsonObject.put("filter_type", "month");
-                jsonObject.put("filter_value", strLess + value + "," + spinnerYear.getSelectedItem());
+                jsonObject.put("filter_value", strLess + value + "," + stryear);
             }
             jsonObject.put("device_id", device_id);
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -436,7 +511,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
         }
 
         String url = ChatApplication.url + Constants.getHeavyLoadDetails;
-        ChatApplication.logDisplay("json filter is " + jsonObject.toString()+" "+url);
+        ChatApplication.logDisplay("json filter is " + " "+ url  + " " + jsonObject.toString());
         new GetJsonTask(HeavyLoadDetailActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
@@ -489,13 +564,13 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
             if (isFlag) {
                 if (spinnerMonth.getSelectedItem().equals("All")) {
                     currentDay = 12;
-                    ArrayList<String> arrayList=getXAxisValues();
+                    ArrayList<String> arrayList= monthlist;
                     for (int i = 0; i < arrayList.size(); i++) {
                         arrayDay.add("" + arrayList.get(i));
                     }
                 } else {
-                    currentDay = Constants.getMonthOfDay(spinnerMonth.getSelectedItemPosition(), Integer.parseInt(String.valueOf(spinnerYear.getSelectedItem())));
-
+                    currentDay = Constants.getMonthOfDay(row_index, stryear);
+                    ChatApplication.logDisplay("current day" + " " + row_index);
                     for (int i = 1; i <= currentDay; i++) {
                         arrayDay.add("" + i);
                     }
@@ -641,43 +716,303 @@ public class HeavyLoadDetailActivity extends AppCompatActivity  {
             for(int i=0; i<heavyModel.getGraphData().size(); i++){
                 totalWv=totalWv+heavyModel.getGraphData().get(i).getEnergy();
             }
-            if(currentDay==12){
-                txtGraphType.setText("Year : "+spinnerYear.getSelectedItem());
-                txtGraphTital.setText("Yearly Graph : "+totalWv);
+            if(currentDay==12)
+            {
+                txtGraphType.setText("Year : " +stryear);
+               // txtGraphTital.setText("Yearly Graph : "+totalWv);
             }else {
-                txtGraphType.setText("Month : "+spinnerMonth.getSelectedItem());
-                txtGraphTital.setText("Monthly Graph : "+totalWv);
+
+                Calendar cal = Calendar.getInstance();
+                SimpleDateFormat month_date = new SimpleDateFormat("MMM");
+                String month = month_date.format(cal.getTime());
+
+                ChatApplication.logDisplay("Current Month" + month);
+
+                txtGraphType.setText("Month : "+ month);
+                //txtGraphTital.setText("Monthly Graph : "+totalWv);
+
+                if (strmonth == 1){
+                    txtGraphType.setText("Month : "+ "Jan");
+                    //txtGraphTital.setText("Monthly Graph : "+totalWv);
+                } else if(strmonth == 2)
+                {
+                    txtGraphType.setText("Month : "+ "Feb");
+                    //txtGraphTital.setText("Monthly Graph : "+totalWv);
+                }else if(strmonth == 3)
+                {
+                    txtGraphType.setText("Month : "+ "Mar");
+                    //txtGraphTital.setText("Monthly Graph : "+totalWv);
+                }else if(strmonth == 4)
+                {
+                    txtGraphType.setText("Month : "+ "Apr");
+                    //txtGraphTital.setText("Monthly Graph : "+totalWv);
+                }else if(strmonth == 5)
+                {
+                    txtGraphType.setText("Month : "+ "May");
+                    //txtGraphTital.setText("Monthly Graph : "+totalWv);
+                }else if(strmonth == 6)
+                {
+                    txtGraphType.setText("Month : "+ "Jun");
+                    //txtGraphTital.setText("Monthly Graph : "+totalWv);
+                }else if(strmonth == 7)
+                {
+                    txtGraphType.setText("Month : "+ "Jul");
+                    //txtGraphTital.setText("Monthly Graph : "+totalWv);
+                }else if(strmonth == 8)
+                {
+                    txtGraphType.setText("Month : "+ "Aug");
+                    //txtGraphTital.setText("Monthly Graph : "+totalWv);
+                }else if(strmonth == 9)
+                {
+                    txtGraphType.setText("Month : "+ "Sep");
+                    //txtGraphTital.setText("Monthly Graph : "+totalWv);
+                }else if(strmonth == 10)
+                {
+                    txtGraphType.setText("Month : "+ "Oct");
+                    //txtGraphTital.setText("Monthly Graph : "+totalWv);
+                }else if(strmonth == 11)
+                {
+                    txtGraphType.setText("Month : "+ "Nov");
+                    //txtGraphTital.setText("Monthly Graph : "+totalWv);
+                }else if(strmonth == 12)
+                {
+                    txtGraphType.setText("Month : "+ "Dec");
+                    //txtGraphTital.setText("Monthly Graph : "+totalWv);
+                }
             }
 
         }else {
-            frameChart.setVisibility(View.GONE);
-            txtNodataFound.setVisibility(View.VISIBLE);
-            barChart.setVisibility(View.GONE);
-            txtGraphType.setVisibility(View.GONE);
-            txtYAxis.setVisibility(View.GONE);
+            frameChart.setVisibility(View.VISIBLE);
+            txtNodataFound.setVisibility(View.GONE);
+            barChart.setVisibility(View.VISIBLE);
+            txtGraphType.setVisibility(View.VISIBLE);
+            txtYAxis.setVisibility(View.VISIBLE);
             txtGraphTital.setVisibility(View.GONE);
             ChatApplication.showToast(this,"No data found.");
+
+
+            Calendar cal = Calendar.getInstance();
+            SimpleDateFormat month_date = new SimpleDateFormat("MMM");
+            String month = month_date.format(cal.getTime());
+
+            ChatApplication.logDisplay("Current Month" + month);
+
+            txtGraphType.setText("Month : "+ month);
+            //txtGraphTital.setText("Monthly Graph : "+totalWv);
+
+            if (strmonth == 1){
+                txtGraphType.setText("Month : "+ "Jan");
+                //txtGraphTital.setText("Monthly Graph : "+totalWv);
+            } else if(strmonth == 2)
+            {
+                txtGraphType.setText("Month : "+ "Feb");
+                //txtGraphTital.setText("Monthly Graph : "+totalWv);
+            }else if(strmonth == 3)
+            {
+                txtGraphType.setText("Month : "+ "Mar");
+                //txtGraphTital.setText("Monthly Graph : "+totalWv);
+            }else if(strmonth == 4)
+            {
+                txtGraphType.setText("Month : "+ "Apr");
+                //txtGraphTital.setText("Monthly Graph : "+totalWv);
+            }else if(strmonth == 5)
+            {
+                txtGraphType.setText("Month : "+ "May");
+                //txtGraphTital.setText("Monthly Graph : "+totalWv);
+            }else if(strmonth == 6)
+            {
+                txtGraphType.setText("Month : "+ "Jun");
+                //txtGraphTital.setText("Monthly Graph : "+totalWv);
+            }else if(strmonth == 7)
+            {
+                txtGraphType.setText("Month : "+ "Jul");
+                //txtGraphTital.setText("Monthly Graph : "+totalWv);
+            }else if(strmonth == 8)
+            {
+                txtGraphType.setText("Month : "+ "Aug");
+                //txtGraphTital.setText("Monthly Graph : "+totalWv);
+            }else if(strmonth == 9)
+            {
+                txtGraphType.setText("Month : "+ "Sep");
+                //txtGraphTital.setText("Monthly Graph : "+totalWv);
+            }else if(strmonth == 10)
+            {
+                txtGraphType.setText("Month : "+ "Oct");
+                //txtGraphTital.setText("Monthly Graph : "+totalWv);
+            }else if(strmonth == 11)
+            {
+                txtGraphType.setText("Month : "+ "Nov");
+                //txtGraphTital.setText("Monthly Graph : "+totalWv);
+            }else if(strmonth == 12)
+            {
+                txtGraphType.setText("Month : "+ "Dec");
+                //txtGraphTital.setText("Monthly Graph : "+totalWv);
+            }
         }
     }
 
 
     private ArrayList<String> getXAxisValues() {
         ArrayList<String> xAxis = new ArrayList<>();
-        xAxis.add("Jan");
-        xAxis.add("Feb");
-        xAxis.add("Mar");
-        xAxis.add("Apr");
+        xAxis.add("January");
+        xAxis.add("February");
+        xAxis.add("March");
+        xAxis.add("April");
         xAxis.add("May");
-        xAxis.add("Jun");
-        xAxis.add("Jul");
-        xAxis.add("Aug");
-        xAxis.add("Sep");
-        xAxis.add("Oct");
-        xAxis.add("Nov");
-        xAxis.add("Dec");
+        xAxis.add("June");
+        xAxis.add("July");
+        xAxis.add("August");
+        xAxis.add("September");
+        xAxis.add("October");
+        xAxis.add("November");
+        xAxis.add("December");
         xAxis.add("");
 
         return xAxis;
+    }
+
+
+    public class MonthAdapter extends RecyclerView.Adapter<MonthAdapter.MonthViewHolder> {
+
+        private Context context;
+
+        public MonthAdapter(Context context, ArrayList months) {
+            this.context = context;
+            monthlist = months;
+        }
+
+        @Override
+        public MonthAdapter.MonthViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new MonthAdapter.MonthViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_month, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(MonthAdapter.MonthViewHolder holder, final int position)
+        {
+            holder.txtmonth.setText(monthlist.get(position));
+            holder.linearlayout_month.setId(position);
+            holder.linearlayout_month.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    row_index = holder.linearlayout_month.getId();
+                    strmonth = row_index + 1;
+                    if(!isApiStatus){
+                        filter();
+                    }
+                    //   getDatesInMonth(Calendar.getInstance().get(Calendar.YEAR), row_index);
+                    notifyDataSetChanged();
+                }
+            });
+            if (row_index == position) {
+                holder.txtmonth.setTextColor(getResources().getColor(R.color.automation_black));
+                holder.imgdots.setVisibility(View.VISIBLE);
+            } else {
+                holder.txtmonth.setTextColor(getResources().getColor(R.color.device_button));
+                holder.imgdots.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return monthlist.size();
+        }
+
+        class MonthViewHolder extends RecyclerView.ViewHolder {
+
+            private TextView txtmonth;
+            private ImageView imgdots;
+            private LinearLayout linearlayout_month;
+
+            MonthViewHolder(View itemView) {
+                super(itemView);
+                txtmonth = itemView.findViewById(R.id.txt_month_name);
+                imgdots = itemView.findViewById(R.id.img_dots_month);
+                linearlayout_month = itemView.findViewById(R.id.linearlayout_month);
+                itemView.setTag(this);
+            }
+        }
+
+    }
+
+    public class YearAdapter extends RecyclerView.Adapter<YearAdapter.YearViewHolder> {
+
+        private Context context;
+
+        public YearAdapter(Context context, ArrayList years) {
+            this.context = context;
+            yearlist = years;
+        }
+
+        @Override
+        public YearAdapter.YearViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new YearAdapter.YearViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_year, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(YearAdapter.YearViewHolder holder, final int position) {
+            holder.txtyear.setText(yearlist.get(position));
+            holder.linearlayout_year.setId(position);
+            holder.linearlayout_year.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    row_index_year = holder.linearlayout_year.getId();
+                    stryear = Integer.parseInt(yearlist.get(position));
+                    mStartIndex = position;
+                    if(!isApiStatus){
+                        filter();
+                    }
+                     selectedyear  = String.valueOf(stryear);
+
+                    notifyDataSetChanged();
+                }
+            });
+            Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            String stryear1 = String.valueOf(year);
+
+            if (mStartIndex == position)
+            {
+                holder.txtyear.setTextColor(getResources().getColor(R.color.automation_black));
+                holder.imgdots.setVisibility(View.VISIBLE);
+
+            } else {
+                holder.txtyear.setTextColor(getResources().getColor(R.color.device_button));
+                holder.imgdots.setVisibility(View.GONE);
+            }
+
+           /* if (yearlist.get(position).equals(selectedyear))
+            {
+                holder.txtyear.setTextColor(getResources().getColor(R.color.automation_black));
+                holder.imgdots.setVisibility(View.VISIBLE);
+
+            } else {
+                holder.txtyear.setTextColor(getResources().getColor(R.color.device_button));
+                holder.imgdots.setVisibility(View.GONE);
+            }*/
+
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return yearlist.size();
+        }
+
+        class YearViewHolder extends RecyclerView.ViewHolder {
+
+            private TextView txtyear;
+            private ImageView imgdots;
+            private LinearLayout linearlayout_year;
+
+            YearViewHolder(View itemView) {
+                super(itemView);
+                txtyear = itemView.findViewById(R.id.txt_year_name);
+                imgdots = itemView.findViewById(R.id.img_dots_year);
+                linearlayout_year = itemView.findViewById(R.id.linearlayout_year);
+                itemView.setTag(this);
+            }
+        }
+
     }
 
 }

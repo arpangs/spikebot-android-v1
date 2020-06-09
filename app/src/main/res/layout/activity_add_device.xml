@@ -6,12 +6,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
@@ -19,9 +19,9 @@
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
 
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -39,7 +39,7 @@
                 android:orientation="vertical">
 
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtLockName"
                     android:visibility="gone"
                     android:layout_width="match_parent"
@@ -47,9 +47,9 @@
                     android:text="Enter Lock Name"
                     android:layout_marginTop="@dimen/_20sdp"
                     android:textColor="@color/automation_black"
-                    android:textSize="@dimen/_14sdp"/>
+                    android:textSize="@dimen/_14sdp" />
 
-                <android.support.v7.widget.AppCompatEditText
+                <androidx.appcompat.widget.AppCompatEditText
                     android:visibility="gone"
                     android:id="@+id/edtLockName"
                     android:layout_width="match_parent"
@@ -61,16 +61,16 @@
                     android:textColor="@color/txtPanal"
                     android:textSize="@dimen/_14sdp"
                     android:paddingRight="@dimen/_10sdp"
-                    android:paddingLeft="@dimen/_10sdp"/>
+                    android:paddingLeft="@dimen/_10sdp" />
 
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Room List"
                     android:layout_marginTop="@dimen/_20sdp"
                     android:textColor="@color/automation_black"
-                    android:textSize="@dimen/_14sdp"/>
+                    android:textSize="@dimen/_14sdp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -79,7 +79,7 @@
                     android:layout_marginTop="@dimen/_4sdp"
                     android:background="@drawable/edt_border">
 
-                    <android.support.v7.widget.AppCompatSpinner
+                    <androidx.appcompat.widget.AppCompatSpinner
                         android:id="@+id/spinnerRoom"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
@@ -87,13 +87,13 @@
 
                 </LinearLayout>
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Panel List"
                     android:layout_marginTop="@dimen/_20sdp"
                     android:textColor="@color/automation_black"
-                    android:textSize="@dimen/_14sdp"/>
+                    android:textSize="@dimen/_14sdp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -101,21 +101,21 @@
                     android:layout_marginTop="@dimen/_4sdp"
                     android:background="@drawable/edt_border">
 
-                    <android.support.v7.widget.AppCompatSpinner
+                    <androidx.appcompat.widget.AppCompatSpinner
                         android:id="@+id/spinnerPanel"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
 
                 </LinearLayout>
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtDeviceList"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Device List"
                     android:layout_marginTop="@dimen/_20sdp"
                     android:textColor="@color/automation_black"
-                    android:textSize="@dimen/_14sdp"/>
+                    android:textSize="@dimen/_14sdp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -123,7 +123,7 @@
                     android:layout_marginTop="@dimen/_4sdp"
                     android:background="@drawable/edt_border">
 
-                    <android.support.v7.widget.AppCompatSpinner
+                    <androidx.appcompat.widget.AppCompatSpinner
                         android:id="@+id/spinnerDevice"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
@@ -131,7 +131,7 @@
                 </LinearLayout>
 
 
-                <android.support.v7.widget.AppCompatButton
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnSubmit"
                     android:layout_width="@dimen/_180sdp"
                     android:layout_height="wrap_content"
@@ -142,7 +142,7 @@
                     android:textSize="@dimen/_14sdp"
                     android:gravity="center"
                     android:textAllCaps="false"
-                    android:textColor="@color/automation_white"/>
+                    android:textColor="@color/automation_white" />
 
 
             </LinearLayout>
@@ -151,9 +151,7 @@
         </ScrollView>
 
 
-
     </LinearLayout>
-
 
 
 </LinearLayout>

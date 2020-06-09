@@ -3,12 +3,12 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
-        <item name="actionBarItemBackground">@color/sky_blue</item>
+        <item name="actionBarItemBackground">@color/solid_blue</item>
         <!--<item name="android:actionBarStyle">@style/MyActionBar</item>-->
 
-        <item name="colorPrimary">@color/sky_blue</item>
-        <item name="colorPrimaryDark">@color/sky_blue</item>
-        <item name="colorAccent">@color/sensor_button</item>
+        <item name="colorPrimary">@color/solid_blue</item>
+        <item name="colorPrimaryDark">@color/solid_blue</item>
+        <item name="colorAccent">@color/solid_blue</item>
 <!--
         <item name="android:colorControlActivated">@color/automation_yellow</item>
         <item name="android:colorControlHighlight">@color/automation_yellow</item>-->
@@ -16,13 +16,16 @@
     </style>
 
     <style name="Color1SwitchStyle" >
-        <item name="colorControlActivated">@color/sensor_button</item>
+        <item name="colorControlActivated">@color/solid_blue</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
 
         <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+        <item name="windowNoTitle">true</item> <item name="android:fontFamily">Axiforma-Regular</item>
+
+       <!-- <item name="android:typeface">serif</item>-->
+
     </style>
 
     <style name="AppTheme.NoActionBarWhite">
@@ -31,12 +34,25 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-
-    <style name="MyActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
-        <item name="android:background">@color/sky_blue</item>
+    <style name="AppBottomSheetDialogTheme"
+        parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModalStyle</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppModalStyle"
+        parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/background_bottomsheet_corner</item>
+    </style>
+
+    <style name="MyActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:background">@color/solid_blue</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="colorPrimaryDark">@android:color/background_dark</item>
+        <item name="android:fontFamily">Avenir-Heavy</item>
+
+    </style>
 
     <style name="AppTheme.AppBarOverlayWhite" parent="ThemeOverlay.AppCompat.Dark.ActionBar" >
         <item name="colorPrimaryDark">@color/automation_white</item>
@@ -83,7 +99,14 @@
         <item name="android:divider">@color/automation_white</item>
         <item name="android:dividerHeight">0.5dp</item>
         <item name="android:textColor">@android:color/white</item>
-        <item name="android:itemBackground">@color/sensor_button</item>
+        <item name="android:itemBackground">@color/solid_blue</item>
+    </style>
+
+    <style name="PopupMenuHome" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:divider">@color/automation_black</item>
+        <item name="android:dividerHeight">2dp</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:itemBackground">@color/automation_white</item>
     </style>
 
 

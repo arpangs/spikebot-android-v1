@@ -1,19 +1,21 @@
 package com.spike.bot.activity.TTLock;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.kp.core.ActivityHelper;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
@@ -64,6 +66,7 @@ public class GateWayListActivity extends AppCompatActivity implements GatewayLis
         setviewId();
     }
 
+    @SuppressLint("RestrictedApi")
     private void setviewId() {
         fab = findViewById(R.id.fab);
         toolbar = findViewById(R.id.toolbar);
@@ -102,29 +105,30 @@ public class GateWayListActivity extends AppCompatActivity implements GatewayLis
         getMenuInflater().inflate(R.menu.menu_room_edit, menu);
         this.menu = menu;
         menu.findItem(R.id.action_save).setTitle("Add Bridge").setVisible(false);
-
+        MenuItem actionsave = menu.findItem(R.id.action_add);
+        actionsave.setVisible(false);
         menu.findItem(R.id.action_log).setVisible(false);
         if (!TextUtils.isEmpty(ttbridgeId)) {
-            menu.findItem(R.id.action_add).setVisible(false);
+            menu.findItem(R.id.action_add_text).setVisible(false);
         }
 
         return super.onCreateOptionsMenu(menu);
-    }
+     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_add) {
-            startActivity(new Intent(this, AddGatewayActivity.class));
-            return true;
-        } else if (id == R.id.action_save) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+     @Override
+     public boolean onOptionsItemSelected(MenuItem item) {
+     int id = item.getItemId();
+     if (id == R.id.action_add_text) {
+     startActivity(new Intent(this, AddGatewayActivity.class));
+     return true;
+     } else if (id == R.id.action_save) {
+     return true;
+     }
+     return super.onOptionsItemSelected(item);
+     }
 
-    /**
-     * Get gateway list
+     /**
+      * Get gateway list
      */
     private void gatewayList() {
         ActivityHelper.showProgressDialog(this, "Please Wait...", false);

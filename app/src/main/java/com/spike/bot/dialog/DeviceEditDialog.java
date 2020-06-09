@@ -95,15 +95,25 @@ public class DeviceEditDialog extends Dialog implements View.OnClickListener {
         TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(activity, flags, 0, true);
         sp_device_type.setAdapter(customAdapter);
 
-        spinner_arrow.setOnClickListener(new View.OnClickListener() {
+       /* spinner_arrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!deviceVO.getDeviceType().equals("3"))
                 {
                     sp_device_type.performClick();
+                } else{
+                    if(deviceVO.getDeviceType().equals("curtain")){
+                        sp_device_type.setEnabled(false);
+                        sp_device_type.setClickable(false);
+                    } else{
+                        sp_device_type.setEnabled(true);
+                        sp_device_type.setClickable(true);
+                    }
                 }
+
+
             }
-        });
+        });*/
 
         if (deviceVO.getDeviceType().equals("3")) {
             sp_device_type.setFocusable(false);
@@ -114,8 +124,10 @@ public class DeviceEditDialog extends Dialog implements View.OnClickListener {
 
         if(deviceVO.getDeviceType().equals("curtain")){
             sp_device_type.setEnabled(false);
+            sp_device_type.setClickable(false);
         } else{
             sp_device_type.setEnabled(true);
+            sp_device_type.setClickable(true);
         }
         getSwitchDetails();
     }

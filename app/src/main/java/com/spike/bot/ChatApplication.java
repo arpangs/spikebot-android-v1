@@ -7,7 +7,6 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
-import android.support.multidex.MultiDex;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -15,6 +14,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
+
+import androidx.multidex.MultiDex;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
@@ -30,6 +31,7 @@ import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.core.CustomReportSender;
+import com.spike.bot.core.TypefaceUtil;
 import com.spike.bot.model.LockObj;
 import com.spike.bot.model.User;
 import com.spike.bot.receiver.ApplicationCrashHandler;
@@ -140,11 +142,13 @@ public class ChatApplication extends Application  {
     public Socket openSocket(String url) {
         this.url = url;
         try {
+
+            String urltoken = this.url + "?" + "token=" + Common.getPrefValue(this, Constants.USER_ID);
             IO.Options opts = new IO.Options();
             opts.reconnection = true;
 //            opts.reconnectionDelay=200;
 
-            mSocket = IO.socket(url,opts);
+            mSocket = IO.socket(urltoken,opts);
             mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
             ChatApplication.logDisplay("chat onDisconnect callll connect done ");
         } catch (URISyntaxException e) {
@@ -261,18 +265,21 @@ public class ChatApplication extends Application  {
        // ApplicationCrashHandler.installHandler();
 
         //beacon
-//        mDeviceStore = new BluetoothLeDeviceStore();
-//        mBluetoothUtils = new BluetoothUtils(getContext());
-//        mScanner = new BluetoothLeScanner(mLeScanCallback, mBluetoothUtils);
-//
-//        final boolean isBluetoothOn = mBluetoothUtils.isBluetoothOn();
-//        final boolean isBluetoothLePresent = mBluetoothUtils.isBluetoothLeSupported();
-//        mDeviceStore.clear();
-//
-//        mBluetoothUtils.askUserToEnableBluetoothIfNeeded();
-//        if (isBluetoothOn && isBluetoothLePresent) {
-//            mScanner.scanLeDevice(-1, true);
-//        }
+        /*mDeviceStore = new BluetoothLeDeviceStore();
+        BluetoothUtils mBluetoothUtils = new BluetoothUtils(getContext());
+        BluetoothLeScanner mScanner = new BluetoothLeScanner(mLeScanCallback, mBluetoothUtils);
+
+        final boolean isBluetoothOn = mBluetoothUtils.isBluetoothOn();
+        final boolean isBluetoothLePresent = mBluetoothUtils.isBluetoothLeSupported();
+        mDeviceStore.clear();
+
+        mBluetoothUtils.askUserToEnableBluetoothIfNeeded();
+        if (isBluetoothOn && isBluetoothLePresent) {
+            mScanner.scanLeDevice(-1, true);
+        }*/
+
+        TypefaceUtil.overrideFont(getApplicationContext(), "Axiforma-Regular", "fonts/Axiforma-Regular.otf");
+
 
     }
 
@@ -352,19 +359,36 @@ public class ChatApplication extends Application  {
     }
 
     public static String getCurrentDateTime(){
-        SimpleDateFormat sdf = new SimpleDateFormat(DateHelper.DATE_YYYY_MM_DD_HH_MM_SS);
+        SimpleDateFormat sdf = new SimpleDateFormat(DateHelper.DATE_D_MMM_YY_H_MM_AMPM);
         String currentDateandTime = sdf.format(new Date());
         return currentDateandTime;
 
     }
 
     public static String getCurrentDate(){
+        SimpleDateFormat sdf = new SimpleDateFormat(DateHelper.DATE_D_MMM_YY_H_MM_AMPM);
+        String currentDateandTime = sdf.format(new Date());
+//yyyy-MM-dd HH:mm:ss
+        return currentDateandTime;
+
+    }
+
+
+    public static String getCurrentDateTimeFormat(){
+        SimpleDateFormat sdf = new SimpleDateFormat(DateHelper.DATE_YYYY_MM_DD_HH_MM_SS);
+        String currentDateandTime = sdf.format(new Date());
+        return currentDateandTime;
+
+    }
+
+    public static String getCurrentDateFormat(){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateandTime = sdf.format(new Date());
 //yyyy-MM-dd HH:mm:ss
         return currentDateandTime+" 00:01:00";
 
     }
+
 
     public static String getCurrentDateOnly(boolean isflag,String onTime ,String offTime){
 

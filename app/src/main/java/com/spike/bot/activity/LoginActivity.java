@@ -5,14 +5,17 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatTextView;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatTextView;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
@@ -43,9 +46,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
     public EditText et_username, et_password;
     public Button btn_login, btnSignUp;
-    public AppCompatTextView btn_SKIP;
+    public ImageView btn_SKIP;
     public String imei = "", token = "", isFlag = "";
-
+    TextView txt_forgot_password;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,10 +70,35 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         btn_SKIP = findViewById(R.id.btn_SKIP);
         btn_login = findViewById(R.id.btn_login);
         btnSignUp = findViewById(R.id.btnSignUp);
+        txt_forgot_password = findViewById(R.id.txt_forgot_password);
 
-        btn_login.setOnClickListener(this);
+
+        String styledText = "<u><font color='#333333'>" + getResources().getString(R.string.forgotpassword) + "</font></u>";
+        txt_forgot_password.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
+
+
+        btn_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (TextUtils.isEmpty(imei)) {
+                    getUUId();
+                    return;
+                }
+                if (TextUtils.isEmpty(et_username.getText().toString())) {
+                    et_username.requestFocus();
+                    et_username.setError("Enter User Name");
+                } else if (TextUtils.isEmpty(et_password.getText().toString())) {
+                    et_password.requestFocus();
+                    et_password.setError("Enter Password");
+                } else {
+                    Common.hideSoftKeyboard(LoginActivity.this);
+                    loginCloud();
+                }
+            }
+        });
         btn_SKIP.setOnClickListener(this);
         btnSignUp.setOnClickListener(this);
+        txt_forgot_password.setOnClickListener(this);
     }
 
     @Override
@@ -88,7 +116,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             ChatApplication.currentuserId = Constants.getuser(this).getUser_id();
             startHomeIntent();
         } else {
-            btn_SKIP.setVisibility(View.INVISIBLE);
+            //  btn_SKIP.setVisibility(View.INVISIBLE);
         }
         super.onResume();
     }
@@ -114,28 +142,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         if (v == btn_SKIP) {
-            ChatApplication.isLocalFragmentResume = false;
-            ChatApplication.isMainFragmentNeedResume = false;
-            this.finish();
-        } else if (v == btn_login) {
-            if (TextUtils.isEmpty(imei)) {
-                getUUId();
-                return;
-            }
-            if (TextUtils.isEmpty(et_username.getText().toString())) {
-                et_username.requestFocus();
-                et_username.setError("Enter User Name");
-            } else if (TextUtils.isEmpty(et_password.getText().toString())) {
-                et_password.requestFocus();
-                et_password.setError("Enter Password");
+            if (isFlag.equalsIgnoreCase("true")) {
+                ChatApplication.isLocalFragmentResume = false;
+                ChatApplication.isMainFragmentNeedResume = false;
+                this.finish();
             } else {
-                Common.hideSoftKeyboard(LoginActivity.this);
-                loginCloud();
+                Intent intent = new Intent(this, LoginSplashActivity.class);
+                startActivity(intent);
+                finish();
             }
 
-        } else if (v == btnSignUp) {
+        }  else if (v == btnSignUp) {
             Intent intent = new Intent(this, SignUp.class);
             startActivity(intent);
+        } else if (v == txt_forgot_password){
+           /* Intent intent = new Intent(this, ForgotpasswordActivity.class);
+            startActivity(intent);*/
         }
     }
 
@@ -143,7 +165,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void loginCloud() {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            ChatApplication.showToast(LoginActivity.this,getResources().getString(R.string.disconnect));
+            ChatApplication.showToast(LoginActivity.this, getResources().getString(R.string.disconnect));
             return;
         }
 
@@ -198,7 +220,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         String mac_address = data.getString("mac_address");
                         Constants.adminType = Integer.parseInt(admin);
 
-                        ChatApplication.currentuserId=user_id;
+                        ChatApplication.currentuserId = user_id;
                         Common.savePrefValue(LoginActivity.this, Constants.PREF_CLOUDLOGIN, "true");
                         Common.savePrefValue(LoginActivity.this, Constants.PREF_IP, cloudIp);
                         Common.savePrefValue(LoginActivity.this, Constants.USER_ID, user_id);
@@ -224,7 +246,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         List<User> userList = new ArrayList<User>();
                         /*set active user */
                         if (!TextUtils.isEmpty(jsonText) && !jsonText.equals("[]") && !jsonText.equals("null")) {
-                            Type type = new TypeToken<List<User>>() {}.getType();
+                            Type type = new TypeToken<List<User>>() {
+                            }.getType();
                             userList = gson.fromJson(jsonText, type);
 
                             if (userList != null && userList.size() != 0) {
@@ -276,14 +299,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-               ChatApplication.showToast(LoginActivity.this,getResources().getString(R.string.something_wrong1));
+                ChatApplication.showToast(LoginActivity.this, getResources().getString(R.string.something_wrong1));
             }
         }).execute();
     }
 
     /* start home screen */
     private void startHomeIntent() {
-        ConnectivityReceiver.counter=0;
+        ConnectivityReceiver.counter = 0;
         Intent intent = new Intent(this, Main2Activity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

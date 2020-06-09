@@ -11,7 +11,7 @@
         android:orientation="vertical">
 
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Already Philips Hue Bridge Added."
@@ -21,7 +21,7 @@
             android:layout_marginTop="@dimen/_25sdp"/>
 
 
-        <android.support.v7.widget.AppCompatButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnExtingBridge"
             android:layout_width="@dimen/_245sdp"
             android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
             android:text="Continue with existing HueBridge"/>
 
 
-        <android.support.v7.widget.AppCompatButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnSearchBridge"
             android:layout_width="@dimen/_245sdp"
             android:layout_height="wrap_content"

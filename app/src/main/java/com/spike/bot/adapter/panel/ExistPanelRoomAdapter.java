@@ -1,14 +1,15 @@
 package com.spike.bot.adapter.panel;
 
 import android.content.Context;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.R;
 import com.spike.bot.core.Constants;
@@ -118,9 +119,9 @@ public class ExistPanelRoomAdapter extends RecyclerView.Adapter<ExistPanelRoomAd
 
         ExistPanelHolder(View itemView) {
             super(itemView);
-            txt_room_panel_name =  itemView.findViewById(R.id.txt_room_panel_name);
-            devicesList =  itemView.findViewById(R.id.list_panel_devices);
-            img_check_panel =  itemView.findViewById(R.id.img_check_panel);
+            txt_room_panel_name = itemView.findViewById(R.id.txt_room_panel_name);
+            devicesList = itemView.findViewById(R.id.list_panel_devices);
+            img_check_panel = itemView.findViewById(R.id.img_check_panel);
             devicesList.setLayoutManager(new GridLayoutManager(context, Constants.SWITCH_NUMBER_EXIST_PANEL));
         }
     }

@@ -1,77 +1,174 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.design.widget.AppBarLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:theme="@style/AppTheme.AppBarOverlay">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
+            <!-- <androidx.appcompat.widget.Toolbar
+                 android:id="@+id/toolbar"
+                 android:layout_width="match_parent"
+                 android:layout_height="?android:attr/actionBarSize"
+                 android:background="@color/sky_blue"
+                 android:gravity="center"
+                 app:popupTheme="@style/AppTheme.PopupOverlay">
+
+             </androidx.appcompat.widget.Toolbar>-->
+
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="?android:attr/actionBarSize"
-                android:background="@color/sky_blue"
-                app:popupTheme="@style/AppTheme.PopupOverlay">
+                android:layout_height="wrap_content">
 
-            </android.support.v7.widget.Toolbar>
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/ThemeOverlay.AppCompat.ActionBar"></androidx.appcompat.widget.Toolbar>
 
-        </android.support.design.widget.AppBarLayout>
+                <TextView
+                    android:id="@+id/txt_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text=""
+                    android:textColor="@color/automation_white" />
 
-        <FrameLayout
+                <TextView
+                    android:id="@+id/txt_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txt_title"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:text=""
+                    android:textColor="@color/automation_white" />
+
+            </RelativeLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <ProgressBar
-                android:id="@+id/progressBar"
+            <ImageView
+                android:id="@+id/img_playvideo"
+                android:layout_width="@dimen/_50sdp"
+                android:layout_height="@dimen/_50sdp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/_40sdp"
+                android:src="@drawable/play"
+                android:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/img_pausevideo"
+                android:layout_width="@dimen/_50sdp"
+                android:layout_height="@dimen/_50sdp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/_40sdp"
+                android:src="@drawable/pause"
+                android:visibility="invisible" />
+
+
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"/>
+                android:layout_height="match_parent"
+                android:layout_below="@+id/img_playvideo"
+                android:orientation="vertical">
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
 
 
-            <com.spike.bot.customview.TouchImageView
-                android:id="@+id/img_slider_item_zoom"
-                android:scaleType="centerInside"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                <FrameLayout
+                    android:id="@+id/frameVideo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_45sdp"
+                    android:layout_marginRight="@dimen/_5sdp">
+
+                    <com.spike.bot.customview.TouchImageView
+                        android:id="@+id/img_slider_item_zoom"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_220sdp"
+                        android:scaleType="center"
+                        android:visibility="visible" />
+
+                    <!--<VideoView
+                        android:id="@+id/videoView"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_220sdp"
+                        android:layout_alignParentLeft="true"
+                        android:visibility="gone" />-->
 
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fabShare"
-                app:layout_behavior="com.spike.bot.core.MoveUpwardBehavior"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/_20sdp"
-                android:layout_marginRight="@dimen/_18sdp"
-                android:layout_gravity="bottom|end"
-                android:gravity="center_vertical"
-                app:srcCompat="@drawable/ic_share_black_24dp"
-                app:fabSize="normal"/>
+                    <com.spike.bot.customview.PlayStateBroadcatingVideoView
+                        android:id="@+id/videoView"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_220sdp"
+                        android:layout_alignParentLeft="true"
+                        android:visibility="invisible"/>
 
-            <Button
-                android:id="@+id/btnReport"
-                android:layout_width="@dimen/_155sdp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|bottom"
-                android:layout_marginBottom="@dimen/_20sdp"
-                android:background="@drawable/button_radius"
-                android:clickable="true"
-                android:text="Report False Image"
-                android:textAllCaps="false"
-                android:textColor="@color/automation_white"
-                android:textStyle="bold" />
+                    <ProgressBar
+                        android:id="@+id/progressBar1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:layout_gravity="center" />
 
-        </FrameLayout>
+                    <FrameLayout
+                        android:id="@+id/placeholder"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent">
+                    </FrameLayout>
 
+
+                </FrameLayout>
+
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fabShare"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginRight="@dimen/_18sdp"
+                    android:layout_marginBottom="@dimen/_20sdp"
+                    android:gravity="center_vertical"
+                    app:fabSize="normal"
+                    app:layout_behavior="com.spike.bot.core.MoveUpwardBehavior"
+                    app:srcCompat="@drawable/ic_share_black_24dp" />
+
+
+                <Button
+                    android:id="@+id/btnReport"
+                    android:layout_width="@dimen/_155sdp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|bottom"
+                    android:layout_marginBottom="@dimen/_20sdp"
+                    android:background="@drawable/button_radius"
+                    android:clickable="true"
+                    android:text="Report False Detection"
+                    android:textAllCaps="false"
+                    android:textColor="@color/automation_white"
+                    android:textStyle="bold" />
+
+            </FrameLayout>
+        </RelativeLayout>
 
     </LinearLayout>
 

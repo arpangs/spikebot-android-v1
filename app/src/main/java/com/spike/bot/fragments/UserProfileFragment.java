@@ -2,11 +2,6 @@ package com.spike.bot.fragments;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.Fragment;
-import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -22,18 +17,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.spike.bot.ChatApplication;
-import com.spike.bot.R;
-import com.spike.bot.activity.Main2Activity;
-import com.spike.bot.activity.UserChildActivity;
-import com.spike.bot.core.APIConst;
-import com.spike.bot.core.Common;
-import com.spike.bot.core.Constants;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
+import com.spike.bot.ChatApplication;
+import com.spike.bot.R;
+import com.spike.bot.core.APIConst;
+import com.spike.bot.core.Common;
+import com.spike.bot.core.Constants;
 import com.spike.bot.model.User;
 
 import org.json.JSONArray;
@@ -332,6 +330,9 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                         ActivityHelper.hideKeyboard(getActivity());
                         ActivityHelper.dismissProgressDialog();
                         ChatApplication.isRefreshUserData = true;
+
+
+                        getActivity().finish();
 
                     }else{
                         ChatApplication.isRefreshUserData = false;

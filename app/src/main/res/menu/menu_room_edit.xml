@@ -6,19 +6,25 @@
 
     <item
         android:id="@+id/actionEdit"
-        android:icon="@drawable/edit_blue"
+        android:icon="@drawable/edit_white"
         android:orderInCategory="100"
         android:title="Add"
         android:visible="false"
         app:showAsAction="always" />
 
-
     <item
-        android:id="@+id/action_add"
-        android:icon="@drawable/add"
+        android:id="@+id/action_add_text"
         android:orderInCategory="100"
         android:title="Add"
+        android:visible="false"
         app:showAsAction="always" />
+
+    <item
+    android:id="@+id/action_add"
+    android:icon="@drawable/add"
+    android:orderInCategory="100"
+    android:title="Add"
+    app:showAsAction="always" />
 
     <item
         android:id="@+id/action_log"

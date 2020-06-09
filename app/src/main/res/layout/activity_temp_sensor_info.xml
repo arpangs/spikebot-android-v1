@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,12 +7,12 @@
     android:background="@drawable/new_screen_resolution"
     tools:context="com.spike.bot.activity.RoomEditActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
@@ -20,11 +20,11 @@
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
 
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="10dp"
@@ -58,7 +58,7 @@
                 android:layout_above="@+id/btn_delete"
                 android:orientation="vertical">
 
-                <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
                     xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/edt_txt_layout"
                     android:layout_width="match_parent"
@@ -228,7 +228,7 @@
 
                     </LinearLayout>
 
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
                 <View
                     android:layout_width="match_parent"
@@ -239,7 +239,7 @@
                     android:visibility="gone" />
 
 
-                <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
                     xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/edt_txt_layout2"
                     android:layout_width="match_parent"
@@ -283,7 +283,7 @@
                                 android:gravity="right"
                                 android:orientation="horizontal">
 
-                                <android.support.v7.widget.SwitchCompat
+                                <androidx.appcompat.widget.SwitchCompat
                                     android:id="@+id/switch_noti_onoff"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -365,7 +365,7 @@
                             android:orientation="vertical"
                             android:visibility="gone">
 
-                            <android.support.v7.widget.LinearLayoutCompat
+                            <androidx.appcompat.widget.LinearLayoutCompat
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="@dimen/_8sdp"
@@ -374,38 +374,38 @@
                                 android:layout_marginTop="@dimen/_4sdp"
                                 android:orientation="horizontal">
 
-                                <android.support.v7.widget.AppCompatTextView
+                                <androidx.appcompat.widget.AppCompatTextView
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:text="Min."
                                     android:textSize="16sp" />
 
-                                <android.support.v7.widget.AppCompatTextView
+                                <androidx.appcompat.widget.AppCompatTextView
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:text="Max."
                                     android:textSize="16sp" />
 
-                                <android.support.v7.widget.AppCompatTextView
+                                <androidx.appcompat.widget.AppCompatTextView
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="2"
                                     android:text="Repeat"
                                     android:textSize="16sp" />
 
-                                <android.support.v7.widget.AppCompatTextView
+                                <androidx.appcompat.widget.AppCompatTextView
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1" />
 
-                                <android.support.v7.widget.AppCompatTextView
+                                <androidx.appcompat.widget.AppCompatTextView
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="0.5" />
 
-                            </android.support.v7.widget.LinearLayoutCompat>
+                            </androidx.appcompat.widget.LinearLayoutCompat>
 
                             <View
                                 android:id="@+id/viewLine"
@@ -413,7 +413,7 @@
                                 android:layout_height="0.5dp"
                                 android:background="#60808080" />
 
-                            <android.support.v7.widget.RecyclerView
+                            <androidx.recyclerview.widget.RecyclerView
                                 android:id="@+id/sensor_list"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -422,7 +422,7 @@
                                 android:layout_marginTop="@dimen/_4sdp"
                                 android:scrollbars="vertical">
 
-                            </android.support.v7.widget.RecyclerView>
+                            </androidx.recyclerview.widget.RecyclerView>
 
                             <TextView
                                 android:id="@+id/txtEmpty"
@@ -441,7 +441,7 @@
 
                     </LinearLayout>
 
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
 
                 <View
@@ -453,7 +453,7 @@
                     android:visibility="gone" />
 
 
-                <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
                     xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/edt_txt_layout3"
                     android:layout_width="match_parent"
@@ -534,7 +534,7 @@
                             android:visibility="visible" />
 
 
-                        <android.support.v7.widget.LinearLayoutCompat
+                        <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="@dimen/_8sdp"
@@ -543,7 +543,7 @@
                             android:layout_marginTop="@dimen/_4sdp"
                             android:orientation="horizontal">
 
-                            <android.support.v7.widget.AppCompatTextView
+                            <androidx.appcompat.widget.AppCompatTextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="2"
@@ -551,7 +551,7 @@
                                 android:textColor="@color/automation_black"
                                 android:textSize="16sp" />
 
-                            <android.support.v7.widget.AppCompatTextView
+                            <androidx.appcompat.widget.AppCompatTextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1.5"
@@ -559,7 +559,7 @@
                                 android:textColor="@color/automation_black"
                                 android:textSize="16sp" />
 
-                            <android.support.v7.widget.AppCompatTextView
+                            <androidx.appcompat.widget.AppCompatTextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="2"
@@ -567,17 +567,17 @@
                                 android:textColor="@color/automation_black"
                                 android:textSize="16sp" />
 
-                            <android.support.v7.widget.AppCompatTextView
+                            <androidx.appcompat.widget.AppCompatTextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1" />
 
-                            <android.support.v7.widget.AppCompatTextView
+                            <androidx.appcompat.widget.AppCompatTextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="0.5" />
 
-                        </android.support.v7.widget.LinearLayoutCompat>
+                        </androidx.appcompat.widget.LinearLayoutCompat>
 
                         <View
                             android:layout_width="wrap_content"
@@ -585,7 +585,7 @@
                             android:background="@color/automation_dark_gray"
                             android:visibility="visible" />
 
-                        <android.support.v7.widget.RecyclerView
+                        <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/recyclerAlert"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -607,10 +607,10 @@
                     </LinearLayout>
 
 
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
 
-               <!-- <android.support.v4.widget.Space
+               <!-- <androidx.legacy.widget.Space
                     android:layout_width="match_parent"
                     android:layout_height="5dp" />
 -->
@@ -619,7 +619,7 @@
             </LinearLayout>
             </ScrollView>
 
-            <android.support.v7.widget.AppCompatButton
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_delete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -632,6 +632,6 @@
         </RelativeLayout>
 
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,15 +1,16 @@
 package com.spike.bot.activity.SmartDevice;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
@@ -33,6 +34,7 @@ public class BrandListActivity extends AppCompatActivity {
     public Toolbar toolbar;
     FloatingActionButton fab;
     public RecyclerView recyclerSmartDevice;
+    TextView label_add;
 
     public SmartBrandAdapter smartBrandAdapter;
     public ArrayList<SmartBrandModel> arrayList = new ArrayList<>();
@@ -51,12 +53,14 @@ public class BrandListActivity extends AppCompatActivity {
         fab = findViewById(R.id.fab);
         recyclerSmartDevice = findViewById(R.id.recyclerSmartDevice);
         txtnodatafound = findViewById(R.id.txtNodataFound);
+        label_add = findViewById(R.id.label_add);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setTitle("Select Your Brand");
         fab.setVisibility(View.GONE);
+        label_add.setVisibility(View.GONE);
         getSmartDevice();
     }
 

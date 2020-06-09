@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/new_screen_resolution">
+    android:background="@color/automation_white">
 
 
     <TextView
@@ -15,43 +15,39 @@
         android:gravity="right"
         android:visibility="invisible" />
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swiperefresh"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp">
 
-        <android.support.v4.widget.NestedScrollView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+        <androidx.core.widget.NestedScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
-            android:layout_above="@+id/view_bottom"
             android:id="@+id/main_scroll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_above="@+id/view_bottom"
             tools:context="com.spike.bot.fragments.DashBoardFragment">
 
             <RelativeLayout
                 android:id="@+id/relativeMainfragment"
-                android:descendantFocusability="blocksDescendants"
                 android:layout_width="match_parent"
-                android:focusableInTouchMode="true"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:descendantFocusability="blocksDescendants"
+                android:focusableInTouchMode="true">
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/messages"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/_8sdp"
+                    android:layout_marginRight="@dimen/_8sdp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="@dimen/_15sdp"
-                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                    android:visibility="visible"
-                    android:layout_marginRight="@dimen/activity_horizontal_margin"
                     android:nestedScrollingEnabled="false"
                     android:scrollbarStyle="outsideOverlay"
                     android:scrollbars="none"
-                    android:background="@color/automation_white"/>
+                    android:visibility="visible" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -65,15 +61,14 @@
             </RelativeLayout>
 
 
-        </android.support.v4.widget.NestedScrollView>
+        </androidx.core.widget.NestedScrollView>
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <LinearLayout
         android:id="@+id/linear_retry"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/new_screen_resolution"
         android:gravity="center"
         android:orientation="vertical"
         android:visibility="gone">
@@ -100,37 +95,37 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/txt_empty_schedule"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="24dp"
-        android:visibility="gone"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/txt_empty_text"
-            android:visibility="visible"
-            android:layout_gravity="center"
-            android:layout_below="@+id/ll_recycler"
-            android:gravity="center"
-            android:textSize="@dimen/_24sdp"
-            android:layout_marginTop="48dp"
-            android:textColor="#808080"
-            android:text="Add Room"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        android:orientation="vertical"
+        android:visibility="gone">
 
 
         <ImageView
             android:id="@+id/empty_add_image"
-            android:src="@drawable/icn_empty_plus"
-            android:layout_marginTop="16dp"
-            android:layout_gravity="center"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/rooms" />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/txt_empty_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/empty_add_image"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:fontFamily="Avenir-Heavy"
+            android:text="NO ROOMS ADDED YET"
+            android:textColor="#808080"
+            android:textSize="18sp"
+            android:visibility="visible" />
+
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/linear_progress"
@@ -145,8 +140,8 @@
             android:id="@+id/deepsImage"
             android:layout_width="38dp"
             android:layout_height="38dp"
-            android:layout_centerHorizontal="true"
             android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
             android:scaleType="centerInside"
@@ -172,28 +167,29 @@
     <!--Fab Menu End-->
 
     <LinearLayout
+        android:id="@+id/linear_fab"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="bottom|end"
         android:layout_marginRight="@dimen/fab_margin"
-        android:gravity="right"
-        android:clipToPadding="false"
-        android:padding="12dp"
         android:layout_marginBottom="@dimen/_4sdp"
-        android:layout_gravity="bottom|end">
+        android:clipToPadding="false"
+        android:gravity="right"
+        android:padding="12dp">
 
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            app:layout_behavior="com.spike.bot.core.MoveUpwardBehavior"
+        <com.akhilpatoliya.floating_text_button.FloatingTextButton
+            android:id="@+id/action_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:background="@color/sky_blue"
-            app:backgroundTint="@color/sky_blue"
-            android:tint="@color/automation_white"
-            android:gravity="center_vertical"
-            app:srcCompat="@drawable/icn_add"
-            app:fabSize="normal"/>
+            android:layout_gravity="center_horizontal|bottom"
+            android:visibility="gone"
+            app:floating_background_color="@color/automation_white"
+            app:floating_left_icon="@drawable/plusbutton"
+            app:floating_title="@string/add_device"
+            app:floating_title_color="@color/automation_black">
+
+        </com.akhilpatoliya.floating_text_button.FloatingTextButton>
     </LinearLayout>
 
 

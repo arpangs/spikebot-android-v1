@@ -4,10 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.View;
@@ -19,11 +15,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.goodiebag.protractorview.ProtractorView;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.GetJsonTaskRemote;
@@ -31,19 +34,16 @@ import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.Repeatar.RepeaterActivity;
 import com.spike.bot.adapter.MoodRemoteAdapter;
-import com.spike.bot.adapter.irblaster.IRBlasterAddListAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.listener.MoodEvent;
-import com.spike.bot.model.AddRemoteReq;
-import com.spike.bot.model.IRBlasterAddRes;
 import com.spike.bot.model.IRDeviceDetailsRes;
 import com.spike.bot.model.RemoteDetailsRes;
 import com.spike.bot.model.RemoteMoodModel;
-import com.spike.bot.model.SendRemoteCommandReq;
-import com.spike.bot.model.SendRemoteCommandRes;
+import com.spike.bot.model.RepeaterModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,24 +58,25 @@ import java.util.List;
 public class IRBlasterRemote extends AppCompatActivity implements View.OnClickListener, MoodEvent {
 
     private LinearLayout mPowerButton;
+    RelativeLayout relative_plus, relative_minus;
     private Button mBrandBottom, mTempMinus, mTempPlus;
     private ImageView mImageAuto, mToolbarBack, imgRemoteStatus, mImageEdit, mImageDelete;
-    private TextView mTemp, mDefaultTemp, mImageAutoText,mRemoteName, txtRemoteState, txtAcState;
+    private TextView mTemp, mDefaultTemp, mImageAutoText, mRemoteName, txtRemoteState, txtAcState;
 
-    private String mRemoteId, moodName = "", mRoomDeviceId,module_id="",modeType="";
+    private String mRemoteId, moodName = "", mRoomDeviceId, module_id = "", modeType = "";
     private boolean isPowerOn = false;
-    private int  isRemoteActive, tempMinus, tempPlus, tempCurrent;
+    private int isRemoteActive, tempMinus, tempPlus, tempCurrent;
 
     private RemoteDetailsRes mRemoteList;
     private RemoteDetailsRes.Data mRemoteCommandList;
 
-//    private List<String> speedList;
+    //    private List<String> speedList;
     public RecyclerView recyclerMode;
     public MoodRemoteAdapter moodRemoteAdapter;
     private ArrayList<RemoteMoodModel> arrayListMood = new ArrayList<>();
 
-    private List<IRDeviceDetailsRes.Data> mIRDeviceList=new ArrayList<>();
-    public String[] moodList = new String[]{"AUTO", "LOW", "MEDIUM", "HIGH"};
+    private List<IRDeviceDetailsRes.Data> mIRDeviceList = new ArrayList<>();
+    public String[] moodList = new String[]{"Auto", "Low", "Medium", "High"};
 
     /**
      * Edit AC Remote
@@ -84,7 +85,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
     private TextView remote_room_txt;
     private EditText mRemoteDefaultTemp;
     private EditText mEdtRemoteName;
-
+    ProtractorView protractorView1, protractorView;
     private Dialog mDialog;
 
     private static String TURN_ON = "TURN ON", TURN_OFF = "TURN OFF";
@@ -110,22 +111,26 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
     private void bindView() {
 
-        mImageEdit =  findViewById(R.id.action_edit);
-        mImageDelete =  findViewById(R.id.action_delete);
-        mBrandBottom =  findViewById(R.id.brand_name_bottom);
-        mToolbarBack =  findViewById(R.id.remote_toolbar_back);
+        mImageEdit = findViewById(R.id.action_edit);
+        mImageDelete = findViewById(R.id.action_delete);
+        mBrandBottom = findViewById(R.id.brand_name_bottom);
+        mToolbarBack = findViewById(R.id.remote_toolbar_back);
         mRemoteName = findViewById(R.id.remote_name);
         txtAcState = findViewById(R.id.txtAcState);
         mTemp = findViewById(R.id.remote_temp);
         mDefaultTemp = findViewById(R.id.remote_default_temp);
-        mImageAuto =  findViewById(R.id.remote_speed_img);
-        imgRemoteStatus =  findViewById(R.id.imgRemoteStatus);
-        mImageAutoText =  findViewById(R.id.remote_speed_text);
-        txtRemoteState =  findViewById(R.id.txtRemoteState);
+        mImageAuto = findViewById(R.id.remote_speed_img);
+        imgRemoteStatus = findViewById(R.id.imgRemoteStatus);
+        mImageAutoText = findViewById(R.id.remote_speed_text);
+        txtRemoteState = findViewById(R.id.txtRemoteState);
         mPowerButton = findViewById(R.id.remote_power_button);
-        mTempMinus =  findViewById(R.id.remote_temp_minus);
-        mTempPlus =  findViewById(R.id.remote_temp_plus);
+        mTempMinus = findViewById(R.id.remote_temp_minus);
+        mTempPlus = findViewById(R.id.remote_temp_plus);
         recyclerMode = findViewById(R.id.recyclerMode);
+        protractorView = findViewById(R.id.Protractor);
+        protractorView1 = findViewById(R.id.Protractor1);
+        relative_plus = findViewById(R.id.relative_plus);
+        relative_minus = findViewById(R.id.relative_minus);
 
         mToolbarBack.setOnClickListener(this);
         mPowerButton.setOnClickListener(this);
@@ -133,32 +138,36 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         mTempPlus.setOnClickListener(this);
         mImageEdit.setOnClickListener(this);
         mImageDelete.setOnClickListener(this);
+        relative_plus.setOnClickListener(this);
+        relative_minus.setOnClickListener(this);
+
 
         if (!Common.getPrefValue(this, Constants.USER_ADMIN_TYPE).equals("1")) {
             mImageDelete.setVisibility(View.GONE);
         }
 
     }
+
     /*set adapter*/
     private void setMoodAdapter() {
         arrayListMood.clear();
 
-        for(int i=0; i<moodList.length; i++){
-            RemoteMoodModel remoteMoodModel=new RemoteMoodModel();
+        for (int i = 0; i < moodList.length; i++) {
+            RemoteMoodModel remoteMoodModel = new RemoteMoodModel();
             remoteMoodModel.setMoodName(moodList[i]);
             remoteMoodModel.setSelect(false);
             arrayListMood.add(remoteMoodModel);
         }
 
-        String value[]=mRemoteCommandList.getDevice().getMeta_device_default_status().split("-");
-        modeType=value[0];
-        tempCurrent= Integer.parseInt(value[1]);
+        String value[] = mRemoteCommandList.getDevice().getMeta_device_default_status().split("-");
+        modeType = value[0];
+        tempCurrent = Integer.parseInt(value[1]);
         for (int i = 0; i < arrayListMood.size(); i++) {
-           if(arrayListMood.get(i).getMoodName().equals(modeType)){
-               arrayListMood.get(i).setSelect(true);
-           }else {
-               arrayListMood.get(i).setSelect(false);
-           }
+            if (arrayListMood.get(i).getMoodName().equals(modeType)) {
+                arrayListMood.get(i).setSelect(true);
+            } else {
+                arrayListMood.get(i).setSelect(false);
+            }
         }
         recyclerMode.setLayoutManager(new GridLayoutManager(this, 4));
         moodRemoteAdapter = new MoodRemoteAdapter(IRBlasterRemote.this, arrayListMood, this);
@@ -167,26 +176,26 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
     private void initView() {
         setMoodAdapter();
-        String value[]=mRemoteCommandList.getDevice().getDeviceSubStatus().split("-");
-        modeType=value[0];
-        tempCurrent= Integer.parseInt(value[1]);
-        isRemoteActive= Integer.parseInt(mRemoteCommandList.getDevice().getDeviceStatus());
-        mTemp.setText("" + tempCurrent+ Common.getC());
+        String value[] = mRemoteCommandList.getDevice().getDeviceSubStatus().split("-");
+        modeType = value[0];
+        tempCurrent = Integer.parseInt(value[1]);
+        isRemoteActive = Integer.parseInt(mRemoteCommandList.getDevice().getDeviceStatus());
+        mTemp.setText("" + tempCurrent + Common.getC());
 
-        String value1[]=mRemoteCommandList.getDevice().getMeta_device_default_status().split("-");
-        modeType=value1[0];
-        tempCurrent= Integer.parseInt(value1[1]);
-        mDefaultTemp.setText("Default Temp. -" + " " + tempCurrent+ Common.getC()  +  " " + modeType);
-        if(mRemoteCommandList.getDevice().getDeviceStatus().equalsIgnoreCase("0")){
+        String value1[] = mRemoteCommandList.getDevice().getMeta_device_default_status().split("-");
+        modeType = value1[0];
+        tempCurrent = Integer.parseInt(value1[1]);
+        mDefaultTemp.setText("Default Status -" + " " + modeType + " " + "-" + " " +tempCurrent + Common.getC());
+        if (mRemoteCommandList.getDevice().getDeviceStatus().equalsIgnoreCase("0")) {
             txtAcState.setText("Ac state : OFF");
-        }else {
+        } else {
             txtAcState.setText("Ac state : ON");
         }
         mImageAutoText.setText(String.format("Speed %s", modeType));
         moodName = modeType;
         setPowerOnOff(mRemoteCommandList.getDevice().getDeviceStatus());
         mRemoteName.setText(mRemoteCommandList.getDevice().getDeviceName());
-        mBrandBottom.setText(mRemoteCommandList.getDevice().getMeta_device_brand() + "{" + mRemoteCommandList.getDevice().getMeta_device_model() + "}");
+        mBrandBottom.setText(mRemoteCommandList.getDevice().getMeta_device_brand()/* + "{" + mRemoteCommandList.getDevice().getMeta_device_model() + "}"*/);
 
         tempMinus = 16;
         tempPlus = 30;
@@ -211,7 +220,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         }
 
         String url = ChatApplication.url + Constants.deviceinfo;
-        ChatApplication.logDisplay("Res : " + url+ " " +object);
+        ChatApplication.logDisplay("Res : " + url + " " + object);
 
         new GetJsonTask(this, url, "POST", object.toString(), new ICallBack() {
             @Override
@@ -265,7 +274,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
         String url = ChatApplication.url + Constants.devicefind;
 
-        ChatApplication.logDisplay("url is " + url+" "+obj.toString());
+        ChatApplication.logDisplay("url is " + url + " " + obj.toString());
 
         new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() {
             @Override
@@ -296,21 +305,21 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
     }
 
     /*set speed test
-    * */
+     * */
     private void setSpeedText(String speedResult) {
 
         if (speedResult.equalsIgnoreCase("AUTO")) {
             mImageAuto.setImageResource(R.drawable.auto_new);
-            setNormalText("AUTO");
+            setNormalText("Auto");
         } else if (speedResult.equalsIgnoreCase("LOW")) {
             mImageAuto.setImageResource(R.drawable.ic_conditionor_windcapacity_low);
-            setNormalText("LOW");
+            setNormalText("Low");
         } else if (speedResult.equalsIgnoreCase("MEDIUM")) {
             mImageAuto.setImageResource(R.drawable.ic_conditionor_windcapacity_middle);
-            setNormalText("MEDIUM");
+            setNormalText("Medium");
         } else if (speedResult.equalsIgnoreCase("HIGH")) {
             mImageAuto.setImageResource(R.drawable.ic_conditionor_windcapacity);
-            setNormalText("HIGH");
+            setNormalText("High");
         }
     }
 
@@ -368,13 +377,156 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                 }
 
                 break;
+            case R.id.relative_plus:
+                ChatApplication.logDisplay("isOn : " + isPowerOn);
+                if (isRemoteActive == 1) {
+                    if (tempCurrent != tempPlus) {
+                        tempCurrent++;
+                        setangle(tempCurrent);
+                        ChatApplication.logDisplay("temperature plus" + tempCurrent);
+                    }
+                    if (tempCurrent == tempPlus) {
+                        tempCurrent = tempPlus;
+                    }
+                    sendRemoteCommand(1);
+                }else{
+                    Common.showToast("Remote is not active");
+                }
+                break;
+            case R.id.relative_minus:
+                ChatApplication.logDisplay("isOn : " + isPowerOn);
+                if(isRemoteActive == 1) {
+                    if (tempCurrent != tempMinus) {
+                        tempCurrent--;
+                        setangle(tempCurrent);
+                        ChatApplication.logDisplay("temperature minus" + tempCurrent);
+                    }
+                    if (tempCurrent == tempMinus) {
+                        tempCurrent = tempMinus;
+                    }
+                    sendRemoteCommand(1);
+                } else{
+                    Common.showToast("Remote is not active");
+                }
+                break;
             case R.id.remote_toolbar_back:
                 onBackPressed();
                 break;
             case R.id.action_edit:
-                showRemoteSaveDialog(true);
+                showBottomSheetDialog();
                 break;
             case R.id.action_delete:
+                break;
+        }
+    }
+
+    public void setangle(int angle) {
+        switch (angle) {
+            case 16:
+                protractorView.setVisibility(View.GONE);
+                protractorView1.setVisibility(View.VISIBLE);
+                protractorView1.setAngle(180 - 0);
+                break;
+            case 17:
+                protractorView.setVisibility(View.GONE);
+                protractorView1.setVisibility(View.VISIBLE);
+                protractorView1.setAngle(180 - 30);
+                break;
+            case 18:
+                protractorView.setVisibility(View.GONE);
+                protractorView1.setVisibility(View.VISIBLE);
+                protractorView1.setAngle(180 - 40);
+                break;
+            case 19:
+                protractorView.setVisibility(View.GONE);
+                protractorView1.setVisibility(View.VISIBLE);
+                protractorView1.setAngle(180 - 50);
+                break;
+            case 20:
+                protractorView.setVisibility(View.GONE);
+                protractorView1.setVisibility(View.VISIBLE);
+                protractorView1.setAngle(180 - 60);
+                break;
+            case 21:
+                protractorView.setVisibility(View.GONE);
+                protractorView1.setVisibility(View.VISIBLE);
+                protractorView1.setAngle(180 - 70);
+                break;
+            case 22:
+                protractorView.setVisibility(View.GONE);
+                protractorView1.setVisibility(View.VISIBLE);
+                protractorView1.setAngle(180 - 80);
+                break;
+            case 23:
+                protractorView.setVisibility(View.GONE);
+                protractorView1.setVisibility(View.VISIBLE);
+                protractorView1.setAngle(180 - 90);
+                break;
+            case 24:
+                protractorView.setVisibility(View.GONE);
+                protractorView1.setVisibility(View.VISIBLE);
+                protractorView1.setAngle(180 - 120);
+                break;
+            case 25:
+                protractorView.setVisibility(View.GONE);
+                protractorView1.setVisibility(View.VISIBLE);
+                protractorView1.setAngle(180 - 130);
+                break;
+            case 26:
+                protractorView.setVisibility(View.GONE);
+                protractorView1.setVisibility(View.VISIBLE);
+                protractorView1.setAngle(180 - 140);
+                break;
+            case 27:
+                protractorView.setVisibility(View.GONE);
+                protractorView1.setVisibility(View.VISIBLE);
+                protractorView1.setAngle(180 - 150);
+                break;
+            case 28:
+                protractorView.setVisibility(View.GONE);
+                protractorView1.setVisibility(View.VISIBLE);
+                protractorView1.setAngle(180 - 160);
+                break;
+            case 29:
+                protractorView.setVisibility(View.GONE);
+                protractorView1.setVisibility(View.VISIBLE);
+                protractorView1.setAngle(180 - 170);
+                break;
+            case 30:
+                protractorView.setVisibility(View.GONE);
+                protractorView1.setVisibility(View.VISIBLE);
+                protractorView1.setAngle(180 - 180);
+                break;
+
+        }
+    }
+
+    public void showBottomSheetDialog() {
+        View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
+
+        TextView txt_bottomsheet_title = view.findViewById(R.id.txt_bottomsheet_title);
+        LinearLayout linear_bottom_edit = view.findViewById(R.id.linear_bottom_edit);
+        LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
+
+        TextView txt_edit = view.findViewById(R.id.txt_edit);
+
+        BottomSheetDialog dialog = new BottomSheetDialog(IRBlasterRemote.this,R.style.AppBottomSheetDialogTheme);
+        dialog.setContentView(view);
+        dialog.show();
+
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + mRemoteCommandList.getDevice().getDeviceName() + " " +"?");
+        linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                showRemoteSaveDialog(true);
+            }
+        });
+
+        linear_bottom_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
                 ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to delete remote?", new ConfirmDialog.IDialogCallback() {
                     @Override
                     public void onConfirmDialogYesClick() {
@@ -387,9 +539,10 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
                 });
                 newFragment.show(getFragmentManager(), "dialog");
-                break;
-        }
+            }
+        });
     }
+
 
     private void showRemoteSaveDialog(final boolean isEdit) {
         if (mDialog == null) {
@@ -404,23 +557,23 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         TextView mDialogTitle = mDialog.findViewById(R.id.tv_title);
         mDialogTitle.setText("Remote Details");
 
-        ImageView iv_close =  mDialog.findViewById(R.id.iv_close);
+        ImageView iv_close = mDialog.findViewById(R.id.iv_close);
         Button mBtnCancel = mDialog.findViewById(R.id.btn_cancel);
         Button mBtnSave = mDialog.findViewById(R.id.btn_save);
 
         mSpinnerBlaster = mDialog.findViewById(R.id.remote_blaster_spinner);
-        remote_room_txt =  mDialog.findViewById(R.id.remote_room_txt);
+        remote_room_txt = mDialog.findViewById(R.id.remote_room_txt);
         mSpinnerMode = mDialog.findViewById(R.id.remote_mode_spinner);
         mRemoteDefaultTemp = mDialog.findViewById(R.id.edt_remote_tmp);
 
-        String modeDefult="";
+        String modeDefult = "";
         try {
-            if(!TextUtils.isEmpty(mRemoteCommandList.getDevice().getMeta_device_default_status())){
-                String[] spiltarray=mRemoteCommandList.getDevice().getMeta_device_default_status().split("-");
+            if (!TextUtils.isEmpty(mRemoteCommandList.getDevice().getMeta_device_default_status())) {
+                String[] spiltarray = mRemoteCommandList.getDevice().getMeta_device_default_status().split("-");
                 mRemoteDefaultTemp.setText("" + spiltarray[1]);
-                modeDefult=spiltarray[0];
+                modeDefult = spiltarray[0];
             }
-            mEdtRemoteName.setText("" +mRemoteCommandList.getDevice().getDeviceName());
+            mEdtRemoteName.setText("" + mRemoteCommandList.getDevice().getDeviceName());
             mEdtRemoteName.setSelection(mEdtRemoteName.getText().toString().length());
 
         } catch (Exception ex) {
@@ -428,13 +581,13 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         }
 //        getIRBlasterList(isEdit);
 
-        ArrayList<String> arrayList=new ArrayList<>();
+        ArrayList<String> arrayList = new ArrayList<>();
 
-        for(int i=0; i<mIRDeviceList.size(); i++){
+        for (int i = 0; i < mIRDeviceList.size(); i++) {
             arrayList.add(mIRDeviceList.get(i).getDeviceName());
         }
 
-        if(arrayList.size()==0){
+        if (arrayList.size() == 0) {
             arrayList.add("No IR Blaster");
         }
         final ArrayAdapter roomAdapter = new ArrayAdapter(getApplicationContext(), R.layout.spinner, arrayList);
@@ -449,9 +602,9 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         mSpinnerBlaster.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(mIRDeviceList.get(position).getRoom()!=null){
+                if (mIRDeviceList.get(position).getRoom() != null) {
                     remote_room_txt.setText("" + mIRDeviceList.get(position).getRoom().getRoomName());
-                }else {
+                } else {
                     remote_room_txt.setText("");
                 }
             }
@@ -560,10 +713,10 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             obj.put("user_id", Common.getPrefValue(getApplicationContext(), Constants.USER_ID));
-            obj.put("device_id",mRemoteCommandList.getDevice().getDevice_id());
+            obj.put("device_id", mRemoteCommandList.getDevice().getDevice_id());
             obj.put("device_name", remoteName);
 //            obj.put("device_icon", "ir_blaster");
-            obj.put("device_default_status", ""+mSpinnerMode.getSelectedItem().toString()+"-"+mRemoteDefaultTemp.getText().toString().trim());
+            obj.put("device_default_status", "" + mSpinnerMode.getSelectedItem().toString() + "-" + mRemoteDefaultTemp.getText().toString().trim());
             obj.put("ir_blaster_id", mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId());
 
         } catch (JSONException e) {
@@ -572,7 +725,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
         String url = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
 
-        ChatApplication.logDisplay("Request : "+url+"  "  + obj);
+        ChatApplication.logDisplay("Request : " + url + "  " + obj);
 
         new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() {
             @Override
@@ -583,7 +736,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
-                    ChatApplication.showToast(IRBlasterRemote.this,message);
+                    ChatApplication.showToast(IRBlasterRemote.this, message);
                     if (code == 200) {
                         getRemoteInfo();
                     }
@@ -604,7 +757,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
     /*delete remote*/
     private void deleteRemote() {
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            ChatApplication.showToast(getApplicationContext(), ""+R.string.disconnect);
+            ChatApplication.showToast(getApplicationContext(), "" + R.string.disconnect);
             return;
         }
 
@@ -661,7 +814,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
     private void sendRemoteCommand(final int counting) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            ChatApplication.showToast(getApplicationContext(), ""+R.string.disconnect);
+            ChatApplication.showToast(getApplicationContext(), "" + R.string.disconnect);
             return;
         }
 
@@ -671,13 +824,13 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             obj.put("device_id", mRemoteId);
-            if(counting==0){
-                obj.put("device_status", isRemoteActive==1? "0":"1");
-            }else {
+            if (counting == 0) {
+                obj.put("device_status", isRemoteActive == 1 ? "0" : "1");
+            } else {
                 obj.put("device_status", "1");
             }
 
-            obj.put("device_sub_status", moodName.trim()+"-"+tempCurrent);//1;
+            obj.put("device_sub_status", moodName.trim() + "-" + tempCurrent);//1;
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -685,7 +838,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         //changedevicestatus
         String url = ChatApplication.url + Constants.CHANGE_DEVICE_STATUS;
 
-        ChatApplication.logDisplay("url is "+url+"  " +obj);
+        ChatApplication.logDisplay("url is " + url + "  " + obj);
 
         new GetJsonTaskRemote(this, url, "POST", obj.toString(), new ICallBack() {
             @Override
@@ -705,9 +858,9 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 //                            isRemoteActive = 0;
 //                        }
 
-                        if(counting==0){
-                            isRemoteActive=isRemoteActive==1 ? 0:1;
-                            isPowerOn=isRemoteActive==1?true:false;
+                        if (counting == 0) {
+                            isRemoteActive = isRemoteActive == 1 ? 0 : 1;
+                            isPowerOn = isRemoteActive == 1 ? true : false;
                         }
                         if (isPowerOn)
                             setPowerOnOff(TURN_OFF);

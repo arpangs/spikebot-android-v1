@@ -27,7 +27,7 @@
             android:layout_gravity="center_horizontal"
             android:adjustViewBounds="true"
             android:gravity="center_horizontal"
-            android:src="@drawable/bulb_off" />
+            android:src="@drawable/offcfl" />
 
         <ImageView
             android:id="@+id/iv_icon_active_camera"

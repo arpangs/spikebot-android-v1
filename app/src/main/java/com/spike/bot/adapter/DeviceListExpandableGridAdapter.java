@@ -3,9 +3,7 @@ package com.spike.bot.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +14,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.R;
 import com.spike.bot.core.Common;
@@ -137,7 +140,8 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
 
                 final RoomVO section = (RoomVO) mDataArrayList.get(position);
 
-                holder.sectionTextView.setText(section.getRoomName());
+                String styledText = "<u><font>"+section.getRoomName()+"</font></u>";
+                holder.sectionTextView.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
                 holder.text_section_on_off.setVisibility(View.GONE);
                 holder.text_section_edit.setVisibility(View.GONE);
                 holder.sectionToggleButton.setVisibility(View.VISIBLE);
@@ -169,10 +173,37 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
 
                 holder.txtSelectDevice.setVisibility(View.VISIBLE);
                 if (!section.getSelectDevice().equalsIgnoreCase("0")) {
-                    holder.txtSelectDevice.setText(section.getSelectDevice() + " devices");
+                    holder.txtSelectDevice.setText(section.getSelectDevice() + " DEVICES");
                 } else {
-                    holder.txtSelectDevice.setText("0 devices");
+                    holder.txtSelectDevice.setText("0 DEVICES");
                 }
+
+
+                if (section.isExpanded()) {
+
+                    ViewGroup.MarginLayoutParams layoutParams =
+                            (ViewGroup.MarginLayoutParams) holder.card_layout.getLayoutParams();
+                    layoutParams.setMargins(2, 10, 2, -7);
+                    holder.card_layout.requestLayout();
+                    holder.card_layout.setCardElevation(0);
+                    holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side_mood));
+                    //   holder.card_layout.setElevation(0);
+                    //  holder.card_layout.setBackgroundResource(R.drawable.background_shadow_bottom_side);
+                    //   holder.card_layout.setCardElevation(0);
+                    //   holder.card_layout.setElevation(0);
+                    // holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side));
+                } else {
+                       /* ViewGroup.MarginLayoutParams layoutParams =
+                                (ViewGroup.MarginLayoutParams) holder.card_layout.getLayoutParams();
+                        layoutParams.setMargins(2, 10, 2, 15);
+                        holder.card_layout.requestLayout();
+                        holder.card_layout.setCardElevation(8);
+                          holder.card_layout.setElevation(8);*/
+                    //  holder.card_layout.setBackgroundResource(R.drawable.background_shadow);
+                    //    holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow));
+
+                }
+
 
                 break;
             case VIEW_TYPE_PANEL:
@@ -180,6 +211,13 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
 
                 holder.sectionTextView.setText(panel1.getPanelName());
                 holder.iv_room_panel_onoff.setVisibility(View.GONE);
+
+                if (position == 0) {
+                    holder.view_line_top.setVisibility(View.GONE);
+                    holder.view_line_top.setBackgroundResource(R.color.automation_white);
+                } else {
+                    holder.view_line_top.setVisibility(View.VISIBLE);
+                }
 
                 if (panel1.isActivePanel()) {
                     holder.ll_background.setVisibility(View.VISIBLE);
@@ -358,9 +396,11 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
         //for section
         TextView sectionTextView, text_section_on_off, txtSelectDevice, text_section_edit, itemTextView;
         ToggleButton sectionToggleButton;
+        CardView card_layout;
+
 
         //for item
-        LinearLayout ll_room_item, ll_background;
+        LinearLayout ll_room_item, ll_background,ll_root_view_section;
         RelativeLayout rel_main_view;
 
         public ViewHolder(View view, int viewType) {
@@ -386,13 +426,14 @@ public class DeviceListExpandableGridAdapter extends RecyclerView.Adapter<Device
             } else {
                 view_line_top = (View) view.findViewById(R.id.view_line_top);
                 sectionTextView = (TextView) view.findViewById(R.id.text_section);
-
+                ll_root_view_section=view.findViewById(R.id.ll_root_view_section);
                 txtSelectDevice = (TextView) view.findViewById(R.id.txtSelectDevice);
                 text_section_on_off = (TextView) view.findViewById(R.id.text_section_on_off);
                 text_section_edit = (TextView) view.findViewById(R.id.text_section_edit);
                 img_room_delete = (ImageView) view.findViewById(R.id.iv_room_delete);
                 sectionToggleButton = (ToggleButton) view.findViewById(R.id.toggle_button_section);
                 rel_main_view = (RelativeLayout) view.findViewById(R.id.rel_main_view);
+                card_layout = view.findViewById(R.id.card_layout);
             }
         }
     }

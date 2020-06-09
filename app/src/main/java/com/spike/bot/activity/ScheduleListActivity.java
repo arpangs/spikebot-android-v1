@@ -2,11 +2,14 @@ package com.spike.bot.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.widget.FrameLayout;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.spike.bot.R;
 import com.spike.bot.fragments.ScheduleFragment;
@@ -49,9 +52,9 @@ public class ScheduleListActivity extends AppCompatActivity {
         }
 
         // create a FragmentManager
-        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
 // create a FragmentTransaction to begin the transaction and replace the Fragment
-        android.support.v4.app.FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
 // replace the FrameLayout with new Fragment
 
         //set room name title on sch list

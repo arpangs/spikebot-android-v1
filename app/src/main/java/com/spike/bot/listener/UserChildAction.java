@@ -8,5 +8,5 @@ import com.spike.bot.model.User;
  */
 public interface UserChildAction {
 
-    public void actionCHild(String type,int postion,User user);
+    public void actionCHild(String type,int postion,User user,boolean ispopupshow);
 }

@@ -4,13 +4,9 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -20,21 +16,26 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.akhilpatoliya.floating_text_button.FloatingTextButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.ir.blaster.IRRemoteAdd;
 import com.spike.bot.adapter.SmartRemoteAdapter;
-import com.spike.bot.adapter.irblaster.IRBlasterAddListAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.IRDeviceDetailsRes;
-import com.spike.bot.model.SmartRemoteModel;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,12 +49,12 @@ import io.socket.emitter.Emitter;
  * Created by Sagar on 1/4/19.
  * Gmail : jethvasagar2@gmail.com
  */
-public class SmartRemoteActivity extends AppCompatActivity implements View.OnClickListener {
+public class SmartRemoteActivity extends AppCompatActivity {
 
     public Toolbar toolbar;
     public RecyclerView recyclerRemoteList;
     TextView txtNodataFound;
-    public FloatingActionButton floatingActionButton;
+    public FloatingTextButton floatingActionButton;
     public SmartRemoteAdapter smartRemoteAdapter;
     public List<IRDeviceDetailsRes.Data> arrayList = new ArrayList<>();
 
@@ -77,9 +78,16 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setTitle("Smart Remote List");
         recyclerRemoteList = findViewById(R.id.recyclerRemoteList);
-        floatingActionButton = findViewById(R.id.fab);
+        floatingActionButton = findViewById(R.id.fab_smart_remote);
         txtNodataFound = findViewById(R.id.txtNodataFound);
-        floatingActionButton.setOnClickListener(this);
+
+        floatingActionButton.setVisibility(View.GONE);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPanelOption();
+            }
+        });
 
 
         getRemoteLIst();
@@ -97,7 +105,7 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
     public void onDestroy() {
         super.onDestroy();
         if (mSocket != null) {
-            mSocket.off("configureSmartRemote", configureDevice);
+            mSocket.off("configureDevice", configureDevice);
         }
     }
 
@@ -108,10 +116,29 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
-    public void onClick(View v) {
-        if (v == floatingActionButton) {
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_room_edit, menu);
+        MenuItem menuAdd = menu.findItem(R.id.action_add);
+        MenuItem actionEdit = menu.findItem(R.id.actionEdit);
+        MenuItem action_save = menu.findItem(R.id.action_save);
+        MenuItem txtmenuadd = menu.findItem(R.id.action_add_text);
+        menuAdd.setVisible(false);
+        action_save.setVisible(false);
+        actionEdit.setVisible(false);
+        txtmenuadd.setVisible(true);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_add_text) {
             showPanelOption();
+            return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public void startSocketConnection() {
@@ -120,9 +147,6 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
             return;
         }
         mSocket = app.getSocket();
-        if (mSocket != null) {
-            mSocket.on("configureDevice", configureDevice);
-        }
     }
 
     private Emitter.Listener configureDevice = new Emitter.Listener() {
@@ -194,6 +218,7 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onClick(View v) {
                 ChatApplication.keyBoardHideForce(SmartRemoteActivity.this);
+                mSocket.off("configureDevice", configureDevice);
                 dialogtemp.dismiss();
             }
         });
@@ -201,6 +226,7 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mSocket.off("configureDevice", configureDevice);
                 dialogtemp.dismiss();
             }
         });
@@ -212,6 +238,7 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
                 } else {
                     ChatApplication.keyBoardHideForce(SmartRemoteActivity.this);
                     saveSensor(dialogtemp, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), module_type);
+                    mSocket.off("configureDevice", configureDevice);
                 }
             }
         });
@@ -228,7 +255,7 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
      * @param alertMessage
      */
     private void showConfigAlert(String alertMessage) {
-        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(alertMessage);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
@@ -318,6 +345,9 @@ public class SmartRemoteActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                if (mSocket != null) {
+                    mSocket.on("configureDevice", configureDevice);
+                }
                 getconfigureData();
             }
         });

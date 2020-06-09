@@ -24,12 +24,13 @@ public class DateHelper {
 	public static final String DATE_FROMATE_HH_MM_AMPM = "hh:mm a";
 	public static final String DATE_FROMATE_H_M_AMPM = "h:mm a";
 	public static final String DATE_FROMATE_H_M_AMPM1 = "yyyy-MM-dd HH:mm";
-	public static final String DATE_FROMATE_H_M_AMPM12 = "MMM dd, yyyy hh:mm aa";
+	public static final String DATE_FROMATE_H_M_AMPM12 = "MMM dd, yyyy h:mm aa";
+	public static final String DATE_FROMATE_H_M_AMPM123 = "dd-MM-yy h:mm aa";
 	public static final String DATE_FROMATE_HH_MM= "HH:mm";
 	public static final String DATE_FROMATE_HH_MM_TEMP= "HH:mm";
 	public static final String DATE_DD_MMM_YYYY_HH_MM_AMPM = "dd-MMM-yyyy hh:mm a";
 	public static final String DATE_MM_DD_YYYY_HH_MM_SS_AMPM = "MM/dd/yyyy hh:mm:ss a";
-	public static final String DATE_D_MMM_YY_H_MM_AMPM = "dd-MMM-yy h:mm a";
+	public static final String DATE_D_MMM_YY_H_MM_AMPM = "dd-MMM-yy hh:mm a";
 	public static final String DATE_YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
 	public static final String DATE_HH_MM_AMPM_DD_MM_YY= "hh:mm a dd-MMM-yy";
 
@@ -70,6 +71,9 @@ public class DateHelper {
 	public static String formateDate(Date date, String format) throws ParseException {
 		SimpleDateFormat formatter = new SimpleDateFormat(format);
 		formatter.setTimeZone(TimeZone.getDefault());
+
+		Log.d("START TEXT ON TIME" + " " ,formatter.format(date));
+
 		return formatter.format(date);
 	}
 

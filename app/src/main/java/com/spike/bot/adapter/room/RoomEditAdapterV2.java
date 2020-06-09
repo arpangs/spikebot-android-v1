@@ -2,9 +2,8 @@ package com.spike.bot.adapter.room;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.Html;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -12,6 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
@@ -97,7 +100,8 @@ public class RoomEditAdapterV2 extends RecyclerView.Adapter<RoomEditAdapterV2.Ed
         }
 
         holder.et_panel.setTag(item1.getPanelId());
-        holder.et_panel.setText(item1.getPanelName());
+        String styledText = "<b><font color='#333333'>" + item1.getPanelName() + "</font></b>";
+        holder.et_panel.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
         txtValueMap.put(item1.getPanelId(), holder.et_panel.getText().toString());
 
         holder.et_panel.addTextChangedListener(new TextWatcher() {

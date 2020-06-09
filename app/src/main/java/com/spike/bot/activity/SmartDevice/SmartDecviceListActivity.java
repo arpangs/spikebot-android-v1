@@ -1,11 +1,12 @@
 package com.spike.bot.activity.SmartDevice;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
@@ -28,11 +29,11 @@ import java.util.ArrayList;
 public class SmartDecviceListActivity extends AppCompatActivity {
 
     public Toolbar toolbar;
-    public String brandId="";
+    public String brandId = "";
     public RecyclerView recyclerSmartDevice;
 
     public SmartBrandAdapter smartBrandAdapter;
-    public ArrayList<SmartBrandModel> arrayList=new ArrayList<>();
+    public ArrayList<SmartBrandModel> arrayList = new ArrayList<>();
 
 
     @Override
@@ -40,13 +41,13 @@ public class SmartDecviceListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_smart_device_list);
 
-        brandId=getIntent().getStringExtra("brandId");
+        brandId = getIntent().getStringExtra("brandId");
         setId();
     }
 
     private void setId() {
-        toolbar=findViewById(R.id.toolbar);
-        recyclerSmartDevice=findViewById(R.id.recyclerSmartDevice);
+        toolbar = findViewById(R.id.toolbar);
+        recyclerSmartDevice = findViewById(R.id.recyclerSmartDevice);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -61,7 +62,9 @@ public class SmartDecviceListActivity extends AppCompatActivity {
         return true;
     }
 
-    /** get All smarat device list */
+    /**
+     * get All smarat device list
+     */
     public void getSmartDevice() {
         if (!ActivityHelper.isConnectingToInternet(SmartDecviceListActivity.this)) {
             Toast.makeText(SmartDecviceListActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -69,7 +72,7 @@ public class SmartDecviceListActivity extends AppCompatActivity {
         }
         ActivityHelper.showProgressDialog(SmartDecviceListActivity.this, "Please wait... ", false);
 
-        String url = ChatApplication.url + Constants.getSmartDeviceType+"/"+brandId;
+        String url = ChatApplication.url + Constants.getSmartDeviceType + "/" + brandId;
         ChatApplication.logDisplay("smart is " + url);
         new GetJsonTask(SmartDecviceListActivity.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL //POST
             @Override
@@ -93,22 +96,22 @@ public class SmartDecviceListActivity extends AppCompatActivity {
                         //    ]
                         //  }
                         //}
-                        ChatApplication.logDisplay("object is "+object);
+                        ChatApplication.logDisplay("object is " + object);
 
-                        JSONArray jsonArray=object.optJSONArray("smart_device_Type_list");
-                        for(int i=0; i<jsonArray.length(); i++){
-                            JSONObject jsonObject=jsonArray.optJSONObject(i);
-                            SmartBrandModel smartBrandModel=new SmartBrandModel();
+                        JSONArray jsonArray = object.optJSONArray("smart_device_Type_list");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jsonObject = jsonArray.optJSONObject(i);
+                            SmartBrandModel smartBrandModel = new SmartBrandModel();
                             smartBrandModel.setId(jsonObject.optString("id"));
                             smartBrandModel.setSmart_device_brand_name(jsonObject.optString("smart_device_type"));
                             smartBrandModel.setIcon_image(jsonObject.optString("icon_image"));
                             arrayList.add(smartBrandModel);
                         }
 
-                        if(arrayList.size()>0){
-                            LinearLayoutManager linearLayoutManager=new LinearLayoutManager(SmartDecviceListActivity.this);
+                        if (arrayList.size() > 0) {
+                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(SmartDecviceListActivity.this);
                             recyclerSmartDevice.setLayoutManager(linearLayoutManager);
-                            smartBrandAdapter=new SmartBrandAdapter(SmartDecviceListActivity.this,arrayList, 2);
+                            smartBrandAdapter = new SmartBrandAdapter(SmartDecviceListActivity.this, arrayList, 2);
                             recyclerSmartDevice.setAdapter(smartBrandAdapter);
                         }
 

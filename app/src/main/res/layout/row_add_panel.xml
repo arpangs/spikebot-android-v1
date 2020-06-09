@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/background_shadow"
-    android:layout_marginTop="8dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
     android:orientation="vertical"
-    app:cardCornerRadius="0dp"
-    app:cardElevation="0dp"
-    app:elevation="0dp">
+    android:visibility="visible"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="5dp"
+    app:elevation="5dp">
     <!--app:cardElevation="0dp"
     app:elevation="0dp"-->
     <LinearLayout
@@ -61,7 +64,7 @@
         </LinearLayout>
 
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:layout_margin="8dp"
             android:id="@+id/list_panel_devices"
             android:layout_width="match_parent"
@@ -69,6 +72,6 @@
             android:layout_height="wrap_content">
 
 
-        </android.support.v7.widget.RecyclerView>
+        </androidx.recyclerview.widget.RecyclerView>
     </LinearLayout>
-</LinearLayout>
+</androidx.cardview.widget.CardView>

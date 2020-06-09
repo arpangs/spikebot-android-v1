@@ -1,13 +1,15 @@
 package com.spike.bot.adapter;
 
 import android.app.Activity;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.R;
 import com.spike.bot.core.Common;
@@ -79,7 +81,7 @@ public class DeviceLogNewAdapter extends RecyclerView.Adapter<DeviceLogNewAdapte
                 holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_black));
             }
 
-            if (deviceLog.getActivity_type().contains("No Record Found") || deviceLogs.size() == 0)
+            if (deviceLog.getActivity_type().contains("No Record Found") || deviceLogs.size() == 0 || deviceLogs.isEmpty() || deviceLogs == null)
 
             {
                 holder.tv_device_description.setVisibility(View.GONE);
@@ -89,6 +91,8 @@ public class DeviceLogNewAdapter extends RecyclerView.Adapter<DeviceLogNewAdapte
                 holder.tv_panel_name.setVisibility(View.GONE);
                 holder.tv_room_name.setVisibility(View.GONE);
                 holder.view_header.setVisibility(View.GONE);
+                holder.linear_log_desc.setVisibility(View.GONE);
+                holder.linear_log_desc.setBackgroundResource(R.color.automation_white);
             } else {
                 holder.tv_device_description.setVisibility(View.VISIBLE);
                 holder.tv_device_log_date.setVisibility(View.VISIBLE);
@@ -97,6 +101,8 @@ public class DeviceLogNewAdapter extends RecyclerView.Adapter<DeviceLogNewAdapte
                 holder.tv_panel_name.setVisibility(View.VISIBLE);
                 holder.tv_room_name.setVisibility(View.VISIBLE);
                 holder.view_header.setVisibility(View.VISIBLE);
+                holder.linear_log_desc.setVisibility(View.VISIBLE);
+                holder.linear_log_desc.setBackgroundResource(R.color.blue_transparent);
 
                 holder.tv_device_description.setText(deviceLog.getMessage().trim());
                 actionList = deviceLog.getActivity_description().split("\\|");
@@ -157,6 +163,7 @@ public class DeviceLogNewAdapter extends RecyclerView.Adapter<DeviceLogNewAdapte
         View view, view_header;
         int viewType;
         TextView tv_device_log_date, tv_device_description, tv_device_log_time, tv_device_name, tv_panel_name, tv_room_name, txt_empty_view;
+        LinearLayout linear_log_desc;
 
         public ViewHolder(View view, int viewType) {
             super(view);
@@ -170,6 +177,7 @@ public class DeviceLogNewAdapter extends RecyclerView.Adapter<DeviceLogNewAdapte
             tv_panel_name = view.findViewById(R.id.txt_panel_name);
             tv_room_name = view.findViewById(R.id.txt_room_name);
             txt_empty_view = view.findViewById(R.id.txt_empty_view);
+            linear_log_desc = view.findViewById(R.id.linear_log_desc);
         }
 
         public void clearAnimation() {

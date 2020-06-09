@@ -31,6 +31,9 @@ public class CameraPushLog implements Serializable {
     @SerializedName("message")
     @Expose
     private String message;
+    @SerializedName("log_object_id")
+    @Expose
+    private String log_object_id;
 
     public String getId() {
         return id;
@@ -94,5 +97,13 @@ public class CameraPushLog implements Serializable {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getLog_object_id() {
+        return log_object_id;
+    }
+
+    public void setLog_object_id(String log_object_id) {
+        this.log_object_id = log_object_id;
     }
 }

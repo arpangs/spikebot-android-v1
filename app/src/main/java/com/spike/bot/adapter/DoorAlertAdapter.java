@@ -2,8 +2,6 @@ package com.spike.bot.adapter;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -11,17 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.kp.core.DateHelper;
+import androidx.annotation.RequiresApi;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.spike.bot.R;
 import com.spike.bot.core.Constants;
-import com.spike.bot.model.DoorSensorResModel;
 import com.spike.bot.model.RemoteDetailsRes;
 
-import java.lang.reflect.Array;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 /**

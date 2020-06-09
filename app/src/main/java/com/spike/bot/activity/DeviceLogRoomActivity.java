@@ -1,27 +1,20 @@
 package com.spike.bot.activity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -36,15 +29,12 @@ import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.DeviceLog;
 import com.spike.bot.model.Filter;
-import com.spike.bot.model.RemoteDetailsRes;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import static android.widget.NumberPicker.OnScrollListener.SCROLL_STATE_IDLE;
@@ -199,7 +189,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
 
         JSONObject object = new JSONObject();
         try {
-            object.put("filter_action","door_open,door_close,temp_alert,gas_detected,water_detected");
+            object.put("filter_action","door_open,door_close,temp_alert,gas_detected,water_detected,door_lock,door_unlock");
             object.put("filter_type","room");
             object.put("room_id",""+ROOM_ID);
             object.put("unseen",1);
@@ -210,7 +200,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        ChatApplication.logDisplay("url is "+url+" "+object);
+        ChatApplication.logDisplay("device find url is "+url+" "+object);
         new GetJsonTask(DeviceLogRoomActivity.this, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {

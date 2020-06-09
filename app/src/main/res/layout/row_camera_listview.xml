@@ -21,13 +21,15 @@
 
             <FrameLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent">
 
                 <ImageView
                     android:id="@+id/iv_icon"
-                    android:layout_width="@dimen/_38sdp"
-                    android:layout_height="@dimen/_38sdp"
-                    android:layout_gravity="center" />
+                    android:layout_width="@dimen/_25sdp"
+                    android:layout_height="@dimen/_25sdp"
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/camera"/>
 
 
                 <LinearLayout
@@ -52,22 +54,55 @@
                 android:layout_weight="1"
                 android:singleLine="true"
                 android:textSize="@dimen/_13sdp"
-                android:textColor="@color/sensor_button"
+                android:textColor="@color/signupblack"
                 android:gravity="center|left"
                 android:paddingLeft="@dimen/_13sdp"/>
+
+            <FrameLayout
+                android:id="@+id/frame_camera_alert"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginRight="8dp">
+
+                <ImageView
+                    android:id="@+id/imgLogCamera"
+                    android:layout_width="29dp"
+                    android:layout_height="28dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:adjustViewBounds="true"
+                    android:gravity="center_vertical|left|start"
+                    android:src="@drawable/bell" />
+
+
+                <TextView
+                    android:id="@+id/txtCameraCount"
+                    android:layout_width="27dp"
+                    android:layout_height="27dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="@dimen/_13sdp"
+                    android:background="@drawable/badge_background"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="#FFF"
+                    android:textSize="13dp"
+                    android:textStyle="bold"
+                    android:visibility="visible" />
+            </FrameLayout>
 
 
             <ImageView
                 android:id="@+id/iv_icon_text"
-                android:layout_width="@dimen/_30sdp"
-                android:layout_height="@dimen/_30sdp"
+                android:layout_width="@dimen/_22sdp"
+                android:layout_height="17dp"
                 android:layout_gravity="center_vertical"
+                android:layout_marginTop="@dimen/_5sdp"
                 android:adjustViewBounds="true"
                 android:gravity="center_horizontal"
                 android:src="@drawable/edit_blue" />
 
 
-            <FrameLayout
+           <!-- <FrameLayout
                 android:id="@+id/frame_camera_alert"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -76,27 +111,29 @@
                 <ImageView
                     android:id="@+id/imgLogCamera"
                     android:layout_width="@dimen/_30sdp"
-                    android:layout_height="@dimen/_30sdp"
+                    android:layout_height="31dp"
                     android:layout_gravity="center_vertical"
                     android:adjustViewBounds="true"
                     android:gravity="center_horizontal"
-                    android:src="@drawable/icn_notification_v2" />
+                    android:src="@drawable/bell" />
 
                 <TextView
                     android:id="@+id/txtCameraCount"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:text="0"
                     android:visibility="visible"
-                    android:layout_marginLeft="@dimen/_27sdp"
+                    android:layout_marginLeft="@dimen/_21sdp"
                     android:background="@drawable/badge_background"
                     android:gravity="center"
-                    android:textSize="14dp"
+                    android:textSize="12dp"
                     android:maxLength="2"
                     android:textColor="@color/automation_white"
-                    android:layout_gravity="right|top"/>
+                    android:layout_gravity="right"/>
 
-            </FrameLayout>
+            </FrameLayout>-->
+
+
 
 
         </LinearLayout>

@@ -1,12 +1,13 @@
 package com.spike.bot.adapter.panel;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.R;
 import com.spike.bot.core.Common;
@@ -44,7 +45,7 @@ public class ExistPanelGridAdapter extends RecyclerView.Adapter<ExistPanelGridAd
         holder.device_header.setText(deviceVO.getDeviceName());
 
         if(deviceVO.getDeviceType().equalsIgnoreCase("-1")){
-            holder.device_icon.setImageResource(R.drawable.off);
+            holder.device_icon.setImageResource(R.drawable.high_wolt_off);
         }else {
             holder.device_icon.setImageResource(Common.getIcon(0, deviceVO.getDevice_icon()));
         }

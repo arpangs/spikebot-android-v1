@@ -7,29 +7,29 @@
     android:orientation="vertical"
     tools:context="com.spike.bot.activity.ProfileActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
             android:background="@color/sky_blue"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
-        <android.support.design.widget.TabLayout
+        <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabs"
             style="@style/customTabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:tabGravity="fill"
-            app:tabIndicatorColor="@color/automation_yellow"
+            app:tabIndicatorColor="@color/automation_white"
             app:tabIndicatorHeight="4dp"
-            app:tabSelectedTextColor="@color/automation_yellow"
+            app:tabSelectedTextColor="@color/automation_white"
             app:tabTextAppearance="@style/MyTabLayoutTextAppearance2"
             app:tabTextColor="@color/automation_white" />
 
@@ -37,10 +37,10 @@
             android:layout_width="match_parent"
             android:layout_height="5dp" />
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/container"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/profile_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"

@@ -42,7 +42,7 @@ public class AddRoomDialog extends Dialog implements
     public Activity activity;
     public Dialog d;
     public Button btn_save;
-    public ImageView iv_close;
+    public ImageView iv_close,sp_drop_down;
     EditText  et_panel_name,et_module_id;
     Spinner sp_no_of_devices,spinnerroomlist;
     TextView tv_title;
@@ -86,6 +86,7 @@ public class AddRoomDialog extends Dialog implements
         et_panel_name =  findViewById(R.id.et_panel_name);
         et_module_id =  findViewById(R.id.et_module_id);
         sp_no_of_devices =  findViewById(R.id.sp_no_of_devices);
+        sp_drop_down = findViewById(R.id.sp_drop_down);
         spinnerroomlist = findViewById(R.id.sp_no_of_rooms);
         btn_save =  findViewById(R.id.btn_save);
         iv_close = findViewById(R.id.iv_close);
@@ -94,6 +95,13 @@ public class AddRoomDialog extends Dialog implements
 
         TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(getContext(),roomnamelist,1,false);
         spinnerroomlist.setAdapter(customAdapter);
+
+        sp_drop_down.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerroomlist.performClick();
+            }
+        });
 
         sp_no_of_devices.setSelection(Integer.parseInt(device_id)-1);
         sp_no_of_devices.setEnabled(false);
