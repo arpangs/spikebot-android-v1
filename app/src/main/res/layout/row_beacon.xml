@@ -39,11 +39,21 @@
             android:textColor="@color/automation_black"/>
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtDistance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_14sdp"
+            android:padding="@dimen/_2sdp"
+            android:textColor="@color/automation_black"/>
+
+
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtPower"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="@dimen/_14sdp"
             android:padding="@dimen/_2sdp"
+            android:visibility="gone"
             android:textColor="@color/automation_black"/>
 
 

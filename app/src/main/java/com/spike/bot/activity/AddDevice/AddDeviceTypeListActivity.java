@@ -43,6 +43,7 @@ import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.Beacon.AddBeaconActivity;
+import com.spike.bot.Beacon.BeaconListActivity;
 import com.spike.bot.Beacon.BeaconScannerAddActivity;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
@@ -144,7 +145,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                 R.drawable.unassigned,
                 R.drawable.room,
                 R.drawable.switchboard,
-               /* R.drawable.smartdevice,*/
+                /* R.drawable.smartdevice,*/
                 R.drawable.irblaster,
                 R.drawable.remote_ac,
                 R.drawable.remote,
@@ -185,16 +186,16 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         list = new DeviceList("Door Lock", covers[6]);
         arrayList.add(list);
 
-        list = new DeviceList("Door Sensor",covers[7]);
+        list = new DeviceList("Door Sensor", covers[7]);
         arrayList.add(list);
 
-        list = new DeviceList("Gas / Smoke Sensor",covers[8]);
+        list = new DeviceList("Gas / Smoke Sensor", covers[8]);
         arrayList.add(list);
 
-        list = new DeviceList("Temperature Sensor",covers[9]);
+        list = new DeviceList("Temperature Sensor", covers[9]);
         arrayList.add(list);
 
-        list = new DeviceList("Curtain",covers[10]);
+        list = new DeviceList("Curtain", covers[10]);
         arrayList.add(list);
 
         list = new DeviceList("Repeaters", covers[11]);
@@ -203,10 +204,10 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         list = new DeviceList("Camera", covers[12]);
         arrayList.add(list);
 
-        list = new DeviceList("Smart Camera",covers[13]);
+        list = new DeviceList("Smart Camera", covers[13]);
         arrayList.add(list);
 
-        list = new DeviceList("Water Detector",covers[14]);
+        list = new DeviceList("Water Detector", covers[14]);
         arrayList.add(list);
 
         list = new DeviceList("Beacon", covers[15]);
@@ -304,12 +305,14 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         } else if (position == 13) {
             Intent intent = new Intent(this, AddJetSonActivity.class);
             startActivity(intent);
-        }else if (position == 14) {
+        } else if (position == 14) {
             showOptionDialog(SENSOR_WATER);
         } else if (position == 15) {
-              Intent intent=new Intent(this, AddBeaconActivity.class);
-                startActivity(intent);
-        } else if (position == 16){
+            /*Intent intent = new Intent(this, AddBeaconActivity.class);
+            startActivity(intent);*/
+            Intent intent = new Intent(this, BeaconListActivity.class);
+            startActivity(intent);
+        } else if (position == 16) {
             Intent intent = new Intent(this, BeaconScannerAddActivity.class);
             startActivity(intent);
         }
@@ -603,7 +606,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         dialog.setContentView(R.layout.dialog_panel_option);
 
         TextView txtDialogTitle = dialog.findViewById(R.id.txt_dialog_title);
-       // txtDialogTitle.setText("Select Sensor Type");
+        // txtDialogTitle.setText("Select Sensor Type");
 
         if (sensor_type == SENSOR_GAS) {
             txtDialogTitle.setText("Gas Sensor");
@@ -850,12 +853,12 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         final AppCompatEditText user_name = dialog.findViewById(R.id.txt_user_name);
         LinearLayout linear_day = dialog.findViewById(R.id.linear_day);
         LinearLayout linear_night = dialog.findViewById(R.id.linear_night);
-       // final TextInputEditText password = dialog.findViewById(R.id.txt_password);
+        // final TextInputEditText password = dialog.findViewById(R.id.txt_password);
         ImageView img_passcode = dialog.findViewById(R.id.img_show_passcode);
 
-        EditText password  = dialog.findViewById(R.id.txt_password);
+        EditText password = dialog.findViewById(R.id.txt_password);
         Button btnSave = dialog.findViewById(R.id.btn_save);
-     //   Button btn_cancel = dialog.findViewById(R.id.btn_cancel);
+        //   Button btn_cancel = dialog.findViewById(R.id.btn_cancel);
         ImageView iv_close = dialog.findViewById(R.id.iv_close);
 
         linear_day.setVisibility(View.GONE);
@@ -863,20 +866,17 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         img_passcode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(password.getTransformationMethod().equals(PasswordTransformationMethod.getInstance())){
+                if (password.getTransformationMethod().equals(PasswordTransformationMethod.getInstance())) {
                     img_passcode.setImageResource(R.drawable.eyeclosed);
                     //Show Password
                     password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                }
-                else{
+                } else {
                     img_passcode.setImageResource(R.drawable.eye);
                     //Hide Password
                     password.setTransformationMethod(PasswordTransformationMethod.getInstance());
                 }
             }
         });
-
-
 
 
         iv_close.setOnClickListener(new View.OnClickListener() {

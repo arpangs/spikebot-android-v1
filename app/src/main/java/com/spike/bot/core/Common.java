@@ -244,6 +244,10 @@ public class Common {
                         resource = R.drawable.remote;
                         break;
 
+                    case "beacon":
+                        resource = R.drawable.beaconsearch;
+                        break;
+
                     default:
                         resource = R.drawable.offcfl;
                         break;
@@ -344,6 +348,9 @@ public class Common {
                         break;
                     case "curtain":
                         resource = R.drawable.curtains_on;
+                        break;
+                    case "beacon":
+                        resource = R.drawable.beaconsearch;
                         break;
                     default:
                         resource = R.drawable.oncfl;

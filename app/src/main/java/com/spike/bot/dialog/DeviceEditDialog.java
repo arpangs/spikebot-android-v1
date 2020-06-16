@@ -85,7 +85,7 @@ public class DeviceEditDialog extends Dialog implements View.OnClickListener {
         iv_close = findViewById(R.id.iv_close);
         spinner_arrow = findViewById(R.id.spinner_arrow);
 
-        et_switch_name.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+       // et_switch_name.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
 
         btn_save.setOnClickListener(this);
         iv_close.setOnClickListener(this);

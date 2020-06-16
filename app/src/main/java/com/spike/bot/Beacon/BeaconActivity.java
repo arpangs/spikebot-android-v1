@@ -1,18 +1,14 @@
 package com.spike.bot.Beacon;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -20,31 +16,25 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.googlecode.mp4parser.authoring.Edit;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.ir.blaster.IRRemoteBrandListActivity;
-import com.spike.bot.activity.ir.blaster.IRRemoteConfigActivity;
 import com.spike.bot.core.APIConst;
-import com.spike.bot.core.BeaconDiffCallBack;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 
@@ -52,8 +42,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat;
@@ -61,13 +49,9 @@ import no.nordicsemi.android.support.v18.scanner.ScanCallback;
 import no.nordicsemi.android.support.v18.scanner.ScanFilter;
 import no.nordicsemi.android.support.v18.scanner.ScanResult;
 import no.nordicsemi.android.support.v18.scanner.ScanSettings;
-import uk.co.alt236.bluetoothlelib.device.BluetoothLeDevice;
-import uk.co.alt236.bluetoothlelib.device.beacon.BeaconType;
-import uk.co.alt236.bluetoothlelib.device.beacon.BeaconUtils;
-import uk.co.alt236.bluetoothlelib.device.beacon.ibeacon.IBeaconDevice;
 
 
-public class BeaconActivity extends AppCompatActivity implements View.OnClickListener, BeaconListAdapter.BeaconListClickEvent {
+public class BeaconActivity extends AppCompatActivity implements View.OnClickListener, BeaconScanListAdapter.BeaconListClickEvent {
 
     private BluetoothLeScannerCompat scanner;
 
@@ -76,13 +60,13 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
 
     List<LeDeviceItem> itemList = new ArrayList<>();
     List<LeDeviceItem> itemListTemp = new ArrayList<>();
-    List<ScanResult> scanresult = new ArrayList<>();
-    BeaconListAdapter beaconListAdapter;
+    List<ScanResult> scanresult;
+    BeaconScanListAdapter beaconScanListAdapter;
     public RecyclerView recycler;
     public Button btnClick;
     BluetoothAdapter bAdapter;
-    String mScannername, mRoomname, mRoomid, mSensorid, mScannerdeviceid, mdevicetype, moduleid, strbeaconname;
-    EditText et_beacon_name;
+    String mScannername, mRoomname, mRoomid, mSensorid, mScannerdeviceid, mdevicetype, moduleid;
+    Dialog beacondialog;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -91,7 +75,6 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
 
         btnClick = findViewById(R.id.btnClick);
         recycler = findViewById(R.id.recycler);
-        et_beacon_name = findViewById(R.id.et_beacon_name);
 
         mScannername = getIntent().getStringExtra("SCANNER_NAME");
         mRoomname = getIntent().getStringExtra("ROOM_NAME");
@@ -122,6 +105,14 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Searching nearby beacons...");
         progressDialog.setCanceledOnTouchOutside(true);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(BeaconActivity.this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recycler.setLayoutManager(linearLayoutManager);
+
+        scanresult = new ArrayList<>();
+        beaconScanListAdapter = new BeaconScanListAdapter(scanresult, BeaconActivity.this);
+        recycler.setAdapter(beaconScanListAdapter);
     }
 
     @Override
@@ -166,62 +157,62 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void startScan() {
-        if (!bAdapter.isEnabled()) {
-            Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(turnOn, 0);
-        }
-
-
-        scanner = BluetoothLeScannerCompat.getScanner();
-        ScanSettings settings = new ScanSettings.Builder()
-                .setLegacy(false)
-                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                .setReportDelay(2000)
-                .setUseHardwareBatchingIfSupported(true)
-                .build();
-        List<ScanFilter> filters = new ArrayList<>();
-        scanner.startScan(filters, settings, new ScanCallback() {
-            @Override
-            public void onScanResult(int callbackType, @NonNull ScanResult result) {
-                super.onScanResult(callbackType, result);
+        try {
+            if (!bAdapter.isEnabled()) {
+                Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(turnOn, 0);
             }
 
-            @Override
-            public void onBatchScanResults(@NonNull List<ScanResult> results) {
-                super.onBatchScanResults(results);
-                scanresult.clear();
-                if (results != null) {
-                    progressDialog.dismiss();
-                    for (ScanResult result : results) {
-                        scanresult.add(result);
-                    }
 
-                    Collections.sort(results, new Comparator<ScanResult>() {
-                        @Override
-                        public int compare(ScanResult s1, ScanResult s2) {
-                            return s1.getDevice().getAddress().compareTo(s2.getDevice().getAddress());
-                        }
-                    });
-
-                    beaconListAdapter.updatebeaconlistitem(scanresult);
-
-                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(BeaconActivity.this);
-                    linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                    recycler.setLayoutManager(linearLayoutManager);
-                    beaconListAdapter = new BeaconListAdapter(scanresult, BeaconActivity.this);
-                    recycler.setAdapter(beaconListAdapter);
-
-
-                    setSyncRange();
+            scanner = BluetoothLeScannerCompat.getScanner();
+            ScanSettings settings = new ScanSettings.Builder()
+                    .setLegacy(false)
+                    .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                    .setReportDelay(2000)
+                    .setUseHardwareBatchingIfSupported(true)
+                    .build();
+            List<ScanFilter> filters = new ArrayList<>();
+            scanner.startScan(filters, settings, new ScanCallback() {
+                @Override
+                public void onScanResult(int callbackType, @NonNull ScanResult result) {
+                    super.onScanResult(callbackType, result);
                 }
-            }
 
-            @Override
-            public void onScanFailed(int errorCode) {
-                super.onScanFailed(errorCode);
-            }
-        });
+                @Override
+                public void onBatchScanResults(@NonNull List<ScanResult> results) {
+                    super.onBatchScanResults(results);
+                    try {
+                        scanresult.clear();
+                        if (results != null) {
+                            progressDialog.dismiss();
+                            for (ScanResult result : results) {
+                                for (int i = 0; i < results.size(); i++) {
+                                    if (!results.get(i).getDevice().getAddress().equalsIgnoreCase(result.getDevice().getAddress())) {
+                                        scanresult.add(result);
+                                    } else if (results.get(i).getDevice().getAddress().equalsIgnoreCase(result.getDevice().getAddress())
+                                            && results.get(i).getRssi() != result.getRssi()) {
+                                        scanresult.set(i, result);
+                                    }
+                                    beaconScanListAdapter.notifyItemChanged(i);
+                                }
 
+
+                            }
+
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onScanFailed(int errorCode) {
+                    super.onScanFailed(errorCode);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -258,6 +249,7 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
                    /* if(!dialog.isShowing()){
                         showDialog1(i);
                     }*/
+                        // beaconScanListAdapter.updatebeaconlistitem(scanresult);
 
 
                     } else if (scanresult.get(i).getRssi() > -20) {
@@ -283,7 +275,7 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
      * @param beacon_name
      * @param beacon_module_id
      */
-    private void saveBeacon(String beacon_name, String beacon_module_id, int beaconrssi) {
+    private void saveBeacon(String beacon_name, String beacon_module_id, int beaconrssi, Dialog dialog) {
 
         if (!ActivityHelper.isConnectingToInternet(getApplicationContext())) {
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -294,7 +286,7 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
 
         JSONObject obj = new JSONObject();
         try {
-            obj.put("device_name", "SBCON");
+            obj.put("device_name", beacon_name);
             obj.put("module_id", beacon_module_id);
             obj.put("module_type", "beacon");
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -371,12 +363,68 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
         String beaconname = scanresultlist.getScanRecord().getDeviceName();
         String beaconaddress = scanresultlist.getDevice().getAddress();
         int beaconrssi = scanresultlist.getRssi();
-        strbeaconname = et_beacon_name.getText().toString();
-        if (TextUtils.isEmpty(strbeaconname)) {
-            ChatApplication.showToast(BeaconActivity.this, "Please enter beacon name");
-        } else {
-            saveBeacon(strbeaconname, beaconaddress, beaconrssi);
-        }
+        dialogAddBeacon(beaconaddress, beaconrssi);
+    }
+
+    /*add beacon dialog*/
+    private void dialogAddBeacon(String beacon_module_id, int rssi) {
+        beacondialog = new Dialog(BeaconActivity.this);
+        beacondialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        beacondialog.setCanceledOnTouchOutside(false);
+        beacondialog.setContentView(R.layout.dialog_add_custome_room);
+
+        final TextInputLayout txtInputSensor = beacondialog.findViewById(R.id.txtInputSensor);
+        final TextInputEditText room_name = beacondialog.findViewById(R.id.edt_room_name);
+        final TextInputEditText edSensorName = beacondialog.findViewById(R.id.edSensorName);
+
+        txtInputSensor.setVisibility(View.VISIBLE);
+        edSensorName.setVisibility(View.VISIBLE);
+
+        room_name.setVisibility(View.GONE);
+        edSensorName.setSingleLine(true);
+
+        InputFilter[] filterArray = new InputFilter[1];
+        filterArray[0] = new InputFilter.LengthFilter(25);
+        edSensorName.setFilters(filterArray);
+
+        Button btnSave = beacondialog.findViewById(R.id.btn_save);
+        Button btn_cancel = beacondialog.findViewById(R.id.btn_cancel);
+        ImageView iv_close = beacondialog.findViewById(R.id.iv_close);
+        TextView tv_title = beacondialog.findViewById(R.id.tv_title);
+
+        txtInputSensor.setHint("Enter Beacon Name");
+        tv_title.setText("Set Beacon Name");
+
+
+        iv_close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                beacondialog.dismiss();
+            }
+        });
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ChatApplication.keyBoardHideForce(BeaconActivity.this);
+                beacondialog.dismiss();
+            }
+        });
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (edSensorName.getText().toString().length() == 0) {
+                    ChatApplication.showToast(BeaconActivity.this, "Please enter beacon name");
+                } else {
+                    saveBeacon(edSensorName.getText().toString(), beacon_module_id, rssi, beacondialog);
+                }
+            }
+        });
+
+        beacondialog.show();
 
     }
+
 }

@@ -464,7 +464,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        ChatApplication.logDisplay("hash code is " + url + "  " + moodObj);
+        ChatApplication.logDisplay("modd add code is " + url + "  " + moodObj);
         new GetJsonTask(this, url, "POST", moodObj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {

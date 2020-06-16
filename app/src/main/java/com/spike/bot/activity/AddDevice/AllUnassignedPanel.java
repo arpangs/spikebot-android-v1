@@ -1,6 +1,7 @@
 package com.spike.bot.activity.AddDevice;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -33,6 +34,8 @@ import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
+import com.spike.bot.Beacon.AddBeaconActivity;
+import com.spike.bot.Beacon.BeaconConfigActivity;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Sensor.DoorSensorInfoActivity;
@@ -293,7 +296,19 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
                 if(roomdeviceList.getModuleType().equals("repeater") || roomdeviceList.getModuleType().equals("smart_remote")){
                     showBottomSheetDialog(roomdeviceList);
                 } else {
-                    showAddDialog(roomdeviceList);
+                    if(roomdeviceList.getModuleType().equals("beacon")){
+                        Intent intent = new Intent(AllUnassignedPanel.this, BeaconConfigActivity.class);
+                        intent.putExtra("DEVICE_TYPE", "beacon");
+                        intent.putExtra("isUnassign",true);
+                        intent.putExtra("isMap",true);
+                        intent.putExtra("isBeaconListAdapter",true);
+                        intent.putExtra("BEACON_MODULE_ID",roomdeviceList.getModuleId());
+                        startActivity(intent);
+                        finish();
+                    } else{
+                        showAddDialog(roomdeviceList);
+                    }
+
                 }
             }
         });

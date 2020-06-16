@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.R;
@@ -35,35 +36,49 @@ public class ScannerAddListAdapter extends RecyclerView.Adapter<ScannerAddListAd
 
     @Override
     public void onBindViewHolder(IRBlasterHolder holder, int position) {
-        devicelist = mIRDeviceList.get(position);
-        holder.ir_add_remote_name.setText("Beacon");
+        try {
+                devicelist = mIRDeviceList.get(position);
+                // holder.ir_add_remote_name.setText("Beacon");
+            if(devicelist !=null) {
+                holder.txtMacAddress.setText("Address:" + " " + devicelist.getMac());
+                holder.txtRss.setText("Distance:" + " " + devicelist.getSs());
 
-        holder.ir_rrot_click.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                irDeviceClikListener.onBeaconDeviceClick(devicelist);
+                holder.ir_rrot_click.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        irDeviceClikListener.onBeaconDeviceClick(devicelist);
+                    }
+                });
             }
-        });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
     public int getItemCount() {
-        return 1;
+        if(mIRDeviceList.size() > 0)
+        return mIRDeviceList.size();
+        else
+            return 0;
     }
 
     class IRBlasterHolder extends RecyclerView.ViewHolder {
 
-        ImageView ir_add_remote_img;
-        TextView ir_add_remote_name;
-        RelativeLayout ir_rrot_click;
+      //  ImageView ir_add_remote_img;
+        TextView /*ir_add_remote_name,*/ /*txtName,*/txtMacAddress,txtRss;
+        CardView ir_rrot_click;
 
         IRBlasterHolder(View itemView) {
             super(itemView);
 
             ir_rrot_click =  itemView.findViewById(R.id.ir_rrot_click);
 
-            ir_add_remote_img =  itemView.findViewById(R.id.ir_add_remote_img);
-            ir_add_remote_name =  itemView.findViewById(R.id.ir_add_remote_name);
+         //   ir_add_remote_img =  itemView.findViewById(R.id.ir_add_remote_img);
+          //  ir_add_remote_name =  itemView.findViewById(R.id.ir_add_remote_name);
+           // txtName = itemView.findViewById(R.id.txtName);
+            txtMacAddress = itemView.findViewById(R.id.textview_MacAddress);
+            txtRss = itemView.findViewById(R.id.textview_Rss);
         }
     }
 

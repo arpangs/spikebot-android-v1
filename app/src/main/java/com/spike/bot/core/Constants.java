@@ -197,7 +197,7 @@ public class Constants {
     public static final String deviceinfo = "/device/info";
     public static final String cameralistbyjetson = "/camera/list-by-jetson";
     public static final String devicemoduledelete = "/device/module/delete";
-
+    public static final String beaconscannerscan = "/device/beacon-scanner/scan";
 
     //temp sensor
     public static final String GET_TEMP_SENSOR_INFO = "/getTempSensorInfo";

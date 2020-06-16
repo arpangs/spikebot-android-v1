@@ -1,83 +1,60 @@
 package com.spike.bot.Beacon;
 
 import android.content.Context;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.R;
-import com.spike.bot.adapter.irblaster.IRRemoteBrandListAdapter;
-import com.spike.bot.core.BeaconDiffCallBack;
-import com.spike.bot.model.IRRemoteListRes;
+import com.spike.bot.adapter.TempSensorInfoAdapter;
+import com.spike.bot.model.CameraVO;
+import com.spike.bot.model.IRBlasterAddRes;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import no.nordicsemi.android.support.v18.scanner.ScanResult;
-
-
 public class BeaconListAdapter extends RecyclerView.Adapter<BeaconListAdapter.SensorViewHolder> {
 
-    private Context mContext;
-    List<ScanResult> arrayListscanresult = new ArrayList<>();
-    BeaconListClickEvent beaconListClickEvent;
-
-    public BeaconListAdapter(List<ScanResult> arrayListscanresult1, BeaconListClickEvent beaconclickevent) {
-        this.arrayListscanresult = arrayListscanresult1;
-        this.beaconListClickEvent = beaconclickevent;
-
-        this.arrayListscanresult.addAll(arrayListscanresult1);
-    }
+    List<IRBlasterAddRes.Datum> arrayListbeacon = new ArrayList<>();
+    public BeaconClickListener clickListener;
 
 
-    public void updatebeaconlistitem(List<ScanResult> results) {
-        final BeaconDiffCallBack diffCallback = new BeaconDiffCallBack(this.arrayListscanresult, results);
-        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
-
-        this.arrayListscanresult.clear();
-        this.arrayListscanresult.addAll(results);
-        diffResult.dispatchUpdatesTo(this);
-    }
-
-
-    @Override
-    public SensorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_beacon, parent, false);
-        return new SensorViewHolder(view);
+    public BeaconListAdapter(List<IRBlasterAddRes.Datum> arrayListbeacon1, BeaconClickListener clickListener) {
+        this.arrayListbeacon = arrayListbeacon1;
+        this.clickListener = clickListener;
     }
 
     @Override
-    public void onBindViewHolder(final SensorViewHolder holder, final int position) {
-        holder.txtMacAddress.setText("Address : " + arrayListscanresult.get(position).getDevice().getAddress());
-        if (TextUtils.isEmpty(arrayListscanresult.get(position).getScanRecord().getDeviceName()) || arrayListscanresult.get(position).getScanRecord().getDeviceName() == null) {
-            holder.txtName.setText("Name : " + "- -");
-            //  holder.txtName.setVisibility(View.GONE);
-        } else {
-            holder.txtName.setVisibility(View.VISIBLE);
-            holder.txtName.setText("Name : " + arrayListscanresult.get(position).getScanRecord().getDeviceName());
-        }
+    public BeaconListAdapter.SensorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_repeater, parent, false);
+        return new BeaconListAdapter.SensorViewHolder(view);
+    }
 
-        holder.txtRss.setText("RSSI : " + arrayListscanresult.get(position).getRssi());
+    @Override
+    public void onBindViewHolder(final BeaconListAdapter.SensorViewHolder holder, final int position) {
 
-        holder.view_beacon.setOnClickListener(new View.OnClickListener() {
+        holder.txtName.setText(arrayListbeacon.get(position).getDeviceName());
+
+        holder.imgBeacon.setImageResource(R.drawable.beaconsearch);
+
+        holder.imgEditBeacon.setId(position);
+        holder.imgEditBeacon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                beaconListClickEvent.onClickBeaconList(arrayListscanresult.get(position));
+                clickListener.editClicked(arrayListbeacon.get(holder.imgEditBeacon.getId()), holder.imgEditBeacon.getId(), 1);
             }
         });
+
     }
 
 
     @Override
     public int getItemCount() {
-        return arrayListscanresult.size();
+        return arrayListbeacon.size();
     }
 
 
@@ -88,20 +65,18 @@ public class BeaconListAdapter extends RecyclerView.Adapter<BeaconListAdapter.Se
 
     public class SensorViewHolder extends RecyclerView.ViewHolder {
 
-        public AppCompatTextView txtName, txtMacAddress, txtRss, txtPower;
-        LinearLayout view_beacon;
+        public AppCompatTextView txtName;
+        public ImageView imgEditBeacon, imgBeacon;
 
         public SensorViewHolder(View view) {
             super(view);
-            txtMacAddress = itemView.findViewById(R.id.txtMacAddress);
             txtName = itemView.findViewById(R.id.txtName);
-            txtRss = itemView.findViewById(R.id.txtRss);
-            txtPower = itemView.findViewById(R.id.txtPower);
-            view_beacon = itemView.findViewById(R.id.view_beacon);
+            imgBeacon = itemView.findViewById(R.id.imgRepeatar);
+            imgEditBeacon = itemView.findViewById(R.id.imgEditRepeater);
         }
     }
 
-    public interface BeaconListClickEvent {
-        void onClickBeaconList(ScanResult scanresultlist);
+    public interface BeaconClickListener {
+        void editClicked(IRBlasterAddRes.Datum beaconmodel, int position, int type);
     }
 }

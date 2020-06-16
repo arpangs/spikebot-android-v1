@@ -1,12 +1,17 @@
 package com.spike.bot.Beacon;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -14,10 +19,14 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
@@ -38,17 +47,19 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddBeaconActivity extends AppCompatActivity implements View.OnClickListener,ScannerAddListAdapter.BeaconDeviceClickListener{
+public class AddBeaconActivity extends AppCompatActivity implements View.OnClickListener, ScannerAddListAdapter.BeaconDeviceClickListener {
 
-    private LinearLayout linear_beacon_progress;
+    private LinearLayout linear_beacon_progress, ll_scanner_list;
     private RecyclerView list_beacon_add;
-    private Spinner beacon_add_scanner_spinner;
+    private AppCompatSpinner beacon_add_scanner_spinner;
     private TextView beacon_add_room_txt, txtNoScanner;
     ScannerAddListAdapter scanneraddlistadapter;
-    private List<IRDeviceDetailsRes.Data> scannerLists=new ArrayList<>();
-    private List<IRDeviceDetailsRes.Data> mBeaconDeviceList=new ArrayList<>();
-    private List<String> scannerArraylist=new ArrayList<>();
-    private String roomName = "", roomId = "";
+    private List<IRDeviceDetailsRes.Data> scannerLists = new ArrayList<>();
+    private List<IRDeviceDetailsRes.Data> mBeaconDeviceList = new ArrayList<>();
+    private List<IRDeviceDetailsRes.Data> mBeaconList = new ArrayList<>();
+    private List<String> scannerArraylist = new ArrayList<>();
+    private String roomName = "", roomId = "", device_id;
+    Dialog beacondialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,31 +69,114 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
         roomName = getIntent().getStringExtra("roomName");
         roomId = getIntent().getStringExtra("roomId");
 
-        Toolbar toolbar =  findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setTitle("Add Beacon");
         getSupportActionBar().setTitle("Add Beacon");
 
-        bindView();
-        getBeacondeviceDetails();
-    }
-
-    private void bindView() {
-        linear_beacon_progress =  findViewById(R.id.linear_beacon_progress);
+        ll_scanner_list = findViewById(R.id.ll_scanner_list);
+        linear_beacon_progress = findViewById(R.id.linear_beacon_progress);
         beacon_add_scanner_spinner = findViewById(R.id.beacon_add_scanner_spinner);
-        beacon_add_room_txt =  findViewById(R.id.beacon_add_room_txt);
-        txtNoScanner =  findViewById(R.id.txtNoScanner);
+        beacon_add_room_txt = findViewById(R.id.beacon_add_room_txt);
+        txtNoScanner = findViewById(R.id.txtNoScanner);
         beacon_add_room_txt.setText("" + roomName);
 
-        list_beacon_add =  findViewById(R.id.list_beacon_add);
-        list_beacon_add.setLayoutManager(new GridLayoutManager(this, 3));
+        list_beacon_add = findViewById(R.id.list_beacon_add);
+
+        getBeaconscannerDetails();
+
+
     }
 
-    /* get details beacon
+    /* get Beacon Detail
+       device_id;
+     */
+
+    private void getbeaconDeviceDetails(String device_id) {
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        showProgress();
+        ActivityHelper.showProgressDialog(AddBeaconActivity.this, "Please Wait...", false);
+
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            obj.put("device_id", device_id);
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String url = ChatApplication.url + Constants.beaconscannerscan;
+
+    //    scannerLists = new ArrayList<>();
+    //    scannerLists.clear();
+        ChatApplication.logDisplay("beacon list url is " + url + " " + obj.toString());
+
+        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() {
+            @Override
+            public void onSuccess(JSONObject result) {
+
+                hideProgress();
+                ActivityHelper.dismissProgressDialog();
+                try {
+
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+
+                    if (code == 200) {
+                        try {
+                            mBeaconList = new ArrayList<>();
+                            mBeaconList.clear();
+                            ChatApplication.logDisplay("beacon list res : " + result.toString());
+                            IRDeviceDetailsRes irDeviceDetailsRes = Common.jsonToPojo(result.toString(), IRDeviceDetailsRes.class);
+                            mBeaconList = irDeviceDetailsRes.getData();
+
+                            if (mBeaconList != null) {
+                                ll_scanner_list.setVisibility(View.GONE);
+                                list_beacon_add.setVisibility(View.VISIBLE);
+                                if (mBeaconList.size() > 0) {
+                                  /*  for (int i = 0; i < mBeaconList.size(); i++) {
+                                        scannerArraylist.add(mBeaconList.get(i).getDeviceName());
+                                    }*/
+                                    scanneraddlistadapter = new ScannerAddListAdapter(mBeaconList, AddBeaconActivity.this);
+                                    list_beacon_add.setLayoutManager(new LinearLayoutManager(AddBeaconActivity.this));
+                                    list_beacon_add.setAdapter(scanneraddlistadapter);
+                                }
+                            } else {
+                                ll_scanner_list.setVisibility(View.VISIBLE);
+                                list_beacon_add.setVisibility(View.GONE);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                hideProgress();
+                ActivityHelper.dismissProgressDialog();
+            }
+        }).execute();
+    }
+
+
+    /* get details beacon scanner
      * device_type = beacon_scanner*/
-    private void getBeacondeviceDetails() {
+    private void getBeaconscannerDetails() {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -107,7 +201,7 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
         scannerLists = new ArrayList<>();
         scannerLists.clear();
 
-        ChatApplication.logDisplay("url is " + url+" "+obj.toString());
+        ChatApplication.logDisplay("url is " + url + " " + obj.toString());
 
         new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() {
             @Override
@@ -121,49 +215,73 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
                     String message = result.getString("message");
 
                     if (code == 200) {
+                        try {
+                            mBeaconDeviceList.clear();
+                            ChatApplication.logDisplay("beacon res : " + result.toString());
+                            IRDeviceDetailsRes irDeviceDetailsRes = Common.jsonToPojo(result.toString(), IRDeviceDetailsRes.class);
+                            mBeaconDeviceList = irDeviceDetailsRes.getData();
 
-                        ChatApplication.logDisplay("beacon res : " + result.toString());
-                        IRDeviceDetailsRes irDeviceDetailsRes = Common.jsonToPojo(result.toString(), IRDeviceDetailsRes.class);
-                        mBeaconDeviceList = irDeviceDetailsRes.getData();
-
-                        if (mBeaconDeviceList.size() > 0) {
-                            for(int i=0; i<mBeaconDeviceList.size(); i++){
-                                scannerArraylist.add(mBeaconDeviceList.get(i).getDeviceName());
+                            if (mBeaconDeviceList.size() > 0) {
+                                for (int i = 0; i < mBeaconDeviceList.size(); i++) {
+                                    scannerArraylist.add(mBeaconDeviceList.get(i).getDeviceName());
+                                }
+                          /*  scanneraddlistadapter = new ScannerAddListAdapter(mBeaconDeviceList, AddBeaconActivity.this);
+                            list_beacon_add.setAdapter(scanneraddlistadapter);*/
                             }
-                            scanneraddlistadapter = new ScannerAddListAdapter(mBeaconDeviceList, AddBeaconActivity.this);
-                            list_beacon_add.setAdapter(scanneraddlistadapter);
-                        }
 
-                        scannerLists = irDeviceDetailsRes.getData();
-                        //If not IR Blaster then add default String add in Spinner
-                        if (scannerLists.size() == 0) {
-                            IRDeviceDetailsRes.Data irEmpty = new IRDeviceDetailsRes.Data();
-                            irEmpty.setDeviceName("");
-                            irEmpty.setDeviceName("No Scanner");
-                            scannerLists.add(0, irEmpty);
-                        }
+                            scannerLists = irDeviceDetailsRes.getData();
+                            //If not IR Blaster then add default String add in Spinner
+                            if (scannerLists.size() == 0) {
+                                IRDeviceDetailsRes.Data irEmpty = new IRDeviceDetailsRes.Data();
+                                irEmpty.setDeviceName("");
+                                irEmpty.setDeviceName("No Scanner");
+                                scannerLists.add(0, irEmpty);
+                            }
 
-                        ArrayAdapter customBlasterAdapter = new ArrayAdapter(getApplicationContext(), R.layout.spinner, scannerArraylist);
-                        beacon_add_scanner_spinner.setAdapter(customBlasterAdapter);
+                            if (scannerArraylist != null){
+                               /* ArrayAdapter customBlasterAdapter = new ArrayAdapter(getApplicationContext(), R.layout.spinner, scannerArraylist);
+                                customBlasterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                beacon_add_scanner_spinner.setAdapter(customBlasterAdapter);*/
+                                try {
+                                    ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(AddBeaconActivity.this, R.layout.spinner, scannerArraylist);
+                                    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                    beacon_add_scanner_spinner.setAdapter(dataAdapter);
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                }
+                            }
 
-                        beacon_add_scanner_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                            @Override
-                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                if (!scannerArraylist.get(position).equalsIgnoreCase("No Scanner")) {
-                                    if( mBeaconDeviceList.get(position).getRoom()!=null){
-                                        beacon_add_room_txt.setText("" + mBeaconDeviceList.get(position).getRoom().getRoomName());
-                                        roomId = mBeaconDeviceList.get(position).getRoom().getRoomId();
+                            beacon_add_scanner_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                @Override
+                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                    if (!scannerArraylist.get(position).equalsIgnoreCase("No Scanner")) {
+                                        if (mBeaconDeviceList.get(position).getRoom() != null) {
+                                            beacon_add_room_txt.setText("" + mBeaconDeviceList.get(position).getRoom().getRoomName());
+                                            roomId = mBeaconDeviceList.get(position).getRoom().getRoomId();
+
+                                            if (mBeaconDeviceList.get(position).getDeviceId() != null) {
+                                                device_id = mBeaconDeviceList.get(position).getDeviceId();
+                                            }
+                                            if (device_id !=null) {
+                                                getbeaconDeviceDetails(device_id);
+                                            }
+                                        }
+
                                     }
 
                                 }
 
-                            }
+                                @Override
+                                public void onNothingSelected(AdapterView<?> parent) {
 
-                            @Override
-                            public void onNothingSelected(AdapterView<?> parent) {
+                                }
+                            });
 
-                            }
-                        });
+
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
                     } else {
                         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
@@ -207,25 +325,17 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
     @Override
     public void onBeaconDeviceClick(IRDeviceDetailsRes.Data devicelist) {
 
-        if (roomId==null) {
+        if (roomId == null) {
             ChatApplication.showToast(AddBeaconActivity.this, "No Room found Please select another IR Blaster.");
             return;
-        }else if ( roomId.equalsIgnoreCase("")) {
+        } else if (roomId.equalsIgnoreCase("")) {
             ChatApplication.showToast(AddBeaconActivity.this, "Please select Ir Blaster");
             return;
         }
 
-        Intent intent = new Intent(this, BeaconActivity.class);
-//        intent.putExtra("REMOTE_NAME", devicelist.getDeviceName());
-        intent.putExtra("SCANNER_NAME", beacon_add_scanner_spinner.getSelectedItem().toString());
-        intent.putExtra("ROOM_NAME", beacon_add_room_txt.getText().toString());
-        intent.putExtra("ROOM_ID", "" + roomId);
-        intent.putExtra("SENSOR_ID", mBeaconDeviceList.get(beacon_add_scanner_spinner.getSelectedItemPosition()).getDeviceId());
-        intent.putExtra("SCANNER_DEVICE_ID", ""+mBeaconDeviceList.get(beacon_add_scanner_spinner.getSelectedItemPosition()).getDeviceId());
-        intent.putExtra("SCANNER_DEVICE_TYPE", "beacon_scanner");
-        intent.putExtra("BEACON_SCANNER_MODULE_ID", mBeaconDeviceList.get(beacon_add_scanner_spinner.getSelectedItemPosition()).getDeviceId());
-        //startActivityForResult(intent, Constants.BEACON_REQUEST_CODE);
-        startActivity(intent);
+        dialogAddBeacon(devicelist);
+
+
     }
 
     @Override
@@ -237,11 +347,78 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
-    /*@Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Constants.BEACON_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            finish();
-        }
-    }*/
+    /*add beacon dialog*/
+    private void dialogAddBeacon(IRDeviceDetailsRes.Data devicelist) {
+        beacondialog = new Dialog(AddBeaconActivity.this);
+        beacondialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        beacondialog.setCanceledOnTouchOutside(false);
+        beacondialog.setContentView(R.layout.dialog_add_custome_room);
+
+        final TextInputLayout txtInputSensor = beacondialog.findViewById(R.id.txtInputSensor);
+        final TextInputEditText room_name = beacondialog.findViewById(R.id.edt_room_name);
+        final TextInputEditText edSensorName = beacondialog.findViewById(R.id.edSensorName);
+
+        txtInputSensor.setVisibility(View.VISIBLE);
+        edSensorName.setVisibility(View.VISIBLE);
+
+        room_name.setVisibility(View.GONE);
+        edSensorName.setSingleLine(true);
+
+        InputFilter[] filterArray = new InputFilter[1];
+        filterArray[0] = new InputFilter.LengthFilter(25);
+        edSensorName.setFilters(filterArray);
+
+        Button btnSave = beacondialog.findViewById(R.id.btn_save);
+        Button btn_cancel = beacondialog.findViewById(R.id.btn_cancel);
+        ImageView iv_close = beacondialog.findViewById(R.id.iv_close);
+        TextView tv_title = beacondialog.findViewById(R.id.tv_title);
+
+        txtInputSensor.setHint("Enter Beacon Name");
+        tv_title.setText("Set Beacon Name");
+
+
+        iv_close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                beacondialog.dismiss();
+            }
+        });
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ChatApplication.keyBoardHideForce(AddBeaconActivity.this);
+                beacondialog.dismiss();
+            }
+        });
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                beacondialog.dismiss();
+                if (edSensorName.getText().toString().length() == 0) {
+                    ChatApplication.showToast(AddBeaconActivity.this, "Please enter beacon name");
+                } else {
+                    Intent intent = new Intent(AddBeaconActivity.this, BeaconConfigActivity.class);
+                    intent.putExtra("SCANNER_NAME", beacon_add_scanner_spinner.getSelectedItem().toString());
+                    intent.putExtra("ROOM_NAME", beacon_add_room_txt.getText().toString());
+                    intent.putExtra("ROOM_ID", "" + roomId);
+                    intent.putExtra("SENSOR_ID", mBeaconDeviceList.get(beacon_add_scanner_spinner.getSelectedItemPosition()).getDeviceId());
+                    intent.putExtra("SCANNER_DEVICE_ID", "" + mBeaconDeviceList.get(beacon_add_scanner_spinner.getSelectedItemPosition()).getDeviceId());
+                    intent.putExtra("DEVICE_TYPE", "beacon");
+                    intent.putExtra("isMap",true);
+                    intent.putExtra("isBeaconListAdapter",true);
+                    intent.putExtra("BEACON_MODULE_ID", devicelist.getMac());
+                    intent.putExtra("BEACON_DEVICE_NAME",edSensorName.getText().toString());
+                    //startActivityForResult(intent, Constants.BEACON_REQUEST_CODE);
+                    startActivity(intent);
+
+                }
+            }
+        });
+
+        beacondialog.show();
+
+    }
+
 }

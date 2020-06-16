@@ -29,20 +29,6 @@
         android:visibility="gone"
         android:text="Scan "/>
 
-    <EditText
-        android:id="@+id/et_beacon_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="15dp"
-        android:completionThreshold="1"
-        android:textSize="18sp"
-        android:gravity="center"
-        android:hint="Enter beacon name"
-        android:imeOptions="actionDone"
-        android:visibility="visible"
-        android:layout_margin="@dimen/_10sdp"/>
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"

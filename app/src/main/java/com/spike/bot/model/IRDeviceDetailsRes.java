@@ -99,6 +99,12 @@ public class IRDeviceDetailsRes implements Serializable {
         @SerializedName("room")
         @Expose
         private IrList room;
+        @SerializedName("mac")
+        @Expose
+        private String mac;
+        @SerializedName("ss")
+        @Expose
+        private String ss;
 
         public String getPanelDeviceId() {
             return panelDeviceId;
@@ -228,6 +234,21 @@ public class IRDeviceDetailsRes implements Serializable {
             this.room = room;
         }
 
+        public String getMac() {
+            return mac;
+        }
+
+        public void setMac(String mac) {
+            this.mac = mac;
+        }
+
+        public String getSs() {
+            return ss;
+        }
+
+        public void setSs(String ss) {
+            this.ss = ss;
+        }
 
         public static class IrList {
 

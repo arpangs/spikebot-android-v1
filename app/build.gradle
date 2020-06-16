@@ -151,6 +151,6 @@ dependencies {
     implementation project(path: ':protractorview')
     implementation project(path: ':third-part-color-cardview')
     implementation 'com.googlecode.mp4parser:isoparser:1.1.9'
-    implementation 'no.nordicsemi.android.support.v18:scanner:1.4.2'
+    implementation 'no.nordicsemi.android.support.v18:scanner:1.4.3'
 }
 apply plugin: 'com.google.gms.google-services'

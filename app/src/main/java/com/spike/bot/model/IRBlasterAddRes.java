@@ -3,6 +3,7 @@ package com.spike.bot.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -44,7 +45,7 @@ public class IRBlasterAddRes {
         this.data = data;
     }
 
-    public class Datum {
+    public class Datum implements Serializable {
 
         @SerializedName("panel_device_id")
         @Expose
@@ -97,6 +98,9 @@ public class IRBlasterAddRes {
         @SerializedName("remote_list")
         @Expose
         private List<RemoteList> remoteList = null;
+        @SerializedName("related_devices")
+        @Expose
+        private List<String> relatedDevices = null;
 
         public String getPanelDeviceId() {
             return panelDeviceId;
@@ -234,6 +238,13 @@ public class IRBlasterAddRes {
             this.remoteList = remoteList;
         }
 
+        public List<String> getRelatedDevices() {
+            return relatedDevices;
+        }
+
+        public void setRelatedDevices(List<String> relatedDevices) {
+            this.relatedDevices = relatedDevices;
+        }
     }
 
     public class RemoteList {

@@ -1,11 +1,18 @@
 package com.spike.bot.Beacon;
 
+import android.app.Dialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +37,7 @@ import com.spike.bot.customview.recycle.ItemClickListener;
 import com.spike.bot.customview.recycle.ItemClickMoodListener;
 import com.spike.bot.model.CameraVO;
 import com.spike.bot.model.DeviceVO;
+import com.spike.bot.model.IRBlasterAddRes;
 import com.spike.bot.model.PanelVO;
 import com.spike.bot.model.RoomVO;
 
@@ -43,21 +51,23 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
-public class BeaconConfigActivity extends AppCompatActivity implements ItemClickMoodListener, ItemClickListener
-{
+public class BeaconConfigActivity extends AppCompatActivity implements ItemClickMoodListener, ItemClickListener {
 
     private RecyclerView mMessagesView;
+    TextView txt_emptyview;
     AppCompatAutoCompleteTextView et_beacon_name;
     MoodDeviceListLayoutHelper deviceListLayoutHelper;
     RoomVO roomVO = new RoomVO();
     ArrayList<RoomVO> roomList = new ArrayList<>();
     List<DeviceVO> deviceVOArrayList;
     List<DeviceVO> deviceVOArrayListTemp = new ArrayList<>();
-    boolean isMoodAdapter = false;
+    IRBlasterAddRes.Datum beaconmodel;
+    boolean editBeacon = false, isMap = false, isBeaconListAdapter = false, isunassign = false;
 
     String mScannername, mRoomname, mRoomid, mSensorid, mScannerdeviceid, mdevicetype,
-            moduleid,beaconname,beaconaddress;
+            moduleid, beaconname, beaconaddress, panel_id;
     int beaconrssi;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,11 +79,24 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
         mRoomid = getIntent().getStringExtra("ROOM_ID");
         mSensorid = getIntent().getStringExtra("SENSOR_ID");
         mScannerdeviceid = getIntent().getStringExtra("SCANNER_DEVICE_ID");
-        mdevicetype = getIntent().getStringExtra("SCANNER_DEVICE_TYPE");
-        moduleid = getIntent().getStringExtra("BEACON_SCANNER_MODULE_ID");
+        //  mdevicetype = getIntent().getStringExtra("SCANNER_DEVICE_TYPE");
+        moduleid = getIntent().getStringExtra("BEACON_MODULE_ID");
         beaconname = getIntent().getStringExtra("BEACON_DEVICE_NAME");
         beaconaddress = getIntent().getStringExtra("SCANNER_DEVICE_ADDRESS");
-        beaconrssi = getIntent().getIntExtra("BEACON_RSSI",0);
+        beaconrssi = getIntent().getIntExtra("BEACON_RSSI", 0);
+        mdevicetype = getIntent().getStringExtra("DEVICE_TYPE");
+        isunassign = getIntent().getExtras().getBoolean("isUnassign", false);
+
+        try {
+            editBeacon = getIntent().getExtras().getBoolean("editBeacon", false);
+            beaconmodel = (IRBlasterAddRes.Datum) getIntent().getExtras().getSerializable("beaconmodel");
+            isMap = getIntent().getBooleanExtra("isMap", false);
+            isBeaconListAdapter = getIntent().getBooleanExtra("isBeaconListAdapter", false);
+            panel_id = getIntent().getStringExtra("panel_id");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         setViewId();
         getDeviceList();
@@ -89,12 +112,45 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
         mMessagesView = findViewById(R.id.recycler_room);
         et_beacon_name = findViewById(R.id.et_beacon_name);
 
+        if (beaconmodel != null) {
+            et_beacon_name.setText(beaconmodel.getDeviceName());
+        }
 
-        if(!TextUtils.isEmpty(beaconname)){
+        if (!TextUtils.isEmpty(beaconname)) {
             et_beacon_name.setText(beaconname);
         }
 
-        toolbar.setTitle("Add Group");
+        et_beacon_name.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                beaconname = et_beacon_name.getText().toString();
+            }
+        });
+
+        if (editBeacon) {
+            et_beacon_name.setEnabled(true);
+            beaconname = et_beacon_name.getText().toString();
+            toolbar.setTitle("Edit Group");
+        } else {
+            if (isunassign) {
+                et_beacon_name.setEnabled(true);
+                beaconname = et_beacon_name.getText().toString();
+                toolbar.setTitle("Add Group");
+            } else {
+                et_beacon_name.setEnabled(false);
+                toolbar.setTitle("Add Group");
+            }
+        }
     }
 
     @Override
@@ -123,30 +179,25 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_save) {
 
-            /*try {
-                room_device_id = deviceListLayoutHelper.getSelectedItemIds();
+            try {
+                //  room_device_id = deviceListLayoutHelper.getSelectedItemIds();
                 deviceVOArrayList = deviceListLayoutHelper.getSelectedItemList();
 
-                *//*if (spinner_mood_icon.getSelectedItemPosition() == 0) {
-                    ChatApplication.showToast(AddMoodActivity.this, "Select Mood");
-                    return true;
-                }*//*
 
-                if (et_switch_name.getListSelection() == 0) {
-                    ChatApplication.showToast(AddMoodActivity.this, "Select Mood");
+                if (et_beacon_name.getText().toString().length() == 0) {
+                    ChatApplication.showToast(BeaconConfigActivity.this, "Please enter beacon name");
+
+                } else if (deviceVOArrayList.size() == 0) {
+                    ChatApplication.showToast(BeaconConfigActivity.this, "Select atleast one device ");
                     return true;
+                } else {
+                    saveBeacon(et_beacon_name.getText().toString());
                 }
 
-                if (deviceVOArrayList.size() == 0) {
-                    ChatApplication.showToast(AddMoodActivity.this, "Select atleast one Switch ");
-                    return true;
-                }
-
-                saveMood();
 
             } catch (Exception ex) {
                 ex.printStackTrace();
-            }*/
+            }
 
 
             return true;
@@ -167,6 +218,9 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
 
         JSONObject jsonObject = new JSONObject();
         try {
+            jsonObject.put("room_type", "room");
+            jsonObject.put("only_on_off_device", 1);
+            jsonObject.put("only_rooms_of_beacon_scanner", 1);
             jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -182,8 +236,16 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
                     ChatApplication.logDisplay("mood list is room " + result);
                     JSONObject dataObject = result.getJSONObject("data");
                     JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
-                    roomList = JsonHelper.parseRoomArray(roomArray, true);
-                    setData(roomList);
+                    if (roomArray != null && roomArray.length() > 0) {
+                        //  mMessagesView.setVisibility(View.VISIBLE);
+                        //    txt_emptyview.setVisibility(View.GONE);
+                        roomList = JsonHelper.parseRoomArray(roomArray, true);
+                        setData(roomList);
+                    } else {
+                        //  txt_emptyview.setVisibility(View.VISIBLE);
+                        //  mMessagesView.setVisibility(View.GONE);
+                    }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } finally {
@@ -193,11 +255,103 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                ChatApplication.showToast(BeaconConfigActivity.this, getResources().getString(R.string.something_wrong1));
+                //  ChatApplication.showToast(BeaconConfigActivity.this, getResources().getString(R.string.something_wrong1));
                 ActivityHelper.dismissProgressDialog();
             }
         }).execute();
     }
+
+    /**
+     * save Beacon
+     */
+    private void saveBeacon(String beaconname) {
+
+        if (!ActivityHelper.isConnectingToInternet(getApplicationContext())) {
+            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ActivityHelper.showProgressDialog(this, "Please wait.", true);
+        String url = "";
+        if (editBeacon) {
+            url = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
+        } else {
+            url = ChatApplication.url + Constants.deviceadd;
+        }
+
+
+        deviceVOArrayListTemp.clear();
+        deviceVOArrayListTemp.addAll(deviceVOArrayList);
+        deviceVOArrayList.clear();
+        deviceVOArrayList = removeDuplicates(deviceVOArrayListTemp);
+
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("device_name", beaconname);
+
+            if (editBeacon) {
+                obj.put("device_id", beaconmodel.getDeviceId());
+            } else {
+                obj.put("module_id", moduleid);
+            }
+            obj.put("module_type", "beacon");
+            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+
+            ArrayList<String> deviceIdList = new ArrayList<>();
+            for (DeviceVO dPanel : deviceVOArrayList) {
+                deviceIdList.add(dPanel.getPanel_device_id());
+            }
+
+            JSONArray array = new JSONArray(deviceIdList);
+            obj.put("related_devices", array);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        ChatApplication.logDisplay("obj : " + url + "  " + obj.toString());
+
+        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            @Override
+            public void onSuccess(JSONObject result) {
+
+                ChatApplication.logDisplay("obj result: " + result);
+
+                try {
+                    //{"code":200,"message":"success"}
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+
+                    if (code == 200) {
+
+                        if (!TextUtils.isEmpty(message)) {
+                            Common.showToast(message);
+                            finish();
+                        }
+                        ActivityHelper.dismissProgressDialog();
+
+                    } else {
+                        Common.showToast(message);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                ChatApplication.logDisplay("obj result: error " + error);
+                ActivityHelper.dismissProgressDialog();
+            }
+        }).execute();
+    }
+
 
     /* set view of room list
      * roles
@@ -221,31 +375,61 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
             for (RoomVO roomVO : roomList) {
 
                 List<PanelVO> panelVOList = roomVO.getPanelList();
+                List<String> beaconlist = null;
+                if (editBeacon) {
+                    beaconlist = beaconmodel.getRelatedDevices();
 
-                for (PanelVO panelVO : panelVOList) {
-                    ArrayList<DeviceVO> deviceList = panelVO.getDeviceList();
+                    for (PanelVO panelVO : panelVOList) {
+                        ArrayList<DeviceVO> deviceList = panelVO.getDeviceList();
 
-                    for (DeviceVO deviceVO : deviceList) {
+                        for (DeviceVO deviceVO : deviceList) {
 
-                        for (String deviceVORoot : deviceVOList) {
-                            ChatApplication.logDisplay("panel id is " + deviceVO.getDeviceType());
-                            if (deviceVO.getDeviceType().equalsIgnoreCase("remote")) { //if device type sensor than compare sensor id instead of room device id
-                                ChatApplication.logDisplay("panel id is " + deviceVO.getDeviceType() + "   " + deviceVO.getDeviceId() + "   " + deviceVORoot);
-                                if (deviceVO.getDeviceId().equalsIgnoreCase(deviceVORoot)) {
+                            for (String deviceVORoot : beaconlist) {
+                                ChatApplication.logDisplay("panel id is " + deviceVO.getDeviceType());
+                                if (deviceVO.getDeviceType().equalsIgnoreCase("remote")) { //if device type sensor than compare sensor id instead of room device id
+                                    ChatApplication.logDisplay("panel id is " + deviceVO.getDeviceType() + "   " + deviceVO.getDeviceId() + "   " + deviceVORoot);
+                                    if (deviceVO.getDeviceId().equalsIgnoreCase(deviceVORoot)) {
 
-                                    roomVO.setExpanded(true);
-                                    deviceVO.setSelected(true);
-                                }
-                            } else {
+                                        roomVO.setExpanded(true);
+                                        deviceVO.setSelected(true);
+                                    }
+                                } else {
 
-                                if (deviceVO.getDeviceId().equalsIgnoreCase(deviceVORoot)) {
-                                    roomVO.setExpanded(true);
-                                    deviceVO.setSelected(true);
+                                    if (deviceVO.getPanel_device_id().equalsIgnoreCase(deviceVORoot)) {
+                                        roomVO.setExpanded(true);
+                                        deviceVO.setSelected(true);
+                                    }
                                 }
                             }
                         }
-                    }
 
+                    }
+                } else {
+                    for (PanelVO panelVO : panelVOList) {
+                        ArrayList<DeviceVO> deviceList = panelVO.getDeviceList();
+
+                        for (DeviceVO deviceVO : deviceList) {
+
+                            for (String deviceVORoot : deviceVOList) {
+                                ChatApplication.logDisplay("panel id is " + deviceVO.getDeviceType());
+                                if (deviceVO.getDeviceType().equalsIgnoreCase("remote")) { //if device type sensor than compare sensor id instead of room device id
+                                    ChatApplication.logDisplay("panel id is " + deviceVO.getDeviceType() + "   " + deviceVO.getDeviceId() + "   " + deviceVORoot);
+                                    if (deviceVO.getDeviceId().equalsIgnoreCase(deviceVORoot)) {
+
+                                        roomVO.setExpanded(true);
+                                        deviceVO.setSelected(true);
+                                    }
+                                } else {
+
+                                    if (deviceVO.getDeviceId().equalsIgnoreCase(deviceVORoot)) {
+                                        roomVO.setExpanded(true);
+                                        deviceVO.setSelected(true);
+                                    }
+                                }
+                            }
+                        }
+
+                    }
                 }
             }
         }
@@ -282,7 +466,7 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
         mMessagesView.addItemDecoration(new SpacesItemDecoration(spanCount, spacing, includeEdge));
 */
 
-        deviceListLayoutHelper = new MoodDeviceListLayoutHelper(BeaconConfigActivity.this, mMessagesView, this, Constants.SWITCH_NUMBER, isMoodAdapter);
+        deviceListLayoutHelper = new MoodDeviceListLayoutHelper(BeaconConfigActivity.this, mMessagesView, this, Constants.SWITCH_NUMBER, isBeaconListAdapter);
         deviceListLayoutHelper.addSectionList(roomList);
         deviceListLayoutHelper.notifyDataSetChanged();
 
@@ -344,7 +528,7 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
                         JSONObject object = result.getJSONObject("data");
                         String room_name = object.getString("room_name");
                         String panel_name = object.getString("panel_name");
-                      //  showDeviceDialog(room_name, panel_name);
+                        //  showDeviceDialog(room_name, panel_name);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

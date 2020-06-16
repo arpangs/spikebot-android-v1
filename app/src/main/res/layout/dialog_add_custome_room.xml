@@ -82,6 +82,42 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <LinearLayout
+            android:id="@+id/linear_scanoption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
+            android:visibility="gone"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textview_bluetooth"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="1. Mobile Bluetooth"
+                android:textSize="@dimen/_15sdp"
+                android:textColor="@color/signupblack"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:background="@color/device_button"/>
+
+            <TextView
+                android:id="@+id/textview_scanner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="2. Scanner"
+                android:textSize="@dimen/_15sdp"
+                android:textColor="@color/signupblack"/>
+        </LinearLayout>
+
+
+
         <RelativeLayout
             android:id="@+id/relative_passcode"
             android:layout_width="match_parent"

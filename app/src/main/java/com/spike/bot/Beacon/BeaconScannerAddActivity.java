@@ -325,17 +325,17 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
 
 
     public void showBottomSheetDialog(int position, IRBlasterAddRes.Datum scanner) {
-        View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
+            View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
 
-        TextView txt_bottomsheet_title = view.findViewById(R.id.txt_bottomsheet_title);
-        LinearLayout linear_bottom_edit = view.findViewById(R.id.linear_bottom_edit);
-        LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
+            TextView txt_bottomsheet_title = view.findViewById(R.id.txt_bottomsheet_title);
+            LinearLayout linear_bottom_edit = view.findViewById(R.id.linear_bottom_edit);
+            LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
 
-        TextView txt_edit = view.findViewById(R.id.txt_edit);
+            TextView txt_edit = view.findViewById(R.id.txt_edit);
 
-        BottomSheetDialog dialog = new BottomSheetDialog(BeaconScannerAddActivity.this,R.style.AppBottomSheetDialogTheme);
-        dialog.setContentView(view);
-        dialog.show();
+            BottomSheetDialog dialog = new BottomSheetDialog(BeaconScannerAddActivity.this,R.style.AppBottomSheetDialogTheme);
+            dialog.setContentView(view);
+            dialog.show();
 
        String scannername =  scannerList.get(position).getDeviceName();
 
