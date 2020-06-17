@@ -263,6 +263,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         holder.toggle_section_on_off.setVisibility(View.GONE);
                         holder.img_room_delete.setVisibility(View.GONE);
                         holder.linearPanelList.setVisibility(View.VISIBLE);
+                        holder.frame_beacon_alert_bell.setVisibility(View.GONE);
                         //  holder.text_section_on_off.setBackgroundResource(R.drawable.icn_camera_power);
                         //     holder.mImgSch.setImageResource(R.drawable.recoeding_new_camera);
                         holder.mImgSch.setImageResource(R.drawable.record);
@@ -311,6 +312,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         holder.txt_schedulelabel.setVisibility(View.VISIBLE);
                         holder.txt_schedulelabel.setText("Schedule");
                         holder.mImgSch.setImageResource(R.drawable.blueclock);
+                        holder.frame_beacon_alert_bell.setVisibility(View.VISIBLE);
 
                         if (section.isExpanded() && !Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
                             holder.text_section_edit.setVisibility(View.VISIBLE);
@@ -1488,7 +1490,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
         RelativeLayout rel_main_view;
         LinearLayout ll_background, ll_room_item, linearRowRoom, linearPanelList, ll_root_view_section,
                 linearClickExpanded;  /*linear_camera_bell*/
-        FrameLayout frame_camera_alert,frame_camera_alert_bell;
+        FrameLayout frame_camera_alert,frame_camera_alert_bell,frame_beacon_alert_bell;
         LinearLayout card_layout;
 
         public ViewHolder(View view, int viewType) {
@@ -1536,6 +1538,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 linearRowRoom = view.findViewById(R.id.linearRowRoom);
                 linearPanelList = view.findViewById(R.id.linearPanelList);
                 frame_camera_alert_bell = view.findViewById(R.id.frame_camera_alert_bell);
+                frame_beacon_alert_bell = view.findViewById(R.id.frame_beacon_alert_bell);
                // linear_camera_bell = view.findViewById(R.id.linear_camera_bell);
                 view_line_top = view.findViewById(R.id.view_line_top);
                 sectionTextView = view.findViewById(R.id.text_section);

@@ -163,14 +163,14 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
                 startActivityForResult(turnOn, 0);
             }
 
-
             scanner = BluetoothLeScannerCompat.getScanner();
             ScanSettings settings = new ScanSettings.Builder()
                     .setLegacy(false)
                     .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                    .setReportDelay(2000)
+                    .setReportDelay(1500)
                     .setUseHardwareBatchingIfSupported(true)
                     .build();
+
             List<ScanFilter> filters = new ArrayList<>();
             scanner.startScan(filters, settings, new ScanCallback() {
                 @Override
@@ -186,20 +186,28 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
                         if (results != null) {
                             progressDialog.dismiss();
                             for (ScanResult result : results) {
-                                for (int i = 0; i < results.size(); i++) {
-                                    if (!results.get(i).getDevice().getAddress().equalsIgnoreCase(result.getDevice().getAddress())) {
-                                        scanresult.add(result);
-                                    } else if (results.get(i).getDevice().getAddress().equalsIgnoreCase(result.getDevice().getAddress())
-                                            && results.get(i).getRssi() != result.getRssi()) {
-                                        scanresult.set(i, result);
-                                    }
-                                    beaconScanListAdapter.notifyItemChanged(i);
-                                }
+                                if(scanresult.size() == 0){
+                                    scanresult.add(result);
+                                } else{
+                                    for (int i = 0; i < scanresult.size(); i++) {
+                                        if (!scanresult.get(i).getDevice().getAddress().equalsIgnoreCase(results.get(i).getDevice().getAddress())) {
+                                            scanresult.add(result);
+                                            beaconScanListAdapter.notifyItemChanged(i);
+                                        } else if (scanresult.get(i).getDevice().getAddress().equalsIgnoreCase(results.get(i).getDevice().getAddress())
+                                                && scanresult.get(i).getRssi() != results.get(i).getRssi()) {
+                                            scanresult.set(i, result);
+                                            beaconScanListAdapter.notifyItemChanged(i);
+                                        }
 
+                                    }
+
+                                }
 
                             }
 
                         }
+                        setSyncRange();
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

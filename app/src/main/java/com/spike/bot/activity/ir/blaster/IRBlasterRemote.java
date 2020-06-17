@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
@@ -141,6 +142,12 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         relative_plus.setOnClickListener(this);
         relative_minus.setOnClickListener(this);
 
+        protractorView1.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
 
         if (!Common.getPrefValue(this, Constants.USER_ADMIN_TYPE).equals("1")) {
             mImageDelete.setVisibility(View.GONE);
@@ -199,9 +206,72 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
         tempMinus = 16;
         tempPlus = 30;
+
+        if (tempCurrent == 16) {
+            protractorView.setVisibility(View.GONE);
+            protractorView1.setVisibility(View.VISIBLE);
+            protractorView1.setAngle(180 - 0);
+        } else if (tempCurrent == 17) {
+            protractorView.setVisibility(View.GONE);
+            protractorView1.setVisibility(View.VISIBLE);
+            protractorView1.setAngle(180 - 30);
+        } else if (tempCurrent == 18) {
+            protractorView.setVisibility(View.GONE);
+            protractorView1.setVisibility(View.VISIBLE);
+            protractorView1.setAngle(180 - 40);
+        } else if (tempCurrent == 19) {
+            protractorView.setVisibility(View.GONE);
+            protractorView1.setVisibility(View.VISIBLE);
+            protractorView1.setAngle(180 - 50);
+        } else if (tempCurrent == 20) {
+            protractorView.setVisibility(View.GONE);
+            protractorView1.setVisibility(View.VISIBLE);
+            protractorView1.setAngle(180 - 60);
+        } else if (tempCurrent == 21) {
+            protractorView.setVisibility(View.GONE);
+            protractorView1.setVisibility(View.VISIBLE);
+            protractorView1.setAngle(180 - 70);
+        } else if (tempCurrent == 22) {
+            protractorView.setVisibility(View.GONE);
+            protractorView1.setVisibility(View.VISIBLE);
+            protractorView1.setAngle(180 - 80);
+        } else if (tempCurrent == 23) {
+            protractorView.setVisibility(View.GONE);
+            protractorView1.setVisibility(View.VISIBLE);
+            protractorView1.setAngle(180 - 90);
+        } else if (tempCurrent == 24) {
+            protractorView.setVisibility(View.GONE);
+            protractorView1.setVisibility(View.VISIBLE);
+            protractorView1.setAngle(180 - 100);
+        } else if (tempCurrent == 25) {
+            protractorView.setVisibility(View.GONE);
+            protractorView1.setVisibility(View.VISIBLE);
+            protractorView1.setAngle(180 - 110);
+        } else if (tempCurrent == 26) {
+            protractorView.setVisibility(View.GONE);
+            protractorView1.setVisibility(View.VISIBLE);
+            protractorView1.setAngle(180 - 120);
+        } else if (tempCurrent == 27) {
+            protractorView.setVisibility(View.GONE);
+            protractorView1.setVisibility(View.VISIBLE);
+            protractorView1.setAngle(180 - 130);
+        } else if (tempCurrent == 28) {
+            protractorView.setVisibility(View.GONE);
+            protractorView1.setVisibility(View.VISIBLE);
+            protractorView1.setAngle(180 - 140);
+        } else if (tempCurrent == 29) {
+            protractorView.setVisibility(View.GONE);
+            protractorView1.setVisibility(View.VISIBLE);
+            protractorView1.setAngle(180 - 150);
+        } else if (tempCurrent == 30) {
+            protractorView.setVisibility(View.GONE);
+            protractorView1.setVisibility(View.VISIBLE);
+            protractorView1.setAngle(180 - 180);
+        }
+
     }
 
-    /*get rempte data*/
+    /*get remote data*/
     private void getRemoteInfo() {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
@@ -465,32 +535,32 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             case 24:
                 protractorView.setVisibility(View.GONE);
                 protractorView1.setVisibility(View.VISIBLE);
-                protractorView1.setAngle(180 - 120);
+                protractorView1.setAngle(180 - 100);
                 break;
             case 25:
                 protractorView.setVisibility(View.GONE);
                 protractorView1.setVisibility(View.VISIBLE);
-                protractorView1.setAngle(180 - 130);
+                protractorView1.setAngle(180 - 110);
                 break;
             case 26:
                 protractorView.setVisibility(View.GONE);
                 protractorView1.setVisibility(View.VISIBLE);
-                protractorView1.setAngle(180 - 140);
+                protractorView1.setAngle(180 - 120);
                 break;
             case 27:
                 protractorView.setVisibility(View.GONE);
                 protractorView1.setVisibility(View.VISIBLE);
-                protractorView1.setAngle(180 - 150);
+                protractorView1.setAngle(180 - 130);
                 break;
             case 28:
                 protractorView.setVisibility(View.GONE);
                 protractorView1.setVisibility(View.VISIBLE);
-                protractorView1.setAngle(180 - 160);
+                protractorView1.setAngle(180 - 140);
                 break;
             case 29:
                 protractorView.setVisibility(View.GONE);
                 protractorView1.setVisibility(View.VISIBLE);
-                protractorView1.setAngle(180 - 170);
+                protractorView1.setAngle(180 - 150);
                 break;
             case 30:
                 protractorView.setVisibility(View.GONE);

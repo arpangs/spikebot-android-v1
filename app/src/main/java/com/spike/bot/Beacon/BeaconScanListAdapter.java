@@ -67,11 +67,12 @@ public class BeaconScanListAdapter extends RecyclerView.Adapter<BeaconScanListAd
 
             DecimalFormat form = new DecimalFormat("0.0");
             holder.txtDistance.setText("Distance : " + form.format(Distance) + "m");
+            ChatApplication.logDisplay("Distance " + form.format(Distance) + "m");
+
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        ChatApplication.logDisplay("Distance " + Distance);
 
         holder.view_beacon.setOnClickListener(new View.OnClickListener() {
             @Override
