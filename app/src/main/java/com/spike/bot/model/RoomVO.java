@@ -45,6 +45,7 @@ public class RoomVO implements Serializable{
     private int is_original;
     private int old_room_status;
     private String is_unread;
+    private String totalbeacons;
     private String temp_sensor_value;
     private String door_sensor_value;
     private boolean isSensorPanelOnly;
@@ -381,6 +382,14 @@ public class RoomVO implements Serializable{
 
     public void setHomeControllerDeviceId(String homeControllerDeviceId) {
         this.home_controller_device_id = homeControllerDeviceId;
+    }
+
+    public String getTotalbeacons() {
+        return totalbeacons;
+    }
+
+    public void setTotalbeacons(String totalbeacons) {
+        this.totalbeacons = totalbeacons;
     }
 
     public String getType() {

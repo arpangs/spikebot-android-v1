@@ -94,6 +94,7 @@ public class Constants {
     /*---------------------------Add new api v2-----------------------------*/
 
     public static final String APP_LOGIN = "/applogin";
+  //  public static final String APP_LOGIN = "/auth/login";
     public static final String APP_LOGOUT = "/applogout";
     public static final String SIGNUP_API = "/signupdetails";
 
@@ -198,6 +199,7 @@ public class Constants {
     public static final String cameralistbyjetson = "/camera/list-by-jetson";
     public static final String devicemoduledelete = "/device/module/delete";
     public static final String beaconscannerscan = "/device/beacon-scanner/scan";
+    public static final String GET_BEACON_LOCATION= "/device/beacon/locations";
 
     //temp sensor
     public static final String GET_TEMP_SENSOR_INFO = "/getTempSensorInfo";

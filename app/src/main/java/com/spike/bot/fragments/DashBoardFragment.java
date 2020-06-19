@@ -48,6 +48,7 @@ import com.kp.core.GetJsonTaslLocal;
 import com.kp.core.ICallBack;
 import com.kp.core.ICallBack2;
 import com.kp.core.dialog.ConfirmDialog;
+import com.spike.bot.Beacon.BeaconDetailActivity;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.Retrofit.GetDataService;
@@ -354,7 +355,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             mSocket.off("updateDeviceBadgeCounter", unReadCount);
             mSocket.off("updateChildUser", updateChildUser);
             mSocket.off("updateRoomAlertCounter", updateRoomAlertCounter);
-
+            mSocket.off("beaconInRoomCountUpdate",beaconInRoomCountUpdate);
         }
 
         if (cloudsocket != null) {
@@ -454,6 +455,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             Intent intent = new Intent(activity, CameraNotificationActivity.class);
             intent.putExtra("Cameraunseenlog", "Cameraunseenlog");
             intent.putExtra("homecontrollerId", homecontrollerid);
+            startActivity(intent);
+        } else if(action.equalsIgnoreCase("icnBeacon")){
+            Intent intent = new Intent(activity, BeaconDetailActivity.class);
             startActivity(intent);
         }
     }
@@ -813,6 +817,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         mSocket.on("updateDeviceBadgeCounter", unReadCount);
         mSocket.on("updateChildUser", updateChildUser);
         mSocket.on("updateRoomAlertCounter", updateRoomAlertCounter);
+        mSocket.on("beaconInRoomCountUpdate",beaconInRoomCountUpdate);
     }
 
     private void cloudsocket() {
@@ -1740,7 +1745,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
             }
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
 
     }
 
@@ -2758,6 +2762,35 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                             int unseen_log = object.getInt("unseen_log");
                             ChatApplication.logDisplay("camera counter socket" + object.toString());
                             getCameraBadgeCount();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
+
+
+    private Emitter.Listener beaconInRoomCountUpdate = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (activity == null) {
+                return;
+            }
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+                          //  String user_id = object.getString("user_id");
+                            String room_id = object.getString("room_id");
+                            String device_count = object.getString("device_count");
+                            ChatApplication.logDisplay("beacon counter socket" + object.toString());
+                            sectionedExpandableLayoutHelper.updateBeaconBadgeCount(room_id, device_count);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

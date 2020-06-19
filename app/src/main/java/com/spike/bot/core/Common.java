@@ -134,6 +134,8 @@ public class Common {
                     case "generic":
                         resource = R.drawable.genericelectricdevice_off_inactive;
                         break;
+                    case "beacon":
+                        resource = R.drawable.beaconsearch;
                 }
                 break;
             case 0:

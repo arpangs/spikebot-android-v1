@@ -229,6 +229,50 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <TextView
+            android:id="@+id/label_roomname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginLeft="@dimen/_15sdp"
+            android:visibility="gone"
+            android:text="Room Name"/>
+
+        <RelativeLayout
+            android:id="@+id/relative_room"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_35sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:visibility="gone"
+            android:background="@drawable/background_white_gray_border"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/room_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:gravity="center"
+                android:layout_centerVertical="true"
+                android:textAlignment="center"
+                android:background="@android:color/transparent"
+                android:textColor="@color/signupblack"
+                android:textColorHint="@color/signupblack" />
+
+            <ImageView
+                android:id="@+id/spinner_mood_icon_img"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="right|center"
+                android:layout_marginRight="@dimen/_5sdp"
+                android:src="@drawable/icn_arrow_down_spinner2" />
+
+        </RelativeLayout>
+
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/inputRoom"
@@ -246,6 +290,7 @@
                 android:inputType="textPassword" />
 
         </com.google.android.material.textfield.TextInputLayout>
+
 
 
         <com.google.android.material.textfield.TextInputLayout

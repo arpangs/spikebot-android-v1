@@ -40,9 +40,8 @@ public class ScannerAddListAdapter extends RecyclerView.Adapter<ScannerAddListAd
                 devicelist = mIRDeviceList.get(position);
                 // holder.ir_add_remote_name.setText("Beacon");
             if(devicelist !=null) {
-                holder.txtMacAddress.setText("Address:" + " " + devicelist.getMac());
-                holder.txtRss.setText("Distance:" + " " + devicelist.getSs());
-
+                holder.txtMacAddress.setText("Address : " + " " + devicelist.getMac());
+                holder.txtRss.setText("Distance : " + " " + devicelist.getSs() + " m");
                 holder.ir_rrot_click.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

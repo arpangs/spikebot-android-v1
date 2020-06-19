@@ -183,7 +183,7 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
     protected void onDestroy() {
         super.onDestroy();
         if (mSocket != null) {
-            mSocket.on("changeDeviceStatus", changeDeviceStatus);
+            mSocket.off("changeDeviceStatus", changeDeviceStatus);
         }
     }
 

@@ -312,7 +312,33 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         holder.txt_schedulelabel.setVisibility(View.VISIBLE);
                         holder.txt_schedulelabel.setText("Schedule");
                         holder.mImgSch.setImageResource(R.drawable.blueclock);
-                        holder.frame_beacon_alert_bell.setVisibility(View.VISIBLE);
+                        String totalbeacons= section.getTotalbeacons();
+                       // holder.frame_beacon_alert_bell.setVisibility(View.VISIBLE);
+
+                        if (!TextUtils.isEmpty(totalbeacons) && Integer.parseInt(totalbeacons) > 0)
+                        {
+
+                            holder.frame_beacon_alert_bell.setVisibility(View.VISIBLE);
+                            holder.img_beacon_badge_count.setVisibility(View.VISIBLE);
+                            if (Integer.parseInt(totalbeacons) > 99) {
+                                holder.img_beacon_badge_count.setText("99+");
+                                holder.img_beacon_badge_count.getLayoutParams().width = Common.dpToPx(mContext, 27);
+                                holder.img_beacon_badge_count.getLayoutParams().height = Common.dpToPx(mContext, 27);
+                            } else if (Integer.parseInt(totalbeacons) > 0) {
+                                holder.img_beacon_badge_count.setText("" + totalbeacons);
+                                holder.img_beacon_badge_count.getLayoutParams().width = Common.dpToPx(mContext, 27);
+                                holder.img_beacon_badge_count.getLayoutParams().height = Common.dpToPx(mContext, 27);
+
+                            } else {
+                                holder.img_beacon_badge_count.setVisibility(View.GONE);
+                            }
+
+
+                        } else {
+                            holder.frame_beacon_alert_bell.setVisibility(View.GONE);
+                            holder.img_beacon_badge_count.setVisibility(View.GONE);
+                        }
+
 
                         if (section.isExpanded() && !Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
                             holder.text_section_edit.setVisibility(View.VISIBLE);
@@ -551,6 +577,13 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             } else {
                                 mItemClickListener.itemClicked(section, "icnSensorLog");
                             }
+                        }
+                    });
+
+                    holder.frame_beacon_alert_bell.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mItemClickListener.itemClicked(section, "icnBeacon");
                         }
                     });
 
@@ -1483,7 +1516,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
         ImageView iv_room_panel_onoff, view_line_top, mImgSch, img_setting_badge, mImgIcnLog, img_room_delete, iv_icon, imgLongClick, iv_icon_text, mImgCameraActive, imgLogCamera;
         ToggleButton sectionToggleButton, toggle_section_on_off;
         TextView sectionTextView, /*text_section_on_off,*/
-                text_section_edit, iv_icon_badge_room, img_setting_badge_count,
+                text_section_edit, iv_icon_badge_room, img_setting_badge_count,img_beacon_badge_count,
                 itemTextView, iv_icon_badge, txt_temp_in_cf, txtTotalDevices, txtCameraCount,
                 txt_recording, textRefreshCamera, textShowCamera,
                 txt_schedulelabel, txt_log_label, txt_notify_label,txt_preview_label,txt_refresh_label;
@@ -1557,6 +1590,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 mImgSch = view.findViewById(R.id.icn_schedule_v2);
                 img_setting_badge = view.findViewById(R.id.img_setting_badge);
                 img_setting_badge_count = view.findViewById(R.id.img_setting_badge_count);
+                img_beacon_badge_count = view.findViewById(R.id.img_beacon_badge_count);
                 txtTotalDevices = view.findViewById(R.id.txtTotalDevices);
                 linearClickExpanded = view.findViewById(R.id.linearClickExpanded);
 

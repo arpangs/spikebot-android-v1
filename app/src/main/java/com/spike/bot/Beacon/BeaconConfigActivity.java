@@ -386,12 +386,12 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
 
                             for (String deviceVORoot : beaconlist) {
                                 ChatApplication.logDisplay("panel id is " + deviceVO.getDeviceType());
-                                if (deviceVO.getDeviceType().equalsIgnoreCase("remote")) { //if device type sensor than compare sensor id instead of room device id
+                                if (deviceVO.getDeviceType().equalsIgnoreCase("remote")
+                                || deviceVO.getDeviceType().equalsIgnoreCase("heavyload")) { //if device type sensor than compare sensor id instead of room device id
                                     ChatApplication.logDisplay("panel id is " + deviceVO.getDeviceType() + "   " + deviceVO.getDeviceId() + "   " + deviceVORoot);
-                                    if (deviceVO.getDeviceId().equalsIgnoreCase(deviceVORoot)) {
-
+                                    if (deviceVO.getPanel_device_id().equalsIgnoreCase(deviceVORoot)) {
                                         roomVO.setExpanded(true);
-                                        deviceVO.setSelected(true);
+                                        deviceVO.setSelected(false);
                                     }
                                 } else {
 
@@ -416,8 +416,8 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
                                     ChatApplication.logDisplay("panel id is " + deviceVO.getDeviceType() + "   " + deviceVO.getDeviceId() + "   " + deviceVORoot);
                                     if (deviceVO.getDeviceId().equalsIgnoreCase(deviceVORoot)) {
 
-                                        roomVO.setExpanded(true);
-                                        deviceVO.setSelected(true);
+                                     //   roomVO.setExpanded(true);
+                                     //   deviceVO.setSelected(true);
                                     }
                                 } else {
 
@@ -447,7 +447,9 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
                     if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).isSensor() && roomList.get(i).getPanelList().get(j).isActivePanel()) {
                         if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_type().equalsIgnoreCase("temp_sensor") ||
                                 roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("gas_sensor") ||
-                                roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("door_sensor")) {
+                                roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("door_sensor") ||
+                        roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("remote"))
+                        {
                             roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
 //                            roomList.get(i).getPanelList().get(j).setActivePanel(false);
                         }

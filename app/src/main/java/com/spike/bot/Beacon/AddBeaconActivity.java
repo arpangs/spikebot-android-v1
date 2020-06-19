@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputFilter;
 import android.view.MenuItem;
 import android.view.View;
@@ -57,9 +58,11 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
     private List<IRDeviceDetailsRes.Data> scannerLists = new ArrayList<>();
     private List<IRDeviceDetailsRes.Data> mBeaconDeviceList = new ArrayList<>();
     private List<IRDeviceDetailsRes.Data> mBeaconList = new ArrayList<>();
+    private List<IRDeviceDetailsRes.Data> tempBeaconList = new ArrayList<>();
     private List<String> scannerArraylist = new ArrayList<>();
     private String roomName = "", roomId = "", device_id;
     Dialog beacondialog;
+    Handler handler;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -99,8 +102,8 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-        showProgress();
-        ActivityHelper.showProgressDialog(AddBeaconActivity.this, "Please Wait...", false);
+     //   showProgress();
+       // ActivityHelper.showProgressDialog(AddBeaconActivity.this, "Please Wait...", false);
 
         JSONObject obj = new JSONObject();
         try {
@@ -123,8 +126,8 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void onSuccess(JSONObject result) {
 
-                hideProgress();
-                ActivityHelper.dismissProgressDialog();
+             //   hideProgress();
+             //   ActivityHelper.dismissProgressDialog();
                 try {
 
                     int code = result.getInt("code");
@@ -134,17 +137,28 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
                         try {
                             mBeaconList = new ArrayList<>();
                             mBeaconList.clear();
+                            tempBeaconList = new ArrayList<>();
+                            tempBeaconList.clear();
                             ChatApplication.logDisplay("beacon list res : " + result.toString());
                             IRDeviceDetailsRes irDeviceDetailsRes = Common.jsonToPojo(result.toString(), IRDeviceDetailsRes.class);
                             mBeaconList = irDeviceDetailsRes.getData();
+                            tempBeaconList = irDeviceDetailsRes.getData();
 
                             if (mBeaconList != null) {
                                 ll_scanner_list.setVisibility(View.GONE);
                                 list_beacon_add.setVisibility(View.VISIBLE);
                                 if (mBeaconList.size() > 0) {
-                                  /*  for (int i = 0; i < mBeaconList.size(); i++) {
-                                        scannerArraylist.add(mBeaconList.get(i).getDeviceName());
-                                    }*/
+                                    for (int i = 0; i < mBeaconList.size(); i++) {
+                                        if(!mBeaconList.get(i).getMac().equalsIgnoreCase(tempBeaconList.get(i).getMac())){
+                                            mBeaconList.addAll(irDeviceDetailsRes.getData());
+                                            scanneraddlistadapter.notifyDataSetChanged();
+                                        } else if(mBeaconList.get(i).getMac().equalsIgnoreCase(tempBeaconList.get(i).getMac())
+                                        && !mBeaconList.get(i).getSs().equalsIgnoreCase(tempBeaconList.get(i).getSs())){
+                                            scanneraddlistadapter.notifyItemChanged(i);
+
+                                        }
+                                    }
+
                                     scanneraddlistadapter = new ScannerAddListAdapter(mBeaconList, AddBeaconActivity.this);
                                     list_beacon_add.setLayoutManager(new LinearLayoutManager(AddBeaconActivity.this));
                                     list_beacon_add.setAdapter(scanneraddlistadapter);
@@ -167,8 +181,8 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                hideProgress();
-                ActivityHelper.dismissProgressDialog();
+               // hideProgress();
+              //  ActivityHelper.dismissProgressDialog();
             }
         }).execute();
     }
@@ -263,7 +277,18 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
                                                 device_id = mBeaconDeviceList.get(position).getDeviceId();
                                             }
                                             if (device_id !=null) {
-                                                getbeaconDeviceDetails(device_id);
+
+                                                handler = new Handler();
+                                                handler.postDelayed(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        //Do something after 20 seconds
+                                                        handler.postDelayed(this, 500);
+                                                        getbeaconDeviceDetails(device_id);
+                                                        ChatApplication.logDisplay("timer" + device_id);
+                                                    }
+                                                }, 1000);
+
                                             }
                                         }
 
@@ -312,12 +337,24 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
         list_beacon_add.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        handler.removeCallbacksAndMessages(null);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             onBackPressed();
+            handler.removeCallbacksAndMessages(null);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -399,6 +436,7 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
                 if (edSensorName.getText().toString().length() == 0) {
                     ChatApplication.showToast(AddBeaconActivity.this, "Please enter beacon name");
                 } else {
+                    handler.removeCallbacksAndMessages(null);
                     Intent intent = new Intent(AddBeaconActivity.this, BeaconConfigActivity.class);
                     intent.putExtra("SCANNER_NAME", beacon_add_scanner_spinner.getSelectedItem().toString());
                     intent.putExtra("ROOM_NAME", beacon_add_room_txt.getText().toString());
