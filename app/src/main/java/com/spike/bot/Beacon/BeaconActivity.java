@@ -42,6 +42,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat;
@@ -60,7 +62,7 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
 
     List<LeDeviceItem> itemList = new ArrayList<>();
     List<LeDeviceItem> itemListTemp = new ArrayList<>();
-    List<ScanResult> scanresult;
+    List<ScanResult> scanresult = new ArrayList<>();
     BeaconScanListAdapter beaconScanListAdapter;
     public RecyclerView recycler;
     public Button btnClick;
@@ -110,9 +112,6 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recycler.setLayoutManager(linearLayoutManager);
 
-        scanresult = new ArrayList<>();
-        beaconScanListAdapter = new BeaconScanListAdapter(scanresult, BeaconActivity.this);
-        recycler.setAdapter(beaconScanListAdapter);
     }
 
     @Override
@@ -129,7 +128,7 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onResume() {
         super.onResume();
-        scanresult.clear();
+//        scanresult.clear();
     }
 
     @Override
@@ -167,7 +166,7 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
             ScanSettings settings = new ScanSettings.Builder()
                     .setLegacy(false)
                     .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                    .setReportDelay(1500)
+                    .setReportDelay(100)
                     .setUseHardwareBatchingIfSupported(true)
                     .build();
 
@@ -183,29 +182,34 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
                     super.onBatchScanResults(results);
                     try {
                         scanresult.clear();
+                        scanresult = new ArrayList<>();
                         if (results != null) {
                             progressDialog.dismiss();
                             for (ScanResult result : results) {
-                                if(scanresult.size() == 0){
-                                    scanresult.add(result);
-                                } else{
-                                    for (int i = 0; i < scanresult.size(); i++) {
+                                if (scanresult.size() == 0) {
+                                    scanresult.addAll(results);
+                                } /*else {
+                                    for (int i = 0; i < scanresult.size(); i++)
+                                    {
                                         if (!scanresult.get(i).getDevice().getAddress().equalsIgnoreCase(results.get(i).getDevice().getAddress())) {
-                                            scanresult.add(result);
-                                            beaconScanListAdapter.notifyItemChanged(i);
+                                            scanresult.addAll(results);
                                         } else if (scanresult.get(i).getDevice().getAddress().equalsIgnoreCase(results.get(i).getDevice().getAddress())
                                                 && scanresult.get(i).getRssi() != results.get(i).getRssi()) {
                                             scanresult.set(i, result);
-                                            beaconScanListAdapter.notifyItemChanged(i);
                                         }
 
                                     }
 
-                                }
+
+                                }*/
+                                beaconScanListAdapter = new BeaconScanListAdapter(scanresult, BeaconActivity.this);
+                                recycler.setAdapter(beaconScanListAdapter);
 
                             }
 
                         }
+
+
                         setSyncRange();
 
                     } catch (Exception e) {
@@ -222,6 +226,18 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
             e.printStackTrace();
         }
 
+    }
+
+    public List<ScanResult> getBeaconListSortedByAddress() {
+
+        Collections.sort(scanresult, new Comparator<ScanResult>() {
+            @Override
+            public int compare(ScanResult a1, ScanResult a2) {
+                return a1.getDevice().getAddress().compareTo(a2.getDevice().getAddress());
+            }
+        });
+
+        return scanresult;
     }
 
     @Override
@@ -257,7 +273,7 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
                    /* if(!dialog.isShowing()){
                         showDialog1(i);
                     }*/
-                        // beaconScanListAdapter.updatebeaconlistitem(scanresult);
+                        beaconScanListAdapter.updatebeaconlistitem(getBeaconListSortedByAddress());
 
 
                     } else if (scanresult.get(i).getRssi() > -20) {
@@ -292,10 +308,13 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
 
         ActivityHelper.showProgressDialog(this, "Please wait.", true);
 
+
         JSONObject obj = new JSONObject();
+
+       String  beacon_id = beacon_module_id.replaceAll(":","").toLowerCase();
         try {
             obj.put("device_name", beacon_name);
-            obj.put("module_id", beacon_module_id);
+            obj.put("module_id", beacon_id);
             obj.put("module_type", "beacon");
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -337,9 +356,9 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
                         intent.putExtra("SENSOR_ID", mSensorid);
                         intent.putExtra("SCANNER_DEVICE_ID", "" + mScannerdeviceid);
                         intent.putExtra("SCANNER_DEVICE_TYPE", mdevicetype);
-                        intent.putExtra("BEACON_SCANNER_MODULE_ID", moduleid);
+                        intent.putExtra("BEACON_MODULE_ID", beacon_id);
                         intent.putExtra("BEACON_DEVICE_NAME", "" + beacon_name);
-                        intent.putExtra("SCANNER_DEVICE_ADDRESS", beacon_module_id);
+                        intent.putExtra("SCANNER_DEVICE_ADDRESS", beacon_id);
                         intent.putExtra("BEACON_RSSI", beaconrssi);
                         startActivity(intent);
                     } else {
@@ -422,11 +441,28 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                beacondialog.dismiss();
                 if (edSensorName.getText().toString().length() == 0) {
                     ChatApplication.showToast(BeaconActivity.this, "Please enter beacon name");
                 } else {
-                    saveBeacon(edSensorName.getText().toString(), beacon_module_id, rssi, beacondialog);
+                    String beacon_id = beacon_module_id.replaceAll(":","").toLowerCase();
+
+
+                    //  Constants.activityWifi.finish();
+                    Intent intent = new Intent(BeaconActivity.this, BeaconConfigActivity.class);
+                    intent.putExtra("SCANNER_NAME", mScannername);
+                    intent.putExtra("ROOM_NAME", mRoomname);
+                    intent.putExtra("ROOM_ID", "" + mRoomid);
+                    intent.putExtra("SENSOR_ID", mSensorid);
+                    intent.putExtra("SCANNER_DEVICE_ID", "" + mScannerdeviceid);
+                    intent.putExtra("SCANNER_DEVICE_TYPE", mdevicetype);
+                    intent.putExtra("BEACON_MODULE_ID", beacon_id);
+                    intent.putExtra("BEACON_DEVICE_NAME", "" + edSensorName.getText().toString());
+                    intent.putExtra("SCANNER_DEVICE_ADDRESS", beacon_id);
+                    startActivity(intent);
+                    finish();
+
+                  //  saveBeacon(edSensorName.getText().toString(), beacon_module_id, rssi, beacondialog);
                 }
             }
         });

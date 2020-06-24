@@ -48,7 +48,7 @@ public class BeaconDiffCallBack extends DiffUtil.Callback {
     }*/
 
 
-    @Nullable
+    /*@Nullable
     @Override
     public Object getChangePayload(int oldItemPosition, int newItemPosition) {
         // Implement method if you're going to use ItemAnimator
@@ -66,6 +66,14 @@ public class BeaconDiffCallBack extends DiffUtil.Callback {
             return null;
         }
         return diff;
+    }*/
+
+
+    @Nullable
+    @Override
+    public Object getChangePayload(int oldItemPosition, int newItemPosition) {
+        // Implement method if you're going to use ItemAnimator
+        return super.getChangePayload(oldItemPosition, newItemPosition);
     }
 }
 

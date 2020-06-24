@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.DiffUtil;
@@ -33,9 +34,7 @@ public class BeaconScanListAdapter extends RecyclerView.Adapter<BeaconScanListAd
         this.arrayListscanresult = arrayListscanresult1;
         this.beaconListClickEvent = beaconclickevent;
 
-       // this.arrayListscanresult.addAll(arrayListscanresult1);
     }
-
 
 
 
@@ -133,9 +132,15 @@ public class BeaconScanListAdapter extends RecyclerView.Adapter<BeaconScanListAd
     public void updatebeaconlistitem(List<ScanResult> results) {
         final BeaconDiffCallBack diffCallback = new BeaconDiffCallBack(this.arrayListscanresult, results);
         final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
-        this.arrayListscanresult.clear();
-        this.arrayListscanresult.addAll(results);
+       // this.arrayListscanresult.clear();
+      //  this.arrayListscanresult.addAll(results);
         diffResult.dispatchUpdatesTo(this);
+
+
+       /* final DiffUtil.DiffResult result = DiffUtil.calculateDiff(new BeaconDiffCallBack(arrayListscanresult, results), false);
+        arrayListscanresult = results;
+        result.dispatchUpdatesTo(BeaconScanListAdapter.this);*/
     }
+
 
 }

@@ -74,6 +74,7 @@ public class BeaconDetailActivity extends AppCompatActivity {
     Dialog roomdialog;
     String room_id;
     private Socket mSocket;
+    LinearLayout ll_beacon_list;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,6 +92,7 @@ public class BeaconDetailActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         recycler_room = findViewById(R.id.recycler_roomlist);
+        ll_beacon_list = findViewById(R.id.ll_beacon_list);
 
         toolbar.setTitle("Beacons");
         startSocketConnection();
@@ -136,16 +138,16 @@ public class BeaconDetailActivity extends AppCompatActivity {
             return;
         }
 
-        ActivityHelper.showProgressDialog(BeaconDetailActivity.this,"Please Wait",true);
+        ActivityHelper.showProgressDialog(BeaconDetailActivity.this, "Please Wait", true);
 
         String url = ChatApplication.url + Constants.GET_BEACON_LOCATION;
 
         JSONObject jsonObject = new JSONObject();
         try {
-            if(roomListString.equals("all")){
-                jsonObject.put("room_id","");
-            } else{
-                jsonObject.put("room_id",room_id);
+            if (roomListString.equals("all")) {
+                jsonObject.put("room_id", "");
+            } else {
+                jsonObject.put("room_id", room_id);
             }
             jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -164,14 +166,21 @@ public class BeaconDetailActivity extends AppCompatActivity {
                     //  JSONObject dataObject = result.getJSONObject("data");
                     JSONArray roomArray = result.getJSONArray("data");
                     if (roomArray != null && roomArray.length() > 0) {
+                        ll_beacon_list.setVisibility(View.GONE);
+                        recycler_room.setVisibility(View.VISIBLE);
                         roomList = JsonHelper.parseBeaconRoomArray(roomArray, true);
                         setData(roomList);
+                    } else {
+
+                        ll_beacon_list.setVisibility(View.VISIBLE);
+                        recycler_room.setVisibility(View.GONE);
                     }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } finally {
                     ActivityHelper.dismissProgressDialog();
+
                 }
             }
 
@@ -434,7 +443,7 @@ public class BeaconDetailActivity extends AppCompatActivity {
 
                         try {
                             JSONObject object = new JSONObject(args[0].toString());
-                             String room_id = object.getString("room_id");
+                            String room_id = object.getString("room_id");
                             String device_id = object.getString("device_id");
                             String device = object.getString("device");
                             ChatApplication.logDisplay("add beacon socket" + object.toString());

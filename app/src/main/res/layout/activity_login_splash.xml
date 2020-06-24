@@ -52,11 +52,12 @@
         android:id="@+id/btn_signup_splash"
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:layout_margin="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:textAllCaps="false"
         android:text="@string/signup"
         android:textSize="20sp"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@+id/btn_login_splash"
         android:textColor="@color/automation_white"
         android:background="@drawable/background_button_signup"/>
 
@@ -65,13 +66,12 @@
         android:id="@+id/btn_login_splash"
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_margin="20dp"
         android:textColor="@color/automation_white"
-        android:layout_above="@+id/btn_signup_splash"
         android:textSize="20sp"
         android:textAllCaps="false"
         android:text="@string/login"
+        android:layout_alignParentBottom="true"
         android:background="@drawable/background_button_login"/>
 
 </RelativeLayout>

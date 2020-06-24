@@ -391,7 +391,7 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
                                     ChatApplication.logDisplay("panel id is " + deviceVO.getDeviceType() + "   " + deviceVO.getDeviceId() + "   " + deviceVORoot);
                                     if (deviceVO.getPanel_device_id().equalsIgnoreCase(deviceVORoot)) {
                                         roomVO.setExpanded(true);
-                                        deviceVO.setSelected(false);
+                                        deviceVO.setSelected(true);
                                     }
                                 } else {
 
@@ -434,7 +434,7 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
             }
         }
 
-        /**sensor unselect condition */
+   /*     *//**sensor unselect condition *//*
         for (int i = 0; i < roomList.size(); i++) {
             for (int j = 0; j < roomList.get(i).getPanelList().size(); j++) {
 
@@ -447,16 +447,15 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
                     if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).isSensor() && roomList.get(i).getPanelList().get(j).isActivePanel()) {
                         if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_type().equalsIgnoreCase("temp_sensor") ||
                                 roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("gas_sensor") ||
-                                roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("door_sensor") ||
-                        roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("remote"))
-                        {
+                                roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("door_sensor"))
+                                                {
                             roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
 //                            roomList.get(i).getPanelList().get(j).setActivePanel(false);
                         }
                     }
                 }
             }
-        }
+        }*/
 
 
         //sort room list vie selected device list available

@@ -132,6 +132,9 @@
                         android:textSize="@dimen/_13sdp"
                         android:textColor="@color/txtPanal"
                         android:background="@null"
+                        android:imeOptions="actionNext"
+                        android:gravity="right"
+                        android:text=""
                         android:hint="@string/words_enter_gateway_password"/>
                 </LinearLayout>
 
@@ -161,6 +164,9 @@
                         android:layout_marginRight="15dp"
                         android:textColor="@color/txtPanal"
                         android:background="@null"
+                        android:imeOptions="actionDone"
+                        android:gravity="right"
+                        android:text=""
                         android:hint="Enter Gateway name"/>
                 </LinearLayout>
 

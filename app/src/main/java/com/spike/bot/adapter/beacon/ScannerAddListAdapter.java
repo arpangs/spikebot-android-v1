@@ -8,12 +8,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.R;
+import com.spike.bot.core.BeaconAPIDiffCallBack;
+import com.spike.bot.core.BeaconDiffCallBack;
 import com.spike.bot.model.IRDeviceDetailsRes;
 
 import java.util.List;
+
+import no.nordicsemi.android.support.v18.scanner.ScanResult;
 
 public class ScannerAddListAdapter extends RecyclerView.Adapter<ScannerAddListAdapter.IRBlasterHolder> {
 
@@ -83,5 +88,12 @@ public class ScannerAddListAdapter extends RecyclerView.Adapter<ScannerAddListAd
 
     public interface BeaconDeviceClickListener {
         void onBeaconDeviceClick(IRDeviceDetailsRes.Data devicelist);
+    }
+
+    public void updatebeaconlistitem(List<IRDeviceDetailsRes.Data> results) {
+        final BeaconAPIDiffCallBack diffCallback = new BeaconAPIDiffCallBack(this.mIRDeviceList, results);
+        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
+        diffResult.dispatchUpdatesTo(this);
+
     }
 }
