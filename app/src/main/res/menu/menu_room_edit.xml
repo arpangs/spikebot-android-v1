@@ -6,7 +6,7 @@
 
     <item
         android:id="@+id/actionEdit"
-        android:icon="@drawable/edit_white"
+        android:icon="@drawable/edit_white_new"
         android:orderInCategory="100"
         android:title="Add"
         android:visible="false"

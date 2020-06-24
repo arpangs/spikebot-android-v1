@@ -80,8 +80,8 @@
 
                     <ImageView
                         android:id="@+id/image_section_edit"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
                         android:layout_marginTop="@dimen/_15sdp"
                         android:layout_marginRight="@dimen/_8sdp"
                         android:src="@drawable/edit_blue" />

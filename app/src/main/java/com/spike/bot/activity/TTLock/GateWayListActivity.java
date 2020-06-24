@@ -45,6 +45,7 @@ public class GateWayListActivity extends AppCompatActivity implements GatewayLis
     FloatingActionButton fab;
     RecyclerView recyclerViewLock;
     public TextView txtNodataFound;
+    TextView label_add;
 
     String ttlockId = "", ttbridgeId = "", lockName = "";
 
@@ -78,6 +79,8 @@ public class GateWayListActivity extends AppCompatActivity implements GatewayLis
 
         recyclerViewLock = findViewById(R.id.recyclerSmartDevice);
         txtNodataFound = findViewById(R.id.txtNodataFound);
+        label_add = findViewById(R.id.label_add);
+        label_add.setVisibility(View.GONE);
 
         if (!TextUtils.isEmpty(ttbridgeId)) {
             toolbar.setTitle("Select Bridge");
@@ -105,9 +108,10 @@ public class GateWayListActivity extends AppCompatActivity implements GatewayLis
         getMenuInflater().inflate(R.menu.menu_room_edit, menu);
         this.menu = menu;
         menu.findItem(R.id.action_save).setTitle("Add Bridge").setVisible(false);
-        MenuItem actionsave = menu.findItem(R.id.action_add);
-        actionsave.setVisible(false);
+        MenuItem actionsave = menu.findItem(R.id.action_add_text);
+        actionsave.setVisible(true);
         menu.findItem(R.id.action_log).setVisible(false);
+        menu.findItem(R.id.action_add).setVisible(false);
         if (!TextUtils.isEmpty(ttbridgeId)) {
             menu.findItem(R.id.action_add_text).setVisible(false);
         }

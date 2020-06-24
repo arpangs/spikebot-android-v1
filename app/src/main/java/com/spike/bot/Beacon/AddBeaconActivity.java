@@ -40,13 +40,19 @@ import com.spike.bot.adapter.irblaster.IRBlasterAddListAdapter;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
+import com.spike.bot.model.DeviceVO;
 import com.spike.bot.model.IRDeviceDetailsRes;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+
+import no.nordicsemi.android.support.v18.scanner.ScanResult;
 
 public class AddBeaconActivity extends AppCompatActivity implements View.OnClickListener, ScannerAddListAdapter.BeaconDeviceClickListener {
 
@@ -89,6 +95,8 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
         list_beacon_add = findViewById(R.id.list_beacon_add);
 
         getBeaconscannerDetails();
+
+
 
 
     }
@@ -148,20 +156,25 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
                                 ll_scanner_list.setVisibility(View.GONE);
                                 list_beacon_add.setVisibility(View.VISIBLE);
                                 if (mBeaconList.size() > 0) {
-                                    for (int i = 0; i < mBeaconList.size(); i++) {
+                                  //  mBeaconList = removeDuplicates(tempBeaconList);
+                                   /* for (int i = 0; i < mBeaconList.size(); i++) {
                                         if(!mBeaconList.get(i).getMac().equalsIgnoreCase(tempBeaconList.get(i).getMac())){
                                             mBeaconList.addAll(irDeviceDetailsRes.getData());
                                             scanneraddlistadapter.notifyDataSetChanged();
-                                        } else if(mBeaconList.get(i).getMac().equalsIgnoreCase(tempBeaconList.get(i).getMac())
+                                        } *//*else if(mBeaconList.get(i).getMac().equalsIgnoreCase(tempBeaconList.get(i).getMac())
                                         && !mBeaconList.get(i).getSs().equalsIgnoreCase(tempBeaconList.get(i).getSs())){
                                             scanneraddlistadapter.notifyItemChanged(i);
 
-                                        }
-                                    }
+                                        }*//*
+                                    }*/
+
 
                                     scanneraddlistadapter = new ScannerAddListAdapter(mBeaconList, AddBeaconActivity.this);
                                     list_beacon_add.setLayoutManager(new LinearLayoutManager(AddBeaconActivity.this));
                                     list_beacon_add.setAdapter(scanneraddlistadapter);
+                                   // scanneraddlistadapter.notifyDataSetChanged();
+
+                                    scanneraddlistadapter.updatebeaconlistitem(getBeaconListSortedByAddress());
                                 }
                             } else {
                                 ll_scanner_list.setVisibility(View.VISIBLE);
@@ -185,6 +198,43 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
               //  ActivityHelper.dismissProgressDialog();
             }
         }).execute();
+    }
+
+    public List<IRDeviceDetailsRes.Data> getBeaconListSortedByAddress() {
+
+        Collections.sort(mBeaconList, new Comparator<IRDeviceDetailsRes.Data>() {
+            @Override
+            public int compare(IRDeviceDetailsRes.Data a1, IRDeviceDetailsRes.Data a2) {
+                return a1.getMac().compareTo(a2.getMac());
+            }
+        });
+
+        return mBeaconList;
+    }
+
+    /*remove duplicate device */
+    public static List<IRDeviceDetailsRes.Data> removeDuplicates(List<IRDeviceDetailsRes.Data> list) {
+        ArrayList<String> arrayList = new ArrayList<>();
+        ArrayList<IRDeviceDetailsRes.Data> listTemp = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            arrayList.add(list.get(i).getMac());
+        }
+
+        HashSet<String> hashSet = new HashSet<String>();
+        hashSet.addAll(arrayList);
+        arrayList.clear();
+        arrayList.addAll(hashSet);
+
+        for (int j = 0; j < list.size(); j++) {
+            for (int i = 0; i < arrayList.size(); i++) {
+                if (arrayList.get(i).length() > 1 && list.get(j).getMac().equalsIgnoreCase(arrayList.get(i))) {
+                    arrayList.set(i, arrayList.get(i) + "i");
+                    listTemp.add(list.get(i));
+                }
+            }
+        }
+
+        return listTemp;
     }
 
 
@@ -346,7 +396,11 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onPause() {
         super.onPause();
-        handler.removeCallbacksAndMessages(null);
+        try {
+            handler.removeCallbacksAndMessages(null);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -354,7 +408,11 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
         int id = item.getItemId();
         if (id == android.R.id.home) {
             onBackPressed();
-            handler.removeCallbacksAndMessages(null);
+            try {
+                handler.removeCallbacksAndMessages(null);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
         return super.onOptionsItemSelected(item);
     }

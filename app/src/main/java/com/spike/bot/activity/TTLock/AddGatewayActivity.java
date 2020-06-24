@@ -172,7 +172,7 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
                     if (gatewayObj.errcode == 0) {
 
                         callUploadToserver(gatewayObj.getGatewayId());
-//
+
                     }
                 }
             }
@@ -215,12 +215,13 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
-        String webUrl = ChatApplication.url + Constants.addLockBridge;
+        String webUrl = ChatApplication.url + Constants.deviceadd;
 
         JSONObject jsonNotification = new JSONObject();
         try {
-            jsonNotification.put("bridge_id", gatewayId);
-            jsonNotification.put("bridge_name", gatewayName);
+            jsonNotification.put("module_id", gatewayId);
+            jsonNotification.put("device_name", gatewayName);
+            jsonNotification.put("module_type ","tt_lock_bridge");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -250,7 +251,6 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
                 ActivityHelper.dismissProgressDialog();
             }
         }).execute();
-
 
     }
 

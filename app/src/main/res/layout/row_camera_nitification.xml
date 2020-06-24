@@ -81,8 +81,8 @@
 
                 <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/switchAlert"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
                     android:layout_gravity="center"
                     android:background="@drawable/selector_section_onoff"
                     android:button="@null"

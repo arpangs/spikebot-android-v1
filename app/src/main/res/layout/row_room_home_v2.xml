@@ -116,8 +116,8 @@
 
                         <TextView
                             android:id="@+id/text_section_edit"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
                             android:layout_gravity="center_vertical"
                             android:layout_margin="2dp"
                             android:background="@drawable/edit_blue"

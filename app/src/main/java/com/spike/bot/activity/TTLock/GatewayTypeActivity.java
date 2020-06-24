@@ -29,6 +29,7 @@ public class GatewayTypeActivity extends AppCompatActivity {
     RecyclerView recyclerSmartDevice;
     SmartLockOptionBrandAdapter smartLockOptionBrandAdapter;
     ArrayList<String> stringArrayList = new ArrayList<>();
+    TextView label_add;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,12 +42,14 @@ public class GatewayTypeActivity extends AppCompatActivity {
     private void setviewId() {
         toolbar = findViewById(R.id.toolbar);
         recyclerSmartDevice = findViewById(R.id.recyclerSmartDevice);
+        label_add = findViewById(R.id.label_add);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setTitle("Select Bridge Type");
 
+        label_add.setVisibility(View.GONE);
         stringArrayList.add("G1");
         stringArrayList.add("G2");
 

@@ -390,7 +390,8 @@ public class ScannerWifiListActivity extends AppCompatActivity implements WifiLi
                 ChatApplication.logDisplay("scanner is found result" + result.toString());
 
                 try {
-                    if (result != null) {
+                    if (result != null)
+                    {
                         if (result.optString("message").equalsIgnoreCase("Success")) {
 //                            dialog.dismiss();
                             Constants.isWifiConnectSave = true;
@@ -405,7 +406,7 @@ public class ScannerWifiListActivity extends AppCompatActivity implements WifiLi
                         }
                     } else {
                         ActivityHelper.dismissProgressDialog();
-                        ChatApplication.logDisplay("scanner is found result error" + result.toString());
+                        ChatApplication.logDisplay("scanner is found result null" + result.toString());
                         ChatApplication.showToast(ScannerWifiListActivity.this, "Please try again later.");
                     }
 
@@ -425,7 +426,7 @@ public class ScannerWifiListActivity extends AppCompatActivity implements WifiLi
             public void onFailure(Throwable throwable, String error) {
 
                 ChatApplication.showToast(ScannerWifiListActivity.this, "Failed response from device." + error);
-                ChatApplication.logDisplay("scanner is found result error " + throwable);
+                ChatApplication.logDisplay("scanner is found result error " + error);
                 //found
                 ActivityHelper.dismissProgressDialog();
             }

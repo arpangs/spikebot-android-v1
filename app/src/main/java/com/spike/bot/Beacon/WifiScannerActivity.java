@@ -235,7 +235,8 @@ public class WifiScannerActivity extends AppCompatActivity implements View.OnCli
 
                 try {
 
-                    if (result != null) {
+                    if (result != null)
+                    {
 
                         JSONObject object = result;
 
