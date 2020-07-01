@@ -23,6 +23,8 @@ import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.irblaster.IRRemoteBrandListAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.DataSearch;
@@ -67,14 +69,14 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
     }
 
     private void bindView() {
-        Toolbar toolbar =  findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Select Remote");
 
-        mSearchBrand =  findViewById(R.id.search_brand);
-        linear_progress =  findViewById(R.id.linear_progress);
+        mSearchBrand = findViewById(R.id.search_brand);
+        linear_progress = findViewById(R.id.linear_progress);
         mIRListView = findViewById(R.id.list_ir_remote);
         mIRListView.setLayoutManager(new GridLayoutManager(this, 1));
 
@@ -130,17 +132,14 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
         showProgress();
         ActivityHelper.showProgressDialog(IRRemoteBrandListActivity.this, "Please Wait...", false);
 
-        String url = ChatApplication.url + Constants.getIRDeviceTypeBrands + "/1";
-
-        ChatApplication.logDisplay("url is "+url);
-        new GetJsonTask(this, url, "GET", "", new ICallBack() {
+        SpikeBotApi.getInstance().getIRDetailsList(new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 hideProgress();
                 ActivityHelper.dismissProgressDialog();
                 try {
-                    ChatApplication.logDisplay("url is res "+result);
+                    JSONObject result = new JSONObject(stringResponse);
+                    ChatApplication.logDisplay("url is res " + result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
@@ -161,11 +160,11 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 hideProgress();
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
     }
 
     /**
@@ -220,19 +219,16 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-
         ActivityHelper.showProgressDialog(IRRemoteBrandListActivity.this, "Please Wait...", false);
 
-        String url = ChatApplication.url + Constants.getDeviceBrandRemoteList + "/" + brandList.getBrandId();
-        ChatApplication.logDisplay("url is "+url);
-        new GetJsonTask(this, url, "GET", "", new ICallBack() {
+        SpikeBotApi.getInstance().getIRRemoteDetails(brandList.getBrandId(), new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    ChatApplication.logDisplay("ir result is " + url+" "+result.toString());
                     if (code == 200) {
 
                         if (arrayList != null) {
@@ -272,10 +268,10 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
-                throwable.printStackTrace();
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
+
     }
 }

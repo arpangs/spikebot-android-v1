@@ -41,6 +41,8 @@ import com.spike.bot.activity.Sensor.DoorSensorInfoActivity;
 import com.spike.bot.adapter.AddCameraAdapter;
 import com.spike.bot.adapter.AlertAdapter;
 import com.spike.bot.adapter.filter.CameraNotificationAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -87,7 +89,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
     public int countCamera = 0;
     Dialog dialog;
-    View view_starttime,view_header;
+    View view_starttime, view_header;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -365,7 +367,13 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                 } else if (countCamera == 0) {
                     Toast.makeText(CameraNotificationActivity.this, "Select atleast one or more camera", Toast.LENGTH_SHORT).show();
                 } else {
-                    callAddCamera(et_schedule_on_time.getText().toString(), et_schedule_off_time.getText().toString(), strFlag, cameraAlertList, Integer.parseInt(edIntervalTime.getText().toString()));
+
+                    if (strFlag.equalsIgnoreCase("update")) {
+                        callUpdateCamera(et_schedule_on_time.getText().toString(), et_schedule_off_time.getText().toString(), strFlag, cameraAlertList, Integer.parseInt(edIntervalTime.getText().toString()));
+                    } else {
+                        callAddCamera(et_schedule_on_time.getText().toString(), et_schedule_off_time.getText().toString(), strFlag, cameraAlertList, Integer.parseInt(edIntervalTime.getText().toString()));
+                    }
+
                 }
             }
         });
@@ -379,106 +387,67 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
      */
     private void callAddCamera(String et_schedule_on_time, String et_schedule_off_time, String strflag, CameraAlertList cameraAlertList, int edIntervalTime) {
 
-        if (strflag.equalsIgnoreCase("update")) {
-
-            String onTime = "", offTime = "";
-
-            try {
-                onTime = DateHelper.formateDate(DateHelper.parseTimeSimple(et_schedule_on_time.toString(), DateHelper.DATE_FROMATE_H_M_AMPM), DateHelper.DATE_FROMATE_HH_MM);
-                offTime = DateHelper.formateDate(DateHelper.parseTimeSimple(et_schedule_off_time.toString(), DateHelper.DATE_FROMATE_H_M_AMPM), DateHelper.DATE_FROMATE_HH_MM);
-
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            JSONObject deviceObj = new JSONObject();
-            try {
-
-                deviceObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-                deviceObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-                deviceObj.put("start_time", onTime);
-                deviceObj.put("end_time", offTime);
-                deviceObj.put("alert_interval", edIntervalTime);
-                deviceObj.put("jetson_id", jetson_id);
-                deviceObj.put("camera_notification_id", cameraAlertList.getCameraNotificationId());
-                deviceObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-                deviceObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-                JSONArray roomDeviceArray = new JSONArray();
-                JSONArray array = new JSONArray();
-                for (CameraVO dPanel : getCameraList) {
-
-                    if (dPanel.getIsSelect()) {
-                        JSONObject object = new JSONObject();
-                        object.put("camera_id", dPanel.getCamera_id());
-                        object.put("camera_name", "" + dPanel.getCamera_name());
-                        object.put("camera_url", "" + dPanel.getCamera_url());
-                        object.put("camera_ip", "" + dPanel.getCamera_ip());
-                        object.put("camera_videopath", "" + dPanel.getCamera_videopath());
-                        object.put("camera_icon", "" + dPanel.getCamera_icon());
-                        object.put("camera_vpn_port", "" + dPanel.getCamera_vpn_port());
-                        object.put("user_name", "" + dPanel.getUserName());
-                        object.put("password", "" + dPanel.getPassword());
-
-                        roomDeviceArray.put(object);
-
-                        array.put(dPanel.getCamera_id());
+        ActivityHelper.showProgressDialog(this, "Please Wait...", false);
+        SpikeBotApi.getInstance().callAddCamera(et_schedule_on_time, et_schedule_off_time, edIntervalTime, getCameraList, new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                ActivityHelper.dismissProgressDialog();
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        dialog.dismiss();
+                        Toast.makeText(getApplicationContext().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                        getconfigureData();
+                    } else {
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-                deviceObj.put("camera_ids", array);
-                deviceObj.put("cameraList", roomDeviceArray);
-                deviceObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-
-                addSchedule(deviceObj, strflag);
-            } catch (Exception e) {
-
             }
 
-        } else {
-            String onTime = "", offTime = "";
-            try {
-                onTime = DateHelper.formateDate(DateHelper.parseTimeSimple(et_schedule_on_time.toString(), DateHelper.DATE_FROMATE_H_M_AMPM), DateHelper.DATE_FROMATE_HH_MM);
-                offTime = DateHelper.formateDate(DateHelper.parseTimeSimple(et_schedule_off_time.toString(), DateHelper.DATE_FROMATE_H_M_AMPM), DateHelper.DATE_FROMATE_HH_MM);
-
-            } catch (ParseException e) {
-                e.printStackTrace();
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
+        });
 
-            JSONObject deviceObj = new JSONObject();
-            try {
+    }
 
-                deviceObj.put("start_time", onTime);
-                deviceObj.put("end_time", offTime);
-                deviceObj.put("alert_interval", edIntervalTime);
-                deviceObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-                deviceObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+    // Call update camera
+    private void callUpdateCamera(String et_schedule_on_time, String et_schedule_off_time, String strflag, CameraAlertList cameraAlertList, int edIntervalTime) {
 
-                JSONArray roomDeviceArray = new JSONArray();
-                for (CameraVO dPanel : getCameraList) {
-
-                    if (dPanel.getIsSelect()) {
-                        JSONObject object = new JSONObject();
-                        object.put("camera_id", dPanel.getCamera_id());
-                        object.put("camera_name", "" + dPanel.getCamera_name());
-                        object.put("camera_url", "" + dPanel.getCamera_url());
-                        object.put("camera_ip", "" + dPanel.getCamera_ip());
-                        object.put("camera_videopath", "" + dPanel.getCamera_videopath());
-                        object.put("camera_icon", "" + dPanel.getCamera_icon());
-                        object.put("camera_vpn_port", "" + dPanel.getCamera_vpn_port());
-                        object.put("user_name", "" + dPanel.getUserName());
-                        object.put("password", "" + dPanel.getPassword());
-
-                        roomDeviceArray.put(object);
+        ActivityHelper.showProgressDialog(this, "Please Wait...", false);
+        SpikeBotApi.getInstance().callUpdateCamera(et_schedule_on_time, et_schedule_off_time, cameraAlertList, jetson_id, edIntervalTime, getCameraList, new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                ActivityHelper.dismissProgressDialog();
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        dialog.dismiss();
+                        Toast.makeText(getApplicationContext().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                        getconfigureData();
+                    } else {
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-
-                deviceObj.put("cameraList", roomDeviceArray);
-                deviceObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-                addSchedule(deviceObj, strflag);
-            } catch (Exception e) {
-
             }
-        }
+
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     /*add schudule & update*/
@@ -535,29 +504,12 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             return;
         }
         ActivityHelper.showProgressDialog(CameraNotificationActivity.this, "Please wait... ", false);
-        JSONObject jsonObject = new JSONObject();
-        try {
-            if (jetsoncameranotification) {
-                jsonObject.put("jetson_id", jetson_id);
-                jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-                jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE)));
-            } else {
-                jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-                jsonObject.put("admin", Integer.parseInt(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE)));
-            }
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.getCameraNotificationAlertList;
-        ChatApplication.logDisplay("json camera is " + url + "  " + jsonObject.toString());
-        new GetJsonTask(CameraNotificationActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
+        SpikeBotApi.getInstance().getconfigureData(jetsoncameranotification, jetson_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
-
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -628,11 +580,12 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(CameraNotificationActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
-        }).execute();
+        });
+
     }
 
     /**
@@ -643,44 +596,21 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             Toast.makeText(CameraNotificationActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-        //{"home_controller_device_id":"b8:27:eb:fe:b8:0e", "notification_number": "0", "camera_id":"" ,
-        // "phone_id": "DD50935F-D564-4676-A678-52878E99AEE7", "jetson_id":"" , "admin": 1, "phone_type": "android", "user_id": "1578660700344_goCIb6AP6"}
-        JSONObject object = new JSONObject();
-        try {
 
-
-            object.put("home_controller_device_id", homecontroller_id);
-            object.put("notification_number", "" + 0);
-            if (jetsoncameranotification) {
-                object.put("jetson_id", "" + jetson_id);
-            } else {
-                object.put("camera_id", "" + "");
-                object.put("jetson_id", "" + "");
-            }
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            object.put("admin", Integer.parseInt(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE)));
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
         ActivityHelper.showProgressDialog(CameraNotificationActivity.this, "Please wait...", false);
-        String url = Constants.CAMERA_CLOUD_SERVER_URL + Constants.getUnseenCameraLog;
-
-        ChatApplication.logDisplay("camera is " + url + " " + object);
-        new GetJsonTask(CameraNotificationActivity.this, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().callCameraUnseenLog(homecontroller_id, jetsoncameranotification, jetson_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
-
+                    ActivityHelper.dismissProgressDialog();
+                JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
 
                         //   JSONObject object = result.optJSONObject("data");
 
-                        if (object == null) {
+                        if (result == null) {
                             recyclerView.setVisibility(View.GONE);
                             txtEmptyAlert.setVisibility(View.VISIBLE);
                             recyclerAlert.setVisibility(View.GONE);
@@ -691,15 +621,6 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
                         JSONArray jsonArray = result.optJSONArray("data");
 
-                    /*    for(int i = 0; i < jsonArray .length(); i++)
-                        {
-                            JSONObject object3 = jsonArray.getJSONObject(i);
-                            String comp_id = object3.getString("companyid");
-                            String username = object3.getString("username");
-                            String date = object3.getString("date");
-                            String report_id = object3.getString("reportid");
-                        }
-*/
                         arrayListAlert.clear();
 
 
@@ -715,22 +636,17 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                             recyclerAlert.setVisibility(View.GONE);
                             txt_empty_notification.setVisibility(View.VISIBLE);
                         }
-
-
                     }
-                } catch (Exception e) {
+                } catch (JSONException e) {
                     e.printStackTrace();
-                } finally {
                 }
-
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-                Toast.makeText(CameraNotificationActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
-        }).execute();
+        });
     }
 
     private void setAlert() {
@@ -774,11 +690,11 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
     @Override
     public void updatecameraALert(final String strFlag, final CameraAlertList cameraAlertList, final SwitchCompat switchAlert, final int position) {
-         if (strFlag.equalsIgnoreCase("switch")) {
+        if (strFlag.equalsIgnoreCase("switch")) {
             showAlertDialog(cameraAlertList, strFlag, switchAlert, position);
-        } else if(strFlag.equalsIgnoreCase("update")){
+        } else if (strFlag.equalsIgnoreCase("update")) {
             if (cameraAlertList.getCameraIds() != null) {
-                showBottomSheetDialog(strFlag, cameraAlertList,switchAlert, position);
+                showBottomSheetDialog(strFlag, cameraAlertList, switchAlert, position);
             }
 
         }
@@ -793,7 +709,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
 
 
-        BottomSheetDialog dialog = new BottomSheetDialog(CameraNotificationActivity.this,R.style.AppBottomSheetDialogTheme);
+        BottomSheetDialog dialog = new BottomSheetDialog(CameraNotificationActivity.this, R.style.AppBottomSheetDialogTheme);
         dialog.setContentView(view);
         dialog.show();
 
@@ -835,62 +751,17 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 		"phone_id":"1234",
 		"phone_type":"iOS"
         * */
-        JSONObject deviceObj = new JSONObject();
-        try {
-            if (jetsoncameranotification) {
-                deviceObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-                deviceObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-                deviceObj.put("jetson_id", jetson_id);
-                deviceObj.put("camera_notification_id", cameraAlertList.getCameraNotificationId());
-                deviceObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-                if (strFlag.equalsIgnoreCase("switch")) {
-                    if (cameraAlertList.getIsActive() == 1) {
-                        deviceObj.put("is_active", "0");
-                    } else {
-                        deviceObj.put("is_active", "1");
-                    }
-
-                }
-            } else {
-                deviceObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-                deviceObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-                deviceObj.put("camera_notification_id", cameraAlertList.getCameraNotificationId());
-                deviceObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-                if (strFlag.equalsIgnoreCase("switch")) {
-                    if (cameraAlertList.getIsActive() == 1) {
-                        deviceObj.put("is_active", "0");
-                    } else {
-                        deviceObj.put("is_active", "1");
-                    }
-
-                }
-            }
-
-        } catch (Exception e) {
-
-        }
-
         if (!ActivityHelper.isConnectingToInternet(this)) {
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
 
         ActivityHelper.showProgressDialog(this, "Please Wait.", false);
-
-        String url = "";
-        if (strFlag.equalsIgnoreCase("switch")) {
-            url = ChatApplication.url + Constants.changeCameraAlertStatus;
-        } else {
-            url = ChatApplication.url + Constants.deleteCameraNotification;
-        }
-
-        ChatApplication.logDisplay("switch alert is :" + url + " " + deviceObj);
-        new GetJsonTask(CameraNotificationActivity.this, url, "POST", deviceObj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().deleteCamera(jetson_id, cameraAlertList.getCameraNotificationId(), jetsoncameranotification, strFlag, cameraAlertList, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                //   ActivityHelper.hideKeyboard(CameraNotificationActivity.this);
-                ChatApplication.isScheduleNeedResume = true;
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -905,12 +776,8 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                             }
                             cameraNotificationAdapter.notifyDataSetChanged();
                         }
-
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
                     }
-                } catch (Exception e) {
+                } catch (JSONException e) {
                     e.printStackTrace();
                 } finally {
                     ActivityHelper.dismissProgressDialog();
@@ -918,13 +785,13 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-                Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
-        }).execute();
-    }
+        });
 
+
+    }
 
     private void showAlertDialog(final CameraAlertList cameraAlertList, final String strFlag, final SwitchCompat switchAlert, final int position) {
 
@@ -1004,26 +871,11 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
         ActivityHelper.showProgressDialog(this, "Please Wait...", false);
 
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("camera_id", "");
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put("log_type", "camera");
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.logsfind;
-
-        ChatApplication.logDisplay("update unread cameralog url is " + url + " " + jsonObject);
-        new GetJsonTask(CameraNotificationActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
+        SpikeBotApi.getInstance().callupdateUnReadCameraLogs(new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-                    ChatApplication.logDisplay("url is " + result);
                     if (b) {
                         Intent intent = new Intent(CameraNotificationActivity.this, CameraDeviceLogActivity.class);
                         if (jetsoncameranotification) {
@@ -1047,11 +899,11 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(CameraNotificationActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
-        }).execute();
+        });
     }
 
     @Override

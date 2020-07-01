@@ -24,6 +24,8 @@ import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Main2Activity;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.camera.CameraPlayer;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -149,32 +151,15 @@ public class CameraGridActivity extends AppCompatActivity {
     /**
      * Get all camera list based on user_id
      */
-
     public void getAllCameraList() {
         ActivityHelper.showProgressDialog(CameraGridActivity.this, "Please Wait...", false);
 
-        String url = ChatApplication.url + Constants.getAllCameraToken;
-
-        JSONObject object = new JSONObject();
-        try {
-            object.put("admin", Integer.parseInt(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE)));
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            if(isCamera){
-                object.put("jetson_id","");
-            } else{
-                object.put("jetson_id",jetson_id);
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("url is " + url + " " + object);
-        new GetJsonTask(this, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().getAllCameraList(jetson_id, isCamera, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                int code = 0;
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    int code = 0;
+                    JSONObject result = new JSONObject(stringResponse);
                     code = result.getInt("code");
                     String message = result.getString("message");
                     ChatApplication.logDisplay("result is " + result.toString());
@@ -189,22 +174,17 @@ public class CameraGridActivity extends AppCompatActivity {
                     } else {
                         ChatApplication.showToast(CameraGridActivity.this, "" + message);
                     }
-                } catch (JSONException e) {
+                }catch (JSONException e) {
                     e.printStackTrace();
-                } finally {
-                    ActivityHelper.dismissProgressDialog();
                 }
-
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(CameraGridActivity.this, "No camera found.");
             }
-        }).execute();
-
-
+        });
     }
 
     /*set view*/

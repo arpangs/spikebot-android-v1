@@ -29,6 +29,8 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.AddMoodActivity;
 import com.spike.bot.adapter.mood.MoodDeviceListLayoutHelper;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -214,26 +216,11 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
             return;
         }
 
-        String url = ChatApplication.url + Constants.GET_DEVICES_LIST;
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("room_type", "room");
-            jsonObject.put("only_on_off_device", 1);
-            jsonObject.put("only_rooms_of_beacon_scanner", 1);
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("get beacon room is " + url + "     " + jsonObject.toString());
-
-        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().getBeaconRoomList(new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
-                    ChatApplication.logDisplay("mood list is room " + result);
+                    JSONObject result = new JSONObject(stringResponse);
                     JSONObject dataObject = result.getJSONObject("data");
                     JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
                     if (roomArray != null && roomArray.length() > 0) {
@@ -254,11 +241,11 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
-                //  ChatApplication.showToast(BeaconConfigActivity.this, getResources().getString(R.string.something_wrong1));
-                ActivityHelper.dismissProgressDialog();
+            public void onData_FailureResponse() {
+
             }
-        }).execute();
+        });
+
     }
 
     /**
@@ -271,57 +258,24 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
             return;
         }
 
-        ActivityHelper.showProgressDialog(this, "Please wait.", true);
-        String url = "";
-        if (editBeacon) {
-            url = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
-        } else {
-            url = ChatApplication.url + Constants.deviceadd;
-        }
-
-
         deviceVOArrayListTemp.clear();
         deviceVOArrayListTemp.addAll(deviceVOArrayList);
         deviceVOArrayList.clear();
         deviceVOArrayList = removeDuplicates(deviceVOArrayListTemp);
 
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("device_name", beaconname);
-
-            if (editBeacon) {
-                obj.put("device_id", beaconmodel.getDeviceId());
-            } else {
-                obj.put("module_id", moduleid);
-            }
-            obj.put("module_type", "beacon");
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-
-            ArrayList<String> deviceIdList = new ArrayList<>();
-            for (DeviceVO dPanel : deviceVOArrayList) {
-                deviceIdList.add(dPanel.getPanel_device_id());
-            }
-
-            JSONArray array = new JSONArray(deviceIdList);
-            obj.put("related_devices", array);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+        ArrayList<String> deviceIdList = new ArrayList<>();
+        for (DeviceVO dPanel : deviceVOArrayList) {
+            deviceIdList.add(dPanel.getPanel_device_id());
         }
 
+        JSONArray array = new JSONArray(deviceIdList);
 
-        ChatApplication.logDisplay("obj : " + url + "  " + obj.toString());
-
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        ActivityHelper.showProgressDialog(this, "Please wait.", true);
+        SpikeBotApi.getInstance().saveBeacon(beaconname, beaconmodel.getDeviceId(), moduleid, array, editBeacon, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
-                ChatApplication.logDisplay("obj result: " + result);
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
-                    //{"code":200,"message":"success"}
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
@@ -329,7 +283,13 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
 
                         if (!TextUtils.isEmpty(message)) {
                             Common.showToast(message);
+                            //finish();
+
+                            Intent i = new Intent(BeaconConfigActivity.this,BeaconListActivity.class);
+                            startActivity(i);
                             finish();
+
+
                         }
                         ActivityHelper.dismissProgressDialog();
 
@@ -345,11 +305,11 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
-                ChatApplication.logDisplay("obj result: error " + error);
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
+
     }
 
 
@@ -433,39 +393,7 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
                 }
             }
         }
-
-   /*     *//**sensor unselect condition *//*
-        for (int i = 0; i < roomList.size(); i++) {
-            for (int j = 0; j < roomList.get(i).getPanelList().size(); j++) {
-
-                if (roomList.get(i).getPanelList().get(j).getDeviceList().size() == 0) {
-                    roomList.get(i).getPanelList().get(j).setPanelName("");
-                }
-
-                for (int k = 0; k < roomList.get(i).getPanelList().get(j).getDeviceList().size(); k++) {
-
-                    if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).isSensor() && roomList.get(i).getPanelList().get(j).isActivePanel()) {
-                        if (roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_type().equalsIgnoreCase("temp_sensor") ||
-                                roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("gas_sensor") ||
-                                roomList.get(i).getPanelList().get(j).getDeviceList().get(k).getSensor_icon().equalsIgnoreCase("door_sensor"))
-                                                {
-                            roomList.get(i).getPanelList().get(j).getDeviceList().get(k).setSelected(false);
-//                            roomList.get(i).getPanelList().get(j).setActivePanel(false);
-                        }
-                    }
-                }
-            }
-        }*/
-
-
-        //sort room list vie selected device list available
         sortList(roomList);
-
-       /* int spanCount = 2; // 3 columns
-        int spacing = 100; // 50px
-        boolean includeEdge = false;
-        mMessagesView.addItemDecoration(new SpacesItemDecoration(spanCount, spacing, includeEdge));
-*/
 
         deviceListLayoutHelper = new MoodDeviceListLayoutHelper(BeaconConfigActivity.this, mMessagesView, this, Constants.SWITCH_NUMBER, isBeaconListAdapter);
         deviceListLayoutHelper.addSectionList(roomList);
@@ -514,14 +442,12 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
      */
     private void getDeviceDetails(String original_room_device_id) {
 
-        String url = ChatApplication.url + Constants.GET_MOOD_DEVICE_DETAILS + "/" + original_room_device_id;
-
-        new GetJsonTask2(BeaconConfigActivity.this, url, "GET", "", new ICallBack2() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().getDeviceDetails(original_room_device_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                ChatApplication.logDisplay("onSuccess :  " + result.toString());
+            public void onData_SuccessfulResponse(String stringResponse) {
                 int code = 0;
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -534,14 +460,13 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error, int responseCode) {
-                ChatApplication.logDisplay("onFailure " + error);
+            public void onData_FailureResponse() {
+
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        });
     }
 
 

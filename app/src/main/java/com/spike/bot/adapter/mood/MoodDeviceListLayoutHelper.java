@@ -124,7 +124,7 @@ public class MoodDeviceListLayoutHelper implements SectionStateChangeListener {
         section.isExpanded = isOpen;
 
 
-        if(!isOpen){
+        /*if(!isOpen){
 
             if(ListUtils.arrayListRoom.size()>0){
 
@@ -139,7 +139,7 @@ public class MoodDeviceListLayoutHelper implements SectionStateChangeListener {
 
         }else{
             ListUtils.arrayListRoom.add(section);
-        }
+        }*/
 
 
 

@@ -112,6 +112,9 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recycler.setLayoutManager(linearLayoutManager);
 
+        beaconScanListAdapter = new BeaconScanListAdapter(scanresult, BeaconActivity.this);
+        recycler.setAdapter(beaconScanListAdapter);
+
     }
 
     @Override
@@ -166,7 +169,7 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
             ScanSettings settings = new ScanSettings.Builder()
                     .setLegacy(false)
                     .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                    .setReportDelay(100)
+                    .setReportDelay(1000)
                     .setUseHardwareBatchingIfSupported(true)
                     .build();
 
@@ -181,36 +184,39 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
                 public void onBatchScanResults(@NonNull List<ScanResult> results) {
                     super.onBatchScanResults(results);
                     try {
-                        scanresult.clear();
-                        scanresult = new ArrayList<>();
-                        if (results != null) {
+//                        scanresult.clear();
+//                        scanresult = new ArrayList<>();
+                        if (results != null)
+                        {
                             progressDialog.dismiss();
                             for (ScanResult result : results) {
-                                if (scanresult.size() == 0) {
+                                if (scanresult.size() == 0)
+                                {
                                     scanresult.addAll(results);
-                                } /*else {
+                                } else {
+                                    boolean isFound = false;
+                                    int foundPosition= -1;
                                     for (int i = 0; i < scanresult.size(); i++)
                                     {
-                                        if (!scanresult.get(i).getDevice().getAddress().equalsIgnoreCase(results.get(i).getDevice().getAddress())) {
-                                            scanresult.addAll(results);
-                                        } else if (scanresult.get(i).getDevice().getAddress().equalsIgnoreCase(results.get(i).getDevice().getAddress())
-                                                && scanresult.get(i).getRssi() != results.get(i).getRssi()) {
-                                            scanresult.set(i, result);
+                                        if (scanresult.get(i).getDevice().getAddress().equalsIgnoreCase(result.getDevice().getAddress())) {
+                                            isFound = true;
+                                            foundPosition = i;
+                                            break;
                                         }
 
                                     }
+                                    if (isFound) {
+                                        scanresult.set(foundPosition, result);
 
+                                    } else {
+                                        scanresult.add(result);
+                                    }
 
-                                }*/
-                                beaconScanListAdapter = new BeaconScanListAdapter(scanresult, BeaconActivity.this);
-                                recycler.setAdapter(beaconScanListAdapter);
-
+                                    beaconScanListAdapter.notifyDataSetChanged();
+                                }
                             }
 
                         }
-
-
-                        setSyncRange();
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -261,37 +267,6 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
         }
 
     }
-
-    private void setSyncRange() {
-        try {
-            if (scanresult.size() > 0) {
-                for (int i = 0; i < scanresult.size(); i++) {
-                    ChatApplication.logDisplay("name is " + scanresult.get(i).getScanRecord().getDeviceName());
-                    if (scanresult.get(i).getRssi() > -100) {
-//                    itemList.get(i).setOnOff(true);
-//                    itemListTemp.get(i).setOnOff(true);
-                   /* if(!dialog.isShowing()){
-                        showDialog1(i);
-                    }*/
-                        beaconScanListAdapter.updatebeaconlistitem(getBeaconListSortedByAddress());
-
-
-                    } else if (scanresult.get(i).getRssi() > -20) {
-                        Log.d("System out", "mLeScanCallback is false found " + itemListTemp.get(i).isOnOff());
-
-                        if (itemListTemp.get(i).isOnOff()) {
-                            itemListTemp.get(i).setOnOff(false);
-                            itemList.get(i).setOnOff(false);
-                        }
-
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 
     /**
      * save Beacon

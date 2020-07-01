@@ -39,9 +39,9 @@
 
         <ImageView
             android:id="@+id/imgEditRepeater"
-            android:layout_width="@dimen/_15sdp"
-            android:layout_height="@dimen/_15sdp"
-            android:src="@drawable/edit_gray"/>
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:src="@drawable/edit_blue"/>
 
     </LinearLayout>
 

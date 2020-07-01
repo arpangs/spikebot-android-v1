@@ -322,7 +322,7 @@
                                 android:layout_height="27dp"
                                 android:layout_alignParentTop="true"
                                 android:layout_marginLeft="@dimen/_32sdp"
-                                android:background="@drawable/badge_background"
+                                android:background="@drawable/badge_background_beacon"
                                 android:gravity="center"
                                 android:text="0"
                                 android:textColor="#FFF"

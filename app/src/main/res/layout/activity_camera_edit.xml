@@ -327,17 +327,6 @@
         </LinearLayout>
 
 
-
-        <Button
-            android:id="@+id/btnDelete"
-            android:layout_marginTop="24dp"
-            android:text="DELETE"
-            android:textColor="@color/automation_white"
-            android:background="@drawable/button_red_border"
-            android:layout_width="match_parent"
-            android:visibility="gone"
-            android:layout_height="wrap_content" />
-
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

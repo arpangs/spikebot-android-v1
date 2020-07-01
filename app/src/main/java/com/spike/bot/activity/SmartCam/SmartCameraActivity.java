@@ -39,6 +39,8 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Camera.CameraEdit;
 import com.spike.bot.adapter.JetSonAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -214,27 +216,13 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
             return;
         }
 
-        JSONObject object = new JSONObject();
-        try {
-            object.put("key", roomName.getText().toString()); /*key is spike123*/
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
         ActivityHelper.showProgressDialog(this, "Searching Device attached", false);
-
-        String url = ChatApplication.url + Constants.validatecamerakey;
-
-        new GetJsonTask(this, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().saveJetsonCameraKey(roomName.getText().toString(), new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay("getconfigureData onSuccess " + result.toString());
                 try {
-                    //{"code":200,"message":"success"}
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
@@ -254,11 +242,11 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(SmartCameraActivity.this,getResources().getString(R.string.something_wrong1));
             }
-        }).execute();
+        });
     }
 
     /**
@@ -415,71 +403,34 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
             ChatApplication.showToast(SmartCameraActivity.this, getResources().getString(R.string.disconnect));
             return;
         }
+        SpikeBotApi.getInstance().addCameraCall(camera_name,camera_ip,user_name,password,confidence_score_day,confidence_score_night,video_path,jetson_id,isflag,
+                new DataResponseListener() {
+                    @Override
+                    public void onData_SuccessfulResponse(String stringResponse) {
+                        ActivityHelper.dismissProgressDialog();
 
-        JSONObject obj = new JSONObject();
-        try {
-
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            obj.put("user_id", Common.getPrefValue(SmartCameraActivity.this, Constants.USER_ID));
-            obj.put("camera_name", camera_name);
-            obj.put("camera_ip", camera_ip);
-
-            obj.put("user_name", user_name);
-            obj.put("password", password);
-            obj.put("confidence_score_day",confidence_score_day);
-            obj.put("confidence_score_night",confidence_score_night);
-
-//            if(isflag){
-//                obj.put("camera_videopath", video_path);
-//                obj.put("camera_id",arrayList.get(position).getCamera_id());
-//            }else {
-                obj.put("video_path", video_path);
-                obj.put("jetson_device_id", jetson_id);
-//            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url="";
-        if(isflag){
-            url=ChatApplication.url+Constants.SAVE_EDIT_CAMERA;
-        }else {
-            url = ChatApplication.url + Constants.ADD_CAMERA;
-        }
-
-        ChatApplication.logDisplay("url is "+url+" "+obj);
-
-        new GetJsonTask(SmartCameraActivity.this, url, "POST", obj.toString(), new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay("onSuccess " + result.toString());
-                try {
-                    //{"code":200,"message":"success"}
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    ChatApplication.showToast(SmartCameraActivity.this, message);
-                    if (code == 200) {
-                        dialog.dismiss();
-                        ChatApplication.keyBoardHideForce(SmartCameraActivity.this);
-                        ChatApplication.showToast(SmartCameraActivity.this, message);
-                        callGetSmarCamera();
+                        try {
+                            JSONObject result = new JSONObject(stringResponse);
+                            int code = result.getInt("code");
+                            String message = result.getString("message");
+                            ChatApplication.showToast(SmartCameraActivity.this, message);
+                            if (code == 200) {
+                                dialog.dismiss();
+                                ChatApplication.keyBoardHideForce(SmartCameraActivity.this);
+                                ChatApplication.showToast(SmartCameraActivity.this, message);
+                                callGetSmarCamera();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
 
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay("onFailure " + error);
-                ChatApplication.showToast(SmartCameraActivity.this,getResources().getString(R.string.something_wrong1));
-            }
-        }).execute();
-
+                    @Override
+                    public void onData_FailureResponse() {
+                        ActivityHelper.dismissProgressDialog();
+                        ChatApplication.showToast(SmartCameraActivity.this,getResources().getString(R.string.something_wrong1));
+                    }
+                });
     }
 
 
@@ -492,27 +443,11 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
     /*call smart camera */
     private void callGetSmarCamera() {
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
-        JSONObject obj = new JSONObject();
-        try {
-
-            obj.put("jetson_device_id", jetson_id);
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.cameralistbyjetson;
-
-        ChatApplication.logDisplay("jetson camera list" + url + obj);
-
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().callGetSmartCamera(jetson_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     ChatApplication.logDisplay("response is "+result);
                     String message = result.getString("message");
@@ -537,8 +472,6 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
                             showView(false);
                         }
 
-
-
                         ChatApplication.logDisplay("response is "+result);
                     }else {
                         showView(false);
@@ -552,36 +485,20 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 showView(false);
                 ActivityHelper.dismissProgressDialog();
-
             }
-        }).execute();
+        });
     }
 
     /*delete jetson camera*/
     private void deleteJetsoncamera(int position) {
-
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("camera_id", arrayList.get(position).getCamera_id());
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url= ChatApplication.url + Constants.DELETE_CAMERA;
-
-        ChatApplication.logDisplay("door sensor " + url + obj);
-
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().deleteJetsoncamera(arrayList.get(position).getCamera_id(), new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     ChatApplication.logDisplay("response is "+result);
                     String message = result.getString("message");
@@ -594,16 +511,14 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
                     e.printStackTrace();
                 } finally {
                     ActivityHelper.dismissProgressDialog();
-
                 }
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-
             }
-        }).execute();
+        });
     }
 
     /*set adapter*/

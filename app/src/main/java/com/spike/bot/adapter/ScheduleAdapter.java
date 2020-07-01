@@ -320,7 +320,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                         holder.img_moon.setImageResource(R.drawable.moon);
                     }
 
-                } else if (lastAMPM.contains("PM")) {
+                } else if (lastAMPM.contains("PM"))
+                {
                     String lastamon="";
                     if(scheduleVO.getSchedule_type() == 1){
                          lastamon = Common.getConvertDateForScheduleTimer(scheduleVO.getSchedule_device_on_time());
@@ -425,13 +426,24 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     String splitoff[] = lastamooff.split(":");
                     int offtime = Integer.parseInt(splitoff[0]);
 
-                    if (offtime > 6) {
+                   /* if (offtime > 6) {
                         holder.ll_off.setBackgroundResource(R.drawable.blue_border_fill_rectangle);
                         holder.img_sun.setImageResource(R.drawable.moon);
 
                     } else {
                         holder.ll_off.setBackgroundResource(R.drawable.blue_border_yellow_right);
                         holder.img_sun.setImageResource(R.drawable.sun);
+                    }*/
+
+                    if (offtime == 12 || offtime == 1 || offtime == 2 || offtime == 3 || offtime == 4 ||
+                            offtime == 5 || offtime == 6) {
+
+                        holder.ll_off.setBackgroundResource(R.drawable.blue_border_yellow_right);
+                        holder.img_sun.setImageResource(R.drawable.sun);
+
+                    } else {
+                        holder.ll_off.setBackgroundResource(R.drawable.blue_border_fill_rectangle);
+                        holder.img_sun.setImageResource(R.drawable.moon);
                     }
 
 
@@ -442,10 +454,10 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     holder.img_sun.setImageResource(R.drawable.moon);*/
                 }
 
-                if ((lastAMPM.equalsIgnoreCase("AM") || lastAMPM.equalsIgnoreCase("am")) && scheduleVO.getSchedule_device_on_time().equalsIgnoreCase("")) {
+               /* if ((lastAMPM.equalsIgnoreCase("AM") || lastAMPM.equalsIgnoreCase("am")) && scheduleVO.getSchedule_device_on_time().equalsIgnoreCase("")) {
                     holder.ll_off.setBackgroundResource(R.drawable.yellow_border_fill_rectangle);
                     holder.img_sun.setImageResource(R.drawable.sun);
-                }
+                }*/
 
             } else {
 

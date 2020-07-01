@@ -38,6 +38,8 @@ import com.spike.bot.R;
 import com.spike.bot.activity.TTLock.YaleLockInfoActivity;
 import com.spike.bot.adapter.beacon.BeaconDeviceListLayoutHelper;
 import com.spike.bot.adapter.mood.MoodDeviceListLayoutHelper;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -94,6 +96,8 @@ public class BeaconDetailActivity extends AppCompatActivity {
         recycler_room = findViewById(R.id.recycler_roomlist);
         ll_beacon_list = findViewById(R.id.ll_beacon_list);
 
+        room_id = getIntent().getStringExtra("room_id");
+
         toolbar.setTitle("Beacons");
         startSocketConnection();
         getRoomList();
@@ -139,29 +143,12 @@ public class BeaconDetailActivity extends AppCompatActivity {
         }
 
         ActivityHelper.showProgressDialog(BeaconDetailActivity.this, "Please Wait", true);
-
-        String url = ChatApplication.url + Constants.GET_BEACON_LOCATION;
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-            if (roomListString.equals("all")) {
-                jsonObject.put("room_id", "");
-            } else {
-                jsonObject.put("room_id", room_id);
-            }
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("get beacon room is " + url + "     " + jsonObject.toString());
-
-        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().getBeaconLocationList(room_id, roomListString, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
                     ActivityHelper.dismissProgressDialog();
+                    JSONObject result = new JSONObject(stringResponse);
                     ChatApplication.logDisplay("beacon list is room " + result);
                     //  JSONObject dataObject = result.getJSONObject("data");
                     JSONArray roomArray = result.getJSONArray("data");
@@ -185,11 +172,11 @@ public class BeaconDetailActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
-                //  ChatApplication.showToast(BeaconConfigActivity.this, getResources().getString(R.string.something_wrong1));
+            public void onData_FailureResponse() {
+                ChatApplication.showToast(BeaconDetailActivity.this, getResources().getString(R.string.something_wrong1));
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
     }
 
     /* set view of room list
@@ -200,7 +187,6 @@ public class BeaconDetailActivity extends AppCompatActivity {
 
         if (moodVO != null) {
 
-            //   List<String> deviceVOList = new ArrayList<>();
 
 
             for (int i = 0; i < moodVO.getPanelList().size(); i++) {
@@ -209,32 +195,10 @@ public class BeaconDetailActivity extends AppCompatActivity {
                     //   deviceVOList.add(moodVO.getPanelList().get(i).getDeviceList().get(j).getDeviceId());
                 }
             }
-
-            moodVO.setExpanded(false);
-           /* for (RoomVO roomVO : roomList) {
-
-                List<DeviceVO> deviceVOList = roomVO.getDeviceList();
-
-                for (DeviceVO deviceVO : deviceVOList) {
-
-                    if (deviceVO.getDeviceId().equalsIgnoreCase(deviceVO.getDeviceId())) {
-                        roomVO.setExpanded(true);
-                        deviceVO.setSelected(true);
-                    }
-
-                }
-            }*/
         }
-
 
         //sort room list vie selected device list available
         sortList(roomList);
-
-       /* int spanCount = 2; // 3 columns
-        int spacing = 100; // 50px
-        boolean includeEdge = false;
-        mMessagesView.addItemDecoration(new SpacesItemDecoration(spanCount, spacing, includeEdge));
-*/
 
         deviceListLayoutHelper = new BeaconDeviceListLayoutHelper(BeaconDetailActivity.this, recycler_room, Constants.SWITCH_NUMBER, true);
         deviceListLayoutHelper.addSectionList(roomList);
@@ -251,27 +215,12 @@ public class BeaconDetailActivity extends AppCompatActivity {
             return;
         }
 
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("room_type", "room");
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.roomslist;
-
-        ChatApplication.logDisplay("un assign is " + url + " " + jsonObject);
-
-        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().getRoomList("room", new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-                    ChatApplication.logDisplay("un assign is " + result);
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -296,10 +245,11 @@ public class BeaconDetailActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
+
     }
 
 

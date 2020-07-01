@@ -72,14 +72,21 @@ public class BeaconAddAdapter extends RecyclerView.Adapter<BeaconAddAdapter.Beac
               holder.mRoomName.setText("[ " + scanner.getRoom().getRoomName() + " ]");
           }
 
+          if(scanner.getIsActive().equals("n")){
+              holder.img_inactive.setVisibility(View.VISIBLE);
+          } else{
+              holder.img_inactive.setVisibility(View.GONE);
+          }
+
        /*   holder.mbeaconListAdapter = new BeaconScannerAddBeaconList(scanner.getRemoteList());
           holder.mbeaconList.setAdapter(holder.mbeaconListAdapter);*/
 
-
+         holder.mbeaconEdit.setId(position);
           holder.mbeaconEdit.setOnClickListener(new View.OnClickListener() {
               @Override
               public void onClick(View v) {
-                  beaconAction.onEdit(position, scanner);
+
+                  beaconAction.onEdit(position, ScannerList.get(holder.mbeaconEdit.getId()));
               }
           });
 
@@ -106,7 +113,7 @@ public class BeaconAddAdapter extends RecyclerView.Adapter<BeaconAddAdapter.Beac
     class BeaconViewHolder extends RecyclerView.ViewHolder {
 
         private TextView mscannerName, mRoomName;
-        private ImageView mbeaconEdit, mbeaconDelete;
+        private ImageView mbeaconEdit, mbeaconDelete,img_inactive;
         private RecyclerView mbeaconList;
         private BeaconScannerAddBeaconList mbeaconListAdapter;
 
@@ -116,6 +123,7 @@ public class BeaconAddAdapter extends RecyclerView.Adapter<BeaconAddAdapter.Beac
             mRoomName = itemView.findViewById(R.id.room_name);
             mbeaconEdit = itemView.findViewById(R.id.iv_room_panel_add);
             mbeaconDelete = itemView.findViewById(R.id.iv_room_panel_delete);
+            img_inactive = itemView.findViewById(R.id.img_inactive);
 
             mbeaconList = itemView.findViewById(R.id.list_edit_device);
             mbeaconList.setLayoutManager(new GridLayoutManager(mContext, 4));

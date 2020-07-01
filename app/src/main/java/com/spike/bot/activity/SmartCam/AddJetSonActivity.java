@@ -32,6 +32,8 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Repeatar.RepeaterActivity;
 import com.spike.bot.adapter.JetSonAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -179,29 +181,14 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
     }
 
     /*get jetson api call*/
-    private void callGetJetson() {
+    private void callGetJetson()
+    {
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
-        JSONObject obj = new JSONObject();
-        try {
-
-            obj.put("device_name", "jetson");
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.jetsonlist;
-
-        ChatApplication.logDisplay("door sensor" + url + obj);
-
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().callGetJetson(new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     ChatApplication.logDisplay("response is "+result);
                     String message = result.getString("message");
@@ -233,12 +220,11 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 showView(false);
                 ActivityHelper.dismissProgressDialog();
-
             }
-        }).execute();
+        });
     }
 
     private void setAdapter() {
@@ -250,47 +236,11 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
     /*add jetson api call*/
     private void callAddJetson(String devicename, String ipaddress, Dialog dialog, boolean isFlag,  int position) {
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
-        JSONObject obj = new JSONObject();
-        try {
-
-            //{
-            //    "user_id": "1568463607921_AyMe7ek9e",
-            //    "phone_id": "asdf",
-            //    "phone_type": "IOS",
-            //    "jetson_id": "JETSON-1579775948513_u4dPheIQ4",
-            //    "jetson_name": "Jetson",
-            //    "jetson_ip": "192.168.175.121"
-            //}
-            if(isFlag){
-                //pass jetson_ip, device_name as params and device_id
-                obj.put("jetson_id", arrayList.get(position).getJetsonId());
-            }
-
-            obj.put("jetson_name", devicename);
-            obj.put("jetson_ip",ipaddress);
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url="";
-
-        if(isFlag){
-            url = ChatApplication.url + Constants.jetsonupdate;
-        }else {
-            url = ChatApplication.url + Constants.jetsonadd;
-        }
-
-        ChatApplication.logDisplay("door sensor " + url + obj);
-
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().callAddJetson(arrayList.get(position).getJetsonId(),devicename,ipaddress,isFlag, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     ChatApplication.logDisplay("response is "+result);
                     String message = result.getString("message");
@@ -309,35 +259,20 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
 
             }
-        }).execute();
+        });
     }
 
     /*delete jetson*/
     private void deleteJetson(int position) {
-
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("jetson_id", arrayList.get(position).getJetsonId());
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url= ChatApplication.url + Constants.jetsondelete;
-
-        ChatApplication.logDisplay("door sensor " + url + obj);
-
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().deleteJetson(arrayList.get(position).getJetsonId(), new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     ChatApplication.logDisplay("response is "+result);
                     String message = result.getString("message");
@@ -355,11 +290,10 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-
             }
-        }).execute();
+        });
     }
 
     @Override

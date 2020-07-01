@@ -32,6 +32,8 @@ import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -222,19 +224,15 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
             return;
         }
 
-        IRRemoteOnOffReq irRemoteOnOffReq = new IRRemoteOnOffReq(mIRBlasterModuleId, mCodeSet, (RESPOND_CONST == 1) ? "ON" : "OFF"
-                , APIConst.PHONE_ID_VALUE, APIConst.PHONE_TYPE_VALUE, onOffValue);
+        IRRemoteOnOffReq irRemoteOnOffReq = new IRRemoteOnOffReq(mIRBlasterModuleId, mCodeSet, (RESPOND_CONST == 1) ? "ON" : "OFF", APIConst.PHONE_ID_VALUE, APIConst.PHONE_TYPE_VALUE, onOffValue);
         Gson gson = new Gson();
         String mStrOnOffReq = gson.toJson(irRemoteOnOffReq);
 
-        ChatApplication.logDisplay("Request : " + mStrOnOffReq);
-
-        String url = ChatApplication.url + Constants.SEND_ON_OFF_COMMAND;
-        new GetJsonTask(this, url, "POST", mStrOnOffReq, new ICallBack() {
+        SpikeBotApi.getInstance().sendOnOfOffRequest(mIRBlasterModuleId, (RESPOND_CONST == 1) ? "ON" : "OFF", onOffValue, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     ChatApplication.logDisplay("response : " + result.toString());
                     if (result != null && !TextUtils.isEmpty(result.toString())) {
                         int code = result.getInt("code");
@@ -258,10 +256,11 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
-                throwable.printStackTrace();
+            public void onData_FailureResponse() {
+
             }
-        }).execute();
+        });
+
     }
 
     /*save remote dialog*/
@@ -382,7 +381,9 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
             return;
         }
 
-        ActivityHelper.showProgressDialog(IRRemoteConfigActivity.this, "Please Wait...", false);
+
+
+      /*  ActivityHelper.showProgressDialog(IRRemoteConfigActivity.this, "Please Wait...", false);
         AddRemoteReq addRemoteReq = new AddRemoteReq(Common.getPrefValue(this, Constants.USER_ID), mIRDeviceId, mIrDeviceType, mBrandId, mIRBrandType, mCodeSet,
                 remoteName, mIRBLasterId, mIRBlasterModuleId, mRoomId,  mSpinnerMode.getSelectedItem().toString()+"-"+mRemoteDefaultTemp.getText().toString().trim(),
                 APIConst.PHONE_ID_KEY, APIConst.PHONE_TYPE_VALUE, brand_name, remote_codeset_id, model_number, onOffValue);
@@ -390,44 +391,41 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
 
         Gson gson = new Gson();
         String mStrOnOffReq = gson.toJson(addRemoteReq);
-        String url = ChatApplication.url + Constants.deviceadd;
+        String url = ChatApplication.url + Constants.deviceadd;*/
 
-        ChatApplication.logDisplay("Request : "+url +" "+ mStrOnOffReq);
+        SpikeBotApi.getInstance().saveremote(mIRDeviceId, mIrDeviceType, remoteName, mIRBLasterId, mIRBlasterModuleId, mRoomId, mSpinnerMode.getSelectedItem().toString() + "-" + mRemoteDefaultTemp.getText().toString().trim(),
+                mBrandId, mCodeSet, model_number, onOffValue, new DataResponseListener() {
+                    @Override
+                    public void onData_SuccessfulResponse(String stringResponse) {
+                        try {
+                            JSONObject result = new JSONObject(stringResponse);
+                            int code = result.getInt("code");
+                            String message = result.getString("message");
 
-        new GetJsonTask(this, url, "POST", mStrOnOffReq, new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
+                            if (code == 200) {
+                                ChatApplication.isEditActivityNeedResume = true;
+                                hideSaveDialog();
+                                ChatApplication.logDisplay("remote res : " + result.toString());
+                                hideRespondView();
+                                Intent returnIntent = new Intent();
+                                setResult(Activity.RESULT_OK, returnIntent);
+                                finish();
+                            } else {
+                                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                            }
 
-                try {
-
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-
-                    if (code == 200) {
-                        ChatApplication.isEditActivityNeedResume = true;
-                        hideSaveDialog();
-                        ChatApplication.logDisplay("remote res : " + result.toString());
-                        hideRespondView();
-                        Intent returnIntent = new Intent();
-                        setResult(Activity.RESULT_OK, returnIntent);
-                        finish();
-                    } else {
-                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } finally {
+                            ActivityHelper.dismissProgressDialog();
+                        }
                     }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                    ActivityHelper.dismissProgressDialog();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
-                throwable.printStackTrace();
-            }
-        }).execute();
+                    @Override
+                    public void onData_FailureResponse() {
+                        ActivityHelper.dismissProgressDialog();
+                    }
+                });
     }
 
     @Override

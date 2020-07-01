@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +41,9 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Sensor.DoorSensorInfoActivity;
 import com.spike.bot.adapter.AddUnassignedPanelAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.RestClient;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -94,6 +98,8 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
         type=getIntent().getStringExtra("type");
         bindViews();
 
+       // getRoomList();
+
         getRoomList();
 
     }
@@ -106,35 +112,18 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
     }
 
     /*get room list */
-    private void getRoomList() {
+    private void getRoomList(){
         if (!ActivityHelper.isConnectingToInternet(this)) {
             showToast("" + R.string.disconnect);
             return;
         }
 
-        roomdeviceList = new ArrayList<>();
-
-        ActivityHelper.showProgressDialog(this, "Loading...", false);
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("room_type", "room");
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.roomslist;
-
-        ChatApplication.logDisplay("un assign is "+url+" "+jsonObject);
-
-        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().getRoomList("room", new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
+
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     ChatApplication.logDisplay("un assign is "+result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -152,17 +141,18 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
+            public void onData_FailureResponse() {
+
             }
-        }).execute();
+        });
+
     }
 
-
-    /*get all unassing list*/
+    /*get all unassign list*/
     private void getUnAssignedList() {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
@@ -170,31 +160,18 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
             return;
         }
 
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put("module_type", type);
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.deviceunassigned;
-
-        ChatApplication.logDisplay("un assign is "+url+" "+jsonObject);
-
-        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() {
+        ActivityHelper.showProgressDialog(AllUnassignedPanel.this, "Please wait...", false);
+        SpikeBotApi.getInstance().getUnAssignedList(type, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     ChatApplication.logDisplay("un assign is "+result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
-                       setAdapter(result.optString("data"));
+                        setAdapter(result.optString("data"));
 
                     } else {
                         if (!TextUtils.isEmpty(message)) {
@@ -216,13 +193,14 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
     }
 
     /*set view*/
@@ -247,7 +225,6 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
         if (id == android.R.id.home) {
             onBackPressed();
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -355,45 +332,35 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String webUrl = ChatApplication.url + Constants.devicemoduledelete;
 
-        JSONObject jsonNotification = new JSONObject();
-        try {
-
-            jsonNotification.put("module_id", module_id);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("delete device url is " + webUrl + " " + jsonNotification);
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().DeleteDevice(module_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-                    ChatApplication.logDisplay("delete device success " + result);
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    if (!TextUtils.isEmpty(message)) {
-                        showToast(message);
-                    }
-                    if (code == 200) {
-                        getRoomList();
-                    }
+                    JSONObject result = new JSONObject(stringResponse);
+                    ActivityHelper.dismissProgressDialog();
+                        ChatApplication.logDisplay("delete device success " + result);
+                        int code = result.getInt("code");
+                        String message = result.getString("message");
+                        if (!TextUtils.isEmpty(message)) {
+                            showToast(message);
+                        }
+                        if (code == 200) {
+                            getRoomList();
+                        }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
     }
 
 
@@ -402,29 +369,14 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
      */
     public void addunAssignRepater(UnassignedListRes.Data roomdeviceList) {
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-        String url = ChatApplication.url + Constants.deviceadd;
 
-        JSONObject object = new JSONObject();
-
-        try {
-            object.put("room_id", "");
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            object.put("device_name", roomdeviceList.getModuleType());
-            object.put("module_id", roomdeviceList.getModuleId());
-            object.put("module_type", roomdeviceList.getModuleType());
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("json " + url + " " + object);
-
-        new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().addunAssignRepater("",roomdeviceList.getModuleType(), roomdeviceList.getModuleId(),roomdeviceList.getModuleType(), new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
+
                     int code = result.getInt("code");
                     ChatApplication.logDisplay("repeatar is " + result);
                     if (code == 200) {
@@ -433,6 +385,7 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
                     } else {
                         ChatApplication.showToast(AllUnassignedPanel.this, result.optString("message"));
                     }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } finally {
@@ -442,12 +395,10 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-                throwable.printStackTrace();
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
+        });
     }
 
     /*show add dialog for panel & sensor */
@@ -542,69 +493,45 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
             return;
         }
 
-
         ActivityHelper.showProgressDialog(this, "Loading...", false);
 
-
-        JSONObject object = new JSONObject();
-        try {
-            //{
-            //	"room_id": "1571407908196_uEVHoQJNR",
-            //	"module_id": "1571407892909_OtecipqUB",
-            //	"panel_name": "my panel 1",
-            //	"user_id": "1568463607921_AyMe7ek9e",
-            //	"device_name": ""
-            //}
-
-            if (roomdeviceList.getModuleType().equals("5") || roomdeviceList.getModuleType().equals("5f")
-                    || roomdeviceList.getModuleType().equals("heavy_load") || roomdeviceList.getModuleType().equals("double_heavy_load")) {
-                object.put("panel_name", panelName);
-            } else {
-                object.put("device_name", panelName);
-            }
-            object.put("room_id", roomId);
-            object.put("module_type", roomdeviceList.getModuleType());
-            object.put("module_id", roomdeviceList.getModuleId());
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        String url = ChatApplication.url + Constants.deviceadd;
-
-        ChatApplication.logDisplay("assign is " + url + " " + object);
-
-        new GetJsonTask(this, url, "POST", object.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().savePanel(roomdeviceList,roomId,panelName, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                mDialog.dismiss();
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
 
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
+                    mDialog.dismiss();
+                    ActivityHelper.dismissProgressDialog();
+                    try {
 
-                    if (!TextUtils.isEmpty(message)) {
-                        showToast("Added successfully");
+                        int code = result.getInt("code");
+                        String message = result.getString("message");
+
+                        if (!TextUtils.isEmpty(message)) {
+                            showToast("Added successfully");
+                        }
+
+                        if (code == 200) {
+                            Common.hideSoftKeyboard(AllUnassignedPanel.this);
+                            finish();
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-
-                    if (code == 200) {
-                        Common.hideSoftKeyboard(AllUnassignedPanel.this);
-                        finish();
-                    }
-
                 } catch (JSONException e) {
                     e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
                 }
-            }
 
+            }
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
-
+        });
     }
 }

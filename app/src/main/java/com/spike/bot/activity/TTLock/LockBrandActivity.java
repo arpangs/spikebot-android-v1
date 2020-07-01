@@ -48,6 +48,8 @@ import com.spike.bot.activity.AddDevice.AllUnassignedPanel;
 import com.spike.bot.activity.ir.blaster.IRBlasterRemote;
 import com.spike.bot.adapter.LockClickListener;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -438,31 +440,12 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
         }
 
         ActivityHelper.showProgressDialog(LockBrandActivity.this, "Please wait.", false);
-
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("module_id", lock_module_id);
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put("device_name", lock_name);
-            obj.put("module_type", module_type);
-
-            int room_pos = sp_room_list.getSelectedItemPosition();
-
-            obj.put("room_id", roomIdList.get(room_pos));
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.deviceadd;
-
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        int room_pos = sp_room_list.getSelectedItemPosition();
+        SpikeBotApi.getInstance().savelockSensor(lock_module_id, lock_name, module_type, roomIdList.get(room_pos), new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
-                    //{"code":200,"message":"success"}
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
@@ -482,15 +465,14 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
                     e.printStackTrace();
                 } finally {
                     ActivityHelper.dismissProgressDialog();
-
                 }
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
     }
 
     /*searching device wait for 7 sec*/
@@ -544,27 +526,13 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
             return;
         }
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put("device_type", "lock");
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.devicefind;
-
-        ChatApplication.logDisplay("yale lock list" + " " + url + obj.toString());
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().getDeviceList("lock",new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
 
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     ChatApplication.logDisplay("remote res : " + result.toString());
 
                     YaleLockVO yalelockres = Common.jsonToPojo(result.toString(), YaleLockVO.class);
@@ -598,9 +566,10 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
     }
 
     /*show sync dialog
@@ -787,26 +756,12 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String webUrl = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
-
-        JSONObject jsonNotification = new JSONObject();
-        try {
-
-            jsonNotification.put("device_id", deviceid);
-            jsonNotification.put("device_name", sensor_name);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("url is " + webUrl + " " + jsonNotification);
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().updateLockSensor(deviceid, sensor_name, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     ChatApplication.logDisplay("url is " + result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -825,10 +780,10 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
     }
 
     public void DeleteLockSensor(String device_id) {
@@ -838,26 +793,12 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String webUrl = ChatApplication.url + Constants.DELETE_MODULE;
-
-        JSONObject jsonNotification = new JSONObject();
-        try {
-
-            jsonNotification.put("device_id", device_id);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("url is " + webUrl + " " + jsonNotification);
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().deleteDevice(device_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-                    ChatApplication.logDisplay("url is " + result);
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (!TextUtils.isEmpty(message)) {
@@ -874,10 +815,11 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
+
     }
 
     public class SmartLockBrandAdapter extends RecyclerView.Adapter<SmartLockBrandAdapter.SensorViewHolder> {

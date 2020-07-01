@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,7 +36,6 @@ public class BeaconScanListAdapter extends RecyclerView.Adapter<BeaconScanListAd
         this.beaconListClickEvent = beaconclickevent;
 
     }
-
 
 
     @Override
@@ -82,22 +82,6 @@ public class BeaconScanListAdapter extends RecyclerView.Adapter<BeaconScanListAd
 
     }
 
-/*    @Override
-    public void onBindViewHolder(final SensorViewHolder holder, final int position,List<Object> payloads) {
-
-        if (payloads.isEmpty()) {
-            super.onBindViewHolder(holder, position, payloads);
-        } else {
-            Bundle o = (Bundle) payloads.get(position);
-            for (String key : o.keySet()) {
-                if (key.equals("address")) {
-                    holder.txtRss.setText("RSSI : " + arrayListscanresult.get(position).getRssi());
-                }
-            }
-        }
-    }*/
-
-
     @Override
     public int getItemCount() {
         return arrayListscanresult.size();
@@ -142,5 +126,13 @@ public class BeaconScanListAdapter extends RecyclerView.Adapter<BeaconScanListAd
         result.dispatchUpdatesTo(BeaconScanListAdapter.this);*/
     }
 
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return super.equals(obj);
+    }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

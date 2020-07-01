@@ -27,6 +27,8 @@ import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.activity.TTLock.AddTTlockActivity;
 import com.spike.bot.activity.TTLock.AddTTlockToRoomActivity;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -187,24 +189,12 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         }
 
         ActivityHelper.showProgressDialog(AddDeviceConfirmActivity.this, "Please wait...", false);
-        JSONObject object = new JSONObject();
-        try {
-            object.put("room_name", roomName.getText().toString());
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(AddDeviceConfirmActivity.this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.ADD_CUSTOME_ROOM;
-
-        new GetJsonTask(AddDeviceConfirmActivity.this, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().saveCustomRoomDevice(roomName.getText().toString(), new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-                    //{"code":200,"message":"success"}
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     ChatApplication.showToast(AddDeviceConfirmActivity.this, message);
@@ -230,10 +220,10 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
     }
 
     /*check add  door / lock */
@@ -316,45 +306,27 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
     private void callAddTTlock(final Dialog dialog, EditText textInputEditText, String door_name,
                                String door_module_id, Spinner sp_room_list, String room_id) {
         ActivityHelper.showProgressDialog(this, " Please Wait...", false);
-        String url = ChatApplication.url + Constants.addTTLock;
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-
-            jsonObject.put("panel_id", "");
-            jsonObject.put("door_sensor_id", "");
-            jsonObject.put("is_new", 1);
-
-            jsonObject.put("lock_id", lock_id);
-            jsonObject.put("room_id", room_id);
-            jsonObject.put("lock_data", lock_data);
-
-            jsonObject.put("lock_name", door_name);
-            jsonObject.put("user_id", "" + Common.getPrefValue(this, Constants.USER_ID));
-
-            ChatApplication.logDisplay("url is " + jsonObject);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("url is " + url);
-        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().callAddTTlock(lock_id, room_id, lock_data, door_name, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject jsonObject1) {
-                ChatApplication.logDisplay("result is " + jsonObject1);
+            public void onData_SuccessfulResponse(String stringResponse) {
 
-                if (jsonObject1.optString("code").equalsIgnoreCase("200")) {
-                    dialog.dismiss();
-                    ActivityHelper.dismissProgressDialog();
-                    setIntentMain();
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    if (result.optString("code").equalsIgnoreCase("200")) {
+                        dialog.dismiss();
+                        ActivityHelper.dismissProgressDialog();
+                        setIntentMain();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
                 }
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
     }
 
    /** Save Sensor lock*/
@@ -371,37 +343,13 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
             textInputEditText.requestFocus();
             return;
         }
-
+        int room_pos = sp_room_list.getSelectedItemPosition();
         ActivityHelper.showProgressDialog(AddDeviceConfirmActivity.this, "Please wait.", false);
-
-        JSONObject obj = new JSONObject();
-        try {
-            int room_pos = sp_room_list.getSelectedItemPosition();
-
-            obj.put("room_id", room_id);
-            obj.put("room_name", roomNameList.get(room_pos));
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put("door_sensor_name", door_name);
-            obj.put("door_sensor_module_id", door_module_id);
-            obj.put("is_new", 1);
-            obj.put("panel_id", "");
-            obj.put("door_sensor_id", "");
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.ADD_DOOR_SENSOR;
-        ChatApplication.logDisplay("url is " + url + " " + obj);
-
-
-        new GetJsonTask(AddDeviceConfirmActivity.this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().saveSensor(room_id, roomNameList.get(room_pos), door_name, door_module_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
-                    //{"code":200,"message":"success"}
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
@@ -420,15 +368,14 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
                     e.printStackTrace();
                 } finally {
                     ActivityHelper.dismissProgressDialog();
-
                 }
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
     }
 
     private void setIntentMain() {

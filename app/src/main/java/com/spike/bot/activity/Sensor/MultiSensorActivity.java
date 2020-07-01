@@ -48,6 +48,8 @@ import com.spike.bot.R;
 import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.adapter.HumiditySensorAdapter;
 import com.spike.bot.adapter.TempMultiSensorAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -423,31 +425,13 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             showToast("" + R.string.disconnect);
             return;
         }
-
-
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String webUrl = ChatApplication.url + Constants.UPDATE_TEMP_SENSOR_NOTIFICATION;
-
-        JSONObject jsonNotification = new JSONObject();
-
-        try {
-            jsonNotification.put("is_active", isActive ? "y" :"n");
-            jsonNotification.put("alert_id", tempSensorNotificationId);
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("url is "+webUrl+" "+jsonNotification);
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().tempSensorNotificationStatus(tempSensorNotificationId, isActive, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     ChatApplication.logDisplay("url is result "+result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -510,11 +494,10 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
-
+        });
     }
 
     @Override
@@ -566,34 +549,11 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String webUrl = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
-
-        JSONObject jsonNotification = new JSONObject();
-        try {
-
-            //{
-            //	"device_id": "1571407908196_uEVHoQJNR",
-            //	"device_name": "jghgh",
-            //	"device_icon": "my panel 1",
-            //	"device_sub_type":"dimmer"
-            //}
-            jsonNotification.put("device_id", temp_module_id);
-            jsonNotification.put("device_name", edsensorName.getText().toString().trim());
-            jsonNotification.put("unit", isCFSelected == 1 ? "C" : "F");
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("url is "+webUrl+" "+jsonNotification);
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().updateTempSensor(temp_module_id, edsensorName.getText().toString().trim(), isCFSelected, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
-
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (!TextUtils.isEmpty(message)) {
@@ -609,10 +569,10 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
     }
 
     /**
@@ -1008,81 +968,48 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             return;
         }
 
-
-        String webUrl = "";
-        if (!isEdit) {
-            webUrl = ChatApplication.url + Constants.ADD_TEMP_SENSOR_NOTIFICATION;
-        } else {
-            webUrl = ChatApplication.url + Constants.UPDATE_TEMP_SENSOR_NOTIFICATION;
-        }
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
+        SpikeBotApi.getInstance().addHumity(Integer.parseInt(minValue.getText().toString().trim()), Integer.parseInt(maxValue.getText().toString().trim()),
+                repeatDayString, temp_module_id, mRemoteCommandList.getDevice().getDevice_id(), isEdit, new DataResponseListener()
+                {
+                    @Override
+                    public void onData_SuccessfulResponse(String stringResponse) {
+                        ActivityHelper.dismissProgressDialog();
+                        try {
+                            JSONObject result = new JSONObject(stringResponse);
+                            int code = result.getInt("code");
+                            String message = result.getString("message");
+                            if (code == 200) {
+                                if (!TextUtils.isEmpty(message)) {
+                                    showToast(message);
+                                }
+                                tempSensorNotificationDialog.dismiss();
+                                repeatDayString = "";
 
-        JSONObject jsonNotification = new JSONObject();
-        try {
-            jsonNotification.put("min_humidity", Integer.parseInt(minValue.getText().toString().trim()));
-            jsonNotification.put("max_humidity", Integer.parseInt(maxValue.getText().toString().trim()));
-            jsonNotification.put("alert_type", "humidity");
-            jsonNotification.put("days", repeatDayString);
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+                                if (isCFSelected == 0) {
+                                    isCFDone = true;
+                                } else {
+                                    isCFDone = false;
+                                }
+                                getSensorDetails();
+                            } else {
+                                if (!TextUtils.isEmpty(message)) {
+                                    maxValue.setFocusableInTouchMode(true);
+                                    maxValue.requestFocus();
+                                    maxValue.setError(message);
+                                }
+                            }
 
-            if (isEdit) {
-                jsonNotification.put("alert_id", temp_module_id);
-
-            } else {
-                jsonNotification.put("device_id", mRemoteCommandList.getDevice().getDevice_id());
-            }
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("json : "+webUrl+"  " + jsonNotification.toString());
-
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
-
-                ChatApplication.logDisplay("result : " + result.toString());
-                ActivityHelper.dismissProgressDialog();
-                try {
-
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    if (code == 200) {
-                        if (!TextUtils.isEmpty(message)) {
-                            showToast(message);
-                        }
-
-                        tempSensorNotificationDialog.dismiss();
-                        repeatDayString = "";
-
-                        if (isCFSelected == 0) {
-                            isCFDone = true;
-                        } else {
-                            isCFDone = false;
-                        }
-                        getSensorDetails();
-                    } else {
-                        if (!TextUtils.isEmpty(message)) {
-                            maxValue.setFocusableInTouchMode(true);
-                            maxValue.requestFocus();
-                            maxValue.setError(message);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
                     }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
-            }
-        }).execute();
+                    @Override
+                    public void onData_FailureResponse() {
+                        ActivityHelper.dismissProgressDialog();
+                    }
+                });
 
     }
 
@@ -1111,89 +1038,49 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             return;
         }
 
-        String webUrl = "";
-        if (isEdit) {
-            webUrl = ChatApplication.url + Constants.UPDATE_TEMP_SENSOR_NOTIFICATION;
-        } else {
-            webUrl = ChatApplication.url + Constants.ADD_TEMP_SENSOR_NOTIFICATION;
-        }
-
-        JSONObject jsonNotification = new JSONObject();
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-        try {
+        SpikeBotApi.getInstance().addTempNotification(Integer.parseInt(minValue.getText().toString().trim()),Integer.parseInt(maxValue.getText().toString().trim()),repeatDayString,
+                temp_sensor_notification_id,mRemoteCommandList.getDevice().getDevice_id(),isEdit,isCFSelected, new DataResponseListener()
+                {
+                    @Override
+                    public void onData_SuccessfulResponse(String stringResponse) {
+                        ActivityHelper.dismissProgressDialog();
+                        try {
+                            JSONObject result = new JSONObject(stringResponse);
+                            int code = result.getInt("code");
+                            String message = result.getString("message");
+                            if (code == 200) {
+                                if (!TextUtils.isEmpty(message)) {
+                                    showToast(message);
+                                }
 
-            if (isCFSelected == 1) {
-                jsonNotification.put("min_temp", Integer.parseInt(minValue.getText().toString().trim()));
-                jsonNotification.put("max_temp", Integer.parseInt(maxValue.getText().toString().trim()));
-            } else {
-                jsonNotification.put("min_temp", Constants.getCTemp(minValue.getText().toString().trim()));
-                jsonNotification.put("max_temp", Constants.getCTemp(maxValue.getText().toString().trim()));
-            }
+                                tempSensorNotificationDialog.dismiss();
+                                repeatDayString = "";
 
-            jsonNotification.put("alert_type", "temperature");
+                                if (isCFSelected == 0) {
+                                    isCFDone = true;
+                                } else {
+                                    isCFDone = false;
+                                }
+                                getSensorDetails();
+                            } else {
+                                if (!TextUtils.isEmpty(message)) {
+                                    maxValue.setFocusableInTouchMode(true);
+                                    maxValue.requestFocus();
+                                    maxValue.setError(message);
+                                }
+                            }
 
-            jsonNotification.put("days", repeatDayString);
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-
-
-            if (isEdit) {
-                jsonNotification.put("alert_id", temp_sensor_notification_id);
-
-            } else {
-                jsonNotification.put("device_id", mRemoteCommandList.getDevice().getDevice_id());
-            }
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("json : " + webUrl + "  " + jsonNotification.toString());
-
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
-
-                ChatApplication.logDisplay("result : " + result.toString());
-                ActivityHelper.dismissProgressDialog();
-                try {
-
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    if (code == 200) {
-                        if (!TextUtils.isEmpty(message)) {
-                            showToast(message);
-                        }
-
-                        tempSensorNotificationDialog.dismiss();
-                        repeatDayString = "";
-
-                        if (isCFSelected == 0) {
-                            isCFDone = true;
-                        } else {
-                            isCFDone = false;
-                        }
-                        getSensorDetails();
-                    } else {
-                        if (!TextUtils.isEmpty(message)) {
-                            maxValue.setFocusableInTouchMode(true);
-                            maxValue.requestFocus();
-                            maxValue.setError(message);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
                     }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
-            }
-        }).execute();
+                    @Override
+                    public void onData_FailureResponse() {
+                        ActivityHelper.dismissProgressDialog();
+                    }
+                });
 
     }
 
@@ -1333,28 +1220,13 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             showToast("" + R.string.disconnect);
             return;
         }
-
-        String webUrl = ChatApplication.url + Constants.DELETE_MODULE;
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-
-        JSONObject jsonNotification = new JSONObject();
-        try {
-            jsonNotification.put("device_id", temp_module_id);
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().deleteDevice(temp_module_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
-                ChatApplication.logDisplay("result : " + result.toString());
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (!TextUtils.isEmpty(message)) {
@@ -1371,9 +1243,10 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
+
             }
-        }).execute();
+        });
 
     }
 
@@ -1501,33 +1374,13 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         //	"phone_id":"1234567",
         //	"phone_type":"Android"
         //	}
-
-        String webUrl = ChatApplication.url + Constants.DELETE_TEMP_SENSOR_NOTIFICATION;
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-        JSONObject jsonNotification = new JSONObject();
-        try {
-
-            if (notificationList != null) {
-                jsonNotification.put("alert_id", notificationList.getAlertId());
-
-            } else {
-                jsonNotification.put("alert_id", notification.getAlertId());
-            }
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("url is "+webUrl+" "+jsonNotification);
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().deleteTempSensorNotification(notificationList, notification, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
-                ChatApplication.logDisplay("result : " + result.toString());
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -1548,11 +1401,10 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
-
+        });
     }
 
 
@@ -1621,49 +1473,32 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     private void getSensorDetails() {
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-//        String url = ChatApplication.url + Constants.getMultiSensorInfo ;
-        String url = ChatApplication.url + Constants.deviceinfo;
-
-        JSONObject object = new JSONObject();
-        try {
-            //{
-            //	"device_id":"1571998596623_EE9U9Ovz7w",
-            //	"alert_type":"temperature"
-            //}
-            object.put("device_id", temp_module_id);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-        ChatApplication.logDisplay("url is " + url + "  " + object);
-        new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().deviceInfo(temp_module_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                ChatApplication.logDisplay("result is " + result);
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try {
+                    notificationHumidityList.clear();
+                    notificationList.clear();
+                    JSONObject result = new JSONObject(stringResponse);
+                    mRemoteList = Common.jsonToPojo(result.toString(), RemoteDetailsRes.class);
+                    mRemoteCommandList = mRemoteList.getData();
 
-                notificationHumidityList.clear();
-                notificationList.clear();
-                mRemoteList = Common.jsonToPojo(result.toString(), RemoteDetailsRes.class);
-                mRemoteCommandList = mRemoteList.getData();
-
-                if (mRemoteList.getCode() == 200) {
-                    txtEmpty.setVisibility(View.GONE);
-                    fillData(mRemoteCommandList, true);
+                    if (mRemoteList.getCode() == 200) {
+                        txtEmpty.setVisibility(View.GONE);
+                        fillData(mRemoteCommandList, true);
+                    }
+                    ActivityHelper.dismissProgressDialog();
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
-                ActivityHelper.dismissProgressDialog();
 
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-                throwable.printStackTrace();
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        });
     }
 
     /**

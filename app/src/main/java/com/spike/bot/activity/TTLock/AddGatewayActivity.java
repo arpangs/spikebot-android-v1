@@ -25,6 +25,8 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.Retrofit.GetDataService;
 import com.spike.bot.Retrofit.RetrofitAPIManager;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.GatewayObj;
 import com.ttlock.bl.sdk.api.TTLockClient;
@@ -214,23 +216,11 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
     private void callAddBridge(int gatewayId) {
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
-        String webUrl = ChatApplication.url + Constants.deviceadd;
-
-        JSONObject jsonNotification = new JSONObject();
-        try {
-            jsonNotification.put("module_id", gatewayId);
-            jsonNotification.put("device_name", gatewayName);
-            jsonNotification.put("module_type ","tt_lock_bridge");
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().callAddBridge(gatewayId, gatewayName, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -247,11 +237,10 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
-
+        });
     }
 
     /*delete gateway
@@ -260,24 +249,12 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
 
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
-        String webUrl = ChatApplication.url + Constants.deleteTTLockBridge;
-
-        JSONObject jsonNotification = new JSONObject();
-        try {
-            jsonNotification.put("bridge_id", gatewayId);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().deleteGateway(gatewayId, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     if (code == 200) {
                         callAddBridge(gatewayId);
@@ -289,10 +266,20 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
+
+        String webUrl = ChatApplication.url + Constants.deleteTTLockBridge;
+
+        JSONObject jsonNotification = new JSONObject();
+        try {
+            jsonNotification.put("bridge_id", gatewayId);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /* add bridge in spikebot

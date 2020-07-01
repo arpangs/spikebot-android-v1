@@ -356,6 +356,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             mSocket.off("updateChildUser", updateChildUser);
             mSocket.off("updateRoomAlertCounter", updateRoomAlertCounter);
             mSocket.off("beaconInRoomCountUpdate",beaconInRoomCountUpdate);
+            mSocket.off("changeIrBlasterTemperature",changeIrBlasterTemperature);
         }
 
         if (cloudsocket != null) {
@@ -458,6 +459,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             startActivity(intent);
         } else if(action.equalsIgnoreCase("icnBeacon")){
             Intent intent = new Intent(activity, BeaconDetailActivity.class);
+            intent.putExtra("room_id",roomVO.getRoomId());
             startActivity(intent);
         }
     }
@@ -756,7 +758,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
             }
 
-            ChatApplication.logDisplay("SOCKET WEB URL" + " " + webUrl);
+            ChatApplication.logDisplay("c" + " " + webUrl);
             mSocket = app.getSocket();
 
             if (mSocket != null) {
@@ -818,6 +820,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         mSocket.on("updateChildUser", updateChildUser);
         mSocket.on("updateRoomAlertCounter", updateRoomAlertCounter);
         mSocket.on("beaconInRoomCountUpdate",beaconInRoomCountUpdate);
+        mSocket.on("changeIrBlasterTemperature",changeIrBlasterTemperature);
     }
 
     private void cloudsocket() {
@@ -2790,7 +2793,37 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                             String room_id = object.getString("room_id");
                             String device_count = object.getString("device_count");
                             ChatApplication.logDisplay("beacon counter socket" + object.toString());
-                            sectionedExpandableLayoutHelper.updateBeaconBadgeCount(room_id, device_count);
+                            //if(!device_count.equals("0")) {
+                                sectionedExpandableLayoutHelper.updateBeaconBadgeCount(room_id, device_count);
+                          //  }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener changeIrBlasterTemperature = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (activity == null) {
+                return;
+            }
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+                            //  String user_id = object.getString("user_id");
+                            String ir_blaster_id = object.getString("ir_blaster_id");
+                            String temperature = object.getString("temperature");
+                            ChatApplication.logDisplay("ir remote temp socket" + object.toString());
+                            sectionedExpandableLayoutHelper.updateTempCount(ir_blaster_id, temperature);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

@@ -57,6 +57,8 @@ import com.spike.bot.activity.Sensor.DoorSensorInfoActivity;
 import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
 import com.spike.bot.adapter.DoorAlertAdapter;
 import com.spike.bot.adapter.DoorSensorInfoAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -575,43 +577,24 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String url = ChatApplication.url + Constants.deviceinfo;
-
-        ChatApplication.logDisplay("door " + url + " ");
-
-        JSONObject object = new JSONObject();
-        try {
-            object.put("device_id", door_sensor_id);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("door sensor" + " " + url + " " + object);
-
-
-        new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().deviceInfo(door_sensor_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                ChatApplication.logDisplay("door sensor is " + result);
-                doorSensorResModelData = Common.jsonToPojo(result.toString(), RemoteDetailsRes.class);
+            public void onData_SuccessfulResponse(String stringResponse) {
+                doorSensorResModelData = Common.jsonToPojo(stringResponse.toString(), RemoteDetailsRes.class);
                 doorSensorResModel = doorSensorResModelData.getData();
 
                 if (doorSensorResModelData.getCode() == 200) {
                     fillData(doorSensorResModel);
 
                 }
-
                 ActivityHelper.dismissProgressDialog();
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-                throwable.printStackTrace();
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        });
 
     }
 
@@ -1293,30 +1276,12 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String webUrl = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
-
-        JSONObject jsonNotification = new JSONObject();
-        try {
-
-            jsonNotification.put("device_id", door_sensor_id);
-            jsonNotification.put("enable_lock_unlock_from_app", enable_lock_unlock_from_app);
-            jsonNotification.put("pass_code", passcode);
-            jsonNotification.put("onetime_code",guestpasscode);
-            jsonNotification.put("device_name", sensor_name);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("update yale lock url is " + webUrl + " " + jsonNotification);
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().updateyalelock(door_sensor_id, enable_lock_unlock_from_app, passcode, guestpasscode, sensor_name, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-                    ChatApplication.logDisplay("url is " + result);
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (!TextUtils.isEmpty(message)) {
@@ -1325,7 +1290,6 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
                     if (code == 200) {
                         dialog.dismiss();
                         toolbar.setTitle(sensor_name);
-//                        finish();
                     }
 
                 } catch (JSONException e) {
@@ -1334,10 +1298,10 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
     }
 
 
@@ -1399,49 +1363,13 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-
-        String webUrl = "";
-        if (!isNotification) {
-            webUrl = ChatApplication.url + Constants.CHANGE_DOOR_SENSOR_STATUS;
-        } else {
-            webUrl = ChatApplication.url + Constants.UPDATE_TEMP_SENSOR_NOTIFICATION;
-        }
-
-        JSONObject jsonNotification = new JSONObject();
-
-        try {
-            // try {
-            //            jsonNotification.put("is_active", isActive ? "y" :"n");
-            //            jsonNotification.put("alert_id", tempSensorNotificationId);
-            //            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            //            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            //            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            //
-            //        } catch (JSONException e) {
-            //            e.printStackTrace();
-            //        }
-
-            if (isNotification) {
-                jsonNotification.put("alert_id", doorSensorNotificationId);
-                jsonNotification.put("is_active", isActive ? "y" : "n");
-            } else {
-                jsonNotification.put("is_push_enable", isActive ? 1 : 0);
-            }
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("url is " + webUrl + " " + jsonNotification);
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().doorSensorNotificationStatus(doorSensorNotificationId, isActive, isNotification, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
 
                 ActivityHelper.dismissProgressDialog();
                 try {
-                    ChatApplication.logDisplay("url is " + result);
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -1457,11 +1385,10 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
-
+        });
     }
 
     @Override
@@ -1538,27 +1465,12 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
-        String webUrl = ChatApplication.url + Constants.DELETE_MODULE;
-
-        JSONObject jsonNotification = new JSONObject();
-        try {
-            jsonNotification.put("device_id", door_sensor_id);
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().deleteDevice(door_sensor_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
@@ -1575,10 +1487,10 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
 
     }
 
@@ -1732,56 +1644,11 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
-        JSONObject jsonNotification = new JSONObject();
-
-        try {
-
-//            if (isEdit) {
-//                jsonNotification.put("door_sensor_notification_id", notification.getAlertId());
-//            }
-//
-//            jsonNotification.put("door_sensor_id", door_sensor_id);
-//            jsonNotification.put("start_datetime", mStartTime);
-//            jsonNotification.put("end_datetime", mEndTime);
-//            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-//            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-//            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-
-
-            jsonNotification.put("start_time", mStartTime);
-            jsonNotification.put("end_time", mEndTime);
-            jsonNotification.put("alert_type", "door_lock_unlock");
-            jsonNotification.put("days", "0,1,2,3,4,5,6");
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-
-            if (isEdit) {
-                jsonNotification.put("alert_id", notification.getAlertId());
-
-            } else {
-                jsonNotification.put("device_id", doorSensorResModel.getDevice().getDevice_id());
-            }
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String webUrl = "";
-        if (isEdit) {
-            webUrl = ChatApplication.url + Constants.UPDATE_TEMP_SENSOR_NOTIFICATION;
-        } else {
-            webUrl = ChatApplication.url + Constants.ADD_TEMP_SENSOR_NOTIFICATION;
-        }
-
-        ChatApplication.logDisplay("url is " + webUrl + " " + jsonNotification);
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().addNotification(mStartTime, mEndTime, notification.getAlertId(), doorSensorResModel.getDevice().getDevice_id(), isEdit, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     ChatApplication.logDisplay("url is " + result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -1810,10 +1677,10 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
 
     }
 
@@ -1832,26 +1699,12 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String webUrl = ChatApplication.url + Constants.DELETE_TEMP_SENSOR_NOTIFICATION;
-
-        JSONObject jsonNotification = new JSONObject();
-        try {
-
-            jsonNotification.put("alert_id", notification.getAlertId());
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().deleteDoorSensorNotification(notification.getAlertId(), new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -1869,11 +1722,10 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
-
+        });
     }
 
 
@@ -1937,39 +1789,17 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
 
     public void unreadApiCall(final boolean b) {
 
-        String webUrl = ChatApplication.url + Constants.MARK_SEEN;
+        SpikeBotApi.getInstance().unreadNotification(door_sensor_id, new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                ChatApplication.logDisplay("log is " + stringResponse);
+            }
 
-        JSONObject jsonObject = new JSONObject();
-        try {
+            @Override
+            public void onData_FailureResponse() {
 
-            jsonObject.put("device_id", door_sensor_id);
-            jsonObject.put("log_type", "device");
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("unread log is " + webUrl + " " + jsonObject);
-        new GetJsonTask(this, webUrl, "POST", jsonObject.toString(), new
-
-                ICallBack() {
-                    @Override
-                    public void onSuccess(JSONObject result) {
-                        ChatApplication.logDisplay("log is " + result);
-                    }
-
-                    @Override
-                    public void onFailure(Throwable throwable, String error) {
-                        if (b) {
-//                            callFilterData(0);
-                        } else {
-
-                        }
-                    }
-                }).
-                executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+        });
     }
 
     public void checkIntent(boolean b) {

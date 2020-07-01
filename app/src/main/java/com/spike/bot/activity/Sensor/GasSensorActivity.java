@@ -29,6 +29,8 @@ import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.RoomEditActivity_v2;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -278,28 +280,14 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
 
     /*delete sensor*/
     private void deleteGas() {
-
-        String url = ChatApplication.url + Constants.DELETE_MODULE;
-
-        JSONObject object = new JSONObject();
-        try {
-            object.put("device_id", device_id);
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("gas " + url + " " + object);
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
-        new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().deleteDevice(device_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay("door is " + result);
                 int code = 0;
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -313,11 +301,10 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-                throwable.printStackTrace();
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        });
 
     }
 
@@ -325,27 +312,14 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
     private void getGasSensorDetails() {
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-
-        String url = ChatApplication.url + Constants.deviceinfo;
-
-        JSONObject object = new JSONObject();
-        try {
-            object.put("device_id", device_id);
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("gas " + url + " " + object);
-
-        new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().deviceInfo(device_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay("door is " + result);
+
                 int code = 0;
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -358,11 +332,10 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-                throwable.printStackTrace();
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        });
 
     }
 
@@ -466,25 +439,12 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String webUrl = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
-
-        JSONObject jsonNotification = new JSONObject();
-        try {
-            jsonNotification.put("device_id", device_id);
-            jsonNotification.put("device_name", edSensorName.getText().toString());
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().updateGasSensor(device_id, edSensorName.getText().toString(), new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
@@ -495,7 +455,6 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
                         edSensorName.setFocusable(false);
                         edSensorName.setFocusableInTouchMode(false); // user touches widget on phone with touch screen
                         edSensorName.setClickable(false);
-
                     }
 
                 } catch (JSONException e) {
@@ -504,10 +463,10 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
 
     }
 

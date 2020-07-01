@@ -39,6 +39,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.JsonObject;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
@@ -55,6 +56,8 @@ import com.spike.bot.activity.TTLock.LockBrandActivity;
 import com.spike.bot.activity.ir.blaster.IRBlasterAddActivity;
 import com.spike.bot.activity.ir.blaster.IRRemoteAdd;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -73,6 +76,7 @@ import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
 import static com.spike.bot.core.Common.dpToPx;
+import static com.spike.bot.core.Common.showToast;
 
 /**
  * Created by Sagar on 15/10/19.
@@ -483,29 +487,15 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             roomName.setError("Enter Room name");
             return;
         }
-
-        JSONObject object = new JSONObject();
-        try {
-            object.put("room_name", roomName.getText().toString());
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("ob : " + object.toString());
         showProgressDialog(this, "Searching Device attached ", false);
 
 
-        String url = ChatApplication.url + Constants.ADD_CUSTOME_ROOM;
-        new GetJsonTask(this, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().saveCustomRoom(roomName.getText().toString(), new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 dismissProgressDialog();
-                ChatApplication.logDisplay("getconfigureData onSuccess " + result.toString());
                 try {
-                    //{"code":200,"message":"success"}
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
@@ -530,12 +520,10 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 dismissProgressDialog();
-                ChatApplication.logDisplay("getconfigureData onFailure " + error);
-                ChatApplication.showToast(AddDeviceTypeListActivity.this, getResources().getString(R.string.something_wrong1));
             }
-        }).execute();
+        });
     }
 
     /**
@@ -712,18 +700,20 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
         typeSync = type;
 
-        ChatApplication.logDisplay("url is " + url);
-        new GetJsonTask(AddDeviceTypeListActivity.this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
+        ChatApplication.logDisplay("config device url is " + url);
+
+        SpikeBotApi.getInstance().getConfigData(url, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
+                JsonObject result = new JsonObject();
                 ChatApplication.logDisplay("url is result " + result);
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
     }
 
 
@@ -775,7 +765,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         }
     }
 
-    /**
+    /**config device url is
      * camera key : spike123
      * camera key check is valid or not..
      */
@@ -803,15 +793,12 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
         showProgressDialog(this, "Searching Device attached ", false);
 
-        String url = ChatApplication.url + Constants.validatecamerakey;
-
-        new GetJsonTask(this, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().saveCameraKey(roomName.getText().toString(), new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 dismissProgressDialog();
-                ChatApplication.logDisplay("getconfigureData onSuccess " + result.toString());
                 try {
-                    //{"code":200,"message":"success"}
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
@@ -825,17 +812,19 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                     } else {
                         ChatApplication.showToast(AddDeviceTypeListActivity.this, message);
                     }
-                } catch (Exception e) {
+
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 dismissProgressDialog();
                 ChatApplication.showToast(AddDeviceTypeListActivity.this, getResources().getString(R.string.something_wrong1));
             }
-        }).execute();
+        });
+
     }
 
     /**
@@ -950,30 +939,13 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             return;
         }
 
-        JSONObject obj = new JSONObject();
-        try {
-
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            obj.put("user_id", Common.getPrefValue(AddDeviceTypeListActivity.this, Constants.USER_ID));
-            obj.put("camera_name", camera_name);
-            obj.put("camera_ip", camera_ip);
-            obj.put("video_path", video_path);
-            obj.put("user_name", user_name);
-            obj.put("password", password);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.ADD_CAMERA;
-
-        new GetJsonTask(AddDeviceTypeListActivity.this, url, "POST", obj.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().addCamera(camera_name, camera_ip, video_path, user_name, password, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 dismissProgressDialog();
-                ChatApplication.logDisplay("onSuccess " + result.toString());
+
                 try {
-                    //{"code":200,"message":"success"}
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     ChatApplication.showToast(AddDeviceTypeListActivity.this, message);
@@ -987,13 +959,11 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 dismissProgressDialog();
-                ChatApplication.logDisplay("onFailure " + error);
                 ChatApplication.showToast(AddDeviceTypeListActivity.this, getResources().getString(R.string.something_wrong1));
             }
-        }).execute();
-
+        });
     }
 
     /*count down for 7 sec after finish*/
@@ -1113,7 +1083,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                 if (edt_door_name.getText().toString().trim().length() == 0) {
                     ChatApplication.showToast(AddDeviceTypeListActivity.this, "Please enter name");
                 } else {
-                    addCurtain(dialog, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list, module_type);
+                    addDevice(dialog, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list, module_type);
                     mSocket.off("configureDevice", configureDevice);
                     dialog.dismiss();
 
@@ -1123,37 +1093,16 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    /*add device comman service */
-    private void addCurtain(final Dialog dialog, String door_name, String door_module_id, Spinner sp_room_list, String module_type) {
-
+    /*add device common service */
+    private void addDevice(final Dialog dialog, String door_name, String door_module_id, Spinner sp_room_list, String module_type) {
 
         ActivityHelper.showProgressDialog(AddDeviceTypeListActivity.this, "Please wait.", false);
-
-        JSONObject obj = new JSONObject();
-        try {
-            int room_pos = sp_room_list.getSelectedItemPosition();
-
-            obj.put("room_id", roomIdList.get(room_pos));
-            obj.put("device_name", door_name);
-            obj.put("module_id", door_module_id);
-            obj.put("module_type", module_type);
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.deviceadd;
-
-        ChatApplication.logDisplay("door sensor" + url + obj);
-
-        new GetJsonTask(AddDeviceTypeListActivity.this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        int room_pos = sp_room_list.getSelectedItemPosition();
+        SpikeBotApi.getInstance().addDevice(roomIdList.get(room_pos), door_name, door_module_id, module_type, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
-                    //{"code":200,"message":"success"}
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -1171,16 +1120,14 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                     e.printStackTrace();
                 } finally {
                     ActivityHelper.dismissProgressDialog();
-
                 }
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-
             }
-        }).execute();
+        });
     }
 
 

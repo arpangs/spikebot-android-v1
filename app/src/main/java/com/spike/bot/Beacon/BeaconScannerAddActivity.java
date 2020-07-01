@@ -40,6 +40,8 @@ import com.spike.bot.activity.AddDevice.AllUnassignedPanel;
 import com.spike.bot.activity.ir.blaster.WifiBlasterActivity;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.adapter.beacon.BeaconAddAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -337,7 +339,7 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
             dialog.setContentView(view);
             dialog.show();
 
-       String scannername =  scannerList.get(position).getDeviceName();
+         String scannername =  scannerList.get(position).getDeviceName();
 
         txt_bottomsheet_title.setText("What would you like to do in" + " " + scannername + " " +"?");
 
@@ -381,26 +383,13 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
             Common.showToast("" + getString(R.string.error_connect));
             return;
         }
-
-        String URL = ChatApplication.url + Constants.DELETE_MODULE;
-
-        JSONObject object = new JSONObject();
-        try {
-            object.put("device_id", "" + scannerId);
-            object.put("phone_id", "" + APIConst.PHONE_ID_VALUE);
-            object.put("phone_type", "" + APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        new GetJsonTask(this, URL, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().deleteDevice(scannerId, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay("result : " + result.toString());
 
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     String code = result.getString("code");
                     String message = result.getString("message");
                     if (!TextUtils.isEmpty(message)) {
@@ -415,11 +404,10 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
-                throwable.printStackTrace();
+            public void onData_FailureResponse() {
                 ChatApplication.showToast(BeaconScannerAddActivity.this, getResources().getString(R.string.something_wrong1));
             }
-        }).execute();
+        });
 
     }
 
@@ -533,38 +521,16 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
             mScannerName.setError("Enter Scanner Name");
             return;
         }
-
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
-        JSONObject object = new JSONObject();
-        try {
-            //"device_id": "1571407908196_uEVHoQJNR",
-            //	"device_name": "jghgh",
-            //
-            object.put("device_name", mScannerName.getText().toString().trim());
-            object.put("device_id", "" + scannerId);
-            object.put("phone_id", "" + APIConst.PHONE_ID_VALUE);
-            object.put("phone_type", "" + APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("Object : " + object.toString());
-
         if (mBeaconscannerName != null) {
             hideSoftKeyboard(mBeaconscannerName);
         }
 
-        String URL = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
-
-        new GetJsonTask(this, URL, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        SpikeBotApi.getInstance().updateBeaconScanner(mScannerName.getText().toString().trim(), scannerId, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
-                ChatApplication.logDisplay("result : " + result.toString());
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     String code = result.getString("code");
                     String message = result.getString("message");
                     if (!TextUtils.isEmpty(message)) {
@@ -574,9 +540,6 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
                         mDialog.dismiss();
                         scanner.setDeviceName(mBeaconscannerName.getText().toString().trim());
                         beaconAddAdapter.notifyDataSetChanged();
-
-
-//                        getIRBlasterList();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -586,12 +549,11 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
-                throwable.printStackTrace();
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(BeaconScannerAddActivity.this, getResources().getString(R.string.something_wrong1));
             }
-        }).execute();
+        });
 
     }
 
@@ -658,28 +620,12 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
             showToast("" + R.string.disconnect);
             return;
         }
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("room_type", "room");
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.roomslist;
-
-        ChatApplication.logDisplay("un assign is "+url+" "+jsonObject);
-
-        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().getRoomList("rooom", new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-                    ChatApplication.logDisplay("un assign is "+result);
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -702,10 +648,10 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
     }
 
 
@@ -718,69 +664,54 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
             ChatApplication.showToast(getApplicationContext(), BeaconScannerAddActivity.this.getResources().getString(R.string.disconnect));
             return;
         }
-
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
-        String url = ChatApplication.url + Constants.devicefind;
-
         if (scannerList != null) {
             scannerList.clear();
         }
-
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put("device_type", "beacon_scanner");
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("beaconscanner  url is "+ url +" "+obj);
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        SpikeBotApi.getInstance().getDeviceList("beacon_scanner", new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    IRBlasterAddRes irBlasterAddRes = Common.jsonToPojo(result.toString(), IRBlasterAddRes.class);
+                    if (irBlasterAddRes.getCode() == 200) {
+                        scannerList = irBlasterAddRes.getData();
+                        scannerList = irBlasterAddRes.getData();
 
-                ChatApplication.logDisplay("result : " + result.toString());
+                        beaconAddAdapter = new BeaconAddAdapter(scannerList, BeaconScannerAddActivity.this);
+                        mBeaconList.setAdapter(beaconAddAdapter);
+                        beaconAddAdapter.notifyDataSetChanged();
 
-                IRBlasterAddRes irBlasterAddRes = Common.jsonToPojo(result.toString(), IRBlasterAddRes.class);
-                if (irBlasterAddRes.getCode() == 200) {
-                    scannerList = irBlasterAddRes.getData();
-                    scannerList = irBlasterAddRes.getData();
+                    } else if (irBlasterAddRes.getCode() == 301) {
+                        scannerList = new ArrayList<>();
+                        scannerList.clear();
+                        BeaconAddAdapter scannerAddAdapter = new BeaconAddAdapter(scannerList, BeaconScannerAddActivity.this);
+                        mBeaconList.setAdapter(scannerAddAdapter);
+                        scannerAddAdapter.notifyDataSetChanged();
+                        Common.showToast(irBlasterAddRes.getMessage());
+                    } else {
+                        Common.showToast(irBlasterAddRes.getMessage());
+                    }
 
-                    beaconAddAdapter = new BeaconAddAdapter(scannerList, BeaconScannerAddActivity.this);
-                    mBeaconList.setAdapter(beaconAddAdapter);
-                    beaconAddAdapter.notifyDataSetChanged();
+                    if (scannerList.size() == 0) {
+                        mEmptyView.setVisibility(View.VISIBLE);
+                        mBeaconList.setVisibility(View.GONE);
+                    } else {
+                        mEmptyView.setVisibility(View.GONE);
+                        mBeaconList.setVisibility(View.VISIBLE);
+                    }
 
-                } else if (irBlasterAddRes.getCode() == 301) {
-                    scannerList = new ArrayList<>();
-                    scannerList.clear();
-                    BeaconAddAdapter scannerAddAdapter = new BeaconAddAdapter(scannerList, BeaconScannerAddActivity.this);
-                    mBeaconList.setAdapter(scannerAddAdapter);
-                    scannerAddAdapter.notifyDataSetChanged();
-                    Common.showToast(irBlasterAddRes.getMessage());
-                } else {
-                    Common.showToast(irBlasterAddRes.getMessage());
+                    getRoomList();
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
-
-                if (scannerList.size() == 0) {
-                    mEmptyView.setVisibility(View.VISIBLE);
-                    mBeaconList.setVisibility(View.GONE);
-                } else {
-                    mEmptyView.setVisibility(View.GONE);
-                    mBeaconList.setVisibility(View.VISIBLE);
-                }
-
-                getRoomList();
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
-                throwable.printStackTrace();
+            public void onData_FailureResponse() {
                 ChatApplication.showToast(BeaconScannerAddActivity.this, getResources().getString(R.string.something_wrong1));
             }
-        }).execute();
+        });
 
     }
 
@@ -807,38 +738,13 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
             return;
         }
 
-
+        int room_pos = sp_room_list.getSelectedItemPosition();
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
-        JSONObject obj = new JSONObject();
-        try {
-
-            int room_pos = sp_room_list.getSelectedItemPosition();
-
-            obj.put("ir_blaster_name", door_name);
-            obj.put("ir_blaster_module_id", door_module_id);
-
-            obj.put("room_id", roomIdList.get(room_pos));
-            obj.put("room_name", roomNameList.get(room_pos));
-
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("obj : " + obj.toString());
-        String url = "";
-
-        url = ChatApplication.url + Constants.ADD_IR_BLASTER;
-
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().addBeaconScanner(door_name, door_module_id, roomIdList.get(room_pos), roomNameList.get(room_pos), new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
-                    //{"code":200,"message":"success"}
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
@@ -862,9 +768,9 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
     }
 }

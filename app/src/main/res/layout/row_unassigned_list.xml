@@ -73,7 +73,7 @@
 
                 <ImageView
                     android:id="@+id/up_save"
-                    android:src="@drawable/edit_gray"
+                    android:src="@drawable/edit_blue"
                     android:layout_width="28dp"
                     android:layout_height="28dp" />
 

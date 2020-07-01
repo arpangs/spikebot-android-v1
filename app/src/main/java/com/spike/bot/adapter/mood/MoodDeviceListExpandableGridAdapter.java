@@ -131,7 +131,7 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                 if (position == 0) {
                     holder.view_line_top.setVisibility(View.GONE);
                 } else {
-                    holder.view_line_top.setVisibility(View.VISIBLE);
+                    holder.view_line_top.setVisibility(View.GONE);
                 }
 
                 final RoomVO section = (RoomVO) mDataArrayList.get(position);

@@ -25,6 +25,8 @@ import com.spike.bot.R;
 import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
 import com.spike.bot.adapter.SensorUnassignedAdapter;
 import com.spike.bot.adapter.UnAssignRepeatarAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -71,13 +73,13 @@ public class SensorUnassignedActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        spinner_room =  findViewById(R.id.spinner_room);
-        list_sensor =  findViewById(R.id.list_sensor);
+        spinner_room = findViewById(R.id.spinner_room);
+        list_sensor = findViewById(R.id.list_sensor);
         viewLine = findViewById(R.id.viewLine);
         list_sensor.setLayoutManager(new GridLayoutManager(this, 1));
 
-        ll_sensor_list_empy =  findViewById(R.id.ll_sensor_list);
-        linear_progress =  findViewById(R.id.linear_progress);
+        ll_sensor_list_empy = findViewById(R.id.ll_sensor_list);
+        linear_progress = findViewById(R.id.linear_progress);
 
         isDoorSensor = getIntent().getIntExtra("isDoorSensor", 0);
         roomName = getIntent().getStringExtra("roomName");
@@ -121,25 +123,23 @@ public class SensorUnassignedActivity extends AppCompatActivity {
     /*call for repeater */
     private void callReptorList() {
 
-        String url = ChatApplication.url + Constants.getUnassignedRepeaterList;
-
         linear_progress.setVisibility(View.VISIBLE);
-
-        new GetJsonTask(getApplicationContext(), url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().callReptorList(new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                //   ActivityHelper.dismissProgressDialog();
+            public void onData_SuccessfulResponse(String stringResponse) {
                 linear_progress.setVisibility(View.GONE);
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    if (result.optInt("code") == 200) {
+                        list_sensor.setVisibility(View.VISIBLE);
+                        ll_sensor_list_empy.setVisibility(View.GONE);
 
-                if (result.optInt("code") == 200) {
-                    list_sensor.setVisibility(View.VISIBLE);
-                    ll_sensor_list_empy.setVisibility(View.GONE);
 
-                    try {
                         arrayListRepeter.clear();
-                        JSONObject object = new JSONObject(result.toString());
+                        //   JSONObject result = new JSONObject(stringResponse);
+                        // JSONObject object = new JSONObject(result.toString());
 
-                        JSONArray array = object.optJSONArray("data");
+                        JSONArray array = result.optJSONArray("data");
 
                         // "repeator_module_id": "B04A1D1A004B1200",
                         //      "repeator_name": "repeater name g",
@@ -156,90 +156,91 @@ public class SensorUnassignedActivity extends AppCompatActivity {
                             unAssignRepeatarAdapter = new UnAssignRepeatarAdapter(SensorUnassignedActivity.this, arrayListRepeter);
                             list_sensor.setAdapter(unAssignRepeatarAdapter);
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
 
-                } else {
-                    Toast.makeText(getApplicationContext(), result.optString("message"), Toast.LENGTH_SHORT).show();
+
+                    } else {
+                        // Toast.makeText(getApplicationContext(), result.optString("message"), Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 linear_progress.setVisibility(View.GONE);
-                throwable.printStackTrace();
                 Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
-        }).execute();
+        });
 
     }
-
 
     private void getSensorUnAssignedDetails(int sensor_type) {
 
         String url = ChatApplication.url + Constants.deviceunassigned;
 
         linear_progress.setVisibility(View.VISIBLE);
-
-        new GetJsonTask(getApplicationContext(), url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().getSensorUnAssignedDetails(new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                linear_progress.setVisibility(View.GONE);
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try {
+                    linear_progress.setVisibility(View.GONE);
+                    JSONObject result = new JSONObject(stringResponse);
+                    SensorUnassignedRes sensorUnassignedRes = Common.jsonToPojo(result.toString(), SensorUnassignedRes.class);
 
-                SensorUnassignedRes sensorUnassignedRes = Common.jsonToPojo(result.toString(), SensorUnassignedRes.class);
+                    if (sensorUnassignedRes.getCode() == 200) {
 
-                if (sensorUnassignedRes.getCode() == 200) {
+                        if (sensorUnassignedRes.getData().getUnassigendSensorList().size() == 0) {
 
-                    if (sensorUnassignedRes.getData().getUnassigendSensorList().size() == 0) {
+                            list_sensor.setVisibility(View.GONE);
+                            ll_sensor_list_empy.setVisibility(View.VISIBLE);
 
-                        list_sensor.setVisibility(View.GONE);
-                        ll_sensor_list_empy.setVisibility(View.VISIBLE);
+                        } else {
+                            ArrayList<String> rooListSpinnerEmpty = new ArrayList<>();
+
+                            roomList = sensorUnassignedRes.getData().getRoomList();
+                            rooListSpinnerEmpty.add("Select Room Name");
+                            int position = 0;
+                            for (SensorUnassignedRes.Data.RoomList roomList1 : roomList) {
+                                if (roomList1.getRoomId().equalsIgnoreCase(roomId)) {
+                                    position = position;
+                                } else {
+                                    position++;
+                                }
+                                rooListSpinnerEmpty.add(roomList1.getRoomName());
+                            }
+
+                            spinnerArrayAdapter = new ArrayAdapter(SensorUnassignedActivity.this, android.R.layout.simple_spinner_dropdown_item, rooListSpinnerEmpty);
+                            spinner_room.setAdapter(spinnerArrayAdapter);
+
+                            for (int i = 0; i < roomList.size(); i++) {
+                                if (roomList.get(i).getRoomId().equalsIgnoreCase(roomId)) {
+                                    spinner_room.setSelection(i + 1);
+                                    break;
+                                }
+                            }
+
+                            list_sensor.setVisibility(View.VISIBLE);
+                            ll_sensor_list_empy.setVisibility(View.GONE);
+
+                            sensorUnassignedAdapter = new SensorUnassignedAdapter(sensorUnassignedRes.getData().getUnassigendSensorList());
+                            list_sensor.setAdapter(sensorUnassignedAdapter);
+                        }
 
                     } else {
-                        ArrayList<String> rooListSpinnerEmpty = new ArrayList<>();
-
-                        roomList = sensorUnassignedRes.getData().getRoomList();
-                        rooListSpinnerEmpty.add("Select Room Name");
-                        int position = 0;
-                        for (SensorUnassignedRes.Data.RoomList roomList1 : roomList) {
-                            if (roomList1.getRoomId().equalsIgnoreCase(roomId)) {
-                                position = position;
-                            } else {
-                                position++;
-                            }
-                            rooListSpinnerEmpty.add(roomList1.getRoomName());
-                        }
-
-                        spinnerArrayAdapter = new ArrayAdapter(SensorUnassignedActivity.this, android.R.layout.simple_spinner_dropdown_item, rooListSpinnerEmpty);
-                        spinner_room.setAdapter(spinnerArrayAdapter);
-
-                        for (int i = 0; i < roomList.size(); i++) {
-                            if (roomList.get(i).getRoomId().equalsIgnoreCase(roomId)) {
-                                spinner_room.setSelection(i + 1);
-                                break;
-                            }
-                        }
-
-                        list_sensor.setVisibility(View.VISIBLE);
-                        ll_sensor_list_empy.setVisibility(View.GONE);
-
-                        sensorUnassignedAdapter = new SensorUnassignedAdapter(sensorUnassignedRes.getData().getUnassigendSensorList());
-                        list_sensor.setAdapter(sensorUnassignedAdapter);
+                        Toast.makeText(getApplicationContext(), sensorUnassignedRes.getMessage(), Toast.LENGTH_SHORT).show();
                     }
-
-                } else {
-                    Toast.makeText(getApplicationContext(), sensorUnassignedRes.getMessage(), Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 linear_progress.setVisibility(View.GONE);
-                throwable.printStackTrace();
                 Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
-        }).execute();
+        });
 
     }
 
@@ -299,50 +300,33 @@ public class SensorUnassignedActivity extends AppCompatActivity {
 
         int position = spinner_room.getSelectedItemPosition() - 1;
 
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("curtain_module_id", unassigendSensorList.getModuleId());
-            jsonObject.put("curtain_name", unassigendSensorList.getSensorName());
-            jsonObject.put("room_id", roomList.get(position).getRoomId());
-            jsonObject.put("room_name", roomList.get(position).getRoomName());
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        SpikeBotApi.getInstance().saveCurtain(unassigendSensorList.getModuleId(), unassigendSensorList.getSensorName(), roomList.get(position).getRoomId(),
+                roomList.get(position).getRoomName(), new DataResponseListener() {
+                    @Override
+                    public void onData_SuccessfulResponse(String stringResponse) {
+                        ActivityHelper.dismissProgressDialog();
+                        try {
+                            JSONObject result = new JSONObject(stringResponse);
+                            int code = result.getInt("code");
+                            String message = result.getString("message");
+                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 
-        String webUrl = ChatApplication.url + Constants.deviceadd;
+                            if (code == 200) {
+                                ChatApplication.isMainFragmentNeedResume = true;
+                                ChatApplication.isEditActivityNeedResume = true;
+                                finish();
+                            }
 
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        new GetJsonTask(this, webUrl, "POST", jsonObject.toString(), new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
-
-                ChatApplication.logDisplay("onSuccess result : " + result.toString());
-                ActivityHelper.dismissProgressDialog();
-                try {
-
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-
-                    if (code == 200) {
-                        ChatApplication.isMainFragmentNeedResume = true;
-                        ChatApplication.isEditActivityNeedResume = true;
-                        finish();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
-            }
-        }).execute();
+                    @Override
+                    public void onData_FailureResponse() {
+                        ActivityHelper.dismissProgressDialog();
+                    }
+                });
 
     }
 
@@ -363,35 +347,11 @@ public class SensorUnassignedActivity extends AppCompatActivity {
             return;
         }
 
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-            //"repeator_module_id"	: "B04A1D1A004B1200",
-            //		"repeator_name":"repeator new name",
-            //	"user_id":"1566980189559_18CfbqxQo",
-            //	"phone_id":"1234567",
-            //	"phone_type":"Android"
-            jsonObject.put("repeator_module_id", unassigendSensorList.getSensorId());
-            jsonObject.put("repeator_name", unassigendSensorList.getSensorName());
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String webUrl = ChatApplication.url + Constants.reassignRepeater;
-
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        new GetJsonTask(this, webUrl, "POST", jsonObject.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().saveRepeaters(unassigendSensorList.getSensorId(), unassigendSensorList.getSensorName(), new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
-                ChatApplication.logDisplay("onSuccess result : " + result.toString());
-                ActivityHelper.dismissProgressDialog();
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
-
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
@@ -405,11 +365,10 @@ public class SensorUnassignedActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
-
+        });
     }
 
     private void saveSensorUnassinged() {
@@ -462,68 +421,45 @@ public class SensorUnassignedActivity extends AppCompatActivity {
 
         int position = spinner_room.getSelectedItemPosition() - 1;
 
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("room_id", roomList.get(position).getRoomId());
-            jsonObject.put("room_name", roomList.get(position).getRoomName());
-            jsonObject.put("sensor_id", unassigendSensorList.getSensorId());
-            jsonObject.put("module_id", unassigendSensorList.getModuleId());
-
-            String sensor_t = "";
-            if (unassigendSensorList.getSensorIcon().equalsIgnoreCase("doorsensor")) {
-                sensor_t = "door";
-            } else if (unassigendSensorList.getSensorIcon().equalsIgnoreCase("tempsensor")) {
-                sensor_t = "temp";
-            } else if (unassigendSensorList.getSensorIcon().equalsIgnoreCase("irblaster")) {
-                sensor_t = "irblaster";
-            } else if (unassigendSensorList.getSensorIcon().equalsIgnoreCase("multisensor")) {
-                sensor_t = "multisensor";
-            } else if (unassigendSensorList.getSensorIcon().equalsIgnoreCase("gassensor")) {
-                sensor_t = "gas";
-            }
-
-            jsonObject.put("sensor_type", sensor_t);
-            jsonObject.put("sensor_name", unassigendSensorList.getSensorName());
-
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+        String sensor_t = "";
+        if (unassigendSensorList.getSensorIcon().equalsIgnoreCase("doorsensor")) {
+            sensor_t = "door";
+        } else if (unassigendSensorList.getSensorIcon().equalsIgnoreCase("tempsensor")) {
+            sensor_t = "temp";
+        } else if (unassigendSensorList.getSensorIcon().equalsIgnoreCase("irblaster")) {
+            sensor_t = "irblaster";
+        } else if (unassigendSensorList.getSensorIcon().equalsIgnoreCase("multisensor")) {
+            sensor_t = "multisensor";
+        } else if (unassigendSensorList.getSensorIcon().equalsIgnoreCase("gassensor")) {
+            sensor_t = "gas";
         }
 
-        String webUrl = ChatApplication.url + Constants.SAVE_UNCONFIGURED_SENSOR;
+        SpikeBotApi.getInstance().saveSensorUnassigned(roomList.get(position).getRoomId(), roomList.get(position).getRoomName(), unassigendSensorList.getSensorId(),
+                unassigendSensorList.getModuleId(), sensor_t, unassigendSensorList.getSensorName(), new DataResponseListener() {
+                    @Override
+                    public void onData_SuccessfulResponse(String stringResponse) {
+                        ActivityHelper.dismissProgressDialog();
+                        try {
+                            JSONObject result = new JSONObject(stringResponse);
+                            int code = result.getInt("code");
+                            String message = result.getString("message");
+                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        new GetJsonTask(this, webUrl, "POST", jsonObject.toString(), new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
+                            if (code == 200) {
+                                ChatApplication.isMainFragmentNeedResume = true;
+                                ChatApplication.isEditActivityNeedResume = true;
+                                finish();
+                            }
 
-                ChatApplication.logDisplay("onSuccess result : " + result.toString());
-                ActivityHelper.dismissProgressDialog();
-                try {
-
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-
-                    if (code == 200) {
-                        ChatApplication.isMainFragmentNeedResume = true;
-                        ChatApplication.isEditActivityNeedResume = true;
-                        finish();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
-            }
-        }).execute();
-
+                    @Override
+                    public void onData_FailureResponse() {
+                        ActivityHelper.dismissProgressDialog();
+                    }
+                });
     }
 }

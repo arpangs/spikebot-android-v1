@@ -163,11 +163,11 @@ public class BeaconDeviceListExpandableGridAdapter extends RecyclerView.Adapter<
                 }
 
                 /*check is device active or not*/
-                if (item.getIsActive() == -1) {
+                /*if (item.getIsActive() == -1) {
                     holder.view.setAlpha(0.50f);
                 } else {
                     holder.view.setAlpha(1);
-                }
+                }*/
 
                 if (item.isSelected()) {
                     holder.iv_icon_select.setVisibility(View.VISIBLE);

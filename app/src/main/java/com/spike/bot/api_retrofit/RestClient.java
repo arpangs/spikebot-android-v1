@@ -38,7 +38,7 @@ public class RestClient {
 
     /*dev arp add this abstract class on 23 june 2020*/
 
-    public static final String BASE_URL = Constants.CLOUD_SERVER_URL;
+    public static final String BASE_URL = ChatApplication.url;
     private static final int TIME = 60 * 15; // 90O milli second
     private static final String TAG = RestClient.class.getSimpleName();
     private static Retrofit retrofit;

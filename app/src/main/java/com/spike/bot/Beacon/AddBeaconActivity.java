@@ -1,6 +1,5 @@
 package com.spike.bot.Beacon;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,7 +20,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,26 +30,24 @@ import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.ir.blaster.IRRemoteAdd;
-import com.spike.bot.activity.ir.blaster.IRRemoteBrandListActivity;
 import com.spike.bot.adapter.beacon.ScannerAddListAdapter;
-import com.spike.bot.adapter.irblaster.IRBlasterAddListAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
-import com.spike.bot.model.DeviceVO;
+import com.spike.bot.customview.recycle.WrapContentLinearLayoutManager;
 import com.spike.bot.model.IRDeviceDetailsRes;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-
-import no.nordicsemi.android.support.v18.scanner.ScanResult;
 
 public class AddBeaconActivity extends AppCompatActivity implements View.OnClickListener, ScannerAddListAdapter.BeaconDeviceClickListener {
 
@@ -94,11 +89,16 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
 
         list_beacon_add = findViewById(R.id.list_beacon_add);
 
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(AddBeaconActivity.this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        list_beacon_add.setHasFixedSize(true);
+        list_beacon_add.setLayoutManager(linearLayoutManager);
+
         getBeaconscannerDetails();
 
+        // list_beacon_add.setLayoutManager(new LinearLayoutManager(AddBeaconActivity.this));
 
-
-
+        list_beacon_add.setLayoutManager(new WrapContentLinearLayoutManager(AddBeaconActivity.this, LinearLayoutManager.VERTICAL, false));
     }
 
     /* get Beacon Detail
@@ -110,34 +110,14 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-     //   showProgress();
-       // ActivityHelper.showProgressDialog(AddBeaconActivity.this, "Please Wait...", false);
+        //   showProgress();
+        // ActivityHelper.showProgressDialog(AddBeaconActivity.this, "Please Wait...", false);
 
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put("device_id", device_id);
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.beaconscannerscan;
-
-    //    scannerLists = new ArrayList<>();
-    //    scannerLists.clear();
-        ChatApplication.logDisplay("beacon list url is " + url + " " + obj.toString());
-
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().getbeaconDeviceDetails(device_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
-             //   hideProgress();
-             //   ActivityHelper.dismissProgressDialog();
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
-
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
@@ -156,25 +136,32 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
                                 ll_scanner_list.setVisibility(View.GONE);
                                 list_beacon_add.setVisibility(View.VISIBLE);
                                 if (mBeaconList.size() > 0) {
-                                  //  mBeaconList = removeDuplicates(tempBeaconList);
-                                   /* for (int i = 0; i < mBeaconList.size(); i++) {
-                                        if(!mBeaconList.get(i).getMac().equalsIgnoreCase(tempBeaconList.get(i).getMac())){
-                                            mBeaconList.addAll(irDeviceDetailsRes.getData());
+                                    for (IRDeviceDetailsRes.Data result1 : irDeviceDetailsRes.getData()) {
+                                        if (mBeaconList.size() == 0) {
+                                            mBeaconList.addAll((Collection<? extends IRDeviceDetailsRes.Data>) result1);
+                                        } else {
+                                            boolean isFound = false;
+                                            int foundPosition = -1;
+                                            for (int i = 0; i < mBeaconList.size(); i++) {
+                                                if (mBeaconList.get(i).getMac().equalsIgnoreCase(result1.getMac())) {
+                                                    isFound = true;
+                                                    foundPosition = i;
+                                                    break;
+                                                }
+
+                                            }
+                                            if (isFound) {
+                                                mBeaconList.set(foundPosition, result1);
+                                            } else {
+                                                mBeaconList.add(result1);
+                                            }
+                                            scanneraddlistadapter = new ScannerAddListAdapter(mBeaconList, AddBeaconActivity.this);
+                                            list_beacon_add.setAdapter(scanneraddlistadapter);
+                                            list_beacon_add.setHasFixedSize(true);
                                             scanneraddlistadapter.notifyDataSetChanged();
-                                        } *//*else if(mBeaconList.get(i).getMac().equalsIgnoreCase(tempBeaconList.get(i).getMac())
-                                        && !mBeaconList.get(i).getSs().equalsIgnoreCase(tempBeaconList.get(i).getSs())){
-                                            scanneraddlistadapter.notifyItemChanged(i);
-
-                                        }*//*
-                                    }*/
-
-
-                                    scanneraddlistadapter = new ScannerAddListAdapter(mBeaconList, AddBeaconActivity.this);
-                                    list_beacon_add.setLayoutManager(new LinearLayoutManager(AddBeaconActivity.this));
-                                    list_beacon_add.setAdapter(scanneraddlistadapter);
-                                   // scanneraddlistadapter.notifyDataSetChanged();
-
-                                    scanneraddlistadapter.updatebeaconlistitem(getBeaconListSortedByAddress());
+                                            scanneraddlistadapter.updatebeaconlistitem(getBeaconListSortedByAddress());
+                                        }
+                                    }
                                 }
                             } else {
                                 ll_scanner_list.setVisibility(View.VISIBLE);
@@ -193,11 +180,10 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
-               // hideProgress();
-              //  ActivityHelper.dismissProgressDialog();
+            public void onData_FailureResponse() {
+
             }
-        }).execute();
+        });
     }
 
     public List<IRDeviceDetailsRes.Data> getBeaconListSortedByAddress() {
@@ -248,33 +234,16 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
         }
         showProgress();
         ActivityHelper.showProgressDialog(AddBeaconActivity.this, "Please Wait...", false);
-
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put("device_type", "beacon_scanner");
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.devicefind;
-
         scannerLists = new ArrayList<>();
         scannerLists.clear();
 
-        ChatApplication.logDisplay("url is " + url + " " + obj.toString());
-
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().getDeviceList("beacon_scanner", new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 hideProgress();
                 ActivityHelper.dismissProgressDialog();
                 try {
-
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
@@ -289,8 +258,6 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
                                 for (int i = 0; i < mBeaconDeviceList.size(); i++) {
                                     scannerArraylist.add(mBeaconDeviceList.get(i).getDeviceName());
                                 }
-                          /*  scanneraddlistadapter = new ScannerAddListAdapter(mBeaconDeviceList, AddBeaconActivity.this);
-                            list_beacon_add.setAdapter(scanneraddlistadapter);*/
                             }
 
                             scannerLists = irDeviceDetailsRes.getData();
@@ -302,15 +269,12 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
                                 scannerLists.add(0, irEmpty);
                             }
 
-                            if (scannerArraylist != null){
-                               /* ArrayAdapter customBlasterAdapter = new ArrayAdapter(getApplicationContext(), R.layout.spinner, scannerArraylist);
-                                customBlasterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                                beacon_add_scanner_spinner.setAdapter(customBlasterAdapter);*/
+                            if (scannerArraylist != null) {
                                 try {
                                     ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(AddBeaconActivity.this, R.layout.spinner, scannerArraylist);
                                     dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                                     beacon_add_scanner_spinner.setAdapter(dataAdapter);
-                                }catch (Exception e){
+                                } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             }
@@ -326,16 +290,16 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
                                             if (mBeaconDeviceList.get(position).getDeviceId() != null) {
                                                 device_id = mBeaconDeviceList.get(position).getDeviceId();
                                             }
-                                            if (device_id !=null) {
+                                            if (device_id != null) {
 
                                                 handler = new Handler();
                                                 handler.postDelayed(new Runnable() {
                                                     @Override
                                                     public void run() {
                                                         //Do something after 20 seconds
-                                                        handler.postDelayed(this, 500);
+                                                        mBeaconList.clear();
+                                                        handler.postDelayed(this, 5000);
                                                         getbeaconDeviceDetails(device_id);
-                                                        ChatApplication.logDisplay("timer" + device_id);
                                                     }
                                                 }, 1000);
 
@@ -353,7 +317,6 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
                             });
 
 
-
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -368,12 +331,11 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 hideProgress();
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
-
+        });
 
     }
 
@@ -390,7 +352,11 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        handler.removeCallbacksAndMessages(null);
+        try {
+            handler.removeCallbacksAndMessages(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -398,7 +364,7 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
         super.onPause();
         try {
             handler.removeCallbacksAndMessages(null);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -410,7 +376,7 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
             onBackPressed();
             try {
                 handler.removeCallbacksAndMessages(null);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -502,10 +468,10 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
                     intent.putExtra("SENSOR_ID", mBeaconDeviceList.get(beacon_add_scanner_spinner.getSelectedItemPosition()).getDeviceId());
                     intent.putExtra("SCANNER_DEVICE_ID", "" + mBeaconDeviceList.get(beacon_add_scanner_spinner.getSelectedItemPosition()).getDeviceId());
                     intent.putExtra("DEVICE_TYPE", "beacon");
-                    intent.putExtra("isMap",true);
-                    intent.putExtra("isBeaconListAdapter",true);
+                    intent.putExtra("isMap", true);
+                    intent.putExtra("isBeaconListAdapter", true);
                     intent.putExtra("BEACON_MODULE_ID", devicelist.getMac());
-                    intent.putExtra("BEACON_DEVICE_NAME",edSensorName.getText().toString());
+                    intent.putExtra("BEACON_DEVICE_NAME", edSensorName.getText().toString());
                     //startActivityForResult(intent, Constants.BEACON_REQUEST_CODE);
                     startActivity(intent);
 

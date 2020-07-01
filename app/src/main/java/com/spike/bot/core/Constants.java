@@ -37,14 +37,12 @@ public class Constants {
     //device type =3 - philip
     // device type = 2 = Ac
 
-      public static  String CLOUD_SERVER_URL = "http://52.24.23.7:3000"; //222 live
-  // public static String CLOUD_SERVER_URL = "http://34.212.76.50:3000";  // local
-
-    public static String CAMERA_CLOUD_SERVER_URL = "http://52.24.23.7:3000"; // live
-    //public static String CAMERA_CLOUD_SERVER_URL = "http://34.212.76.50:3000"; // local
-
     public static final String LIVE = "LIVE-";     // live for notification subscribe/unsubscribe topic
+    // public static String CLOUD_SERVER_URL = "http://34.212.76.50:3000";  // local
     public static final String LOCAL = "LOCAL-";   // local for notification subscribe/unsubscribe topic
+    //public static String CAMERA_CLOUD_SERVER_URL = "http://34.212.76.50:3000"; // local
+    public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";
+    public static final String CAMERA_PATH = "/static/storage/volume/pi/";
 
     //   public static  String CLOUD_SERVER_URL = "http://52.24.23.7:3000";
 //    public static  String CLOUD_SERVER_URL = "http://api.spikebot.io"; //222
@@ -55,17 +53,9 @@ public class Constants {
 
 //    public static  String  IP_END = "117"; // jhanvi / 123
 //    public static  String  IP_END = "118"; // bhumi / 123
-
-    public static String IP_END = "222";
-    public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";
-    public static final String CAMERA_PATH = "/static/storage/volume/pi/";
-
-    public static String startUrl = "http://home.d";
-
     public static final int ACK_TIME_OUT = 5000;
     public static final int REMOTE_REQUEST_CODE = 10;
     public static final int BEACON_REQUEST_CODE = 11;
-
     public static final int SWITCH_NUMBER = 4;
     public static final int SWITCH_NUMBER_EXIST_PANEL = 5;
     public static final String PREF_CLOUDLOGIN = "cloudLogin";
@@ -78,32 +68,27 @@ public class Constants {
     public static final String lock_exe = "lock_exe";
     public static final String lock_token = "lock_token";
     public static final String home_controller_id = "home_controller_id";
-    public static int lockDate = 0;
-    public static String socketIp = "";
-    public static int adminType = 1;
-    public static int room_type = 0;
-
+    public static final String AUTHORIZATION_TOKEN = "Authorization_TOKEN"; // dev arp add on 22 june 2020
     public static final String DEVICE_PUSH_TOKEN = "device_push_token";
-
-
     public static final String SIMPLE_DATE_FORMAT_1 = "MMM dd, yyyy";
     public static final String LOG_DATE_FORMAT_1 = "yyyy-MM-dd HH:mm:ss";
     public static final String DATE_D_MMM_YY_H_MM_AMPM = "dd-MMM-yy hh:mm a";
     public static final String LOG_DATE_FORMAT_2 = "dd-MMM yyyy h:mm a";
 
-    /*---------------------------Add new api v2-----------------------------*/
 
-    public static final String APP_LOGIN = "/applogin";
-  //  public static final String APP_LOGIN = "/auth/login";
+        public static final String APP_LOGIN = "/applogin";
+ //   public static final String APP_LOGIN = "/auth/login"; // dev arp change on 22 june 2020
     public static final String APP_LOGOUT = "/applogout";
+//    public static final String APP_LOGOUT = "/auth/logout"; // dev arp change on 23 june 2020
     public static final String SIGNUP_API = "/signupdetails";
-
     //room
     public static final String GET_DEVICES_LIST = "/device/list";
     public static final String moodList = "/mood/list";
     public static final String roomsget = "/rooms/get";
     public static final String roomslist = "/rooms/list";
     public static final String getMoodName = "/mood/names/list";
+
+    /*---------------------------Add new api v2-----------------------------*/
     public static final String getChildUsers = "/getChildUsers";
     public static final String deviceunassigned = "/device/unassigned";
     public static final String DeleteChildUser = "/DeleteChildUser";
@@ -130,11 +115,9 @@ public class Constants {
     public static final String addHueBridge = "/addHueBridge";
     public static final String searchBridges = "/searchBridges";
     public static final String moodsmartremote = "/mood/smart-remote";
-
     //added : 3-10-2018
     public static final String GET_ALL_UNASSIGNED_DEVICES = "/getAllUnassignedDevices";
     public static final String ADD_UN_CONFIGURED_DEVICE = "/addUnconfiguredDevice";
-
     //door sensor
     public static final String CONFIGURE_DOOR_SENSOR_REQUEST = "/configureDoorSensorRequest";
     public static final String ADD_DOOR_SENSOR = "/addDoorSensor"; // is_new=1 means new panel add & is_new=0 means exting panel add
@@ -171,13 +154,12 @@ public class Constants {
     public static final String curtaindelete = "/curtain/delete";
     public static final String curtainupdatestatus = "/curtain/update-status";
     public static final String deviceheavyloadping = "/device/heavy-load/ping";
-
     public static final String SENSOR_ROOM_DETAILS = "/sensorRoomDetails";
     public static final String SENSOR_NOTIFICATION = "/sensorNotification";
     public static final String GET_UNASSIGNED_SENSORS = "/getUnassignedSensors";
     public static final String SAVE_UNCONFIGURED_SENSOR = "/saveUnconfiguredSensor";
     public static final String UPDATE_UNREAD_LOGS = "/updateUnReadLogs";
-    public static final String MARK_SEEN =  "/logs/seen";
+    public static final String MARK_SEEN = "/logs/seen";
     public static final String SAVE_EDIT_SWITCH = "/device/edit";
     public static final String configureGasSensorRequest = "/configureGasSensorRequest";
     public static final String devicefind = "/device/find";
@@ -192,15 +174,14 @@ public class Constants {
     public static final String deleteRepeator = "/deleteRepeator";
     public static final String reassignRepeater = "/reassignRepeater";
     public static final String getUnassignedRepeaterList = "/getUnassignedRepeaterList";
-  //  public static final String curtainconfigure = "/curtain/configure";
+    //  public static final String curtainconfigure = "/curtain/configure";
     public static final String deviceconfigure = "/device/configure/";
     public static final String alertlist = "/alert/list";
     public static final String deviceinfo = "/device/info";
     public static final String cameralistbyjetson = "/camera/list-by-jetson";
     public static final String devicemoduledelete = "/device/module/delete";
     public static final String beaconscannerscan = "/device/beacon-scanner/scan";
-    public static final String GET_BEACON_LOCATION= "/device/beacon/locations";
-
+    public static final String GET_BEACON_LOCATION = "/device/beacon/locations";
     //temp sensor
     public static final String GET_TEMP_SENSOR_INFO = "/getTempSensorInfo";
     public static final String getMultiSensorInfo = "/getMultiSensorInfo";
@@ -224,7 +205,6 @@ public class Constants {
     public static final String deleteMultiSensor = "/deleteMultiSensor";
     public static final String reportFalseImage = "/false_image";
     public static final String changeTempSensorNotificationStatus = "/changeTempSensorNotificationStatus";
-
     //IR Blaster
     public static final String CONFIGURE_IR_BLASTER_REQUEST = "/configureIRBlasterRequest";
     public static final String ADD_IR_BLASTER = "/AddIRBlaster";
@@ -240,8 +220,6 @@ public class Constants {
     public static final String getDeviceBrandRemoteList = "/getDeviceBrandRemoteList";
     public static final String changeHueLightState = "/changeHueLightState";
     public static final String getPhilipsHueParams = "/getPhilipsHueParams";
-
-
     //new api for IR Blaster
     public static final String GET_REMOTE_INFO = "/getRemoteInfo";
     public static final String GET_IR_BLASTER_LIST = "/getIRBlasterList";
@@ -253,24 +231,20 @@ public class Constants {
     public static final String UPDATE_REMOTE_DETAILS = "/updateRemoteDetails";
     public static final String DELETE_REMOTE = "/deleteRemote";
     public static final String deletePhilipsHue = "/deletePhilipsHue";
-
     //panel
     public static final String ADD_CUSTOM_PANEL = "/panel/add-existing";
     public static final String CHANGE_ROOM_PANELMOOD_STATUS_NEW = "/room/status";
     public static final String mood_status = "/mood/status";
     public static final String CHANGE_PANELSTATUS = "/panel/status";
     public static final String CONFIGURE_NEW_PANEL = "/configureNewPanel";
-
     //devices
     public static final String CHANGE_DEVICE_STATUS = "/device/status";
     public static final String ADD_CUSTOME_DEVICE = "/panel/update/devices";
     public static final String CHECK_INDIVIDUAL_SWITCH_DETAILS = "/device/icon/list";
-
     //mood
     public static final String ADD_NEW_MOOD_NEW = "/mood/add";
     public static final String EDITMOOD = "/mood/edit";  //saveEditMood
     public static final String GET_MOOD_DEVICE_DETAILS = "/getMoodDeviceDetails";
-
     //schedule
     public static final String ADD_NEW_SCHEDULE = "/schedule/add";
     public static final String scheduleedit = "/schedule/edit";
@@ -284,11 +258,9 @@ public class Constants {
     public static final String deleteCameraNotification = "/deleteCameraNotification";
     public static final String updateCameraNotification = "/updateCameraNotification";
     public static final String changeCameraAlertStatus = "/changeCameraAlertStatus";
-
     //profile
     public static final String GET_USER_PROFILE_INFO = "/getuserProfileInfo";
     public static final String SAVE_USER_PROFILE_DETAILS = "/saveUserProfileDetails";
-
     //camera
     public static final String ADD_CAMERA = "/addCamera";
     public static final String SAVE_EDIT_CAMERA = "/updateCamera";
@@ -298,7 +270,6 @@ public class Constants {
     public static final String GET_CAMERA_NOTIFICATION_COUNTER = "/getNotificationCounter";
     public static final String getCameraLogs = "/getCameraLogs";
     public static final String getUnseenCameraLog = "/getUnseenCameraLog";
-
     //others
     public static final String getScheduleNotification = "/getScheduleNotification";
     public static final String GET_FILTER_NOTIFICATION_INFO = "/logs/categories";
@@ -314,22 +285,26 @@ public class Constants {
     public static final String addTTLock = "/addTTLock";
     public static final String getLockLists = "/getLockLists";
     public static final String deleteTTLock = "/deleteTTLock";
-
-    /*----------------------------------------------------------------------*/
-
     public static final String ANDROID = "android";
-
     //lock
     public static final String client_id = "439063e312444f1f85050a52efcecd2e";
     public static final String client_secret = "0ef1c49b70c02ae6314bde603d4e9b05";
-    public static String access_token = "a74549ab15d07ecd988e26f50985aee7";
     public static final String locK_base_uri = "http://open.ttlock.com.cn";
     public static final String lockUserName = "ttchatcrash@gmail.com";
     public static final String lockPassword = "ttchat$123";
     public static final String startUrlhttp = "http:";
     public static final int lockUserId = 1941573;
 
-
+    /*----------------------------------------------------------------------*/
+    public static String CLOUD_SERVER_URL = "http://52.24.23.7:3000"; //222 live
+    public static String CAMERA_CLOUD_SERVER_URL = "http://52.24.23.7:3000"; // live
+    public static String IP_END = "222";
+    public static String startUrl = "http://home.d";
+    public static int lockDate = 0;
+    public static String socketIp = "";
+    public static int adminType = 1;
+    public static int room_type = 0;
+    public static String access_token = "a74549ab15d07ecd988e26f50985aee7";
     /*-----------ununsed api-----------*/
     public static boolean isWifiConnect = false;
     public static boolean isWifiConnectSave = false;
@@ -623,7 +598,7 @@ public class Constants {
         TimeZone tz = TimeZone.getDefault();
         calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy h:mm a", Locale.getDefault());
-        java.util.Date currenTimeZone = new java.util.Date((long) activity_time);
+        Date currenTimeZone = new Date((long) activity_time);
         return sdf.format(currenTimeZone);
     }
 
@@ -632,7 +607,7 @@ public class Constants {
         TimeZone tz = TimeZone.getDefault();
         calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
         SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy h:mm a", Locale.getDefault());
-        java.util.Date currenTimeZone = new java.util.Date((long) activity_time);
+        Date currenTimeZone = new Date((long) activity_time);
         return sdf.format(currenTimeZone);
     }
 
@@ -687,4 +662,5 @@ public class Constants {
         }
         return nextDate;
     }
+
 }

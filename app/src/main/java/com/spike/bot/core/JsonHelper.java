@@ -615,7 +615,8 @@ public class JsonHelper {
 
                 DeviceVO d1 = new DeviceVO();
                 d1.setSpeed(hasObject(deviceObj,"mode") ? deviceObj.optString("mode") : "");
-                d1.setTemprature(hasObject(deviceObj,"temperature") ? deviceObj.optInt("temperature") : 0);
+                d1.setTemprature(deviceObj.optString("temperature"));
+                d1.setMeta_ir_blaster_id(deviceObj.optString("meta_ir_blaster_id"));
                 d1.setRoom_panel_id(room_panel_id);
                 d1.setRemote_device_id(hasObject(deviceObj,"remote_device_id") ? deviceObj.optString("remote_device_id") : "");
                 d1.setRemote_status(hasObject(deviceObj,"remote_status") ? deviceObj.optString("remote_status") : "");
@@ -781,7 +782,8 @@ public class JsonHelper {
                 d1.setSpeed(hasObject(deviceObj,"mode") ? deviceObj.optString("mode") : "");
                 d1.setIs_door_active(is_door_active);
                 d1.setIs_lock_active(is_lock_active);
-                d1.setTemprature(hasObject(deviceObj,"temperature") ? deviceObj.optInt("temperature") : 0);
+                d1.setTemprature(deviceObj.optString("temperature"));
+                d1.setMeta_ir_blaster_id(deviceObj.optString("meta_ir_blaster_id"));
                 d1.setRoom_panel_id(room_panel_id);
                 d1.setRemote_device_id(hasObject(deviceObj,"remote_device_id") ? deviceObj.optString("remote_device_id") : "");
                 d1.setRemote_status(hasObject(deviceObj,"remote_status") ? deviceObj.optString("remote_status") : "");
@@ -797,6 +799,7 @@ public class JsonHelper {
                     sensor_id = deviceObj.optString("sensor_id");
                     d1.setIr_blaster_id(ir_blaster_id);
                     module_id = deviceObj.has("module_id") ? deviceObj.optString("module_id") : "";
+                    d1.setMeta_ir_blaster_id(deviceObj.optString("meta_ir_blaster_id"));
 
                 }else{
                     sensor_id = deviceObj.optString("sensor_id");

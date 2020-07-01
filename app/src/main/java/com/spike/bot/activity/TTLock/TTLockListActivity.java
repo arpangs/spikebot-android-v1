@@ -21,6 +21,8 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
 import com.spike.bot.adapter.TTlockAdapter.UserLockListAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.LockObj;
 
@@ -114,20 +116,17 @@ public class TTLockListActivity extends AppCompatActivity {
     private void getAllLockList() {
 
         ActivityHelper.showProgressDialog(this, " Please Wait...", false);
-        String url = ChatApplication.url + Constants.getLockLists;
-
-        ChatApplication.logDisplay("url is " + url);
-        new GetJsonTask(this, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().getAllLockList(new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                ChatApplication.logDisplay("result is " + result);
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
-                if (result.optInt("code") == 200) {
+
+
                     lockObjs.clear();
                     //{"code":200,"message":"Success","data":[{"lock_id":"1578230","lock_name":"ttlock"},{"lock_id":"1444344","lock_name":"lockj"}]}
                     try {
-                        JSONObject jsonObject = new JSONObject(result.toString());
-                        JSONArray jsonArray = jsonObject.getJSONArray("data");
+                        JSONObject result = new JSONObject(stringResponse);
+                        JSONArray jsonArray = result.getJSONArray("data");
 
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject object1 = jsonArray.optJSONObject(i);
@@ -145,14 +144,14 @@ public class TTLockListActivity extends AppCompatActivity {
                     } finally {
                         ActivityHelper.dismissProgressDialog();
                     }
-                }
+
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
     }
 
     public void setAdapter() {

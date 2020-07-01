@@ -24,6 +24,8 @@ import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.irblaster.IRBlasterAddListAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -80,6 +82,7 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
         mIRListView =  findViewById(R.id.list_ir_sensor_add);
         mIRListView.setLayoutManager(new GridLayoutManager(this, 3));
     }
+
     /* get details ir
     * device_type = ir_blaster*/
     private void getIRDeviceDetails() {
@@ -90,33 +93,15 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
         }
         showProgress();
         ActivityHelper.showProgressDialog(IRRemoteAdd.this, "Please Wait...", false);
-
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put("device_type", "ir_blaster");
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.devicefind;
-
         irLists = new ArrayList<>();
         irLists.clear();
 
-        ChatApplication.logDisplay("url is " + url+" "+obj.toString());
-
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().getDeviceList("ir_blaster",new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
-                hideProgress();
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
@@ -150,13 +135,13 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
                         mSpinnerBlaster.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                             @Override
                             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                    if (!blasterArraylist.get(position).equalsIgnoreCase("No IR Blaster")) {
-                                        if( mIRDeviceList.get(position).getRoom()!=null){
-                                            mRoomText.setText("" + mIRDeviceList.get(position).getRoom().getRoomName());
-                                            roomId = mIRDeviceList.get(position).getRoom().getRoomId();
-                                        }
-
+                                if (!blasterArraylist.get(position).equalsIgnoreCase("No IR Blaster")) {
+                                    if( mIRDeviceList.get(position).getRoom()!=null){
+                                        mRoomText.setText("" + mIRDeviceList.get(position).getRoom().getRoomName());
+                                        roomId = mIRDeviceList.get(position).getRoom().getRoomId();
                                     }
+
+                                }
 
                             }
 
@@ -172,17 +157,17 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                } finally {
+                    hideProgress();
                 }
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 hideProgress();
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
-
-
+        });
     }
 
     private void showProgress() {
