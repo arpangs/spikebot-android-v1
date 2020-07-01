@@ -159,12 +159,12 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                 holder.sectionToggleButton.setChecked(section.isExpanded());
 
                 if (section.isExpanded()) {
-
-                    holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side_mood));
+                    holder.view_line_top.setVisibility(View.VISIBLE);
+                    holder.card_layout.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side_mood));
                     // holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side));
                 } else {
-
-                    holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow));
+                    holder.view_line_top.setVisibility(View.GONE);
+                    holder.card_layout.setBackground(mContext.getDrawable(R.drawable.background_with_shadow_new));
 
                 }
 
@@ -174,13 +174,13 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                 final PanelVO panel1 = (PanelVO) mDataArrayList.get(position);
                 holder.sectionTextView.setText(panel1.getPanelName());
                 holder.iv_room_panel_onoff.setVisibility(View.GONE);
-
+/*
                 if (position == 0) {
                     holder.view_line_top.setVisibility(View.GONE);
                     holder.view_line_top.setBackgroundResource(R.color.automation_white);
                 } else {
                     holder.view_line_top.setVisibility(View.VISIBLE);
-                }
+                }*/
 
                 if (panel1.isActivePanel()) {
                     holder.sectionTextView.setVisibility(View.VISIBLE);
@@ -324,7 +324,7 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
         ToggleButton sectionToggleButton;
         TextView sectionTextView, text_section_on_off, text_section_edit, itemTextView;
         LinearLayout ll_room_item,ll_root_view_section;
-        RelativeLayout rel_main_view;
+        RelativeLayout rel_main_view,card_layout;
 
         public ViewHolder(View view, int viewType) {
             super(view);
@@ -346,6 +346,7 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                 iv_room_panel_onoff = view.findViewById(R.id.iv_room_panel_onoff);
 
             } else {
+                card_layout = view.findViewById(R.id.card_layout);
                 view_line_top = view.findViewById(R.id.view_line_top);
                 sectionTextView = view.findViewById(R.id.text_section);
                 ll_root_view_section= view.findViewById(R.id.ll_root_view_section);
