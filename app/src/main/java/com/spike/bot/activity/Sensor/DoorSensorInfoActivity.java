@@ -332,7 +332,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         if (mSocket != null) {
             mSocket.off("doorsensorvoltage", doorsensorvoltage);
             mSocket.off("unReadCount", unReadCount);
-            mSocket.on("changeDeviceStatus", changeDoorSensorStatus);
+            mSocket.off("changeDeviceStatus", changeDoorSensorStatus);
         }
     }
 
@@ -1536,7 +1536,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             Autolockdialog();
         } else if (v == imgDoorDelete) {
            // deleteSensor(1);
-
             showBottomSheetDialog();
         } else if (v == imgLockDelete) {
             deleteSensor(2);

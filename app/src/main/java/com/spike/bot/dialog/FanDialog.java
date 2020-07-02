@@ -19,17 +19,12 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 
 import com.goodiebag.protractorview.ProtractorView;
-import com.spike.bot.ChatApplication;
-import com.spike.bot.core.APIConst;
-import com.spike.bot.core.Common;
-import com.spike.bot.core.Constants;
-import com.spike.bot.R;
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
+import com.spike.bot.ChatApplication;
+import com.spike.bot.R;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -38,19 +33,19 @@ import org.json.JSONObject;
 
 public class FanDialog extends Dialog implements
         View.OnClickListener {
-    String TAG = "FanDialog";
     public Activity activity;
     public Dialog d;
     public Button btn_save;
     public ImageView iv_close;
+    public String room_device_id = "", device_id = "", device_name = "";
+    String TAG = "FanDialog";
     ProtractorView protractorView1, protractorView;
     SeekBar sb_fan;
     TextView tv_seek_value, tv_title, textview_fanspeed;
     RelativeLayout relative_plus, relative_minus;
-
-    public String room_device_id = "", device_id = "", device_name = "";
     onCallback iCallback;
-    int fanSpeed = 3, /*numadd = 1, numsub = 1,*/ angle = 0;
+    int fanSpeed = 3, /*numadd = 1, numsub = 1,*/
+            angle = 0;
 
     public FanDialog(Activity a) {
         super(a);
@@ -191,7 +186,7 @@ public class FanDialog extends Dialog implements
         }
     }
 
-    public void getFanDetails() {
+   /* public void getFanDetails() {  // dev arp commented due to not use anywhere on 27 june 2020
 
         if (!ActivityHelper.isConnectingToInternet(activity)) {
             Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -246,17 +241,18 @@ public class FanDialog extends Dialog implements
                 Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
-    }
+    }*/
 
     public void changeFanSpeed() {
+
 
         if (!ActivityHelper.isConnectingToInternet(activity)) {
             Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-      //  ActivityHelper.showProgressDialog(activity, "Please wait.", false);
+        //  ActivityHelper.showProgressDialog(activity, "Please wait.", false);
 
-        JSONObject obj = new JSONObject();
+      /*  JSONObject obj = new JSONObject();
         try {
 
             //{
@@ -308,7 +304,47 @@ public class FanDialog extends Dialog implements
             public void onFailure(Throwable throwable, String error) {
               //  ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        }).execute();*/
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+
+        SpikeBotApi.getInstance().ChangeFanSpeed(room_device_id, fanSpeed, new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+
+                try {
+
+                    JSONObject result = new JSONObject(stringResponse);
+
+                    ChatApplication.logDisplay("fan is result " + result);
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        if (!TextUtils.isEmpty(message)) {
+                            Toast.makeText(activity.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                        }
+                        dismiss();
+                        iCallback.onSuccess(fanSpeed);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
+        });
     }
 
     private void increment() {
@@ -354,7 +390,7 @@ public class FanDialog extends Dialog implements
         } else {
             ChatApplication.logDisplay("Decrease number" + " " + fanSpeed);
             textview_fanspeed.setText(String.valueOf(fanSpeed));
-           // setangle(angle);
+            // setangle(angle);
         }
 
         if (fanSpeed == 1) {
@@ -381,31 +417,31 @@ public class FanDialog extends Dialog implements
                 protractorView.setVisibility(View.GONE);
                 protractorView1.setVisibility(View.VISIBLE);
                 protractorView1.setAngle(180 - 0);
-               // changeFanSpeed(angle);
+                // changeFanSpeed(angle);
                 break;
             case 2:
                 protractorView.setVisibility(View.GONE);
                 protractorView1.setVisibility(View.VISIBLE);
                 protractorView1.setAngle(180 - 50);
-              //  changeFanSpeed(angle);
+                //  changeFanSpeed(angle);
                 break;
             case 3:
                 protractorView.setVisibility(View.GONE);
                 protractorView1.setVisibility(View.VISIBLE);
                 protractorView1.setAngle(180 - 90);
-               // changeFanSpeed(angle);
+                // changeFanSpeed(angle);
                 break;
             case 4:
                 protractorView.setVisibility(View.GONE);
                 protractorView1.setVisibility(View.VISIBLE);
                 protractorView1.setAngle(180 - 140);
-             //   changeFanSpeed(angle);
+                //   changeFanSpeed(angle);
                 break;
             case 5:
                 protractorView.setVisibility(View.GONE);
                 protractorView1.setVisibility(View.VISIBLE);
                 protractorView1.setAngle(180 - 180);
-               // changeFanSpeed(angle);
+                // changeFanSpeed(angle);
                 break;
 
 

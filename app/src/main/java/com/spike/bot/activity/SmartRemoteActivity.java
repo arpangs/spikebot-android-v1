@@ -31,6 +31,8 @@ import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.SmartRemoteAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -276,7 +278,7 @@ public class SmartRemoteActivity extends AppCompatActivity {
 
         ActivityHelper.showProgressDialog(SmartRemoteActivity.this, "Please wait.", false);
 
-        JSONObject obj = new JSONObject();
+       /* JSONObject obj = new JSONObject();
         try {
             obj.put("module_id", door_module_id);
             obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -287,11 +289,11 @@ public class SmartRemoteActivity extends AppCompatActivity {
 
         } catch (JSONException e) {
             e.printStackTrace();
-        }
+        }*/
 
         String url = ChatApplication.url + Constants.deviceadd;
 
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        /*new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 try {
@@ -323,7 +325,52 @@ public class SmartRemoteActivity extends AppCompatActivity {
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        }).execute();*/
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+
+        SpikeBotApi.getInstance().SaveSensor(door_name, door_module_id , module_type, new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    //{"code":200,"message":"success"}
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        if (!TextUtils.isEmpty(message)) {
+                            ChatApplication.showToast(SmartRemoteActivity.this, message);
+                        }
+                        getRemoteLIst();
+                        ActivityHelper.dismissProgressDialog();
+                        dialog.dismiss();
+                    } else {
+                        ChatApplication.showToast(SmartRemoteActivity.this, message);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
+
+
+
+
     }
 
     private void showPanelOption() {
@@ -413,7 +460,7 @@ public class SmartRemoteActivity extends AppCompatActivity {
         }
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
 
-        JSONObject obj = new JSONObject();
+        /*JSONObject obj = new JSONObject();
         try {
             obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             obj.put("device_type", "smart_remote");
@@ -422,9 +469,9 @@ public class SmartRemoteActivity extends AppCompatActivity {
 
         } catch (JSONException e) {
             e.printStackTrace();
-        }
+        }*/
 
-        String url = ChatApplication.url + Constants.devicefind;
+       /* String url = ChatApplication.url + Constants.devicefind;
         new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -451,7 +498,50 @@ public class SmartRemoteActivity extends AppCompatActivity {
             @Override
             public void onFailure(Throwable throwable, String error) {
             }
-        }).execute();
+        }).execute();*/
+
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+
+        SpikeBotApi.getInstance().GetRemoteLIst(new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                ActivityHelper.dismissProgressDialog();
+                try {
+
+                    JSONObject result = new JSONObject(stringResponse);
+
+                    ChatApplication.logDisplay("remote res : " + result.toString());
+                    IRDeviceDetailsRes irDeviceDetailsRes = Common.jsonToPojo(result.toString(), IRDeviceDetailsRes.class);
+                    arrayList = irDeviceDetailsRes.getData();
+
+                    if (arrayList.size() > 0) {
+                        txtNodataFound.setVisibility(View.GONE);
+                        recyclerRemoteList.setVisibility(View.VISIBLE);
+                        setAdapter();
+                    }else {
+                        txtNodataFound.setVisibility(View.VISIBLE);
+                        recyclerRemoteList.setVisibility(View.VISIBLE);
+                        ChatApplication.showToast(getApplicationContext(),"No data found.");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
+        });
+
     }
 
     private void setAdapter() {

@@ -25,6 +25,8 @@ import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.User;
@@ -268,7 +270,7 @@ public class SignUp extends AppCompatActivity {
         Common.savePrefValue(getApplicationContext(),Constants.DEVICE_PUSH_TOKEN,token);
 
 
-        JSONObject object = new JSONObject();
+        /*JSONObject object = new JSONObject();
         try {
             object.put("first_name",edt_first_name.getText().toString());
             object.put("last_name",edt_last_name.getText().toString());
@@ -301,14 +303,14 @@ public class SignUp extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
                         }
 
-                        /*/*
+                        *//*//**
                          *  {"code":200,"message":"Succesfully!
                          *  Your account has been created",
                          *  "data":{"first_name":"vipul",
                          *  "last_name":"patel",
                          *  "ip":"http:\/\/home.deepfoods.net:11150",
                          *  "user_id":"1545317988870_UrL_0HY9u","user_password":"c1bc06"}}
-                         * */
+                         * *//*
 
                         JSONObject data=result.getJSONObject("data");
                      //   JSONObject object1=data.optJSONObject(data.toString());
@@ -377,7 +379,117 @@ public class SignUp extends AppCompatActivity {
                 ChatApplication.showToast(SignUp.this,"Please connect to your gateway's local network and try again.");
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        }).execute();*/
+
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+
+        SpikeBotApi.getInstance().Signup(ipAddressPI + ":",edt_first_name.getText().toString(), edt_last_name.getText().toString(), edt_user_name.getText().toString().trim(),
+                edt_email_id.getText().toString(), edt_password.getText().toString(), edt_phone_no.getText().toString(), imei
+                , token, new DataResponseListener() {
+                    @Override
+                    public void onData_SuccessfulResponse(String stringResponse) {
+
+                        ActivityHelper.dismissProgressDialog();
+                        try {
+
+                            JSONObject result = new JSONObject(stringResponse);
+
+                            int code = result.getInt("code");
+                            String message = result.getString("message");
+                            if(code==200){
+                                ChatApplication.isMainFragmentNeedResume = true;
+                                if(!TextUtils.isEmpty(message)){
+                                    Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                                }
+
+                                /*/*
+                                 *  {"code":200,"message":"Succesfully!
+                                 *  Your account has been created",
+                                 *  "data":{"first_name":"vipul",
+                                 *  "last_name":"patel",
+                                 *  "ip":"http:\/\/home.deepfoods.net:11150",
+                                 *  "user_id":"1545317988870_UrL_0HY9u","user_password":"c1bc06"}}
+                                 * */
+
+                                JSONObject data=result.getJSONObject("data");
+                                //   JSONObject object1=data.optJSONObject(data.toString());
+                                String first_name=data.optString("first_name");
+                                String ip=data.optString("ip");
+                                String last_name=data.optString("last_name");
+                                String user_id=data.optString("user_id");
+                                String user_password=data.optString("user_password");
+                                String admin=data.optString("admin");
+                                String local_ip=data.optString("local_ip_address");
+                                String mac_address = data.getString("mac_address");
+
+                                Common.savePrefValue(SignUp.this,Constants.USER_PASSWORD,user_password);
+                                Common.savePrefValue(SignUp.this,Constants.PREF_IP,ip);
+                                Common.savePrefValue(SignUp.this,Constants.USER_ID,user_id);
+
+                                Common.savePrefValue(SignUp.this, Constants.USER_ADMIN_TYPE, admin);
+
+                                if (Common.getPrefValue(SignUp.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("1")) {
+                                    Constants.room_type = 0;
+                                    Common.savePrefValue(SignUp.this, Constants.USER_ROOM_TYPE, ""+0);
+                                } else {
+                                    Constants.room_type = 2;
+                                    Common.savePrefValue(SignUp.this, Constants.USER_ROOM_TYPE, ""+2);
+                                }
+
+                                User user = new User(user_id,first_name,last_name,ip,false,user_password,admin,local_ip,mac_address);
+
+                                Gson gson = new Gson();
+                                String jsonText = Common.getPrefValue(getApplicationContext(),Common.USER_JSON);
+                                List<User> userList = new ArrayList<User>();
+                                user.setIsActive(true);
+                                userList.add(user);
+
+                                String jsonCurProduct = gson.toJson(userList);
+                                Common.savePrefValue(getApplicationContext(),Common.USER_JSON,jsonCurProduct);
+
+                                ChatApplication.logDisplay("response is signup "+data.toString());
+                                ChatApplication.isRefreshHome=false;
+                                ChatApplication.isSignUp=true;
+                                Main2Activity.isResumeConnect=false;
+
+                                webUrl = ipAddressPI;
+                                ChatApplication.url = webUrl;
+                                ChatApplication.isCallDeviceList=true;
+                                Intent intent=new Intent(SignUp.this,Main2Activity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                                finish();
+
+                            }
+                            else{
+                                Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            ActivityHelper.dismissProgressDialog();
+                        }
+                    }
+
+                    @Override
+                    public void onData_FailureResponse() {
+                        ChatApplication.showToast(SignUp.this,"Please connect to your gateway's local network and try again.");
+                        ActivityHelper.dismissProgressDialog();
+                    }
+
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
+                        ChatApplication.logDisplay("error is "+error);
+                        ChatApplication.showToast(SignUp.this,"Please connect to your gateway's local network and try again.");
+                        ActivityHelper.dismissProgressDialog();
+                    }
+                });
+
 
     }
 

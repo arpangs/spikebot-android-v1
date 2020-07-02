@@ -136,7 +136,12 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
+//    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0' // updated by dev arpan on 23 june 2020
+
+    /* using retrofit for api calling*/
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
 
   //  kotlin
   //  implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

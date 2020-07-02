@@ -38,7 +38,7 @@ public class CustomReportSender implements ReportSender {
             this.mContext = ctx;
             crashReport = ctx.openFileOutput("crashReport", Context.MODE_PRIVATE);
 //        loginVo = ActivityHelper.getLoginData(ctx);
-            prefs=mContext.getSharedPreferences("App", mContext.MODE_PRIVATE);
+            prefs=mContext.getSharedPreferences(Common.SP_NAME, mContext.MODE_PRIVATE);
            // username=prefs.getString(AppConstants.TTCHAT_USERNAME,"");
           //  fullName=prefs.getString(AppConstants.TTCHAT_FULLNAME,"");
         } catch (FileNotFoundException e) {

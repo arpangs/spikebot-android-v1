@@ -21,8 +21,9 @@ import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.AddDevice.AddDeviceTypeListActivity;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -42,32 +43,33 @@ public class AddRoomDialog extends Dialog implements
     public Activity activity;
     public Dialog d;
     public Button btn_save;
-    public ImageView iv_close,sp_drop_down;
-    EditText  et_panel_name,et_module_id;
-    Spinner sp_no_of_devices,spinnerroomlist;
+    public ImageView iv_close, sp_drop_down;
+    public String module_id = "", device_id = "", room_id = "", module_type = "";
+    EditText et_panel_name, et_module_id;
+    Spinner sp_no_of_devices, spinnerroomlist;
     TextView tv_title;
     LinearLayout ll_room;
     ArrayList<String> roomidlist;
     ArrayList<String> roomnamelist;
-
-    public String module_id="", device_id="",room_id="",module_type ="";
-    boolean isRoom=false;
+    boolean isRoom = false;
     ICallback iCallback;
+    String TAG = "AddRoom";
+
     public AddRoomDialog(Activity a) {
         super(a);
         // TODO Auto-generated constructor stub
         this.activity = a;
     }
 
-    public AddRoomDialog(Activity activity,ArrayList<String> roomidlist1,ArrayList<String> roomnamelist1, String module_id, String device_id,String module_type, ICallback iCallback) {
+    public AddRoomDialog(Activity activity, ArrayList<String> roomidlist1, ArrayList<String> roomnamelist1, String module_id, String device_id, String module_type, ICallback iCallback) {
         super(activity);
         this.activity = activity;
         this.module_id = module_id;
-        this.device_id=device_id;
-        this.roomidlist= roomidlist1;
+        this.device_id = device_id;
+        this.roomidlist = roomidlist1;
         this.roomnamelist = roomnamelist1;
         this.module_type = module_type;
-        this.iCallback=iCallback;
+        this.iCallback = iCallback;
     }
 
     @Override
@@ -83,17 +85,17 @@ public class AddRoomDialog extends Dialog implements
 
         ll_room = findViewById(R.id.ll_room);
         tv_title = findViewById(R.id.tv_title);
-        et_panel_name =  findViewById(R.id.et_panel_name);
-        et_module_id =  findViewById(R.id.et_module_id);
-        sp_no_of_devices =  findViewById(R.id.sp_no_of_devices);
+        et_panel_name = findViewById(R.id.et_panel_name);
+        et_module_id = findViewById(R.id.et_module_id);
+        sp_no_of_devices = findViewById(R.id.sp_no_of_devices);
         sp_drop_down = findViewById(R.id.sp_drop_down);
         spinnerroomlist = findViewById(R.id.sp_no_of_rooms);
-        btn_save =  findViewById(R.id.btn_save);
+        btn_save = findViewById(R.id.btn_save);
         iv_close = findViewById(R.id.iv_close);
         et_module_id.setText(module_id);
 
 
-        TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(getContext(),roomnamelist,1,false);
+        TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(getContext(), roomnamelist, 1, false);
         spinnerroomlist.setAdapter(customAdapter);
 
         sp_drop_down.setOnClickListener(new View.OnClickListener() {
@@ -103,14 +105,13 @@ public class AddRoomDialog extends Dialog implements
             }
         });
 
-        sp_no_of_devices.setSelection(Integer.parseInt(device_id)-1);
+        sp_no_of_devices.setSelection(Integer.parseInt(device_id) - 1);
         sp_no_of_devices.setEnabled(false);
 
         btn_save.setOnClickListener(this);
         iv_close.setOnClickListener(this);
-            tv_title.setText("Add Panel");
-            ll_room.setVisibility(View.VISIBLE);
-
+        tv_title.setText("Add Panel");
+        ll_room.setVisibility(View.VISIBLE);
 
 
         spinnerroomlist.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -130,8 +131,8 @@ public class AddRoomDialog extends Dialog implements
         switch (v.getId()) {
             case R.id.btn_save:
 
-                if(TextUtils.isEmpty(et_panel_name.getText().toString())){
-                    Toast.makeText(activity,  "Enter Panel name" ,Toast.LENGTH_SHORT ).show();
+                if (TextUtils.isEmpty(et_panel_name.getText().toString())) {
+                    Toast.makeText(activity, "Enter Panel name", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 configureNewRoom();
@@ -147,27 +148,27 @@ public class AddRoomDialog extends Dialog implements
                 break;
         }
     }
-    String TAG = "AddRoom";
-    public void configureNewRoom(){
 
-        if(!ActivityHelper.isConnectingToInternet(activity)){
-            Toast.makeText(activity.getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
+    public void configureNewRoom() {
+
+        if (!ActivityHelper.isConnectingToInternet(activity)) {
+            Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-        ActivityHelper.showProgressDialog(activity,"Please wait.",false);
+        ActivityHelper.showProgressDialog(activity, "Please wait.", false);
 
-        JSONObject obj = new JSONObject();
+       /* JSONObject obj = new JSONObject();
         try {
 
-            obj.put("room_id",room_id);
+            obj.put("room_id", room_id);
 //            obj.put("room_name",et_room_name.getText().toString());
-            obj.put("panel_name",et_panel_name.getText().toString());
-            obj.put("module_id",et_module_id.getText().toString());
+            obj.put("panel_name", et_panel_name.getText().toString());
+            obj.put("module_id", et_module_id.getText().toString());
 //            obj.put("device_id",sp_no_of_devices.getSelectedItem().toString());
-            obj.put("module_type",module_type);
+            obj.put("module_type", module_type);
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY,APIConst.PHONE_TYPE_VALUE);
+            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -175,10 +176,9 @@ public class AddRoomDialog extends Dialog implements
 
 
         String url = "";
-        if(isRoom){
+        if (isRoom) {
 //            url = ChatApplication.url + Constants.CONFIGURE_NEWROOM;
-        }
-        else{
+        } else {
             try {
                 obj.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
                 obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -189,43 +189,91 @@ public class AddRoomDialog extends Dialog implements
 //            url = ChatApplication.url + Constants.CONFIGURE_NEW_PANEL;
             url = ChatApplication.url + Constants.deviceadd;
 
-            ChatApplication.logDisplay("url is "+url+" "+obj);
+            ChatApplication.logDisplay("url is " + url + " " + obj);
         }
-        new GetJsonTask(activity,url ,"POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        new GetJsonTask(activity, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    if(code==200){
+                    if (code == 200) {
                         Common.hideSoftKeyboard(activity);
-                        if(!TextUtils.isEmpty(message)){
-                            Toast.makeText(activity.getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                        if (!TextUtils.isEmpty(message)) {
+                            Toast.makeText(activity.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                         }
 
                         ActivityHelper.dismissProgressDialog();
                         dismiss();
                         iCallback.onSuccess("yes");
-                    }
-                    else{
-                        Toast.makeText(activity.getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(activity.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     }
                     // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
-                finally {
+                } finally {
                     ActivityHelper.dismissProgressDialog();
 
                 }
             }
+
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
-        }).execute();
+        }).execute();*/
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+
+        SpikeBotApi.getInstance().ConfigureNewRoom(room_id, et_panel_name.getText().toString(), et_module_id.getText().toString()
+                , module_type, isRoom, new DataResponseListener() {
+                    @Override
+                    public void onData_SuccessfulResponse(String stringResponse) {
+
+                        try {
+                            JSONObject result = new JSONObject(stringResponse);
+                            //{"code":200,"message":"success"}
+                            int code = result.getInt("code");
+                            String message = result.getString("message");
+                            if (code == 200) {
+                                Common.hideSoftKeyboard(activity);
+                                if (!TextUtils.isEmpty(message)) {
+                                    Toast.makeText(activity.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                                }
+
+                                ActivityHelper.dismissProgressDialog();
+                                dismiss();
+                                iCallback.onSuccess("yes");
+                            } else {
+                                Toast.makeText(activity.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        } finally {
+                            ActivityHelper.dismissProgressDialog();
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onData_FailureResponse() {
+                        ActivityHelper.dismissProgressDialog();
+                        Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
+                        ActivityHelper.dismissProgressDialog();
+                        Toast.makeText(activity.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
     }
 
 }

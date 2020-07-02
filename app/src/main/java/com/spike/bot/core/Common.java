@@ -49,6 +49,9 @@ public class Common {
     public static String USER_JSON = "user_pref_json";
     public static String camera_key = "camera_key"; //key : spike123
 
+    public static final String SP_NAME = "PREFS_SPIKE_BOT";
+
+
     /**
      * @param context
      * @return
@@ -671,7 +674,8 @@ public class Common {
      */
     public static void savePrefValue(Context context, String key, String keyValue) {
         //To save
-        SharedPreferences settings = context.getSharedPreferences("App", Context.MODE_PRIVATE);
+//        SharedPreferences settings = context.getSharedPreferences("App", Context.MODE_PRIVATE);
+        SharedPreferences settings = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE); // dev arp change the common preference TAG on 23 june 2020
         SharedPreferences.Editor editor = settings.edit();
         editor.putString(key, keyValue);
         editor.commit();
@@ -686,9 +690,30 @@ public class Common {
      * @return
      */
     public static String getPrefValue(Context context, String key) {
-        SharedPreferences settings = context.getSharedPreferences("App", Context.MODE_PRIVATE);
+        SharedPreferences settings = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
         String value = settings.getString(key, ""); //0 is the default value
         return value;
+    }
+
+
+
+    /*
+    *
+    * if user not authorised then remove all preference value and logout the user
+    *
+    * */
+    public static void removeAllKey() {
+        getSharedPreferences(ChatApplication.getContext()).edit().clear().apply();
+    }
+
+    public static void removeKey(String key) {
+        SharedPreferences.Editor editor = getSharedPreferences(ChatApplication.getContext()).edit();
+        editor.remove(key);
+        editor.apply();
+    }
+
+    private static SharedPreferences getSharedPreferences(Context context) {
+        return context.getSharedPreferences(SP_NAME, 0); // Context.MODE_PRIVATE);
     }
 
 

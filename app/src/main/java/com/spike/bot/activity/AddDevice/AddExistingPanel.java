@@ -264,7 +264,7 @@ public class AddExistingPanel extends AppCompatActivity {
                                     if (deviceVO.getDeviceId().equals(devicePanelVO.getDeviceId())) {
                                         roomVO.setExpanded(true);
                                         devicePanelVO.setSelected(true);
-                                    }
+                                }
                                 }
                             }
                         }

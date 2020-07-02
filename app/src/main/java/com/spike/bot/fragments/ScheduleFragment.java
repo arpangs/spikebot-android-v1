@@ -3,7 +3,6 @@ package com.spike.bot.fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -27,41 +26,31 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.akhilpatoliya.floating_text_button.FloatingTextButton;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.GetJsonTask2;
-import com.kp.core.ICallBack;
-import com.kp.core.ICallBack2;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.activity.Main2Activity;
-import com.spike.bot.activity.RoomEditActivity_v2;
 import com.spike.bot.activity.ScheduleActivity;
 import com.spike.bot.activity.ScheduleListActivity;
 import com.spike.bot.adapter.ScheduleAdapter;
 import com.spike.bot.adapter.ScheduleClickListener;
-import com.spike.bot.core.APIConst;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.core.JsonHelper;
 import com.spike.bot.listener.ResponseErrorCode;
 import com.spike.bot.model.Device;
-import com.spike.bot.model.RoomVO;
 import com.spike.bot.model.ScheduleVO;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import io.socket.client.Socket;
@@ -72,35 +61,98 @@ import io.socket.emitter.Emitter;
  */
 public class ScheduleFragment extends Fragment implements View.OnClickListener, ScheduleClickListener, SwipeRefreshLayout.OnRefreshListener {
 
-    private RecyclerView rv_mood;
+    private static DashBoardFragment instance = null;
+    public boolean isFilterType = false, isMood, isMoodAdapter, isRefreshonScroll = false;
     ImageView iv_mood_add, iv_room_add;
     LinearLayout txt_empty_scheduler, ll_room, linearMood, linearTabSchedule, ll_mood_view, ll_recycler;
     TextView txt_mood_title, txtRoomScdule;
     Button btnMoodSchedule, btnRoomSchedule;
-    private ImageView empty_add_image;
-
     ScheduleAdapter scheduleRoomAdapter;
     ArrayList<ScheduleVO> scheduleRoomArrayList = new ArrayList<>();
-
-    public boolean isFilterType = false, isMood, isMoodAdapter, isRefreshonScroll = false;
     String isRoomMainFm = "", isActivityType = "", moodId = "", moodId2 = "", moodId3 = "", roomId = "", userName = "";
     int selection = 0;
-    boolean isCallVisibleHint = false,isFABOpen=false;
+    boolean isCallVisibleHint = false, isFABOpen = false;
     Menu mainMenu;
-
     DashBoardFragment.OnHeadlineSelectedListener mCallback;
-    private Socket mSocket;
-    private FloatingTextButton mFab;
     View view;
-
     // This event fires 1st, before creation of fragment or any views
     // The onAttach method is called when the Fragment instance is associated with an Activity.
     // This does not mean the Activity is fully initialized.
     ResponseErrorCode responseErrorCode;
-
-    private static DashBoardFragment instance = null;
+    private RecyclerView rv_mood;
+    private ImageView empty_add_image;
+    private Socket mSocket;
+    private FloatingTextButton mFab;
     private Activity activity;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private Emitter.Listener updateChildUser = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (getActivity() == null) {
+                return;
+            }
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+
+                            String message = object.optString("message");
+                            String user_id = object.optString("user_id");
+                            if (Common.getPrefValue(getActivity(), Constants.USER_ID).equalsIgnoreCase(user_id)) {
+                                getDeviceList();
+                                ChatApplication.showToast(getActivity(), message);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
+    private Emitter.Listener reloadScheduleList = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (getActivity() == null) {
+                return;
+            }
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+                        try {
+                            if (args[0] != null) {
+
+                                JSONObject jsonObject = new JSONObject(args[0].toString());
+                                String schedule_id = jsonObject.getString("schedule_id");
+                                String schedule_status = jsonObject.getString("schedule_status");
+                                String schedule_type = jsonObject.getString("schedule_type");
+
+                                if (isMood) {
+                                    // scheduleMoodAdapter.chandeScheduleStatus(schedule_id, schedule_status);
+                                    scheduleRoomAdapter.chandeScheduleStatus(schedule_id, schedule_status);
+                                } else {
+
+                                    if (isFilterType) {
+                                        scheduleRoomAdapter.chandeScheduleStatus(schedule_id, schedule_status);
+                                    } else {
+                                        scheduleRoomAdapter.chandeScheduleStatus(schedule_id, schedule_status);
+                                    }
+                                }
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
 
     public ScheduleFragment() {
         super();
@@ -130,6 +182,9 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         return fragment;
     }
 
+    public static DashBoardFragment getInstance() {
+        return instance;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -162,11 +217,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         this.activity = activity;
     }
 
-
-    public static DashBoardFragment getInstance() {
-        return instance;
-    }
-
     @Override
     public void onRefresh() {
         try {
@@ -174,7 +224,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             swipeRefreshLayout.setRefreshing(true);
             scheduleRoomAdapter.setClickable(false);
             getDeviceList();
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             e.printStackTrace();
             swipeRefreshLayout.setRefreshing(false);
         }
@@ -283,7 +333,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             }
         });
     }
-
 
     /**
      * Display Fab Menu with subFab Button
@@ -406,78 +455,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         }
 
     }
-
-    private Emitter.Listener updateChildUser = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            if (getActivity() == null) {
-                return;
-            }
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-
-                        try {
-                            JSONObject object = new JSONObject(args[0].toString());
-
-                            String message = object.optString("message");
-                            String user_id = object.optString("user_id");
-                            if (Common.getPrefValue(getActivity(), Constants.USER_ID).equalsIgnoreCase(user_id)) {
-                                getDeviceList();
-                                ChatApplication.showToast(getActivity(), message);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }
-            });
-        }
-    };
-
-
-    private Emitter.Listener reloadScheduleList = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            if (getActivity() == null) {
-                return;
-            }
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-                        try {
-                            if (args[0] != null) {
-
-                                JSONObject jsonObject = new JSONObject(args[0].toString());
-                                String schedule_id = jsonObject.getString("schedule_id");
-                                String schedule_status = jsonObject.getString("schedule_status");
-                                String schedule_type = jsonObject.getString("schedule_type");
-
-                                if (isMood) {
-                                    // scheduleMoodAdapter.chandeScheduleStatus(schedule_id, schedule_status);
-                                    scheduleRoomAdapter.chandeScheduleStatus(schedule_id, schedule_status);
-                                } else {
-
-                                    if (isFilterType) {
-                                        scheduleRoomAdapter.chandeScheduleStatus(schedule_id, schedule_status);
-                                    } else {
-                                        scheduleRoomAdapter.chandeScheduleStatus(schedule_id, schedule_status);
-                                    }
-                                }
-                            }
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-
-                    }
-                }
-            });
-        }
-    };
-
 
     @Override
     public void onDestroy() {
@@ -650,17 +627,21 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
     /// all webservice call below.
     public void getDeviceList() {
+
+        if (ChatApplication.url.contains("http://")) // dev arpan add this condition on 27 june
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         if (getActivity() == null) {
             return;
         }
 
-        String url = ChatApplication.url + Constants.GET_SCHEDULE_LIST;//+userId;
+       /* String url = ChatApplication.url + Constants.GET_SCHEDULE_LIST;//+userId;
 
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
 
-            /*type check & pass value */
+            *//*type check & pass value *//*
             if (TextUtils.isEmpty(isActivityType)) {
                 jsonObject.put("schedule_device_type", isFilterType ? "mood" : "room");
             } else {
@@ -678,12 +659,12 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
         } catch (JSONException e) {
             e.printStackTrace();
-        }
+        }*/
         if (ChatApplication.isShowProgress) {
             ActivityHelper.showProgressDialog(getActivity(), "Please wait...", false);
         }
 
-        ChatApplication.logDisplay("jsonObject is schedule " + url + " " + jsonObject.toString());
+       /* ChatApplication.logDisplay("jsonObject is schedule " + url + " " + jsonObject.toString());
         new GetJsonTask2(getActivity(), url, "POST", jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -731,7 +712,65 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.logDisplay("getScheduleList onFailure " + error);
             }
-        }).execute();
+        }).execute();*/
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+
+        SpikeBotApi.getInstance().GetScheduleList(isActivityType, isFilterType, moodId, moodId3, new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                ChatApplication.isShowProgress = false;
+                swipeRefreshLayout.setRefreshing(false);
+                ActivityHelper.dismissProgressDialog();
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    ll_recycler.setVisibility(View.VISIBLE);
+                    txt_empty_scheduler.setVisibility(View.VISIBLE);
+                    rv_mood.setVisibility(View.GONE);
+                    ChatApplication.logDisplay("schedule is " + result.toString());
+                    if (result.optJSONArray("data") != null && result.optJSONArray("data").length() > 0) {
+                        scheduleRoomArrayList.clear();
+                        scheduleRoomArrayList.addAll(JsonHelper.parseRoomScheduleArray(result.optJSONArray("data")));
+
+                        setAdapter();
+
+                        if (isRefreshonScroll) {
+                            isRefreshonScroll = false;
+                        }
+                    }
+
+
+                } catch (Exception e) {
+                    ChatApplication.isScheduleNeedResume = true;
+
+                    scheduleRoomArrayList.clear();
+                    scheduleRoomAdapter = new ScheduleAdapter(getActivity(), scheduleRoomArrayList, ScheduleFragment.this, true, false);
+                    rv_mood.setAdapter(scheduleRoomAdapter);
+                    scheduleRoomAdapter.notifyDataSetChanged();
+
+
+                    e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                swipeRefreshLayout.setRefreshing(false);
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                swipeRefreshLayout.setRefreshing(false);
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.logDisplay("getScheduleList onFailure " + error);
+            }
+        });
+
 
     }
 
@@ -809,7 +848,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             ChatApplication.showToast(getActivity().getApplicationContext(), "" + R.string.disconnect);
             return;
         }
-        JSONObject obj = new JSONObject();
+       /* JSONObject obj = new JSONObject();
         try {
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -819,9 +858,9 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         ActivityHelper.showProgressDialog(getActivity(), "Please Wait.", false);
-        String url = ChatApplication.url + Constants.DELETE_SCHEDULE;
+        /*String url = ChatApplication.url + Constants.DELETE_SCHEDULE;
         new GetJsonTask(getActivity(), url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -859,7 +898,60 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
-        }).execute();
+        }).execute();*/
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+
+        SpikeBotApi.getInstance().DeleteSchedule(schedule_id, new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try {
+
+                    JSONObject result = new JSONObject(stringResponse);
+
+                    ChatApplication.isScheduleNeedResume = true;
+                    ChatApplication.logDisplay("deleteSchedule onSuccess " + result.toString());
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        if (!TextUtils.isEmpty(message)) {
+                            Toast.makeText(getActivity().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                        }
+                        ChatApplication.isScheduleNeedResume = true;
+
+                        scheduleRoomArrayList.clear();
+                        scheduleRoomAdapter = new ScheduleAdapter(getActivity(), scheduleRoomArrayList, ScheduleFragment.this, true, false);
+                        rv_mood.setAdapter(scheduleRoomAdapter);
+                        scheduleRoomAdapter.notifyDataSetChanged();
+                        ChatApplication.isScheduleNeedResume = false;
+
+                        onLoadFragment(3);
+                    } else {
+                        Toast.makeText(getActivity().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ChatApplication.logDisplay("deleteSchedule onFailure " + error);
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
     }
 
     /*change schedule status */
@@ -871,14 +963,14 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         }
         ActivityHelper.showProgressDialog(getActivity(), "Please Wait...", false);
 
-        String timer_on_date = "";
+        /*String timer_on_date = "";
         String timer_off_date = "";
 
         JSONObject obj = new JSONObject();
         try {
-            ChatApplication.logDisplay("is ative is "+scheduleVO.getIs_active());
+            ChatApplication.logDisplay("is ative is " + scheduleVO.getIs_active());
             obj.put("schedule_id", scheduleVO.getSchedule_id());
-            obj.put("is_active", scheduleVO.getIs_active()==1 ? "y":"n");
+            obj.put("is_active", scheduleVO.getIs_active() == 1 ? "y" : "n");
 
             if (scheduleVO.getIs_active() == 1 && scheduleVO.getSchedule_type() == 1) {
 
@@ -886,13 +978,13 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                 String sch_off_date = scheduleVO.getSchedule_device_off_time().trim();
 
                 if (!TextUtils.isEmpty(sch_on_after) && !TextUtils.isEmpty(sch_off_date) && !sch_off_date.equalsIgnoreCase("null")) {
-                    ChatApplication.logDisplay("timer is "+sch_on_after);
+                    ChatApplication.logDisplay("timer is " + sch_on_after);
                     try {
 
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTime(new Date());
                         sch_on_after = Common.getHH(sch_on_after);
-                        ChatApplication.logDisplay("timer is "+sch_on_after);
+                        ChatApplication.logDisplay("timer is " + sch_on_after);
                         calendar.add(Calendar.HOUR, Integer.parseInt(sch_on_after.split(":")[0]));
                         calendar.add(Calendar.MINUTE, Integer.parseInt(sch_on_after.split(":")[1]));
 
@@ -948,10 +1040,10 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                         }
                     }
 
-                    scheduleVO.setSchedule_device_on_time(timer_on_date+" "+sch_on_after);
-                    scheduleVO.setSchedule_device_off_time(timer_off_date+" "+sch_off_date);
-                    obj.put("on_time",timer_on_date+" "+sch_on_after+":00");
-                    obj.put("off_time",timer_off_date+" "+sch_off_date+":00");
+                    scheduleVO.setSchedule_device_on_time(timer_on_date + " " + sch_on_after);
+                    scheduleVO.setSchedule_device_off_time(timer_off_date + " " + sch_off_date);
+                    obj.put("on_time", timer_on_date + " " + sch_on_after + ":00");
+                    obj.put("off_time", timer_off_date + " " + sch_off_date + ":00");
 
                 }
             }
@@ -968,7 +1060,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         }
 
         String url = ChatApplication.url + Constants.scheduleedit;
-        ChatApplication.logDisplay("url is "+url+" "+obj);
+        ChatApplication.logDisplay("url is " + url + " " + obj);
 
         new GetJsonTask(getActivity(), url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
@@ -979,19 +1071,19 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                     String message = result.getString("message");
                     if (code == 200) {
                         if (!TextUtils.isEmpty(message)) {
-                           ChatApplication.showToast(getActivity().getApplicationContext(), message);
+                            ChatApplication.showToast(getActivity().getApplicationContext(), message);
                         }
-                            try {
-                                for (int i = 0; i < scheduleRoomArrayList.size(); i++) {
-                                    ScheduleVO scheduleVO2 = scheduleRoomArrayList.get(i);
-                                    if (scheduleVO2.getSchedule_id().equalsIgnoreCase(scheduleVO.getSchedule_id())) {
-                                        scheduleRoomAdapter.notifyItemChanged(i,scheduleVO);
-                                    }
+                        try {
+                            for (int i = 0; i < scheduleRoomArrayList.size(); i++) {
+                                ScheduleVO scheduleVO2 = scheduleRoomArrayList.get(i);
+                                if (scheduleVO2.getSchedule_id().equalsIgnoreCase(scheduleVO.getSchedule_id())) {
+                                    scheduleRoomAdapter.notifyItemChanged(i, scheduleVO);
                                 }
-
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
                             }
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
 
                     } else {
                         Toast.makeText(getActivity().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
@@ -1009,7 +1101,60 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+
+        SpikeBotApi.getInstance().ChangeScheduleStatus(scheduleVO, new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    ChatApplication.logDisplay("SchEdit changeScheduleStatus onSuccess " + result.toString());
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        if (!TextUtils.isEmpty(message)) {
+                            ChatApplication.showToast(getActivity().getApplicationContext(), message);
+                        }
+                        try {
+                            for (int i = 0; i < scheduleRoomArrayList.size(); i++) {
+                                ScheduleVO scheduleVO2 = scheduleRoomArrayList.get(i);
+                                if (scheduleVO2.getSchedule_id().equalsIgnoreCase(scheduleVO.getSchedule_id())) {
+                                    scheduleRoomAdapter.notifyItemChanged(i, scheduleVO);
+                                }
+                            }
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+
+                    } else {
+                        Toast.makeText(getActivity().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ChatApplication.logDisplay("changeScheduleStatus onFailure " + error);
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(getActivity().getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
     }
 
     //isMood boolean used for is intent direct in Room list
@@ -1020,11 +1165,10 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         ChatApplication.logDisplay(" action " + action);
         if (action.equalsIgnoreCase("active")) {
             changeScheduleStatus(scheduleVO);
-        } else if (action.equalsIgnoreCase("edit"))
-        {
-            showBottomSheetDialog(scheduleVO,isMood);
+        } else if (action.equalsIgnoreCase("edit")) {
+            showBottomSheetDialog(scheduleVO, isMood);
         } else if (action.equalsIgnoreCase("delete")) {
-        } else if (action.equalsIgnoreCase("log")){
+        } else if (action.equalsIgnoreCase("log")) {
 
         }
 
@@ -1047,18 +1191,19 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         view_log.setVisibility(View.VISIBLE);
         linear_bottom_log.setVisibility(View.VISIBLE);
 
-        BottomSheetDialog dialog = new BottomSheetDialog(getActivity(),R.style.AppBottomSheetDialogTheme);
+        BottomSheetDialog dialog = new BottomSheetDialog(getActivity(), R.style.AppBottomSheetDialogTheme);
         dialog.setContentView(view);
         dialog.show();
 
-        txt_bottomsheet_title.setText("What would you like to do in" + " " +scheduleVO.getSchedule_name() + "" +" " +"?");
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + scheduleVO.getSchedule_name() + "" + " " + "?");
         linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
                 String room_device_id = "";
                 Gson gson = new Gson();
-                List<Device> deviceList = gson.fromJson(scheduleVO.getDevicesList(), new TypeToken<List<Device>>() {}.getType());
+                List<Device> deviceList = gson.fromJson(scheduleVO.getDevicesList(), new TypeToken<List<Device>>() {
+                }.getType());
 
                 for (int i = 0; i < deviceList.size(); i++) {
                     if (i == 0) {
@@ -1121,9 +1266,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             }
         });
     }
-
-
-
 
 
 }

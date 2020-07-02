@@ -38,14 +38,12 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.CloudAdapter;
-import com.spike.bot.core.APIConst;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.fcm.MyFirebaseMessagingService;
@@ -73,42 +71,66 @@ import io.socket.emitter.Emitter;
 public class Main2Activity extends AppCompatActivity implements View.OnClickListener,
         ConnectivityReceiver.ConnectivityReceiverListener, CloudAdapter.CloudClickListener,
         DashBoardFragment.OnHeadlineSelectedListener, ResponseErrorCode, SocketListener,
-        LoginPIEvent , BottomNavigationView.OnNavigationItemSelectedListener,
-        ChipNavigationBar.OnItemSelectedListener{
+        LoginPIEvent, BottomNavigationView.OnNavigationItemSelectedListener,
+        ChipNavigationBar.OnItemSelectedListener {
 
-    private String ERROR_STRING = "No Internet found.\n" + "Check your connection or try again.";
-    public static boolean flagPicheck = false, flagLogin = false,isResumeConnect=false,isCloudConnected=false;
-
+    public static boolean flagPicheck = false, flagLogin = false, isResumeConnect = false, isCloudConnected = false;
     public Toolbar toolbar;
-  //  public BottomNavigationView tabLayout;
-    ChipNavigationBar navigation_bar;
-    public ImageView mToolBarSettings,deepsImage, mImageCloud,img_profile;
-    public TextView toolbarTitle,toolbarwifiname,txt_connection, txt_add_acoount,toolbarImage;
-    public LinearLayout linear_main, linear_progress,linearTab;
+    public ImageView mToolBarSettings, deepsImage, mImageCloud, img_profile;
+    public TextView toolbarTitle, toolbarwifiname, txt_connection, txt_add_acoount, toolbarImage;
+    public LinearLayout linear_main, linear_progress, linearTab;
     public FrameLayout linearCloud;
-    private RecyclerView recyclerView;
-
-    //refresh view like change network
-    DeviceListRefreshView deviceListRefreshView;
-    // PopupWindow popupWindow;
-    private CloudAdapter cloudAdapter;
-
-    PowerManager.WakeLock wakeLock;
     public DashBoardFragment dashBoardFragment1;
     public MoodFragment moodFragment;
     public ScheduleFragment scheduleFragment;
+    public int tabCount = 0;
+    public String userId = "0", webUrl = "", token = "";
+    public boolean isSocketConnected = true, isTimerStart = false, isTimerEnd = false, doubleBackToExitPressedOnce = false, isWifiConnect = false, isNetwork = false;
+    public Dialog dialogUser;
+    //  public BottomNavigationView tabLayout;
+    ChipNavigationBar navigation_bar;
+    //refresh view like change network
+    DeviceListRefreshView deviceListRefreshView;
+    PowerManager.WakeLock wakeLock;
+    Gson gson;
+    List<User> userList = new ArrayList<User>();
+    Fragment fragment = null;
+    private String ERROR_STRING = "No Internet found.\n" + "Check your connection or try again.";
+    private RecyclerView recyclerView;
+    // PopupWindow popupWindow;
+    private CloudAdapter cloudAdapter;
     private FrameLayout mViewPager;
     private Socket mSocket;
-
-    public int tabCount=0;
-    public String userId="0",webUrl = "",token="";
-    public boolean  isSocketConnected = true,isTimerStart=false,isTimerEnd=false,doubleBackToExitPressedOnce=false,isWifiConnect = false, isNetwork = false;
-
-    Gson gson;
     private ConnectivityReceiver connectivityReceiver;
-    public Dialog dialogUser;
+    //Socket
+    private Emitter.Listener deleteChildUser = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (Main2Activity.this == null) {
+                return;
+            }
+            Main2Activity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
 
-    List<User> userList = new ArrayList<User>();
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+                            String message = object.optString("message");
+                            String user_id = object.optString("user_id");
+                            if (Common.getPrefValue(Main2Activity.this, Constants.USER_ID).equalsIgnoreCase(user_id)) {
+                                childRemoveSQLite();
+                                ChatApplication.showToast(Main2Activity.this, message);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
 
     @SuppressLint("InvalidWakeLockTag")
     @Override
@@ -118,7 +140,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_main2);
 
         //network change broadcast registretion..
-        gson= new Gson();
+        gson = new Gson();
         connectivityReceiver = new ConnectivityReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -128,7 +150,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         //application menu show badge count
         MyFirebaseMessagingService.badge = "0";
 
-        toolbar =  findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
@@ -144,8 +166,9 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         DashBoardFragment.clearNotification(Main2Activity.this);
 
         //first fragment load
-        loadFragment(new DashBoardFragment());
-  //      tabLayout.setOnNavigationItemSelectedListener(this);
+//        loadFragment(new DashBoardFragment()); // edited by arpan
+        onItemSelected(ChatApplication.CurrnetFragment);
+        //      tabLayout.setOnNavigationItemSelectedListener(this);
 
         // check login or not
         if (!Constants.checkLoginAccountCount(this)) {
@@ -157,7 +180,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
         setUserName();
     }
-
 
     @Override
     public void onResume() {
@@ -177,26 +199,28 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             hideAlertDialog();
             showAlertDialog(ERROR_STRING);
         }
+
+        navigation_bar.setItemSelected(ChatApplication.CurrnetFragment, true); // dev arpan add on 15 june 2020
     }
 
     private void setViewId() {
         mViewPager = findViewById(R.id.container);
-     //   tabLayout =  findViewById(R.id.tabs);
+        //   tabLayout =  findViewById(R.id.tabs);
         navigation_bar = findViewById(R.id.navigation_bar);
-        mImageCloud =  findViewById(R.id.toolbar_cloud);
-        toolbarImage =  findViewById(R.id.toolbarImage);
-        deepsImage =  findViewById(R.id.deepsImage);
-        txt_connection =  findViewById(R.id.txt_connection);
-        linear_main =  findViewById(R.id.linear_main);
-        linear_progress =  findViewById(R.id.linear_progress);
+        mImageCloud = findViewById(R.id.toolbar_cloud);
+        toolbarImage = findViewById(R.id.toolbarImage);
+        deepsImage = findViewById(R.id.deepsImage);
+        txt_connection = findViewById(R.id.txt_connection);
+        linear_main = findViewById(R.id.linear_main);
+        linear_progress = findViewById(R.id.linear_progress);
         toolbarTitle = findViewById(R.id.toolbarTitle);
         toolbarwifiname = findViewById(R.id.toolbarwifiname);
         img_profile = findViewById(R.id.img_profile);
-        mToolBarSettings =  findViewById(R.id.toolbar_setting);
-        linearCloud =  findViewById(R.id.linear_progress_cloud);
+        mToolBarSettings = findViewById(R.id.toolbar_setting);
+        linearCloud = findViewById(R.id.linear_progress_cloud);
         linearTab = findViewById(R.id.linearTab);
 
-     //   tabLayout.setOnNavigationItemSelectedListener(this);
+        //   tabLayout.setOnNavigationItemSelectedListener(this);
         toolbarImage.setOnClickListener(this);
         toolbarTitle.setOnClickListener(this);
         mImageCloud.setOnClickListener(this);
@@ -204,7 +228,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         navigation_bar.setOnItemSelectedListener(this);
         img_profile.setOnClickListener(this);
 
-        navigation_bar.setItemSelected(R.id.navigationDashboard,true);
+        navigation_bar.setItemSelected(R.id.navigationDashboard, true);
 
         //update user fname and lname after updaing the profile activity
         setUserName();
@@ -221,7 +245,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         ChatApplication.isMainFragmentNeedResume = true;
 
     }
-
 
     @Override
     public void onDestroy() {
@@ -247,55 +270,54 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.toolbar_cloud) {
-          //  showAccountDialog(toolbarTitle);
+            //  showAccountDialog(toolbarTitle);
         } else if (view.getId() == R.id.toolbarImage) {
             showAccountDialog(toolbarTitle);
         } else if (view.getId() == R.id.toolbarTitle) {
             showAccountDialog(toolbarTitle);
-        }else if (view.getId() == R.id.toolbar_setting) {
+        } else if (view.getId() == R.id.toolbar_setting) {
             if (!ActivityHelper.isConnectingToInternet(Main2Activity.this)) {
                 ChatApplication.showToast(Main2Activity.this, getResources().getString(R.string.disconnect));
             } else {
-                    openSettingPopup(toolbar);
+                openSettingPopup(toolbar);
             }
-        }else if (view.getId() == R.id.img_profile) {
-            Intent i =new Intent(Main2Activity.this,ProfileActivity.class);
-           startActivity(i);
+        } else if (view.getId() == R.id.img_profile) {
+            Intent i = new Intent(Main2Activity.this, ProfileActivity.class);
+            startActivity(i);
         }
     }
 
-    Fragment fragment=null;
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.navigationDashboard:
-                tabCount=0;
-                if(dashBoardFragment1 ==null){
+                tabCount = 0;
+                if (dashBoardFragment1 == null) {
                     dashBoardFragment1 = new DashBoardFragment();
-                    fragment= dashBoardFragment1;
-                }else {
-                    fragment= dashBoardFragment1;
+                    fragment = dashBoardFragment1;
+                } else {
+                    fragment = dashBoardFragment1;
                 }
 
                 break;
 
             case R.id.navigationMood:
-                tabCount=1;
-                if(moodFragment==null){
+                tabCount = 1;
+                if (moodFragment == null) {
                     moodFragment = new MoodFragment();
-                    fragment=moodFragment;
-                }else {
-                    fragment=moodFragment;
+                    fragment = moodFragment;
+                } else {
+                    fragment = moodFragment;
                 }
                 break;
 
             case R.id.navigationSchedule:
-                tabCount=2;
-                if(scheduleFragment==null){
+                tabCount = 2;
+                if (scheduleFragment == null) {
                     scheduleFragment = new ScheduleFragment();
-                    fragment=scheduleFragment;
-                }else {
-                    fragment=scheduleFragment;
+                    fragment = scheduleFragment;
+                } else {
+                    fragment = scheduleFragment;
                 }
                 break;
         }
@@ -305,41 +327,40 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onItemSelected(int i) {
+
         switch (i) {
             case R.id.navigationDashboard:
-                tabCount=0;
-                if(dashBoardFragment1 ==null){
+                tabCount = 0;
+                if (dashBoardFragment1 == null) {
                     dashBoardFragment1 = new DashBoardFragment();
-                    fragment= dashBoardFragment1;
-                }else {
-                    fragment= dashBoardFragment1;
+                    fragment = dashBoardFragment1;
+                } else {
+                    fragment = dashBoardFragment1;
                 }
-
                 break;
 
             case R.id.navigationMood:
-                tabCount=1;
-                if(moodFragment==null){
+                tabCount = 1;
+                if (moodFragment == null) {
                     moodFragment = new MoodFragment();
-                    fragment=moodFragment;
-                }else {
-                    fragment=moodFragment;
+                    fragment = moodFragment;
+                } else {
+                    fragment = moodFragment;
                 }
                 break;
 
             case R.id.navigationSchedule:
-                tabCount=2;
-                if(scheduleFragment==null){
+                tabCount = 2;
+                if (scheduleFragment == null) {
                     scheduleFragment = new ScheduleFragment();
-                    fragment=scheduleFragment;
-                }else {
-                    fragment=scheduleFragment;
+                    fragment = scheduleFragment;
+                } else {
+                    fragment = scheduleFragment;
                 }
                 break;
         }
         loadFragment(fragment);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -362,9 +383,9 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onArticleSelected(String name) {
         if (toolbarTitle != null)
-          setUserName();
+            setUserName();
         else {
-            toolbarTitle =  findViewById(R.id.toolbarTitle);
+            toolbarTitle = findViewById(R.id.toolbarTitle);
             setUserName();
             toolbarTitle.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -409,10 +430,11 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             String jsonCurProduct = gson.toJson(userList);
             Common.savePrefValue(getApplicationContext(), Common.USER_JSON, jsonCurProduct);
 
-            String cloudIp = "", local_ip = "",mac_address="";
+            String cloudIp = "", local_ip = "", mac_address = "";
             String jsonText = Common.getPrefValue(getApplicationContext(), Common.USER_JSON);
             if (!TextUtils.isEmpty(jsonText)) {
-                Type type = new TypeToken<List<User>>() {}.getType();
+                Type type = new TypeToken<List<User>>() {
+                }.getType();
                 userList = gson.fromJson(jsonText, type);
 
                 for (int i = 0; i < userList.size(); i++) {
@@ -421,7 +443,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                         cloudIp = userList.get(i).getCloudIP();
                         local_ip = userList.get(i).getLocal_ip();
                         mac_address = userList.get(i).getLocal_ip();
-                        ChatApplication.currentuserId=userList.get(i).getUser_id();
+                        ChatApplication.currentuserId = userList.get(i).getUser_id();
                     } else {
                         userList.get(i).setIsActive(false);
                     }
@@ -431,7 +453,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 Common.savePrefValue(getApplicationContext(), Common.USER_JSON, json);
             }
 
-             setUserName();
+            setUserName();
 
             if (cloudAdapter != null) {
                 cloudAdapter.notifyDataSetChanged();
@@ -453,8 +475,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 Common.savePrefValue(Main2Activity.this, Constants.USER_ROOM_TYPE, "" + 2);
             }
 
-            ChatApplication.isCallDeviceList=true;
-            setWifiLocalflow(local_ip,cloudIp,mac_address,0);
+            ChatApplication.isCallDeviceList = true;
+            setWifiLocalflow(local_ip, cloudIp, mac_address, 0);
         }
 
     }
@@ -463,7 +485,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
      *
      */
     @Override
-    public void startSession() { }
+    public void startSession() {
+    }
 
     /*network change interface call like switch network*/
     @Override
@@ -483,14 +506,14 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         if (ActivityHelper.isConnectingToInternet(Main2Activity.this)) {
             mToolBarSettings.setVisibility(View.VISIBLE);
             if (isConnected) {
-                if(tabCount!=0){
-                  //  tabLayout.setSelectedItemId(R.id.navigationDashboard);
-                }else {
+                if (tabCount != 0) {
+                    //  tabLayout.setSelectedItemId(R.id.navigationDashboard);
+                } else {
                     ChatApplication.isCallDeviceList = true;
                     deviceListRefreshView.deviceRefreshView(1);
                 }
 
-                ChatApplication.logDisplay("device refreshing main "+tabCount);
+                ChatApplication.logDisplay("device refreshing main " + tabCount);
 
             } else {
                 linear_progress.setVisibility(View.GONE);
@@ -541,7 +564,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     public void onSuccess() {
     }
 
-
     //load fragment
     public boolean loadFragment(Fragment fragment) {
         if (fragment != null) {
@@ -554,17 +576,15 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         return false;
     }
 
-
-    public void setUserName(){
+    public void setUserName() {
         toolbarTitle.setText(Constants.getUserName(this));
     }
 
     /*tab hide & show*/
-    public void tabShow(boolean b){
-        linearTab.setVisibility(b==true ? View.VISIBLE :View.GONE);
+    public void tabShow(boolean b) {
+        linearTab.setVisibility(b == true ? View.VISIBLE : View.GONE);
 //        mToolBarSettings.setClickable(b);
     }
-
 
     /**
      * If Network is connected on cloud then display cloud icon otherwise display wifi icon
@@ -591,11 +611,11 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     /* port & url set */
     private void listServiceTemp(final String msg, String ip, final int port, final boolean isFound, boolean isShow) {
-        String openIp="";
-        if(ip.startsWith(Constants.startUrlhttp)){
-            openIp   = (isFound) ? ip + ":" + port : Constants.CLOUD_SERVER_URL;
-        }else {
-            openIp  = (isFound) ?  "http://" +ip + ":" + port : Constants.CLOUD_SERVER_URL;
+        String openIp = "";
+        if (ip.startsWith(Constants.startUrlhttp)) {
+            openIp = (isFound) ? ip + ":" + port : Constants.CLOUD_SERVER_URL;
+        } else {
+            openIp = (isFound) ? "http://" + ip + ":" + port : Constants.CLOUD_SERVER_URL;
         }
 
         ChatApplication.logDisplay("openIp is connect " + openIp);
@@ -608,24 +628,23 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             if (Common.getPrefValue(this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
                 //toolbarImage.setVisibility(View.VISIBLE);
                 toolbarTitle.setClickable(true);
-              //  toolbarImage.setClickable(true);
+                //  toolbarImage.setClickable(true);
                 dashBoardFragment1.addDeviceFab.setVisibility(View.GONE);
                 toolbarTitle.setTextColor(getResources().getColor(R.color.username_green));
             } else {
                 toolbarTitle.setClickable(true);
-             //   toolbarImage.setClickable(true);
-             //   toolbarImage.setVisibility(View.VISIBLE);
+                //   toolbarImage.setClickable(true);
+                //   toolbarImage.setVisibility(View.VISIBLE);
                 dashBoardFragment1.addDeviceFab.setVisibility(View.VISIBLE);
                 toolbarTitle.setTextColor(getResources().getColor(R.color.signupblack));
             }
         }
     }
 
-    public  void changestatus() {
+    public void changestatus() {
         linearTab.setVisibility(View.VISIBLE);
         mToolBarSettings.setVisibility(View.VISIBLE);
     }
-
 
     /**
      * show Account Dialog with toolbar title
@@ -653,8 +672,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         dialogUser.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         dialogUser.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        txt_add_acoount =  dialogUser.findViewById(R.id.txt_add_account);
-        recyclerView =  dialogUser.findViewById(R.id.userList);
+        txt_add_acoount = dialogUser.findViewById(R.id.txt_add_account);
+        recyclerView = dialogUser.findViewById(R.id.userList);
         TextView txtOutside = dialogUser.findViewById(R.id.txtOutside);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
 
@@ -666,7 +685,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         userList.clear();
 
         if (!TextUtils.isEmpty(jsonText)) {
-            Type type = new TypeToken<List<User>>() {}.getType();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
             userList = gson.fromJson(jsonText, type);
             recyclerView.setVisibility(View.VISIBLE);
         } else {
@@ -691,8 +711,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 dialogUser.dismiss();
                 hideAlertDialog();
 
-                Intent intent=new Intent(Main2Activity.this,LoginSplashActivity.class);
-                intent.putExtra("isFlag","true");
+                Intent intent = new Intent(Main2Activity.this, LoginSplashActivity.class);
+                intent.putExtra("isFlag", "true");
                 startActivity(intent);
             }
         });
@@ -734,35 +754,35 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.action_device_log:
-                        if(linearTab.getVisibility()==View.VISIBLE){
+                        if (linearTab.getVisibility() == View.VISIBLE) {
                             Intent intent = new Intent(Main2Activity.this, DeviceLogActivity.class);
                             intent.putExtra("isCheckActivity", "AllType");
                             startActivity(intent);
-                        }else {
-                            ChatApplication.showToast(Main2Activity.this,getResources().getString(R.string.something_wrong1));
+                        } else {
+                            ChatApplication.showToast(Main2Activity.this, getResources().getString(R.string.something_wrong1));
                         }
 
                         break;
                     case R.id.action_notification_settings:
-                        if(linearTab.getVisibility()==View.VISIBLE){
+                        if (linearTab.getVisibility() == View.VISIBLE) {
                             Intent intentNotification = new Intent(Main2Activity.this, NotificationSetting.class);
                             startActivity(intentNotification);
-                        }else {
-                            ChatApplication.showToast(Main2Activity.this,getResources().getString(R.string.something_wrong1));
+                        } else {
+                            ChatApplication.showToast(Main2Activity.this, getResources().getString(R.string.something_wrong1));
                         }
 
                         break;
                     case R.id.action_profile:
-                        if(linearTab.getVisibility()==View.VISIBLE){
+                        if (linearTab.getVisibility() == View.VISIBLE) {
                             Intent intentProfile = new Intent(Main2Activity.this, ProfileActivity.class);
                             startActivity(intentProfile);
-                        }else {
-                            ChatApplication.showToast(Main2Activity.this,getResources().getString(R.string.something_wrong1));
+                        } else {
+                            ChatApplication.showToast(Main2Activity.this, getResources().getString(R.string.something_wrong1));
                         }
 
                         break;
                     case R.id.action_logout:
-                        if(linearTab.getVisibility()==View.VISIBLE) {
+                        if (linearTab.getVisibility() == View.VISIBLE) {
                             logoutCloudUser();
                         }
                         break;
@@ -790,7 +810,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         final List<User> tempList = new ArrayList<User>();
 
         if (!TextUtils.isEmpty(jsonText)) {
-            Type type = new TypeToken<List<User>>() {}.getType();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
             uList = gson.fromJson(jsonText, type);
             boolean isFoundUser = false;
 
@@ -850,7 +871,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                         }
                         ActivityHelper.dismissProgressDialog();
 
-                        setWifiLocalflow(tempList.get(0).getLocal_ip(),tempList.get(0).getCloudIP(),tempList.get(0).getMac_address(),0);
+                        setWifiLocalflow(tempList.get(0).getLocal_ip(), tempList.get(0).getCloudIP(), tempList.get(0).getMac_address(), 0);
 
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -897,7 +918,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
         if (!TextUtils.isEmpty(jsonText)) {
 
-            Type type = new TypeToken<List<User>>() {}.getType();
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
             uList = gson.fromJson(jsonText, type);
 
             boolean isFoundUser = false;
@@ -914,7 +936,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             if (isFoundUser) {
                 //logoutUser();
                 //TODO code for logout api call
-                String url = Constants.CLOUD_SERVER_URL + Constants.APP_LOGOUT;
+              /*  String url = Constants.CLOUD_SERVER_URL + Constants.APP_LOGOUT;
 
                 JSONObject object = new JSONObject();
                 try {
@@ -927,10 +949,10 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                ChatApplication.logDisplay("logout is " + url  + object.toString());
+                ChatApplication.logDisplay("logout is " + url + object.toString());*/
                 ActivityHelper.showProgressDialog(Main2Activity.this, "Please wait...", false);
 
-                new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
+               /* new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
                     @Override
                     public void onSuccess(JSONObject result) {
                         ActivityHelper.dismissProgressDialog();
@@ -973,8 +995,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                                         }
 
                                         ChatApplication.isCallDeviceList = true;
-                                        ChatApplication.currentuserId=tempList.get(0).getUser_id();
-                                        setWifiLocalflow(tempList.get(0).getLocal_ip(),tempList.get(0).getCloudIP(),tempList.get(0).getMac_address(),0);
+                                        ChatApplication.currentuserId = tempList.get(0).getUser_id();
+                                        setWifiLocalflow(tempList.get(0).getLocal_ip(), tempList.get(0).getCloudIP(), tempList.get(0).getMac_address(), 0);
 
                                     } catch (Exception ex) {
                                         ex.printStackTrace();
@@ -1003,7 +1025,94 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     public void onFailure(Throwable throwable, String error) {
                         ActivityHelper.dismissProgressDialog();
                     }
-                }).execute();
+                }).execute();*/
+
+
+                if (ChatApplication.url.contains("http://"))
+                    ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+                SpikeBotApi.getInstance().LogoutCloudUser(logOutUser.getUser_id(), new DataResponseListener() {
+                    @Override
+                    public void onData_SuccessfulResponse(String stringResponse) {
+                        ActivityHelper.dismissProgressDialog();
+                        int code = 0;
+                        try {
+                            JSONObject result = new JSONObject(stringResponse);
+                            code = result.getInt("code");
+                            String message = result.getString("message");
+                            if (code == 200) {
+                                ChatApplication.showToast(Main2Activity.this, message);
+
+                                String jsonCurProduct = gson.toJson(tempList);
+                                ChatApplication.logDisplay("user name logout: " + tempList.size());
+
+                                if (tempList.size() == 0) {
+                                    Common.savePrefValue(getApplicationContext(), Common.USER_JSON, "");
+                                } else {
+                                    tempList.get(0).setIsActive(true);
+                                    jsonCurProduct = gson.toJson(tempList);
+                                    Common.savePrefValue(getApplicationContext(), Common.USER_JSON, jsonCurProduct);
+                                }
+
+                                if (cloudAdapter != null) {
+                                    cloudAdapter.notifyDataSetChanged();
+                                }
+
+                                if (tempList.size() > 0) {
+                                    try {
+                                        Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "true");
+                                        Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, tempList.get(0).getCloudIP());
+                                        Common.savePrefValue(Main2Activity.this, Constants.USER_ID, tempList.get(0).getUser_id());
+                                        Common.savePrefValue(Main2Activity.this, Constants.USER_PASSWORD, tempList.get(0).getPassword());
+                                        Common.savePrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE, tempList.get(0).getAdmin());
+
+                                        if (Common.getPrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("1")) {
+                                            Constants.room_type = 0;
+                                            Common.savePrefValue(Main2Activity.this, Constants.USER_ROOM_TYPE, "" + 0);
+                                        } else {
+                                            Constants.room_type = 2;
+                                            Common.savePrefValue(Main2Activity.this, Constants.USER_ROOM_TYPE, "" + 2);
+                                        }
+
+                                        ChatApplication.isCallDeviceList = true;
+                                        ChatApplication.currentuserId = tempList.get(0).getUser_id();
+                                        setWifiLocalflow(tempList.get(0).getLocal_ip(), tempList.get(0).getCloudIP(), tempList.get(0).getMac_address(), 0);
+
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
+                                } else {
+                                    Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "false");
+                                    Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, "");
+                                    Common.savePrefValue(Main2Activity.this, Constants.USER_ID, "");
+                                    Common.savePrefValue(Main2Activity.this, Constants.USER_PASSWORD, "");
+                                    Common.savePrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE, "");
+
+                                    webUrl = "";
+                                    ChatApplication app = ChatApplication.getInstance();
+                                    app.closeSocket(webUrl);
+                                    flagPicheck = true;
+                                    loginIntent();
+                                }
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onData_FailureResponse() {
+                        ActivityHelper.dismissProgressDialog();
+                    }
+
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
+                        ActivityHelper.dismissProgressDialog();
+                    }
+                });
+
+
             }
         } else {
             ChatApplication app = ChatApplication.getInstance();
@@ -1013,55 +1122,56 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     /*login screen */
     private void loginIntent() {
-        Intent intent=new Intent(this,LoginActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         this.finish();
     }
+
     /* call back set when dashboard screen refresh*/
-    public void setCallBack(DeviceListRefreshView callBack){
-        this.deviceListRefreshView=callBack;
+    public void setCallBack(DeviceListRefreshView callBack) {
+        this.deviceListRefreshView = callBack;
     }
 
     /* click lister*/
     public void getUserDialogClick(boolean isClick) {
         if (isClick) {
-          //  toolbarImage.setClickable(true);
+            //  toolbarImage.setClickable(true);
             toolbarTitle.setClickable(true);
             mToolBarSettings.setClickable(true);
             //toolbarImage.setOnClickListener(this);
             toolbarTitle.setOnClickListener(this);
             mToolBarSettings.setOnClickListener(this);
         } else {
-         //   toolbarImage.setClickable(false);
+            //   toolbarImage.setClickable(false);
             toolbarTitle.setClickable(false);
         }
     }
 
     /* most impoer method work like
-    * > user switch
-    * > nertwork change
-    * > user logout
-    *
-    *  */
-    public void setWifiLocalflow(String localIp, String cloudIp, String mac_address,int isCount) {
+     * > user switch
+     * > nertwork change
+     * > user logout
+     *
+     *  */
+    public void setWifiLocalflow(String localIp, String cloudIp, String mac_address, int isCount) {
 
-        ChatApplication.logDisplay("count is ss "+isCount);
+        ChatApplication.logDisplay("count is ss " + isCount);
         if (Common.isNetworkConnected(Main2Activity.this)) {
             isWifiConnect = true;
             webUrl = localIp;
-            if(!webUrl.startsWith("http")){
-                webUrl="http://"+webUrl;
+            if (!webUrl.startsWith("http")) {
+                webUrl = "http://" + webUrl;
             }
-                ChatApplication.url = webUrl;
-                flagPicheck = false;
-                listServiceTemp("\nService resolved: ", webUrl, 80, true, false);
+            ChatApplication.url = webUrl;
+            flagPicheck = false;
+            listServiceTemp("\nService resolved: ", webUrl, 80, true, false);
 
         } else {
             isNetwork = true;
             webUrl = cloudIp;
-            if(!webUrl.startsWith("http")){
-                webUrl="http://"+webUrl;
+            if (!webUrl.startsWith("http")) {
+                webUrl = "http://" + webUrl;
             }
             ChatApplication.url = webUrl;
             isCloudConnected = true;
@@ -1091,11 +1201,11 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         ChatApplication.isRefreshHome = false;
         invalidateToolbarCloudImage();
 
-        dashBoardFragment1.isResumeConnect=true;
+        dashBoardFragment1.isResumeConnect = true;
         dashBoardFragment1.showDialog = 1;
         getUserDialogClick(true);
         /* user switch to first tab*/
-       // tabLayout.setSelectedItemId(R.id.navigationDashboard);
+        // tabLayout.setSelectedItemId(R.id.navigationDashboard);
         setUserName();
         deviceListRefreshView.deviceRefreshView(1);
     }
@@ -1114,7 +1224,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         linear_progress.setVisibility(View.GONE);
     }
 
-
     public void showAlertDialog(String erroString) {
         deviceListRefreshView.deviceRefreshView(0);
     }
@@ -1122,37 +1231,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     public void hideAlertDialog() {
         linear_main.setVisibility(View.VISIBLE);
     }
-
-
-    //Socket
-    private Emitter.Listener deleteChildUser = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            if (Main2Activity.this == null) {
-                return;
-            }
-            Main2Activity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-
-                        try {
-                            JSONObject object = new JSONObject(args[0].toString());
-                            String message = object.optString("message");
-                            String user_id = object.optString("user_id");
-                            if (Common.getPrefValue(Main2Activity.this, Constants.USER_ID).equalsIgnoreCase(user_id)) {
-                                childRemoveSQLite();
-                                ChatApplication.showToast(Main2Activity.this, message);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }
-            });
-        }
-    };
 
     @Override
     public void onBackPressed() {

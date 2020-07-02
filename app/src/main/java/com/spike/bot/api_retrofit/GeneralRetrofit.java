@@ -63,6 +63,8 @@ class GeneralRetrofit {
             if (!call.isCanceled())
                 if (dataResponseListener != null)
                     dataResponseListener.onData_FailureResponse();
+
+                    dataResponseListener.onData_FailureResponse_with_Message(t.getMessage());
         }
     };
 

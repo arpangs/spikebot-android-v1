@@ -117,7 +117,7 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
         label_add.setVisibility(View.GONE);
         setAdapter();
           stringArrayList.add("Bridge");
-          stringArrayList.add("Lock");
+        stringArrayList.add("Lock");
 
         startSocketConnection();
     }

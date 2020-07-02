@@ -34,7 +34,10 @@ import com.spike.bot.R;
 import com.spike.bot.activity.AddDevice.AddDeviceTypeListActivity;
 import com.spike.bot.activity.AddDevice.AddExistingPanel;
 import com.spike.bot.activity.ir.blaster.IRRemoteBrandListActivity;
+import com.spike.bot.adapter.HumiditySensorAdapter;
 import com.spike.bot.adapter.room.RoomEditAdapterV2;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -185,7 +188,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             return;
         }
 
-        JSONObject object = new JSONObject();
+       /* JSONObject object = new JSONObject();
         try {
             object.put("room_id", roomVO.getRoomId());
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -195,9 +198,9 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             e.printStackTrace();
         }
 
-        String url = ChatApplication.url + Constants.DELETE_ROOM;
+        String url = ChatApplication.url + Constants.DELETE_ROOM;*/
 
-        ChatApplication.logDisplay("url is "+url+" "+object);
+       /* ChatApplication.logDisplay("url is "+url+" "+object);
 
         new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
@@ -223,8 +226,44 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(RoomEditActivity_v2.this, getResources().getString(R.string.something_wrong1));
             }
-        }).execute();
+        }).execute();*/
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+        SpikeBotApi.getInstance().DeleteRoom(roomVO.getRoomId(), new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                ActivityHelper.dismissProgressDialog();
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+
+                    ChatApplication.logDisplay("url is "+result);
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        ChatApplication.isMainFragmentNeedResume = true;
+                        finish();
+                    }
+                    ChatApplication.showToast(getApplicationContext(), message);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(RoomEditActivity_v2.this, getResources().getString(R.string.something_wrong1));
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(RoomEditActivity_v2.this, getResources().getString(R.string.something_wrong1));
+            }
+        });
     }
+
 
     private void deleteRoomAction(final RoomVO room) {
         ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ? \nNote: All the devices and sensors associated with this room will be deleted", new ConfirmDialog.IDialogCallback() {
@@ -291,7 +330,9 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             return;
         }
 
-        boolean isEmptyPanel = false;
+
+
+        /*
 
         JSONObject obj = new JSONObject();
         try {
@@ -326,10 +367,10 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         }
         String url = ChatApplication.url + Constants.SAVE_ROOM_AND_PANEL_NAME;
 
-        ChatApplication.logDisplay("ur is " + url + " " + obj);
+        ChatApplication.logDisplay("ur is " + url + " " + obj);*/
         ActivityHelper.showProgressDialog(RoomEditActivity_v2.this, "Please wait...", false);
 
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+       /* new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 try {
@@ -360,12 +401,80 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(getApplicationContext(), getResources().getString(R.string.something_wrong1));
             }
-        }).execute();
+        }).execute();*/
+
+        boolean isEmptyPanel = false;
+        JSONArray panelArray = new JSONArray();
+        try {
+
+            for (PanelVO panel : panelVOs) {
+                JSONObject objPanel = new JSONObject();
+                objPanel.put("panel_id", panel.getPanelId());
+                objPanel.put("panel_name", panel.getPanelName());
+                panelArray.put(objPanel);
+                if (TextUtils.isEmpty(panel.getPanelName())) {
+                    isEmptyPanel = true;
+                }
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (isEmptyPanel) {
+            return;
+        }
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().SaveRoom(room.getRoomId(), et_toolbar_title.getText().toString(), panelArray, new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    //{"code":200,"message":"success"}
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        ChatApplication.showToast(getApplicationContext(), message);
+                        ActivityHelper.dismissProgressDialog();
+                        ChatApplication.isRefreshDashBoard = true;
+                        ChatApplication.isMainFragmentNeedResume = true;
+                        finish();
+
+                    } else if (code == 301) {
+                        ChatApplication.showToast(getApplicationContext(), message);
+                    } else {
+                        ChatApplication.showToast(getApplicationContext(), message);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(getApplicationContext(), getResources().getString(R.string.something_wrong1));
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(getApplicationContext(), getResources().getString(R.string.something_wrong1));
+            }
+        });
+
+
+
+
+
     }
 
     public void getDeviceList() {
         JSONObject jsonObject = new JSONObject();
-        try {
+       /* try {
             //"room_id": "1571409634267_43TZShCIQ",
             //	"room_type": "room"
             jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -376,9 +485,9 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
 
         } catch (JSONException e) {
             e.printStackTrace();
-        }
+        }*/
 
-        String url = ChatApplication.url + Constants.roomsget;
+       /* String url = ChatApplication.url + Constants.roomsget;
 
         ChatApplication.logDisplay("edit room "+url+" "+jsonObject);
 
@@ -431,7 +540,75 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                     mMessagesView.setVisibility(View.VISIBLE);
                 }
             }
-        }).execute();
+        }).execute();*/
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().GetDeviceList(room.getRoomId(), new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    ActivityHelper.dismissProgressDialog();
+                    ArrayList<RoomVO> roomList = new ArrayList<>();
+                    JSONObject dataObject = result.getJSONObject("data");
+                    ChatApplication.logDisplay("result is " + dataObject);
+                    roomList = JsonHelper.parseRoomObject(dataObject, false);
+                    if (roomList.size() > 0) {
+                        room = roomList.get(0);
+                        et_toolbar_title.setText(room.getRoomName());
+
+                        if (room.getPanelList() != null && room.getPanelList().size() > 0) {
+                            roomEditGridAdapter = new RoomEditAdapterV2(room.getPanelList(), RoomEditActivity_v2.this, RoomEditActivity_v2.this);
+                            mMessagesView.setAdapter(roomEditGridAdapter);
+                            roomEditGridAdapter.notifyDataSetChanged();
+                        }
+
+                    }
+                    ActivityHelper.dismissProgressDialog();
+                } catch (JSONException e) {
+                    ActivityHelper.dismissProgressDialog();
+                    e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+                    if (room.getPanelList().size() == 0) {
+                        txt_empty_room.setVisibility(View.VISIBLE);
+                        mMessagesView.setVisibility(View.GONE);
+                    } else {
+                        txt_empty_room.setVisibility(View.GONE);
+                        mMessagesView.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(getApplicationContext(), getResources().getString(R.string.something_wrong1));
+                if (room.getPanelList().size() == 0) {
+                    txt_empty_room.setVisibility(View.VISIBLE);
+                    mMessagesView.setVisibility(View.GONE);
+                } else {
+                    txt_empty_room.setVisibility(View.GONE);
+                    mMessagesView.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(getApplicationContext(), getResources().getString(R.string.something_wrong1));
+                if (room.getPanelList().size() == 0) {
+                    txt_empty_room.setVisibility(View.VISIBLE);
+                    mMessagesView.setVisibility(View.GONE);
+                } else {
+                    txt_empty_room.setVisibility(View.GONE);
+                    mMessagesView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+
+
     }
 
     @Override
@@ -490,7 +667,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
             ChatApplication.showToast(getApplicationContext(), getResources().getString(R.string.disconnect));
             return;
         }
-        String url = ChatApplication.url + Constants.CHECK_INDIVIDUAL_SWITCH_DETAILS;
+        /*String url = ChatApplication.url + Constants.CHECK_INDIVIDUAL_SWITCH_DETAILS;
         JSONObject obj = new JSONObject();
         try {
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -499,9 +676,9 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        ChatApplication.logDisplay("icon list "+ " " + url + " " + obj.toString());
+        ChatApplication.logDisplay("icon list "+ " " + url + " " + obj.toString());*/
 
-        new GetJsonTask(this, url, "POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+       /* new GetJsonTask(this, url, "POST",obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
 
@@ -532,7 +709,52 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(getApplicationContext(), getResources().getString(R.string.something_wrong1));
             }
-        }).execute();
+        }).execute();*/
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+        SpikeBotApi.getInstance().ShowDeviceEditDialog(new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+
+                ActivityHelper.dismissProgressDialog();
+                try {
+
+                    JSONObject result = new JSONObject(stringResponse);
+
+                    deviceEditDialog = new DeviceEditDialog(RoomEditActivity_v2.this, deviceVO, result, new ICallback()
+                    {
+                        @Override
+                        public void onSuccess(String str) {
+                            ChatApplication.isRefreshDashBoard = true;
+                            ChatApplication.isMainFragmentNeedResume = true;
+                            getDeviceList();
+                        }
+                    });
+                    if (!deviceEditDialog.isShowing()) {
+                        deviceEditDialog.show();
+                    }
+
+                } catch (JSONException e) {
+                    ActivityHelper.dismissProgressDialog();
+                    e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(getApplicationContext(), getResources().getString(R.string.something_wrong1));
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(getApplicationContext(), getResources().getString(R.string.something_wrong1));
+            }
+        });
 
     }
 
@@ -544,7 +766,7 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         }
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
 
-        JSONObject object = new JSONObject();
+       /* JSONObject object = new JSONObject();
         try {
             object.put("panel_id", panelVO.getPanelId());
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -581,6 +803,42 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(getApplicationContext(), getResources().getString(R.string.something_wrong1));
             }
-        }).execute();
+        }).execute();*/
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+        SpikeBotApi.getInstance().DeletePanel(panelVO.getPanelId(), new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                ActivityHelper.dismissProgressDialog();
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    //{"code":200,"message":"success"}
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        ChatApplication.showToast(getApplicationContext(), message);
+                        getDeviceList();
+                    } else {
+                        ChatApplication.showToast(getApplicationContext(), message);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(getApplicationContext(), getResources().getString(R.string.something_wrong1));
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(getApplicationContext(), getResources().getString(R.string.something_wrong1));
+            }
+        });
     }
 }

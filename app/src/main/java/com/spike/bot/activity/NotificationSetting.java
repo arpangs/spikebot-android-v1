@@ -17,6 +17,8 @@ import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.NotificationSettingAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -33,7 +35,7 @@ import java.util.List;
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class NotificationSetting extends AppCompatActivity implements NotificationSettingAdapter.SwitchChanges{
+public class NotificationSetting extends AppCompatActivity implements NotificationSettingAdapter.SwitchChanges {
 
     private NotificationListRes mNotificationListRes;
     private List<NotificationListRes.Data> notificationDataList;
@@ -53,9 +55,8 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        mListNotification = (RecyclerView)findViewById(R.id.mListNotification);
-        mListNotification.setLayoutManager(new GridLayoutManager(this,1));
-
+        mListNotification = (RecyclerView) findViewById(R.id.mListNotification);
+        mListNotification.setLayoutManager(new GridLayoutManager(this, 1));
 
 
         getNotificationList();
@@ -75,21 +76,23 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
         if (id == R.id.action_save) {
             saveNotiSettingList();
             return true;
-        }else if(id == android.R.id.home){
+        } else if (id == android.R.id.home) {
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    /** Save the notification list*/
-    private void saveNotiSettingList(){
+    /**
+     * Save the notification list
+     */
+    private void saveNotiSettingList() {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        JSONObject dataObject = new JSONObject();
+//        JSONObject dataObject = new JSONObject();
 
         try {
 
@@ -98,29 +101,27 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
             //Added multisensor and gas enable/disable option.
 
             JSONArray dataArray = new JSONArray();
-            for(NotificationListRes.Data data : notificationDataList){
+            for (NotificationListRes.Data data : notificationDataList) {
                 JSONObject homeObject = new JSONObject();
-                homeObject.put("id",data.getId());
-                homeObject.put("title",data.getTitle());
-                homeObject.put("value",data.getValue());
+                homeObject.put("id", data.getId());
+                homeObject.put("title", data.getTitle());
+                homeObject.put("value", data.getValue());
 
 
                 dataArray.put(homeObject);
             }
 
-            dataObject.put("data",dataArray);
-            dataObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
+//            dataObject.put("data",dataArray);
+//            dataObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
 
 
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        String webUrl = ChatApplication.url + Constants.SAVE_NOTIFICATION_LIST;
-        ChatApplication.logDisplay("notification result is "+ webUrl + dataObject);
-        ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
-        new GetJsonTask(this, webUrl, "POST", dataObject.toString(), new ICallBack() {
+       /* String webUrl = ChatApplication.url + Constants.SAVE_NOTIFICATION_LIST;
+        ChatApplication.logDisplay("notification result is "+ webUrl + dataObject);*/
+            ActivityHelper.showProgressDialog(this, "Please wait.", false);
+
+       /* new GetJsonTask(this, webUrl, "POST", dataObject.toString(), new ICallBack() {
             @Override
             public void onSuccess(JSONObject result) {
 
@@ -144,12 +145,53 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        }).execute();*/
+            if (ChatApplication.url.contains("http://"))
+                ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+            SpikeBotApi.getInstance().SaveNotiSettingList(dataArray, new DataResponseListener() {
+                @Override
+                public void onData_SuccessfulResponse(String stringResponse) {
+                    ActivityHelper.dismissProgressDialog();
+                    try {
+
+                        JSONObject result = new JSONObject(stringResponse);
+                        int code = result.getInt("code");
+                        String message = result.getString("message");
+                        if (code == 200) {
+                            finish();
+                        } else {
+                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onData_FailureResponse() {
+                    ActivityHelper.dismissProgressDialog();
+                }
+
+                @Override
+                public void onData_FailureResponse_with_Message(String error) {
+                    ActivityHelper.dismissProgressDialog();
+                }
+            });
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
-    /** Get All notification list*/
-    private void getNotificationList(){
+    /**
+     * Get All notification list
+     */
+    private void getNotificationList() {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -157,7 +199,7 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String webUrl = ChatApplication.url + Constants.GET_NOTIFICATION_LIST;
+       /* String webUrl = ChatApplication.url + Constants.GET_NOTIFICATION_LIST;
 
         JSONObject dataObject = new JSONObject();
 
@@ -168,7 +210,7 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        ChatApplication.logDisplay("result is "+ webUrl + dataObject);
+        ChatApplication.logDisplay("result is " + webUrl + dataObject);
 
         new GetJsonTask(this, webUrl, "POST", dataObject.toString(), new ICallBack() {
             @Override
@@ -176,16 +218,16 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
 
                 ActivityHelper.dismissProgressDialog();
                 try {
-                    ChatApplication.logDisplay("result is "+result);
+                    ChatApplication.logDisplay("result is " + result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    if(code == 200){
-                        mNotificationListRes = Common.jsonToPojo(result.toString(),NotificationListRes.class);
+                    if (code == 200) {
+                        mNotificationListRes = Common.jsonToPojo(result.toString(), NotificationListRes.class);
                         notificationDataList = mNotificationListRes.getData();
                         updateAdapter(notificationDataList);
 
-                    }else{
-                        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     }
 
 
@@ -198,7 +240,47 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        }).execute();*/
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+        SpikeBotApi.getInstance().GetNotificationList(new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                ActivityHelper.dismissProgressDialog();
+                try {
+
+                    JSONObject result = new JSONObject(stringResponse);
+
+                    ChatApplication.logDisplay("result is " + result);
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        mNotificationListRes = Common.jsonToPojo(result.toString(), NotificationListRes.class);
+                        notificationDataList = mNotificationListRes.getData();
+                        updateAdapter(notificationDataList);
+
+                    } else {
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
 
     }
 
@@ -208,9 +290,9 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
         return true;
     }
 
-    private void updateAdapter(List<NotificationListRes.Data> data){
+    private void updateAdapter(List<NotificationListRes.Data> data) {
 
-        notificationSettingAdapter = new NotificationSettingAdapter(data,this);
+        notificationSettingAdapter = new NotificationSettingAdapter(data, this);
         mListNotification.setAdapter(notificationSettingAdapter);
     }
 

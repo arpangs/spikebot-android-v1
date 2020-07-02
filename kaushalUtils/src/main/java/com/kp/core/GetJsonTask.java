@@ -12,6 +12,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import android.provider.SyncStateContract;
 import android.text.TextUtils;
 
 /**
@@ -28,6 +29,7 @@ public class GetJsonTask extends AsyncTask<String, Void, String> {
 	private String error = null;
 	private String method = "POST";
 
+
 	public GetJsonTask(Context context, String url, String method, String json, ICallBack activity) {
 		this.activity = activity;
 		this.context = context;
@@ -37,6 +39,7 @@ public class GetJsonTask extends AsyncTask<String, Void, String> {
 		if(!this.url.trim().startsWith("http")){
 			this.url="http://"+this.url;
 		}
+
 	}
 
 

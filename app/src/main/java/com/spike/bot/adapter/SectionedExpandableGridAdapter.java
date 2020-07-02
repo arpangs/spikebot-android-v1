@@ -2,7 +2,6 @@ package com.spike.bot.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.text.TextUtils;
@@ -17,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,37 +40,27 @@ import java.util.ArrayList;
  */
 public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<SectionedExpandableGridAdapter.ViewHolder> {
 
-    //data array
-    private ArrayList<Object> mDataArrayList;
-    private ArrayList<CameraCounterModel.Data> mCounterList;
-
-    //context
-    private final Context mContext;
-
-    //listeners
-    private final ItemClickListener mItemClickListener;
-    private CameraClickListener mCameraClickListener;
-    private JetsonClickListener jetsonClickListener;
-    private final SectionStateChangeListener mSectionStateChangeListener;
-    private OnSmoothScrollList onSmoothScrollList;
-    private TempClickListener tempClickListener;
-
     //view type
     private static final int VIEW_TYPE_SECTION = R.layout.row_room_home_v2;
     private static final int VIEW_TYPE_PANEL = R.layout.row_room_panel;
     private static final int VIEW_TYPE_ITEM = R.layout.row_room_switch_item; //TODO : change this
     private static final int VIEW_TYPE_CAMERA = R.layout.row_camera_listview;
-
+    //context
+    private final Context mContext;
+    //listeners
+    private final ItemClickListener mItemClickListener;
+    private final SectionStateChangeListener mSectionStateChangeListener;
     public GridLayoutManager gridLayoutManager;
+    public boolean isClickable = true;
+    public int sectionPosition = 0;
     CameraVO cameraVO = new CameraVO();
-
-    public void setCameraClickListener(CameraClickListener mCameraClickListener) {
-        this.mCameraClickListener = mCameraClickListener;
-    }
-
-    public void setJetsonClickListener(JetsonClickListener jetsonClickListener) {
-        this.jetsonClickListener = jetsonClickListener;
-    }
+    //data array
+    private ArrayList<Object> mDataArrayList;
+    private ArrayList<CameraCounterModel.Data> mCounterList;
+    private CameraClickListener mCameraClickListener;
+    private JetsonClickListener jetsonClickListener;
+    private OnSmoothScrollList onSmoothScrollList;
+    private TempClickListener tempClickListener;
 
     public SectionedExpandableGridAdapter(Context context, ArrayList<Object> dataArrayList, ArrayList<CameraCounterModel.Data> counterList,
                                           final GridLayoutManager gridLayout, ItemClickListener itemClickListener,
@@ -88,6 +76,14 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
         setGridView();
 
+    }
+
+    public void setCameraClickListener(CameraClickListener mCameraClickListener) {
+        this.mCameraClickListener = mCameraClickListener;
+    }
+
+    public void setJetsonClickListener(JetsonClickListener jetsonClickListener) {
+        this.jetsonClickListener = jetsonClickListener;
     }
 
     public void setGridView() {
@@ -110,7 +106,6 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
             ex.printStackTrace();
         }
     }
-
 
     private boolean isSection(int position) {
         try {
@@ -140,8 +135,6 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
     }
 
-    public boolean isClickable = true;
-
     /**
      * if swipe refresh is enable then disable the click event on recycler item
      *
@@ -151,8 +144,6 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
     public void setClickable(boolean isClickable) {
         this.isClickable = isClickable;
     }
-
-    public int sectionPosition = 0;
 
     @SuppressLint("ResourceType")
     @Override
@@ -205,7 +196,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     } else {
                         holder.mImgIcnLog.setVisibility(View.VISIBLE);
                         if (section.getRoomName().length() >= 16) {
-                          //  roomName = section.getRoomName().substring(0, 16);
+                            //  roomName = section.getRoomName().substring(0, 16);
                         }
                         holder.sectionTextView.setMaxLines(2);
                     }
@@ -216,13 +207,13 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                                 (ViewGroup.MarginLayoutParanms) holder.card_layout.getLayoutParams();
                         layoutParams.setMargins(2, 10, 2, -5);
                         holder.card_layout.requestLayout();*/
-                     //   holder.card_layout.setCardElevation(0);
-                      //  holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side_mood));
+                        //   holder.card_layout.setCardElevation(0);
+                        //  holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side_mood));
                         //   holder.card_layout.setElevation(0);
                         //  holder.card_layout.setBackgroundResource(R.drawable.background_shadow_bottom_side);
                         //   holder.card_layout.setCardElevation(0);
                         //   holder.card_layout.setElevation(0);
-                         holder.card_layout.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side));
+                        holder.card_layout.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side)); // dev arp change drawable class on 23 june 2020
                     } else {
                         holder.card_layout.setBackground(mContext.getDrawable(R.drawable.background_with_shadow_new));
                        /* ViewGroup.MarginLayoutParams layoutParams =
@@ -232,7 +223,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         holder.card_layout.setCardElevation(8);
                           holder.card_layout.setElevation(8);*/
                         //  holder.card_layout.setBackgroundResource(R.drawable.background_shadow);
-                    //    holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow));
+                        //    holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow));
 
                     }
 
@@ -312,11 +303,10 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         holder.txt_schedulelabel.setVisibility(View.VISIBLE);
                         holder.txt_schedulelabel.setText("Schedule");
                         holder.mImgSch.setImageResource(R.drawable.blueclock);
-                        String totalbeacons= section.getTotalbeacons();
-                       // holder.frame_beacon_alert_bell.setVisibility(View.VISIBLE);
+                        String totalbeacons = section.getTotalbeacons();
+                        // holder.frame_beacon_alert_bell.setVisibility(View.VISIBLE);
 
-                        if (!TextUtils.isEmpty(totalbeacons) && Integer.parseInt(totalbeacons) > 0)
-                        {
+                        if (!TextUtils.isEmpty(totalbeacons) && Integer.parseInt(totalbeacons) > 0) {
 
                             holder.frame_beacon_alert_bell.setVisibility(View.VISIBLE);
                             holder.img_beacon_badge_count.setVisibility(View.VISIBLE);
@@ -633,7 +623,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     if (flag || section.getRoomId().startsWith("JETSON-")) {
                         ChatApplication.logDisplay("total notification is " + isunRead);
                         holder.frame_camera_alert_bell.setVisibility(View.VISIBLE);
-                      //  holder.linear_camera_bell.setVisibility(View.VISIBLE);
+                        //  holder.linear_camera_bell.setVisibility(View.VISIBLE);
 
                         if (TextUtils.isEmpty(section.getIs_unread())) {
                             holder.img_setting_badge_count.setVisibility(View.GONE);
@@ -650,7 +640,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             }
                         }
                     } else {
-                       // holder.linear_camera_bell.setVisibility(View.GONE);
+                        // holder.linear_camera_bell.setVisibility(View.GONE);
                         holder.frame_camera_alert_bell.setVisibility(View.GONE);
                         holder.txt_notify_label.setVisibility(View.VISIBLE);
                         //  holder.img_setting_badge.setVisibility(View.GONE);
@@ -1161,7 +1151,6 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         }
 
 
-
                         if (item.getIsActive() != -1) {
                             holder.txt_temp_in_cf.setAlpha(1);
                             holder.txt_temp_in_cf.setText(Html.fromHtml("<b>" + tempInCF + "</b>"));
@@ -1235,8 +1224,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     holder.itemTextView.setText(itemData);
                 }
 
-                if (item.getDeviceType().equals(mContext.getResources().getString(R.string.curtain)))
-                {
+                if (item.getDeviceType().equals(mContext.getResources().getString(R.string.curtain))) {
                     if (item.getDeviceStatus() == 1) {
                         itemIcon = Common.getIcon(1, item.getDevice_icon());
                     } else if (item.getDeviceStatus() == 2) {
@@ -1249,7 +1237,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         if (item.getIsActive() == 1) {
                             if (item.getDeviceStatus() == 2) {
                                 itemIcon = R.drawable.curtains_on;
-                            } else{
+                            } else {
                                 itemIcon = item.getDeviceStatus() == 1 ? R.drawable.curtains_on : R.drawable.curtains_off;
                             }
                         } else {
@@ -1510,20 +1498,28 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
         }
     }
 
+    public interface CameraClickListener {
+        void itemClicked(CameraVO item, String action);
+    }
+
+    public interface JetsonClickListener {
+        void jetsonClicked(PanelVO panelVO, String action, String jetsonid, String camera_id);
+    }
+
     protected static class ViewHolder extends RecyclerView.ViewHolder {
         View view;
         int viewType;
         ImageView iv_room_panel_onoff, view_line_top, mImgSch, img_setting_badge, mImgIcnLog, img_room_delete, iv_icon, imgLongClick, iv_icon_text, mImgCameraActive, imgLogCamera;
         ToggleButton sectionToggleButton, toggle_section_on_off;
         TextView sectionTextView, /*text_section_on_off,*/
-                text_section_edit, iv_icon_badge_room, img_setting_badge_count,img_beacon_badge_count,
+                text_section_edit, iv_icon_badge_room, img_setting_badge_count, img_beacon_badge_count,
                 itemTextView, iv_icon_badge, txt_temp_in_cf, txtTotalDevices, txtCameraCount,
                 txt_recording, textRefreshCamera, textShowCamera,
-                txt_schedulelabel, txt_log_label, txt_notify_label,txt_preview_label,txt_refresh_label;
+                txt_schedulelabel, txt_log_label, txt_notify_label, txt_preview_label, txt_refresh_label;
         RelativeLayout rel_main_view;
         LinearLayout ll_background, ll_room_item, linearRowRoom, linearPanelList, ll_root_view_section,
                 linearClickExpanded;  /*linear_camera_bell*/
-        FrameLayout frame_camera_alert,frame_camera_alert_bell,frame_beacon_alert_bell;
+        FrameLayout frame_camera_alert, frame_camera_alert_bell, frame_beacon_alert_bell;
         LinearLayout card_layout;
 
         public ViewHolder(View view, int viewType) {
@@ -1572,7 +1568,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 linearPanelList = view.findViewById(R.id.linearPanelList);
                 frame_camera_alert_bell = view.findViewById(R.id.frame_camera_alert_bell);
                 frame_beacon_alert_bell = view.findViewById(R.id.frame_beacon_alert_bell);
-               // linear_camera_bell = view.findViewById(R.id.linear_camera_bell);
+                // linear_camera_bell = view.findViewById(R.id.linear_camera_bell);
                 view_line_top = view.findViewById(R.id.view_line_top);
                 sectionTextView = view.findViewById(R.id.text_section);
 
@@ -1596,13 +1592,5 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
             }
         }
-    }
-
-    public interface CameraClickListener {
-        void itemClicked(CameraVO item, String action);
-    }
-
-    public interface JetsonClickListener {
-        void jetsonClicked(PanelVO panelVO, String action, String jetsonid, String camera_id);
     }
 }
