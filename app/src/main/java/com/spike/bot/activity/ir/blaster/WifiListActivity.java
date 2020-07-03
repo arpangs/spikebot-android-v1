@@ -31,6 +31,8 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.adapter.WifiAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -193,35 +195,13 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", true);
-
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("device_name", door_name);
-            obj.put("module_id", door_module_id);
-            obj.put("module_type", "ir_blaster");
-            obj.put("room_id", roomListArray.get(sp_room_list.getSelectedItemPosition()).getRoomId());
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = "";
-
-        url = ChatApplication.url + Constants.deviceadd;
-
-        ChatApplication.logDisplay("obj : "+url+"  " + obj.toString());
-
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().saveIRBlaster(door_name, door_module_id, roomListArray.get(sp_room_list.getSelectedItemPosition()).getRoomId(), new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
-                ChatApplication.logDisplay("obj result: " + result);
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
-                    //{"code":200,"message":"success"}
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
@@ -242,16 +222,18 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
                     e.printStackTrace();
                 } finally {
                     ActivityHelper.dismissProgressDialog();
-
                 }
+            }
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
-                ChatApplication.logDisplay("obj result: error " + error);
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
     }
 
 

@@ -33,6 +33,8 @@ import com.spike.bot.R;
 import com.spike.bot.activity.AddDevice.AddDeviceTypeListActivity;
 import com.spike.bot.activity.AddMoodActivity;
 import com.spike.bot.adapter.beacon.BeaconAddAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -126,58 +128,55 @@ public class BeaconListActivity extends AppCompatActivity implements BeaconListA
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
-        String url = ChatApplication.url + Constants.devicefind;
-
         if (beaconList != null) {
             beaconList.clear();
         }
 
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put("device_type", "beacon");
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
-        ChatApplication.logDisplay("beaconscanner  url is "+ url +" "+obj);
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().getDeviceList("beacon",new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    IRBlasterAddRes irBlasterAddRes = Common.jsonToPojo(result.toString(), IRBlasterAddRes.class);
+                    if (irBlasterAddRes.getCode() == 200) {
+                        ActivityHelper.dismissProgressDialog();
+                        beaconList = irBlasterAddRes.getData();
+                        beaconList = irBlasterAddRes.getData();
 
-                ChatApplication.logDisplay("result : " + result.toString());
+                        beaconlistAdapter = new BeaconListAdapter(beaconList, BeaconListActivity.this);
+                        recycler_beaconlist.setAdapter(beaconlistAdapter);
+                        beaconlistAdapter.notifyDataSetChanged();
 
-                IRBlasterAddRes irBlasterAddRes = Common.jsonToPojo(result.toString(), IRBlasterAddRes.class);
-                if (irBlasterAddRes.getCode() == 200) {
-                    ActivityHelper.dismissProgressDialog();
-                    beaconList = irBlasterAddRes.getData();
-                    beaconList = irBlasterAddRes.getData();
+                    } else {
+                        Common.showToast(irBlasterAddRes.getMessage());
+                    }
 
-                    beaconlistAdapter = new BeaconListAdapter(beaconList, BeaconListActivity.this);
-                    recycler_beaconlist.setAdapter(beaconlistAdapter);
-                    beaconlistAdapter.notifyDataSetChanged();
-
-                } else {
-                    Common.showToast(irBlasterAddRes.getMessage());
-                }
-
-                if (beaconList.size() == 0) {
-                    mEmptyView.setVisibility(View.VISIBLE);
-                    recycler_beaconlist.setVisibility(View.GONE);
-                } else {
-                    mEmptyView.setVisibility(View.GONE);
-                    recycler_beaconlist.setVisibility(View.VISIBLE);
+                    if (beaconList.size() == 0) {
+                        mEmptyView.setVisibility(View.VISIBLE);
+                        recycler_beaconlist.setVisibility(View.GONE);
+                    } else {
+                        mEmptyView.setVisibility(View.GONE);
+                        recycler_beaconlist.setVisibility(View.VISIBLE);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
-                throwable.printStackTrace();
+            public void onData_FailureResponse() {
                 ChatApplication.showToast(BeaconListActivity.this, getResources().getString(R.string.something_wrong1));
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ChatApplication.showToast(BeaconListActivity.this, getResources().getString(R.string.something_wrong1));
+            }
+        });
+
     }
 
     @Override
@@ -243,25 +242,14 @@ public class BeaconListActivity extends AppCompatActivity implements BeaconListA
             Common.showToast("" + getString(R.string.error_connect));
             return;
         }
-        String URL = ChatApplication.url + Constants.DELETE_MODULE;
-
-        JSONObject object = new JSONObject();
-        try {
-            object.put("device_id", "" + beaconid);
-            object.put("phone_id", "" + APIConst.PHONE_ID_VALUE);
-            object.put("phone_type", "" + APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        new GetJsonTask(this, URL, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().deleteDevice(beaconid, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay("result : " + result.toString());
-
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     String code = result.getString("code");
                     String message = result.getString("message");
                     if (!TextUtils.isEmpty(message)) {
@@ -276,11 +264,15 @@ public class BeaconListActivity extends AppCompatActivity implements BeaconListA
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
-                throwable.printStackTrace();
+            public void onData_FailureResponse() {
                 ChatApplication.showToast(BeaconListActivity.this, getResources().getString(R.string.something_wrong1));
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ChatApplication.showToast(BeaconListActivity.this, getResources().getString(R.string.something_wrong1));
+            }
+        });
 
     }
 

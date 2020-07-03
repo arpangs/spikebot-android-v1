@@ -46,6 +46,8 @@ import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.DeviceLogActivity;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -368,30 +370,16 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             Toast.makeText(HeavyLoadDetailActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put("device_id", device_id);
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.deviceheavyloadping;
-        ChatApplication.logDisplay("url is" + jsonObject.toString()+" "+url);
-        new GetJsonTask(HeavyLoadDetailActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
-            @RequiresApi(api = Build.VERSION_CODES.O)
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().getHeavyLoadValue(device_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     ChatApplication.logDisplay("url is result " + result);
                     int code = result.getInt("code");
-                    if (code == 200) {
-                    }
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -399,13 +387,18 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
     }
 
-
+    /*call service for heavy load details*/
     public void getHeavyloadDetails() {
         if (!ActivityHelper.isConnectingToInternet(HeavyLoadDetailActivity.this)) {
             Toast.makeText(HeavyLoadDetailActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -414,25 +407,15 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
 
         isApiStatus=true;
         ActivityHelper.showProgressDialog(HeavyLoadDetailActivity.this, "Please wait... ", false);
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("device_id", device_id);
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.getHeavyLoadDetails;
-        ChatApplication.logDisplay("json filter is first " +" "+ url +" " + jsonObject.toString());
-        new GetJsonTask(HeavyLoadDetailActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().getHeavyloadDetails(device_id, new DataResponseListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -440,9 +423,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                         JSONObject object = result.optJSONObject("data");
 
                         heavyModel = (DataHeavyModel) Common.fromJson(result.toString(), new TypeToken<DataHeavyModel>() {}.getType());
-
                         chartDataset(false);
-
                     }
 
                 } catch (Exception e) {
@@ -451,14 +432,20 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                     isApiStatus=false;
                 }
             }
-
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
                 isApiStatus=false;
                 ChatApplication.showToast(HeavyLoadDetailActivity.this, getResources().getString(R.string.something_wrong1));
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                isApiStatus=false;
+                ChatApplication.showToast(HeavyLoadDetailActivity.this, getResources().getString(R.string.something_wrong1));
+            }
+        });
     }
 
 
@@ -480,45 +467,22 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             return;
         }
 
-        ActivityHelper.showProgressDialog(HeavyLoadDetailActivity.this, "Please wait... ", false);
-        JSONObject jsonObject = new JSONObject();
-        try {
-            // "room_device_id":"1561365773929_OvHzT5WcFU",
-            // "filter_type":"month",   //year
-            // "filter_value":"06"
-            jsonObject.put("device_id", device_id);
-
-            if (spinnerMonth.getSelectedItem().equals("All")) {
-                jsonObject.put("filter_type", "year");
-                jsonObject.put("filter_value", strYear);
-            } else {
-                int value = row_index+1;
-                String strLess = "";
-                if (value < 10) {
-                    strLess = "0";
-                }
-
-                jsonObject.put("filter_type", "month");
-                jsonObject.put("filter_value", strLess + value + "," + stryear);
-            }
-            jsonObject.put("device_id", device_id);
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+        int value = row_index+1;
+        String strLess = "";
+        if (value < 10) {
+            strLess = "0";
         }
 
-        String url = ChatApplication.url + Constants.getHeavyLoadDetails;
-        ChatApplication.logDisplay("json filter is " + " "+ url  + " " + jsonObject.toString());
-        new GetJsonTask(HeavyLoadDetailActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
+        ActivityHelper.showProgressDialog(HeavyLoadDetailActivity.this, "Please wait... ", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().HeavyloadFilter(device_id, strLess, value, stryear, new DataResponseListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
-                try {
-
+                try{
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     if (code == 200) {
                         ChatApplication.logDisplay("json filter is result " + result);
@@ -545,11 +509,17 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(HeavyLoadDetailActivity.this, getResources().getString(R.string.something_wrong1));
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(HeavyLoadDetailActivity.this, getResources().getString(R.string.something_wrong1));
+            }
+        });
     }
 
     /*chart data set

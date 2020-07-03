@@ -32,6 +32,7 @@ public interface ApiInterface {
     Call<JsonElement> postWebserviceCall(@Url String url, @Body HashMap<String, Object> body);
 
 
+
     /*
      *
      * Get api
@@ -56,6 +57,27 @@ public interface ApiInterface {
     @GET("http://{localip}" + Constants.GET_MOOD_DEVICE_DETAILS + "{original_room_device_id}")
     Call<JsonElement> GetDeviceDetails(@Path("localip") String localip, @Path("original_room_device_id") String original_room_device_id);
 
+    @GET("http://{localip}" + Constants.GET_USER_PROFILE_INFO)
+    Call<JsonElement> getConfigData(@Path("localip") String localip);
+
+    @GET("http://{localip}" + Constants.getIRDeviceTypeBrands + "{original_room_device_id}")
+    Call<JsonElement> getIRDeviceTypeBrands(@Path("localip") String localip, @Path("original_room_device_id") String original_room_device_id);
+
+    @GET("http://{localip}" + Constants.getIRDeviceTypeBrands + "{original_room_device_id}")
+    Call<JsonElement> getDeviceBrandRemoteList(@Path("localip") String localip, @Path("original_room_device_id") String original_room_device_id);
+
+    @GET("http://{localip}" + Constants.getUnassignedRepeaterList)
+    Call<JsonElement> getUnassignedRepeaterList(@Path("localip") String localip);
+
+    @GET("http://{localip}" + Constants.getUnassignedRepeaterList)
+    Call<JsonElement> deviceunassigned(@Path("localip") String localip);
+
+    @GET("http://{localip}" + Constants.getLockLists)
+    Call<JsonElement> getLockLists(@Path("localip") String localip);
+
+    @GET("http://{localip}" + Constants.GET_MOOD_DEVICE_DETAILS + "{original_room_device_id}")
+    Call<JsonElement> GET_MOOD_DEVICE_DETAILS(@Path("localip") String localip, @Path("original_room_device_id") String original_room_device_id);
+
 
     /*
      *
@@ -65,12 +87,20 @@ public interface ApiInterface {
     @POST("http://52.24.23.7:3000" + Constants.APP_LOGIN)
     Call<JsonElement> postLoginWebserviceCall(@Body HashMap<String, Object> body);
 
-
     @POST("http://52.24.23.7:3000" + Constants.GET_CAMERA_NOTIFICATION_COUNTER)
     Call<JsonElement> postGetCameraBadgeCount(@Body HashMap<String, Object> body);
 
     @POST("http://52.24.23.7:3000" + Constants.APP_LOGOUT)
     Call<JsonElement> LogoutCloudUser(@Body HashMap<String, Object> body);
+
+    @POST("http://52.24.23.7:3000" + Constants.reportFalseImage)
+    Call<JsonElement> reportFalseImage(@Body HashMap<String, Object> body);
+
+    @POST("http://52.24.23.7:3000" + Constants.getUnseenCameraLog)
+    Call<JsonElement> getUnseenCameraLog(@Body HashMap<String, Object> body);
+
+    @POST("http://52.24.23.7:3000" + Constants.getCameraLogs)
+    Call<JsonElement> getCameraLogs(@Body HashMap<String, Object> body);
 
     @POST("http://{url}" + Constants.ADD_CUSTOME_ROOM)
     Call<JsonElement> postCustomRoom(@Path("url") String url, @Body HashMap<String, Object> body);
@@ -222,7 +252,177 @@ public interface ApiInterface {
     Call<JsonElement> EditMood(@Path("url") String url, @Body Object body);
 
 
+    @POST("http://{url}" + Constants.roomslist)
+    Call<JsonElement> roomslist(@Path("url") String url, @Body Object body);
 
+    @POST("http://{url}" + Constants.deviceunassigned)
+    Call<JsonElement> GetUnAssignedList(@Path("url") String url, @Body Object body);
 
+    @POST("http://{url}" + Constants.devicemoduledelete)
+    Call<JsonElement> devicemoduledelete(@Path("url") String url, @Body Object body);
 
+    @POST("http://{url}" + Constants.devicefind)
+    Call<JsonElement> devicefind(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.deviceadd)
+    Call<JsonElement> addunAssignRepater(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.deviceadd)
+    Call<JsonElement> savePanel(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.ADD_CUSTOME_ROOM)
+    Call<JsonElement> saveCustomRoom(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.validatecamerakey)
+    Call<JsonElement> saveCameraKey(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.ADD_CAMERA)
+    Call<JsonElement> addCamera(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.deviceadd)
+    Call<JsonElement> addDevice(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.getRoomCameraList)
+    Call<JsonElement> getroomcameralist(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.GET_ORIGINAL_DEVICES)
+    Call<JsonElement> getCustomPanelDetail(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.ADD_CUSTOM_PANEL)
+    Call<JsonElement> ADD_CUSTOM_PANEL(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.ADD_CUSTOME_DEVICE)
+    Call<JsonElement> ADD_CUSTOME_DEVICE(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.cameralistbyjetson)
+    Call<JsonElement> cameralistbyjetson(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.logsfind)
+    Call<JsonElement> callupdateUnReadCameraLogs(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.SAVE_EDIT_CAMERA)
+    Call<JsonElement> updateCamera(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.getAllCameraToken)
+    Call<JsonElement> getAllCameraList(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.addCameraNotification)
+    Call<JsonElement> addCameraNotification(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.updateCameraNotification)
+    Call<JsonElement> updateCameraNotification(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.getCameraNotificationAlertList)
+    Call<JsonElement> getCameraNotificationAlertList(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.changeCameraAlertStatus)
+    Call<JsonElement> changeCameraAlertStatus(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.deleteCameraNotification)
+    Call<JsonElement> deleteCameraNotification(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.logsfind)
+    Call<JsonElement> logsfind(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.GET_CAMERA_RECORDING_BY_DATE)
+    Call<JsonElement> GET_CAMERA_RECORDING_BY_DATE(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.camerarecording)
+    Call<JsonElement> camerarecording(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.CHANGE_DEVICE_STATUS)
+    Call<JsonElement> CHANGE_DEVICE_STATUS(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.SAVE_EDIT_SWITCH)
+    Call<JsonElement> SAVE_EDIT_SWITCH(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.deviceheavyloadping)
+    Call<JsonElement> deviceheavyloadping(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.DELETE_MODULE)
+    Call<JsonElement> DELETE_MODULE(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.deviceheavyloadping)
+    Call<JsonElement> getHeavyloadDetails(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.getHeavyLoadDetails)
+    Call<JsonElement> getHeavyLoadDetails(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.ADD_IR_BLASTER)
+    Call<JsonElement> ADD_IR_BLASTER(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.deviceinfo)
+    Call<JsonElement> deviceinfo(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.SEND_ON_OFF_COMMAND)
+    Call<JsonElement> SEND_ON_OFF_COMMAND(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.deviceadd)
+    Call<JsonElement> deviceadd(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.CHANGE_DOOR_SENSOR_STATUS)
+    Call<JsonElement> CHANGE_DOOR_SENSOR_STATUS(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.UPDATE_TEMP_SENSOR_NOTIFICATION)
+    Call<JsonElement> UPDATE_TEMP_SENSOR_NOTIFICATION(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.ADD_TEMP_SENSOR_NOTIFICATION)
+    Call<JsonElement> ADD_TEMP_SENSOR_NOTIFICATION(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.DELETE_TEMP_SENSOR_NOTIFICATION)
+    Call<JsonElement> DELETE_TEMP_SENSOR_NOTIFICATION(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.MARK_SEEN)
+    Call<JsonElement> MARK_SEEN(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.reassignRepeater)
+    Call<JsonElement> reassignRepeater(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.SAVE_UNCONFIGURED_SENSOR)
+    Call<JsonElement> SAVE_UNCONFIGURED_SENSOR(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.jetsonlist)
+    Call<JsonElement> jetsonlist(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.jetsonupdate)
+    Call<JsonElement> jetsonupdate(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.jetsonadd)
+    Call<JsonElement> jetsonadd(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.jetsondelete)
+    Call<JsonElement> jetsondelete(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.validatecamerakey)
+    Call<JsonElement> validatecamerakey(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.SAVE_EDIT_CAMERA)
+    Call<JsonElement> SAVE_EDIT_CAMERA(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.ADD_CAMERA)
+    Call<JsonElement> ADD_CAMERA(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.DELETE_CAMERA)
+    Call<JsonElement> DELETE_CAMERA(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.ADD_CUSTOME_ROOM)
+    Call<JsonElement> ADD_CUSTOME_ROOM(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.addTTLock)
+    Call<JsonElement> addTTLock(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.ADD_DOOR_SENSOR)
+    Call<JsonElement> ADD_DOOR_SENSOR(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.deleteTTLockBridge)
+    Call<JsonElement> deleteTTLockBridge(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.beaconscannerscan)
+    Call<JsonElement> beaconscannerscan(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.GET_DEVICES_LIST)
+    Call<JsonElement> GET_DEVICES_LIST(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.GET_BEACON_LOCATION)
+    Call<JsonElement> GET_BEACON_LOCATION(@Path("url") String url, @Body Object body);
 }

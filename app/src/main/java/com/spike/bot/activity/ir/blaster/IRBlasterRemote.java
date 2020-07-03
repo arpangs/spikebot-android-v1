@@ -37,6 +37,8 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Repeatar.RepeaterActivity;
 import com.spike.bot.adapter.MoodRemoteAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -66,7 +68,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
     private String mRemoteId, moodName = "", mRoomDeviceId, module_id = "", modeType = "";
     private boolean isPowerOn = false;
-    private int isRemoteActive, tempMinus, tempPlus, tempCurrent;
+    private int isRemoteActive, tempMinus, tempPlus, tempCurrent, tempdefaultstatus;
 
     private RemoteDetailsRes mRemoteList;
     private RemoteDetailsRes.Data mRemoteCommandList;
@@ -168,7 +170,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
         String value[] = mRemoteCommandList.getDevice().getMeta_device_default_status().split("-");
         modeType = value[0];
-        tempCurrent = Integer.parseInt(value[1]);
+        tempdefaultstatus = Integer.parseInt(value[1]);
         for (int i = 0; i < arrayListMood.size(); i++) {
             if (arrayListMood.get(i).getMoodName().equals(modeType)) {
                 arrayListMood.get(i).setSelect(true);
@@ -191,8 +193,8 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
         String value1[] = mRemoteCommandList.getDevice().getMeta_device_default_status().split("-");
         modeType = value1[0];
-        tempCurrent = Integer.parseInt(value1[1]);
-        mDefaultTemp.setText("Default Status -" + " " + modeType + " " + "-" + " " +tempCurrent + Common.getC());
+        tempdefaultstatus = Integer.parseInt(value1[1]);
+        mDefaultTemp.setText("Default Status -" + " " + modeType + " " + "-" + " " + tempdefaultstatus + Common.getC());
         if (mRemoteCommandList.getDevice().getDeviceStatus().equalsIgnoreCase("0")) {
             txtAcState.setText("Ac state : OFF");
         } else {
@@ -279,23 +281,13 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             return;
         }
 
-        JSONObject object = new JSONObject();
-        try {
-            object.put("device_id", mRemoteId);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.deviceinfo;
-        ChatApplication.logDisplay("Res : " + url + " " + object);
-
-        new GetJsonTask(this, url, "POST", object.toString(), new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().deviceInfo(mRemoteId, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     ChatApplication.logDisplay("Res : " + result.toString());
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -318,10 +310,16 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
+
     }
 
     private void getIRDeviceDetails() {
@@ -331,26 +329,15 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             return;
         }
         ActivityHelper.showProgressDialog(IRBlasterRemote.this, "Please Wait...", false);
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put("device_type", "ir_blaster");
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
-        String url = ChatApplication.url + Constants.devicefind;
-
-        ChatApplication.logDisplay("url is " + url + " " + obj.toString());
-
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().getDeviceList("ir_blaster",new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
-
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     if (code == 200) {
                         ChatApplication.logDisplay("remote res : " + result.toString());
@@ -366,12 +353,15 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
 
-
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
     }
 
     /*set speed test
@@ -422,32 +412,19 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                 if (isRemoteActive == 1) {
                     if (tempCurrent != tempMinus) {
                         tempCurrent--;
+                        setangle(tempCurrent);
+                        ChatApplication.logDisplay("temperature minus" + tempCurrent);
                     }
                     if (tempCurrent == tempMinus) {
                         tempCurrent = tempMinus;
                     }
                     sendRemoteCommand(1);
                 } else {
-                    Common.showToast("Remote is Not Active");
+                    Common.showToast("Remote is not active");
                 }
                 break;
 
             case R.id.remote_temp_plus:
-                ChatApplication.logDisplay("isOn : " + isPowerOn);
-                if (isRemoteActive == 1) {
-                    if (tempCurrent != tempPlus) {
-                        tempCurrent++;
-                    }
-                    if (tempCurrent == tempPlus) {
-                        tempCurrent = tempPlus;
-                    }
-                    sendRemoteCommand(1);
-                } else {
-                    Common.showToast("Remote is Not Active");
-                }
-
-                break;
-            case R.id.relative_plus:
                 ChatApplication.logDisplay("isOn : " + isPowerOn);
                 if (isRemoteActive == 1) {
                     if (tempCurrent != tempPlus) {
@@ -459,13 +436,28 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                         tempCurrent = tempPlus;
                     }
                     sendRemoteCommand(1);
-                }else{
+                } else {
+                    Common.showToast("Remote is not active");
+                }
+
+                break;
+            case R.id.relative_plus:
+                if (isRemoteActive == 1) {
+                    if (tempCurrent != tempPlus) {
+                        tempCurrent++;
+                        setangle(tempCurrent);
+                        ChatApplication.logDisplay("temperature plus" + tempCurrent);
+                    }
+                    if (tempCurrent == tempPlus) {
+                        tempCurrent = tempPlus;
+                    }
+                    sendRemoteCommand(1);
+                } else {
                     Common.showToast("Remote is not active");
                 }
                 break;
             case R.id.relative_minus:
-                ChatApplication.logDisplay("isOn : " + isPowerOn);
-                if(isRemoteActive == 1) {
+                if (isRemoteActive == 1) {
                     if (tempCurrent != tempMinus) {
                         tempCurrent--;
                         setangle(tempCurrent);
@@ -475,7 +467,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                         tempCurrent = tempMinus;
                     }
                     sendRemoteCommand(1);
-                } else{
+                } else {
                     Common.showToast("Remote is not active");
                 }
                 break;
@@ -580,11 +572,11 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
         TextView txt_edit = view.findViewById(R.id.txt_edit);
 
-        BottomSheetDialog dialog = new BottomSheetDialog(IRBlasterRemote.this,R.style.AppBottomSheetDialogTheme);
+        BottomSheetDialog dialog = new BottomSheetDialog(IRBlasterRemote.this, R.style.AppBottomSheetDialogTheme);
         dialog.setContentView(view);
         dialog.show();
 
-        txt_bottomsheet_title.setText("What would you like to do in" + " " + mRemoteCommandList.getDevice().getDeviceName() + " " +"?");
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + mRemoteCommandList.getDevice().getDeviceName() + " " + "?");
         linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -778,50 +770,41 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             return;
         }
 
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            obj.put("user_id", Common.getPrefValue(getApplicationContext(), Constants.USER_ID));
-            obj.put("device_id", mRemoteCommandList.getDevice().getDevice_id());
-            obj.put("device_name", remoteName);
-//            obj.put("device_icon", "ir_blaster");
-            obj.put("device_default_status", "" + mSpinnerMode.getSelectedItem().toString() + "-" + mRemoteDefaultTemp.getText().toString().trim());
-            obj.put("ir_blaster_id", mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId());
+        ActivityHelper.dismissProgressDialog();
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        SpikeBotApi.getInstance().saveRemote(mRemoteCommandList.getDevice().getDevice_id(), remoteName,
+                mSpinnerMode.getSelectedItem().toString() + "-" + mRemoteDefaultTemp.getText().toString().trim(), mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId(),
+                new DataResponseListener() {
+                    @Override
+                    public void onData_SuccessfulResponse(String stringResponse) {
+                        try {
+                            hideSaveDialog();
+                            JSONObject result = new JSONObject(stringResponse);
+                            int code = result.getInt("code");
+                            String message = result.getString("message");
 
-        String url = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
+                            ChatApplication.showToast(IRBlasterRemote.this, message);
+                            if (code == 200) {
+                                getRemoteInfo();
+                            }
 
-        ChatApplication.logDisplay("Request : " + url + "  " + obj);
-
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
-
-                try {
-                    hideSaveDialog();
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-
-                    ChatApplication.showToast(IRBlasterRemote.this, message);
-                    if (code == 200) {
-                        getRemoteInfo();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
+                    @Override
+                    public void onData_FailureResponse() {
+                        ChatApplication.showToast(IRBlasterRemote.this, getResources().getString(R.string.something_wrong1));
+                    }
 
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                throwable.printStackTrace();
-                ChatApplication.showToast(IRBlasterRemote.this, getResources().getString(R.string.something_wrong1));
-            }
-        }).execute();
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
+                        ChatApplication.showToast(IRBlasterRemote.this, getResources().getString(R.string.something_wrong1));
+                    }
+                });
     }
 
     /*delete remote*/
@@ -830,27 +813,15 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             ChatApplication.showToast(getApplicationContext(), "" + R.string.disconnect);
             return;
         }
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().deleteDevice(mRemoteCommandList.getDevice().getDevice_id(), new DataResponseListener() {
 
-        JSONObject object = new JSONObject();
-        try {
-            object.put("device_id", mRemoteCommandList.getDevice().getDevice_id());
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.DELETE_MODULE;
-
-        new GetJsonTask(this, url, "POST", object.toString(), new ICallBack() {
             @Override
-            public void onSuccess(JSONObject result) {
-
-                android.util.Log.d("RequestSch", "onSuccess result : " + result.toString());
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
@@ -869,11 +840,17 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(IRBlasterRemote.this, getResources().getString(R.string.something_wrong1));
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(IRBlasterRemote.this, getResources().getString(R.string.something_wrong1));
+            }
+        });
     }
 
     /*
@@ -888,38 +865,18 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             return;
         }
 
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put("device_id", mRemoteId);
-            if (counting == 0) {
-                obj.put("device_status", isRemoteActive == 1 ? "0" : "1");
-            } else {
-                obj.put("device_status", "1");
-            }
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
-            obj.put("device_sub_status", moodName.trim() + "-" + tempCurrent);//1;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        //changedevicestatus
-        String url = ChatApplication.url + Constants.CHANGE_DEVICE_STATUS;
-
-        ChatApplication.logDisplay("url is " + url + "  " + obj);
-
-        new GetJsonTaskRemote(this, url, "POST", obj.toString(), new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
-                ChatApplication.logDisplay("onSuccess result : " + result.toString());
-                ActivityHelper.dismissProgressDialog();
-                try {
-
-                    int code = result.getInt("code");
-                    if (code == 200) {
-                        ChatApplication.isMoodFragmentNeedResume = true;
+        SpikeBotApi.getInstance().sendRemoteCommand(mRemoteId, isRemoteActive == 1 ? "0" : "1", moodName.trim() + "-" + tempCurrent, counting,
+                new DataResponseListener() {
+                    @Override
+                    public void onData_SuccessfulResponse(String stringResponse) {
+                        try {
+                            JSONObject result = new JSONObject(stringResponse);
+                            int code = result.getInt("code");
+                            if (code == 200) {
+                                ChatApplication.isMoodFragmentNeedResume = true;
 //                        SendRemoteCommandRes tmpIrBlasterCurrentStatusList = Common.jsonToPojo(result.toString(), SendRemoteCommandRes.class);
 
 ////                        if (tmpIrBlasterCurrentStatusList.getData().getRemoteCurrentStatusDetails().getPower().equalsIgnoreCase("ON")) {
@@ -928,32 +885,38 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 //                            isRemoteActive = 0;
 //                        }
 
-                        if (counting == 0) {
-                            isRemoteActive = isRemoteActive == 1 ? 0 : 1;
-                            isPowerOn = isRemoteActive == 1 ? true : false;
+                                if (counting == 0) {
+                                    isRemoteActive = isRemoteActive == 1 ? 0 : 1;
+                                    isPowerOn = isRemoteActive == 1 ? true : false;
+                                }
+                                if (isPowerOn)
+                                    setPowerOnOff(TURN_OFF);
+                                else
+                                    setPowerOnOff(TURN_ON);
+
+                                updateRemoteUI();
+
+                            } else {
+                                ChatApplication.showToast(IRBlasterRemote.this, mRemoteName.getText() + " " + getString(R.string.ir_error));
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                        if (isPowerOn)
-                            setPowerOnOff(TURN_OFF);
-                        else
-                            setPowerOnOff(TURN_ON);
+                    }
 
-                        updateRemoteUI();
-
-                    } else {
+                    @Override
+                    public void onData_FailureResponse() {
+                        ActivityHelper.dismissProgressDialog();
                         ChatApplication.showToast(IRBlasterRemote.this, mRemoteName.getText() + " " + getString(R.string.ir_error));
                     }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
-                ChatApplication.showToast(IRBlasterRemote.this, mRemoteName.getText() + " " + getString(R.string.ir_error));
-            }
-        }).execute();
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
+                        ActivityHelper.dismissProgressDialog();
+                        ChatApplication.showToast(IRBlasterRemote.this, mRemoteName.getText() + " " + getString(R.string.ir_error));
+                    }
+                });
     }
 
     /**

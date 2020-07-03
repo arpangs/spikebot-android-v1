@@ -20,6 +20,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
@@ -27,6 +28,8 @@ import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.panel.ExistPanelRoomAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -83,7 +86,7 @@ public class AddExistingPanel extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_existing_panel);
 
-        Toolbar toolbar =  findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -101,9 +104,9 @@ public class AddExistingPanel extends AppCompatActivity {
             ex.printStackTrace();
         }
 
-        ll_panel_view =  findViewById(R.id.ll_panel_view);
-        ll_un_view =  findViewById(R.id.ll_un_view);
-        spinnerRoom =  findViewById(R.id.spinnerRoom);
+        ll_panel_view = findViewById(R.id.ll_panel_view);
+        ll_un_view = findViewById(R.id.ll_un_view);
+        spinnerRoom = findViewById(R.id.spinnerRoom);
 
         if (isDeviceAdd) {
             getSupportActionBar().setTitle("Add Custom Device");
@@ -113,21 +116,21 @@ public class AddExistingPanel extends AppCompatActivity {
         } else {
             getSupportActionBar().setTitle("Add Panel");
             ll_panel_view.setVisibility(View.VISIBLE);
-            if(!isDeviceAdd){
+            if (!isDeviceAdd) {
                 ll_un_view.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 ll_un_view.setVisibility(View.GONE);
             }
 
         }
 
-        linear_progress =  findViewById(R.id.linear_progress);
-        ll_panel_list =  findViewById(R.id.ll_panel_list);
+        linear_progress = findViewById(R.id.linear_progress);
+        ll_panel_list = findViewById(R.id.ll_panel_list);
 
-        et_panel_name_existing =  findViewById(R.id.et_panel_name_existing);
+        et_panel_name_existing = findViewById(R.id.et_panel_name_existing);
         et_panel_name_existing.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
 
-        list_panel =  findViewById(R.id.list_panel);
+        list_panel = findViewById(R.id.list_panel);
         list_panel.setHasFixedSize(true);
         list_panel.setLayoutManager(new LinearLayoutManager(this));
 
@@ -135,7 +138,7 @@ public class AddExistingPanel extends AppCompatActivity {
         existPanelRoomAdapter = new ExistPanelRoomAdapter(roomList, isSync);
         list_panel.setAdapter(existPanelRoomAdapter);
 
-        ActivityHelper.hideKeyboard(this);
+//        ActivityHelper.hideKeyboard(this);
         startSocketConnection();
 
     }
@@ -156,30 +159,14 @@ public class AddExistingPanel extends AppCompatActivity {
             showToast("" + R.string.disconnect);
             return;
         }
-
-//        ActivityHelper.showProgressDialog(this, "Loading...", false);
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("room_type", "room");
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.getRoomCameraList;
-
-        ChatApplication.logDisplay("un assign is " + url + " " + jsonObject);
-
-        new GetJsonTask(this, url, "GET", "", new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().getroomcameralist("room", new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
+            public void onData_SuccessfulResponse(String stringResponse) {
+
                 try {
-                    ChatApplication.logDisplay("un assign is " + result);
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -200,10 +187,15 @@ public class AddExistingPanel extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
+            public void onData_FailureResponse() {
+
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
+        });
     }
 
     /**
@@ -213,40 +205,17 @@ public class AddExistingPanel extends AppCompatActivity {
 
         roomList.clear();
         roomList = new ArrayList<>();
-
-        String url = "";
-//        if (isSync) {
-////            url = webUrl + Constants.deviceunassigned; //add new unassigned
-////        } else {
-////            url = webUrl + Constants.GET_ORIGINAL_DEVICES + "/" + 1; //Add from existing
-////        }
-
-        url = webUrl + Constants.GET_ORIGINAL_DEVICES ; //add new unassigned
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("web url : " + url+ jsonObject);
-
         showProgress();
-
-        new GetJsonTask(getApplicationContext(), url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().getCustomPanelDetail(new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
+            public void onData_SuccessfulResponse(String stringResponse) {
+                getRoomList();
+                roomList = new ArrayList<>();
                 try {
-                    getRoomList();
-
-                    roomList = new ArrayList<>();
-
+                    JSONObject result = new JSONObject(stringResponse);
                     JSONObject dataObject = result.getJSONObject("data");
-
                     JSONArray roomArray = dataObject.optJSONArray("roomdeviceList");
                     roomList = JsonHelper.parseExistPanelArray(roomArray);
 
@@ -259,8 +228,7 @@ public class AddExistingPanel extends AppCompatActivity {
                                 ArrayList<DevicePanelVO> panelList = roomVO.getDevicePanelList();
                                 for (DevicePanelVO devicePanelVO : panelList) {
 
-                                    ChatApplication.logDisplay("id is "+deviceVO.getDeviceId()+"  "+devicePanelVO.getDeviceId());
-//                                    if (deviceVO.getDeviceId() == devicePanelVO.getDeviceId() && deviceVO.getModuleId().equalsIgnoreCase(devicePanelVO.getModuleId())) {
+                                    ChatApplication.logDisplay("id is " + deviceVO.getDeviceId() + "  " + devicePanelVO.getDeviceId());
                                     if (deviceVO.getDeviceId().equals(devicePanelVO.getDeviceId())) {
                                         roomVO.setExpanded(true);
                                         devicePanelVO.setSelected(true);
@@ -280,8 +248,6 @@ public class AddExistingPanel extends AppCompatActivity {
                     } else {
                         menu.findItem(R.id.action_save).setEnabled(true);
                     }
-
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } finally {
@@ -290,7 +256,7 @@ public class AddExistingPanel extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 hideProgress();
                 if (roomList.size() == 0) {
                     list_panel.setVisibility(View.GONE);
@@ -300,12 +266,24 @@ public class AddExistingPanel extends AppCompatActivity {
                     }
                 }
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                hideProgress();
+                if (roomList.size() == 0) {
+                    list_panel.setVisibility(View.GONE);
+                    ll_panel_list.setVisibility(View.VISIBLE);
+                    if (menu != null) {
+                        menu.findItem(R.id.action_save).setEnabled(false);
+                    }
+                }
+            }
+        });
     }
 
     private void setRoomSpinner(ArrayList<UnassignedListRes.Data.RoomList> roomListtemp) {
         roomNameList.clear();
-        for(int i = 0; i< roomListtemp.size(); i++){
+        for (int i = 0; i < roomListtemp.size(); i++) {
             roomNameList.add(roomListtemp.get(i).getRoomName());
         }
 
@@ -316,7 +294,7 @@ public class AddExistingPanel extends AppCompatActivity {
         spinnerRoom.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                roomId= roomListName.get(position).getRoomId();
+                roomId = roomListName.get(position).getRoomId();
             }
 
             @Override
@@ -378,14 +356,14 @@ public class AddExistingPanel extends AppCompatActivity {
     private void saveExistPanel() {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            ChatApplication.showToast(getApplicationContext(),getResources().getString(R.string.disconnect));
+            ChatApplication.showToast(getApplicationContext(), getResources().getString(R.string.disconnect));
             return;
         }
         if (!isDeviceAdd) {
             if (TextUtils.isEmpty(roomId)) {
                 Toast.makeText(getApplicationContext(), "Please select room", Toast.LENGTH_SHORT).show();
                 return;
-            }else if (TextUtils.isEmpty(et_panel_name_existing.getText().toString())) {
+            } else if (TextUtils.isEmpty(et_panel_name_existing.getText().toString())) {
                 Toast.makeText(getApplicationContext(), R.string.enter_panel_name, Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -408,53 +386,20 @@ public class AddExistingPanel extends AppCompatActivity {
                 }
             }
         }
-
+        ActivityHelper.showProgressDialog(AddExistingPanel.this, "Please wait...", false);
+        JSONArray jsonArrayDevice = new JSONArray(listDevice);
         if (!isSelected) {
             Toast.makeText(getApplicationContext(),
                     isDeviceAdd ? "Please select Device" : "Please select Panel", Toast.LENGTH_SHORT).show();
             return;
         } else {
-
-            String url = "";
-            if (!isDeviceAdd) {
-                url = ChatApplication.url + Constants.ADD_CUSTOM_PANEL;
-            } else {
-                url = ChatApplication.url + Constants.ADD_CUSTOME_DEVICE;
-            }
-
-            ChatApplication.logDisplay("URL CALL : " + url + " isDeviceAdd : " + isDeviceAdd);
-            JSONObject panelObj = new JSONObject();
-            try {
-
-                if (!isDeviceAdd) {
-                    panelObj.put("room_id", roomId);
-                    panelObj.put("panel_name", et_panel_name_existing.getText().toString());
-                }else {
-                    panelObj.put("panel_id", panelId);
-                }
-
-                panelObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-                panelObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-                panelObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-
-                JSONArray jsonArrayDevice = new JSONArray(listDevice);
-                panelObj.put("devices", jsonArrayDevice);
-
-                ChatApplication.logDisplay("JSONObject : " + panelObj.toString());
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            ActivityHelper.showProgressDialog(AddExistingPanel.this, "Please wait...", false);
-
-
-            new GetJsonTask(this, url, "POST", panelObj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+            if (ChatApplication.url.contains("http://"))
+                ChatApplication.url = ChatApplication.url.replace("http://", "");
+            SpikeBotApi.getInstance().saveExistPanel(roomId, et_panel_name_existing.getText().toString(), panelId, isDeviceAdd, jsonArrayDevice, new DataResponseListener() {
                 @Override
-                public void onSuccess(JSONObject result) {
-                    ActivityHelper.dismissProgressDialog();
-                    ChatApplication.logDisplay("saveMood onSuccess " + result.toString());
+                public void onData_SuccessfulResponse(String stringResponse) {
                     try {
+                        JSONObject result = new JSONObject(stringResponse);
 
                         int code = result.getInt("code");
                         String message = result.getString("message");
@@ -477,10 +422,15 @@ public class AddExistingPanel extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(Throwable throwable, String error) {
+                public void onData_FailureResponse() {
                     ActivityHelper.dismissProgressDialog();
                 }
-            }).execute();
+
+                @Override
+                public void onData_FailureResponse_with_Message(String error) {
+                    ActivityHelper.dismissProgressDialog();
+                }
+            });
         }
 
     }

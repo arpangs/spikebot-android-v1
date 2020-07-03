@@ -230,7 +230,7 @@ public class DeviceEditDialog extends Dialog implements View.OnClickListener {
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
 
-        SpikeBotApi.getInstance().DeleteDevice(deviceVO.getOriginal_room_device_id(), new DataResponseListener() {
+        SpikeBotApi.getInstance().DeleteDeviceDailog(deviceVO.getOriginal_room_device_id(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {

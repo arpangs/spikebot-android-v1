@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
@@ -93,7 +94,17 @@ public class ScannerAddListAdapter extends RecyclerView.Adapter<ScannerAddListAd
     public void updatebeaconlistitem(List<IRDeviceDetailsRes.Data> results) {
         final BeaconAPIDiffCallBack diffCallback = new BeaconAPIDiffCallBack(this.mIRDeviceList, results);
         final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
+        diffResult.convertNewPositionToOld(diffCallback.getNewListSize());
         diffResult.dispatchUpdatesTo(this);
-
     }
+
+  /*  @Override
+    public boolean equals(@Nullable Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }*/
 }

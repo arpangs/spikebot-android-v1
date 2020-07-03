@@ -64,6 +64,8 @@ public class BeaconDeviceListLayoutHelper implements SectionStateChangeListener 
     public void addSection(RoomVO section) {
         if (this.section!=null && this.section.equals(section)){
             section.isExpanded = true;
+        } else{
+            section.isExpanded = true;
         }
         mSectionDataMap.put(section, section.getDeviceList());
         generateDataList();
@@ -101,7 +103,7 @@ public class BeaconDeviceListLayoutHelper implements SectionStateChangeListener 
         section.isExpanded = isOpen;
 
 
-        if(!isOpen){
+       /* if(!isOpen){
 
             if(ListUtils.arrayListRoom.size()>0){
 
@@ -116,7 +118,7 @@ public class BeaconDeviceListLayoutHelper implements SectionStateChangeListener 
 
         }else{
             ListUtils.arrayListRoom.add(section);
-        }
+        }*/
 
 
 

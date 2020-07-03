@@ -28,6 +28,7 @@ public class DeviceVO implements Serializable,Cloneable {
     private String deviceSync;
     private String deviceType;
     private String enable_lock_unlock_from_app;
+    private String meta_ir_blaster_id;
 
     public String getEnable_lock_unlock_from_app() {
         return enable_lock_unlock_from_app;
@@ -127,6 +128,14 @@ public class DeviceVO implements Serializable,Cloneable {
 
     public void setPanel_device_id(String panel_device_id) {
         this.panel_device_id = panel_device_id;
+    }
+
+    public String getMeta_ir_blaster_id() {
+        return meta_ir_blaster_id;
+    }
+
+    public void setMeta_ir_blaster_id(String meta_ir_blaster_id) {
+        this.meta_ir_blaster_id = meta_ir_blaster_id;
     }
 
     private String panel_device_id;
@@ -231,13 +240,13 @@ public class DeviceVO implements Serializable,Cloneable {
     private String to_use;
 
     private String speed;
-    private int temprature;
+    private String temprature;
 
-    public int getTemprature() {
+    public String getTemprature() {
         return temprature;
     }
 
-    public void setTemprature(int temprature) {
+    public void setTemprature(String temprature) {
         this.temprature = temprature;
     }
 

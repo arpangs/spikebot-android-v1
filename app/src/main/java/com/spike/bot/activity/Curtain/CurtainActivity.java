@@ -27,6 +27,8 @@ import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.ir.blaster.IRBlasterAddActivity;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -48,7 +50,7 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
 
     Toolbar toolbar;
     ImageView imgClose, imgOpen, imgPause;
-   // Button btn_delete;
+    // Button btn_delete;
     String curtain_id = "", module_id = "", curtain_name = "", curtain_status = "", panel_id = "";
 
     @Override
@@ -75,12 +77,12 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
         imgPause = findViewById(R.id.imgPause);
         imgOpen = findViewById(R.id.imgOpen);
         imgClose = findViewById(R.id.imgClose);
-     //   btn_delete = findViewById(R.id.btn_delete);
+        //   btn_delete = findViewById(R.id.btn_delete);
 
         imgClose.setOnClickListener(this);
         imgOpen.setOnClickListener(this);
         imgPause.setOnClickListener(this);
-   //     btn_delete.setOnClickListener(this);
+        //     btn_delete.setOnClickListener(this);
 
         setView();
     }
@@ -175,7 +177,7 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
                             ChatApplication.logDisplay("curtain socket is " + object);
                             String device_id = object.optString("device_id");
                             curtain_status = object.optString("device_status");
-                            if(device_id.equalsIgnoreCase(curtain_id)) {
+                            if (device_id.equalsIgnoreCase(curtain_id)) {
                                 setView();
                             }
 
@@ -205,12 +207,12 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
 
         TextView txt_edit = view.findViewById(R.id.txt_edit);
 
-        BottomSheetDialog dialog = new BottomSheetDialog(CurtainActivity.this,R.style.AppBottomSheetDialogTheme);
+        BottomSheetDialog dialog = new BottomSheetDialog(CurtainActivity.this, R.style.AppBottomSheetDialogTheme);
         dialog.setContentView(view);
         dialog.show();
 
 
-        txt_bottomsheet_title.setText("What would you like to do in" + " " + curtain_name + " " +"?");
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + curtain_name + " " + "?");
         linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -267,7 +269,7 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-               // ChatApplication.keyBoardHideForce(CurtainActivity.this);
+                // ChatApplication.keyBoardHideForce(CurtainActivity.this);
 
             }
         });
@@ -304,122 +306,106 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
         newFragment.show(getFragmentManager(), "dialog");
     }
 
-    /*delete panale*/
+    /*delete panel*/
     private void deletePanel() {
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-        String url = ChatApplication.url + Constants.DELETE_MODULE;
-
-        JSONObject object = new JSONObject();
-        try {
-            object.put("device_id", curtain_id);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("curtaindelete " + url + " " + object);
-
-        new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().deleteDevice(curtain_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay("updateCurtain is " + result);
-                if (result.optInt("code") == 200) {
-                    CurtainActivity.this.finish();
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    ChatApplication.logDisplay("updateCurtain is " + result);
+                    if (result.optInt("code") == 200) {
+                        CurtainActivity.this.finish();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
-                throwable.printStackTrace();
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        });
     }
 
+    /*update curtain Status*/
     private void updateStatus() {
 
-//        ActivityHelper.showProgressDialog(this, "Please wait...", false);
-        String url = ChatApplication.url + Constants.CHANGE_DEVICE_STATUS;
-
-
-        JSONObject object = new JSONObject();
-        try {
-            //pass curtain_id and curtain_name
-            object.put("device_id", curtain_id);
-            object.put("panel_id", panel_id);
-            object.put("device_status", Integer.parseInt(curtain_status));
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("curtain status update is " + url + " " + object);
-
-        new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().updateCutainStatus(curtain_id, panel_id, curtain_status, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
-                if (result.optInt("code") == 200) {
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    if (result.optInt("code") == 200) {
 
-                    if (curtain_status.equals("1")) {
-                        setCurtainClick(true, false, false);
-                    } else if (curtain_status.equals("2")) {
-                        setCurtainClick(false, false, true);
-                    } else if (curtain_status.equals("0")) {
-                        setCurtainClick(false, true, false);
+                        if (curtain_status.equals("1")) {
+                            setCurtainClick(true, false, false);
+                        } else if (curtain_status.equals("2")) {
+                            setCurtainClick(false, false, true);
+                        } else if (curtain_status.equals("0")) {
+                            setCurtainClick(false, true, false);
+                        }
                     }
-
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                ChatApplication.logDisplay("updateCurtain is " + result);
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
-                throwable.printStackTrace();
+            public void onData_FailureResponse() {
+
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
+        });
+
     }
 
+    /*update curtain name*/
     private void updateCurtain(String name) {
-
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-        String url = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
-
-
-        JSONObject object = new JSONObject();
-        try {
-            //pass curtain_id and curtain_name
-            object.put("device_id", curtain_id);
-            object.put("device_name", name);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("curtain update is " + url + " " + object);
-
-        new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().updateCurtain(curtain_id, name, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
-                if (result.optInt("code") == 200) {
-                    toolbar.setTitle(name);
-                    ChatApplication.showToast(CurtainActivity.this, result.optString("message"));
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    ActivityHelper.dismissProgressDialog();
+                    if (result.optInt("code") == 200) {
+                        toolbar.setTitle(name);
+                        ChatApplication.showToast(CurtainActivity.this, result.optString("message"));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                ChatApplication.logDisplay("updateCurtain is " + result);
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-                throwable.printStackTrace();
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
+
     }
 
 

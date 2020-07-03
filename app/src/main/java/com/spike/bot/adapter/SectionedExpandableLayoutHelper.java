@@ -496,6 +496,26 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
         }
     }
 
+    public void updateTempCount(String blaster_id, String counter) {
+
+        for (int k = 0; k < mDataArrayList.size(); k++) {
+
+            if (mDataArrayList.get(k) instanceof DeviceVO) {
+                DeviceVO deviceVO1 = (DeviceVO) mDataArrayList.get(k);
+                if (deviceVO1 != null) {
+                    if(deviceVO1.getDeviceType().equals("remote")) {
+                        if (deviceVO1.getMeta_ir_blaster_id().equals(blaster_id)) {
+                            ((DeviceVO) mDataArrayList.get(k)).setTemprature(counter);
+                            mSectionedExpandableGridAdapter.notifyItemChanged(k);
+                            break;
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
 
     public void updateBadgeCount1(String sensor_type, String sensor_unread, String module_id, String room_id, String room_unread) {
 

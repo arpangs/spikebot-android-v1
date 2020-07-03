@@ -39,9 +39,12 @@ import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.AddDevice.AllUnassignedPanel;
+import com.spike.bot.activity.Curtain.CurtainActivity;
 import com.spike.bot.activity.Sensor.SensorUnassignedActivity;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.adapter.irblaster.IRBlasterAddAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -397,38 +400,17 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             ChatApplication.showToast(getApplicationContext(), IRBlasterAddActivity.this.getResources().getString(R.string.disconnect));
             return;
         }
-
-
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        int room_pos = sp_room_list.getSelectedItemPosition();
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong1));
 
-        JSONObject obj = new JSONObject();
-        try {
-
-            int room_pos = sp_room_list.getSelectedItemPosition();
-
-            obj.put("ir_blaster_name", door_name);
-            obj.put("ir_blaster_module_id", door_module_id);
-
-            obj.put("room_id", roomIdList.get(room_pos));
-            obj.put("room_name", roomNameList.get(room_pos));
-
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("obj : " + obj.toString());
-        String url = "";
-
-        url = ChatApplication.url + Constants.ADD_IR_BLASTER;
-
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().saveIRBlaster(door_name, door_module_id, roomIdList.get(room_pos), roomNameList.get(room_pos), new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -453,10 +435,15 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
     }
 
     private void showOptionDialog(final int sensor_type) {
@@ -554,41 +541,27 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
 
     };
 
-    /*get room list*/
-    private void getRoomList() {
-
-
+    /*get room list */
+    private void getRoomList(){
         if (!ActivityHelper.isConnectingToInternet(this)) {
             showToast("" + R.string.disconnect);
             return;
         }
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("room_type", "room");
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.roomslist;
-
-        ChatApplication.logDisplay("un assign is "+url+" "+jsonObject);
-
-        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().getRoomList("room", new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
+            public void onData_SuccessfulResponse(String stringResponse) {
+
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     ChatApplication.logDisplay("un assign is "+result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
                         Type type = new TypeToken<ArrayList<UnassignedListRes.Data.RoomList>>() {}.getType();
                         roomListArray = (ArrayList<UnassignedListRes.Data.RoomList>) Constants.fromJson(result.optString("data").toString(), type);
+
 
                         for(int i=0; i<roomListArray.size(); i++){
                             roomListString.add(roomListArray.get(i).getRoomName());
@@ -603,13 +576,20 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
+            public void onData_FailureResponse() {
+
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
+        });
+
     }
 
     /**
@@ -624,66 +604,63 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
-        String url = ChatApplication.url + Constants.devicefind;
-
         if (irList != null) {
             irList.clear();
         }
-
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put("device_type", "ir_blaster");
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("IR blaster url is "+url+" "+obj);
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().getDeviceList("ir_blaster",new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
+                ActivityHelper.dismissProgressDialog();
+                try{
+                    JSONObject result = new JSONObject(stringResponse);
+                    IRBlasterAddRes irBlasterAddRes = Common.jsonToPojo(result.toString(), IRBlasterAddRes.class);
+                    if (irBlasterAddRes.getCode() == 200) {
+                        irList = irBlasterAddRes.getData();
+                        irList = irBlasterAddRes.getData();
 
-                ChatApplication.logDisplay("result : " + result.toString());
+                        irBlasterAddAdapter = new IRBlasterAddAdapter(irList, IRBlasterAddActivity.this);
+                        mBlasterList.setAdapter(irBlasterAddAdapter);
+                        irBlasterAddAdapter.notifyDataSetChanged();
 
-                IRBlasterAddRes irBlasterAddRes = Common.jsonToPojo(result.toString(), IRBlasterAddRes.class);
-                if (irBlasterAddRes.getCode() == 200) {
-                    irList = irBlasterAddRes.getData();
-                    irList = irBlasterAddRes.getData();
+                    } else if (irBlasterAddRes.getCode() == 301) {
+                        irList = new ArrayList<>();
+                        irList.clear();
+                        IRBlasterAddAdapter irBlasterAddAdapter = new IRBlasterAddAdapter(irList, IRBlasterAddActivity.this);
+                        mBlasterList.setAdapter(irBlasterAddAdapter);
+                        irBlasterAddAdapter.notifyDataSetChanged();
+                        Common.showToast(irBlasterAddRes.getMessage());
+                    } else {
+                        Common.showToast(irBlasterAddRes.getMessage());
+                    }
 
-                    irBlasterAddAdapter = new IRBlasterAddAdapter(irList, IRBlasterAddActivity.this);
-                    mBlasterList.setAdapter(irBlasterAddAdapter);
-                    irBlasterAddAdapter.notifyDataSetChanged();
+                    if (irList.size() == 0) {
+                        mEmptyView.setVisibility(View.VISIBLE);
+                        mBlasterList.setVisibility(View.GONE);
+                    } else {
+                        mEmptyView.setVisibility(View.GONE);
+                        mBlasterList.setVisibility(View.VISIBLE);
+                    }
 
-                } else if (irBlasterAddRes.getCode() == 301) {
-                    irList = new ArrayList<>();
-                    irList.clear();
-                    IRBlasterAddAdapter irBlasterAddAdapter = new IRBlasterAddAdapter(irList, IRBlasterAddActivity.this);
-                    mBlasterList.setAdapter(irBlasterAddAdapter);
-                    irBlasterAddAdapter.notifyDataSetChanged();
-                    Common.showToast(irBlasterAddRes.getMessage());
-                } else {
-                    Common.showToast(irBlasterAddRes.getMessage());
+                    getRoomList();
+                } catch (Exception e){
+                    e.printStackTrace();
                 }
-
-                if (irList.size() == 0) {
-                    mEmptyView.setVisibility(View.VISIBLE);
-                    mBlasterList.setVisibility(View.GONE);
-                } else {
-                    mEmptyView.setVisibility(View.GONE);
-                    mBlasterList.setVisibility(View.VISIBLE);
-                }
-
-                getRoomList();
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
-                throwable.printStackTrace();
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong1));
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong1));
+            }
+        });
 
     }
 
@@ -759,25 +736,16 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             return;
         }
 
-        String URL = ChatApplication.url + Constants.DELETE_MODULE;
-
-        JSONObject object = new JSONObject();
-        try {
-            object.put("device_id", "" + irBlasterId);
-            object.put("phone_id", "" + APIConst.PHONE_ID_VALUE);
-            object.put("phone_type", "" + APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        new GetJsonTask(this, URL, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong1));
+        ActivityHelper.showProgressDialog(this, "Please wait...", false);
+        SpikeBotApi.getInstance().deleteDevice("" + irBlasterId, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay("result : " + result.toString());
-
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     String code = result.getString("code");
                     String message = result.getString("message");
                     if (!TextUtils.isEmpty(message)) {
@@ -786,18 +754,22 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
                     if (code.equalsIgnoreCase("200")) {
                         getIRBlasterList(); //update ir blaster list after delete blaster success
                     }
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-
             @Override
-            public void onFailure(Throwable throwable, String error) {
-                throwable.printStackTrace();
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong1));
             }
-        }).execute();
 
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong1));
+            }
+        });
     }
 
 
@@ -910,38 +882,16 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             mBlasterName.setError("Enter Blaster Name");
             return;
         }
-
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
-        JSONObject object = new JSONObject();
-        try {
-            //"device_id": "1571407908196_uEVHoQJNR",
-            //	"device_name": "jghgh",
-            //
-            object.put("device_name", mBlasterName.getText().toString().trim());
-            object.put("device_id", "" + irBlasterId);
-            object.put("phone_id", "" + APIConst.PHONE_ID_VALUE);
-            object.put("phone_type", "" + APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("Object : " + object.toString());
-
-        if (mBlasterName != null) {
-            hideSoftKeyboard(mBlasterName);
-        }
-
-        String URL = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
-
-        new GetJsonTask(this, URL, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong1));
+        SpikeBotApi.getInstance().updateBlaster(mBlasterName.getText().toString().trim(), irBlasterId, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
-                ChatApplication.logDisplay("result : " + result.toString());
-
-                try {
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try{
+                    JSONObject result = new JSONObject(stringResponse);
                     String code = result.getString("code");
                     String message = result.getString("message");
                     if (!TextUtils.isEmpty(message)) {
@@ -952,23 +902,26 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
                         ir.setDeviceName(mBlasterName.getText().toString().trim());
                         irBlasterAddAdapter.notifyDataSetChanged();
 
-
-//                        getIRBlasterList();
                     }
-                } catch (JSONException e) {
+                }catch (JSONException e){
                     e.printStackTrace();
-                } finally {
+                }finally {
                     ActivityHelper.dismissProgressDialog();
                 }
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
-                throwable.printStackTrace();
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong1));
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong1));
+            }
+        });
 
     }
 

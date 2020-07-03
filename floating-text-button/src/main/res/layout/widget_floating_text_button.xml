@@ -17,8 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:orientation="horizontal"
-            tools:ignore="UseCompoundDrawables"
-            >
+            tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/layout_button_image_left"

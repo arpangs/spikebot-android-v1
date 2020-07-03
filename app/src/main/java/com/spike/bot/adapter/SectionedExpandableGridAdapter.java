@@ -862,7 +862,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         holder.itemTextView.setAlpha(1);
                     }
 
-                    if (item.getDeviceType().equalsIgnoreCase("remote")) {
+                    if (item.getDeviceType().equalsIgnoreCase("remote"))
+                    {
                         holder.txt_temp_in_cf.setVisibility(View.INVISIBLE);
                         holder.iv_icon.setVisibility(View.VISIBLE);
 
@@ -876,6 +877,15 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         holder.iv_icon_badge.setVisibility(View.GONE);
                         holder.itemTextView.setVisibility(View.VISIBLE);
                         holder.itemTextView.setText(item.getSensor_name());
+
+                        if(item.getTemprature().equals("0")){
+                            holder.txt_temp_in_cf.setVisibility(View.INVISIBLE);
+                        } else{
+                            holder.txt_temp_in_cf.setVisibility(View.VISIBLE);
+                            String[] temp = item.getTemprature().split("\\.");
+                            String replacetemp = temp[0];
+                            holder.txt_temp_in_cf.setText(replacetemp + " " + Common.getC());
+                        }
 
                         if (item.getIsActive() == -1) {
                             holder.itemTextView.setAlpha(0.50f);

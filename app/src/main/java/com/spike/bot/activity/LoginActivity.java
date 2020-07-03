@@ -183,6 +183,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
+
         } catch (Exception e) {
             e.printStackTrace();
         }*/

@@ -39,6 +39,8 @@ import com.spike.bot.R;
 import com.spike.bot.activity.AddDevice.AllUnassignedPanel;
 import com.spike.bot.adapter.RepeaterAdapter;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -370,7 +372,6 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
 
     }
 
-
     /**
      * Save individual repeater */
     private void saveRepeater(final Dialog dialog, String module_type, String door_name, String door_module_id) {
@@ -380,31 +381,14 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
             return;
         }
 
-
         ActivityHelper.showProgressDialog(RepeaterActivity.this, "Please wait.", false);
-
-        JSONObject obj = new JSONObject();
-        try {
-
-            obj.put("room_id", "");
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put("device_name", door_name);
-            obj.put("module_id", door_module_id);
-            obj.put("module_type", module_type);
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.deviceadd;
-        ChatApplication.logDisplay("rep is "+url+" "+obj);
-        new GetJsonTask(RepeaterActivity.this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().saveRepeater(door_name, door_module_id, module_type, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     ChatApplication.logDisplay("rep is "+result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -424,42 +408,31 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
                     e.printStackTrace();
                 } finally {
                     ActivityHelper.dismissProgressDialog();
-
                 }
+            }
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        });
     }
 
     /**
      * get individual door sensor details
      */
     private void getRepeatorLists() {
-        String url = ChatApplication.url + Constants.devicefind;
-
-        JSONObject obj = new JSONObject();
-        try {
-
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put("device_type", "repeater");
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("devicefind is " + url + " "+obj);
-
-        new GetJsonTask(getApplicationContext(), url, "POST", obj.toString(), new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().getDeviceList("repeater",new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     ChatApplication.logDisplay("repeatar is " + result);
                     if (code == 200) {
@@ -473,16 +446,18 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
                 } finally {
                     ActivityHelper.dismissProgressDialog();
                 }
-
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-                throwable.printStackTrace();
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
     }
 
     /** Fill data of individual repeater
@@ -527,29 +502,14 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
 
     /** Delete individual epeater */
     private void deleteRepater(RepeaterModel repeaterModel, int postion) {
-
-        ActivityHelper.showProgressDialog(this, "Please wait...", false);
-        String url = ChatApplication.url + Constants.DELETE_MODULE;
-
-        ChatApplication.logDisplay("door " + url + " ");
-
-        JSONObject object = new JSONObject();
-
-
-        try {
-            object.put("device_id", repeaterModel.getRepeator_module_id());
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().deleteDevice(repeaterModel.getRepeator_module_id(), new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     ChatApplication.logDisplay("repeatar is " + result);
                     if (code == 200) {
@@ -565,15 +525,18 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
                 } finally {
                     ActivityHelper.dismissProgressDialog();
                 }
-
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-                throwable.printStackTrace();
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
 
     }
 
@@ -694,27 +657,16 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
     private void updateRepetar(RepeaterModel repeaterModel, int postion, Dialog dialog, String name) {
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-        String url = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
 
-        JSONObject object = new JSONObject();
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
-        try {
-            object.put("device_id", repeaterModel.getRepeator_module_id());
-            object.put("device_name", name);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("door " + url + " " + object);
-
-        new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
+        SpikeBotApi.getInstance().updateRepetar(repeaterModel.getRepeator_module_id(), name, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     dialog.dismiss();
                     int code = result.getInt("code");
                     ChatApplication.logDisplay("repeatar is " + result);
@@ -730,15 +682,17 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
                 } finally {
                     ActivityHelper.dismissProgressDialog();
                 }
-
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-                throwable.printStackTrace();
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
     }
 }

@@ -33,6 +33,8 @@ import com.spike.bot.R;
 import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.activity.SmartDevice.ExpandableTestAdapter;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.CameraSearchModel;
@@ -288,57 +290,18 @@ public class CameraPlayBack extends AppCompatActivity implements ExpandableTestA
             return;
         }
 
-        JSONObject jsonObject = new JSONObject();
-        try {
-
-            jsonObject.put("camera_start_date", startDate);
-            jsonObject.put("camera_end_date", endDate);
-
-            try {
-                JSONArray jsonArray = new JSONArray();
-                for (CameraVO cameraVO : cameraVOArrayList) {
-                    for (String ss : selectedCamera) {
-                        if (cameraVO.getCamera_name().equalsIgnoreCase(ss)) {
-                            JSONObject ob = new JSONObject();
-                            ob.put("camera_id", cameraVO.getCamera_id());
-                            ob.put("camera_name", cameraVO.getCamera_name());
-                            jsonArray.put(ob);
-                        }
-                    }
-                }
-                jsonObject.put("camera_details", jsonArray);
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication app = ChatApplication.getInstance();
-        if (mSocket != null && mSocket.connected()) {
-        } else {
-            mSocket = app.getSocket();
-        }
-        webUrl = app.url;
-
-        arrayList.clear();
-        String url = webUrl;
-
-        url = url + Constants.GET_CAMERA_RECORDING_BY_DATE;
-
-        ChatApplication.logDisplay("Camera recording is " + " " + url + " " + jsonObject.toString());
-
         ActivityHelper.showProgressDialog(CameraPlayBack.this, "Please wait...", false);
 
-        new GetJsonTaskVideo(getApplicationContext(), url, "POST", jsonObject.toString(), new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().searchCameraList(startDate, endDate, cameraVOArrayList, selectedCamera, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ChatApplication.ADAPTER_POSITION = -1;
                 ActivityHelper.dismissProgressDialog();
-
                 int code = 0;
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -413,11 +376,10 @@ public class CameraPlayBack extends AppCompatActivity implements ExpandableTestA
                         cameraList.setVisibility(View.VISIBLE);
                     }
                 }
-
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
                 if (cameraVOs.isEmpty()) {
                     txt_no_date.setVisibility(View.VISIBLE);
@@ -427,8 +389,19 @@ public class CameraPlayBack extends AppCompatActivity implements ExpandableTestA
                     cameraList.setVisibility(View.VISIBLE);
                 }
             }
-        }).execute();
 
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                if (cameraVOs.isEmpty()) {
+                    txt_no_date.setVisibility(View.VISIBLE);
+                    cameraList.setVisibility(View.GONE);
+                } else {
+                    txt_no_date.setVisibility(View.GONE);
+                    cameraList.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     private void setAdpater() {

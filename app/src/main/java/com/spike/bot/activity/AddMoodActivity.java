@@ -354,7 +354,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                         RoomVO roomVO2 = new RoomVO();
                         roomVO2.setRoomId(moodVO.getMood_name_id());
                         roomVO2.setRoomName(moodVO.getRoomName());
-                        moodIconList.add(1, roomVO2);
+                        moodIconList.add(roomVO2);
                     }
 
                     for (int i = 0; i < moodNamesArray.length(); i++) {
@@ -382,7 +382,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                ChatApplication.showToast(AddMoodActivity.this, getResources().getString(R.string.something_wrong1));
+                ChatApplication.showToast(AddMoodActivity.this, getResources().getString(R.string.something_wrong1) + "mood name list");
                 ActivityHelper.dismissProgressDialog();
             }
         }).execute();*/
@@ -481,7 +481,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                ChatApplication.showToast(AddMoodActivity.this, getResources().getString(R.string.something_wrong1));
+                ChatApplication.showToast(AddMoodActivity.this, getResources().getString(R.string.something_wrong1) + "device list");
                 ActivityHelper.dismissProgressDialog();
             }
         }).execute();*/
@@ -580,7 +580,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                ChatApplication.showToast(AddMoodActivity.this, getResources().getString(R.string.something_wrong1));
+                ChatApplication.showToast(AddMoodActivity.this, getResources().getString(R.string.something_wrong1) + "save mood");
                 ActivityHelper.dismissProgressDialog();
             }
         }).execute();*/

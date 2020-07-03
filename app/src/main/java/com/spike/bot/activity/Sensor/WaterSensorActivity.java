@@ -27,6 +27,8 @@ import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -308,33 +310,21 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void addalert(){
-        String url = ChatApplication.url + Constants.ADD_TEMP_SENSOR_NOTIFICATION;
-
-        JSONObject object = new JSONObject();
-        try {
-            object.put("device_id", device_id);
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("water alert" + " " + url + " " + object);
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
-        new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().addalert(device_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay("water is " + result);
                 int code = 0;
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
-                      //  ChatApplication.showToast(WaterSensorActivity.this, message);
-                     //   WaterSensorActivity.this.finish();
+                        //  ChatApplication.showToast(WaterSensorActivity.this, message);
+                        //   WaterSensorActivity.this.finish();
                     }
 
                 } catch (JSONException e) {
@@ -343,42 +333,34 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-                throwable.printStackTrace();
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
 
     }
 
     private void deletealert(){
-        String url = ChatApplication.url + Constants.DELETE_TEMP_SENSOR_NOTIFICATION;
-
-        JSONObject object = new JSONObject();
-        try {
-            object.put("device_id", device_id);
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("water alert" + " " + url + " " + object);
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
-        new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().deletealert(device_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay("water is " + result);
                 int code = 0;
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
-                       //      ChatApplication.showToast(WaterSensorActivity.this, message);
-                      //  WaterSensorActivity.this.finish();
+                        //      ChatApplication.showToast(WaterSensorActivity.this, message);
+                        //  WaterSensorActivity.this.finish();
                     }
 
                 } catch (JSONException e) {
@@ -387,38 +369,30 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-                throwable.printStackTrace();
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
 
     }
 
     /*delete sensor*/
     private void deleteWater() {
-
-        String url = ChatApplication.url + Constants.DELETE_MODULE;
-
-        JSONObject object = new JSONObject();
-        try {
-            object.put("device_id", device_id);
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("water " + url + " " + object);
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
-        new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().deleteDevice(device_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay("water is " + result);
                 int code = 0;
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -432,11 +406,15 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-                throwable.printStackTrace();
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
 
     }
 
@@ -444,31 +422,19 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
     private void getWaterdetectorDetails() {
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-
-        String url = ChatApplication.url + Constants.deviceinfo;
-
-        JSONObject object = new JSONObject();
-        try {
-            object.put("device_id", device_id);
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("water " + url + " " + object);
-
-        new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().deviceInfo(device_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay("water is " + result);
                 int code = 0;
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
-                         filldata(result);
+                        filldata(result);
                     }
 
                 } catch (JSONException e) {
@@ -477,11 +443,15 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-                throwable.printStackTrace();
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
 
     }
 
@@ -626,25 +596,14 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String webUrl = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
-
-        JSONObject jsonNotification = new JSONObject();
-        try {
-            jsonNotification.put("device_id", device_id);
-            jsonNotification.put("device_name", edSensorName.getText().toString());
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().updateWaterSensor(device_id,edSensorName.getText().toString(), new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
@@ -663,10 +622,14 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
 
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
     }
 }

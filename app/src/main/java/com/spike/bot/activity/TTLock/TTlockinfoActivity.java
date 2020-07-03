@@ -55,6 +55,8 @@ import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
 import com.spike.bot.adapter.DoorAlertAdapter;
 import com.spike.bot.adapter.DoorSensorInfoAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -334,44 +336,35 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String url = ChatApplication.url + Constants.deviceinfo;
-
-        ChatApplication.logDisplay("door " + url + " ");
-
-        JSONObject object = new JSONObject();
-        try {
-            object.put("device_id", door_sensor_id);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("door sensor" + url + " " + object);
-
-
-        new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().deviceInfo(door_sensor_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                ChatApplication.logDisplay("door sensor is " + result);
-                doorSensorResModelData = Common.jsonToPojo(result.toString(), RemoteDetailsRes.class);
-                doorSensorResModel = doorSensorResModelData.getData();
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    doorSensorResModelData = Common.jsonToPojo(result.toString(), RemoteDetailsRes.class);
+                    doorSensorResModel = doorSensorResModelData.getData();
 
-                if (doorSensorResModelData.getCode() == 200) {
-                    fillData(doorSensorResModel);
+                    if (doorSensorResModelData.getCode() == 200) {
+                        fillData(doorSensorResModel);
 
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
+            }
 
+            @Override
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
-                throwable.printStackTrace();
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
+        });
     }
 
     /**
@@ -1235,27 +1228,14 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String webUrl = ChatApplication.url + Constants.SAVE_EDIT_SWITCH;
-
-        JSONObject jsonNotification = new JSONObject();
-        try {
-
-            jsonNotification.put("device_id", door_sensor_id);
-            jsonNotification.put("device_name", sensor_name);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("url is "+webUrl+" "+jsonNotification);
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().updateDoorSensor(door_sensor_id, sensor_name, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-                    ChatApplication.logDisplay("url is "+result);
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (!TextUtils.isEmpty(message)) {
@@ -1264,7 +1244,6 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
                     if (code == 200) {
                         dialog.dismiss();
                         toolbar.setTitle(sensor_name);
-//                        finish();
                     }
 
                 } catch (JSONException e) {
@@ -1273,10 +1252,15 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
+            public void onData_FailureResponse() {
+
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
+        });
     }
 
 
@@ -1427,49 +1411,14 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-
-        String webUrl = "";
-        if (!isNotification) {
-            webUrl = ChatApplication.url + Constants.CHANGE_DOOR_SENSOR_STATUS;
-        } else {
-            webUrl = ChatApplication.url + Constants.UPDATE_TEMP_SENSOR_NOTIFICATION;
-        }
-
-        JSONObject jsonNotification = new JSONObject();
-
-        try {
-            // try {
-            //            jsonNotification.put("is_active", isActive ? "y" :"n");
-            //            jsonNotification.put("alert_id", tempSensorNotificationId);
-            //            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            //            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            //            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            //
-            //        } catch (JSONException e) {
-            //            e.printStackTrace();
-            //        }
-
-            if (isNotification) {
-                jsonNotification.put("alert_id", doorSensorNotificationId);
-                jsonNotification.put("is_active", isActive ? "y" : "n");
-            } else {
-                jsonNotification.put("is_push_enable", isActive ? 1 : 0);
-            }
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("url is "+webUrl+" "+jsonNotification);
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().doorSensorNotificationStatus(doorSensorNotificationId, isActive, isNotification, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-                    ChatApplication.logDisplay("url is "+result);
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -1485,11 +1434,15 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
 
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
     }
 
     @Override
@@ -1630,33 +1583,19 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
     private void deleteDoorSensor() {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
-            //Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             showToast("" + R.string.disconnect);
             return;
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-
-        String webUrl = ChatApplication.url + Constants.DELETE_MODULE;
-
-        JSONObject jsonNotification = new JSONObject();
-        try {
-            jsonNotification.put("device_id", door_sensor_id);
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().deleteDevice(door_sensor_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
 
@@ -1673,10 +1612,15 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
 
     }
 
@@ -1828,90 +1772,51 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
             end_time.setError("Select End Time");
             return;
         }
-
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
-        JSONObject jsonNotification = new JSONObject();
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().addNotification(mStartTime, mEndTime, notification.getAlertId(), doorSensorResModel.getDevice().getDevice_id(), isEdit,
+                new DataResponseListener() {
+                    @Override
+                    public void onData_SuccessfulResponse(java.lang.String stringResponse) {
+                        try {
+                            JSONObject result = new JSONObject(stringResponse);
+                            int code = result.getInt("code");
+                            String message = result.getString("message");
+                            if (code == 200) {
+                                if (!TextUtils.isEmpty(message)) {
+                                    showToast(message);
+                                }
 
-        try {
+                                isRefresh = true;
+                                isRefreshAll = true;
+                                doorSensorNotificationDialog.dismiss();
+                            } else {
+                                if (!TextUtils.isEmpty(message)) {
+                                    end_time.setFocusableInTouchMode(true);
+                                    end_time.requestFocus();
+                                    end_time.setError(message);
+                                }
+                            }
 
-//            if (isEdit) {
-//                jsonNotification.put("door_sensor_notification_id", notification.getAlertId());
-//            }
-//
-//            jsonNotification.put("door_sensor_id", door_sensor_id);
-//            jsonNotification.put("start_datetime", mStartTime);
-//            jsonNotification.put("end_datetime", mEndTime);
-//            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-//            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-//            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-
-
-            jsonNotification.put("start_time",mStartTime);
-            jsonNotification.put("end_time",mEndTime);
-            jsonNotification.put("alert_type", "door_open_close");
-            jsonNotification.put("days", "0,1,2,3,4,5,6");
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-
-            if (isEdit) {
-                jsonNotification.put("alert_id", notification.getAlertId());
-
-            } else {
-                jsonNotification.put("device_id", doorSensorResModel.getDevice().getDevice_id());
-            }
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String webUrl = "";
-        if (isEdit) {
-            webUrl = ChatApplication.url + Constants.UPDATE_TEMP_SENSOR_NOTIFICATION;
-        } else {
-            webUrl = ChatApplication.url + Constants.ADD_TEMP_SENSOR_NOTIFICATION;
-        }
-
-        ChatApplication.logDisplay("url is "+webUrl+" "+jsonNotification);
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
-
-                try {
-                    ChatApplication.logDisplay("url is "+result);
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    if (code == 200) {
-                        if (!TextUtils.isEmpty(message)) {
-                            showToast(message);
-                        }
-
-                        isRefresh = true;
-                        isRefreshAll = true;
-                        doorSensorNotificationDialog.dismiss();
-                    } else {
-                        if (!TextUtils.isEmpty(message)) {
-                            end_time.setFocusableInTouchMode(true);
-                            end_time.requestFocus();
-                            end_time.setError(message);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } finally {
+                            ActivityHelper.dismissProgressDialog();
                         }
                     }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                    ActivityHelper.dismissProgressDialog();
-                }
-            }
+                    @Override
+                    public void onData_FailureResponse() {
+                        ActivityHelper.dismissProgressDialog();
+                    }
 
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
-            }
-        }).execute();
-
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
+                        ActivityHelper.dismissProgressDialog();
+                    }
+                });
     }
 
     /**
@@ -1929,26 +1834,14 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        String webUrl = ChatApplication.url + Constants.DELETE_TEMP_SENSOR_NOTIFICATION;
-
-        JSONObject jsonNotification = new JSONObject();
-        try {
-
-            jsonNotification.put("alert_id", notification.getAlertId());
-            jsonNotification.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonNotification.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            jsonNotification.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        new GetJsonTask(this, webUrl, "POST", jsonNotification.toString(), new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().deleteDoorSensorNotification(notification.getAlertId(), new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
-
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -1965,10 +1858,15 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
 
     }
 

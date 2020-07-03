@@ -487,7 +487,8 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
             }
         }).execute();*/
-
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
         SpikeBotApi.getInstance().GetBadgeClear(new DataResponseListener() {
             @Override
@@ -3064,8 +3065,12 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                          */
                         Gson gson = new Gson();
                         if (!TextUtils.isEmpty(userPassword)) {
-
-                            String jsonTextTemp1 = Common.getPrefValue(getContext(), Common.USER_JSON);
+                            String jsonTextTemp1="";
+                            try {
+                                 jsonTextTemp1 = Common.getPrefValue(getContext(), Common.USER_JSON);
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
 
                             List<User> userList1 = new ArrayList<User>();
                             if (!TextUtils.isEmpty(jsonTextTemp1)) {

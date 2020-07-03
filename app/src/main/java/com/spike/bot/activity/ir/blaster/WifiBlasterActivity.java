@@ -30,6 +30,8 @@ import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -196,27 +198,14 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("room_type", "room");
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.roomslist;
-
-        ChatApplication.logDisplay("un assign is "+url+" "+jsonObject);
-
-        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().getRoomList("room", new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     ChatApplication.logDisplay("un assign is "+result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -236,10 +225,15 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
     }
 
     /*getting wifi list */

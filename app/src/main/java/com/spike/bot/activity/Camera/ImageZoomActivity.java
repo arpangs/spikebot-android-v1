@@ -41,6 +41,8 @@ import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.BuildConfig;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.customview.PlayStateBroadcatingVideoView;
@@ -344,27 +346,14 @@ public class ImageZoomActivity extends AppCompatActivity{
             imageName = separated[separated.length - 1];
         }
 
-        JSONObject object = new JSONObject();
-        try {
-            /*" {
- "image_name":"out_frame_007__BA-QA-_-1560797169248_DbZww2wfE.png",
- "image_url":"https://spikebot.s3.amazonaws.com/backup/1562238755935_7-4TuHSwb-vip@gmail.com/python_images/20180128/out_frame_007__BA-QA-_-1560797169248_DbZww2wfE.png"
-}"*/
-            //  object.put("image_name", "" + imageName);
-            object.put("image_url", imgUrl);
-            object.put("home_controller_device_id", home_controller_device_id);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
-        ActivityHelper.showProgressDialog(ImageZoomActivity.this, "Please wait...", false);
-        String url = Constants.CLOUD_SERVER_URL + Constants.reportFalseImage;
-
-        ChatApplication.logDisplay("Report false image" + " " + url + " " + object.toString());
-        new GetJsonTask(ImageZoomActivity.this, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        SpikeBotApi.getInstance().callReport(imgUrl, home_controller_device_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     ChatApplication.showToast(ImageZoomActivity.this, "" + message);
@@ -374,13 +363,20 @@ public class ImageZoomActivity extends AppCompatActivity{
                     ActivityHelper.dismissProgressDialog();
                 }
             }
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(ImageZoomActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+
+            }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(ImageZoomActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
-        }).execute();
+        });
+
     }
 
     public void CameraRecordingPlay() {
@@ -388,29 +384,14 @@ public class ImageZoomActivity extends AppCompatActivity{
             Toast.makeText(ImageZoomActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-        Long tsLong = System.currentTimeMillis() / 1000;
-        String ts = tsLong.toString();
-       /* object.put("camera_id", "1589017520398_4HMt9ItNu");
-        object.put("timestamp", "1589455800");*/
-
-        // {"camera_id":"1589017646842_cZu6CrE-K","timestamp":"1589781664"}
-
-        JSONObject object = new JSONObject();
-        try {
-            object.put("camera_id", camera_id);
-            object.put("timestamp", imgDate);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
         ActivityHelper.showProgressDialog(ImageZoomActivity.this, "Please wait...", false);
-        url = ChatApplication.url + Constants.camerarecording;
-        ChatApplication.logDisplay("Camera Recording" + " " + url + " " + object.toString());
-
-
-        new GetJsonTask(ImageZoomActivity.this, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().CameraRecordingPlay(camera_id, imgDate, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                try {
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try{
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     ChatApplication.logDisplay("getCamerarecoring onSuccess " + result.toString());
@@ -430,68 +411,45 @@ public class ImageZoomActivity extends AppCompatActivity{
                             }
                             ChatApplication.logDisplay("Value of element " + file1);
                         }
-
-
                     }
-
-                } catch (JSONException e) {
+                } catch (Exception e){
                     e.printStackTrace();
-                    ActivityHelper.dismissProgressDialog();
-                } //finally {
-//                    ActivityHelper.dismissProgressDialog();
-//                }
+                }
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(ImageZoomActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(ImageZoomActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
     }
 
     public void playvideo(int skiptime, List<String> recordingfiles) {
         ChatApplication.logDisplay("video skip time" + " " +  skiptime);
 
         ispause =false;
-       /* if (img_pausevideo.getVisibility() == View.VISIBLE) {
-            int videoposition = currentposition;
-            videoView.seekTo(videoposition);
-            videoView.start();
-        } else{*/
-
-       // }
-/*
-        if (img_pausevideo.getVisibility() == View.VISIBLE) {
-            if (!videoView.isPlaying()) {
-                int videoposition = currentposition;
-                videoView.seekTo(videoposition);
-                videoView.start();
-            }
-        }*/
-
-        /*else {
-            int time = (int) TimeUnit.MINUTES.toMillis(skiptime);
-            videoView.seekTo(time);
-            videoView.start();
-        }*/
 
         String uriPath1 = file1;
         Uri uri1 = Uri.parse(uriPath1);
         videoView.setVideoURI(uri1);
-     //   videoView.setZOrderOnTop(true);
-
 
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
-              //  videoView.animate().alpha(1);
-               // placeholder.setVisibility(View.GONE);
 
                 mc = new MediaController(ImageZoomActivity.this);
                 mc.setMediaPlayer(videoView);
                 videoView.setMediaController(mc);
-
 
                 videoView.setBackgroundColor(Color.TRANSPARENT);
                 progressBar1.setVisibility(View.GONE);

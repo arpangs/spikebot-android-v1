@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
@@ -42,6 +43,8 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.adapter.CameraLogAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -117,7 +120,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         jetsoncameralog = getIntent().getStringExtra("jetsoncameralog");
         isjetsonnotification = getIntent().getExtras().getBoolean("jetsonnotification");
         isJetsonCameralog = getIntent().getExtras().getBoolean("isshowJestonCameraLog");
-       // getCameraList = (ArrayList<CameraVO>) getIntent().getExtras().getSerializable("cameraList");
+        // getCameraList = (ArrayList<CameraVO>) getIntent().getExtras().getSerializable("cameraList");
 
         toolbar.setTitle("Camera Logs");
         rvDeviceLog = findViewById(R.id.rv_device_log);
@@ -199,12 +202,12 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         Spinner spinnerCamera = dialog.findViewById(R.id.spinnerCamera);
 
         final ArrayList<String> stringArrayList = new ArrayList<>();
-      //  stringArrayList.add("All");
+        //  stringArrayList.add("All");
         try {
             for (int i = 0; i < getCameraList.size(); i++) {
                 stringArrayList.add(getCameraList.get(i).getCamera_name());
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -280,42 +283,30 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
     private void callGetSmarCamera() {
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
-        JSONObject obj = new JSONObject();
-        try {
-
-            obj.put("jetson_device_id", jetson_id);
-            obj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.cameralistbyjetson;
-
-        ChatApplication.logDisplay("jetson camera list" + url + obj);
-
-        new GetJsonTask(this, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().callGetSmarCamera(jetson_id, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
-                    ChatApplication.logDisplay("response is "+result);
+                    ChatApplication.logDisplay("response is " + result);
                     String message = result.getString("message");
 
                     if (code == 200) {
-                        Gson gson=new Gson();
+                        Gson gson = new Gson();
                         getCameraList.clear();
 
-                        JSONObject  object= new JSONObject(String.valueOf(result));
-                        JSONArray jsonArray= object.optJSONArray("data");
+                        JSONObject object = new JSONObject(String.valueOf(result));
+                        JSONArray jsonArray = object.optJSONArray("data");
 
-                        if(jsonArray!=null && jsonArray.length()>0){
-                            getCameraList = gson.fromJson(jsonArray.toString(), new TypeToken<ArrayList<CameraVO>>(){}.getType());
+                        if (jsonArray != null && jsonArray.length() > 0) {
+                            getCameraList = gson.fromJson(jsonArray.toString(), new TypeToken<ArrayList<CameraVO>>() {
+                            }.getType());
                         }
-                        ChatApplication.logDisplay("jetson camera list response is "+result);
-                    }else {
+                        ChatApplication.logDisplay("jetson camera list response is " + result);
+                    } else {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -326,11 +317,15 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
     }
 
 
@@ -342,103 +337,73 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
             Toast.makeText(CameraDeviceLogActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-        JSONObject object = new JSONObject();
-        try {
-            /*"camera_id":"",	"start_date":"",	"end_date":""*/
-//            object.put("camera_id", "" + camera_id);
-//            object.put("start_date", "" + start_date);
-//            object.put("end_date", "" + end_date);
-//            object.put("notification_number", "" + notification_number);
-            //    object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            //    object.put("filter_type", "camera");
-                object.put("start_date", "" + start_date);
-                 object.put("end_date", "" + end_date);
-
-            /*object.put("jetson_id", "" + jetson_id);
-            object.put("camera_id", "" + camera_id);*/
-            object.put("camera_id", "" + camera_id);
-            object.put("home_controller_device_id", homecontroller_id);
-            object.put("notification_number", "" + notification_number);
-            if (isJetsonCameralog || isjetsonnotification) {
-                object.put("jetson_id", "" + jetson_id);
-            } else {
-                if (!TextUtils.isEmpty(cameralog)) {
-                    object.put("camera_id", "" + camera_id);
-                } else if (!TextUtils.isEmpty(jetsoncameralog)) {
-                    object.put("jetson_id", "" + jetson_id);
-                    object.put("camera_id", "" + camera_id);
-                } else {
-                    object.put("camera_id", "" + "");
-                    object.put("jetson_id", "" + "");
-                }
-
-            }
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            object.put("admin", Integer.parseInt(Common.getPrefValue(this, Constants.USER_ADMIN_TYPE)));
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
         ActivityHelper.showProgressDialog(CameraDeviceLogActivity.this, "Please wait...", false);
-        String url = Constants.CAMERA_CLOUD_SERVER_URL + Constants.getCameraLogs;
 
-        ChatApplication.logDisplay("camera is " + url + " " + object);
-        new GetJsonTask(CameraDeviceLogActivity.this, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
-                try {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().callCameraLog(start_date, end_date, camera_id, homecontroller_id, notification_number, isJetsonCameralog, isjetsonnotification, jetson_id,
+                cameralog, jetsoncameralog, new DataResponseListener() {
+                    @Override
+                    public void onData_SuccessfulResponse(String stringResponse) {
+                        ActivityHelper.dismissProgressDialog();
+                        try {
+                            JSONObject result = new JSONObject(stringResponse);
 
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    if (code == 200) {
-                        if (notification_number == 0) {
-                            arrayList.clear();
-                        }
-                        arrayListTemp.clear();
-                        ChatApplication.logDisplay("json is " + result);
-                        JSONArray jsonArray = result.optJSONArray("data");
+                            int code = result.getInt("code");
+                            String message = result.getString("message");
+                            if (code == 200) {
+                                if (notification_number == 0) {
+                                    arrayList.clear();
+                                }
+                                arrayListTemp.clear();
+                                ChatApplication.logDisplay("json is " + result);
+                                JSONArray jsonArray = result.optJSONArray("data");
 
-                        if (jsonArray != null && jsonArray.length() > 0) {
-                            arrayListTemp = (ArrayList<NotificationList>) Common.fromJson(jsonArray.toString(), new TypeToken<ArrayList<NotificationList>>() {
-                            }.getType());
-                            arrayList.addAll(arrayListTemp);
-                        } else {
-                            Toast.makeText(CameraDeviceLogActivity.this.getApplicationContext(), "No Record Found...", Toast.LENGTH_SHORT).show();
-                        }
+                                if (jsonArray != null && jsonArray.length() > 0) {
+                                    arrayListTemp = (ArrayList<NotificationList>) Common.fromJson(jsonArray.toString(), new TypeToken<ArrayList<NotificationList>>() {
+                                    }.getType());
+                                    arrayList.addAll(arrayListTemp);
+                                } else {
+                                    Toast.makeText(CameraDeviceLogActivity.this.getApplicationContext(), "No Record Found...", Toast.LENGTH_SHORT).show();
+                                }
 
 
-                        if (arrayList.size() > 0) {
-                            rvDeviceLog.setVisibility(View.VISIBLE);
-                            isLoading = false;
-                            setAdapter();
-                        } else {
-                            if (notification_number == 0) {
-                                rvDeviceLog.setVisibility(View.GONE);
+                                if (arrayList.size() > 0) {
+                                    rvDeviceLog.setVisibility(View.VISIBLE);
+                                    isLoading = false;
+                                    setAdapter();
+                                } else {
+                                    if (notification_number == 0) {
+                                        rvDeviceLog.setVisibility(View.GONE);
+                                    }
+                                    isLoading = true;
+                                }
+                                if (arrayListTemp.size() == 0) {
+                                    isLoading = true;
+                                }
+                            } else {
+                                isLoading = true;
+                                Toast.makeText(CameraDeviceLogActivity.this.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                             }
-                            isLoading = true;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        } finally {
                         }
-                        if (arrayListTemp.size() == 0) {
-                            isLoading = true;
-                        }
-                    } else {
-                        isLoading = true;
-                        Toast.makeText(CameraDeviceLogActivity.this.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     }
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                }
-            }
+                    @Override
+                    public void onData_FailureResponse() {
+                        ActivityHelper.dismissProgressDialog();
+                        Toast.makeText(CameraDeviceLogActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
 
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
-                Toast.makeText(CameraDeviceLogActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
-            }
-        }).execute();
+                    }
+
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
+                        ActivityHelper.dismissProgressDialog();
+                        Toast.makeText(CameraDeviceLogActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     /*
@@ -516,7 +481,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
     private void setAdapter() {
 
         if (notification_number == 0) {
-            cameraLogAdapter = new CameraLogAdapter(CameraDeviceLogActivity.this, arrayList,homecontroller_id);
+            cameraLogAdapter = new CameraLogAdapter(CameraDeviceLogActivity.this, arrayList, homecontroller_id);
             rvDeviceLog.setAdapter(cameraLogAdapter);
         } else {
 
@@ -624,7 +589,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
                     row_index = holder.linearlayout_month.getId();
                     notification_number = 0;
                     datelist.clear();
-                 //   getDatesInMonth(Calendar.getInstance().get(Calendar.YEAR), row_index);
+                    //   getDatesInMonth(Calendar.getInstance().get(Calendar.YEAR), row_index);
                     notifyDataSetChanged();
                 }
             });
@@ -667,24 +632,12 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
             Toast.makeText(this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put("log_type", "camera");
-            jsonObject.put("camera_id", "" + cameraIdTemp);
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
-        String url = ChatApplication.url + Constants.logsfind;
-        ChatApplication.logDisplay("url is " + url + " " + jsonObject);
-        new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL //POST
+        SpikeBotApi.getInstance().callupdateUnReadCameraLogs("camera", cameraIdTemp, new DataResponseListener() {
             @Override
-            public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
-                ChatApplication.logDisplay("url is " + result);
+            public void onData_SuccessfulResponse(String stringResponse) {
                 try {
                     finish();
 
@@ -694,11 +647,17 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(CameraDeviceLogActivity.this, R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(CameraDeviceLogActivity.this, R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 
