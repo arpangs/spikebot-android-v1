@@ -55,7 +55,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     EditText et_profile_first_name, et_profile_last_name, et_profile_contact_no, et_profile_email, et_profile_user_name;
     LinearLayout ll_password_view_expand,ll_pass_edittext_view;
     ImageView img_pass_arrow;
-    Button btn_save,btnChangePassword;
+    Button btn_save,btnChangePassword,btnforgotPassword;
     EditText edt_new_password,edt_confrim_password;
     Animation slideUpAnimation, slideDownAnimation;
 
@@ -100,6 +100,8 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         img_pass_arrow = view.findViewById(R.id.img_pass_arrow);
         btnChangePassword = view.findViewById(R.id.btnChangePassword);
         btnChangePassword.setOnClickListener(this);
+        btnforgotPassword= view.findViewById(R.id.btnforgotPassword);
+        btnforgotPassword.setOnClickListener(this);
         edt_new_password = view.findViewById(R.id.et_new_password);
         edt_confrim_password = view.findViewById(R.id.et_new_password_confirm);
 
@@ -364,11 +366,17 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
         final TextInputLayout inputRoom = dialog.findViewById(R.id.inputRoom);
         final TextInputLayout inputPassword = dialog.findViewById(R.id.inputPassword);
+        final TextInputLayout inputnewPassword = dialog.findViewById(R.id.inputnewPassword);
+        final TextInputLayout inputconfirmPassword = dialog.findViewById(R.id.inputconfirmPassword);
 
         final TextInputEditText edtPasswordChild=dialog.findViewById(R.id.edtPasswordChild);
+        final TextInputEditText edtnewPasswordChild=dialog.findViewById(R.id.edtnewPasswordChild);
+        final TextInputEditText edtconfirmPasswordChild=dialog.findViewById(R.id.edtconfirmPasswordChild);
+
         inputRoom.setVisibility(View.GONE);
         inputPassword.setVisibility(View.VISIBLE);
-
+        inputnewPassword.setVisibility(View.VISIBLE);
+        inputconfirmPassword.setVisibility(View.VISIBLE);
 
         TextView tv_title =  dialog.findViewById(R.id.tv_title);
         Button btnSave =  dialog.findViewById(R.id.btn_save);
@@ -417,5 +425,11 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         if(v==btnChangePassword){
             addCustomRoom();
         }
+
+        if(v==btnforgotPassword){
+
+        }
     }
+
+
 }

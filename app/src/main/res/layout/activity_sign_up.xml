@@ -247,6 +247,31 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content" />
 
+                <!--  <RelativeLayout
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:layout_gravity="center_vertical"
+                      android:gravity="center_vertical"
+                      android:weightSum="1"
+                      android:orientation="horizontal">
+
+                      <com.hbb20.CountryCodePicker
+                          android:id="@+id/ccp"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content" />
+
+                      <EditText
+                          android:id="@+id/edit_contact_number"
+                          android:hint="Mobile Number"
+                          android:maxLines="1"
+                          android:layout_centerVertical="true"
+                          android:gravity="center_vertical"
+                          android:inputType="number"
+                          android:layout_toRightOf="@+id/ccp"
+                          android:layout_width="match_parent"
+                          android:layout_height="wrap_content" />
+                  </RelativeLayout>
+-->
             </LinearLayout>
 
             <LinearLayout

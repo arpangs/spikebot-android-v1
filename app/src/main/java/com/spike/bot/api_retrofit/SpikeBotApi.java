@@ -111,6 +111,19 @@ public class SpikeBotApi {
         new GeneralRetrofit(apiService.postWebserviceCall(Constants.devicefind, params), params, dataResponseListener).call();
     }
 
+    // update device
+    public void updateDevice(String device_id, String device_name, DataResponseListener dataResponseListener){
+            HashMap<String, Object> params = new HashMap<>();
+
+            params.put("device_id", device_id);
+            params.put("device_name", device_name);
+            params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+
+            new GeneralRetrofit(apiService.postWebserviceCall(Constants.SAVE_EDIT_SWITCH, params), params, dataResponseListener).call();
+    }
+
     //AllUnassignedpanel - add unAssign Repeater
     public void addunAssignRepater(String room_id, String device_name, String module_id, String module_type, DataResponseListener dataResponseListener) {
 
@@ -621,19 +634,6 @@ public class SpikeBotApi {
         new GeneralRetrofit(apiService.postWebserviceCall(Constants.CHANGE_DEVICE_STATUS, params), params, dataResponseListener).call();
     }
 
-    // curtain - updateCurtain
-    public void updateCurtain(String curtain_id, String name, DataResponseListener dataResponseListener) {
-        HashMap<String, Object> params = new HashMap<>();
-
-        params.put("device_id", curtain_id);
-        params.put("device_name", name);
-        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
-
-        new GeneralRetrofit(apiService.postWebserviceCall(Constants.SAVE_EDIT_SWITCH, params), params, dataResponseListener).call();
-    }
-
     // curtain - deletecurtainPanel
     public void deleteDevice(String device_id, DataResponseListener dataResponseListener) {
         HashMap<String, Object> params = new HashMap<>();
@@ -700,19 +700,6 @@ public class SpikeBotApi {
 
         new GeneralRetrofit(apiService.postWebserviceCall(Constants.ADD_IR_BLASTER, params), params, dataResponseListener).call();
 
-    }
-
-    // IRBlasterAdd - updateBlaster
-    public void updateBlaster(String device_name, String device_id, DataResponseListener dataResponseListener) {
-        HashMap<String, Object> params = new HashMap<>();
-
-        params.put("device_name", device_name);
-        params.put("device_id", device_id);
-        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
-        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        new GeneralRetrofit(apiService.postWebserviceCall(Constants.SAVE_EDIT_SWITCH, params), params, dataResponseListener).call();
     }
 
     // IRBlasterRemote -  getdeviceino - get all type of device info call this service
@@ -813,20 +800,6 @@ public class SpikeBotApi {
 
         new GeneralRetrofit(apiService.postWebserviceCall(Constants.deviceadd, params), params, dataResponseListener).call();
     }
-    //WifiListActivity - saveremote
-    public void saveIRBlaster(String device_name,String module_id,String room_id,DataResponseListener dataResponseListener){
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("device_name", device_name);
-        params.put("module_id", module_id);
-        params.put("module_type", "ir_blaster");
-        params.put("room_id", room_id);
-
-        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
-        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        new GeneralRetrofit(apiService.postWebserviceCall(Constants.deviceadd, params), params, dataResponseListener).call();
-    }
 
     //Repeater - saveRepeater
     public void saveRepeater(String device_name,String door_module_id,String module_type,DataResponseListener dataResponseListener){
@@ -843,18 +816,6 @@ public class SpikeBotApi {
         new GeneralRetrofit(apiService.postWebserviceCall(Constants.deviceadd, params), params, dataResponseListener).call();
     }
 
-    //Repeater - update Repeater
-    public void updateRepetar(String device_id,String device_name,DataResponseListener dataResponseListener){
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("device_id", device_id);
-        params.put("device_name", device_name);
-        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
-        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        new GeneralRetrofit(apiService.postWebserviceCall(Constants.SAVE_EDIT_SWITCH, params), params, dataResponseListener).call();
-    }
-
    //DoorSensorInfo  - getDoorSensorDetails
     public void getDoorSensorDetails(String device_id,DataResponseListener dataResponseListener){
         HashMap<String, Object> params = new HashMap<>();
@@ -864,18 +825,6 @@ public class SpikeBotApi {
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
         new GeneralRetrofit(apiService.postWebserviceCall(Constants.deviceinfo, params), params, dataResponseListener).call();
-    }
-
-    //DoorSensorInfo  - updateDoorSensor
-    public void updateDoorSensor(String device_id,String device_name,DataResponseListener dataResponseListener){
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("device_id", device_id);
-        params.put("device_name", device_name);
-        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
-        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        new GeneralRetrofit(apiService.postWebserviceCall(Constants.SAVE_EDIT_SWITCH, params), params, dataResponseListener).call();
     }
 
     //DoorSensorInfo  - doorSensor Notification Status
@@ -948,18 +897,6 @@ public class SpikeBotApi {
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
         new GeneralRetrofit(apiService.postWebserviceCall(Constants.MARK_SEEN, params), params, dataResponseListener).call();
-    }
-
-    // GasSensor - update gas sensor
-    public void updateGasSensor(String device_id,String device_name,DataResponseListener dataResponseListener){
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("device_id", device_id);
-        params.put("device_name", device_name);
-        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
-        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        new GeneralRetrofit(apiService.postWebserviceCall(Constants.SAVE_EDIT_SWITCH, params), params, dataResponseListener).call();
     }
 
     // MultiSensor - tempSensorNotificationStatus
@@ -1135,18 +1072,6 @@ public class SpikeBotApi {
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
 
         new GeneralRetrofit(apiService.postWebserviceCall(Constants.DELETE_TEMP_SENSOR_NOTIFICATION,params), params, dataResponseListener).call();
-    }
-
-    // Water sensor - update water sensor
-    public void updateWaterSensor(String device_id,String device_name,DataResponseListener dataResponseListener){
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("device_id", device_id);
-        params.put("device_name", device_name);
-        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
-        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        new GeneralRetrofit(apiService.postWebserviceCall(Constants.SAVE_EDIT_SWITCH, params), params, dataResponseListener).call();
     }
 
     // AddJetSon - GetJetson
@@ -1331,35 +1256,6 @@ public class SpikeBotApi {
         new GeneralRetrofit(apiService.postWebserviceCall(Constants.deleteTTLockBridge, params), params, dataResponseListener).call();
     }
 
-    // LockBrand - saveSensor
-    public void savelockSensor(String module_id,String device_name,String module_type,String room_id,DataResponseListener dataResponseListener){
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("module_id", module_id);
-        params.put("device_name", device_name);
-        params.put("module_type", module_type);
-        params.put("room_id", room_id);
-
-        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
-        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        new GeneralRetrofit(apiService.postWebserviceCall(Constants.deviceadd, params), params, dataResponseListener).call();
-    }
-
-    //LockBrand - updateLockSensor
-    public void updateLockSensor(String deviceid,String device_name,DataResponseListener dataResponseListener){
-        HashMap<String, Object> params = new HashMap<>();
-
-        params.put("device_id", deviceid);
-        params.put("device_name", device_name);
-
-        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
-        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        new GeneralRetrofit(apiService.postWebserviceCall(Constants.SAVE_EDIT_SWITCH, params), params, dataResponseListener).call();
-    }
-
     //TTLockList - AllLockList
     public void getAllLockList(DataResponseListener dataResponseListener){
         new GeneralRetrofit(apiService.getWebserviceCall(Constants.getLockLists), null, dataResponseListener).call();
@@ -1461,18 +1357,6 @@ public class SpikeBotApi {
         new GeneralRetrofit(apiService.postWebserviceCall(Constants.GET_BEACON_LOCATION, params), params, dataResponseListener).call();
     }
 
-    //BeaconScannerAdd - update beacon scanner
-    public void updateBeaconScanner(String device_name,String module_id,DataResponseListener dataResponseListener){
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("device_name", device_name);
-        params.put("device_id", "" + module_id);
-        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
-        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        new GeneralRetrofit(apiService.postWebserviceCall(Constants.SAVE_EDIT_SWITCH, params), params, dataResponseListener).call();
-    }
-
     //BeaconScannerAdd - Add Beacon Scanner
     public void addBeaconScanner(String ir_blaster_name,String ir_blaster_module_id,String room_id,String room_name,DataResponseListener dataResponseListener){
         HashMap<String, Object> params = new HashMap<>();
@@ -1489,22 +1373,24 @@ public class SpikeBotApi {
         new GeneralRetrofit(apiService.postWebserviceCall(Constants.ADD_IR_BLASTER, params), params, dataResponseListener).call();
     }
 
-    //ScannerWifiList - save Beacon Scanner
-    public void saveBeaconScanner(String device_name,String module_id,String room_id,DataResponseListener dataResponseListener){
+    // ScannerWifiList - add scanner
+    public void addScanner(String room_id, String device_name, String module_id, String module_type,String on_time,String off_time,String range, DataResponseListener dataResponseListener) {
+
         HashMap<String, Object> params = new HashMap<>();
 
+        params.put("room_id", room_id);
         params.put("device_name", device_name);
         params.put("module_id", module_id);
-        params.put("module_type", "beacon_scanner");
-        params.put("room_id", room_id);
-
+        params.put("module_type", module_type);
+        params.put("on_time", on_time);
+        params.put("off_time", off_time);
+        params.put("range", range);
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
         params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
-         new GeneralRetrofit(apiService.postWebserviceCall(Constants.deviceadd, params), params, dataResponseListener).call();
+        new GeneralRetrofit(apiService.postWebserviceCall(Constants.deviceadd, params), params, dataResponseListener).call();
     }
-
 
     /*Dash board - Home listing*/  // dev arpan on 24 june 2020
     public void GetCameraBadgeCount(String homecontrollerid, DataResponseListener dataResponseListener) {

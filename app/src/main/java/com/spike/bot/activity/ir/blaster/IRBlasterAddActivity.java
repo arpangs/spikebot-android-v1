@@ -853,7 +853,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         }
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
-        SpikeBotApi.getInstance().updateBlaster(mBlasterName.getText().toString().trim(), irBlasterId, new DataResponseListener() {
+        SpikeBotApi.getInstance().updateDevice(irBlasterId,mBlasterName.getText().toString().trim(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try{

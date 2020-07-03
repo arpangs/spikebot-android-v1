@@ -439,7 +439,7 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        SpikeBotApi.getInstance().updateGasSensor(device_id, edSensorName.getText().toString(), new DataResponseListener() {
+        SpikeBotApi.getInstance().updateDevice(device_id, edSensorName.getText().toString(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();

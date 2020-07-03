@@ -441,7 +441,7 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
 
         ActivityHelper.showProgressDialog(LockBrandActivity.this, "Please wait.", false);
         int room_pos = sp_room_list.getSelectedItemPosition();
-        SpikeBotApi.getInstance().savelockSensor(lock_module_id, lock_name, module_type, roomIdList.get(room_pos), new DataResponseListener() {
+        SpikeBotApi.getInstance().addDevice(roomIdList.get(room_pos), lock_name,lock_module_id, module_type, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
@@ -756,7 +756,7 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        SpikeBotApi.getInstance().updateLockSensor(deviceid, sensor_name, new DataResponseListener() {
+        SpikeBotApi.getInstance().updateDevice(deviceid, sensor_name, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();

@@ -364,7 +364,7 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
     /*update curtain name*/
     private void updateCurtain(String name) {
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-        SpikeBotApi.getInstance().updateCurtain(curtain_id, name, new DataResponseListener() {
+        SpikeBotApi.getInstance().updateDevice(curtain_id, name, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {

@@ -60,8 +60,6 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
     public ProgressDialog progressDialog;
     public int count = 0;
 
-    List<LeDeviceItem> itemList = new ArrayList<>();
-    List<LeDeviceItem> itemListTemp = new ArrayList<>();
     List<ScanResult> scanresult = new ArrayList<>();
     BeaconScanListAdapter beaconScanListAdapter;
     public RecyclerView recycler;
@@ -101,8 +99,6 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
     private void setViewid() {
         btnClick.setOnClickListener(this);
 
-        itemList.clear();
-        itemListTemp.clear();
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Searching nearby beacons...");
@@ -149,8 +145,6 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
 
         if (id == R.id.action_scan) {
             progressDialog.show();
-            itemList.clear();
-            itemListTemp.clear();
             scanresult.clear();
             checkpermission();
             return true;

@@ -41,7 +41,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import cn.wj.android.colorcardview.CardView;
 
 import static android.view.View.GONE;
 

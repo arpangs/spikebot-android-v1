@@ -526,7 +526,7 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        SpikeBotApi.getInstance().updateBeaconScanner(mScannerName.getText().toString().trim(), scannerId, new DataResponseListener() {
+        SpikeBotApi.getInstance().updateDevice(scannerId,mScannerName.getText().toString().trim(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {

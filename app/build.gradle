@@ -141,16 +141,15 @@ dependencies {
   //  kotlin
   //  implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    //beacon
-    implementation 'uk.co.alt236:bluetooth-le-library-android:1.0.0'
 
    // implementation 'com.ismaeldivita.chipnavigation:chip-navigation-bar:1.2.0'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.70'
     implementation project(path: ':chip-navigation-bar')
     implementation project(path: ':floating-text-button')
     implementation project(path: ':protractorview')
-    implementation project(path: ':third-part-color-cardview')
-    implementation 'com.googlecode.mp4parser:isoparser:1.1.9'
     implementation 'no.nordicsemi.android.support.v18:scanner:1.4.3'
+    implementation 'com.github.aabhasr1:OtpView:v1.1.2'
+    implementation 'com.hbb20:ccp:2.0.2'
+    implementation project(path: ':third-part-color-cardview')
 }
 apply plugin: 'com.google.gms.google-services'

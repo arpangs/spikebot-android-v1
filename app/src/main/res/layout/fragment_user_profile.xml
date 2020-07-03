@@ -178,6 +178,16 @@
                     android:textAllCaps="false"
                     android:layout_height="wrap_content" />
 
+                <Button
+                    android:id="@+id/btnforgotPassword"
+                    android:text="Forgot password"
+                    android:textColor="@color/automation_white"
+                    android:layout_margin="@dimen/_7sdp"
+                    android:background="@drawable/background_button_change_password"
+                    android:layout_width="match_parent"
+                    android:textAllCaps="false"
+                    android:layout_height="wrap_content" />
+
 
                 <LinearLayout
                     android:visibility="gone"

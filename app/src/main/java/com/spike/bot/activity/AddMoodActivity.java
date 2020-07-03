@@ -115,7 +115,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
             toolbar.setTitle("Add Mood");
         }
 
-      //  et_switch_name.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        //  et_switch_name.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
 
         getMoodNameList();
     }
@@ -700,7 +700,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         }
 
         return listTemp;
-}
+    }
 
    /* @Override
     public void onBackPressed() {

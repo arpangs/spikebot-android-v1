@@ -155,16 +155,26 @@
             android:layout_height="wrap_content"
             android:visibility="gone">
 
+            <TextView
+                android:id="@+id/label_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/sensor_button"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:visibility="gone"
+                android:text="Enter new password"/>
+
             <EditText
                 android:id="@+id/edSensorguestPasscode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginRight="16dp"
-                android:inputType="number"
-                android:password="true"
-                android:maxLength="4" />
+                android:layout_below="@+id/label_password"/>
 
 
             <ImageView
@@ -321,11 +331,50 @@
             android:layout_marginRight="16dp"
             android:visibility="gone">
 
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edtPasswordChild"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter Password"
+                android:hint="Enter old password"
+                android:inputType="textPassword"
+                android:maxLength="25" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/inputnewPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
+            android:visibility="gone">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtnewPasswordChild"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter new password"
+                android:inputType="textPassword"
+                android:maxLength="25" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/inputconfirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
+            android:visibility="gone">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtconfirmPasswordChild"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter confirm password"
                 android:inputType="textPassword"
                 android:maxLength="25" />
 

@@ -638,7 +638,7 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
     private void updateRepetar(RepeaterModel repeaterModel, int postion, Dialog dialog, String name) {
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-        SpikeBotApi.getInstance().updateRepetar(repeaterModel.getRepeator_module_id(), name, new DataResponseListener() {
+        SpikeBotApi.getInstance().updateDevice(repeaterModel.getRepeator_module_id(), name, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();

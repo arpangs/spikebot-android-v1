@@ -20,6 +20,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.hbb20.CountryCodePicker;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
@@ -44,11 +45,12 @@ import java.util.List;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
-    public EditText et_username, et_password;
+    public EditText et_username, et_password,edit_contact_number;
     public Button btn_login, btnSignUp;
     public ImageView btn_SKIP;
     public String imei = "", token = "", isFlag = "";
     TextView txt_forgot_password;
+    CountryCodePicker countryCodePicker;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,6 +73,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         btn_login = findViewById(R.id.btn_login);
         btnSignUp = findViewById(R.id.btnSignUp);
         txt_forgot_password = findViewById(R.id.txt_forgot_password);
+     //   edit_contact_number = findViewById(R.id.edit_contact_number);
+      //  countryCodePicker = findViewById(R.id.ccp);
+
+      //  countryCodePicker.setNumberAutoFormattingEnabled(true);
+      //  countryCodePicker.registerCarrierNumberEditText(edit_contact_number);
 
 
         String styledText = "<u><font color='#333333'>" + getResources().getString(R.string.forgotpassword) + "</font></u>";
@@ -98,6 +105,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         });
         btn_SKIP.setOnClickListener(this);
         btnSignUp.setOnClickListener(this);
+        txt_forgot_password.setOnClickListener(this);
         txt_forgot_password.setOnClickListener(this);
     }
 
@@ -156,8 +164,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Intent intent = new Intent(this, SignUp.class);
             startActivity(intent);
         } else if (v == txt_forgot_password){
-           /* Intent intent = new Intent(this, ForgotpasswordActivity.class);
-            startActivity(intent);*/
+            Intent intent = new Intent(this, ForgotpasswordActivity.class);
+            startActivity(intent);
         }
     }
 

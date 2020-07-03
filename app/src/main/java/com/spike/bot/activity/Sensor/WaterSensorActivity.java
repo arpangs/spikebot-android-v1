@@ -568,7 +568,7 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        SpikeBotApi.getInstance().updateWaterSensor(device_id,edSensorName.getText().toString(), new DataResponseListener() {
+        SpikeBotApi.getInstance().updateDevice(device_id,edSensorName.getText().toString(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();

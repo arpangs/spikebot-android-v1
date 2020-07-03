@@ -196,7 +196,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
 
         ActivityHelper.showProgressDialog(this, "Please wait.", true);
 
-        SpikeBotApi.getInstance().saveIRBlaster(door_name, door_module_id, roomListArray.get(sp_room_list.getSelectedItemPosition()).getRoomId(), new DataResponseListener() {
+        SpikeBotApi.getInstance().addDevice(roomListArray.get(sp_room_list.getSelectedItemPosition()).getRoomId(),door_name, door_module_id,"ir_blaster" ,new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {

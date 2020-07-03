@@ -1221,7 +1221,7 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        SpikeBotApi.getInstance().updateDoorSensor(door_sensor_id, sensor_name, new DataResponseListener() {
+        SpikeBotApi.getInstance().updateDevice(door_sensor_id, sensor_name, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();

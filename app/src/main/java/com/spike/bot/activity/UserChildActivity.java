@@ -256,10 +256,16 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
 
         final TextInputLayout inputRoom = dialog.findViewById(R.id.inputRoom);
         final TextInputLayout inputPassword = dialog.findViewById(R.id.inputPassword);
+        final TextInputLayout inputnewPassword = dialog.findViewById(R.id.inputnewPassword);
+        final TextInputLayout inputconfirmPassword = dialog.findViewById(R.id.inputconfirmPassword);
 
         final TextInputEditText edtPasswordChild = dialog.findViewById(R.id.edtPasswordChild);
+        final TextInputEditText edtnewPasswordChild=dialog.findViewById(R.id.edtnewPasswordChild);
+        final TextInputEditText edtconfirmPasswordChild=dialog.findViewById(R.id.edtconfirmPasswordChild);
         inputRoom.setVisibility(View.GONE);
         inputPassword.setVisibility(View.VISIBLE);
+        inputnewPassword.setVisibility(View.VISIBLE);
+        inputconfirmPassword.setVisibility(View.VISIBLE);
 
         TextView tv_title = dialog.findViewById(R.id.tv_title);
         Button btnSave = dialog.findViewById(R.id.btn_save);
@@ -273,9 +279,9 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
         });
 
         if (modeType.equalsIgnoreCase("update")) {
-            tv_title.setText("Enter Password");
+            tv_title.setText("Change Password");
         } else {
-            tv_title.setText("Enter Password");
+            tv_title.setText("Change Password");
         }
 
 

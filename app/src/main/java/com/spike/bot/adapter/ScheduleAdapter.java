@@ -27,7 +27,6 @@ import com.spike.bot.model.ScheduleVO;
 
 import java.util.ArrayList;
 
-import cn.wj.android.colorcardview.CardView;
 
 import static com.spike.bot.core.Common.getDateTime;
 

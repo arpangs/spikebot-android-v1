@@ -20,6 +20,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.hbb20.CountryCodePicker;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
@@ -54,6 +55,7 @@ public class SignUp extends AppCompatActivity {
     String webUrl = "";
     private Socket mSocket;
     private  List<User> tempList;
+    CountryCodePicker countryCodePicker;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -83,6 +85,11 @@ public class SignUp extends AppCompatActivity {
         edt_con_password = findViewById(R.id.edt_con_password_su);
         edt_phone_no = findViewById(R.id.edt_phone_no_su);
         edtIPAddress = findViewById(R.id.edtIPAddress);
+
+        //  countryCodePicker = findViewById(R.id.ccp);
+
+        //  countryCodePicker.setNumberAutoFormattingEnabled(true);
+        //  countryCodePicker.registerCarrierNumberEditText(edt_phone_no);
 
         Gson gson = new Gson();
         String jsonText = Common.getPrefValue(getApplicationContext(),Common.USER_JSON);

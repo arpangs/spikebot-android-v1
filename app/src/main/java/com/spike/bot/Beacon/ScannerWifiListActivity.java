@@ -2,9 +2,12 @@ package com.spike.bot.Beacon;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +16,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,12 +29,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kp.core.ActivityHelper;
+import com.kp.core.DateHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.GetJsonTaskVideo;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Camera.ImageZoomActivity;
+import com.spike.bot.activity.ForgotpasswordActivity;
+import com.spike.bot.activity.ScheduleActivity;
 import com.spike.bot.adapter.BeaconWifiAdapter;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.api_retrofit.DataResponseListener;
@@ -38,6 +46,9 @@ import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.customview.CustomEditText;
+import com.spike.bot.customview.DrawableClickListener;
+import com.spike.bot.dialog.ICallback;
+import com.spike.bot.dialog.TimePickerFragment;
 import com.spike.bot.listener.WifiListner;
 import com.spike.bot.model.CameraRecordingResmodel;
 import com.spike.bot.model.UnassignedListRes;
@@ -47,6 +58,7 @@ import com.spike.bot.receiver.ConnectivityReceiver;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +66,7 @@ public class ScannerWifiListActivity extends AppCompatActivity implements WifiLi
 
     public Toolbar toolbar;
     public RecyclerView recyclerWifi;
-    public String wifiIP = "", moduleId = "";
+    public String wifiIP = "", moduleId = "", rangevalue = "1";
     public boolean isNetworkChange = false;
 
     /*Socket*/
@@ -118,6 +130,18 @@ public class ScannerWifiListActivity extends AppCompatActivity implements WifiLi
         TextView dialogTitle = irDialog.findViewById(R.id.tv_title);
         TextView txt_sensor_name = irDialog.findViewById(R.id.txt_sensor_name);
         TextView txtSelectRoom = irDialog.findViewById(R.id.txtSelectRoom);
+        LinearLayout linear_on_time = irDialog.findViewById(R.id.linear_on_time);
+        LinearLayout linear_off_time = irDialog.findViewById(R.id.linear_off_time);
+        LinearLayout linear_range = irDialog.findViewById(R.id.linear_range);
+        CustomEditText on_time = irDialog.findViewById(R.id.ed_on_time);
+        CustomEditText off_time = irDialog.findViewById(R.id.ed_off_time);
+        SeekBar sbrange = irDialog.findViewById(R.id.sb_range);
+        TextView txtrange = irDialog.findViewById(R.id.txt_rangevalue);
+
+
+        linear_on_time.setVisibility(View.VISIBLE);
+        linear_off_time.setVisibility(View.VISIBLE);
+        linear_range.setVisibility(View.VISIBLE);
 
         dialogTitle.setText("Add Beacon Scanner");
         txt_sensor_name.setText("Scanner Name");
@@ -133,12 +157,70 @@ public class ScannerWifiListActivity extends AppCompatActivity implements WifiLi
             }
         }
 
+
         TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(getApplicationContext(), roomNameList, 1, false);
         sp_room_list.setAdapter(customAdapter);
 
         Button btn_cancel = irDialog.findViewById(R.id.btn_door_cancel);
         Button btn_save = irDialog.findViewById(R.id.btn_door_save);
         ImageView iv_close = irDialog.findViewById(R.id.iv_close);
+
+        on_time.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ActivityHelper.hideKeyboard(ScannerWifiListActivity.this);
+                DialogFragment fromTimeFragment = new TimePickerFragment(ScannerWifiListActivity.this, on_time.getText().toString(), new ICallback() {
+                    @Override
+                    public void onSuccess(String str) {
+                        on_time.setText(str);
+
+                    }
+                });
+                if (!fromTimeFragment.isVisible()) {
+                    fromTimeFragment.show(ScannerWifiListActivity.this.getFragmentManager(), "timePicker");
+                }
+            }
+        });
+
+        off_time.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ActivityHelper.hideKeyboard(ScannerWifiListActivity.this);
+                DialogFragment fromTimeFragment = new TimePickerFragment(ScannerWifiListActivity.this, off_time.getText().toString(), new ICallback() {
+                    @Override
+                    public void onSuccess(String str) {
+                        off_time.setText(str);
+
+                    }
+                });
+                if (!fromTimeFragment.isVisible()) {
+                    fromTimeFragment.show(ScannerWifiListActivity.this.getFragmentManager(), "timePicker");
+                }
+            }
+        });
+
+
+        txtrange.setText("1");
+        sbrange.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                rangevalue = String.valueOf(i);
+                if (rangevalue.equals("0")) {
+                    sbrange.setProgress(1);
+                }
+                txtrange.setText(String.valueOf(i));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         sp_drop_down.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,15 +248,28 @@ public class ScannerWifiListActivity extends AppCompatActivity implements WifiLi
                 if (TextUtils.isEmpty(edt_door_name.getText().toString())) {
                     edt_door_name.requestFocus();
                     edt_door_name.setError("Enter Scanner Name");
+                } else if (TextUtils.isEmpty(on_time.getText().toString())) {
+                    Toast.makeText(ScannerWifiListActivity.this, "Please enter On time", Toast.LENGTH_SHORT).show();
+                } else if (TextUtils.isEmpty(off_time.getText().toString())) {
+                    Toast.makeText(ScannerWifiListActivity.this, "Please enter Off time", Toast.LENGTH_SHORT).show();
+                } else if (!TextUtils.isEmpty(on_time.getText().toString()) && !TextUtils.isEmpty(off_time.getText().toString()) &&
+                        on_time.getText().toString().equalsIgnoreCase(off_time.getText().toString())) {
+                    Toast.makeText(ScannerWifiListActivity.this, "Select different On and Off time", Toast.LENGTH_SHORT).show();
                 } else if (roomListArray.size() == 0) {
                     ChatApplication.showToast(ScannerWifiListActivity.this, "Please create room.");
                 } else {
-                    saveBeaconScanner(irDialog, edt_door_name, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list);
+                    saveBeaconScanner(irDialog, edt_door_name, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list, rangevalue,
+                            on_time.getText().toString(), off_time.getText().toString());
                 }
             }
         });
         irDialog.show();
+
+        on_time.setOnKeyListener(null);
+        off_time.setOnKeyListener(null);
+
     }
+
 
     /**
      * save Beacon Scanner
@@ -186,48 +281,62 @@ public class ScannerWifiListActivity extends AppCompatActivity implements WifiLi
      * @param sp_room_list
      */
     private void saveBeaconScanner(final Dialog dialog, EditText textInputEditText, String door_name,
-                                   String door_module_id, Spinner sp_room_list) {
-
+                                   String door_module_id, Spinner sp_room_list, String rangevalue, String on_time, String off_time) {
+        String beacon_on_time = "", beacon_off_time = "";
         if (!ActivityHelper.isConnectingToInternet(getApplicationContext())) {
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
+        try {
+
+            if (!TextUtils.isEmpty(on_time)) {
+
+                beacon_on_time = DateHelper.formateDate(DateHelper.parseTimeSimple(on_time, DateHelper.DATE_FROMATE_H_M_AMPM), DateHelper.DATE_FROMATE_HH_MM);
+
+            }
+            if (!TextUtils.isEmpty(off_time)) {
+                beacon_off_time = DateHelper.formateDate(DateHelper.parseTimeSimple(off_time, DateHelper.DATE_FROMATE_H_M_AMPM), DateHelper.DATE_FROMATE_HH_MM);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", true);
-        SpikeBotApi.getInstance().saveBeaconScanner(door_name,door_module_id,roomListArray.get(sp_room_list.getSelectedItemPosition()).getRoomId(), new DataResponseListener() {
-            @Override
-            public void onData_SuccessfulResponse(String stringResponse) {
-                try {
-                    JSONObject result = new JSONObject(stringResponse);
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
+        SpikeBotApi.getInstance().addScanner(roomListArray.get(sp_room_list.getSelectedItemPosition()).getRoomId(), door_name, door_module_id, "beacon_scanner",
+                beacon_on_time, beacon_off_time, rangevalue, new DataResponseListener() {
+                    @Override
+                    public void onData_SuccessfulResponse(String stringResponse) {
+                        try {
+                            JSONObject result = new JSONObject(stringResponse);
+                            int code = result.getInt("code");
+                            String message = result.getString("message");
 
-                    if (code == 200) {
+                            if (code == 200) {
 
-                        if (!TextUtils.isEmpty(message)) {
-                            Common.showToast(message);
+                                if (!TextUtils.isEmpty(message)) {
+                                    Common.showToast(message);
+                                }
+                                ActivityHelper.dismissProgressDialog();
+                                dialog.dismiss();
+
+                                Constants.activityWifi.finish();
+                                ScannerWifiListActivity.this.finish();
+                            } else {
+                                Common.showToast(message);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        } finally {
+                            ActivityHelper.dismissProgressDialog();
+
                         }
-                        ActivityHelper.dismissProgressDialog();
-                        dialog.dismiss();
-
-                        Constants.activityWifi.finish();
-                        ScannerWifiListActivity.this.finish();
-                    } else {
-                        Common.showToast(message);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    ActivityHelper.dismissProgressDialog();
 
-                }
-            }
-
-            @Override
-            public void onData_FailureResponse() {
-                ActivityHelper.dismissProgressDialog();
-            }
-        });
+                    @Override
+                    public void onData_FailureResponse() {
+                        ActivityHelper.dismissProgressDialog();
+                    }
+                });
     }
 
 
@@ -367,8 +476,7 @@ public class ScannerWifiListActivity extends AppCompatActivity implements WifiLi
                 ChatApplication.logDisplay("scanner is found result" + result.toString());
 
                 try {
-                    if (result != null)
-                    {
+                    if (result != null) {
                         if (result.optString("message").equalsIgnoreCase("Success")) {
 //                            dialog.dismiss();
                             Constants.isWifiConnectSave = true;
