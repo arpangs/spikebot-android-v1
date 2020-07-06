@@ -402,6 +402,10 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         }
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
         int room_pos = sp_room_list.getSelectedItemPosition();
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong1));
+
         SpikeBotApi.getInstance().saveIRBlaster(door_name, door_module_id, roomIdList.get(room_pos), roomNameList.get(room_pos), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -433,6 +437,11 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
     }
@@ -538,7 +547,8 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             showToast("" + R.string.disconnect);
             return;
         }
-
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().getRoomList("room", new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -573,6 +583,11 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             public void onData_FailureResponse() {
 
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
         });
 
     }
@@ -592,7 +607,8 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         if (irList != null) {
             irList.clear();
         }
-
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().getDeviceList("ir_blaster",new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -637,6 +653,11 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong1));
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
 
@@ -714,6 +735,9 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             return;
         }
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong1));
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
         SpikeBotApi.getInstance().deleteDevice("" + irBlasterId, new DataResponseListener() {
             @Override
@@ -737,6 +761,11 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong1));
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
     }
@@ -853,6 +882,9 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
         }
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong1));
         SpikeBotApi.getInstance().updateDevice(irBlasterId,mBlasterName.getText().toString().trim(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -880,6 +912,11 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong1));
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
 

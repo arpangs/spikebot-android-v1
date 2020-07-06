@@ -382,6 +382,8 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
         }
 
         ActivityHelper.showProgressDialog(RepeaterActivity.this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().saveRepeater(door_name, door_module_id, module_type, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -412,6 +414,11 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
         });
     }
 
@@ -419,7 +426,8 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
      * get individual door sensor details
      */
     private void getRepeatorLists() {
-
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().getDeviceList("repeater",new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -443,6 +451,11 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
     }
@@ -489,7 +502,8 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
 
     /** Delete individual epeater */
     private void deleteRepater(RepeaterModel repeaterModel, int postion) {
-
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deleteDevice(repeaterModel.getRepeator_module_id(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -516,6 +530,11 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
 
@@ -638,6 +657,11 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
     private void updateRepetar(RepeaterModel repeaterModel, int postion, Dialog dialog, String name) {
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
+
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().updateDevice(repeaterModel.getRepeator_module_id(), name, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -664,6 +688,11 @@ public class RepeaterActivity extends AppCompatActivity implements RepeaterAdapt
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
     }

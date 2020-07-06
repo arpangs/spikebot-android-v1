@@ -6,7 +6,6 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.InputFilter;
@@ -51,7 +50,6 @@ import com.spike.bot.R;
 import com.spike.bot.Retrofit.GetDataService;
 import com.spike.bot.Retrofit.RetrofitAPIManager;
 import com.spike.bot.activity.DeviceLogActivity;
-import com.spike.bot.activity.RoomEditActivity_v2;
 import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
 import com.spike.bot.adapter.DoorAlertAdapter;
 import com.spike.bot.adapter.DoorSensorInfoAdapter;
@@ -65,7 +63,6 @@ import com.spike.bot.dialog.ICallback;
 import com.spike.bot.dialog.TimePickerFragment12;
 import com.spike.bot.model.LockObj;
 import com.spike.bot.model.RemoteDetailsRes;
-import com.spike.bot.model.RoomVO;
 import com.spike.bot.receiver.ConnectivityReceiver;
 import com.ttlock.bl.sdk.api.TTLockClient;
 import com.ttlock.bl.sdk.util.DigitUtil;
@@ -242,7 +239,6 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             });
         }
     };
-
     /* unread count getting socket*/
     private Emitter.Listener unReadCount = new Emitter.Listener() {
         @Override
@@ -334,7 +330,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         if (mSocket != null) {
             mSocket.off("doorsensorvoltage", doorsensorvoltage);
             mSocket.off("unReadCount", unReadCount);
-            mSocket.on("changeDeviceStatus", changeDoorSensorStatus);
+            mSocket.off("changeDeviceStatus", changeDoorSensorStatus);
         }
     }
 
@@ -348,6 +344,8 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         }*/
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().getDoorSensorDetails(door_sensor_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -363,6 +361,11 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
     }
@@ -1232,13 +1235,15 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().updateDevice(door_sensor_id, sensor_name, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
                 try {
                     JSONObject result = new JSONObject(stringResponse);
-                    ChatApplication.logDisplay("url is "+result);
+                    ChatApplication.logDisplay("url is " + result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (!TextUtils.isEmpty(message)) {
@@ -1258,6 +1263,11 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
     }
@@ -1409,6 +1419,8 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().doorSensorNotificationStatus(doorSensorNotificationId, isActive,isNotification, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -1433,6 +1445,11 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
     }
@@ -1581,6 +1598,8 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deleteDevice(door_sensor_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -1605,6 +1624,11 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
 
@@ -1760,7 +1784,9 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        SpikeBotApi.getInstance().addNotification(mStartTime,mEndTime,notification.getAlertId(),doorSensorResModel.getDevice().getDevice_id(),isEdit,new DataResponseListener() {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().addNotification(mStartTime, mEndTime, notification.getAlertId(), doorSensorResModel.getDevice().getDevice_id(), isEdit, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
@@ -1796,6 +1822,11 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
         });
     }
 
@@ -1814,6 +1845,8 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deleteDoorSensorNotification(notification.getAlertId(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -1839,6 +1872,11 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
 
@@ -1903,6 +1941,8 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
     }
 
     public void unreadApiCall(final boolean b) {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().unreadNotification(door_sensor_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -1910,6 +1950,11 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
             @Override
             public void onData_FailureResponse() {
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
 

@@ -216,6 +216,8 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
     private void callAddBridge(int gatewayId) {
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().callAddBridge(gatewayId, gatewayName, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -240,6 +242,11 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
         });
     }
 
@@ -249,6 +256,8 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
 
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deleteGateway(gatewayId, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -267,6 +276,11 @@ public class AddGatewayActivity extends AppCompatActivity implements View.OnClic
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
         });

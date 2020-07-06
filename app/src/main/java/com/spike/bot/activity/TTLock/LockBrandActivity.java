@@ -118,8 +118,8 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
 
         label_add.setVisibility(View.GONE);
         setAdapter();
-          stringArrayList.add("Bridge");
-          stringArrayList.add("Lock");
+        stringArrayList.add("Bridge");
+        stringArrayList.add("Lock");
 
         startSocketConnection();
     }
@@ -403,7 +403,7 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
                     ChatApplication.showToast(LockBrandActivity.this, "Please enter Yale lock name");
                 } else {
                     ChatApplication.keyBoardHideForce(LockBrandActivity.this);
-                   // saveSensor(dialogtemp, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(),spro ,module_type);
+                    // saveSensor(dialogtemp, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(),spro ,module_type);
                 }
             }
         });
@@ -441,6 +441,8 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
 
         ActivityHelper.showProgressDialog(LockBrandActivity.this, "Please wait.", false);
         int room_pos = sp_room_list.getSelectedItemPosition();
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().addDevice(roomIdList.get(room_pos), lock_name,lock_module_id, module_type, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -471,6 +473,11 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
     }
@@ -525,6 +532,8 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
             Toast.makeText(LockBrandActivity.this, R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
         SpikeBotApi.getInstance().getDeviceList("lock",new DataResponseListener() {
             @Override
@@ -568,6 +577,11 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
     }
@@ -756,6 +770,8 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().updateDevice(deviceid, sensor_name, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -783,6 +799,11 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
         });
     }
 
@@ -793,6 +814,8 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deleteDevice(device_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -817,6 +840,11 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
 

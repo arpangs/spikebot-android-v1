@@ -346,6 +346,9 @@ public class ImageZoomActivity extends AppCompatActivity{
             imageName = separated[separated.length - 1];
         }
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().callReport(imgUrl, home_controller_device_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -366,6 +369,12 @@ public class ImageZoomActivity extends AppCompatActivity{
                 Toast.makeText(ImageZoomActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
 
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(ImageZoomActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
         });
 
     }
@@ -376,6 +385,8 @@ public class ImageZoomActivity extends AppCompatActivity{
             return;
         }
         ActivityHelper.showProgressDialog(ImageZoomActivity.this, "Please wait...", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().CameraRecordingPlay(camera_id, imgDate, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -408,6 +419,13 @@ public class ImageZoomActivity extends AppCompatActivity{
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(ImageZoomActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(ImageZoomActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
 

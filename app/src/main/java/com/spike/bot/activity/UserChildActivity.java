@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -36,12 +35,10 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.GetJsonTask2;
-import com.kp.core.ICallBack;
-import com.kp.core.ICallBack2;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -78,12 +75,11 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
     public boolean isClickFlag = false;
 
     public User user;
-    private ArrayList<UnassignedListRes.Data.RoomList> roomList = new ArrayList<>();
-    private ArrayList<String> roomListString = new ArrayList<>();
     public ArrayList<CameraVO> cameraarrayList = new ArrayList<>();
-
     RoomListAdapter roomListAdapter;
     CameraListAdapter cameraListAdapter;
+    private ArrayList<UnassignedListRes.Data.RoomList> roomList = new ArrayList<>();
+    private ArrayList<String> roomListString = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -389,7 +385,7 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
 
         ActivityHelper.showProgressDialog(this, "Loading...", false);
 
-        JSONObject jsonObject = new JSONObject();
+       /* JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("room_type", "room");
             jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -441,7 +437,57 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        }).execute();*/
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+
+        SpikeBotApi.getInstance().GetRoomList(new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                ActivityHelper.dismissProgressDialog();
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    ChatApplication.logDisplay("un assign is " + result);
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        Type type = new TypeToken<ArrayList<UnassignedListRes.Data.RoomList>>() {
+                        }.getType();
+                        roomList = (ArrayList<UnassignedListRes.Data.RoomList>) Constants.fromJson(result.optJSONObject("data").optJSONArray("roomList").toString(), type);
+
+                        for (int i = 0; i < result.optJSONObject("data").optJSONArray("cameradeviceList").length(); i++) {
+                            JSONObject object = result.optJSONObject("data").optJSONArray("cameradeviceList").optJSONObject(i);
+                            CameraVO cameraVO = new CameraVO();
+                            cameraVO.setCamera_id(object.optString("camera_id"));
+                            cameraVO.setCamera_name(object.optString("camera_name"));
+                            cameraarrayList.add(cameraVO);
+                        }
+                        setSelectValue();
+                    } else {
+                        if (!TextUtils.isEmpty(message)) {
+                            showToast(message);
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
+
+
     }
 
 
@@ -452,14 +498,14 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
         //admin child =-1
         //child = 0
 
-        String url = "";
+     /*   String url = "";
         if (modeType.equalsIgnoreCase("update")) {
             url = ChatApplication.url + Constants.updateChildUser;
         } else {
             url = ChatApplication.url + Constants.AddChildUser;
-        }
+        }*/
 
-        JSONObject jsonObject = new JSONObject();
+        /*JSONObject jsonObject = new JSONObject();*/
 
         int selectedRadioButtonID = radioGroup.getCheckedRadioButtonId();
 
@@ -469,33 +515,30 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
             isChildType = 0;
         }
 
-        try {
-
-            for (int i = 0; i < roomList.size(); i++) {
-                if (roomList.get(i).isDisable()) {
-                    roomListString.add(roomList.get(i).getRoomId());
-                }
+        for (int i = 0; i < roomList.size(); i++) {
+            if (roomList.get(i).isDisable()) {
+                roomListString.add(roomList.get(i).getRoomId());
             }
+        }
 
-            ArrayList<String> cameraList = new ArrayList<>();
+        ArrayList<String> cameraList = new ArrayList<>();
 
-            for (int i = 0; i < cameraarrayList.size(); i++) {
-                if (cameraarrayList.get(i).isDisable()) {
-                    cameraList.add(cameraarrayList.get(i).getCamera_id());
-                }
+        for (int i = 0; i < cameraarrayList.size(); i++) {
+            if (cameraarrayList.get(i).isDisable()) {
+                cameraList.add(cameraarrayList.get(i).getCamera_id());
             }
+        }
 
 
-            if (roomListString.size() == 0 && cameraarrayList.size() == 0) {
-                ChatApplication.showToast(this, "Please select at least one room or camera");
-                return;
-            }
+        if (roomListString.size() == 0 && cameraarrayList.size() == 0) {
+            ChatApplication.showToast(this, "Please select at least one room or camera");
+            return;
+        }
 
-            ActivityHelper.showProgressDialog(this, "Please Wait...", false);
+        ActivityHelper.showProgressDialog(this, "Please Wait...", false);
 
-            JSONArray jsonArray3 = new JSONArray(roomListString);
-            JSONArray jsonArray4 = new JSONArray(cameraList);
-            if (modeType.equalsIgnoreCase("update")) {
+
+            /*if (modeType.equalsIgnoreCase("update")) {
                 jsonObject.put("child_user_id", user.getUser_id());
                 jsonObject.put("roomList", jsonArray3);
                 jsonObject.put("cameraList", jsonArray4);
@@ -512,13 +555,11 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
             jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+*/
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-        ChatApplication.logDisplay("json is " + jsonObject.toString());
-        new GetJsonTask2(this, url, "POST", jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
+//        ChatApplication.logDisplay("json is " + jsonObject.toString());
+       /* new GetJsonTask2(this, url, "POST", jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.dismissProgressDialog();
@@ -552,7 +593,61 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
                 ActivityHelper.dismissProgressDialog();
 
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
+
+
+        JSONArray jsonArray3 = new JSONArray(roomListString);
+        JSONArray jsonArray4 = new JSONArray(cameraList);
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+
+
+        SpikeBotApi.getInstance().AddUserChild(modeType, user.getUser_id(), jsonArray3, jsonArray4,
+                edtUsername.getText().toString(), edDisplayName.getText().toString(), strPassword,new DataResponseListener() {
+                    @Override
+                    public void onData_SuccessfulResponse(String stringResponse) {
+
+                        ActivityHelper.dismissProgressDialog();
+
+                        try {
+
+                            JSONObject result = new JSONObject(stringResponse);
+
+                            ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
+                            int code = result.getInt("code");
+                            String message = result.getString("message");
+                            if (code == 200) {
+                                setdefult();
+                                ActivityHelper.hideKeyboard(UserChildActivity.this);
+                                ChatApplication.showToast(UserChildActivity.this, "" + message);
+                                Intent returnIntent = new Intent();
+                                setResult(Activity.RESULT_OK, returnIntent);
+                                UserChildActivity.this.finish();
+                            } else {
+                                ChatApplication.showToast(UserChildActivity.this, "" + message);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } finally {
+                            ActivityHelper.dismissProgressDialog();
+                        }
+                    }
+
+                    @Override
+                    public void onData_FailureResponse() {
+                        ActivityHelper.dismissProgressDialog();
+                    }
+
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
+                        ActivityHelper.dismissProgressDialog();
+                    }
+                });
+
+
     }
 
     private void setdefult() {
@@ -571,8 +666,8 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
 
     public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.SensorViewHolder> {
 
-        private Context mContext;
         ArrayList<UnassignedListRes.Data.RoomList> arrayListLog = new ArrayList<>();
+        private Context mContext;
 
         public RoomListAdapter(Context context, ArrayList<UnassignedListRes.Data.RoomList> roomListString) {
             this.mContext = context;
@@ -654,8 +749,8 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
 
     public class CameraListAdapter extends RecyclerView.Adapter<CameraListAdapter.SensorViewHolder> {
 
-        private Context mContext;
         ArrayList<CameraVO> arrayListLog = new ArrayList<>();
+        private Context mContext;
 
         public CameraListAdapter(Context context, ArrayList<CameraVO> roomListString) {
             this.mContext = context;

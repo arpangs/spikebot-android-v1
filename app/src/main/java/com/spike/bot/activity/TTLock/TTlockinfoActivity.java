@@ -336,6 +336,8 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deviceInfo(door_sensor_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -356,6 +358,11 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
     }
@@ -906,7 +913,7 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
         Call<String> call = apiService.gatewaylist(Constants.client_id, Constants.access_token, 1, 20, System.currentTimeMillis());
         call.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(Call<String> call, retrofit2.Response<String> response) {
+            public void onResponse(Call<String> call, Response<String> response) {
                 String json = response.body();
                 if (json.contains("list")) {
                     try {
@@ -1221,6 +1228,8 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().updateDevice(door_sensor_id, sensor_name, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -1244,6 +1253,11 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
 
             @Override
             public void onData_FailureResponse() {
+
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
 
             }
         });
@@ -1397,6 +1411,8 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().doorSensorNotificationStatus(doorSensorNotificationId, isActive, isNotification, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -1420,6 +1436,11 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
     }
@@ -1567,6 +1588,8 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deleteDevice(door_sensor_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -1591,6 +1614,11 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
 
@@ -1745,10 +1773,12 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
             return;
         }
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().addNotification(mStartTime, mEndTime, notification.getAlertId(), doorSensorResModel.getDevice().getDevice_id(), isEdit,
                 new DataResponseListener() {
                     @Override
-                    public void onData_SuccessfulResponse(java.lang.String stringResponse) {
+                    public void onData_SuccessfulResponse(String stringResponse) {
                         try {
                             JSONObject result = new JSONObject(stringResponse);
                             int code = result.getInt("code");
@@ -1780,6 +1810,11 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
                     public void onData_FailureResponse() {
                         ActivityHelper.dismissProgressDialog();
                     }
+
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
+
+                    }
                 });
     }
 
@@ -1798,6 +1833,8 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deleteDoorSensorNotification(notification.getAlertId(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -1822,6 +1859,11 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
 

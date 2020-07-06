@@ -113,6 +113,9 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
         //   showProgress();
         // ActivityHelper.showProgressDialog(AddBeaconActivity.this, "Please Wait...", false);
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().getbeaconDeviceDetails(device_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -183,6 +186,11 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
             public void onData_FailureResponse() {
 
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
         });
     }
 
@@ -236,6 +244,9 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
         ActivityHelper.showProgressDialog(AddBeaconActivity.this, "Please Wait...", false);
         scannerLists = new ArrayList<>();
         scannerLists.clear();
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
         SpikeBotApi.getInstance().getDeviceList("beacon_scanner", new DataResponseListener() {
             @Override
@@ -332,6 +343,12 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
 
             @Override
             public void onData_FailureResponse() {
+                hideProgress();
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 hideProgress();
                 ActivityHelper.dismissProgressDialog();
             }

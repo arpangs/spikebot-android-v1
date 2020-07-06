@@ -383,6 +383,8 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
             Common.showToast("" + getString(R.string.error_connect));
             return;
         }
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deleteDevice(scannerId, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -405,6 +407,11 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
 
             @Override
             public void onData_FailureResponse() {
+                ChatApplication.showToast(BeaconScannerAddActivity.this, getResources().getString(R.string.something_wrong1));
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ChatApplication.showToast(BeaconScannerAddActivity.this, getResources().getString(R.string.something_wrong1));
             }
         });
@@ -550,8 +557,12 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
 
             @Override
             public void onData_FailureResponse() {
-                ActivityHelper.dismissProgressDialog();
-                ChatApplication.showToast(BeaconScannerAddActivity.this, getResources().getString(R.string.something_wrong1));
+
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
 
@@ -620,6 +631,8 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
             showToast("" + R.string.disconnect);
             return;
         }
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().getRoomList("rooom", new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -651,6 +664,11 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
         });
     }
 
@@ -668,6 +686,8 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
             scannerList.clear();
         }
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().getDeviceList("beacon_scanner", new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -711,6 +731,11 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
             public void onData_FailureResponse() {
                 ChatApplication.showToast(BeaconScannerAddActivity.this, getResources().getString(R.string.something_wrong1));
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
         });
 
     }
@@ -740,6 +765,8 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
 
         int room_pos = sp_room_list.getSelectedItemPosition();
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().addBeaconScanner(door_name, door_module_id, roomIdList.get(room_pos), roomNameList.get(room_pos), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -770,6 +797,11 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
     }

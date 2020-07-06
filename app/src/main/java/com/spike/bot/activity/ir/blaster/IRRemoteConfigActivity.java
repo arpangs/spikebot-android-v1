@@ -228,6 +228,8 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         Gson gson = new Gson();
         String mStrOnOffReq = gson.toJson(irRemoteOnOffReq);
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().sendOnOfOffRequest(mIRBlasterModuleId, (RESPOND_CONST == 1) ? "ON" : "OFF", onOffValue, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -257,6 +259,11 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
 
             @Override
             public void onData_FailureResponse() {
+
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
 
             }
         });
@@ -393,6 +400,8 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         String mStrOnOffReq = gson.toJson(addRemoteReq);
         String url = ChatApplication.url + Constants.deviceadd;*/
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().saveremote(mIRDeviceId, mIrDeviceType, remoteName, mIRBLasterId, mIRBlasterModuleId, mRoomId, mSpinnerMode.getSelectedItem().toString() + "-" + mRemoteDefaultTemp.getText().toString().trim(),
                 mBrandId, mCodeSet, model_number, onOffValue, new DataResponseListener() {
                     @Override
@@ -423,6 +432,11 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
 
                     @Override
                     public void onData_FailureResponse() {
+                        ActivityHelper.dismissProgressDialog();
+                    }
+
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
                         ActivityHelper.dismissProgressDialog();
                     }
                 });

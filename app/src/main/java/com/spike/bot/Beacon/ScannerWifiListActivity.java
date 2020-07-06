@@ -300,7 +300,9 @@ public class ScannerWifiListActivity extends AppCompatActivity implements WifiLi
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        ActivityHelper.showProgressDialog(this, "Please wait.", true);
         ActivityHelper.showProgressDialog(this, "Please wait.", true);
         SpikeBotApi.getInstance().addScanner(roomListArray.get(sp_room_list.getSelectedItemPosition()).getRoomId(), door_name, door_module_id, "beacon_scanner",
                 beacon_on_time, beacon_off_time, rangevalue, new DataResponseListener() {
@@ -335,6 +337,11 @@ public class ScannerWifiListActivity extends AppCompatActivity implements WifiLi
                     @Override
                     public void onData_FailureResponse() {
                         ActivityHelper.dismissProgressDialog();
+                    }
+
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
+
                     }
                 });
     }
@@ -476,7 +483,8 @@ public class ScannerWifiListActivity extends AppCompatActivity implements WifiLi
                 ChatApplication.logDisplay("scanner is found result" + result.toString());
 
                 try {
-                    if (result != null) {
+                    if (result != null)
+                    {
                         if (result.optString("message").equalsIgnoreCase("Success")) {
 //                            dialog.dismiss();
                             Constants.isWifiConnectSave = true;

@@ -64,4 +64,6 @@
     <color name="shadow_light_black">#545454</color>
     <color name="light_blue">#DBF3FA</color>
 
+    <color name="dashboardwhite">#fafafa</color>
+
 </resources>

@@ -184,6 +184,8 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
     private void callGetJetson()
     {
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().callGetJetson(new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -224,6 +226,12 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
                 showView(false);
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                showView(false);
+                ActivityHelper.dismissProgressDialog();
+            }
         });
     }
 
@@ -236,6 +244,8 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
     /*add jetson api call*/
     private void callAddJetson(String devicename, String ipaddress, Dialog dialog, boolean isFlag,  int position) {
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().callAddJetson(arrayList.get(position).getJetsonId(),devicename,ipaddress,isFlag, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -263,11 +273,18 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
                 ActivityHelper.dismissProgressDialog();
 
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
         });
     }
 
     /*delete jetson*/
     private void deleteJetson(int position) {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deleteJetson(arrayList.get(position).getJetsonId(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -291,6 +308,11 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
         });

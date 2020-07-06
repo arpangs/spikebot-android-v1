@@ -3,7 +3,6 @@ package com.spike.bot.dialog;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -17,17 +16,19 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.kp.core.dialog.ConfirmDialog;
-import com.spike.bot.ChatApplication;
-import com.spike.bot.core.APIConst;
-import com.spike.bot.core.Common;
-import com.spike.bot.core.Constants;
-import com.spike.bot.R;
-import com.spike.bot.adapter.TypeSpinnerAdapter;
-import com.spike.bot.model.DeviceVO;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
+import com.kp.core.dialog.ConfirmDialog;
+import com.spike.bot.ChatApplication;
+import com.spike.bot.R;
+import com.spike.bot.adapter.TypeSpinnerAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
+import com.spike.bot.core.APIConst;
+import com.spike.bot.core.Common;
+import com.spike.bot.core.Constants;
+import com.spike.bot.model.DeviceVO;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,19 +45,18 @@ public class DeviceEditDialog extends Dialog implements View.OnClickListener {
     public Activity activity;
     public Dialog d;
     public Button btn_save, btn_Delete;
-    public ImageView iv_close,spinner_arrow;
+    public ImageView iv_close, spinner_arrow;
+    public JSONObject jsonObject = new JSONObject();
+    public String module_id = "", device_id = "", room_id = "", room_name = "";
     EditText et_switch_name;
     Spinner sp_device_type;
     TextView tv_title;
     LinearLayout ll_auto_mode_type;
     RadioGroup rg_auto_mode_type;
     RadioButton rb_auto_mode_type_normal, rb_auto_mode_type_dimmer;
-
     DeviceVO deviceVO;
     ICallback iCallback;
-    public JSONObject jsonObject = new JSONObject();
-
-    public String module_id = "", device_id = "", room_id = "", room_name = "";
+    ArrayList<String> flags = new ArrayList<>();
 
     public DeviceEditDialog(Activity activity, DeviceVO deviceVO, JSONObject result, ICallback iCallback) {
         super(activity);
@@ -85,7 +85,7 @@ public class DeviceEditDialog extends Dialog implements View.OnClickListener {
         iv_close = findViewById(R.id.iv_close);
         spinner_arrow = findViewById(R.id.spinner_arrow);
 
-       // et_switch_name.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        // et_switch_name.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
 
         btn_save.setOnClickListener(this);
         iv_close.setOnClickListener(this);
@@ -122,10 +122,10 @@ public class DeviceEditDialog extends Dialog implements View.OnClickListener {
             sp_device_type.setEnabled(false);
         }
 
-        if(deviceVO.getDeviceType().equals("curtain")){
+        if (deviceVO.getDeviceType().equals("curtain")) {
             sp_device_type.setEnabled(false);
             sp_device_type.setClickable(false);
-        } else{
+        } else {
             sp_device_type.setEnabled(true);
             sp_device_type.setClickable(true);
         }
@@ -179,7 +179,7 @@ public class DeviceEditDialog extends Dialog implements View.OnClickListener {
         }
         ActivityHelper.showProgressDialog(activity, "Please wait.", false);
 
-        JSONObject obj = new JSONObject();
+        /*JSONObject obj = new JSONObject();
         try {
 
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -195,7 +195,8 @@ public class DeviceEditDialog extends Dialog implements View.OnClickListener {
 
         new GetJsonTask(activity, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
-            public void onSuccess(JSONObject result) {;
+            public void onSuccess(JSONObject result) {
+                ;
                 try {
                     //{"code":200,"message":"success"}
                     int code = result.getInt("code");
@@ -223,28 +224,70 @@ public class DeviceEditDialog extends Dialog implements View.OnClickListener {
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        }).execute();*/
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+
+        SpikeBotApi.getInstance().DeleteDeviceDailog(deviceVO.getOriginal_room_device_id(), new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    //{"code":200,"message":"success"}
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        if (!TextUtils.isEmpty(message)) {
+                            Toast.makeText(activity.getApplicationContext().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                        }
+                        ActivityHelper.dismissProgressDialog();
+                        dismiss();
+                        iCallback.onSuccess("yes");
+
+                    } else {
+                        ChatApplication.showToast(getContext(), message);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
     }
 
     /* save value of device name & device icon*/
     public void saveSwithcDetails(String name) {
 
         if (!ActivityHelper.isConnectingToInternet(activity)) {
-            ChatApplication.showToast(activity.getApplicationContext() ,activity.getResources().getString(R.string.disconnect));
+            ChatApplication.showToast(activity.getApplicationContext(), activity.getResources().getString(R.string.disconnect));
             return;
         }
         ActivityHelper.showProgressDialog(activity, "Please wait.", false);
 
-        JSONObject obj = new JSONObject();
+        /*JSONObject obj = new JSONObject();
         try {
             obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
             obj.put("user_id", Common.getPrefValue(activity.getApplicationContext(), Constants.USER_ID));
             obj.put("device_id", deviceVO.getDeviceId());
             obj.put("device_name", name);
-            if(deviceVO.getDeviceType().equalsIgnoreCase("curtain")){
+            if (deviceVO.getDeviceType().equalsIgnoreCase("curtain")) {
                 obj.put("device_icon", "");
-            }else {
+            } else {
                 obj.put("device_icon", flags.get(sp_device_type.getSelectedItemPosition()).toString());
             }
 
@@ -288,7 +331,53 @@ public class DeviceEditDialog extends Dialog implements View.OnClickListener {
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        }).execute();*/
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+
+        SpikeBotApi.getInstance().SaveSwithcDetails(deviceVO.getDeviceId(),name,flags.get(sp_device_type.getSelectedItemPosition()),
+                flags.get(sp_device_type.getSelectedItemPosition()).toString(),rg_auto_mode_type.getCheckedRadioButtonId() == R.id.rb_auto_mode_type_normal ? "normal" : "dimmer",
+                new DataResponseListener() {
+                    @Override
+                    public void onData_SuccessfulResponse(String stringResponse) {
+                        try {
+
+                            JSONObject result = new JSONObject(stringResponse);
+                            //{"code":200,"message":"success"}
+                            int code = result.getInt("code");
+                            String message = result.getString("message");
+                            ChatApplication.logDisplay("save switch result is" + " " + message);
+                            if (code == 200) {
+                                if (!TextUtils.isEmpty(message)) {
+                                    ChatApplication.showToast(getContext(), message);
+                                }
+                                ActivityHelper.dismissProgressDialog();
+                                dismiss();
+                                iCallback.onSuccess("yes");
+                            } else {
+                                ChatApplication.showToast(getContext(), message);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        } finally {
+                            ActivityHelper.dismissProgressDialog();
+
+                        }
+                    }
+
+                    @Override
+                    public void onData_FailureResponse() {
+                        ActivityHelper.dismissProgressDialog();
+                    }
+
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
+                        ActivityHelper.dismissProgressDialog();
+                    }
+                    });
+
     }
 
     public void getSwitchDetails() {
@@ -334,8 +423,6 @@ public class DeviceEditDialog extends Dialog implements View.OnClickListener {
         }
 
     }
-
-    ArrayList<String> flags = new ArrayList<>();
 
     /* set icon view */
     private void setSpinnerValue(JSONArray device_iconsArray) {

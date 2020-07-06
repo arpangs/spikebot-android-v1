@@ -142,6 +142,9 @@ public class BeaconDetailActivity extends AppCompatActivity {
             return;
         }
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         ActivityHelper.showProgressDialog(BeaconDetailActivity.this, "Please Wait", true);
         SpikeBotApi.getInstance().getBeaconLocationList(room_id, roomListString, new DataResponseListener() {
             @Override
@@ -173,6 +176,12 @@ public class BeaconDetailActivity extends AppCompatActivity {
 
             @Override
             public void onData_FailureResponse() {
+                ChatApplication.showToast(BeaconDetailActivity.this, getResources().getString(R.string.something_wrong1));
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ChatApplication.showToast(BeaconDetailActivity.this, getResources().getString(R.string.something_wrong1));
                 ActivityHelper.dismissProgressDialog();
             }
@@ -215,6 +224,8 @@ public class BeaconDetailActivity extends AppCompatActivity {
             return;
         }
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().getRoomList("room", new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -246,6 +257,11 @@ public class BeaconDetailActivity extends AppCompatActivity {
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
         });

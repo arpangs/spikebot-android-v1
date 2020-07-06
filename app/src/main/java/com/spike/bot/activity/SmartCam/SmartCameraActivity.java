@@ -217,6 +217,8 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
         }
 
         ActivityHelper.showProgressDialog(this, "Searching Device attached", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().saveJetsonCameraKey(roomName.getText().toString(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -243,6 +245,12 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(SmartCameraActivity.this,getResources().getString(R.string.something_wrong1));
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(SmartCameraActivity.this,getResources().getString(R.string.something_wrong1));
             }
@@ -403,6 +411,8 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
             ChatApplication.showToast(SmartCameraActivity.this, getResources().getString(R.string.disconnect));
             return;
         }
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().addCameraCall(camera_name,camera_ip,user_name,password,confidence_score_day,confidence_score_night,video_path,jetson_id,isflag,
                 new DataResponseListener() {
                     @Override
@@ -430,6 +440,12 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
                         ActivityHelper.dismissProgressDialog();
                         ChatApplication.showToast(SmartCameraActivity.this,getResources().getString(R.string.something_wrong1));
                     }
+
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
+                        ActivityHelper.dismissProgressDialog();
+                        ChatApplication.showToast(SmartCameraActivity.this,getResources().getString(R.string.something_wrong1));
+                    }
                 });
     }
 
@@ -443,6 +459,9 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
     /*call smart camera */
     private void callGetSmarCamera() {
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().callGetSmartCamera(jetson_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -489,11 +508,19 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
                 showView(false);
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                showView(false);
+                ActivityHelper.dismissProgressDialog();
+            }
         });
     }
 
     /*delete jetson camera*/
     private void deleteJetsoncamera(int position) {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deleteJetsoncamera(arrayList.get(position).getCamera_id(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -516,6 +543,11 @@ public class SmartCameraActivity extends AppCompatActivity implements View.OnCli
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
         });

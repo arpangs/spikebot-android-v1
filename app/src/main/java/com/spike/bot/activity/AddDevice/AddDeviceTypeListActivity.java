@@ -23,7 +23,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -34,23 +33,18 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.JsonObject;
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
-import com.spike.bot.Beacon.AddBeaconActivity;
 import com.spike.bot.Beacon.BeaconListActivity;
 import com.spike.bot.Beacon.BeaconScannerAddActivity;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Repeatar.RepeaterActivity;
 import com.spike.bot.activity.SmartCam.AddJetSonActivity;
-import com.spike.bot.activity.SmartDevice.BrandListActivity;
 import com.spike.bot.activity.SmartRemoteActivity;
 import com.spike.bot.activity.TTLock.LockBrandActivity;
 import com.spike.bot.activity.ir.blaster.IRBlasterAddActivity;
@@ -75,15 +69,14 @@ import java.util.ArrayList;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
-import static com.spike.bot.core.Common.dpToPx;
-import static com.spike.bot.core.Common.showToast;
-
 /**
  * Created by Sagar on 15/10/19.
  * Gmail : vipul patel
  */
 public class AddDeviceTypeListActivity extends AppCompatActivity {
 
+    public static int SENSOR_TYPE_PANAL = 0, SENSOR_TYPE_DOOR = 1, SENSOR_TYPE_TEMP = 2, SENSOR_GAS = 5, Curtain = 6, typeSync = 0, SENSOR_WATER = 7;
+    public AddRoomDialog addRoomDialog;
     Toolbar toolbar;
     RecyclerView recyclerSmartDevice;
     DeviceListAdapter deviceListAdapter;
@@ -92,13 +85,92 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
     ArrayList<String> roomNameList = new ArrayList<>();
     ProgressDialog m_progressDialog;
     RoomVO room;
-    private Socket mSocket;
-
-    public AddRoomDialog addRoomDialog;
     Dialog dialog;
 
     boolean addRoom = false, addTempSensor = false;
-    public static int SENSOR_TYPE_PANAL = 0, SENSOR_TYPE_DOOR = 1, SENSOR_TYPE_TEMP = 2, SENSOR_GAS = 5, Curtain = 6, typeSync = 0, SENSOR_WATER = 7;
+    private Socket mSocket;
+    /**
+     * Socket Listner for configure devices
+     */
+    private Emitter.Listener configureDevice = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            AddDeviceTypeListActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (countDownTimer != null) {
+                            countDownTimer.cancel();
+                        }
+
+                        roomIdList.clear();
+                        roomNameList.clear();
+
+                        //message, gas_sensor_module_id,room_list
+                        JSONObject object = new JSONObject(args[0].toString());
+
+                        ChatApplication.logDisplay("configureDevice is " + object);
+
+                        if (TextUtils.isEmpty(object.getString("message"))) {
+
+                            JSONArray jsonArray = object.getJSONArray("room_list");
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject objectRoom = jsonArray.getJSONObject(i);
+                                String room_id = objectRoom.getString("room_id");
+                                String room_name = objectRoom.getString("room_name");
+
+                                roomIdList.add(room_id);
+                                roomNameList.add(room_name);
+                            }
+                        }
+
+                        ActivityHelper.dismissProgressDialog();
+                        String total_devices = object.optString("total_devices");
+                        ChatApplication.logDisplay("typeSync is " + typeSync);
+                        if (TextUtils.isEmpty(object.getString("message"))) {
+                            if (typeSync == 0) {
+                                addRoomDialog = new AddRoomDialog(AddDeviceTypeListActivity.this, roomIdList, roomNameList, object.getString("module_id"), total_devices, object.getString("module_type"), new ICallback() {
+                                    @Override
+                                    public void onSuccess(String str) {
+                                        if (str.equalsIgnoreCase("yes")) {
+                                            ChatApplication.isOpenDialog = true;
+                                            ChatApplication.isRefreshDashBoard = true;
+                                            ChatApplication.isMainFragmentNeedResume = true;
+                                            ChatApplication.closeKeyboard(AddDeviceTypeListActivity.this);
+                                        }
+                                    }
+                                });
+                                if (!addRoomDialog.isShowing()) {
+                                    addRoomDialog.show();
+                                }
+                            } else {
+                                showGasSensor(object.optString("module_id"), object.optString("module_type"));
+                            }
+                        } else {
+                            showConfigAlert(object.getString("message"));
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+        }
+    };
+    /*count down for 7 sec after finish*/
+    CountDownTimer countDownTimer = new CountDownTimer(7000, 4000) {
+        public void onTick(long millisUntilFinished) {
+        }
+
+        public void onFinish() {
+            addRoom = false;
+            ActivityHelper.dismissProgressDialog();
+            ChatApplication.showToast(getApplicationContext(), "No New Device detected!");
+            mSocket.off("configureDevice", configureDevice);
+        }
+
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -355,73 +427,6 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         }
     }
 
-    /*device list adapter*/
-    public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.SensorViewHolder> {
-
-        private Context mContext;
-        ArrayList<DeviceList> arrayListLog = new ArrayList<>();
-
-
-        public DeviceListAdapter(Context context, ArrayList<DeviceList> arrayListLog1) {
-            this.mContext = context;
-            this.arrayListLog = arrayListLog1;
-        }
-
-        @Override
-        public DeviceListAdapter.SensorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_device_list, parent, false);
-            return new DeviceListAdapter.SensorViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(final DeviceListAdapter.SensorViewHolder holder, final int position) {
-
-            DeviceList devielist = arrayList.get(position);
-
-            // loading album cover using Glide library
-            Glide.with(mContext).load(devielist.getThumbnail()).into(holder.imgAdd);
-            holder.txtUserName.setText(devielist.getDevicename());
-
-           /* if (position == 0 || position == 3 || position == 4 || position == 6 || position == 7 || position == 12 || position == 14) {
-                holder.imgAdd.setVisibility(View.INVISIBLE);
-            } else {
-                holder.imgAdd.setVisibility(View.VISIBLE);
-            }*/
-
-            holder.view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    setIntent(position);
-                }
-            });
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return arrayListLog.size();
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            return position;
-        }
-
-        public class SensorViewHolder extends RecyclerView.ViewHolder {
-
-            public View view;
-            public TextView txtUserName;
-            public ImageView imgAdd;
-
-            public SensorViewHolder(View view) {
-                super(view);
-                this.view = view;
-                txtUserName = itemView.findViewById(R.id.txtUserName);
-                imgAdd = itemView.findViewById(R.id.imgAdd);
-            }
-        }
-    }
-
     /**
      * Call api for add custom room
      */
@@ -489,6 +494,8 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         }
         showProgressDialog(this, "Searching Device attached ", false);
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
         SpikeBotApi.getInstance().saveCustomRoom(roomName.getText().toString(), new DataResponseListener() {
             @Override
@@ -504,6 +511,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                         dialog.dismiss();
                         ChatApplication.showToast(AddDeviceTypeListActivity.this, message);
                         ChatApplication.isMainFragmentNeedResume = true;
+                        ChatApplication.CurrnetFragment = R.id.navigationDashboard;  // dev arpan on 15 june 2020
                         finish();
                     } else if (code == 301) {
                         ChatApplication.showToast(AddDeviceTypeListActivity.this, message);
@@ -521,6 +529,11 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
             @Override
             public void onData_FailureResponse() {
+                dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 dismissProgressDialog();
             }
         });
@@ -702,6 +715,8 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
         ChatApplication.logDisplay("config device url is " + url);
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().getConfigData(url, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -713,9 +728,13 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
         });
     }
-
 
     /**
      * dialog enter key camera
@@ -765,7 +784,8 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         }
     }
 
-    /**config device url is
+    /**
+     * config device url is
      * camera key : spike123
      * camera key check is valid or not..
      */
@@ -792,6 +812,9 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         }
 
         showProgressDialog(this, "Searching Device attached ", false);
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
         SpikeBotApi.getInstance().saveCameraKey(roomName.getText().toString(), new DataResponseListener() {
             @Override
@@ -820,6 +843,12 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
             @Override
             public void onData_FailureResponse() {
+                dismissProgressDialog();
+                ChatApplication.showToast(AddDeviceTypeListActivity.this, getResources().getString(R.string.something_wrong1));
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 dismissProgressDialog();
                 ChatApplication.showToast(AddDeviceTypeListActivity.this, getResources().getString(R.string.something_wrong1));
             }
@@ -939,6 +968,8 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             return;
         }
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().addCamera(camera_name, camera_ip, video_path, user_name, password, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -963,22 +994,14 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                 dismissProgressDialog();
                 ChatApplication.showToast(AddDeviceTypeListActivity.this, getResources().getString(R.string.something_wrong1));
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                dismissProgressDialog();
+                ChatApplication.showToast(AddDeviceTypeListActivity.this, getResources().getString(R.string.something_wrong1));
+            }
         });
     }
-
-    /*count down for 7 sec after finish*/
-    CountDownTimer countDownTimer = new CountDownTimer(7000, 4000) {
-        public void onTick(long millisUntilFinished) {
-        }
-
-        public void onFinish() {
-            addRoom = false;
-            ActivityHelper.dismissProgressDialog();
-            ChatApplication.showToast(getApplicationContext(), "No New Device detected!");
-            mSocket.off("configureDevice", configureDevice);
-        }
-
-    };
 
     public void startTimer() {
         try {
@@ -987,13 +1010,12 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         }
     }
 
-
     @Override
     public boolean onSupportNavigateUp() {
+        ChatApplication.CurrnetFragment = R.id.navigationDashboard;  // dev arpan on 15 june 2020
         onBackPressed();
         return true;
     }
-
 
     public void showProgressDialog(Context context, String message, boolean iscancle) {
         m_progressDialog = new ProgressDialog(this);
@@ -1098,6 +1120,8 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
         ActivityHelper.showProgressDialog(AddDeviceTypeListActivity.this, "Please wait.", false);
         int room_pos = sp_room_list.getSelectedItemPosition();
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().addDevice(roomIdList.get(room_pos), door_name, door_module_id, module_type, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -1127,80 +1151,13 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
         });
     }
-
-
-    /**
-     * Socket Listner for configure devices
-     */
-    private Emitter.Listener configureDevice = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            AddDeviceTypeListActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        if (countDownTimer != null) {
-                            countDownTimer.cancel();
-                        }
-
-                        roomIdList.clear();
-                        roomNameList.clear();
-
-                        //message, gas_sensor_module_id,room_list
-                        JSONObject object = new JSONObject(args[0].toString());
-
-                        ChatApplication.logDisplay("configureDevice is " + object);
-
-                        if (TextUtils.isEmpty(object.getString("message"))) {
-
-                            JSONArray jsonArray = object.getJSONArray("room_list");
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject objectRoom = jsonArray.getJSONObject(i);
-                                String room_id = objectRoom.getString("room_id");
-                                String room_name = objectRoom.getString("room_name");
-
-                                roomIdList.add(room_id);
-                                roomNameList.add(room_name);
-                            }
-                        }
-
-                        ActivityHelper.dismissProgressDialog();
-                        String total_devices = object.optString("total_devices");
-                        ChatApplication.logDisplay("typeSync is " + typeSync);
-                        if (TextUtils.isEmpty(object.getString("message"))) {
-                            if (typeSync == 0) {
-                                addRoomDialog = new AddRoomDialog(AddDeviceTypeListActivity.this, roomIdList, roomNameList, object.getString("module_id"), total_devices, object.getString("module_type"), new ICallback() {
-                                    @Override
-                                    public void onSuccess(String str) {
-                                        if (str.equalsIgnoreCase("yes")) {
-                                            ChatApplication.isOpenDialog = true;
-                                            ChatApplication.isRefreshDashBoard = true;
-                                            ChatApplication.isMainFragmentNeedResume = true;
-                                            ChatApplication.closeKeyboard(AddDeviceTypeListActivity.this);
-                                        }
-                                    }
-                                });
-                                if (!addRoomDialog.isShowing()) {
-                                    addRoomDialog.show();
-                                }
-                            } else {
-                                showGasSensor(object.optString("module_id"), object.optString("module_type"));
-                            }
-                        } else {
-                            showConfigAlert(object.getString("message"));
-                        }
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            });
-        }
-    };
-
 
     /**
      * Display Alert dialog when found door or temp sensor config already configured
@@ -1218,6 +1175,73 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             }
         });
         builder.create().show();
+    }
+
+    /*device list adapter*/
+    public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.SensorViewHolder> {
+
+        ArrayList<DeviceList> arrayListLog = new ArrayList<>();
+        private Context mContext;
+
+
+        public DeviceListAdapter(Context context, ArrayList<DeviceList> arrayListLog1) {
+            this.mContext = context;
+            this.arrayListLog = arrayListLog1;
+        }
+
+        @Override
+        public DeviceListAdapter.SensorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_device_list, parent, false);
+            return new DeviceListAdapter.SensorViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(final DeviceListAdapter.SensorViewHolder holder, final int position) {
+
+            DeviceList devielist = arrayList.get(position);
+
+            // loading album cover using Glide library
+            Glide.with(mContext).load(devielist.getThumbnail()).into(holder.imgAdd);
+            holder.txtUserName.setText(devielist.getDevicename());
+
+           /* if (position == 0 || position == 3 || position == 4 || position == 6 || position == 7 || position == 12 || position == 14) {
+                holder.imgAdd.setVisibility(View.INVISIBLE);
+            } else {
+                holder.imgAdd.setVisibility(View.VISIBLE);
+            }*/
+
+            holder.view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    setIntent(position);
+                }
+            });
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return arrayListLog.size();
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return position;
+        }
+
+        public class SensorViewHolder extends RecyclerView.ViewHolder {
+
+            public View view;
+            public TextView txtUserName;
+            public ImageView imgAdd;
+
+            public SensorViewHolder(View view) {
+                super(view);
+                this.view = view;
+                txtUserName = itemView.findViewById(R.id.txtUserName);
+                imgAdd = itemView.findViewById(R.id.imgAdd);
+            }
+        }
     }
 
     /**

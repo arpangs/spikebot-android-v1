@@ -62,7 +62,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
     ArrayList<WifiModel.WiFiList> arrayList = new ArrayList<>();
     ArrayList<String> roomIdList = new ArrayList<>();
     ArrayList<String> roomNameList = new ArrayList<>();
-    ArrayList<UnassignedListRes.Data.RoomList> roomListArray=new ArrayList<>();
+    ArrayList<UnassignedListRes.Data.RoomList> roomListArray = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,9 +72,9 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
         ConnectivityReceiver.connectivityReceiverWifi = WifiListActivity.this;
         arrayList = (ArrayList<WifiModel.WiFiList>) getIntent().getSerializableExtra("arrayList");
         wifiIP = getIntent().getStringExtra("wifiIP");
-        roomListArray = (ArrayList<UnassignedListRes.Data.RoomList>)getIntent().getSerializableExtra("roomListArray");
+        roomListArray = (ArrayList<UnassignedListRes.Data.RoomList>) getIntent().getSerializableExtra("roomListArray");
 
-        toolbar =  findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -84,13 +84,13 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
     }
 
     private void setUi() {
-        recyclerWifi =  findViewById(R.id.recyclerWifi);
+        recyclerWifi = findViewById(R.id.recyclerWifi);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(WifiListActivity.this);
         recyclerWifi.setLayoutManager(linearLayoutManager);
         WifiAdapter wifiAdapter = new WifiAdapter(WifiListActivity.this, arrayList, this);
         recyclerWifi.setAdapter(wifiAdapter);
         wifiAdapter.notifyDataSetChanged();
-        ChatApplication.logDisplay("roomListArray is "+roomListArray.size());
+        ChatApplication.logDisplay("roomListArray is " + roomListArray.size());
     }
 
     @Override
@@ -112,12 +112,12 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
         irDialog.setContentView(R.layout.dialog_add_sensordoor);
         irDialog.setCanceledOnTouchOutside(false);
 
-        final EditText edt_door_name =  irDialog.findViewById(R.id.txt_door_sensor_name);
+        final EditText edt_door_name = irDialog.findViewById(R.id.txt_door_sensor_name);
         final TextView edt_door_module_id = irDialog.findViewById(R.id.txt_module_id);
-        final Spinner sp_room_list =  irDialog.findViewById(R.id.sp_room_list);
+        final Spinner sp_room_list = irDialog.findViewById(R.id.sp_room_list);
         ImageView sp_drop_down = irDialog.findViewById(R.id.sp_drop_down);
         TextView dialogTitle = irDialog.findViewById(R.id.tv_title);
-        TextView txt_sensor_name =  irDialog.findViewById(R.id.txt_sensor_name);
+        TextView txt_sensor_name = irDialog.findViewById(R.id.txt_sensor_name);
         TextView txtSelectRoom = irDialog.findViewById(R.id.txtSelectRoom);
 
         dialogTitle.setText("Add IR Blaster");
@@ -128,8 +128,8 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
         edt_door_module_id.setFocusable(false);
 
         roomNameList.clear();
-        if(roomListArray.size()>0){
-            for(int i=0; i<roomListArray.size(); i++){
+        if (roomListArray.size() > 0) {
+            for (int i = 0; i < roomListArray.size(); i++) {
                 roomNameList.add(roomListArray.get(i).getRoomName());
             }
         }
@@ -137,9 +137,9 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
         TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(getApplicationContext(), roomNameList, 1, false);
         sp_room_list.setAdapter(customAdapter);
 
-        Button btn_cancel =  irDialog.findViewById(R.id.btn_door_cancel);
-        Button btn_save =  irDialog.findViewById(R.id.btn_door_save);
-        ImageView iv_close =  irDialog.findViewById(R.id.iv_close);
+        Button btn_cancel = irDialog.findViewById(R.id.btn_door_cancel);
+        Button btn_save = irDialog.findViewById(R.id.btn_door_save);
+        ImageView iv_close = irDialog.findViewById(R.id.iv_close);
 
         sp_drop_down.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -167,9 +167,9 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
                 if (TextUtils.isEmpty(edt_door_name.getText().toString())) {
                     edt_door_name.requestFocus();
                     edt_door_name.setError("Enter IR Name");
-                }else if(roomListArray.size()==0){
-                    ChatApplication.showToast(WifiListActivity.this,"Please create room.");
-                }else {
+                } else if (roomListArray.size() == 0) {
+                    ChatApplication.showToast(WifiListActivity.this, "Please create room.");
+                } else {
                     saveIRBlaster(irDialog, edt_door_name, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list);
                 }
             }
@@ -195,8 +195,10 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", true);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().addDevice(roomListArray.get(sp_room_list.getSelectedItemPosition()).getRoomId(), door_name, door_module_id, "ir_blaster", new DataResponseListener() {
 
-        SpikeBotApi.getInstance().addDevice(roomListArray.get(sp_room_list.getSelectedItemPosition()).getRoomId(),door_name, door_module_id,"ir_blaster" ,new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
@@ -223,9 +225,15 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
                     ActivityHelper.dismissProgressDialog();
                 }
             }
+
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
     }
@@ -240,11 +248,11 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
         dialog.setContentView(R.layout.dialog_wifi_password);
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
-        final CustomEditText edWifiPassword =  dialog.findViewById(R.id.edWifiPassword);
-        final CustomEditText edWifiIP =  dialog.findViewById(R.id.edWifiIP);
-        TextView txtSave =  dialog.findViewById(R.id.txtSave);
-        TextView txtWait =  dialog.findViewById(R.id.txtWait);
+        ImageView iv_close = dialog.findViewById(R.id.iv_close);
+        final CustomEditText edWifiPassword = dialog.findViewById(R.id.edWifiPassword);
+        final CustomEditText edWifiIP = dialog.findViewById(R.id.edWifiIP);
+        TextView txtSave = dialog.findViewById(R.id.txtSave);
+        TextView txtWait = dialog.findViewById(R.id.txtWait);
 
         edWifiIP.setSelection(edWifiPassword.getText().length());
         edWifiPassword.setSelection(edWifiPassword.getText().length());
@@ -267,7 +275,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
 //                    txtWait.setVisibility(View.VISIBLE);
                     InputMethodManager imm = (InputMethodManager) WifiListActivity.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(edWifiPassword.getWindowToken(), 0);
-                    callWifiPasswordCheck(txtSave,txtWait,edWifiPassword.getText().toString(), wiFiList, edWifiIP.getText().toString(), dialog);
+                    callWifiPasswordCheck(txtSave, txtWait, edWifiPassword.getText().toString(), wiFiList, edWifiIP.getText().toString(), dialog);
                 }
             }
         });
@@ -282,8 +290,8 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
     }
 
     /*blaster wifi connection request
-    * */
-    private void callWifiPasswordCheck(TextView txtSave,TextView txtWait,String s, WifiModel.WiFiList wiFiList, String edWifiIP, final Dialog dialog) {
+     * */
+    private void callWifiPasswordCheck(TextView txtSave, TextView txtWait, String s, WifiModel.WiFiList wiFiList, String edWifiIP, final Dialog dialog) {
         if (!ActivityHelper.isConnectingToInternet(WifiListActivity.this)) {
             Toast.makeText(WifiListActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -305,7 +313,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
                             Constants.isWifiConnectSave = true;
                             moduleId = result.optString("moduleId");
                             if (moduleId.length() > 1) {
-                                setSaveView(txtSave,txtWait,dialog);
+                                setSaveView(txtSave, txtWait, dialog);
                             }
                         } else {
                             ActivityHelper.dismissProgressDialog();
@@ -338,7 +346,7 @@ public class WifiListActivity extends AppCompatActivity implements WifiListner, 
     /*for blaster wifi off & last wifi connectiong wait ..
     some time wifi connectig few sec so timer cout adding
     * */
-    private void setSaveView(TextView txtSave,TextView txtWait, Dialog dialog) {
+    private void setSaveView(TextView txtSave, TextView txtWait, Dialog dialog) {
         new CountDownTimer(2500, 1000) {
             public void onTick(long millisUntilFinished) {
             }

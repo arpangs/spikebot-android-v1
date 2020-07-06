@@ -577,6 +577,8 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deviceInfo(door_sensor_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -592,6 +594,11 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
         });
@@ -1276,6 +1283,8 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().updateyalelock(door_sensor_id, enable_lock_unlock_from_app, passcode, guestpasscode, sensor_name, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -1299,6 +1308,11 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
         });
@@ -1363,6 +1377,8 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().doorSensorNotificationStatus(doorSensorNotificationId, isActive, isNotification, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -1386,6 +1402,11 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
         });
@@ -1465,6 +1486,8 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deleteDevice(door_sensor_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -1488,6 +1511,11 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
         });
@@ -1644,6 +1672,8 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().addNotification(mStartTime, mEndTime, notification.getAlertId(), doorSensorResModel.getDevice().getDevice_id(), isEdit, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -1680,6 +1710,11 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
         });
 
     }
@@ -1699,6 +1734,8 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deleteDoorSensorNotification(notification.getAlertId(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -1723,6 +1760,11 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
         });
@@ -1788,7 +1830,8 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
     }
 
     public void unreadApiCall(final boolean b) {
-
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().unreadNotification(door_sensor_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -1797,6 +1840,11 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
 
             @Override
             public void onData_FailureResponse() {
+
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
 
             }
         });

@@ -101,6 +101,16 @@ public class IRBlasterAddRes {
         @SerializedName("related_devices")
         @Expose
         private List<String> relatedDevices = null;
+        @SerializedName("range")
+        @Expose
+        private int range;
+        @SerializedName("on_time")
+        @Expose
+        private String on_time;
+        @SerializedName("off_time")
+        @Expose
+        private String off_time;
+
 
         public String getPanelDeviceId() {
             return panelDeviceId;
@@ -244,6 +254,30 @@ public class IRBlasterAddRes {
 
         public void setRelatedDevices(List<String> relatedDevices) {
             this.relatedDevices = relatedDevices;
+        }
+
+        public int getRange() {
+            return range;
+        }
+
+        public void setRange(int range) {
+            this.range = range;
+        }
+
+        public String getOn_time() {
+            return on_time;
+        }
+
+        public void setOn_time(String on_time) {
+            this.on_time = on_time;
+        }
+
+        public String getOff_time() {
+            return off_time;
+        }
+
+        public void setOff_time(String off_time) {
+            this.off_time = off_time;
         }
     }
 

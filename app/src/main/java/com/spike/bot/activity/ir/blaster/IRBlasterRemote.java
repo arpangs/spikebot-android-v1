@@ -280,6 +280,9 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deviceInfo(mRemoteId, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -310,6 +313,11 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
         });
 
     }
@@ -321,6 +329,9 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             return;
         }
         ActivityHelper.showProgressDialog(IRBlasterRemote.this, "Please Wait...", false);
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
         SpikeBotApi.getInstance().getDeviceList("ir_blaster",new DataResponseListener() {
             @Override
@@ -343,6 +354,11 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
         });
@@ -753,6 +769,11 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
+
+        ActivityHelper.dismissProgressDialog();
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().saveRemote(mRemoteCommandList.getDevice().getDevice_id(), remoteName,
                 mSpinnerMode.getSelectedItem().toString() + "-" + mRemoteDefaultTemp.getText().toString().trim(), mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId(),
                 new DataResponseListener() {
@@ -778,6 +799,11 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                     public void onData_FailureResponse() {
                         ChatApplication.showToast(IRBlasterRemote.this, getResources().getString(R.string.something_wrong1));
                     }
+
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
+                        ChatApplication.showToast(IRBlasterRemote.this, getResources().getString(R.string.something_wrong1));
+                    }
                 });
     }
 
@@ -787,8 +813,10 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             ChatApplication.showToast(getApplicationContext(), "" + R.string.disconnect);
             return;
         }
-
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deleteDevice(mRemoteCommandList.getDevice().getDevice_id(), new DataResponseListener() {
+
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
@@ -816,6 +844,12 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(IRBlasterRemote.this, getResources().getString(R.string.something_wrong1));
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(IRBlasterRemote.this, getResources().getString(R.string.something_wrong1));
+            }
         });
     }
 
@@ -830,6 +864,9 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
             ChatApplication.showToast(getApplicationContext(), "" + R.string.disconnect);
             return;
         }
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
         SpikeBotApi.getInstance().sendRemoteCommand(mRemoteId, isRemoteActive == 1 ? "0" : "1", moodName.trim() + "-" + tempCurrent, counting,
                 new DataResponseListener() {
@@ -870,6 +907,12 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
                     @Override
                     public void onData_FailureResponse() {
+                        ActivityHelper.dismissProgressDialog();
+                        ChatApplication.showToast(IRBlasterRemote.this, mRemoteName.getText() + " " + getString(R.string.ir_error));
+                    }
+
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
                         ActivityHelper.dismissProgressDialog();
                         ChatApplication.showToast(IRBlasterRemote.this, mRemoteName.getText() + " " + getString(R.string.ir_error));
                     }

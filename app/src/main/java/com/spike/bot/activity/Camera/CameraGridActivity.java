@@ -154,6 +154,9 @@ public class CameraGridActivity extends AppCompatActivity {
     public void getAllCameraList() {
         ActivityHelper.showProgressDialog(CameraGridActivity.this, "Please Wait...", false);
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().getAllCameraList(jetson_id, isCamera, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -181,6 +184,12 @@ public class CameraGridActivity extends AppCompatActivity {
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(CameraGridActivity.this, "No camera found.");
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(CameraGridActivity.this, "No camera found.");
             }

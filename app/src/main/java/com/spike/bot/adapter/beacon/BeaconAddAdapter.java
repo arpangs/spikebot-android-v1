@@ -1,10 +1,12 @@
 package com.spike.bot.adapter.beacon;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -78,6 +80,14 @@ public class BeaconAddAdapter extends RecyclerView.Adapter<BeaconAddAdapter.Beac
               holder.img_inactive.setVisibility(View.GONE);
           }
 
+          if(TextUtils.isEmpty(scanner.getOn_time()) || TextUtils.isEmpty(scanner.getOff_time())){
+              holder.linear_onofftime.setVisibility(View.GONE);
+          } else {
+              holder.linear_onofftime.setVisibility(View.VISIBLE);
+              holder.txt_on_time.setText(scanner.getOn_time());
+              holder.txt_off_time.setText(scanner.getOff_time());
+          }
+
        /*   holder.mbeaconListAdapter = new BeaconScannerAddBeaconList(scanner.getRemoteList());
           holder.mbeaconList.setAdapter(holder.mbeaconListAdapter);*/
 
@@ -112,10 +122,11 @@ public class BeaconAddAdapter extends RecyclerView.Adapter<BeaconAddAdapter.Beac
 
     class BeaconViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView mscannerName, mRoomName;
+        private TextView mscannerName, mRoomName,txt_on_time,txt_off_time;
         private ImageView mbeaconEdit, mbeaconDelete,img_inactive;
         private RecyclerView mbeaconList;
         private BeaconScannerAddBeaconList mbeaconListAdapter;
+        private LinearLayout linear_onofftime;
 
         BeaconViewHolder(View itemView) {
             super(itemView);
@@ -124,6 +135,9 @@ public class BeaconAddAdapter extends RecyclerView.Adapter<BeaconAddAdapter.Beac
             mbeaconEdit = itemView.findViewById(R.id.iv_room_panel_add);
             mbeaconDelete = itemView.findViewById(R.id.iv_room_panel_delete);
             img_inactive = itemView.findViewById(R.id.img_inactive);
+            linear_onofftime = itemView.findViewById(R.id.linear_onofftime);
+            txt_on_time = itemView.findViewById(R.id.txt_on_time);
+            txt_off_time = itemView.findViewById(R.id.txt_off_time);
 
             mbeaconList = itemView.findViewById(R.id.list_edit_device);
             mbeaconList.setLayoutManager(new GridLayoutManager(mContext, 4));

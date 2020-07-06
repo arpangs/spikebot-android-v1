@@ -311,6 +311,8 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
 
     private void addalert(){
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().addalert(device_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -334,12 +336,19 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
         });
 
     }
 
     private void deletealert(){
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deletealert(device_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -363,6 +372,11 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
         });
 
     }
@@ -370,6 +384,8 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
     /*delete sensor*/
     private void deleteWater() {
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deleteDevice(device_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -393,6 +409,11 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
         });
 
     }
@@ -401,6 +422,8 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
     private void getWaterdetectorDetails() {
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deviceInfo(device_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -422,6 +445,11 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
 
@@ -568,6 +596,8 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().updateDevice(device_id,edSensorName.getText().toString(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -594,6 +624,11 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
     }

@@ -132,6 +132,9 @@ public class BeaconListActivity extends AppCompatActivity implements BeaconListA
             beaconList.clear();
         }
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().getDeviceList("beacon",new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -165,6 +168,11 @@ public class BeaconListActivity extends AppCompatActivity implements BeaconListA
 
             @Override
             public void onData_FailureResponse() {
+                ChatApplication.showToast(BeaconListActivity.this, getResources().getString(R.string.something_wrong1));
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ChatApplication.showToast(BeaconListActivity.this, getResources().getString(R.string.something_wrong1));
             }
         });
@@ -234,6 +242,8 @@ public class BeaconListActivity extends AppCompatActivity implements BeaconListA
             Common.showToast("" + getString(R.string.error_connect));
             return;
         }
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deleteDevice(beaconid, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -255,6 +265,11 @@ public class BeaconListActivity extends AppCompatActivity implements BeaconListA
 
             @Override
             public void onData_FailureResponse() {
+                ChatApplication.showToast(BeaconListActivity.this, getResources().getString(R.string.something_wrong1));
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ChatApplication.showToast(BeaconListActivity.this, getResources().getString(R.string.something_wrong1));
             }
         });

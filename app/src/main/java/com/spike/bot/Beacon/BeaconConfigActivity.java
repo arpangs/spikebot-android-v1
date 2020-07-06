@@ -216,6 +216,8 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
             return;
         }
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().getBeaconRoomList(new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -242,6 +244,11 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
 
             @Override
             public void onData_FailureResponse() {
+
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
 
             }
         });
@@ -271,6 +278,8 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
         JSONArray array = new JSONArray(deviceIdList);
 
         ActivityHelper.showProgressDialog(this, "Please wait.", true);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().saveBeacon(beaconname, beaconmodel.getDeviceId(), moduleid, array, editBeacon, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -306,6 +315,11 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
         });
@@ -441,7 +455,8 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
      * Get room device details
      */
     private void getDeviceDetails(String original_room_device_id) {
-
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().getDeviceDetails(original_room_device_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -464,6 +479,11 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
 
             @Override
             public void onData_FailureResponse() {
+
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
 
             }
         });

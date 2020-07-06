@@ -18,8 +18,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.irblaster.IRRemoteBrandListAdapter;
@@ -43,11 +41,11 @@ import java.util.List;
 public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRemoteBrandListAdapter.IRRemoteListClickEvent {
 
     public static DataSearch arrayList = new DataSearch();
+    List<IRRemoteListRes.Data.BrandList> brandLists = new ArrayList<>();
     private LinearLayout linear_progress;
     private RecyclerView mIRListView;
     private EditText mSearchBrand;
     private String mIrDeviceId, mRemoteName, mIrDeviceType, mRoomId, mIRBlasterModuleId, mIrBlasterId, mRoomName, mBlasterName;
-    List<IRRemoteListRes.Data.BrandList> brandLists = new ArrayList<>();
     private IRRemoteBrandListAdapter irRemoteBrandListAdapter;
 
     @Override
@@ -131,7 +129,8 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
 
         showProgress();
         ActivityHelper.showProgressDialog(IRRemoteBrandListActivity.this, "Please Wait...", false);
-
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().getIRDetailsList(new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -161,6 +160,12 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
 
             @Override
             public void onData_FailureResponse() {
+                hideProgress();
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 hideProgress();
                 ActivityHelper.dismissProgressDialog();
             }
@@ -221,6 +226,9 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
         }
         ActivityHelper.showProgressDialog(IRRemoteBrandListActivity.this, "Please Wait...", false);
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().getIRRemoteDetails(brandList.getBrandId(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -269,6 +277,11 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
         });

@@ -370,6 +370,8 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             Toast.makeText(HeavyLoadDetailActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().getHeavyLoadValue(device_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -388,6 +390,11 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
         });
     }
 
@@ -400,6 +407,8 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
 
         isApiStatus=true;
         ActivityHelper.showProgressDialog(HeavyLoadDetailActivity.this, "Please wait... ", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().getHeavyloadDetails(device_id, new DataResponseListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
@@ -425,6 +434,13 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             }
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                isApiStatus=false;
+                ChatApplication.showToast(HeavyLoadDetailActivity.this, getResources().getString(R.string.something_wrong1));
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
                 isApiStatus=false;
                 ChatApplication.showToast(HeavyLoadDetailActivity.this, getResources().getString(R.string.something_wrong1));
@@ -458,6 +474,8 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
         }
 
         ActivityHelper.showProgressDialog(HeavyLoadDetailActivity.this, "Please wait... ", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().HeavyloadFilter(device_id, strLess, value, stryear, new DataResponseListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
@@ -492,6 +510,12 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(HeavyLoadDetailActivity.this, getResources().getString(R.string.something_wrong1));
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(HeavyLoadDetailActivity.this, getResources().getString(R.string.something_wrong1));
             }

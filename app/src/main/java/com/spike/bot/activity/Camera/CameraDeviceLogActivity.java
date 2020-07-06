@@ -283,6 +283,8 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
     private void callGetSmarCamera() {
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().callGetSmarCamera(jetson_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -318,6 +320,11 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
         });
     }
 
@@ -332,6 +339,8 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         }
         ActivityHelper.showProgressDialog(CameraDeviceLogActivity.this, "Please wait...", false);
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().callCameraLog(start_date, end_date, camera_id, homecontroller_id, notification_number, isJetsonCameralog, isjetsonnotification, jetson_id,
                 cameralog, jetsoncameralog, new DataResponseListener() {
                     @Override
@@ -387,6 +396,12 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
                         ActivityHelper.dismissProgressDialog();
                         Toast.makeText(CameraDeviceLogActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
 
+                    }
+
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
+                        ActivityHelper.dismissProgressDialog();
+                        Toast.makeText(CameraDeviceLogActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -617,6 +632,8 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
             Toast.makeText(this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
         SpikeBotApi.getInstance().callupdateUnReadCameraLogs("camera", cameraIdTemp, new DataResponseListener() {
             @Override
@@ -631,6 +648,12 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(CameraDeviceLogActivity.this, R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(CameraDeviceLogActivity.this, R.string.disconnect, Toast.LENGTH_SHORT).show();
             }

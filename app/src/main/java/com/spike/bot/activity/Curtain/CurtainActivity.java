@@ -309,6 +309,8 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
     /*delete panel*/
     private void deletePanel() {
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deleteDevice(curtain_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -327,12 +329,19 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
         });
     }
 
     /*update curtain Status*/
     private void updateStatus() {
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().updateCutainStatus(curtain_id, panel_id, curtain_status, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -357,6 +366,11 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
             public void onData_FailureResponse() {
 
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
         });
 
     }
@@ -364,6 +378,9 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
     /*update curtain name*/
     private void updateCurtain(String name) {
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().updateDevice(curtain_id, name, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -382,6 +399,11 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
 

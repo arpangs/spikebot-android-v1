@@ -690,7 +690,7 @@ public class Common {
      * @return
      */
     public static String getPrefValue(Context context, String key) {
-        SharedPreferences settings = context.getSharedPreferences(Common.SP_NAME, Context.MODE_PRIVATE);
+        SharedPreferences settings = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
         String value = settings.getString(key, ""); //0 is the default value
         return value;
     }

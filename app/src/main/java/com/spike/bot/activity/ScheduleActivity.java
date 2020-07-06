@@ -2,6 +2,7 @@ package com.spike.bot.activity;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
@@ -16,7 +17,6 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -41,6 +41,8 @@ import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.DeviceListLayoutHelper;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -79,42 +81,78 @@ import static com.spike.bot.activity.DeviceLogActivity.getDate;
 
 public class ScheduleActivity extends AppCompatActivity implements View.OnClickListener, Spinner.OnItemSelectedListener, ItemClickListener, SelectDevicesListener {
 
-    CustomEditText et_schedule_on_time, et_schedule_off_time,et_schedule_name;
+    public String et_on_hour_ampm_12 = "";
+    public String et_off_hour_ampm_12 = "";
+    public Dialog dialog = null;
+    CustomEditText et_schedule_on_time, et_schedule_off_time, et_schedule_name;
     Spinner sp_schedule_list;
-    RadioGroup rg_schedule_type,rg_schedule_select;
-    RadioButton rb_schedule_type_room, rb_schedule_type_mood,rb_schedule_select_schedule, rb_schedule_select_auto;
-
+    RadioGroup rg_schedule_type, rg_schedule_select;
+    RadioButton rb_schedule_type_room, rb_schedule_type_mood, rb_schedule_select_schedule, rb_schedule_select_auto;
     TextView text_schedule_1, text_schedule_2, text_schedule_3, text_schedule_4,
-            text_schedule_5, text_schedule_6, text_schedule_7,txt_empty_sch,txtRoomSchedule,txtMoodSchedule;
+            text_schedule_5, text_schedule_6, text_schedule_7, txt_empty_sch, txtRoomSchedule, txtMoodSchedule;
     ImageView iv_schedule_on_time_clear, iv_schedule_off_time_clear;
-    Button btnMoodSchedule, btnRoomSchedule,btn_add_schedule, btn_cancel_schedule;
+    Button btnMoodSchedule, btnRoomSchedule, btn_add_schedule, btn_cancel_schedule;
     ImageView imgArrow, imgArraoTime;
-    LinearLayout ll_schedule, ll_spinner_hide,ll_on_time, ll_off_time, ll_week_title, ll_week_days,
-            ll_on_time_auto, ll_on_time_bottom,ll_off_time_auto, ll_off_time_bottom,ll_spinner_mood,
-            empty_ll_view,linear_header,linear_header_textviews,linear_header_buttons;
-    private Spinner sp_mood_selection;
-    CustomEditText et_on_time_hours, et_on_time_min,et_off_time_hours, et_off_time_min;
-    TextView et_on_time_bottom_header, et_off_time_bottom_header,et_on_time_bottom_header_at, et_on_time_bottom_header_at_time, et_on_time_bottom_header_at_ampm,
-            et_off_time_bottom_header_at, et_off_time_bottom_header_at_time, et_off_time_bottom_header_at_ampm,tv_schedule_list;
+    LinearLayout ll_schedule, ll_spinner_hide, ll_on_time, ll_off_time, ll_week_title, ll_week_days,
+            ll_on_time_auto, ll_on_time_bottom, ll_off_time_auto, ll_off_time_bottom, ll_spinner_mood,
+            empty_ll_view, linear_header, linear_header_textviews, linear_header_buttons;
+    CustomEditText et_on_time_hours, et_on_time_min, et_off_time_hours, et_off_time_min;
+    TextView et_on_time_bottom_header, et_off_time_bottom_header, et_on_time_bottom_header_at, et_on_time_bottom_header_at_time, et_on_time_bottom_header_at_ampm,
+            et_off_time_bottom_header_at, et_off_time_bottom_header_at_time, et_off_time_bottom_header_at_ampm, tv_schedule_list;
     RecyclerView rv_auto_mode, rv_schedule;
-
-    View view_header,view_starttime,view_moodlist;
-
+    View view_header, view_starttime, view_moodlist;
     JSONObject deviceObj = new JSONObject();
     ScheduleVO scheduleVO = new ScheduleVO();
-    int position = 0,selection=0,nextFalse=0;
-    boolean isEdit = false, isEditOpen = false, isSelectMode = false,isScheduleClick = false, isMoodSelected = false, isMap = false, isMoodAdapter;
-    String webUrl = "",moodId = "", roomId = "", startCheckDate = "", endCheckDate = "",on_time_date = "",off_time_date = "", isActivityType = "",on_at_time = "", off_at_time = "";
-
+    int position = 0, selection = 0, nextFalse = 0;
+    boolean isEdit = false, isEditOpen = false, isSelectMode = false, isScheduleClick = false, isMoodSelected = false, isMap = false, isMoodAdapter;
+    String webUrl = "", moodId = "", roomId = "", startCheckDate = "", endCheckDate = "", on_time_date = "", off_time_date = "", isActivityType = "", on_at_time = "", off_at_time = "";
     ArrayList<RoomVO> roomList = new ArrayList<>();
     ArrayList<RoomVO> roomListAdd = new ArrayList<>();
     ArrayList<MoodVO> moodList = new ArrayList<>();
     ArrayList<RoomVO> moodListSpinner = new ArrayList<>();
     ArrayList<RoomVO> moodListAdd = new ArrayList<>();
     ArrayList<RoomVO> roomArrayListTemp = new ArrayList<>();
-
     DeviceListLayoutHelper deviceListLayoutHelper;
 
+
+    /*
+     * set button background
+     */
+    String repeatDayString = "";
+    ArrayAdapter spinnerArrayAdapter;
+    private Spinner sp_mood_selection;
+    /**
+     * get Room name and Panel name using original_room_device_id
+     *
+     * @param original_room_device_id
+     */
+    private Socket mSocket;
+
+    /*remove duplicate value*/
+    public static List<DeviceVO> removeDuplicates(ArrayList<DeviceVO> list) {
+
+        ArrayList<String> arrayList = new ArrayList<>();
+        ArrayList<DeviceVO> listTemp = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            arrayList.add(list.get(i).getPanel_device_id());
+        }
+
+        HashSet<String> hashSet = new HashSet<String>();
+        hashSet.addAll(arrayList);
+        arrayList.clear();
+        arrayList.addAll(hashSet);
+
+
+        for (int j = 0; j < list.size(); j++) {
+            for (int i = 0; i < arrayList.size(); i++) {
+                if (arrayList.get(i).length() > 2 && list.get(j).getPanel_device_id().equalsIgnoreCase(arrayList.get(i))) {
+                    arrayList.set(i, arrayList.get(i) + "i");
+                    listTemp.add(list.get(i));
+                }
+            }
+        }
+        return listTemp;
+    }
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -178,67 +216,67 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         linear_header = findViewById(R.id.linear_headers);
         linear_header_textviews = findViewById(R.id.linear_header_textviews);
         linear_header_buttons = findViewById(R.id.linear_header_buttons);
-        imgArrow =  findViewById(R.id.imgArrow);
-        imgArraoTime =  findViewById(R.id.imgArraoTime);
-        empty_ll_view =  findViewById(R.id.empty_ll_view);
+        imgArrow = findViewById(R.id.imgArrow);
+        imgArraoTime = findViewById(R.id.imgArraoTime);
+        empty_ll_view = findViewById(R.id.empty_ll_view);
         empty_ll_view.setVisibility(View.GONE);
-        ll_spinner_mood =  findViewById(R.id.ll_spinner_mood);
-        sp_mood_selection =  findViewById(R.id.sp_mood_selection);
+        ll_spinner_mood = findViewById(R.id.ll_spinner_mood);
+        sp_mood_selection = findViewById(R.id.sp_mood_selection);
         et_on_time_hours = findViewById(R.id.et_on_time_hours);
         et_on_time_min = findViewById(R.id.et_on_time_min);
         et_off_time_hours = findViewById(R.id.et_off_time_hours);
         et_off_time_min = findViewById(R.id.et_off_time_min);
-        txt_empty_sch =  findViewById(R.id.txt_empty_sch);
-        btnRoomSchedule =  findViewById(R.id.btnRoomSchedule);
-        btnMoodSchedule =  findViewById(R.id.btnMoodSchedule);
+        txt_empty_sch = findViewById(R.id.txt_empty_sch);
+        btnRoomSchedule = findViewById(R.id.btnRoomSchedule);
+        btnMoodSchedule = findViewById(R.id.btnMoodSchedule);
         //headr on time
-        et_on_time_bottom_header =  findViewById(R.id.et_on_time_bottom_header);
-        et_on_time_bottom_header_at =  findViewById(R.id.et_on_time_bottom_header_at);
-        et_on_time_bottom_header_at_time =  findViewById(R.id.et_on_time_bottom_header_at_time);
-        et_on_time_bottom_header_at_ampm =  findViewById(R.id.et_on_time_bottom_header_at_ampm);
+        et_on_time_bottom_header = findViewById(R.id.et_on_time_bottom_header);
+        et_on_time_bottom_header_at = findViewById(R.id.et_on_time_bottom_header_at);
+        et_on_time_bottom_header_at_time = findViewById(R.id.et_on_time_bottom_header_at_time);
+        et_on_time_bottom_header_at_ampm = findViewById(R.id.et_on_time_bottom_header_at_ampm);
 
         //header off time
-        et_off_time_bottom_header =  findViewById(R.id.et_off_time_bottom_header);
+        et_off_time_bottom_header = findViewById(R.id.et_off_time_bottom_header);
 
-        et_off_time_bottom_header_at =  findViewById(R.id.et_off_time_bottom_header_at);
-        et_off_time_bottom_header_at_time =  findViewById(R.id.et_off_time_bottom_header_at_time);
-        et_off_time_bottom_header_at_ampm =  findViewById(R.id.et_off_time_bottom_header_at_ampm);
+        et_off_time_bottom_header_at = findViewById(R.id.et_off_time_bottom_header_at);
+        et_off_time_bottom_header_at_time = findViewById(R.id.et_off_time_bottom_header_at_time);
+        et_off_time_bottom_header_at_ampm = findViewById(R.id.et_off_time_bottom_header_at_ampm);
 
         //auto end
         sp_schedule_list = findViewById(R.id.sp_schedule_list);
         rg_schedule_type = findViewById(R.id.rg_schedule_type);
         rg_schedule_select = findViewById(R.id.rg_schedule_select);
-        rb_schedule_type_room =  findViewById(R.id.rb_schedule_type_room);
-        rb_schedule_type_mood =  findViewById(R.id.rb_schedule_type_mood);
-        rb_schedule_select_schedule =  findViewById(R.id.rb_schedule_select_schedule);
-        rb_schedule_select_auto =  findViewById(R.id.rb_schedule_select_timer);
-        tv_schedule_list =  findViewById(R.id.tv_schedule_list);
-        rv_auto_mode =  findViewById(R.id.rv_auto_mode);
-        et_schedule_name =  findViewById(R.id.et_schedule_name);
+        rb_schedule_type_room = findViewById(R.id.rb_schedule_type_room);
+        rb_schedule_type_mood = findViewById(R.id.rb_schedule_type_mood);
+        rb_schedule_select_schedule = findViewById(R.id.rb_schedule_select_schedule);
+        rb_schedule_select_auto = findViewById(R.id.rb_schedule_select_timer);
+        tv_schedule_list = findViewById(R.id.tv_schedule_list);
+        rv_auto_mode = findViewById(R.id.rv_auto_mode);
+        et_schedule_name = findViewById(R.id.et_schedule_name);
         et_schedule_name.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         et_schedule_name.setTypeface(et_schedule_name.getTypeface(), Typeface.NORMAL);
 
         et_schedule_on_time = findViewById(R.id.et_schedule_on_time);
         et_schedule_off_time = findViewById(R.id.et_schedule_off_time);
 
-        iv_schedule_on_time_clear =  findViewById(R.id.iv_schedule_on_time_clear);
-        iv_schedule_off_time_clear =  findViewById(R.id.iv_schedule_off_time_clear);
+        iv_schedule_on_time_clear = findViewById(R.id.iv_schedule_on_time_clear);
+        iv_schedule_off_time_clear = findViewById(R.id.iv_schedule_off_time_clear);
 
-        text_schedule_1 =  findViewById(R.id.text_schedule_1);
-        text_schedule_2 =  findViewById(R.id.text_schedule_2);
-        text_schedule_3 =  findViewById(R.id.text_schedule_3);
-        text_schedule_4 =  findViewById(R.id.text_schedule_4);
-        text_schedule_5 =  findViewById(R.id.text_schedule_5);
-        text_schedule_6 =  findViewById(R.id.text_schedule_6);
-        text_schedule_7 =  findViewById(R.id.text_schedule_7);
+        text_schedule_1 = findViewById(R.id.text_schedule_1);
+        text_schedule_2 = findViewById(R.id.text_schedule_2);
+        text_schedule_3 = findViewById(R.id.text_schedule_3);
+        text_schedule_4 = findViewById(R.id.text_schedule_4);
+        text_schedule_5 = findViewById(R.id.text_schedule_5);
+        text_schedule_6 = findViewById(R.id.text_schedule_6);
+        text_schedule_7 = findViewById(R.id.text_schedule_7);
 
-        txtRoomSchedule =  findViewById(R.id.txtRoomSchedule);
-        txtMoodSchedule =  findViewById(R.id.txtMoodSchedule);
+        txtRoomSchedule = findViewById(R.id.txtRoomSchedule);
+        txtMoodSchedule = findViewById(R.id.txtMoodSchedule);
         rv_schedule = findViewById(R.id.rv_schedule);
-        btn_add_schedule =  findViewById(R.id.btn_add_schedule);
-        btn_cancel_schedule =  findViewById(R.id.btn_cancel_schedule);
-        ll_spinner_hide =  findViewById(R.id.ll_spinner_hide);
-        ll_schedule =  findViewById(R.id.ll_schedule);
+        btn_add_schedule = findViewById(R.id.btn_add_schedule);
+        btn_cancel_schedule = findViewById(R.id.btn_cancel_schedule);
+        ll_spinner_hide = findViewById(R.id.ll_spinner_hide);
+        ll_schedule = findViewById(R.id.ll_schedule);
         view_header = findViewById(R.id.view_header);
         view_starttime = findViewById(R.id.view_starttime);
         view_moodlist = findViewById(R.id.view_moodlist);
@@ -411,8 +449,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         });
 
 
-        if (isEdit)
-        {
+        if (isEdit) {
             linear_header.setVisibility(View.VISIBLE);
             view_header.setVisibility(View.VISIBLE);
 
@@ -499,8 +536,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     rb_schedule_select_schedule.setClickable(false);
 
                     /*check schedule type*/
-                    if (scheduleVO.getSchedule_type() == 1)
-                    {
+                    if (scheduleVO.getSchedule_type() == 1) {
 
                         rb_schedule_select_auto.setChecked(true);
                         rb_schedule_select_schedule.setEnabled(true);
@@ -807,23 +843,23 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 });
 
                 //   String outputPattern2 = "MMM dd, yyyy";//:ss
-                String outputPattern2 = Constants.SIMPLE_DATE_FORMAT_1;
-                SimpleDateFormat outputFormat2 = new SimpleDateFormat(outputPattern2);
-                String finalJustDate = outputFormat2.format(new Date().getTime());
+                    String outputPattern2 = Constants.SIMPLE_DATE_FORMAT_1;
+                    SimpleDateFormat outputFormat2 = new SimpleDateFormat(outputPattern2);
+                    String finalJustDate = outputFormat2.format(new Date().getTime());
 
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(new Date());
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(new Date());
 
-                String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
-                if (TextUtils.isEmpty(et_on_hour_ampm_12)) {
-                    et_on_hour_ampm_12 = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
-                }
+                    String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
+                    if (TextUtils.isEmpty(et_on_hour_ampm_12)) {
+                        et_on_hour_ampm_12 = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
+                    }
 
 
-                String ampm = DateUtils.getAMPMString(calendar.get(Calendar.AM_PM));
+                    String ampm = DateUtils.getAMPMString(calendar.get(Calendar.AM_PM));
 
-                if (TextUtils.isEmpty(off_time_date)) {
-                    setEtOffTimeHeader(finalJustDate, hourMinute, ampm);
+                    if (TextUtils.isEmpty(off_time_date)) {
+                        setEtOffTimeHeader(finalJustDate, hourMinute, ampm);
                 }
                 if (TextUtils.isEmpty(on_time_date)) {
                     setEtOnTimeHeader(finalJustDate, hourMinute, ampm);
@@ -831,7 +867,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
                 sp_mood_selection.setEnabled(false);
 
-            } catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
@@ -843,8 +879,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
              * moodid : means MoodFragment
              * */
 
-            if (!TextUtils.isEmpty(isActivityType) && !isEdit)
-            {
+            if (!TextUtils.isEmpty(isActivityType) && !isEdit) {
                 if (!TextUtils.isEmpty(roomId) || !TextUtils.isEmpty(moodId)) {
                     btnRoomSchedule.setClickable(false);
                     btnMoodSchedule.setClickable(false);
@@ -883,8 +918,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             if (scheduleVO == null) {
                 scheduleVO = new ScheduleVO();
             }
-            if (isScheduleClick)
-            {
+            if (isScheduleClick) {
                 if (selection == 1) {
                     rb_schedule_type_room.setChecked(true);
 
@@ -897,11 +931,11 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     view_header.setVisibility(View.VISIBLE);
                     rv_schedule.setVisibility(View.VISIBLE);*/
 
-                  //  view_moodlist.setVisibility(View.GONE);
+                    //  view_moodlist.setVisibility(View.GONE);
                     btnMoodSchedule.setBackground(getResources().getDrawable(R.drawable.drawable_gray_schedule));
                     btnRoomSchedule.setBackground(getResources().getDrawable(R.drawable.drawable_gray_schedule));
 
-                 //   setBackGroundColorButton(true);
+                    //   setBackGroundColorButton(true);
                 } else if (selection == 2) {
                     rb_schedule_type_mood.setChecked(true);
 
@@ -914,11 +948,11 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     view_header.setVisibility(View.VISIBLE);
                     rv_schedule.setVisibility(View.VISIBLE);*/
 
-                  //  view_moodlist.setVisibility(View.VISIBLE);
+                    //  view_moodlist.setVisibility(View.VISIBLE);
                     btnMoodSchedule.setBackground(getResources().getDrawable(R.drawable.drawable_gray_schedule));
                     btnRoomSchedule.setBackground(getResources().getDrawable(R.drawable.drawable_gray_schedule));
 
-                 //   setBackGroundColorButton(false);
+                    //   setBackGroundColorButton(false);
                 }
             } else {
                 //add default room checked
@@ -1147,11 +1181,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-
-    /*
-     * set button background
-     */
-
     public void setBackGroundColorButton(boolean isFlag) {
         if (isFlag) {
             isSelectMode = true;
@@ -1169,12 +1198,9 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-    public String et_on_hour_ampm_12 = "";
-    public String et_off_hour_ampm_12 = "";
-
     /**
      * set Label data at and am/pm
-     *
+     *21
      * @param _finalJustDate: Mar 07, 2018
      * @param _hourMinute     : 15:35
      * @param _ampm           : PM
@@ -1186,7 +1212,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         et_on_time_bottom_header_at_time.setText(_hourMinute);
         et_on_time_bottom_header_at_ampm.setText(_ampm);
 
-        startCheckDate = _finalJustDate + " " + _hourMinute +" "+ _ampm;
+        startCheckDate = _finalJustDate + " " + _hourMinute + " " + _ampm;
 
         ChatApplication.logDisplay("Date " + startCheckDate);
 
@@ -1198,9 +1224,8 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         et_off_time_bottom_header_at_time.setText(_hourMinute);
         et_off_time_bottom_header_at_ampm.setText(_ampm);
 
-        endCheckDate = _finalJustDate + " " + _hourMinute +" " + _ampm;
+        endCheckDate = _finalJustDate + " " + _hourMinute + " " + _ampm;
     }
-
 
     //if select schedule radio button display sch ui and invisible timer ui
     private void showScheduleUI() {
@@ -1260,9 +1285,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         ll_off_time_bottom.setVisibility(View.VISIBLE);
     }
 
-
-    String repeatDayString = "";
-
     @Override
     public void onClick(View view) {
 
@@ -1299,7 +1321,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             ActivityHelper.hideKeyboard(this);
             et_schedule_off_time.setText("");
         } else if ((id == R.id.text_schedule_1) || (id == R.id.text_schedule_2) || (id == R.id.text_schedule_3) || (id == R.id.text_schedule_4) || (id == R.id.text_schedule_5) || (id == R.id.text_schedule_6) || (id == R.id.text_schedule_7)) {
-            Common.setOnOffBackground(this,  findViewById(id));
+            Common.setOnOffBackground(this, findViewById(id));
 
         } else if (id == R.id.btnRoomSchedule) {
             setBackGroundColorButton(true);
@@ -1458,7 +1480,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 //                deviceObj.put("schedule_type", isSelectMode ? 0 : 1);
 
 
-
                 List<DeviceVO> deviceVOArrayList = new ArrayList<>();
 
                 deviceVOArrayList = removeDuplicates(deviceListLayoutHelper.getSelectedItemList());
@@ -1472,17 +1493,17 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 deviceObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
                 deviceObj.put("schedule_name", et_schedule_name.getText().toString());
 
-                ChatApplication.logDisplay("color is "+btnRoomSchedule.getTextColors());
+                ChatApplication.logDisplay("color is " + btnRoomSchedule.getTextColors());
 
                 deviceObj.put("schedule_device_type", isSelectMode ? "room" : "mood");
 
-                if(!isSelectMode){
-                    deviceObj.put("mood_id",moodListAdd.get(sp_mood_selection.getSelectedItemPosition()).getRoomId());
+                if (!isSelectMode) {
+                    deviceObj.put("mood_id", moodListAdd.get(sp_mood_selection.getSelectedItemPosition()).getRoomId());
                 }
 
 
-                if(isEdit){
-                    deviceObj.put("schedule_id",scheduleVO.getSchedule_id());
+                if (isEdit) {
+                    deviceObj.put("schedule_id", scheduleVO.getSchedule_id());
                 }
 
                 int rId = rg_schedule_select.getCheckedRadioButtonId();
@@ -1497,12 +1518,12 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                         offTime = DateHelper.formateDate(DateHelper.parseTimeSimple(et_schedule_off_time.getText().toString(), DateHelper.DATE_FROMATE_H_M_AMPM), DateHelper.DATE_FROMATE_HH_MM);
                     }
 
-                    deviceObj.put("on_time",onTime);
-                    deviceObj.put("off_time",offTime);
-                    deviceObj.put("schedule_type","schedule");
-                    deviceObj.put("schedule_days",repeatDayString);
-                } else  {
-                    deviceObj.put("schedule_type","timer");
+                    deviceObj.put("on_time", onTime);
+                    deviceObj.put("off_time", offTime);
+                    deviceObj.put("schedule_type", "schedule");
+                    deviceObj.put("schedule_days", repeatDayString);
+                } else {
+                    deviceObj.put("schedule_type", "timer");
                     deviceObj.put("schedule_device_day", "");
 
                     if (!TextUtils.isEmpty(et_on_time_hours.getText().toString()) && TextUtils.isEmpty(et_on_time_min.getText().toString())) {
@@ -1518,8 +1539,8 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
                         if (hOn == 0 && mOn == 0) {
                         } else {
-                            deviceObj.put("on_time",Common.getConvertDateForSchedule(startCheckDate));
-                            ChatApplication.logDisplay("date is "+Common.getConvertDateForSchedule(startCheckDate));
+                            deviceObj.put("on_time", Common.getConvertDateForSchedule(startCheckDate));
+                            ChatApplication.logDisplay("date is " + Common.getConvertDateForSchedule(startCheckDate));
                         }
                     }
 
@@ -1538,20 +1559,20 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
                         if (hFn == 0 && mFn == 0) {
                         } else {
-                            deviceObj.put("off_time",Common.getConvertDateForSchedule(endCheckDate));
-                            ChatApplication.logDisplay("date is "+Common.getConvertDateForSchedule(endCheckDate));
+                            deviceObj.put("off_time", Common.getConvertDateForSchedule(endCheckDate));
+                            ChatApplication.logDisplay("date is " + Common.getConvertDateForSchedule(endCheckDate));
 
                         }
                     }
                 }
 
-                ArrayList<String> stringArrayList=new ArrayList<>();
-                for(int i=0; i<deviceVOArrayList.size(); i++){
+                ArrayList<String> stringArrayList = new ArrayList<>();
+                for (int i = 0; i < deviceVOArrayList.size(); i++) {
                     stringArrayList.add(deviceVOArrayList.get(i).getPanel_device_id());
                 }
 
-                JSONArray jsonArray=new JSONArray(stringArrayList);
-                deviceObj.put("devices",jsonArray);
+                JSONArray jsonArray = new JSONArray(stringArrayList);
+                deviceObj.put("devices", jsonArray);
 
                 addSchedule();
 
@@ -1562,7 +1583,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     /*
      *  HH:mm
@@ -1586,7 +1606,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
         roomListAdd = new ArrayList<>();
-        ChatApplication app = (ChatApplication) getApplication();
+        /*ChatApplication app = (ChatApplication) getApplication();
         String webUrl = app.url;
 
         //  String url = webUrl + Constants.GET_DEVICES_LIST + "/"+Constants.DEVICE_TOKEN + "/0/0"; //0/1
@@ -1644,10 +1664,10 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     txt_empty_sch.setText("No Room Found");
                     rv_schedule.setVisibility(View.GONE);
                 } else {
-                    if(linear_header.getVisibility() == View.VISIBLE) {
+                    if (linear_header.getVisibility() == View.VISIBLE) {
                         empty_ll_view.setVisibility(View.GONE);
                         rv_schedule.setVisibility(View.VISIBLE);
-                    } else{
+                    } else {
                         empty_ll_view.setVisibility(View.GONE);
                         rv_schedule.setVisibility(View.GONE);
                     }
@@ -1662,20 +1682,105 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     txt_empty_sch.setText("No Room Found");
                     rv_schedule.setVisibility(View.GONE);
                 } else {
-                    if(linear_header.getVisibility() == View.VISIBLE) {
+                    if (linear_header.getVisibility() == View.VISIBLE) {
                         empty_ll_view.setVisibility(View.GONE);
                         rv_schedule.setVisibility(View.VISIBLE);
-                    } else{
+                    } else {
                         empty_ll_view.setVisibility(View.GONE);
                         rv_schedule.setVisibility(View.GONE);
                     }
                 }
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
-    }
+        }).execute();*/
 
-    ArrayAdapter spinnerArrayAdapter;
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+        SpikeBotApi.getInstance().GetDeviceClould(new DataResponseListener() {  // due to same api calling from dashboard fragment with same param // dev arpan add this on 29 june 2020
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    roomListAdd = new ArrayList<>();
+                    roomListAdd.clear();
+                    roomList.clear();
+                    JSONObject dataObject = result.getJSONObject("data");
+
+                    JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
+                    roomListAdd = JsonHelper.parseRoomArray(roomArray, false);
+
+                    roomList = JsonHelper.parseRoomArray(roomArray, false);
+
+                    if (isEdit || isEditOpen) {
+
+                        if (isSelectMode) {
+                            rb_schedule_type_mood.setEnabled(false);
+                            setBackGroundColorButton(true);
+                        } else {
+                            rb_schedule_type_room.setEnabled(false);
+                            setBackGroundColorButton(false);
+                        }
+
+                        rb_schedule_type_mood.setClickable(false);
+                        rb_schedule_type_room.setClickable(false);
+
+                        sp_schedule_list.setEnabled(false);
+                    }
+
+                    setData(roomListAdd, 2, false);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+                }
+
+
+
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                if (roomListAdd.size() == 0) {
+                    empty_ll_view.setVisibility(View.VISIBLE);
+                    txt_empty_sch.setText("No Room Found");
+                    rv_schedule.setVisibility(View.GONE);
+                } else {
+                    if (linear_header.getVisibility() == View.VISIBLE) {
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.VISIBLE);
+                    } else {
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.GONE);
+                    }
+                }
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ChatApplication.logDisplay("getDeviceList onFailure " + error);
+                if (roomListAdd.size() == 0) {
+                    empty_ll_view.setVisibility(View.VISIBLE);
+                    txt_empty_sch.setText("No Room Found");
+                    rv_schedule.setVisibility(View.GONE);
+                } else {
+                    if (linear_header.getVisibility() == View.VISIBLE) {
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.VISIBLE);
+                    } else {
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.GONE);
+                    }
+                }
+                ActivityHelper.dismissProgressDialog();
+
+            }
+        });
+
+
+    }
 
     //getMoodList
     public void getMoodListAdd() {
@@ -1683,7 +1788,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
         String url = webUrl + Constants.moodList;
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        JSONObject jsonObject = new JSONObject();
+     /*   JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             jsonObject.put("room_type", "mood");
@@ -1693,7 +1798,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        ChatApplication.logDisplay("mood list "+url+" "+jsonObject);
+        ChatApplication.logDisplay("mood list " + url + " " + jsonObject);
 
         new GetJsonTask(ScheduleActivity.this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
@@ -1707,6 +1812,161 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     moodListAdd = JsonHelper.parseRoomArray(roomArray, false);
 
                     // sortMoodList(moodListAdd);
+                    moodListSpinner.clear();
+                    moodListSpinner = moodListAdd;
+
+                    if (moodListSpinner.size() == 0) {
+
+                        ArrayList<RoomVO> moodListSpinnerEmpty = new ArrayList<>();
+
+                        RoomVO room = new RoomVO();
+                        room.setRoomId("select");
+                        room.setRoomName("-- Select --");
+                        moodListSpinnerEmpty.add(0, room);
+
+                        spinnerArrayAdapter = new ArrayAdapter(ScheduleActivity.this, android.R.layout.simple_spinner_dropdown_item, moodListSpinnerEmpty);
+                        sp_mood_selection.setAdapter(spinnerArrayAdapter);
+
+                    } else {
+                        spinnerArrayAdapter = new ArrayAdapter(ScheduleActivity.this, android.R.layout.simple_spinner_dropdown_item, moodListSpinner);
+                        sp_mood_selection.setAdapter(spinnerArrayAdapter);
+                    }
+
+
+                    //if isEdit true in Scheduer fragment
+                    if (isEdit && !TextUtils.isEmpty(scheduleVO.getMood_id())) {
+                        for (int i = 0; i < moodListSpinner.size(); i++) {
+                            if (moodListSpinner.get(i).getRoomId().equalsIgnoreCase(scheduleVO.getMood_id())) {
+                                sp_mood_selection.setSelection(i);
+                                break;
+                            }
+                        }
+                    }
+
+                    //moodId if moodId coming to MoodFragment in scheduler add click event
+                    if (!TextUtils.isEmpty(moodId) && !isEdit) {
+                            sp_mood_selection.setEnabled(false);
+                            for (int i = 0; i < moodListSpinner.size(); i++) {
+                                if (moodListSpinner.get(i).getRoomId().equalsIgnoreCase(moodId)) {
+                                    sp_mood_selection.setSelection(i);
+                                    break;
+                                }
+                            }
+                    }
+
+                    //mood spinner
+
+                    if (isEdit || isEditOpen) {
+
+                        int typeId = rg_schedule_type.getCheckedRadioButtonId();
+                        if (isSelectMode) {
+                            rb_schedule_type_mood.setEnabled(false);
+                            setBackGroundColorButton(true);
+                        } else {
+                            rb_schedule_type_room.setEnabled(false);
+                            setBackGroundColorButton(false);
+                        }
+
+                        rb_schedule_type_mood.setClickable(false);
+                        rb_schedule_type_room.setClickable(false);
+                        sp_schedule_list.setEnabled(false);
+
+                    }
+
+                    ArrayList<RoomVO> tempList = new ArrayList<RoomVO>();
+
+                    for (int i = 0; i < moodListAdd.size(); i++) { //i=1
+                        RoomVO moodVo = moodListAdd.get(i);
+
+                        int mPosition = sp_mood_selection.getSelectedItemPosition();
+                        String moodSelectedId = moodListSpinner.get(mPosition).getRoomId();
+
+                        if (moodSelectedId.equalsIgnoreCase(moodVo.getRoomId()) && !moodSelectedId.equalsIgnoreCase("select")) {
+
+                            RoomVO roomVO = new RoomVO();
+
+                            roomVO.setRoomId(moodVo.getRoomId());
+                            roomVO.setRoomName(moodVo.getRoomName());
+                            roomVO.setPanelList(moodVo.getPanelList());
+
+                            for (PanelVO panelVO : roomVO.getPanelList()) {
+                                for (DeviceVO deviceVO : panelVO.getDeviceList()) {
+                                    roomVO.setExpanded(true);
+                                    deviceVO.setSelected(false);
+                                }
+                            }
+
+                            tempList.add(roomVO);
+                        }
+                    }
+
+                    if (moodListAdd.size() > 0) {
+                        setData(tempList, 1, false);
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+                }
+
+                if (moodListAdd.size() == 0) {
+                    empty_ll_view.setVisibility(View.VISIBLE);
+                    txt_empty_sch.setText("No Mood Found");
+                    rv_schedule.setVisibility(View.GONE);
+                } else {
+                    if (linear_header.getVisibility() == View.VISIBLE) {
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.VISIBLE);
+                    } else {
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.GONE);
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable, String error) {
+                Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                if (moodListAdd.size() == 0) {
+                    empty_ll_view.setVisibility(View.VISIBLE);
+                    txt_empty_sch.setText("No Mood Found");
+                    rv_schedule.setVisibility(View.GONE);
+                } else {
+                    if (linear_header.getVisibility() == View.VISIBLE) {
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.VISIBLE);
+                    } else {
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.GONE);
+                    }
+                }
+                ActivityHelper.dismissProgressDialog();
+            }
+        }).execute();*/
+
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+
+        SpikeBotApi.getInstance().GetMoodList(new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+
+                try {
+
+                    JSONObject result = new JSONObject(stringResponse);
+
+                    ChatApplication.logDisplay("mood list " + result.toString());
+                    moodListAdd = new ArrayList<>();
+                    JSONObject dataObject = result.getJSONObject("data");
+
+                    JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
+                    moodListAdd = JsonHelper.parseRoomArray(roomArray, false);
+
                     moodListSpinner.clear();
                     moodListSpinner = moodListAdd;
 
@@ -1811,36 +2071,57 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     txt_empty_sch.setText("No Mood Found");
                     rv_schedule.setVisibility(View.GONE);
                 } else {
-                    if(linear_header.getVisibility() == View.VISIBLE) {
+                    if (linear_header.getVisibility() == View.VISIBLE) {
                         empty_ll_view.setVisibility(View.GONE);
                         rv_schedule.setVisibility(View.VISIBLE);
-                    } else{
+                    } else {
                         empty_ll_view.setVisibility(View.GONE);
                         rv_schedule.setVisibility(View.GONE);
                     }
 
                 }
+
             }
 
             @Override
-            public void onFailure(Throwable throwable, String error) {
+            public void onData_FailureResponse() {
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
                 if (moodListAdd.size() == 0) {
                     empty_ll_view.setVisibility(View.VISIBLE);
                     txt_empty_sch.setText("No Mood Found");
                     rv_schedule.setVisibility(View.GONE);
                 } else {
-                    if(linear_header.getVisibility() == View.VISIBLE) {
+                    if (linear_header.getVisibility() == View.VISIBLE) {
                         empty_ll_view.setVisibility(View.GONE);
                         rv_schedule.setVisibility(View.VISIBLE);
-                    } else{
+                    } else {
                         empty_ll_view.setVisibility(View.GONE);
                         rv_schedule.setVisibility(View.GONE);
                     }
                 }
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                if (moodListAdd.size() == 0) {
+                    empty_ll_view.setVisibility(View.VISIBLE);
+                    txt_empty_sch.setText("No Mood Found");
+                    rv_schedule.setVisibility(View.GONE);
+                } else {
+                    if (linear_header.getVisibility() == View.VISIBLE) {
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.VISIBLE);
+                    } else {
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.GONE);
+                    }
+                }
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
+
 
 
     }
@@ -1887,8 +2168,10 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onBackPressed() {
-    //    nextFalse = 0;
+        //    nextFalse = 0;
         ActivityHelper.hideKeyboard(this);
+        ChatApplication.CurrnetFragment = R.id.navigationSchedule;  // dev arpan on 15 june 2020
+        startActivity(new Intent(this, Main2Activity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)); // dev arpan on 15 june 2020
         super.onBackPressed();
     }
 
@@ -2066,7 +2349,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     }
                     if (typesensor.equalsIgnoreCase("gas_sensor") ||
                             typesensor.equalsIgnoreCase("temp_sensor") ||
-                            typesensor.equalsIgnoreCase("door_sensor" )) {
+                            typesensor.equalsIgnoreCase("door_sensor")) {
                         roomArrayList.get(i).getDeviceList().get(j).setSelected(false);
                     }
                 }
@@ -2138,16 +2421,16 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
         ActivityHelper.showProgressDialog(this, "Please Wait.", false);
 
-        String url = "";
-        if(isEdit){
+       /* String url = "";
+        if (isEdit) {
             url = webUrl + Constants.scheduleedit;
-        }else {
+        } else {
             url = webUrl + Constants.ADD_NEW_SCHEDULE;
         }
 
-        ChatApplication.logDisplay("schu is " +url+" "+ deviceObj.toString());
+        ChatApplication.logDisplay("schu is " + url + " " + deviceObj.toString());*/
 
-        new GetJsonTask(ScheduleActivity.this, url, "POST", deviceObj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        /*new GetJsonTask(ScheduleActivity.this, url, "POST", deviceObj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 ActivityHelper.hideKeyboard(ScheduleActivity.this);
@@ -2168,6 +2451,8 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                             if (!TextUtils.isEmpty(message)) {
                                 Toast.makeText(getApplicationContext().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                             }
+                            ChatApplication.CurrnetFragment = R.id.navigationSchedule;  // dev arpan on 15 june 2020
+                            startActivity(new Intent(ScheduleActivity.this, Main2Activity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));  // dev arpan on 15 june 2020
                             ScheduleActivity.this.finish();
                         }
                         //getDeviceList();
@@ -2191,7 +2476,70 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
-        }).execute();
+        }).execute();*/
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+        SpikeBotApi.getInstance().AddSchedule(isEdit, deviceObj, new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try {
+
+                    JSONObject result = new JSONObject(stringResponse);
+                    ActivityHelper.hideKeyboard(ScheduleActivity.this);
+                    ChatApplication.isScheduleNeedResume = true;
+                    ChatApplication.logDisplay("addSchedule onSuccess " + result.toString());
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        ChatApplication.isShowProgress = true;
+                        if (result.has("data")) {
+                            JSONObject obj = result.getJSONObject("data");
+                            int is_duplicate = obj.getInt("is_duplicate");
+                            if (is_duplicate == 1) {
+                                showConfirmSave(message);
+                            }
+                        } else {
+                            if (!TextUtils.isEmpty(message)) {
+                                Toast.makeText(getApplicationContext().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                            }
+                            ChatApplication.CurrnetFragment = R.id.navigationSchedule;  // dev arpan on 15 june 2020
+                            startActivity(new Intent(ScheduleActivity.this, Main2Activity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));  // dev arpan on 15 june 2020
+                            ScheduleActivity.this.finish();
+                        }
+                        //getDeviceList();
+                    } else if (code == 3001) { //3001 old status code
+                        showConfirmSave(message);
+                    } else {
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+                    }
+                    // Toast.makeText(getActivity().getApplicationContext(), "No New Device detected!" , Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+                    repeatDayString = "";
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ChatApplication.logDisplay("addSchedule onFailure " + error);
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+
     }
 
     public void getRepeatString() {
@@ -2226,7 +2574,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-
     @Override
     public void itemClicked(RoomVO item, String action) {
 
@@ -2249,13 +2596,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-    /**
-     * get Room name and Panel name using original_room_device_id
-     *
-     * @param original_room_device_id
-     */
-    private Socket mSocket;
-
     private void getDeviceDetails(String original_room_device_id) {
 
         //original_room_device_id
@@ -2269,9 +2609,9 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
         webUrl = app.url;
 
-        String url = webUrl + Constants.GET_MOOD_DEVICE_DETAILS + "/" + original_room_device_id;
+//        String url = webUrl + Constants.GET_MOOD_DEVICE_DETAILS + "/" + original_room_device_id;
 
-        new GetJsonTask2(ScheduleActivity.this, url, "GET", "", new ICallBack2() { //Constants.CHAT_SERVER_URL
+     /*   new GetJsonTask2(ScheduleActivity.this, url, "GET", "", new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 int code = 0;
@@ -2294,10 +2634,46 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onFailure(Throwable throwable, String error, int responseCode) {
             }
-        }).execute();
-    }
+        }).execute();*/
 
-    public Dialog dialog = null;
+
+        if (webUrl.contains("http://"))
+            webUrl = webUrl.replace("http://", "");
+
+
+        SpikeBotApi.getInstance().GetDeviceDetails_Schedule(webUrl, original_room_device_id,new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                int code = 0;
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+                    code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+
+                        JSONObject object = result.getJSONObject("data");
+                        String room_name = object.getString("room_name");
+                        String panel_name = object.getString("panel_name");
+                        showDeviceDialog(room_name, panel_name);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
+        });
+
+
+    }
 
     public synchronized void showDeviceDialog(String roomName, String panelName) {
 
@@ -2311,13 +2687,13 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         dialog.setCanceledOnTouchOutside(false);
         dialog.setContentView(R.layout.dialog_virtual_devices);
 
-        TextView txtRoom =  dialog.findViewById(R.id.vtxt_room);
-        TextView txtPanel =  dialog.findViewById(R.id.vtvt_panel);
+        TextView txtRoom = dialog.findViewById(R.id.vtxt_room);
+        TextView txtPanel = dialog.findViewById(R.id.vtvt_panel);
 
         txtRoom.setText(roomName);
         txtPanel.setText(panelName);
 
-        Button btnOK =  dialog.findViewById(R.id.vbtn_ok);
+        Button btnOK = dialog.findViewById(R.id.vbtn_ok);
 
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -2360,31 +2736,5 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         }
 
         deviceListLayoutHelper.notifyDataSetChanged();
-    }
-
-    /*remove duplicate value*/
-    public static List<DeviceVO> removeDuplicates(ArrayList<DeviceVO> list) {
-
-        ArrayList<String> arrayList = new ArrayList<>();
-        ArrayList<DeviceVO> listTemp = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++) {
-            arrayList.add(list.get(i).getPanel_device_id());
-        }
-
-        HashSet<String> hashSet = new HashSet<String>();
-        hashSet.addAll(arrayList);
-        arrayList.clear();
-        arrayList.addAll(hashSet);
-
-
-        for (int j = 0; j < list.size(); j++) {
-            for (int i = 0; i < arrayList.size(); i++) {
-                if (arrayList.get(i).length() > 2 && list.get(j).getPanel_device_id().equalsIgnoreCase(arrayList.get(i))) {
-                    arrayList.set(i, arrayList.get(i) + "i");
-                    listTemp.add(list.get(i));
-                }
-            }
-        }
-        return listTemp;
     }
 }

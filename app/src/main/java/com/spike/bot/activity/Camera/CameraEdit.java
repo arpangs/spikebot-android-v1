@@ -306,6 +306,9 @@ public class CameraEdit extends AppCompatActivity {
         }
         ActivityHelper.showProgressDialog(CameraEdit.this, "Please wait...", false);
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().updateCamera(cameraSelcet.getCamera_id(), cameraSelcet.getJetson_device_id(), edt_camera_name.getText().toString().trim(),
                 edt_camera_ip.getText().toString().trim(), confidence_score_day, confidence_score_night, edt_video_path.getText().toString().trim(), edt_user_name.getText().toString().trim(),
                 edt_user_password.getText().toString().trim(), new DataResponseListener() {
@@ -333,6 +336,11 @@ public class CameraEdit extends AppCompatActivity {
 
                     @Override
                     public void onData_FailureResponse() {
+                        ActivityHelper.dismissProgressDialog();
+                    }
+
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
                         ActivityHelper.dismissProgressDialog();
                     }
                 });

@@ -159,7 +159,8 @@ public class AddExistingPanel extends AppCompatActivity {
             showToast("" + R.string.disconnect);
             return;
         }
-
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().getroomcameralist("room", new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -189,6 +190,11 @@ public class AddExistingPanel extends AppCompatActivity {
             public void onData_FailureResponse() {
 
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
         });
     }
 
@@ -200,7 +206,8 @@ public class AddExistingPanel extends AppCompatActivity {
         roomList.clear();
         roomList = new ArrayList<>();
         showProgress();
-
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().getCustomPanelDetail(new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -225,7 +232,7 @@ public class AddExistingPanel extends AppCompatActivity {
                                     if (deviceVO.getDeviceId().equals(devicePanelVO.getDeviceId())) {
                                         roomVO.setExpanded(true);
                                         devicePanelVO.setSelected(true);
-                                    }
+                                }
                                 }
                             }
                         }
@@ -250,6 +257,18 @@ public class AddExistingPanel extends AppCompatActivity {
 
             @Override
             public void onData_FailureResponse() {
+                hideProgress();
+                if (roomList.size() == 0) {
+                    list_panel.setVisibility(View.GONE);
+                    ll_panel_list.setVisibility(View.VISIBLE);
+                    if (menu != null) {
+                        menu.findItem(R.id.action_save).setEnabled(false);
+                    }
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 hideProgress();
                 if (roomList.size() == 0) {
                     list_panel.setVisibility(View.GONE);
@@ -374,7 +393,8 @@ public class AddExistingPanel extends AppCompatActivity {
                     isDeviceAdd ? "Please select Device" : "Please select Panel", Toast.LENGTH_SHORT).show();
             return;
         } else {
-
+            if (ChatApplication.url.contains("http://"))
+                ChatApplication.url = ChatApplication.url.replace("http://", "");
             SpikeBotApi.getInstance().saveExistPanel(roomId, et_panel_name_existing.getText().toString(), panelId, isDeviceAdd, jsonArrayDevice, new DataResponseListener() {
                 @Override
                 public void onData_SuccessfulResponse(String stringResponse) {
@@ -403,6 +423,11 @@ public class AddExistingPanel extends AppCompatActivity {
 
                 @Override
                 public void onData_FailureResponse() {
+                    ActivityHelper.dismissProgressDialog();
+                }
+
+                @Override
+                public void onData_FailureResponse_with_Message(String error) {
                     ActivityHelper.dismissProgressDialog();
                 }
             });

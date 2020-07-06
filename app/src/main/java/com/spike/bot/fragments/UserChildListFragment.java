@@ -23,14 +23,14 @@ import com.kp.core.ICallBack2;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.AddDevice.AllUnassignedPanel;
 import com.spike.bot.activity.UserChildActivity;
 import com.spike.bot.adapter.ChildUserAdapter;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.listener.UserChildAction;
-import com.spike.bot.model.UnassignedListRes;
 import com.spike.bot.model.User;
 
 import org.json.JSONArray;
@@ -46,13 +46,13 @@ import static android.app.Activity.RESULT_OK;
  * Created by Sagar on 6/3/19.
  * Gmail : jethvasagar2@gmail.com
  */
-public class UserChildListFragment extends Fragment implements View.OnClickListener ,UserChildAction {
+public class UserChildListFragment extends Fragment implements View.OnClickListener, UserChildAction {
 
-    public String userIdDown="";
+    public String userIdDown = "";
     public View view;
     public RecyclerView recyclerUserList;
+    public ArrayList<User> userArrayList = new ArrayList<>();
     ChildUserAdapter childUserAdapter;
-    public ArrayList<User> userArrayList=new ArrayList<>();
     LinearLayout linear_child_list;
 
     public static UserChildListFragment newInstance() {
@@ -75,7 +75,7 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
     private void setUiId() {
         recyclerUserList = view.findViewById(R.id.recyclerUserList);
         linear_child_list = view.findViewById(R.id.linear_child_list);
-        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(getActivity());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerUserList.setLayoutManager(linearLayoutManager);
         getUserCHildList();
     }
@@ -90,7 +90,7 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
         ActivityHelper.showProgressDialog(getActivity(), "Please Wait...", false);
         String url = ChatApplication.url + Constants.getChildUsers;
 
-        ChatApplication.logDisplay("url is "+ url);
+        /*ChatApplication.logDisplay("url is " + url);
         new GetJsonTask2(getActivity(), url, "GET", "", new ICallBack2() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -98,56 +98,56 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
                 ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
 
                 try {
-                    if(userArrayList!=null){
+                    if (userArrayList != null) {
                         userArrayList.clear();
                     }
 
                     int code = result.getInt("code");
 
-                    if(code==200){
+                    if (code == 200) {
 
-                        JSONObject object=new JSONObject(result.toString());
+                        JSONObject object = new JSONObject(result.toString());
 
-                        JSONObject object1=object.optJSONObject("data");
-                        JSONArray jsonArray=object1.getJSONArray("child_list");
-                        for(int i=0; i<jsonArray.length(); i++){
+                        JSONObject object1 = object.optJSONObject("data");
+                        JSONArray jsonArray = object1.getJSONArray("child_list");
+                        for (int i = 0; i < jsonArray.length(); i++) {
 
-                            JSONObject object2=jsonArray.optJSONObject(i);
+                            JSONObject object2 = jsonArray.optJSONObject(i);
 
-                            User user=new User();
+                            User user = new User();
                             user.setUser_id(object2.optString("user_id"));
                             user.setFirstname(object2.optString("user_name"));
                             user.setAdmin("0");
-                            if(userIdDown.equals(object2.optString("user_id"))){
+                            if (userIdDown.equals(object2.optString("user_id"))) {
                                 user.setIsopen(true);
-                            }else {
+                            } else {
                                 user.setIsopen(false);
                             }
 
 
-                            JSONArray jsonArray1=object2.optJSONArray("roomList");
-                            JSONArray jsonArray2=object2.optJSONArray("cameraList");
+                            JSONArray jsonArray1 = object2.optJSONArray("roomList");
+                            JSONArray jsonArray2 = object2.optJSONArray("cameraList");
 
-                            String roomList="";
-                            for(int j=0;j<jsonArray1.length(); j++){
-                                JSONObject object3=jsonArray1.optJSONObject(j);
+                            String roomList = "";
+                            for (int j = 0; j < jsonArray1.length(); j++) {
+                                JSONObject object3 = jsonArray1.optJSONObject(j);
 
-                                roomList=roomList+object3.optString("room_id")+",";
+                                roomList = roomList + object3.optString("room_id") + ",";
                             }
 
-                            String cameraList="";
-                            for(int j=0;j<jsonArray2.length(); j++){
-                                JSONObject object3=jsonArray2.optJSONObject(j);
+                            String cameraList = "";
+                            for (int j = 0; j < jsonArray2.length(); j++) {
+                                JSONObject object3 = jsonArray2.optJSONObject(j);
 
-                                cameraList=cameraList+object3.optString("camera_id")+",";
+                                cameraList = cameraList + object3.optString("camera_id") + ",";
                             }
 
-                            if(!TextUtils.isEmpty(roomList)){
+                            if (!TextUtils.isEmpty(roomList)) {
                                 ArrayList<String> myList = new ArrayList<String>(Arrays.asList(roomList.split(",")));
                                 user.setRoomList(myList);
                             }
 
-                            if(!TextUtils.isEmpty(cameraList)){
+                            if (!TextUtils.isEmpty(cameraList)) {
                                 ArrayList<String> arrayList = new ArrayList<String>(Arrays.asList(cameraList.split(",")));
                                 user.setCameralist(arrayList);
                             }
@@ -169,23 +169,114 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
                 ActivityHelper.dismissProgressDialog();
 
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+        SpikeBotApi.getInstance().GetUserCHildList(new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                ActivityHelper.dismissProgressDialog();
+
+                try {
+                    JSONObject result = new JSONObject(stringResponse);
+
+                    ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
+                    if (userArrayList != null) {
+                        userArrayList.clear();
+                    }
+
+                    int code = result.getInt("code");
+
+                    if (code == 200) {
+
+                        JSONObject object = new JSONObject(result.toString());
+
+                        JSONObject object1 = object.optJSONObject("data");
+                        JSONArray jsonArray = object1.getJSONArray("child_list");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+
+                            JSONObject object2 = jsonArray.optJSONObject(i);
+
+                            User user = new User();
+                            user.setUser_id(object2.optString("user_id"));
+                            user.setFirstname(object2.optString("user_name"));
+                            user.setAdmin("0");
+                            if (userIdDown.equals(object2.optString("user_id"))) {
+                                user.setIsopen(true);
+                            } else {
+                                user.setIsopen(false);
+                            }
+
+
+                            JSONArray jsonArray1 = object2.optJSONArray("roomList");
+                            JSONArray jsonArray2 = object2.optJSONArray("cameraList");
+
+                            String roomList = "";
+                            for (int j = 0; j < jsonArray1.length(); j++) {
+                                JSONObject object3 = jsonArray1.optJSONObject(j);
+
+                                roomList = roomList + object3.optString("room_id") + ",";
+                            }
+
+                            String cameraList = "";
+                            for (int j = 0; j < jsonArray2.length(); j++) {
+                                JSONObject object3 = jsonArray2.optJSONObject(j);
+
+                                cameraList = cameraList + object3.optString("camera_id") + ",";
+                            }
+
+                            if (!TextUtils.isEmpty(roomList)) {
+                                ArrayList<String> myList = new ArrayList<String>(Arrays.asList(roomList.split(",")));
+                                user.setRoomList(myList);
+                            }
+
+                            if (!TextUtils.isEmpty(cameraList)) {
+                                ArrayList<String> arrayList = new ArrayList<String>(Arrays.asList(cameraList.split(",")));
+                                user.setCameralist(arrayList);
+                            }
+
+                            userArrayList.add(user);
+                        }
+
+                        setAdapter();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
+
+
     }
 
     private void setAdapter() {
-        if(userArrayList.size()>0){
-            childUserAdapter=new ChildUserAdapter(getActivity(),userArrayList,this,this);
+        if (userArrayList.size() > 0) {
+            childUserAdapter = new ChildUserAdapter(getActivity(), userArrayList, this, this);
             recyclerUserList.setAdapter(childUserAdapter);
         }
     }
 
     /*confim dialog */
-    private void showDeleteDialog(final int position, final User user){
-        ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete child user ? "+user.getFirstname(), new ConfirmDialog.IDialogCallback() {
+    private void showDeleteDialog(final int position, final User user) {
+        ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete child user ? " + user.getFirstname(), new ConfirmDialog.IDialogCallback() {
             @Override
             public void onConfirmDialogYesClick() {
 
-                deleteUserChild(position,user);
+                deleteUserChild(position, user);
             }
 
             @Override
@@ -198,12 +289,12 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
     /*child user delete */
     private void deleteUserChild(final int position, User user) {
         ActivityHelper.showProgressDialog(getActivity(), "Please Wait...", false);
-        String url = ChatApplication.url + Constants.DeleteChildUser;
+       /* String url = ChatApplication.url + Constants.DeleteChildUser;
 
-        JSONObject object=new JSONObject();
+        JSONObject object = new JSONObject();
         try {
             object.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
-            object.put("child_user_id",user.getUser_id());
+            object.put("child_user_id", user.getUser_id());
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
         } catch (JSONException e) {
@@ -219,13 +310,13 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
                 try {
                     int code = result.getInt("code");
                     String message = result.getString("message");
-                    if(code==200){
-                        ChatApplication.showToast(getActivity(),message);
+                    if (code == 200) {
+                        ChatApplication.showToast(getActivity(), message);
 
                         userArrayList.remove(position);
                         childUserAdapter.notifyDataSetChanged();
-                    }else {
-                        ChatApplication.showToast(getActivity(),message);
+                    } else {
+                        ChatApplication.showToast(getActivity(), message);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -239,25 +330,69 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
                 ActivityHelper.dismissProgressDialog();
 
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+        SpikeBotApi.getInstance().DeleteUserChild(user.getUser_id(), new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+
+                try {
+
+                    JSONObject result = new JSONObject(stringResponse);
+
+                    ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        ChatApplication.showToast(getActivity(), message);
+
+                        userArrayList.remove(position);
+                        childUserAdapter.notifyDataSetChanged();
+                    } else {
+                        ChatApplication.showToast(getActivity(), message);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
+
+
+
     }
 
-    public void BackgroundBlurred(){
+    public void BackgroundBlurred() {
         recyclerUserList.setBackgroundResource(R.color.automation_transparent);
     }
 
-    public void Backgroundwhite(){
+    public void Backgroundwhite() {
         recyclerUserList.setBackgroundResource(R.color.automation_white);
     }
+
     @Override
-    public void actionCHild(String type,int position,User user,boolean ispopupshow) {
-        if(type.equalsIgnoreCase("update")){
-            showBottomSheetDialog(type,position,user);
+    public void actionCHild(String type, int position, User user, boolean ispopupshow) {
+        if (type.equalsIgnoreCase("update")) {
+            showBottomSheetDialog(type, position, user);
         }
     }
 
 
-    public void showBottomSheetDialog(String type,int position,User user) {
+    public void showBottomSheetDialog(String type, int position, User user) {
         View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
 
         TextView txt_bottomsheet_title = view.findViewById(R.id.txt_bottomsheet_title);
@@ -267,20 +402,20 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
         TextView txt_edit = view.findViewById(R.id.txt_edit);
         txt_edit.setText("Edit");
 
-        BottomSheetDialog dialog = new BottomSheetDialog(getActivity(),R.style.AppBottomSheetDialogTheme);
+        BottomSheetDialog dialog = new BottomSheetDialog(getActivity(), R.style.AppBottomSheetDialogTheme);
         dialog.setContentView(view);
         dialog.show();
 
-        txt_bottomsheet_title.setText("What would you like to do in" + " " + user.getFirstname() + " " +"?");
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + user.getFirstname() + " " + "?");
         linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                userIdDown=user.getUser_id();
-                Intent intent=new Intent(getActivity(),UserChildActivity.class);
-                intent.putExtra("modeType","update");
-                intent.putExtra("arraylist",user);
-                startActivityForResult(intent,1001);
+                userIdDown = user.getUser_id();
+                Intent intent = new Intent(getActivity(), UserChildActivity.class);
+                intent.putExtra("modeType", "update");
+                intent.putExtra("arraylist", user);
+                startActivityForResult(intent, 1001);
             }
         });
 
@@ -288,7 +423,7 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                showDeleteDialog(position,user);
+                showDeleteDialog(position, user);
             }
         });
     }
@@ -296,8 +431,8 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        ChatApplication.logDisplay("activity is 11 "+requestCode+" "+requestCode);
-        if(requestCode==1001 && resultCode == RESULT_OK){
+        ChatApplication.logDisplay("activity is 11 " + requestCode + " " + requestCode);
+        if (requestCode == 1001 && resultCode == RESULT_OK) {
             setUiId();
         }
     }

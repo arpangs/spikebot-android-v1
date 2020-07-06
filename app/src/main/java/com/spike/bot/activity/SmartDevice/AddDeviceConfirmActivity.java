@@ -100,6 +100,8 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
 
     @Override
     public boolean onSupportNavigateUp() {
+        ChatApplication.CurrnetFragment = R.id.navigationDashboard; // dev arpan on 15 june 2020
+//        startActivity(new Intent(this, Main2Activity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)); // dev arpan on 15 june 2020
         onBackPressed();
         return true;
     }
@@ -139,16 +141,16 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         dialog.setCanceledOnTouchOutside(false);
         dialog.setContentView(R.layout.dialog_add_custome_room);
 
-        final TextInputEditText room_name =  dialog.findViewById(R.id.edt_room_name);
+        final TextInputEditText room_name = dialog.findViewById(R.id.edt_room_name);
         room_name.setSingleLine(true);
 
         InputFilter[] filterArray = new InputFilter[1];
         filterArray[0] = new InputFilter.LengthFilter(25);
         room_name.setFilters(filterArray);
 
-        Button btnSave =  dialog.findViewById(R.id.btn_save);
-        Button btn_cancel =  dialog.findViewById(R.id.btn_cancel);
-        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
+        Button btnSave = dialog.findViewById(R.id.btn_save);
+        Button btn_cancel = dialog.findViewById(R.id.btn_cancel);
+        ImageView iv_close = dialog.findViewById(R.id.iv_close);
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -189,6 +191,9 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         }
 
         ActivityHelper.showProgressDialog(AddDeviceConfirmActivity.this, "Please wait...", false);
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().saveCustomRoomDevice(roomName.getText().toString(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -223,6 +228,11 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
         });
     }
 
@@ -234,9 +244,9 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         dialog.setContentView(R.layout.dialog_add_sensordoor);
         dialog.setCanceledOnTouchOutside(false);
 
-        final EditText edt_door_name =dialog.findViewById(R.id.txt_door_sensor_name);
+        final EditText edt_door_name = dialog.findViewById(R.id.txt_door_sensor_name);
         final TextView edt_door_module_id = dialog.findViewById(R.id.txt_module_id);
-        final Spinner sp_room_list =  dialog.findViewById(R.id.sp_room_list);
+        final Spinner sp_room_list = dialog.findViewById(R.id.sp_room_list);
 
         TextView dialogTitle = dialog.findViewById(R.id.tv_title);
         TextView txt_sensor_name = dialog.findViewById(R.id.txt_sensor_name);
@@ -262,9 +272,9 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(this, roomNameList, 1, false);
         sp_room_list.setAdapter(customAdapter);
 
-        Button btn_cancel =  dialog.findViewById(R.id.btn_door_cancel);
-        Button btn_save =  dialog.findViewById(R.id.btn_door_save);
-        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
+        Button btn_cancel = dialog.findViewById(R.id.btn_door_cancel);
+        Button btn_save = dialog.findViewById(R.id.btn_door_save);
+        ImageView iv_close = dialog.findViewById(R.id.iv_close);
 
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -302,10 +312,14 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         }
     }
 
-    /** Add sensor lock*/
+    /**
+     * Add sensor lock
+     */
     private void callAddTTlock(final Dialog dialog, EditText textInputEditText, String door_name,
                                String door_module_id, Spinner sp_room_list, String room_id) {
         ActivityHelper.showProgressDialog(this, " Please Wait...", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().callAddTTlock(lock_id, room_id, lock_data, door_name, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -326,10 +340,17 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
         });
     }
 
-   /** Save Sensor lock*/
+    /**
+     * Save Sensor lock
+     */
     private void saveSensor(final Dialog dialog, EditText textInputEditText, String door_name,
                             String door_module_id, Spinner sp_room_list, String room_id) {
 
@@ -345,6 +366,8 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         }
         int room_pos = sp_room_list.getSelectedItemPosition();
         ActivityHelper.showProgressDialog(AddDeviceConfirmActivity.this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().saveSensor(room_id, roomNameList.get(room_pos), door_name, door_module_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -375,6 +398,11 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
         });
     }
 
@@ -382,6 +410,8 @@ public class AddDeviceConfirmActivity extends AppCompatActivity implements View.
         Intent intent = new Intent(AddDeviceConfirmActivity.this, Main2Activity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+        ChatApplication.CurrnetFragment = R.id.navigationDashboard;  // dev arpan on 15 june 2020
+//        startActivity(new Intent(this, Main2Activity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)); // dev arpan on 15 june 2020
         this.finish();
     }
 

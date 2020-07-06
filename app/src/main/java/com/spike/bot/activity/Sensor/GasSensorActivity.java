@@ -281,6 +281,8 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
     /*delete sensor*/
     private void deleteGas() {
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deleteDevice(device_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -304,6 +306,11 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
         });
 
     }
@@ -312,6 +319,9 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
     private void getGasSensorDetails() {
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deviceInfo(device_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -334,6 +344,11 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
 
@@ -439,6 +454,8 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().updateDevice(device_id, edSensorName.getText().toString(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -465,6 +482,11 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
             }
         });
 

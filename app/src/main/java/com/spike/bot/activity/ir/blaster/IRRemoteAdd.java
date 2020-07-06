@@ -96,6 +96,9 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
         irLists = new ArrayList<>();
         irLists.clear();
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().getDeviceList("ir_blaster",new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -164,6 +167,12 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
 
             @Override
             public void onData_FailureResponse() {
+                hideProgress();
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 hideProgress();
                 ActivityHelper.dismissProgressDialog();
             }

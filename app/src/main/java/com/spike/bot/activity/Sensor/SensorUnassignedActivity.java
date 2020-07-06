@@ -18,8 +18,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
@@ -27,7 +25,6 @@ import com.spike.bot.adapter.SensorUnassignedAdapter;
 import com.spike.bot.adapter.UnAssignRepeatarAdapter;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
-import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.fragments.DashBoardFragment;
@@ -47,20 +44,17 @@ import java.util.List;
 
 public class SensorUnassignedActivity extends AppCompatActivity {
 
-    private Spinner spinner_room;
+    public String roomName = "", roomId = "";
     View viewLine;
+    ArrayAdapter spinnerArrayAdapter;
+    ArrayList<SensorUnassignedRes.Data.UnassigendSensorList> arrayListRepeter = new ArrayList<>();
+    List<SensorUnassignedRes.Data.RoomList> roomList = new ArrayList<>();
+    private Spinner spinner_room;
     private RecyclerView list_sensor;
     private LinearLayout ll_sensor_list_empy, linear_progress;
-
-    ArrayAdapter spinnerArrayAdapter;
     private SensorUnassignedAdapter sensorUnassignedAdapter;
     private UnAssignRepeatarAdapter unAssignRepeatarAdapter;
     private int isDoorSensor;
-    public String roomName = "", roomId = "";
-
-    ArrayList<SensorUnassignedRes.Data.UnassigendSensorList> arrayListRepeter = new ArrayList<>();
-
-    List<SensorUnassignedRes.Data.RoomList> roomList = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -123,6 +117,8 @@ public class SensorUnassignedActivity extends AppCompatActivity {
     /*call for repeater */
     private void callReptorList() {
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         linear_progress.setVisibility(View.VISIBLE);
         SpikeBotApi.getInstance().callReptorList(new DataResponseListener() {
             @Override
@@ -171,6 +167,12 @@ public class SensorUnassignedActivity extends AppCompatActivity {
                 linear_progress.setVisibility(View.GONE);
                 Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                linear_progress.setVisibility(View.GONE);
+                Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
         });
 
     }
@@ -180,6 +182,10 @@ public class SensorUnassignedActivity extends AppCompatActivity {
         String url = ChatApplication.url + Constants.deviceunassigned;
 
         linear_progress.setVisibility(View.VISIBLE);
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().getSensorUnAssignedDetails(new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -237,6 +243,12 @@ public class SensorUnassignedActivity extends AppCompatActivity {
 
             @Override
             public void onData_FailureResponse() {
+                linear_progress.setVisibility(View.GONE);
+                Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 linear_progress.setVisibility(View.GONE);
                 Toast.makeText(ChatApplication.getInstance(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
@@ -300,6 +312,9 @@ public class SensorUnassignedActivity extends AppCompatActivity {
 
         int position = spinner_room.getSelectedItemPosition() - 1;
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().saveCurtain(unassigendSensorList.getModuleId(), unassigendSensorList.getSensorName(), roomList.get(position).getRoomId(),
                 roomList.get(position).getRoomName(), new DataResponseListener() {
                     @Override
@@ -326,6 +341,11 @@ public class SensorUnassignedActivity extends AppCompatActivity {
                     public void onData_FailureResponse() {
                         ActivityHelper.dismissProgressDialog();
                     }
+
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
+                        ActivityHelper.dismissProgressDialog();
+                    }
                 });
 
     }
@@ -347,6 +367,8 @@ public class SensorUnassignedActivity extends AppCompatActivity {
             return;
         }
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().saveRepeaters(unassigendSensorList.getSensorId(), unassigendSensorList.getSensorName(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -366,6 +388,11 @@ public class SensorUnassignedActivity extends AppCompatActivity {
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
         });
@@ -434,6 +461,8 @@ public class SensorUnassignedActivity extends AppCompatActivity {
             sensor_t = "gas";
         }
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().saveSensorUnassigned(roomList.get(position).getRoomId(), roomList.get(position).getRoomName(), unassigendSensorList.getSensorId(),
                 unassigendSensorList.getModuleId(), sensor_t, unassigendSensorList.getSensorName(), new DataResponseListener() {
                     @Override
@@ -458,6 +487,11 @@ public class SensorUnassignedActivity extends AppCompatActivity {
 
                     @Override
                     public void onData_FailureResponse() {
+                        ActivityHelper.dismissProgressDialog();
+                    }
+
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
                         ActivityHelper.dismissProgressDialog();
                     }
                 });

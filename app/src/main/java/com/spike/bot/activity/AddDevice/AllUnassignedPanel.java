@@ -118,6 +118,9 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
             return;
         }
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().getRoomList("room", new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -148,6 +151,11 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
             public void onData_FailureResponse() {
 
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
         });
 
     }
@@ -161,6 +169,11 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
         }
 
         ActivityHelper.showProgressDialog(AllUnassignedPanel.this, "Please wait...", false);
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+
         SpikeBotApi.getInstance().getUnAssignedList(type, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -198,6 +211,11 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
         });
@@ -333,6 +351,9 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().DeleteDevice(module_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -360,6 +381,11 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
         });
     }
 
@@ -369,6 +395,9 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
      */
     public void addunAssignRepater(UnassignedListRes.Data roomdeviceList) {
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
         SpikeBotApi.getInstance().addunAssignRepater("",roomdeviceList.getModuleType(), roomdeviceList.getModuleId(),roomdeviceList.getModuleType(), new DataResponseListener() {
             @Override
@@ -396,6 +425,11 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
         });
@@ -495,6 +529,9 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
 
         ActivityHelper.showProgressDialog(this, "Loading...", false);
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().savePanel(roomdeviceList,roomId,panelName, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -530,6 +567,11 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
             }
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
         });

@@ -240,6 +240,7 @@ public class ActivityHelper {
         con.setRequestProperty("Content-Type", "application/json");
         con.setRequestProperty("Accept", "application/json");
 
+
         con.setConnectTimeout(10000);
         con.setReadTimeout(10000);
         con.setUseCaches(false);

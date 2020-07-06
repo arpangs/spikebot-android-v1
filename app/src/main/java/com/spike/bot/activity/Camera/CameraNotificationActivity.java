@@ -5,7 +5,6 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -37,13 +36,11 @@ import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.Sensor.DoorSensorInfoActivity;
 import com.spike.bot.adapter.AddCameraAdapter;
 import com.spike.bot.adapter.AlertAdapter;
 import com.spike.bot.adapter.filter.CameraNotificationAdapter;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
-import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.customview.CustomEditText;
@@ -71,6 +68,7 @@ import java.util.List;
  */
 public class CameraNotificationActivity extends AppCompatActivity implements SelectCamera, UpdateCameraAlert, View.OnClickListener {
 
+    public static boolean jetsoncameranotification = false;
     public Toolbar toolbar;
     public RecyclerView recyclerView, recyclerAlert;
     public TextView txtAlertCount;
@@ -78,18 +76,14 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
     public AlertAdapter alertAdapter;
     public TextView txtSDevice, txt_empty_notification, txtEmptyAlert;
     public ImageView view_rel_badge;
-
+    public int countCamera = 0;
     ArrayList<CameraVO> getCameraList = new ArrayList<>();
     ArrayList<CameraAlertList> arrayListLog = new ArrayList<>();
     ArrayList<CameraPushLog> arrayListAlert = new ArrayList<>();
     ArrayList<CameraVO> cameraVOArrayList = new ArrayList<>();
-
-    private String homecontroller_id = "", jetson_id = "";
-    public static boolean jetsoncameranotification = false;
-
-    public int countCamera = 0;
     Dialog dialog;
     View view_starttime, view_header;
+    private String homecontroller_id = "", jetson_id = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -388,6 +382,9 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
     private void callAddCamera(String et_schedule_on_time, String et_schedule_off_time, String strflag, CameraAlertList cameraAlertList, int edIntervalTime) {
 
         ActivityHelper.showProgressDialog(this, "Please Wait...", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().callAddCamera(et_schedule_on_time, et_schedule_off_time, edIntervalTime, getCameraList, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -413,6 +410,12 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
         });
 
     }
@@ -420,6 +423,8 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
     // Call update camera
     private void callUpdateCamera(String et_schedule_on_time, String et_schedule_off_time, String strflag, CameraAlertList cameraAlertList, int edIntervalTime) {
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         ActivityHelper.showProgressDialog(this, "Please Wait...", false);
         SpikeBotApi.getInstance().callUpdateCamera(et_schedule_on_time, et_schedule_off_time, cameraAlertList, jetson_id, edIntervalTime, getCameraList, new DataResponseListener() {
             @Override
@@ -443,6 +448,12 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
@@ -504,6 +515,9 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             return;
         }
         ActivityHelper.showProgressDialog(CameraNotificationActivity.this, "Please wait... ", false);
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
         SpikeBotApi.getInstance().getconfigureData(jetsoncameranotification, jetson_id, new DataResponseListener() {
             @Override
@@ -584,6 +598,12 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(CameraNotificationActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(CameraNotificationActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
         });
 
     }
@@ -598,12 +618,16 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         }
 
         ActivityHelper.showProgressDialog(CameraNotificationActivity.this, "Please wait...", false);
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().callCameraUnseenLog(homecontroller_id, jetsoncameranotification, jetson_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
                     ActivityHelper.dismissProgressDialog();
-                JSONObject result = new JSONObject(stringResponse);
+                    JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
@@ -644,6 +668,11 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
         });
@@ -757,6 +786,8 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         }
 
         ActivityHelper.showProgressDialog(this, "Please Wait.", false);
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().deleteCamera(jetson_id, cameraAlertList.getCameraNotificationId(), jetsoncameranotification, strFlag, cameraAlertList, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -786,6 +817,11 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
             }
         });
@@ -871,6 +907,9 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
         ActivityHelper.showProgressDialog(this, "Please Wait...", false);
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().callupdateUnReadCameraLogs(new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -900,6 +939,12 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(CameraNotificationActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
                 Toast.makeText(CameraNotificationActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }

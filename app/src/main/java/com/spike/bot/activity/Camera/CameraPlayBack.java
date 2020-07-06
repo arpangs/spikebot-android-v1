@@ -292,6 +292,8 @@ public class CameraPlayBack extends AppCompatActivity implements ExpandableTestA
 
         ActivityHelper.showProgressDialog(CameraPlayBack.this, "Please wait...", false);
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().searchCameraList(startDate, endDate, cameraVOArrayList, selectedCamera, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -378,6 +380,18 @@ public class CameraPlayBack extends AppCompatActivity implements ExpandableTestA
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                if (cameraVOs.isEmpty()) {
+                    txt_no_date.setVisibility(View.VISIBLE);
+                    cameraList.setVisibility(View.GONE);
+                } else {
+                    txt_no_date.setVisibility(View.GONE);
+                    cameraList.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
                 if (cameraVOs.isEmpty()) {
                     txt_no_date.setVisibility(View.VISIBLE);

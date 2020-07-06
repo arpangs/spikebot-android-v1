@@ -1,7 +1,6 @@
 package com.spike.bot.activity;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,12 +18,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.LogRoomAdapter;
-import com.spike.bot.core.APIConst;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.DeviceLog;
@@ -46,29 +44,26 @@ import static android.widget.NumberPicker.OnScrollListener.SCROLL_STATE_IDLE;
 public class DeviceLogRoomActivity extends AppCompatActivity {
 
     public String isNotification = "", room_name = "", ROOM_ID = "", IS_SENSOR = "", typeSelection = "1";
-    public int mStartIndex = 0,lastVisibleItem,row_index=-1;
-    private int mScrollState = AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
-
+    public int mStartIndex = 0, lastVisibleItem, row_index = -1;
+    public boolean isScrollDown = false, isLoading = false;
+    public List<DeviceLog> deviceLogList = new ArrayList<>();
     Toolbar toolbar;
     RecyclerView rv_device_log;
     LinearLayout ll_empty;
-
-
     LinearLayoutManager linearLayoutManager;
     LogRoomAdapter deviceLogAdapter;
-    public boolean isScrollDown = false, isLoading = false;
+    private int mScrollState = AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
     private ArrayList<Filter> filterArrayList = new ArrayList<>();
     private ArrayList<Filter> filterArrayListTemp = new ArrayList<>();
     private ArrayList datelist = new ArrayList();
     private ArrayList monthlist = new ArrayList();
-    public List<DeviceLog> deviceLogList = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_log_room);
 
-        toolbar =  findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -126,8 +121,8 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
     }
 
     private void init() {
-        rv_device_log =  findViewById(R.id.rv_device_log);
-        ll_empty =  findViewById(R.id.ll_empty);
+        rv_device_log = findViewById(R.id.rv_device_log);
+        ll_empty = findViewById(R.id.ll_empty);
 
         linearLayoutManager = new LinearLayoutManager(DeviceLogRoomActivity.this);
         rv_device_log.setLayoutManager(linearLayoutManager);
@@ -155,7 +150,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
                     if (deviceLogList.size() != 0 && mScrollState == SCROLL_STATE_IDLE) {
                         if (deviceLogList.size() >= 25) {
                             if ((deviceLogList.size() - 1) == lastVisibleItem) {
-                                if ( !isScrollDown) {
+                                if (!isScrollDown) {
                                     isLoading = true;
 
                                     isScrollDown = true;
@@ -185,22 +180,24 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
         }
         ActivityHelper.showProgressDialog(DeviceLogRoomActivity.this, "Please wait.", false);
 
-        String url = ChatApplication.url + Constants.logsfind;
+
+
+       /* String url = ChatApplication.url + Constants.logsfind;
 
         JSONObject object = new JSONObject();
         try {
-            object.put("filter_action","door_open,door_close,temp_alert,gas_detected,water_detected,door_lock,door_unlock");
-            object.put("filter_type","room");
-            object.put("room_id",""+ROOM_ID);
-            object.put("unseen",1);
-            object.put("notification_number",""+position);
+            object.put("filter_action", "door_open,door_close,temp_alert,gas_detected,water_detected,door_lock,door_unlock");
+            object.put("filter_type", "room");
+            object.put("room_id", "" + ROOM_ID);
+            object.put("unseen", 1);
+            object.put("notification_number", "" + position);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        ChatApplication.logDisplay("device find url is "+url+" "+object);
+        ChatApplication.logDisplay("device find url is " + url + " " + object);
         new GetJsonTask(DeviceLogRoomActivity.this, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
@@ -209,10 +206,12 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
-                        ChatApplication.logDisplay("result is "+result);
+                        ChatApplication.logDisplay("result is " + result);
                         JSONArray dataObj = result.optJSONArray("data");
-                        Gson gson=new Gson();
-                        List<DeviceLog> deviceLogs = gson.fromJson(dataObj.toString(), new TypeToken<List<DeviceLog>>(){}.getType());;
+                        Gson gson = new Gson();
+                        List<DeviceLog> deviceLogs = gson.fromJson(dataObj.toString(), new TypeToken<List<DeviceLog>>() {
+                        }.getType());
+                        ;
 
                         deviceLogList.addAll(deviceLogs);
                         if (deviceLogs == null || deviceLogs.size() == 0) {
@@ -250,7 +249,72 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
                 rv_device_log.setVisibility(View.GONE);
                 Toast.makeText(getApplicationContext(), "No data found.", Toast.LENGTH_SHORT).show();
             }
-        }).execute();
+        }).execute();*/
+
+
+        SpikeBotApi.getInstance().GetLogFind(ROOM_ID, position, new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+
+                try {
+
+                    JSONObject result = new JSONObject(stringResponse);
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        ChatApplication.logDisplay("result is " + result);
+                        JSONArray dataObj = result.optJSONArray("data");
+                        Gson gson = new Gson();
+                        List<DeviceLog> deviceLogs = gson.fromJson(dataObj.toString(), new TypeToken<List<DeviceLog>>() {
+                        }.getType());
+                        ;
+
+                        deviceLogList.addAll(deviceLogs);
+                        if (deviceLogs == null || deviceLogs.size() == 0) {
+                            isScrollDown = true;
+                            if (mStartIndex == 0) {
+                                ll_empty.setVisibility(View.VISIBLE);
+                                rv_device_log.setVisibility(View.GONE);
+                                Toast.makeText(getApplicationContext(), "No data found.", Toast.LENGTH_SHORT).show();
+                            }
+                            isLoading = true;
+                        } else {
+                            isScrollDown = false;
+                            isLoading = false;
+
+                            setAdapter();
+                        }
+
+
+                        ActivityHelper.dismissProgressDialog();
+                    } else {
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                ll_empty.setVisibility(View.VISIBLE);
+                rv_device_log.setVisibility(View.GONE);
+                Toast.makeText(getApplicationContext(), "No data found.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                ll_empty.setVisibility(View.VISIBLE);
+                rv_device_log.setVisibility(View.GONE);
+                Toast.makeText(getApplicationContext(), "No data found.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     private void setAdapter() {
@@ -280,9 +344,9 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
     /*back pressed after clear log count*/
     private void callreadCountApi() {
 
-        String webUrl = ChatApplication.url + Constants.UPDATE_UNREAD_LOGS;
+//        String webUrl = ChatApplication.url + Constants.UPDATE_UNREAD_LOGS;
 
-        JSONObject jsonObject = new JSONObject();
+//        JSONObject jsonObject = new JSONObject();
         try {
 
             JSONArray jsonArray = new JSONArray();
@@ -293,13 +357,11 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
             object.put("room_id", "" + ROOM_ID);
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             jsonArray.put(object);
-            jsonObject.put("update_logs", jsonArray);
+//            jsonObject.put("update_logs", jsonArray);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-        new GetJsonTask(this, webUrl, "POST", jsonObject.toString(), new
+
+       /* new GetJsonTask(this, webUrl, "POST", jsonObject.toString(), new
 
                 ICallBack() {
                     @Override
@@ -312,6 +374,31 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
                         DeviceLogRoomActivity.this.finish();
                     }
                 }).
-                executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
+
+
+            if (ChatApplication.url.contains("http://"))
+                ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+            SpikeBotApi.getInstance().CallreadCountApi(jsonArray, new DataResponseListener() {
+                @Override
+                public void onData_SuccessfulResponse(String stringResponse) {
+                    DeviceLogRoomActivity.this.finish();
+                }
+
+                @Override
+                public void onData_FailureResponse() {
+                    DeviceLogRoomActivity.this.finish();
+                }
+
+                @Override
+                public void onData_FailureResponse_with_Message(String error) {
+                    DeviceLogRoomActivity.this.finish();
+                }
+            });
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
