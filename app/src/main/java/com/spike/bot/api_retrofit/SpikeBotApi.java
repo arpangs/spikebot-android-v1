@@ -3,6 +3,7 @@ package com.spike.bot.api_retrofit;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.widget.Spinner;
 
 import com.kp.core.DateHelper;
 import com.spike.bot.ChatApplication;
@@ -12,6 +13,7 @@ import com.spike.bot.core.Constants;
 import com.spike.bot.model.CameraAlertList;
 import com.spike.bot.model.CameraVO;
 import com.spike.bot.model.DeviceVO;
+import com.spike.bot.model.Filter;
 import com.spike.bot.model.RemoteDetailsRes;
 import com.spike.bot.model.RoomVO;
 import com.spike.bot.model.ScheduleVO;
@@ -35,9 +37,8 @@ public class SpikeBotApi {
     /*dev arp add this class on 23 june 2020*/
 
     private static SpikeBotApi SpikeBotApi = null;
-    private Context mContext;
-
     private static ApiInterface apiService = RestClient.getInstance().getApiInterface();
+    private Context mContext;
 
     public static SpikeBotApi getInstance() {
         if (SpikeBotApi == null)
@@ -890,6 +891,7 @@ public class SpikeBotApi {
         params.put("device_push_token", "" + device_push_token);
         params.put("phone_id", APIConst.PHONE_ID_VALUE);
         params.put("phone_type", APIConst.PHONE_TYPE_VALUE);
+        params.put("auth_key", Common.getPrefValue(ChatApplication.getContext(), Constants.AUTHORIZATION_TOKEN)); // dev arpan add this new param as discussed with dev parth
 
 
         new GeneralRetrofit(apiService.LogoutCloudUser(params), params, dataResponseListener).call();
@@ -976,12 +978,398 @@ public class SpikeBotApi {
     }
 
 
-    public void CallFilterData(JSONObject jsonObject, DataResponseListener dataResponseListener) {
-        new GeneralRetrofit(apiService.CallFilterData(ChatApplication.url, jsonObject), jsonObject, dataResponseListener).call();
+    public void CallFilterData(boolean isFilterActive, int position, String mRoomId, String start_date, String end_date, Spinner mSpinnerRoomList, Spinner mSpinnerRoomMood,
+                               boolean isFilterType, ArrayList<Filter> filterArrayList, String actionType, String isCheckActivity, String strDeviceId, String strpanelId, String typeofFilter, boolean userChange,
+                               DataResponseListener dataResponseListener) {
+
+        HashMap<String, Object> params = new HashMap<>();
+
+        params.put("notification_number", position);
+
+
+//            if (actionType.equals("Mood") || actionType.equals("Room")) {
+//                object.put("is_room", 1);
+//            } else {
+//                object.put("is_room", 0);
+//            }
+
+        if (typeofFilter.equalsIgnoreCase("refresh")) {
+            params.put("start_date", "");
+            params.put("end_date", "");
+//                if (isCheckActivity.equals("room") || isCheckActivity.equals("mood")) {
+            if (isCheckActivity.equals("room")) {
+                params.put("room_id", "" + mRoomId);
+            } else if (isCheckActivity.equals("mode")) {
+                params.put("mood_id", "" + mRoomId);
+            } else if (isCheckActivity.equalsIgnoreCase("schedule")) {
+                params.put("schedule_id", "" + mRoomId);
+            }
+
+            if (isCheckActivity.equals("room")) {
+                params.put("filter_type", "room");
+            } else if (isCheckActivity.equalsIgnoreCase("mode")) {
+                params.put("filter_type", "mood");
+            } else if (isCheckActivity.equals("schedule")) {
+                params.put("filter_type", "schedule");
+            } else if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor")
+                    || isCheckActivity.equals("yalelock")) {
+                params.put("filter_type", "device");
+                params.put("device_id", "" + mRoomId);
+            } else {
+                params.put("filter_type", "all");
+            }
+
+
+            params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+
+        } else {
+
+            if (userChange) {
+                params.put("start_date", "");
+                params.put("end_date", "");
+                params.put("filter_type", "all");
+            } else {
+                params.put("start_date", start_date);
+                params.put("end_date", end_date);
+                params.put("filter_type", "all");
+            }
+
+            RoomVO roomVO = null;
+            if (mSpinnerRoomList != null) {
+                roomVO = (RoomVO) mSpinnerRoomList.getSelectedItem();
+                if (mSpinnerRoomMood.getSelectedItem().toString().equals("All")) {
+                    if (isFilterType) {
+                        String actionname = "";
+                        ArrayList<String> stringArrayList = new ArrayList<>();
+                        if (filterArrayList.size() > 0) {
+                            for (int i = 0; i < filterArrayList.size(); i++) {
+                                if (filterArrayList.get(i).isChecked()) {
+                                    stringArrayList.add(filterArrayList.get(i).getName());
+                                }
+                            }
+
+                            for (int i = 0; i < stringArrayList.size(); i++) {
+                                if (i == 0) {
+                                    actionname = stringArrayList.get(i).toLowerCase();
+                                } else {
+                                    actionname = actionname + "," + stringArrayList.get(i).toLowerCase();
+                                }
+                            }
+                            params.put("filter_action", actionname.replace(" ", "_"));
+                        }
+
+                        if (actionType.equalsIgnoreCase("Door sensor")) {
+                            params.put("filter_type", "door_sensor");
+                        } else if (actionType.equalsIgnoreCase("Gas sensor")) {
+                            params.put("filter_type", "gas_sensor");
+                        } else if (actionType.equalsIgnoreCase("Temp sensor")) {
+                            params.put("filter_type", "temp_sensor");
+                        } else if (actionType.equalsIgnoreCase("Water detector")) {
+                            params.put("filter_type", "water_detector");
+                        } else if (actionType.equalsIgnoreCase("Lock")) {
+                            params.put("filter_type", "lock");
+                        } else {
+                            params.put("filter_type", "all_sensor");
+                        }
+
+                        if (roomVO != null) {
+                            params.put("device_id", roomVO.getRoomId());
+                        }
+                    }
+
+
+                } else {
+
+                    if (isFilterType) {
+
+                        if (actionType.equalsIgnoreCase("Door sensor")) {
+                            params.put("filter_type", "door_sensor");
+                        } else if (actionType.equalsIgnoreCase("Gas sensor")) {
+                            params.put("filter_type", "gas_sensor");
+                        } else if (actionType.equalsIgnoreCase("Temp sensor")) {
+                            params.put("filter_type", "temp_sensor");
+                        } else if (actionType.equalsIgnoreCase("Water detector")) {
+                            params.put("filter_type", "water_detector");
+                        } else if (actionType.equalsIgnoreCase("Lock")) {
+                            params.put("filter_type", "lock");
+                        } else {
+                            params.put("filter_type", "all_sensor");
+                        }
+
+                        if (roomVO != null) {
+                            params.put("device_id", roomVO.getRoomId());
+                        }
+
+                    } else {
+
+                        if (roomVO != null && !roomVO.getRoomId().equalsIgnoreCase("0")) {
+
+                            if (mSpinnerRoomMood != null) {
+                                if (mSpinnerRoomMood.getSelectedItem().toString().toLowerCase().equals("mood")) {
+                                    params.put("mood_id", "" + roomVO.getRoomId());
+                                } else {
+                                    params.put("room_id", "" + roomVO.getRoomId());
+                                }
+                            } else {
+                                params.put("room_id", "" + roomVO.getRoomId());
+                            }
+                        }
+
+                        if (!TextUtils.isEmpty(strDeviceId) && strDeviceId.length() > 0) {
+                            params.put("device_id", "" + strDeviceId);
+                        } else {
+                            params.put("device_id", "");
+                        }
+
+                        if (!TextUtils.isEmpty(strpanelId) && strpanelId.length() > 0) {
+                            params.put("panel_id", "" + strpanelId);
+                        } else {
+                            params.put("panel_id", "");
+                        }
+
+                    }
+                    String actionname = "";
+                    ArrayList<String> stringArrayList = new ArrayList<>();
+                    for (int i = 0; i < filterArrayList.size(); i++) {
+
+                        if (filterArrayList.get(i).isChecked()) {
+                            stringArrayList.add(filterArrayList.get(i).getName());
+                        }
+                    }
+
+                    for (int i = 0; i < stringArrayList.size(); i++) {
+                        if (i == 0) {
+                            actionname = stringArrayList.get(i).toLowerCase();
+                        } else {
+                            actionname = actionname + "," + stringArrayList.get(i).toLowerCase();
+                        }
+                    }
+
+                    params.put("filter_action", actionname.replace(" ", "_"));
+                }
+            } else {
+                if (roomVO != null) {
+                    params.put("room_id", "" + roomVO.getRoomId());
+                } else if (isCheckActivity.equals("room") || isCheckActivity.equalsIgnoreCase("mode")) {
+                    if (isCheckActivity.equalsIgnoreCase("mode")) {
+                        params.put("mood_id", "" + mRoomId);
+                    } else {
+                        params.put("room_id", "" + mRoomId);
+                    }
+                } else if (isCheckActivity.equalsIgnoreCase("schedule")) {
+                    params.put("schedule_id", "" + mRoomId);
+                } else if (isCheckActivity.equals("AllType")) {
+                    params.put("filter_type", "all");
+                } else {
+                    params.put("room_id", "");
+                }
+            }
+
+            if (mSpinnerRoomMood != null) {
+                if (mSpinnerRoomMood.getSelectedItemPosition() == 0 && isFilterType) {
+                    params.put("filter_type", "all_sensor");
+                } else {
+                    if (actionType.equalsIgnoreCase("Door sensor")) {
+                        params.put("filter_type", "door_sensor");
+                    } else if (actionType.equalsIgnoreCase("Gas sensor")) {
+                        params.put("filter_type", "gas_sensor");
+                    } else if (actionType.equalsIgnoreCase("Temp sensor")) {
+                        params.put("filter_type", "temp_sensor");
+                    } else if (actionType.equalsIgnoreCase("Water detector")) {
+                        params.put("filter_type", "water_detector");
+                    } else if (actionType.equalsIgnoreCase("Lock")) {
+                        params.put("filter_type", "lock");
+                    }
+                }
+
+            } else {
+                if (isCheckActivity.equals("room")) {
+                    params.put("filter_type", "room");
+                } else if (isCheckActivity.equalsIgnoreCase("mode")) {
+                    params.put("filter_type", "mood");
+                } else if (isCheckActivity.equals("schedule")) {
+                    params.put("filter_type", "schedule");
+                } else if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor") ||
+                        isCheckActivity.equals("yalelock")) {
+                    params.put("filter_type", "device");
+                    params.put("device_id", "" + mRoomId);
+                } else {
+                    params.put("filter_type", "all");
+                }
+
+            }
+        }
+
+
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+
+        new GeneralRetrofit(apiService.CallFilterData(ChatApplication.url, params), params, dataResponseListener).call();
     }
 
-    public void GetDeviceLog(JSONObject jsonObject, DataResponseListener dataResponseListener) {
-        new GeneralRetrofit(apiService.GetDeviceLog(ChatApplication.url, jsonObject), jsonObject, dataResponseListener).call();
+    public void GetDeviceLog(boolean isFilterActive, int position, String mRoomId, String start_date, String end_date, Spinner mSpinnerRoomList, Spinner mSpinnerRoomMood,
+                             boolean isFilterType, ArrayList<Filter> filterArrayList, String actionType, String isCheckActivity, String strDeviceId, String strpanelId, DataResponseListener dataResponseListener) {
+
+        HashMap<String, Object> params = new HashMap<>();
+
+        try {
+            if (isFilterActive) {
+                params.put("notification_number", position);
+                params.put("room_id", "" + mRoomId);
+                params.put("start_datetime", start_date);
+                params.put("end_datetime", end_date);
+
+
+                RoomVO roomVO = (RoomVO) mSpinnerRoomList.getSelectedItem();
+                JSONArray array = new JSONArray();
+                if (mSpinnerRoomMood.getSelectedItem().toString().equals("All")) {
+                    if (isFilterType) {
+                        params.put("sensor_type", "all");
+
+                        String actionname = "";
+                        ArrayList<String> stringArrayList = new ArrayList<>();
+                        if (filterArrayList.size() > 0) {
+                            for (int i = 0; i < filterArrayList.size(); i++) {
+                                if (filterArrayList.get(i).isChecked()) {
+                                    stringArrayList.add(filterArrayList.get(i).getName());
+                                }
+                            }
+
+                            for (int i = 0; i < stringArrayList.size(); i++) {
+                                if (i == stringArrayList.size() - 1) {
+                                    actionname = actionname + "'" + stringArrayList.get(i) + "'";
+                                } else {
+                                    actionname = actionname + "'" + stringArrayList.get(i) + "',";
+                                }
+                            }
+                            JSONObject subObject = new JSONObject();
+                            subObject.put("activity_action", actionname);
+                            subObject.put("activity_type", "All");
+                            array.put(subObject);
+                            params.put("filter_data", array);
+                        }
+
+                    } else {
+                        String actionname = "";
+                        ArrayList<String> stringArrayList = new ArrayList<>();
+                        if (filterArrayList.size() > 0) {
+                            for (int i = 0; i < filterArrayList.size(); i++) {
+                                if (filterArrayList.get(i).isChecked()) {
+                                    stringArrayList.add(filterArrayList.get(i).getName());
+                                }
+                            }
+
+                            for (int i = 0; i < stringArrayList.size(); i++) {
+                                if (i == stringArrayList.size() - 1) {
+                                    actionname = actionname + "'" + stringArrayList.get(i) + "'";
+                                } else {
+                                    actionname = actionname + "'" + stringArrayList.get(i) + "',";
+                                }
+                            }
+                            JSONObject subObject = new JSONObject();
+                            subObject.put("activity_action", actionname);
+
+                            subObject.put("activity_type", "All");
+                            array.put(subObject);
+                            params.put("filter_data", array);
+                        }
+                    }
+
+                } else {
+
+                    if (isFilterType) {
+
+                        if (actionType.equalsIgnoreCase("Door Sensor")) {
+                            params.put("sensor_type", "door");
+                        } else {
+                            params.put("sensor_type", "temp");
+                        }
+
+                        params.put("room_id", "");
+                        params.put("panel_id", "");
+                        if (roomVO != null) {
+                            params.put("module_id", "" + (roomVO.getRoomId().equalsIgnoreCase("0") ? "" : roomVO.getRoomId()));
+                        } else {
+                            params.put("module_id", "");
+                        }
+
+                    } else {
+                        if (roomVO != null) {
+                            params.put("room_id", "" + (roomVO.getRoomId().equalsIgnoreCase("0") ? "" : roomVO.getRoomId()));
+                        } else if (isCheckActivity.equals("room")) {
+                            params.put("room_id", "" + mRoomId);
+                        } else {
+                            params.put("room_id", "");
+                        }
+
+                        if (actionType.equals("Room")) {
+                            params.put("module_id", "" + strDeviceId);
+                            params.put("panel_id", "" + strpanelId);
+                        } else {
+                            params.put("panel_id", "");
+                            params.put("module_id", "");
+                        }
+                    }
+                    String actionname = "";
+                    ArrayList<String> stringArrayList = new ArrayList<>();
+                    for (int i = 0; i < filterArrayList.size(); i++) {
+
+                        if (filterArrayList.get(i).isChecked()) {
+                            stringArrayList.add(filterArrayList.get(i).getName());
+                        }
+                    }
+
+                    for (int i = 0; i < stringArrayList.size(); i++) {
+                        if (i == stringArrayList.size() - 1) {
+                            actionname = actionname + "'" + stringArrayList.get(i) + "'";
+                        } else {
+                            actionname = actionname + "'" + stringArrayList.get(i) + "',";
+                        }
+                    }
+                    JSONObject subObject = new JSONObject();
+                    subObject.put("activity_action", actionname);
+                    subObject.put("activity_type", "" + actionType);
+
+                    array.put(subObject);
+                    params.put("filter_data", array);
+                }
+
+
+            } else {
+                params.put("notification_number", position);
+                params.put("start_datetime", "");
+                params.put("end_datetime", "");
+                params.put("filter_data", "");
+                if (TextUtils.isEmpty(mRoomId)) {
+                    params.put("room_id", "");
+                } else {
+                    params.put("room_id", "" + mRoomId);
+                }
+
+                params.put("panel_id", "");
+                if (isCheckActivity.equals("mode")) {
+                    params.put("filter_type", "mood");
+                } else if (isCheckActivity.equalsIgnoreCase("mood")) {
+                    params.put("filter_type", "room");
+                } else if (isCheckActivity.equalsIgnoreCase("schedule")) {
+                    params.put("filter_type", "schedule");
+                } else {
+                    params.put("filter_type", "");
+                }
+            }
+            params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+            params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        new GeneralRetrofit(apiService.GetDeviceLog(ChatApplication.url, params), params, dataResponseListener).call();
     }
 
     public void GetMoodNameList(DataResponseListener dataResponseListener) {
@@ -1064,16 +1452,16 @@ public class SpikeBotApi {
     }
 
     // update device
-    public void updateDevice(String device_id, String device_name, DataResponseListener dataResponseListener){
-            HashMap<String, Object> params = new HashMap<>();
+    public void updateDevice(String device_id, String device_name, DataResponseListener dataResponseListener) {
+        HashMap<String, Object> params = new HashMap<>();
 
-            params.put("device_id", device_id);
-            params.put("device_name", device_name);
-            params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+        params.put("device_id", device_id);
+        params.put("device_name", device_name);
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
 
-            new GeneralRetrofit(apiService.SAVE_EDIT_SWITCH(ChatApplication.url, params), params, dataResponseListener).call();
+        new GeneralRetrofit(apiService.SAVE_EDIT_SWITCH(ChatApplication.url, params), params, dataResponseListener).call();
     }
 
     //AllUnassignedpanel - add unAssign Repeater
@@ -1125,9 +1513,32 @@ public class SpikeBotApi {
     }
 
     // adddevice - get config device data
-    public void getConfigData(String url, DataResponseListener dataResponseListener) {
+    public void getConfigData(int type, DataResponseListener dataResponseListener) {
 
-        new GeneralRetrofit(apiService.getConfigData(url), null, dataResponseListener).call();
+        switch (type) {
+
+            case 1:
+                new GeneralRetrofit(apiService.getConfigData(ChatApplication.url, "door_sensor"), null, dataResponseListener).call();
+                break;
+            case 2:
+                new GeneralRetrofit(apiService.getConfigData(ChatApplication.url, "temp_sensor"), null, dataResponseListener).call();
+                break;
+            case 5:
+                new GeneralRetrofit(apiService.getConfigData(ChatApplication.url, "gas_sensor"), null, dataResponseListener).call();
+                break;
+            case 6:
+                new GeneralRetrofit(apiService.getConfigData(ChatApplication.url, "curtain"), null, dataResponseListener).call();
+                break;
+            case 7:
+                new GeneralRetrofit(apiService.getConfigData(ChatApplication.url, "water_detector"), null, dataResponseListener).call();
+                break;
+            default:
+                new GeneralRetrofit(apiService.getConfigData(ChatApplication.url, "5"), null, dataResponseListener).call();
+                break;
+
+
+        }
+
     }
 
     // add device - save camera key
@@ -1762,8 +2173,8 @@ public class SpikeBotApi {
         new GeneralRetrofit(apiService.deviceadd(ChatApplication.url, params), params, dataResponseListener).call();
     }
 
-   //DoorSensorInfo  - getDoorSensorDetails
-    public void getDoorSensorDetails(String device_id,DataResponseListener dataResponseListener){
+    //DoorSensorInfo  - getDoorSensorDetails
+    public void getDoorSensorDetails(String device_id, DataResponseListener dataResponseListener) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("device_id", device_id);
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
@@ -2314,7 +2725,7 @@ public class SpikeBotApi {
     }
 
     // ScannerWifiList - add scanner
-    public void addScanner(String room_id, String device_name, String module_id, String module_type,String on_time,String off_time,String range, DataResponseListener dataResponseListener) {
+    public void addScanner(String room_id, String device_name, String module_id, String module_type, String on_time, String off_time, String range, DataResponseListener dataResponseListener) {
 
         HashMap<String, Object> params = new HashMap<>();
 
@@ -2332,4 +2743,56 @@ public class SpikeBotApi {
         new GeneralRetrofit(apiService.deviceadd(ChatApplication.url, params), params, dataResponseListener).call();
     }
 
+
+    /*forgot password*/  // dev arpan add on july 06
+
+    public void forgetPassword(String mobile_no, DataResponseListener dataResponseListener) {
+
+        HashMap<String, Object> params = new HashMap<>();
+
+        params.put("user_phone", mobile_no);
+
+        new GeneralRetrofit(apiService.forgetpassword(params), params, dataResponseListener).call();
+
+    }
+
+
+    /*forgot password*/  // dev arpan add on july 06
+    public void RetryPassword(String mobile_no, DataResponseListener dataResponseListener) {
+
+        HashMap<String, Object> params = new HashMap<>();
+
+        params.put("user_phone", mobile_no);
+
+        new GeneralRetrofit(apiService.RetryPassword(params), params, dataResponseListener).call();
+
+    }
+
+
+    /*forgot password*/  // dev arpan add on july 06
+
+    public void OTPVerify(String OTP, DataResponseListener dataResponseListener) {
+
+        HashMap<String, Object> params = new HashMap<>();
+
+        params.put("otp", OTP);
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.FORGETPASSWORD_MOBILENUMBER));
+
+        new GeneralRetrofit(apiService.verifyOTP(params), params, dataResponseListener).call();
+
+    }
+
+    /*forgot password*/  // dev arpan add on july 06
+
+    public void SetNewPassword(String password, DataResponseListener dataResponseListener) {
+
+        HashMap<String, Object> params = new HashMap<>();
+
+        params.put("user_password", password);
+        params.put("user_phone", Common.getPrefValue(ChatApplication.getContext(), Constants.FORGETPASSWORD_MOBILENUMBER));
+        params.put("otp", Common.getPrefValue(ChatApplication.getContext(), Constants.CURRENT_OPT));
+
+        new GeneralRetrofit(apiService.SetNewPassword(params), params, dataResponseListener).call();
+
+    }
 }

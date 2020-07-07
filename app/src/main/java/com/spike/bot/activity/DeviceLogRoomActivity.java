@@ -251,6 +251,8 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
             }
         }).execute();*/
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
         SpikeBotApi.getInstance().GetLogFind(ROOM_ID, position, new DataResponseListener() {
             @Override

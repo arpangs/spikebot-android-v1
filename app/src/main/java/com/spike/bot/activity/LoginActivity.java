@@ -370,7 +370,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         }
                         Common.savePrefValue(LoginActivity.this, Constants.USER_PASSWORD, user_password);
 
-                        User user = new User(user_id, first_name, last_name, cloudIp, false, user_password, admin, local_ip, mac_address);
+                        User user = new User(user_id, first_name, last_name, cloudIp, false, user_password, admin, local_ip, mac_address, auth_key);
                         Gson gson = new Gson();
                         String jsonText = Common.getPrefValue(getApplicationContext(), Common.USER_JSON);
                         List<User> userList = new ArrayList<User>();

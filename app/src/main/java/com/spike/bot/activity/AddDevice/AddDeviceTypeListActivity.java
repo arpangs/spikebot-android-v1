@@ -695,8 +695,13 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         startTimer();
 
         addTempSensor = true;
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         //curtain | gas_sensor | temp_sensor | smart_remote | door_sensor | repeater | 5 | 5f | heavy_load | double_heavy_load
         String url = ChatApplication.url + Constants.deviceconfigure;
+
         if (type == SENSOR_GAS) {
             url = url + "gas_sensor";
         } else if (type == Curtain) {
@@ -711,13 +716,13 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             url = url + "5";
         }
 
+
         typeSync = type;
 
         ChatApplication.logDisplay("config device url is " + url);
 
-        if (ChatApplication.url.contains("http://"))
-            ChatApplication.url = ChatApplication.url.replace("http://", "");
-        SpikeBotApi.getInstance().getConfigData(url, new DataResponseListener() {
+
+        SpikeBotApi.getInstance().getConfigData(type, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 JsonObject result = new JsonObject();

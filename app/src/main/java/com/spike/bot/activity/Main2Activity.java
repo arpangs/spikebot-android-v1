@@ -465,6 +465,9 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             Common.savePrefValue(Main2Activity.this, Constants.USER_PASSWORD, user.getPassword());
 
             Common.savePrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE, user.getAdmin());
+            Common.savePrefValue(Main2Activity.this, Constants.AUTHORIZATION_TOKEN, user.getAuth_key());
+
+
             setUserTypeValue();
             if (Common.getPrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("1")) {
                 Constants.room_type = 0;
@@ -1028,10 +1031,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 }).execute();*/
 
 
-                if (ChatApplication.url.contains("http://"))
-                    ChatApplication.url = ChatApplication.url.replace("http://", "");
-
-                SpikeBotApi.getInstance().LogoutCloudUser(logOutUser.getUser_id(), new DataResponseListener() {
+//                SpikeBotApi.getInstance().LogoutCloudUser(logOutUser.getUser_id(), new DataResponseListener() {
+                SpikeBotApi.getInstance().LogoutCloudUser(USER_ID, new DataResponseListener() {
                     @Override
                     public void onData_SuccessfulResponse(String stringResponse) {
                         ActivityHelper.dismissProgressDialog();
@@ -1066,6 +1067,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                                         Common.savePrefValue(Main2Activity.this, Constants.USER_PASSWORD, tempList.get(0).getPassword());
                                         Common.savePrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE, tempList.get(0).getAdmin());
 
+                                        Common.savePrefValue(Main2Activity.this, Constants.AUTHORIZATION_TOKEN, tempList.get(0).getAuth_key());
+
                                         if (Common.getPrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("1")) {
                                             Constants.room_type = 0;
                                             Common.savePrefValue(Main2Activity.this, Constants.USER_ROOM_TYPE, "" + 0);
@@ -1087,6 +1090,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                                     Common.savePrefValue(Main2Activity.this, Constants.USER_ID, "");
                                     Common.savePrefValue(Main2Activity.this, Constants.USER_PASSWORD, "");
                                     Common.savePrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE, "");
+                                    Common.savePrefValue(Main2Activity.this, Constants.AUTHORIZATION_TOKEN, "");
 
                                     webUrl = "";
                                     ChatApplication app = ChatApplication.getInstance();

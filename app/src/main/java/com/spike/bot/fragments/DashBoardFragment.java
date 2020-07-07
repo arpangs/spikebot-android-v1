@@ -40,6 +40,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
 import com.kp.core.dialog.ConfirmDialog;
+import com.spike.bot.Beacon.BeaconDetailActivity;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.Retrofit.GetDataService;
@@ -788,6 +789,10 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             Intent intent = new Intent(activity, CameraNotificationActivity.class);
             intent.putExtra("Cameraunseenlog", "Cameraunseenlog");
             intent.putExtra("homecontrollerId", homecontrollerid);
+            startActivity(intent);
+        } else if (action.equalsIgnoreCase("icnBeacon")) {
+            Intent intent = new Intent(activity, BeaconDetailActivity.class);
+            intent.putExtra("room_id",  roomVO.getRoomId());
             startActivity(intent);
         }
     }

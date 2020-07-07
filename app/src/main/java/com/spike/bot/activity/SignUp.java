@@ -22,8 +22,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.hbb20.CountryCodePicker;
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.api_retrofit.DataResponseListener;
@@ -51,13 +49,34 @@ import io.socket.client.Socket;
 
 public class SignUp extends AppCompatActivity {
 
-    private Button btn_signup,btn_sign_up_cancel;
-    private EditText edt_first_name,edt_last_name,edt_email_id,edt_user_name,edt_password,edt_con_password,edt_phone_no,edtIPAddress;
-    private ImageView btn_signupback;
+    private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
     String webUrl = "";
+    String imei = "";
+    private Button btn_signup, btn_sign_up_cancel;
+    private EditText edt_first_name, edt_last_name, edt_email_id, edt_user_name, edt_password, edt_con_password, edt_phone_no, edtIPAddress;
+    private ImageView btn_signupback;
     private Socket mSocket;
-    private  List<User> tempList;
+    private List<User> tempList;
     CountryCodePicker countryCodePicker;
+
+    /**
+     * @param phone
+     * @return
+     */
+
+    public static boolean isValidMobile(String phone) {
+        boolean check = false;
+        if (!Pattern.matches("[a-zA-Z]+", phone)) {
+            if (phone.length() < 10 || phone.length() > 13) {
+                check = false;
+            } else {
+                check = android.util.Patterns.PHONE.matcher(phone).matches();
+            }
+        } else {
+            check = false;
+        }
+        return check;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,11 +91,11 @@ public class SignUp extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         setTitle("Sign Up");
-       // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-       // getSupportActionBar().setDisplayShowHomeEnabled(true);
+        // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        // getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        btn_signup =  findViewById(R.id.btn_sign_up);
-        btn_sign_up_cancel =  findViewById(R.id.btn_sign_up_cancel);
+        btn_signup = findViewById(R.id.btn_sign_up);
+        btn_sign_up_cancel = findViewById(R.id.btn_sign_up_cancel);
         btn_signupback = findViewById(R.id.btn_signupback);
 
         edt_first_name = findViewById(R.id.edt_first_name_su);
@@ -94,12 +113,13 @@ public class SignUp extends AppCompatActivity {
         //  countryCodePicker.registerCarrierNumberEditText(edt_phone_no);
 
         Gson gson = new Gson();
-        String jsonText = Common.getPrefValue(getApplicationContext(),Common.USER_JSON);
+        String jsonText = Common.getPrefValue(getApplicationContext(), Common.USER_JSON);
         tempList = new ArrayList<User>();
 
 
-        if(!TextUtils.isEmpty(jsonText)){
-            Type type = new TypeToken<List<User>>() {}.getType();
+        if (!TextUtils.isEmpty(jsonText)) {
+            Type type = new TypeToken<List<User>>() {
+            }.getType();
             tempList = gson.fromJson(jsonText, type);
         }
        /* if(tempList.size() > 0){
@@ -112,9 +132,9 @@ public class SignUp extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if(Common.isConnectedToMobile(SignUp.this)){
-                    ChatApplication.showToast(SignUp.this,"Please connect to your gateway's local network and try again.");
-                }else {
+                if (Common.isConnectedToMobile(SignUp.this)) {
+                    ChatApplication.showToast(SignUp.this, "Please connect to your gateway's local network and try again.");
+                } else {
                     singUP();
                 }
 
@@ -160,34 +180,11 @@ public class SignUp extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    /**
-     *
-     * @param phone
-     * @return
-     */
-
-    public static boolean isValidMobile(String phone) {
-        boolean check = false;
-        if (!Pattern.matches("[a-zA-Z]+", phone)) {
-            if (phone.length() < 10 || phone.length() > 13) {
-                check = false;
-            } else {
-                check = android.util.Patterns.PHONE.matcher(phone).matches();
-            }
-        } else {
-            check = false;
-        }
-        return check;
-    }
-
-    String imei = "";
-    private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
-
     /* frist check wifi connect in your pie network */
-    private void singUP(){
+    private void singUP() {
 
-        if(!ActivityHelper.isConnectingToInternet(this)){
-            Toast.makeText(getApplicationContext(), R.string.disconnect , Toast.LENGTH_SHORT).show();
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -199,40 +196,40 @@ public class SignUp extends AppCompatActivity {
         String ipAddressPI = array[0] + "." + array[1] + "." + array[2] + "." + array[3];
 
 
-        if(TextUtils.isEmpty(edt_first_name.getText().toString())){
+        if (TextUtils.isEmpty(edt_first_name.getText().toString())) {
             edt_first_name.requestFocus();
             edt_first_name.setError("Enter First Name");
             return;
         }
-        if(TextUtils.isEmpty(edt_last_name.getText().toString())){
+        if (TextUtils.isEmpty(edt_last_name.getText().toString())) {
             edt_last_name.requestFocus();
             edt_last_name.setError("Enter Last Name");
             return;
         }
-        if(TextUtils.isEmpty(edt_email_id.getText().toString())){
+        if (TextUtils.isEmpty(edt_email_id.getText().toString())) {
             edt_email_id.requestFocus();
             edt_email_id.setError("Enter Emaid Id");
             return;
         }
-        if(TextUtils.isEmpty(edt_user_name.getText().toString())){
+        if (TextUtils.isEmpty(edt_user_name.getText().toString())) {
             edt_user_name.requestFocus();
             edt_user_name.setError("Enter User Name");
             return;
         }
 
-        if (edt_user_name.getText().toString().trim().matches(".*([ \t]).*")){
+        if (edt_user_name.getText().toString().trim().matches(".*([ \t]).*")) {
             edt_user_name.requestFocus();
             edt_user_name.setError("Invalid Username");
             return;
         }
 
-        if(TextUtils.isEmpty(edt_password.getText().toString())){
+        if (TextUtils.isEmpty(edt_password.getText().toString())) {
             edt_password.requestFocus();
             edt_password.setError("Enter Password");
             return;
         }
 
-        if(TextUtils.isEmpty(edt_phone_no.getText().toString())){
+        if (TextUtils.isEmpty(edt_phone_no.getText().toString())) {
             edt_phone_no.requestFocus();
             edt_phone_no.setError("Enter Phone No");
             return;
@@ -251,18 +248,18 @@ public class SignUp extends AppCompatActivity {
 //            return;
 //        }
 
-        if(TextUtils.isEmpty(imei)){
+        if (TextUtils.isEmpty(imei)) {
             getUUID();
         }
 
 
-        if(!edt_password.getText().toString().trim().equalsIgnoreCase(edt_con_password.getText().toString().trim())){
+        if (!edt_password.getText().toString().trim().equalsIgnoreCase(edt_con_password.getText().toString().trim())) {
             edt_con_password.requestFocus();
             edt_con_password.setError("Password not match");
             //Toast.makeText(getApplicationContext(),"Password not match",Toast.LENGTH_SHORT).show();
             return;
         }
-        ActivityHelper.showProgressDialog(SignUp.this,"Please wait...",false);
+        ActivityHelper.showProgressDialog(SignUp.this, "Please wait...", false);
         ChatApplication app = ChatApplication.getInstance();
         if (mSocket != null && mSocket.connected()) {
         } else {
@@ -270,11 +267,11 @@ public class SignUp extends AppCompatActivity {
         }
 //        webUrl = app.url;
         /*set statically ip address*/
-        String url = "http://" + ipAddressPI + ":"  + Constants.SIGNUP_API;
+        String url = "http://" + ipAddressPI + ":" + Constants.SIGNUP_API;
 //        String url = "http://" + "192.168.175.121" + ":"  + Constants.SIGNUP_API;//111
 //        String url = "http://" + edtIPAddress.getText().toString() + ":"  + Constants.SIGNUP_API;//117
         String token = FirebaseInstanceId.getInstance().getToken();
-        Common.savePrefValue(getApplicationContext(),Constants.DEVICE_PUSH_TOKEN,token);
+        Common.savePrefValue(getApplicationContext(), Constants.DEVICE_PUSH_TOKEN, token);
 
 
         /*JSONObject object = new JSONObject();
@@ -311,13 +308,13 @@ public class SignUp extends AppCompatActivity {
                         }
 
                         *//*//**
-                         *  {"code":200,"message":"Succesfully!
-                         *  Your account has been created",
-                         *  "data":{"first_name":"vipul",
-                         *  "last_name":"patel",
-                         *  "ip":"http:\/\/home.deepfoods.net:11150",
-                         *  "user_id":"1545317988870_UrL_0HY9u","user_password":"c1bc06"}}
-                         * *//*
+         *  {"code":200,"message":"Succesfully!
+         *  Your account has been created",
+         *  "data":{"first_name":"vipul",
+         *  "last_name":"patel",
+         *  "ip":"http:\/\/home.deepfoods.net:11150",
+         *  "user_id":"1545317988870_UrL_0HY9u","user_password":"c1bc06"}}
+         * *//*
 
                         JSONObject data=result.getJSONObject("data");
                      //   JSONObject object1=data.optJSONObject(data.toString());
@@ -393,7 +390,7 @@ public class SignUp extends AppCompatActivity {
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
 
-        SpikeBotApi.getInstance().Signup(ipAddressPI + ":",edt_first_name.getText().toString(), edt_last_name.getText().toString(), edt_user_name.getText().toString().trim(),
+        SpikeBotApi.getInstance().Signup(ipAddressPI + ":", edt_first_name.getText().toString(), edt_last_name.getText().toString(), edt_user_name.getText().toString().trim(),
                 edt_email_id.getText().toString(), edt_password.getText().toString(), edt_phone_no.getText().toString(), imei
                 , token, new DataResponseListener() {
                     @Override
@@ -406,10 +403,10 @@ public class SignUp extends AppCompatActivity {
 
                             int code = result.getInt("code");
                             String message = result.getString("message");
-                            if(code==200){
+                            if (code == 200) {
                                 ChatApplication.isMainFragmentNeedResume = true;
-                                if(!TextUtils.isEmpty(message)){
-                                    Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                                if (!TextUtils.isEmpty(message)) {
+                                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                                 }
 
                                 /*/*
@@ -421,78 +418,78 @@ public class SignUp extends AppCompatActivity {
                                  *  "user_id":"1545317988870_UrL_0HY9u","user_password":"c1bc06"}}
                                  * */
 
-                                JSONObject data=result.getJSONObject("data");
+                                JSONObject data = result.getJSONObject("data");
                                 //   JSONObject object1=data.optJSONObject(data.toString());
-                                String first_name=data.optString("first_name");
-                                String ip=data.optString("ip");
-                                String last_name=data.optString("last_name");
-                                String user_id=data.optString("user_id");
-                                String user_password=data.optString("user_password");
-                                String admin=data.optString("admin");
-                                String local_ip=data.optString("local_ip_address");
+                                String first_name = data.optString("first_name");
+                                String ip = data.optString("ip");
+                                String last_name = data.optString("last_name");
+                                String user_id = data.optString("user_id");
+                                String user_password = data.optString("user_password");
+                                String admin = data.optString("admin");
+                                String local_ip = data.optString("local_ip_address");
                                 String mac_address = data.getString("mac_address");
 
-                                Common.savePrefValue(SignUp.this,Constants.USER_PASSWORD,user_password);
-                                Common.savePrefValue(SignUp.this,Constants.PREF_IP,ip);
-                                Common.savePrefValue(SignUp.this,Constants.USER_ID,user_id);
+                                Common.savePrefValue(SignUp.this, Constants.USER_PASSWORD, user_password);
+                                Common.savePrefValue(SignUp.this, Constants.PREF_IP, ip);
+                                Common.savePrefValue(SignUp.this, Constants.USER_ID, user_id);
 
                                 Common.savePrefValue(SignUp.this, Constants.USER_ADMIN_TYPE, admin);
 
                                 if (Common.getPrefValue(SignUp.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("1")) {
                                     Constants.room_type = 0;
-                                    Common.savePrefValue(SignUp.this, Constants.USER_ROOM_TYPE, ""+0);
+                                    Common.savePrefValue(SignUp.this, Constants.USER_ROOM_TYPE, "" + 0);
                                 } else {
                                     Constants.room_type = 2;
-                                    Common.savePrefValue(SignUp.this, Constants.USER_ROOM_TYPE, ""+2);
+                                    Common.savePrefValue(SignUp.this, Constants.USER_ROOM_TYPE, "" + 2);
                                 }
 
-                                User user = new User(user_id,first_name,last_name,ip,false,user_password,admin,local_ip,mac_address);
+                                String auth_key = "";  // value of this key will add at login time
+
+                                User user = new User(user_id, first_name, last_name, ip, false, user_password, admin, local_ip, mac_address, auth_key);
 
                                 Gson gson = new Gson();
-                                String jsonText = Common.getPrefValue(getApplicationContext(),Common.USER_JSON);
+                                String jsonText = Common.getPrefValue(getApplicationContext(), Common.USER_JSON);
                                 List<User> userList = new ArrayList<User>();
                                 user.setIsActive(true);
                                 userList.add(user);
 
                                 String jsonCurProduct = gson.toJson(userList);
-                                Common.savePrefValue(getApplicationContext(),Common.USER_JSON,jsonCurProduct);
+                                Common.savePrefValue(getApplicationContext(), Common.USER_JSON, jsonCurProduct);
 
-                                ChatApplication.logDisplay("response is signup "+data.toString());
-                                ChatApplication.isRefreshHome=false;
-                                ChatApplication.isSignUp=true;
-                                Main2Activity.isResumeConnect=false;
+                                ChatApplication.logDisplay("response is signup " + data.toString());
+                                ChatApplication.isRefreshHome = false;
+                                ChatApplication.isSignUp = true;
+                                Main2Activity.isResumeConnect = false;
 
                                 webUrl = ipAddressPI;
                                 ChatApplication.url = webUrl;
-                                ChatApplication.isCallDeviceList=true;
-                                Intent intent=new Intent(SignUp.this,Main2Activity.class);
+                                ChatApplication.isCallDeviceList = true;
+                                Intent intent = new Intent(SignUp.this, Main2Activity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
                                 finish();
 
-                            }
-                            else{
-                                Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
-                        }
-                        finally {
+                        } finally {
                             ActivityHelper.dismissProgressDialog();
                         }
                     }
 
                     @Override
                     public void onData_FailureResponse() {
-                        ChatApplication.showToast(SignUp.this,"Please connect to your gateway's local network and try again.");
+                        ChatApplication.showToast(SignUp.this, "Please connect to your gateway's local network and try again.");
                         ActivityHelper.dismissProgressDialog();
                     }
 
                     @Override
                     public void onData_FailureResponse_with_Message(String error) {
-                        ChatApplication.logDisplay("error is "+error);
-                        ChatApplication.showToast(SignUp.this,"Please connect to your gateway's local network and try again.");
+                        ChatApplication.logDisplay("error is " + error);
+                        ChatApplication.showToast(SignUp.this, "Please connect to your gateway's local network and try again.");
                         ActivityHelper.dismissProgressDialog();
                     }
                 });
@@ -510,7 +507,7 @@ public class SignUp extends AppCompatActivity {
             } else {
                 imei = ActivityHelper.getIMEI(this);
             }
-        }else {
+        } else {
             imei = ActivityHelper.getIMEI(this);
         }
     }

@@ -1,6 +1,9 @@
 package com.spike.bot.fragments;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -27,14 +30,11 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.ForgotpasswordActivity;
+import com.spike.bot.activity.LoginSplashActivity;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
-import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.User;
@@ -56,17 +56,19 @@ import in.aabhasjindal.otptextview.OtpTextView;
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class UserProfileFragment extends Fragment implements View.OnClickListener{
+public class UserProfileFragment extends Fragment implements View.OnClickListener {
 
-    String  TAG = "ProfileActivity",strPassword="";
+    String TAG = "ProfileActivity", strPassword = "";
 
     EditText et_profile_first_name, et_profile_last_name, et_profile_contact_no, et_profile_email, et_profile_user_name;
-    LinearLayout ll_password_view_expand,ll_pass_edittext_view;
+    LinearLayout ll_password_view_expand, ll_pass_edittext_view;
     ImageView img_pass_arrow;
-    Button btn_save,btnChangePassword,btnforgotPassword;
-    EditText edt_new_password,edt_confrim_password;
+    Button btn_save, btnChangePassword, btnforgotPassword;
+    EditText edt_new_password, edt_confrim_password;
     Animation slideUpAnimation, slideDownAnimation;
     Dialog otpdialog, passworddialog;
+    OtpTextView otp_view;
+    ProgressDialog m_progressDialog;
 
     public UserProfileFragment() {
         super();
@@ -128,7 +130,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         img_pass_arrow = view.findViewById(R.id.img_pass_arrow);
         btnChangePassword = view.findViewById(R.id.btnChangePassword);
         btnChangePassword.setOnClickListener(this);
-        btnforgotPassword= view.findViewById(R.id.btnforgotPassword);
+        btnforgotPassword = view.findViewById(R.id.btnforgotPassword);
         btnforgotPassword.setOnClickListener(this);
         edt_new_password = view.findViewById(R.id.et_new_password);
         edt_confrim_password = view.findViewById(R.id.et_new_password_confirm);
@@ -186,8 +188,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             Toast.makeText(getContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-
-
 
 
         ActivityHelper.showProgressDialog(getContext(), "Please wait....", false);
@@ -532,19 +532,19 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         final TextInputLayout inputnewPassword = dialog.findViewById(R.id.inputnewPassword);
         final TextInputLayout inputconfirmPassword = dialog.findViewById(R.id.inputconfirmPassword);
 
-        final TextInputEditText edtPasswordChild=dialog.findViewById(R.id.edtPasswordChild);
-        final TextInputEditText edtnewPasswordChild=dialog.findViewById(R.id.edtnewPasswordChild);
-        final TextInputEditText edtconfirmPasswordChild=dialog.findViewById(R.id.edtconfirmPasswordChild);
+        final TextInputEditText edtPasswordChild = dialog.findViewById(R.id.edtPasswordChild);
+        final TextInputEditText edtnewPasswordChild = dialog.findViewById(R.id.edtnewPasswordChild);
+        final TextInputEditText edtconfirmPasswordChild = dialog.findViewById(R.id.edtconfirmPasswordChild);
 
         inputRoom.setVisibility(View.GONE);
         inputPassword.setVisibility(View.VISIBLE);
         inputnewPassword.setVisibility(View.VISIBLE);
         inputconfirmPassword.setVisibility(View.VISIBLE);
 
-        TextView tv_title =  dialog.findViewById(R.id.tv_title);
-        Button btnSave =  dialog.findViewById(R.id.btn_save);
-        Button btn_cancel =  dialog.findViewById(R.id.btn_cancel);
-        ImageView iv_close =  dialog.findViewById(R.id.iv_close);
+        TextView tv_title = dialog.findViewById(R.id.tv_title);
+        Button btnSave = dialog.findViewById(R.id.btn_save);
+        Button btn_cancel = dialog.findViewById(R.id.btn_cancel);
+        ImageView iv_close = dialog.findViewById(R.id.iv_close);
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -565,11 +565,11 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(edtPasswordChild.getText().length()>0){
+                if (edtPasswordChild.getText().length() > 0) {
                     ChatApplication.keyBoardHideForce(getActivity());
                     dialog.cancel();
-                    strPassword=edtPasswordChild.getText().toString();
-                }else {
+                    strPassword = edtPasswordChild.getText().toString();
+                } else {
                     ChatApplication.showToast(getActivity(), "Please enter password");
                 }
             }
@@ -585,12 +585,67 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
-        if(v==btnChangePassword){
+        if (v == btnChangePassword) {
             addCustomRoom();
         }
 
-        if(v==btnforgotPassword){
-            dialogOtp();
+        if (v == btnforgotPassword) {
+
+            if (!ActivityHelper.isConnectingToInternet(getActivity())) {
+                ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
+                return;
+            }
+
+            if (ChatApplication.url.contains("http://"))
+                ChatApplication.url = ChatApplication.url.replace("http://", "");
+            showProgressDialog(getActivity(), "Please wait...", false);
+            SpikeBotApi.getInstance().forgetPassword(et_profile_contact_no.getText().toString(), new DataResponseListener() {
+                @Override
+                public void onData_SuccessfulResponse(String stringResponse) {
+
+                    try {
+                        JSONObject result = new JSONObject(stringResponse);
+                        dismissProgressDialog();
+                        if (result.has("code")) {
+                            if (result.getString("code").equalsIgnoreCase("200")) {
+
+                                if (stringResponse.contains("Success")) {
+                                    dialogOtp();
+                                    Common.savePrefValue(getActivity(), Constants.FORGETPASSWORD_MOBILENUMBER, et_profile_contact_no.getText().toString());
+                                }
+                            } else {
+
+                                String message;
+
+                                if (result.has("message")) {
+                                    message = result.getString("message");
+                                } else {
+                                    message = "Something went wrong, Please try again later";
+                                }
+
+                                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                @Override
+                public void onData_FailureResponse() {
+                    dismissProgressDialog();
+                    Toast.makeText(getActivity(), "Something went wrong, Please try again later", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onData_FailureResponse_with_Message(String error) {
+                    dismissProgressDialog();
+                    Toast.makeText(getActivity(), "Something went wrong, Please try again later", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
@@ -601,9 +656,11 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         otpdialog.setCanceledOnTouchOutside(false);
         otpdialog.setContentView(R.layout.dialog_otp);
 
-        OtpTextView otp_view = otpdialog.findViewById(R.id.otp_view);
+        otp_view = otpdialog.findViewById(R.id.otp_view);
         ImageView iv_close = otpdialog.findViewById(R.id.iv_close);
         Button btnSave = otpdialog.findViewById(R.id.btn_save);
+
+        TextView mRetryOtp = otpdialog.findViewById(R.id.txt_retry_otp);
 
         otp_view.setOtpListener(new OTPListener() {
             @Override
@@ -613,7 +670,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
             @Override
             public void onOTPComplete(String otp) {
-
+                OTPValidate();
             }
         });
 
@@ -628,12 +685,100 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             @Override
             public void onClick(View v) {
                 otpdialog.dismiss();
-                dialogNewPassword();
+                OTPValidate();
+
+            }
+        });
+
+        mRetryOtp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (!ActivityHelper.isConnectingToInternet(getActivity())) {
+                    ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
+                    return;
+                }
+
+                showProgressDialog(getActivity(), "Please wait...", false);
+
+                SpikeBotApi.getInstance().RetryPassword(Common.getPrefValue(ChatApplication.getContext(), Constants.FORGETPASSWORD_MOBILENUMBER), new DataResponseListener() {
+                    @Override
+                    public void onData_SuccessfulResponse(String stringResponse) {
+                        dismissProgressDialog();
+
+                        if (stringResponse.contains("Success")) {
+
+                        }
+                    }
+
+                    @Override
+                    public void onData_FailureResponse() {
+                        dismissProgressDialog();
+                        Toast.makeText(getActivity(), "Something went wrong, Please try again later", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
+                        dismissProgressDialog();
+                        Toast.makeText(getActivity(), "Something went wrong, Please try again later", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
             }
         });
 
         otpdialog.show();
 
+    }
+
+    private boolean isOTPValidate() {
+
+        if (otp_view.getOTP().length() != 6) {
+            Toast.makeText(getActivity(), "Please enter valid OTP.", Toast.LENGTH_SHORT).show();
+            otp_view.requestFocus();
+            return false;
+
+        } else {
+            return true;
+        }
+
+
+    }
+
+    private void OTPValidate() {
+
+        if (isOTPValidate()) {
+
+            if (!ActivityHelper.isConnectingToInternet(getActivity())) {
+                ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
+                return;
+            }
+            showProgressDialog(getActivity(),"Please wait...",false);
+            SpikeBotApi.getInstance().OTPVerify(otp_view.getOTP(), new DataResponseListener() {
+                @Override
+                public void onData_SuccessfulResponse(String stringResponse) {
+                    dismissProgressDialog();
+                    if (stringResponse.contains("Success")) {
+                        dialogNewPassword();
+                        Common.savePrefValue(getActivity(), Constants.CURRENT_OPT, otp_view.getOTP().toString());
+                    }
+                }
+
+                @Override
+                public void onData_FailureResponse() {
+                    dismissProgressDialog();
+                    Toast.makeText(getActivity(), "Something went wrong, Please try again later", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onData_FailureResponse_with_Message(String error) {
+                    dismissProgressDialog();
+                    Toast.makeText(getActivity(), "Something went wrong, Please try again later", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+
+        }
     }
 
 
@@ -668,6 +813,8 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         ImageView iv_close = passworddialog.findViewById(R.id.iv_close);
         TextView tv_title = passworddialog.findViewById(R.id.tv_title);
 
+        EditText mPassword = passworddialog.findViewById(R.id.edSensorguestPasscode);
+
         txtInputSensor.setHint("Enter password");
         tv_title.setText("New Password");
 
@@ -683,9 +830,55 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!ActivityHelper.isConnectingToInternet(getActivity())) {
+                    ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
+                    return;
+                }
+                showProgressDialog(getActivity(),"Please wait...",false);
+                SpikeBotApi.getInstance().SetNewPassword(mPassword.getText().toString(), new DataResponseListener() {
+                    @Override
+                    public void onData_SuccessfulResponse(String stringResponse) {
+                        dismissProgressDialog();
+                        if (stringResponse.contains("Success")) {
+                            Intent intent = new Intent(getActivity(), LoginSplashActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            getActivity().finish();
+                        }
+                    }
+
+                    @Override
+                    public void onData_FailureResponse() {
+                        dismissProgressDialog();
+                        Toast.makeText(getActivity(), "Something went wrong, Please try again later", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onData_FailureResponse_with_Message(String error) {
+                        dismissProgressDialog();
+                        Toast.makeText(getActivity(), "Something went wrong, Please try again later", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
         passworddialog.show();
 
     }
+
+    public void showProgressDialog(Context context, String message, boolean iscancle) {
+        m_progressDialog = new ProgressDialog(getActivity());
+        m_progressDialog.setMessage(message);
+        m_progressDialog.setCanceledOnTouchOutside(true);
+        m_progressDialog.show();
+    }
+
+    public void dismissProgressDialog() {
+        if (m_progressDialog != null) {
+            ChatApplication.logDisplay("m_progressDialog is null not");
+            m_progressDialog.cancel();
+            m_progressDialog.dismiss();
+        }
+    }
+
+
 }

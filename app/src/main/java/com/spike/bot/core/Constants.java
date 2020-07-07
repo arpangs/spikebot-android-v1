@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.spike.bot.ChatApplication;
+import com.spike.bot.model.SendRemoteCommandReq;
 import com.spike.bot.model.User;
 
 import java.lang.reflect.Type;
@@ -70,6 +71,9 @@ public class Constants {
     public static final String home_controller_id = "home_controller_id";
     public static final String AUTHORIZATION_TOKEN = "Authorization_TOKEN"; // dev arp add on 22 june 2020
     public static final String DEVICE_PUSH_TOKEN = "device_push_token";
+
+    public static final String FORGETPASSWORD_MOBILENUMBER = "mobile_number";
+    public static final String CURRENT_OPT = "currnet_otp";
 
 
     public static final String SIMPLE_DATE_FORMAT_1 = "MMM dd, yyyy";
@@ -302,6 +306,16 @@ public class Constants {
     public static final String addTTLock = "/addTTLock";
     public static final String getLockLists = "/getLockLists";
     public static final String deleteTTLock = "/deleteTTLock";
+
+
+
+    /*forget password*/
+
+    public static final String FORGET_PASSWORD = "/auth/forget-password";
+    public static final String OTP_VERIFY = "/auth/forget-password/verify-otp";
+    public static final String RETRY_OTP = "/auth/forget-password/resend-otp";
+    public static final String SET_NEW_PASSWORD = "/auth/forget-password/reset-password";
+
 
     /*----------------------------------------------------------------------*/
 

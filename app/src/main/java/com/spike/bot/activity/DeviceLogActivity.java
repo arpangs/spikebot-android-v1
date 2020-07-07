@@ -1748,7 +1748,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
         //}
 
         JSONObject object = new JSONObject();
-        try {
+       /* try {
             object.put("notification_number", position);
 
 
@@ -1973,7 +1973,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
-        }
+        }*/
 
        /* ChatApplication.logDisplay("object is " + url + "  " + object.toString());
         new GetJsonTask(activity, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
@@ -2072,7 +2072,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
         }).execute();*/
 
 
-        SpikeBotApi.getInstance().CallFilterData(object, new DataResponseListener() {
+        SpikeBotApi.getInstance().CallFilterData(isFilterActive,position,mRoomId,start_date,end_date,mSpinnerRoomList,mSpinnerRoomMood,isFilterType,filterArrayList,
+                actionType,isCheckActivity,strDeviceId,strpanelId,typeofFilter,userChange, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 swipeRefreshLayout.setRefreshing(false);
@@ -2194,7 +2195,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
         //	"room_id":"1573120794804_ag6n2_MrR"
         //}
 
-        JSONObject object = new JSONObject();
+      /*  JSONObject object = new JSONObject();
         try {
             if (isFilterActive) {
                 object.put("notification_number", position);
@@ -2324,14 +2325,14 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
 
             } else {
-                /*{
+                *//*{
 	"user_id":"someuser_id",
 	"phone_id":"somephone_id",
 	"phone_type":"IOS",
 	"filter_type":"all",
 	"filter_action":"schedule_delete",
 	"room_id":"1573120794804_ag6n2_MrR"
-                * */
+                * *//*
 
                 object.put("notification_number", position);
                 object.put("start_datetime", "");
@@ -2359,7 +2360,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
-        }
+        }*/
 
 /*
         ChatApplication.logDisplay("log categories object is " + object.toString() + url);
@@ -2591,7 +2592,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
 
-        SpikeBotApi.getInstance().GetDeviceLog(object, new DataResponseListener() {
+        SpikeBotApi.getInstance().GetDeviceLog(isFilterActive,position,mRoomId,start_date,end_date,mSpinnerRoomList,mSpinnerRoomMood,isFilterType,filterArrayList,
+                actionType,isCheckActivity,strDeviceId,strpanelId, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 swipeRefreshLayout.setRefreshing(false);
@@ -2963,7 +2965,8 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
-        SpikeBotApi.getInstance().CallFilterData(jsonObject, new DataResponseListener() {
+        SpikeBotApi.getInstance().CallFilterData(isFilterActive,0,mRoomId,start_date,end_date,mSpinnerRoomList,mSpinnerRoomMood,isFilterType,filterArrayList,
+                actionType,isCheckActivity,strDeviceId,strpanelId,"",userChange, new DataResponseListener() {
 
 
             @Override

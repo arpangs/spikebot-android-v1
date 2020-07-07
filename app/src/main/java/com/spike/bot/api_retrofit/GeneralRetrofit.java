@@ -4,9 +4,10 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.spike.bot.activity.Main2Activity;
+import com.spike.bot.core.Common;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -19,22 +20,6 @@ class GeneralRetrofit {
     private final Call<JsonElement> call;
     private final Object params;
     private DataResponseListener dataResponseListener;
-
-    GeneralRetrofit(Call<JsonElement> call, Object params, DataResponseListener dataResponseListener) {
-        this.call = call;
-        this.params = params;
-        this.dataResponseListener = dataResponseListener;
-    }
-
-    Call<JsonElement> call() {
-        Log.w("Dev_Arp_", "--->   " + " API URL = " + call.request().url());
-        if (params != null && call.request().body() != null) {
-            Log.w("Dev_Arp_", "--->   " + " Passing Params = " + new Gson().toJson(params));
-        }
-        call.enqueue(postCall);
-        return call;
-    }
-
     private Callback<JsonElement> postCall = new Callback<JsonElement>() {
         @Override
         public void onResponse(@NonNull Call<JsonElement> call, @NonNull Response<JsonElement> response) {
@@ -46,8 +31,17 @@ class GeneralRetrofit {
                 Log.w("Dev_Arp_", "--->   " + " RESPONSE = " + String.valueOf(response.body()));
 
                 String responseString = String.valueOf(response.body());
+
+
                 if (dataResponseListener != null)
                     dataResponseListener.onData_SuccessfulResponse(responseString);
+
+                if (responseString.contains("Unauthorized Request")) {  /*dev arpan add 06 july 2020 for web developer provide status code in response string with 200 status code so manage like this*/
+                    Main2Activity activity = new Main2Activity();
+                    activity.logoutCloudUser();
+                    Common.removeAllKey();
+                }
+
             } else {
                 if (dataResponseListener != null)
                     dataResponseListener.onData_FailureResponse();
@@ -64,10 +58,24 @@ class GeneralRetrofit {
                 if (dataResponseListener != null)
                     dataResponseListener.onData_FailureResponse();
 
-                    dataResponseListener.onData_FailureResponse_with_Message(t.getMessage());
+            dataResponseListener.onData_FailureResponse_with_Message(t.getMessage());
         }
     };
 
+    GeneralRetrofit(Call<JsonElement> call, Object params, DataResponseListener dataResponseListener) {
+        this.call = call;
+        this.params = params;
+        this.dataResponseListener = dataResponseListener;
+    }
+
+    Call<JsonElement> call() {
+        Log.w("Dev_Arp_", "--->   " + " API URL = " + call.request().url());
+        if (params != null && call.request().body() != null) {
+            Log.w("Dev_Arp_", "--->   " + " Passing Params = " + new Gson().toJson(params));
+        }
+        call.enqueue(postCall);
+        return call;
+    }
 
 
 }

@@ -57,8 +57,8 @@ public interface ApiInterface {
     @GET("http://{localip}" + Constants.GET_MOOD_DEVICE_DETAILS + "{original_room_device_id}")
     Call<JsonElement> GetDeviceDetails(@Path("localip") String localip, @Path("original_room_device_id") String original_room_device_id);
 
-    @GET("http://{localip}" + Constants.GET_USER_PROFILE_INFO)
-    Call<JsonElement> getConfigData(@Path("localip") String localip);
+    @GET("http://{localip}" + Constants.deviceconfigure + "{SensorType}")
+    Call<JsonElement> getConfigData(@Path("localip") String localip, @Path("SensorType") String SensorType);
 
     @GET("http://{localip}" + Constants.getIRDeviceTypeBrands + "{original_room_device_id}")
     Call<JsonElement> getIRDeviceTypeBrands(@Path("localip") String localip, @Path("original_room_device_id") String original_room_device_id);
@@ -84,23 +84,49 @@ public interface ApiInterface {
      * Post apis
      *
      * */
-    @POST("http://52.24.23.7:3000" + Constants.APP_LOGIN)
+//    @POST("http://52.24.23.7:3000" + Constants.APP_LOGIN)
+    @POST("https://live.spikebot.io:8443" + Constants.APP_LOGIN)
+    // updated on july 07 2020
     Call<JsonElement> postLoginWebserviceCall(@Body HashMap<String, Object> body);
 
-    @POST("http://52.24.23.7:3000" + Constants.GET_CAMERA_NOTIFICATION_COUNTER)
+    //    @POST("http://52.24.23.7:3000" + Constants.GET_CAMERA_NOTIFICATION_COUNTER)
+    @POST("https://live.spikebot.io:8443" + Constants.GET_CAMERA_NOTIFICATION_COUNTER)
+    // updated on july 07 2020
     Call<JsonElement> postGetCameraBadgeCount(@Body HashMap<String, Object> body);
 
-    @POST("http://52.24.23.7:3000" + Constants.APP_LOGOUT)
+    //    @POST("http://52.24.23.7:3000" + Constants.APP_LOGOUT)
+    @POST("https://live.spikebot.io:8443" + Constants.APP_LOGOUT)
+    // updated on july 07 2020
     Call<JsonElement> LogoutCloudUser(@Body HashMap<String, Object> body);
 
-    @POST("http://52.24.23.7:3000" + Constants.reportFalseImage)
+    //    @POST("http://52.24.23.7:3000" + Constants.reportFalseImage)
+    @POST("https://live.spikebot.io:8443" + Constants.reportFalseImage)
+    // updated on july 07 2020
     Call<JsonElement> reportFalseImage(@Body HashMap<String, Object> body);
 
-    @POST("http://52.24.23.7:3000" + Constants.getUnseenCameraLog)
+    //    @POST("http://52.24.23.7:3000" + Constants.getUnseenCameraLog)
+    @POST("https://live.spikebot.io:8443" + Constants.getUnseenCameraLog)
+    // updated on july 07 2020
     Call<JsonElement> getUnseenCameraLog(@Body HashMap<String, Object> body);
 
-    @POST("http://52.24.23.7:3000" + Constants.getCameraLogs)
+    //    @POST("http://52.24.23.7:3000" + Constants.getCameraLogs)
+    @POST("https://live.spikebot.io:8443" + Constants.getCameraLogs)
+    // updated on july 07 2020
     Call<JsonElement> getCameraLogs(@Body HashMap<String, Object> body);
+
+
+    @POST("https://live.spikebot.io:8443" + Constants.FORGET_PASSWORD)
+    Call<JsonElement> forgetpassword(@Body Object body);
+
+    @POST("https://live.spikebot.io:8443" + Constants.RETRY_OTP)
+    Call<JsonElement> RetryPassword(@Body Object body);
+
+    @POST("https://live.spikebot.io:8443" + Constants.OTP_VERIFY)
+    Call<JsonElement> verifyOTP(@Body Object body);
+
+    @POST("https://live.spikebot.io:8443" + Constants.SET_NEW_PASSWORD)
+    Call<JsonElement> SetNewPassword(@Body Object body);
+
 
     @POST("http://{url}" + Constants.ADD_CUSTOME_ROOM)
     Call<JsonElement> postCustomRoom(@Path("url") String url, @Body HashMap<String, Object> body);
@@ -425,4 +451,5 @@ public interface ApiInterface {
 
     @POST("http://{url}" + Constants.GET_BEACON_LOCATION)
     Call<JsonElement> GET_BEACON_LOCATION(@Path("url") String url, @Body Object body);
+
 }

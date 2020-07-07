@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <LinearLayout
@@ -29,8 +29,8 @@
             android:id="@+id/iv_close"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:padding="3dp"
             android:backgroundTint="@color/sensor_button"
+            android:padding="3dp"
             app:srcCompat="@drawable/cross" />
 
     </LinearLayout>
@@ -41,40 +41,58 @@
         android:layout_gravity="end"
         android:background="@color/automation_dark" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/sensor_button"
-        android:textStyle="bold"
-        android:layout_margin="15dp"
-        android:text="Enter the OTP"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="Enter the OTP"
+            android:textColor="@color/sensor_button"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txt_retry_otp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:layout_weight="0.5"
+            android:text="Retry OTP"
+            android:textColor="@color/sensor_button"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <in.aabhasjindal.otptextview.OtpTextView
         android:id="@+id/otp_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="15dp"
         android:textColor="@color/sensor_button"
-        app:height="40dp"
-        app:width="40dp"
-        app:bar_inactive_color="@color/sensor_button"
         app:bar_active_color="@color/sensor_button"
         app:bar_enabled="true"
         app:bar_height="2dp"
-        app:length="4"
+        app:bar_inactive_color="@color/sensor_button"
+        app:height="40dp"
+        app:length="6"
         app:otp=""
-        android:layout_margin="15dp"
-        app:otp_text_size="24dp"/>
+
+        app:otp_text_size="24dp"
+        app:width="40dp" />
 
     <Button
         android:id="@+id/btn_save"
         android:layout_width="130dp"
         android:layout_height="wrap_content"
-        android:textAllCaps="false"
-        android:text="Submit"
         android:layout_margin="15dp"
-        android:textSize="@dimen/_14sdp"
         android:layout_marginBottom="@dimen/_16sdp"
+        android:background="@drawable/drawable_blue_schedule"
+        android:text="Submit"
+        android:textAllCaps="false"
         android:textColor="@color/automation_white"
-        android:background="@drawable/drawable_blue_schedule" />
+        android:textSize="@dimen/_14sdp" />
 
 </LinearLayout>
