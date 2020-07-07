@@ -88,6 +88,8 @@ public class BeaconAddAdapter extends RecyclerView.Adapter<BeaconAddAdapter.Beac
               holder.txt_off_time.setText(scanner.getOff_time());
           }
 
+          holder.txt_range.setText(scanner.getRange() + "m");
+
        /*   holder.mbeaconListAdapter = new BeaconScannerAddBeaconList(scanner.getRemoteList());
           holder.mbeaconList.setAdapter(holder.mbeaconListAdapter);*/
 
@@ -122,7 +124,7 @@ public class BeaconAddAdapter extends RecyclerView.Adapter<BeaconAddAdapter.Beac
 
     class BeaconViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView mscannerName, mRoomName,txt_on_time,txt_off_time;
+        private TextView mscannerName, mRoomName,txt_on_time,txt_off_time,txt_range;
         private ImageView mbeaconEdit, mbeaconDelete,img_inactive;
         private RecyclerView mbeaconList;
         private BeaconScannerAddBeaconList mbeaconListAdapter;
@@ -138,6 +140,7 @@ public class BeaconAddAdapter extends RecyclerView.Adapter<BeaconAddAdapter.Beac
             linear_onofftime = itemView.findViewById(R.id.linear_onofftime);
             txt_on_time = itemView.findViewById(R.id.txt_on_time);
             txt_off_time = itemView.findViewById(R.id.txt_off_time);
+            txt_range = itemView.findViewById(R.id.txt_range);
 
             mbeaconList = itemView.findViewById(R.id.list_edit_device);
             mbeaconList.setLayoutManager(new GridLayoutManager(mContext, 4));

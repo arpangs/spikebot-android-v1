@@ -139,6 +139,7 @@ public class BeaconListActivity extends AppCompatActivity implements BeaconListA
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    ActivityHelper.dismissProgressDialog();
                     JSONObject result = new JSONObject(stringResponse);
                     IRBlasterAddRes irBlasterAddRes = Common.jsonToPojo(result.toString(), IRBlasterAddRes.class);
                     if (irBlasterAddRes.getCode() == 200) {
@@ -168,11 +169,13 @@ public class BeaconListActivity extends AppCompatActivity implements BeaconListA
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(BeaconListActivity.this, getResources().getString(R.string.something_wrong1));
             }
 
             @Override
             public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(BeaconListActivity.this, getResources().getString(R.string.something_wrong1));
             }
         });

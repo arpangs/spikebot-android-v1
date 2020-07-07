@@ -368,7 +368,7 @@ public interface ApiInterface {
     @POST("http://{url}" + Constants.DELETE_MODULE)
     Call<JsonElement> DELETE_MODULE(@Path("url") String url, @Body Object body);
 
-    @POST("http://{url}" + Constants.deviceheavyloadping)
+    @POST("http://{url}" + Constants.getHeavyLoadDetails)
     Call<JsonElement> getHeavyloadDetails(@Path("url") String url, @Body Object body);
 
     @POST("http://{url}" + Constants.getHeavyLoadDetails)

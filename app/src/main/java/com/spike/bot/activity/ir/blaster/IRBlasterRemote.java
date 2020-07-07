@@ -652,6 +652,10 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         if (arrayList.size() == 0) {
             arrayList.add("No IR Blaster");
         }
+
+        mSpinnerBlaster.setEnabled(false);
+        mSpinnerBlaster.setClickable(false);
+
         final ArrayAdapter roomAdapter = new ArrayAdapter(getApplicationContext(), R.layout.spinner, arrayList);
         mSpinnerBlaster.setAdapter(roomAdapter);
 

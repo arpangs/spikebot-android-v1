@@ -56,9 +56,9 @@ import in.aabhasjindal.otptextview.OtpTextView;
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class UserProfileFragment extends Fragment implements View.OnClickListener {
+public class UserProfileFragment extends Fragment implements View.OnClickListener{
 
-    String TAG = "ProfileActivity", strPassword = "";
+    String  TAG = "ProfileActivity",stroldPassword="",strconfirmpassword="",strnewpassword="";
 
     EditText et_profile_first_name, et_profile_last_name, et_profile_contact_no, et_profile_email, et_profile_user_name;
     LinearLayout ll_password_view_expand, ll_pass_edittext_view;
@@ -336,6 +336,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             return;
         }
 
+
         if (et_profile_user_name.getText().toString().trim().matches(".*([ \t]).*")) {
             Toast.makeText(getContext(), "Invalid Username", Toast.LENGTH_SHORT).show();
             return;
@@ -440,7 +441,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
         SpikeBotApi.getInstance().SaveProfile(et_profile_first_name.getText().toString(), et_profile_last_name.getText().toString(),
                 et_profile_user_name.getText().toString(), et_profile_contact_no.getText().toString(), et_profile_email.getText().toString(),
-                strPassword, new DataResponseListener() {
+                stroldPassword, new DataResponseListener() {
                     @Override
                     public void onData_SuccessfulResponse(String stringResponse) {
                         try {
@@ -532,9 +533,9 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         final TextInputLayout inputnewPassword = dialog.findViewById(R.id.inputnewPassword);
         final TextInputLayout inputconfirmPassword = dialog.findViewById(R.id.inputconfirmPassword);
 
-        final TextInputEditText edtPasswordChild = dialog.findViewById(R.id.edtPasswordChild);
-        final TextInputEditText edtnewPasswordChild = dialog.findViewById(R.id.edtnewPasswordChild);
-        final TextInputEditText edtconfirmPasswordChild = dialog.findViewById(R.id.edtconfirmPasswordChild);
+        final TextInputEditText edtOldPasswordChild=dialog.findViewById(R.id.edtOldPasswordChild);
+        final TextInputEditText edtnewPasswordChild=dialog.findViewById(R.id.edtnewPasswordChild);
+        final TextInputEditText edtconfirmPasswordChild=dialog.findViewById(R.id.edtconfirmPasswordChild);
 
         inputRoom.setVisibility(View.GONE);
         inputPassword.setVisibility(View.VISIBLE);
@@ -565,12 +566,30 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (edtPasswordChild.getText().length() > 0) {
+               /* if(edtOldPasswordChild.getText().length()>0)
+                {
                     ChatApplication.keyBoardHideForce(getActivity());
                     dialog.cancel();
-                    strPassword = edtPasswordChild.getText().toString();
-                } else {
+                    stroldPassword=edtOldPasswordChild.getText().toString();
+                    strnewpassword=edtnewPasswordChild.getText().toString();
+                    strconfirmpassword=edtconfirmPasswordChild.getText().toString();
+                }else {
                     ChatApplication.showToast(getActivity(), "Please enter password");
+                }*/
+
+
+                if(TextUtils.isEmpty(edtOldPasswordChild.getText().toString())){
+                    ChatApplication.showToast(getActivity(), "Please enter old password");
+                } else if(TextUtils.isEmpty(edtnewPasswordChild.getText().toString())){
+                    ChatApplication.showToast(getActivity(), "Please enter new password");
+                } else if(TextUtils.isEmpty(edtconfirmPasswordChild.getText().toString())){
+                    ChatApplication.showToast(getActivity(), "Please enter confirm password");
+                } else if(strnewpassword.equals(strconfirmpassword)){
+                    ChatApplication.showToast(getActivity(), "New password and confirm password must be same");
+                } else{
+                    stroldPassword=edtOldPasswordChild.getText().toString();
+                    strnewpassword=edtnewPasswordChild.getText().toString();
+
                 }
             }
         });

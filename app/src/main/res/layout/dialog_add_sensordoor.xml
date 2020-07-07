@@ -143,7 +143,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:text="On Time"
+                android:text="Start Time"
                 android:layout_gravity="center"
                 android:layout_weight="0.4"
                 android:layout_width="0dp"
@@ -176,7 +176,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:text="Off Time"
+                android:text="End Time"
                 android:layout_gravity="center"
                 android:layout_weight="0.4"
                 android:layout_width="0dp"

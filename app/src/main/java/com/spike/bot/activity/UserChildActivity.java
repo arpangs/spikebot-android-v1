@@ -255,9 +255,10 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
         final TextInputLayout inputnewPassword = dialog.findViewById(R.id.inputnewPassword);
         final TextInputLayout inputconfirmPassword = dialog.findViewById(R.id.inputconfirmPassword);
 
-        final TextInputEditText edtPasswordChild = dialog.findViewById(R.id.edtPasswordChild);
-        final TextInputEditText edtnewPasswordChild=dialog.findViewById(R.id.edtnewPasswordChild);
-        final TextInputEditText edtconfirmPasswordChild=dialog.findViewById(R.id.edtconfirmPasswordChild);
+        final TextInputEditText edtPasswordChild = dialog.findViewById(R.id.edtOldPasswordChild);
+        final TextInputEditText edtnewPasswordChild = dialog.findViewById(R.id.edtnewPasswordChild);
+        final TextInputEditText edtconfirmPasswordChild = dialog.findViewById(R.id.edtconfirmPasswordChild);
+
         inputRoom.setVisibility(View.GONE);
         inputPassword.setVisibility(View.VISIBLE);
         inputnewPassword.setVisibility(View.VISIBLE);

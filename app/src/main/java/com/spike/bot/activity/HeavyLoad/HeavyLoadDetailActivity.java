@@ -412,9 +412,9 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
         SpikeBotApi.getInstance().getHeavyloadDetails(device_id, new DataResponseListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
-            public void onData_SuccessfulResponse(String stringResponse) {
-                ActivityHelper.dismissProgressDialog();
+            public void onData_SuccessfulResponse(String stringResponse) { ActivityHelper.dismissProgressDialog();
                 try {
+                    ActivityHelper.dismissProgressDialog();
                     JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -459,7 +459,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
         Calendar c = Calendar.getInstance();
         int month = c.get(Calendar.MONTH)+1;
         int year = c.get(Calendar.YEAR);
-        int strYear =  stryear;
+        int strYear =  year;
 
         if(strYear== year && strmonth > month){
 
@@ -476,7 +476,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
         ActivityHelper.showProgressDialog(HeavyLoadDetailActivity.this, "Please wait... ", false);
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-        SpikeBotApi.getInstance().HeavyloadFilter(device_id, strLess, value, stryear, new DataResponseListener() {
+        SpikeBotApi.getInstance().HeavyloadFilter(device_id, strLess, value, strYear, new DataResponseListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -593,9 +593,11 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             LineDataSet dataSet = new LineDataSet(entries, "");
             dataSet.setColor(ContextCompat.getColor(this, R.color.sensor_button));
             dataSet.setValueTextColor(ContextCompat.getColor(this, R.color.automation_black));
+            dataSet.setCircleColor(ContextCompat.getColor(this, R.color.sensor_button));
+            dataSet.setCircleColorHole(ContextCompat.getColor(this, R.color.sensor_button));
             dataSet.setValueTextSize(13);
             dataSet.setLineWidth(2);
-            dataSet.setCircleRadius(13);
+            dataSet.setCircleRadius(10);
             dataSet.setDrawValues(false);
             barChart.getDescription().setEnabled(false);
             barChart.getLegend().setEnabled(false);
@@ -641,6 +643,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             }
 
             xAxis.setGranularity(1f); // minimum axis-step (interval) is 1
+            xAxis.setAxisMinimum(0);
             xAxis.setValueFormatter(formatter);
 
             //***
@@ -652,7 +655,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             // Controlling left side of y axis
             YAxis yAxisLeft = barChart.getAxisLeft();
             yAxisLeft.setGranularity(1f);
-            yAxisLeft.setAxisMinimum(1);
+            yAxisLeft.setAxisMinimum(0);
 
             // Setting Data
             LineData data = new LineData(dataSet);

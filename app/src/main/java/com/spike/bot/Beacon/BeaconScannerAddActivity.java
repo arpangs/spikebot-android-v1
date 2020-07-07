@@ -1,6 +1,7 @@
 package com.spike.bot.Beacon;
 
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,8 +19,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -31,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
+import com.kp.core.DateHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
@@ -45,6 +49,8 @@ import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
+import com.spike.bot.dialog.ICallback;
+import com.spike.bot.dialog.TimePickerFragment;
 import com.spike.bot.model.IRBlasterAddRes;
 import com.spike.bot.model.UnassignedListRes;
 
@@ -53,6 +59,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,7 +83,7 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
     private Dialog mDialog;
     EditText mBeaconscannerName;
     Dialog irDialog;
-
+    String rangevalue = "1";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -451,6 +458,11 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
         Button btnCancel = mDialog.findViewById(R.id.btn_cancel);
         Button btnSave = mDialog.findViewById(R.id.btn_save);
         ImageView btnClose = mDialog.findViewById(R.id.iv_close);
+        EditText edontime = mDialog.findViewById(R.id.ed_on_time);
+        EditText edofftime = mDialog.findViewById(R.id.ed_off_time);
+        SeekBar sb_range = mDialog.findViewById(R.id.sb_range);
+        TextView txt_rangevalue  = mDialog.findViewById(R.id.txt_rangevalue);
+
 
         TextView txt_scanner_room_name = mDialog.findViewById(R.id.txt_scanner_room_name);
         txt_scanner_room_name.setFocusable(false);
@@ -476,6 +488,66 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
         } catch (Exception e){
             e.printStackTrace();
         }
+        rangevalue = String.valueOf(scanner.getRange());
+        edontime.setText(scanner.getOn_time());
+        edofftime.setText(scanner.getOff_time());
+        sb_range.setProgress(scanner.getRange());
+        txt_rangevalue.setText(rangevalue);
+
+        edontime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ActivityHelper.hideKeyboard(BeaconScannerAddActivity.this);
+                DialogFragment fromTimeFragment = new TimePickerFragment(BeaconScannerAddActivity.this, edontime.getText().toString(), new ICallback() {
+                    @Override
+                    public void onSuccess(String str) {
+                        edontime.setText(str);
+
+                    }
+                });
+                if (!fromTimeFragment.isVisible()) {
+                    fromTimeFragment.show(BeaconScannerAddActivity.this.getFragmentManager(), "timePicker");
+                }
+            }
+        });
+
+        edofftime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ActivityHelper.hideKeyboard(BeaconScannerAddActivity.this);
+                DialogFragment fromTimeFragment = new TimePickerFragment(BeaconScannerAddActivity.this, edofftime.getText().toString(), new ICallback() {
+                    @Override
+                    public void onSuccess(String str) {
+                        edofftime.setText(str);
+
+                    }
+                });
+                if (!fromTimeFragment.isVisible()) {
+                    fromTimeFragment.show(BeaconScannerAddActivity.this.getFragmentManager(), "timePicker");
+                }
+            }
+        });
+
+        sb_range.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                rangevalue = String.valueOf(i);
+                if (rangevalue.equals("0")) {
+                    sb_range.setProgress(1);
+                }
+                txt_rangevalue.setText(String.valueOf(i));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -494,8 +566,18 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                updateBeaconScanner(mDialog, mBeaconscannerName, scanner.getDeviceId(),scanner);
+                if (TextUtils.isEmpty(mBeaconscannerName.getText().toString())) {
+                    mBeaconscannerName.requestFocus();
+                    mBeaconscannerName.setError("Enter Scanner Name");
+                } else if (TextUtils.isEmpty(edontime.getText().toString())) {
+                    Toast.makeText(BeaconScannerAddActivity.this, "Please enter On time", Toast.LENGTH_SHORT).show();
+                } else if (TextUtils.isEmpty(edofftime.getText().toString())) {
+                    Toast.makeText(BeaconScannerAddActivity.this, "Please enter Off time", Toast.LENGTH_SHORT).show();
+                } else if (!TextUtils.isEmpty(edontime.getText().toString()) && !TextUtils.isEmpty(edofftime.getText().toString()) &&
+                        edontime.getText().toString().equalsIgnoreCase(edofftime.getText().toString())) {
+                    Toast.makeText(BeaconScannerAddActivity.this, "Select different On and Off time", Toast.LENGTH_SHORT).show();
+                }
+                updateBeaconScanner(mDialog, mBeaconscannerName, scanner.getDeviceId(),scanner,edontime.getText().toString(),edofftime.getText().toString(),rangevalue);
             }
         });
 
@@ -516,24 +598,38 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
      * @param scannerId
      * @param scanner
      */
-    private void updateBeaconScanner(final Dialog mDialog, EditText mScannerName, String scannerId, IRBlasterAddRes.Datum scanner) {
+    private void updateBeaconScanner(final Dialog mDialog, EditText mScannerName, String scannerId, IRBlasterAddRes.Datum scanner,String on_time,
+                                     String off_time,String rangvalue) {
 
+        String beacon_on_time = "", beacon_off_time = "";
         if (!ActivityHelper.isConnectingToInternet(getApplicationContext())) {
-            Common.showToast("" + getString(R.string.error_connect));
+            Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
+        }
+        try {
+
+            if (!TextUtils.isEmpty(on_time)) {
+                beacon_on_time = DateHelper.formateDate(DateHelper.parseTimeSimple(on_time, DateHelper.DATE_FROMATE_H_M_AMPM), DateHelper.DATE_FROMATE_HH_MM);
+
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
 
-        if (TextUtils.isEmpty(mScannerName.getText().toString().trim())) {
-            mScannerName.requestFocus();
-            mScannerName.setError("Enter Scanner Name");
-            return;
+        try {
+            if (!TextUtils.isEmpty(off_time)) {
+                beacon_off_time = DateHelper.formateDate(DateHelper.parseTimeSimple(off_time, DateHelper.DATE_FROMATE_H_M_AMPM), DateHelper.DATE_FROMATE_HH_MM);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
+
         if (mBeaconscannerName != null) {
             hideSoftKeyboard(mBeaconscannerName);
         }
 
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
-        SpikeBotApi.getInstance().updateDevice(scannerId,mScannerName.getText().toString().trim(), new DataResponseListener() {
+        SpikeBotApi.getInstance().updateBeaconScanner(scannerId,mScannerName.getText().toString().trim(),beacon_on_time,beacon_off_time,rangvalue, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
@@ -547,6 +643,8 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
                         mDialog.dismiss();
                         scanner.setDeviceName(mBeaconscannerName.getText().toString().trim());
                         beaconAddAdapter.notifyDataSetChanged();
+
+                        getScannerList();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -692,6 +790,7 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    ActivityHelper.dismissProgressDialog();
                     JSONObject result = new JSONObject(stringResponse);
                     IRBlasterAddRes irBlasterAddRes = Common.jsonToPojo(result.toString(), IRBlasterAddRes.class);
                     if (irBlasterAddRes.getCode() == 200) {
@@ -729,12 +828,14 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
                 ChatApplication.showToast(BeaconScannerAddActivity.this, getResources().getString(R.string.something_wrong1));
             }
 
             @Override
             public void onData_FailureResponse_with_Message(String error) {
-
+                ActivityHelper.dismissProgressDialog();
+                ChatApplication.showToast(BeaconScannerAddActivity.this, error);
             }
         });
 

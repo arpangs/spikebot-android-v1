@@ -523,7 +523,7 @@ public class SpikeBotApi {
 
     /*UserProfileFragment*/  // dev arpan add on 27 june 2020
 
-    public void SaveProfile(String firstname, String lastname, String username, String userphone, String useremail, String strPassword, DataResponseListener dataResponseListener) {
+    public void SaveProfile(String firstname, String lastname, String username, String userphone, String useremail, String strnewPassword, DataResponseListener dataResponseListener) {
 
 
         HashMap<String, Object> params = new HashMap<>();
@@ -537,11 +537,12 @@ public class SpikeBotApi {
         params.put("user_name", username);
         params.put("user_phone", userphone);
         params.put("user_email", useremail);
-        if (strPassword.length() > 0) {
-            params.put("user_password", "" + strPassword);
+        if (strnewPassword.length() > 0) {
+            params.put("user_password", "" + strnewPassword);
         } else {
             params.put("user_password", "");
         }
+
 
 
         new GeneralRetrofit(apiService.SaveProfile(ChatApplication.url, params), params, dataResponseListener).call();
@@ -889,6 +890,7 @@ public class SpikeBotApi {
         String device_push_token = Common.getPrefValue(ChatApplication.getContext(), Constants.DEVICE_PUSH_TOKEN);
         params.put("user_id", "" + user_id);
         params.put("device_push_token", "" + device_push_token);
+
         params.put("phone_id", APIConst.PHONE_ID_VALUE);
         params.put("phone_type", APIConst.PHONE_TYPE_VALUE);
         params.put("auth_key", Common.getPrefValue(ChatApplication.getContext(), Constants.AUTHORIZATION_TOKEN)); // dev arpan add this new param as discussed with dev parth
@@ -1455,11 +1457,12 @@ public class SpikeBotApi {
     public void updateDevice(String device_id, String device_name, DataResponseListener dataResponseListener) {
         HashMap<String, Object> params = new HashMap<>();
 
-        params.put("device_id", device_id);
-        params.put("device_name", device_name);
-        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+            params.put("device_id", device_id);
+            params.put("device_name", device_name);
+
+            params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+            params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+            params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
 
         new GeneralRetrofit(apiService.SAVE_EDIT_SWITCH(ChatApplication.url, params), params, dataResponseListener).call();
     }
@@ -1743,8 +1746,7 @@ public class SpikeBotApi {
     }
 
     // CameraNotification - Add camera
-    public void callAddCamera(String start_time, String end_time, int edIntervalTime, ArrayList<CameraVO> getCameraList
-            , DataResponseListener dataResponseListener) {
+    public void callAddCamera(String start_time, String end_time, int edIntervalTime, ArrayList<CameraVO> getCameraList, DataResponseListener dataResponseListener) {
 
         String ontime = "", offTime = "";
         try {
@@ -2722,6 +2724,23 @@ public class SpikeBotApi {
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
         new GeneralRetrofit(apiService.ADD_IR_BLASTER(ChatApplication.url, params), params, dataResponseListener).call();
+    }
+
+    //BeaconScannerAdd - update Beacon Scanner
+    public void updateBeaconScanner(String device_id, String device_name,String on_time,String off_time,String rangevalue, DataResponseListener dataResponseListener){
+        HashMap<String, Object> params = new HashMap<>();
+
+        params.put("device_id", device_id);
+        params.put("device_name", device_name);
+        params.put("on_time", on_time);
+        params.put("off_time", off_time);
+        params.put("range", rangevalue);
+
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+
+        new GeneralRetrofit(apiService.SAVE_EDIT_SWITCH(ChatApplication.url, params), params, dataResponseListener).call();
     }
 
     // ScannerWifiList - add scanner

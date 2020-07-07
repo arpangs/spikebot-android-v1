@@ -303,7 +303,6 @@ public class ScannerWifiListActivity extends AppCompatActivity implements WifiLi
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
         ActivityHelper.showProgressDialog(this, "Please wait.", true);
-        ActivityHelper.showProgressDialog(this, "Please wait.", true);
         SpikeBotApi.getInstance().addScanner(roomListArray.get(sp_room_list.getSelectedItemPosition()).getRoomId(), door_name, door_module_id, "beacon_scanner",
                 beacon_on_time, beacon_off_time, rangevalue, new DataResponseListener() {
                     @Override

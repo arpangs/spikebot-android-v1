@@ -162,6 +162,7 @@ public class CameraGridActivity extends AppCompatActivity {
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
                     int code = 0;
+                    ActivityHelper.dismissProgressDialog();
                     JSONObject result = new JSONObject(stringResponse);
                     code = result.getInt("code");
                     String message = result.getString("message");

@@ -266,7 +266,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_margin="@dimen/_7sdp"
                     android:weightSum="1">
 
                     <Button
@@ -274,7 +274,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.30"
-                        android:layout_margin="@dimen/_5sdp"
                         android:background="@drawable/background_button_change_password"
                         android:clickable="true"
                         android:textAllCaps="false"
