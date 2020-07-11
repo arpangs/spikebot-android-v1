@@ -216,6 +216,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
                 Intent intent = new Intent(IRBlasterAddActivity.this, WifiBlasterActivity.class);
                 //  intent.putExtra("roomId",""+room.getRoomId());
                 //  intent.putExtra("roomName",""+room.getRoomName());
+                intent.putExtra("roomListArray", roomListArray);
                 startActivity(intent);
             }
         });

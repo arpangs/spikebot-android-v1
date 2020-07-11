@@ -275,12 +275,12 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
             deviceIdList.add(dPanel.getPanel_device_id());
         }
 
-        JSONArray array = new JSONArray(deviceIdList);
+       // JSONArray array = new JSONArray(deviceIdList);
 
         ActivityHelper.showProgressDialog(this, "Please wait.", true);
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-        SpikeBotApi.getInstance().saveBeacon(beaconname, beaconmodel.getDeviceId(), moduleid, array, editBeacon, new DataResponseListener() {
+        SpikeBotApi.getInstance().saveBeacon(beaconname, beaconmodel.getDeviceId(), moduleid, deviceIdList, editBeacon, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {

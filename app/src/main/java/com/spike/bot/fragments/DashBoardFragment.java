@@ -1117,7 +1117,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         if (cloudsocket != null && cloudsocket.connected()) {
         } else {
 
-            cloudurl = "http://52.24.23.7:3000/";
+            cloudurl = "https://live.spikebot.io:8443";
             cloudsocket = app.getCloudSocket();
 
             if (cloudsocket != null) {
@@ -2427,9 +2427,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
                     dismissProgressDialog();
                     ChatApplication.isCallDeviceList = false;
-                    if (ChatApplication.isPushFound) {
+                   /* if (ChatApplication.isPushFound) {
                         getBadgeClear(activity);
-                    }
+                    }*/
                     addDeviceFab.setVisibility(View.VISIBLE);
                     mMessagesView.setClickable(true);
                     responseErrorCode.onSuccess();
@@ -2499,16 +2499,16 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                                 userList1 = gsonType.fromJson(jsonTextTemp1, type);
                             }
 
-                            for (User user : userList1) {
+                           /* for (User user : userList1) {
                                 if (user.isActive()) {
-                                    /*if user password changed than logout */
+                                    *//*if user password changed than logout *//*
                                     if (user.getUser_id().equalsIgnoreCase(userId) && !user.getPassword().equalsIgnoreCase(userPassword)) {
                                         ChatApplication.showToast(activity, "Password has been changed!");
                                         ((Main2Activity) activity).logoutCloudUser();
                                     }
 
                                 }
-                            }
+                            }*/
                         }
                         //End user pass checking
                         try {
@@ -2995,7 +2995,8 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
 
-
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().GetDeviceLocal(new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -3006,9 +3007,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
                     dismissProgressDialog();
                     ChatApplication.isCallDeviceList = false;
-                    if (ChatApplication.isPushFound) {
+                  /*  if (ChatApplication.isPushFound) {
                         getBadgeClear(activity);
-                    }
+                    }*/
                     addDeviceFab.setVisibility(View.VISIBLE);
                     mMessagesView.setClickable(true);
                     responseErrorCode.onSuccess();
@@ -3084,7 +3085,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                                 userList1 = gson.fromJson(jsonTextTemp1, type);
                             }
 
-                            for (User user : userList1) {
+                            /*for (User user : userList1) {
                                 if (user.isActive()) {
                                     if (user.getUser_id().equalsIgnoreCase(userId) && !user.getPassword().equalsIgnoreCase(userPassword)) {
                                         ChatApplication.showToast(activity, "Password has been changed!");
@@ -3092,7 +3093,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                                     }
 
                                 }
-                            }
+                            }*/
 
                         }
                         //End user pass checking

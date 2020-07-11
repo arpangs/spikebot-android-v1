@@ -237,7 +237,7 @@
                     android:visibility="gone"
                     android:layout_height="wrap_content" />
 
-                <EditText
+              <!--  <EditText
                     android:id="@+id/edt_phone_no_su"
                     android:layout_weight="0.6"
                     android:singleLine="true"
@@ -245,9 +245,9 @@
                     android:maxLength="12"
                     android:hint="Phone Number"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content" />-->
 
-                <!--  <RelativeLayout
+                  <RelativeLayout
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:layout_gravity="center_vertical"
@@ -261,7 +261,7 @@
                           android:layout_height="wrap_content" />
 
                       <EditText
-                          android:id="@+id/edit_contact_number"
+                          android:id="@+id/edt_phone_no_su"
                           android:hint="Mobile Number"
                           android:maxLines="1"
                           android:layout_centerVertical="true"
@@ -271,7 +271,6 @@
                           android:layout_width="match_parent"
                           android:layout_height="wrap_content" />
                   </RelativeLayout>
--->
             </LinearLayout>
 
             <LinearLayout

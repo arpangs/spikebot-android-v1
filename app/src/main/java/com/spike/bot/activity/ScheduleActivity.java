@@ -72,6 +72,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -101,7 +102,8 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             et_off_time_bottom_header_at, et_off_time_bottom_header_at_time, et_off_time_bottom_header_at_ampm, tv_schedule_list;
     RecyclerView rv_auto_mode, rv_schedule;
     View view_header, view_starttime, view_moodlist;
-    JSONObject deviceObj = new JSONObject();
+   // JSONObject deviceObj = new JSONObject();
+    HashMap<String, Object> deviceObj = new HashMap<>();
     ScheduleVO scheduleVO = new ScheduleVO();
     int position = 0, selection = 0, nextFalse = 0;
     boolean isEdit = false, isEditOpen = false, isSelectMode = false, isScheduleClick = false, isMoodSelected = false, isMap = false, isMoodAdapter;
@@ -2398,7 +2400,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 try {
                     deviceObj.put("is_duplicate", 1);
                     deviceObj.put("user_id", Common.getPrefValue(ScheduleActivity.this, Constants.USER_ID));
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 addSchedule();

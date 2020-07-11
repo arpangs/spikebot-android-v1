@@ -77,6 +77,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -1671,10 +1672,26 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
             return;
         }
 
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("start_time", mStartTime);
+        params.put("end_time", mEndTime);
+        params.put("alert_type", "door_open_close");
+        params.put("days", "0,1,2,3,4,5,6");
+        if (isEdit) {
+            params.put("alert_id", notification.getAlertId());
+
+        } else {
+            params.put("device_id", doorSensorResModel.getDevice().getDevice_id());
+        }
+
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-        SpikeBotApi.getInstance().addNotification(mStartTime, mEndTime, notification.getAlertId(), doorSensorResModel.getDevice().getDevice_id(), isEdit, new DataResponseListener() {
+        SpikeBotApi.getInstance().addNotification(params, isEdit, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {

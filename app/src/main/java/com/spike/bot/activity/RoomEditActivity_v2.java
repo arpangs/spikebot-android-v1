@@ -25,6 +25,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
@@ -404,22 +406,18 @@ public class RoomEditActivity_v2 extends AppCompatActivity implements ItemClickR
         }).execute();*/
 
         boolean isEmptyPanel = false;
-        JSONArray panelArray = new JSONArray();
-        try {
+        JsonArray panelArray = new JsonArray();
 
             for (PanelVO panel : panelVOs) {
-                JSONObject objPanel = new JSONObject();
-                objPanel.put("panel_id", panel.getPanelId());
-                objPanel.put("panel_name", panel.getPanelName());
-                panelArray.put(objPanel);
+                JsonObject objPanel = new JsonObject();
+                objPanel.addProperty("panel_id", panel.getPanelId());
+                objPanel.addProperty("panel_name", panel.getPanelName());
+                panelArray.add(objPanel);
                 if (TextUtils.isEmpty(panel.getPanelName())) {
                     isEmptyPanel = true;
                 }
             }
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         if (isEmptyPanel) {
             return;

@@ -7,7 +7,7 @@
     <string name="automate">Automate everyting.</string>
     <string name="login">Login</string>
     <string name="signup">Sign-up</string>
-    <string name="forgotpassword">Forgot your password?</string>
+    <string name="forgotpassword">Forgot your password? (Admin users only)</string>
     <string name="lbl_password">Forgot Password</string>
 
     <string name="connect_cloud">Connecting to cloud...</string>

@@ -102,6 +102,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     private FrameLayout mViewPager;
     private Socket mSocket;
     private ConnectivityReceiver connectivityReceiver;
+
     //Socket
     private Emitter.Listener deleteChildUser = new Emitter.Listener() {
         @Override
@@ -237,9 +238,9 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onPause() {
         super.onPause();
-        if (ChatApplication.isPushFound) {
+       /* if (ChatApplication.isPushFound) {
             DashBoardFragment.getBadgeClear(Main2Activity.this);
-        }
+        }*/
         ChatApplication.isCallDeviceList = false;
         DashBoardFragment.isRefredCheck = true;
         ChatApplication.isMainFragmentNeedResume = true;
@@ -904,41 +905,42 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     /* logout user than back user showing another wise login screen move to*/
     public void logoutCloudUser() {
+        try {
+            //clear pref and open login screen
+            Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "false");
+            Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, "");
+            FirebaseMessaging.getInstance().unsubscribeFromTopic(Constants.LIVE + Common.getPrefValue(Main2Activity.this, Constants.USER_ID));
+            ChatApplication.logDisplay("unsubscribeFromTopic" + " " + Constants.LIVE + Common.getPrefValue(Main2Activity.this, Constants.USER_ID));
+            ///start//
 
-        //clear pref and open login screen
-        Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "false");
-        Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, "");
-        FirebaseMessaging.getInstance().unsubscribeFromTopic(Constants.LIVE + Common.getPrefValue(Main2Activity.this, Constants.USER_ID));
-        ChatApplication.logDisplay("unsubscribeFromTopic" + " " + Constants.LIVE + Common.getPrefValue(Main2Activity.this, Constants.USER_ID));
-        ///start//
 
-        final Gson gson = new Gson();
-        String jsonText = Common.getPrefValue(getApplicationContext(), Common.USER_JSON);
-        String USER_ID = Common.getPrefValue(getApplicationContext(), Constants.USER_ID);
+            final Gson gson = new Gson();
+            String jsonText = Common.getPrefValue(getApplicationContext(), Common.USER_JSON);
+            String USER_ID = Common.getPrefValue(getApplicationContext(), Constants.USER_ID);
 
-        List<User> uList = new ArrayList<User>();
-        final List<User> tempList = new ArrayList<User>();
+            List<User> uList = new ArrayList<User>();
+            final List<User> tempList = new ArrayList<User>();
 
-        if (!TextUtils.isEmpty(jsonText)) {
+            if (!TextUtils.isEmpty(jsonText)) {
 
-            Type type = new TypeToken<List<User>>() {
-            }.getType();
-            uList = gson.fromJson(jsonText, type);
+                Type type = new TypeToken<List<User>>() {
+                }.getType();
+                uList = gson.fromJson(jsonText, type);
 
-            boolean isFoundUser = false;
-            User logOutUser = new User();
+                boolean isFoundUser = false;
+                User logOutUser = new User();
 
-            for (User user : uList) {
-                if (!user.isActive()) {
-                    tempList.add(user);
-                } else {
-                    isFoundUser = true;
-                    logOutUser = user;
+                for (User user : uList) {
+                    if (!user.isActive()) {
+                        tempList.add(user);
+                    } else {
+                        isFoundUser = true;
+                        logOutUser = user;
+                    }
                 }
-            }
-            if (isFoundUser) {
-                //logoutUser();
-                //TODO code for logout api call
+                if (isFoundUser) {
+                    //logoutUser();
+                    //TODO code for logout api call
               /*  String url = Constants.CLOUD_SERVER_URL + Constants.APP_LOGOUT;
 
                 JSONObject object = new JSONObject();
@@ -953,7 +955,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     e.printStackTrace();
                 }
                 ChatApplication.logDisplay("logout is " + url + object.toString());*/
-                ActivityHelper.showProgressDialog(Main2Activity.this, "Please wait...", false);
+                    ActivityHelper.showProgressDialog(Main2Activity.this, "Please wait...", false);
 
                /* new GetJsonTask(getApplicationContext(), url, "POST", object.toString(), new ICallBack() {
                     @Override
@@ -1032,104 +1034,183 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
 
 //                SpikeBotApi.getInstance().LogoutCloudUser(logOutUser.getUser_id(), new DataResponseListener() {
-                SpikeBotApi.getInstance().LogoutCloudUser(USER_ID, new DataResponseListener() {
-                    @Override
-                    public void onData_SuccessfulResponse(String stringResponse) {
-                        ActivityHelper.dismissProgressDialog();
-                        int code = 0;
-                        try {
-                            JSONObject result = new JSONObject(stringResponse);
-                            code = result.getInt("code");
-                            String message = result.getString("message");
-                            if (code == 200) {
-                                ChatApplication.showToast(Main2Activity.this, message);
+                    SpikeBotApi.getInstance().LogoutCloudUser(USER_ID, new DataResponseListener() {
+                        @Override
+                        public void onData_SuccessfulResponse(String stringResponse) {
+                            ActivityHelper.dismissProgressDialog();
+                            int code = 0;
+                            try {
+                                JSONObject result = new JSONObject(stringResponse);
+                                code = result.getInt("code");
+                                String message = result.getString("message");
+                                if (code == 200) {
+                                    ChatApplication.showToast(Main2Activity.this, message);
 
-                                String jsonCurProduct = gson.toJson(tempList);
-                                ChatApplication.logDisplay("user name logout: " + tempList.size());
+                                    String jsonCurProduct = gson.toJson(tempList);
+                                    ChatApplication.logDisplay("user name logout: " + tempList.size());
 
-                                if (tempList.size() == 0) {
-                                    Common.savePrefValue(getApplicationContext(), Common.USER_JSON, "");
-                                } else {
-                                    tempList.get(0).setIsActive(true);
-                                    jsonCurProduct = gson.toJson(tempList);
-                                    Common.savePrefValue(getApplicationContext(), Common.USER_JSON, jsonCurProduct);
-                                }
-
-                                if (cloudAdapter != null) {
-                                    cloudAdapter.notifyDataSetChanged();
-                                }
-
-                                if (tempList.size() > 0) {
-                                    try {
-                                        Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "true");
-                                        Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, tempList.get(0).getCloudIP());
-                                        Common.savePrefValue(Main2Activity.this, Constants.USER_ID, tempList.get(0).getUser_id());
-                                        Common.savePrefValue(Main2Activity.this, Constants.USER_PASSWORD, tempList.get(0).getPassword());
-                                        Common.savePrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE, tempList.get(0).getAdmin());
-
-                                        Common.savePrefValue(Main2Activity.this, Constants.AUTHORIZATION_TOKEN, tempList.get(0).getAuth_key());
-
-                                        if (Common.getPrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("1")) {
-                                            Constants.room_type = 0;
-                                            Common.savePrefValue(Main2Activity.this, Constants.USER_ROOM_TYPE, "" + 0);
-                                        } else {
-                                            Constants.room_type = 2;
-                                            Common.savePrefValue(Main2Activity.this, Constants.USER_ROOM_TYPE, "" + 2);
-                                        }
-
-                                        ChatApplication.isCallDeviceList = true;
-                                        ChatApplication.currentuserId = tempList.get(0).getUser_id();
-                                        setWifiLocalflow(tempList.get(0).getLocal_ip(), tempList.get(0).getCloudIP(), tempList.get(0).getMac_address(), 0);
-
-                                    } catch (Exception ex) {
-                                        ex.printStackTrace();
+                                    if (tempList.size() == 0) {
+                                        Common.savePrefValue(getApplicationContext(), Common.USER_JSON, "");
+                                    } else {
+                                        tempList.get(0).setIsActive(true);
+                                        jsonCurProduct = gson.toJson(tempList);
+                                        Common.savePrefValue(getApplicationContext(), Common.USER_JSON, jsonCurProduct);
                                     }
-                                } else {
-                                    Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "false");
-                                    Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, "");
-                                    Common.savePrefValue(Main2Activity.this, Constants.USER_ID, "");
-                                    Common.savePrefValue(Main2Activity.this, Constants.USER_PASSWORD, "");
-                                    Common.savePrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE, "");
-                                    Common.savePrefValue(Main2Activity.this, Constants.AUTHORIZATION_TOKEN, "");
 
-                                    webUrl = "";
-                                    ChatApplication app = ChatApplication.getInstance();
-                                    app.closeSocket(webUrl);
-                                    flagPicheck = true;
-                                    loginIntent();
+                                    if (cloudAdapter != null) {
+                                        cloudAdapter.notifyDataSetChanged();
+                                    }
+
+                                    if (tempList.size() > 0) {
+                                        try {
+                                            Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "true");
+                                            Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, tempList.get(0).getCloudIP());
+                                            Common.savePrefValue(Main2Activity.this, Constants.USER_ID, tempList.get(0).getUser_id());
+                                            Common.savePrefValue(Main2Activity.this, Constants.USER_PASSWORD, tempList.get(0).getPassword());
+                                            Common.savePrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE, tempList.get(0).getAdmin());
+
+                                            Common.savePrefValue(Main2Activity.this, Constants.AUTHORIZATION_TOKEN, tempList.get(0).getAuth_key());
+
+                                            if (Common.getPrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("1")) {
+                                                Constants.room_type = 0;
+                                                Common.savePrefValue(Main2Activity.this, Constants.USER_ROOM_TYPE, "" + 0);
+                                            } else {
+                                                Constants.room_type = 2;
+                                                Common.savePrefValue(Main2Activity.this, Constants.USER_ROOM_TYPE, "" + 2);
+                                            }
+
+                                            ChatApplication.isCallDeviceList = true;
+                                            ChatApplication.currentuserId = tempList.get(0).getUser_id();
+                                            setWifiLocalflow(tempList.get(0).getLocal_ip(), tempList.get(0).getCloudIP(), tempList.get(0).getMac_address(), 0);
+
+                                        } catch (Exception ex) {
+                                            ex.printStackTrace();
+                                        }
+                                    } else {
+                                        Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "false");
+                                        Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, "");
+                                        Common.savePrefValue(Main2Activity.this, Constants.USER_ID, "");
+                                        Common.savePrefValue(Main2Activity.this, Constants.USER_PASSWORD, "");
+                                        Common.savePrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE, "");
+                                        Common.savePrefValue(Main2Activity.this, Constants.AUTHORIZATION_TOKEN, "");
+
+                                        webUrl = "";
+                                        ChatApplication app = ChatApplication.getInstance();
+                                        app.closeSocket(webUrl);
+                                        flagPicheck = true;
+                                        loginIntent();
+                                    }
                                 }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
                         }
-                    }
 
-                    @Override
-                    public void onData_FailureResponse() {
-                        ActivityHelper.dismissProgressDialog();
-                    }
+                        @Override
+                        public void onData_FailureResponse() {
+                            ActivityHelper.dismissProgressDialog();
+                        }
 
-                    @Override
-                    public void onData_FailureResponse_with_Message(String error) {
-                        ActivityHelper.dismissProgressDialog();
-                    }
-                });
+                        @Override
+                        public void onData_FailureResponse_with_Message(String error) {
+                            ActivityHelper.dismissProgressDialog();
+                        }
+                    });
 
 
+                }
+            } else {
+                ChatApplication app = ChatApplication.getInstance();
+                app.closeSocket(webUrl);
             }
-        } else {
-            ChatApplication app = ChatApplication.getInstance();
-            app.closeSocket(webUrl);
+
+        }catch (Exception e) {
+            e.printStackTrace();
+
+
+            String jsonText = Common.getPrefValue(ChatApplication.getContext(), Common.USER_JSON);
+            String USER_ID = Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID);
+
+            List<User> uList = new ArrayList<User>();
+
+            if (gson == null) gson = new Gson();
+
+
+            if (!TextUtils.isEmpty(jsonText)) {
+
+                Type type = new TypeToken<List<User>>() {
+                }.getType();
+                uList = gson.fromJson(jsonText, type);
+
+                for (User user : uList) {
+                    if (user.getUser_id().equals(USER_ID)) {
+                        uList.remove(user);
+                        return;
+                    }
+                }
+
+                if (uList != null && uList.size() > 0)
+                {
+                    try {
+                        Common.savePrefValue(Main2Activity.this, Constants.PREF_CLOUDLOGIN, "true");
+                        Common.savePrefValue(Main2Activity.this, Constants.PREF_IP, uList.get(0).getCloudIP());
+                        Common.savePrefValue(Main2Activity.this, Constants.USER_ID, uList.get(0).getUser_id());
+                        Common.savePrefValue(Main2Activity.this, Constants.USER_PASSWORD, uList.get(0).getPassword());
+                        Common.savePrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE, uList.get(0).getAdmin());
+
+                        Common.savePrefValue(Main2Activity.this, Constants.AUTHORIZATION_TOKEN, uList.get(0).getAuth_key());
+
+                        if (Common.getPrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("1")) {
+                            Constants.room_type = 0;
+                            Common.savePrefValue(Main2Activity.this, Constants.USER_ROOM_TYPE, "" + 0);
+                        } else {
+                            Constants.room_type = 2;
+                            Common.savePrefValue(Main2Activity.this, Constants.USER_ROOM_TYPE, "" + 2);
+                        }
+                        ChatApplication.isCallDeviceList = true;
+                        ChatApplication.currentuserId = uList.get(0).getUser_id();
+                        setWifiLocalflow(uList.get(0).getLocal_ip(), uList.get(0).getCloudIP(), uList.get(0).getMac_address(), 0);
+
+
+                        setViewId();
+
+                        ChatApplication.getInstance().setConnectivityListener(this);
+                        if (Common.isConnected() && isResumeConnect) {
+                            hideAlertDialog();
+                            isResumeConnect = false;
+                        } else if (Common.isConnected() && ChatApplication.isRefreshHome) {
+                            hideAlertDialog();
+                            linear_progress.setVisibility(View.GONE);
+                            ChatApplication.isRefreshHome = false;
+                        } else if (!Common.isConnected()) {
+                            hideAlertDialog();
+                            showAlertDialog(ERROR_STRING);
+                        }
+
+                        navigation_bar.setItemSelected(ChatApplication.CurrnetFragment, true); // dev arpan add on 15 june 2020
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+
+                } else {
+                    Intent intent = new Intent(Main2Activity.this, LoginSplashActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                }
+            }
         }
     }
 
     /*login screen */
     private void loginIntent() {
-        Intent intent = new Intent(this, LoginActivity.class);
+        Intent intent = new Intent(Main2Activity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-        this.finish();
+        Main2Activity.this.finish();
     }
 
     /* call back set when dashboard screen refresh*/

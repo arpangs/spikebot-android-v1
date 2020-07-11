@@ -387,7 +387,7 @@ public class AddExistingPanel extends AppCompatActivity {
             }
         }
         ActivityHelper.showProgressDialog(AddExistingPanel.this, "Please wait...", false);
-        JSONArray jsonArrayDevice = new JSONArray(listDevice);
+      //  JSONArray jsonArrayDevice = new JSONArray(listDevice);
         if (!isSelected) {
             Toast.makeText(getApplicationContext(),
                     isDeviceAdd ? "Please select Device" : "Please select Panel", Toast.LENGTH_SHORT).show();
@@ -395,7 +395,7 @@ public class AddExistingPanel extends AppCompatActivity {
         } else {
             if (ChatApplication.url.contains("http://"))
                 ChatApplication.url = ChatApplication.url.replace("http://", "");
-            SpikeBotApi.getInstance().saveExistPanel(roomId, et_panel_name_existing.getText().toString(), panelId, isDeviceAdd, jsonArrayDevice, new DataResponseListener() {
+            SpikeBotApi.getInstance().saveExistPanel(roomId, et_panel_name_existing.getText().toString(), panelId, isDeviceAdd, listDevice, new DataResponseListener() {
                 @Override
                 public void onData_SuccessfulResponse(String stringResponse) {
                     try {

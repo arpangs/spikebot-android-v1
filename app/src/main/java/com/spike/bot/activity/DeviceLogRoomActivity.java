@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
 import com.spike.bot.ChatApplication;
@@ -349,16 +351,15 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
 //        String webUrl = ChatApplication.url + Constants.UPDATE_UNREAD_LOGS;
 
 //        JSONObject jsonObject = new JSONObject();
-        try {
 
-            JSONArray jsonArray = new JSONArray();
+            JsonArray jsonArray = new JsonArray();
 
-            JSONObject object = new JSONObject();
-            object.put("sensor_type", "");
-            object.put("module_id", "");
-            object.put("room_id", "" + ROOM_ID);
-            object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonArray.put(object);
+            JsonObject object = new JsonObject();
+            object.addProperty("sensor_type", "");
+            object.addProperty("module_id", "");
+            object.addProperty("room_id", "" + ROOM_ID);
+            object.addProperty("user_id", Common.getPrefValue(this, Constants.USER_ID));
+            jsonArray.add(object);
 //            jsonObject.put("update_logs", jsonArray);
 
 
@@ -399,8 +400,5 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
                 }
             });
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 }

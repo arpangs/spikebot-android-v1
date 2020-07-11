@@ -64,7 +64,7 @@ public interface ApiInterface {
     Call<JsonElement> getIRDeviceTypeBrands(@Path("localip") String localip, @Path("original_room_device_id") String original_room_device_id);
 
     @GET("http://{localip}" + Constants.getIRDeviceTypeBrands + "{original_room_device_id}")
-    Call<JsonElement> getDeviceBrandRemoteList(@Path("localip") String localip, @Path("original_room_device_id") String original_room_device_id);
+    Call<JsonElement> getDeviceBrandRemoteList(@Path("localip") String localip, @Path("original_room_device_id") int original_room_device_id);
 
     @GET("http://{localip}" + Constants.getUnassignedRepeaterList)
     Call<JsonElement> getUnassignedRepeaterList(@Path("localip") String localip);
@@ -78,38 +78,36 @@ public interface ApiInterface {
     @GET("http://{localip}" + Constants.GET_MOOD_DEVICE_DETAILS + "{original_room_device_id}")
     Call<JsonElement> GET_MOOD_DEVICE_DETAILS(@Path("localip") String localip, @Path("original_room_device_id") String original_room_device_id);
 
+    @GET("http://{localip}" + Constants.getRoomCameraList)
+    Call<JsonElement> getroomcameralist(@Path("localip") String localip);
+
+
 
     /*
      *
      * Post apis
      *
      * */
-//    @POST("http://52.24.23.7:3000" + Constants.APP_LOGIN)
     @POST("https://live.spikebot.io:8443" + Constants.APP_LOGIN)
     // updated on july 07 2020
     Call<JsonElement> postLoginWebserviceCall(@Body HashMap<String, Object> body);
 
-    //    @POST("http://52.24.23.7:3000" + Constants.GET_CAMERA_NOTIFICATION_COUNTER)
     @POST("https://live.spikebot.io:8443" + Constants.GET_CAMERA_NOTIFICATION_COUNTER)
     // updated on july 07 2020
     Call<JsonElement> postGetCameraBadgeCount(@Body HashMap<String, Object> body);
 
-    //    @POST("http://52.24.23.7:3000" + Constants.APP_LOGOUT)
     @POST("https://live.spikebot.io:8443" + Constants.APP_LOGOUT)
     // updated on july 07 2020
     Call<JsonElement> LogoutCloudUser(@Body HashMap<String, Object> body);
 
-    //    @POST("http://52.24.23.7:3000" + Constants.reportFalseImage)
     @POST("https://live.spikebot.io:8443" + Constants.reportFalseImage)
     // updated on july 07 2020
     Call<JsonElement> reportFalseImage(@Body HashMap<String, Object> body);
 
-    //    @POST("http://52.24.23.7:3000" + Constants.getUnseenCameraLog)
     @POST("https://live.spikebot.io:8443" + Constants.getUnseenCameraLog)
     // updated on july 07 2020
     Call<JsonElement> getUnseenCameraLog(@Body HashMap<String, Object> body);
 
-    //    @POST("http://52.24.23.7:3000" + Constants.getCameraLogs)
     @POST("https://live.spikebot.io:8443" + Constants.getCameraLogs)
     // updated on july 07 2020
     Call<JsonElement> getCameraLogs(@Body HashMap<String, Object> body);
@@ -177,6 +175,9 @@ public interface ApiInterface {
     @POST("http://{url}" + Constants.SAVE_USER_PROFILE_DETAILS)
     Call<JsonElement> SaveProfile(@Path("url") String url, @Body HashMap<String, Object> body);
 
+    @POST("http://{url}" + Constants.CHANGE_PASSWORD)
+    Call<JsonElement> ChangePassword(@Path("url") String url, @Body HashMap<String, Object> body);
+
     @POST("http://{url}" + Constants.deviceadd)
     Call<JsonElement> ConfigureNewRoom(@Path("url") String url, @Body HashMap<String, Object> body);
 
@@ -211,8 +212,8 @@ public interface ApiInterface {
     @POST("http://{url}" + Constants.getPhilipsHueParams)
     Call<JsonElement> GetPhilipsHueParams(@Path("url") String url, @Body HashMap<String, Object> body);
 
-    @POST("http://{url}" + Constants.SIGNUP_API)
-    Call<JsonElement> Signup(@Path("url") String url, @Body HashMap<String, Object> body);
+    @POST("http://192.168.175.119" + Constants.SIGNUP_API)
+    Call<JsonElement> Signup(@Body HashMap<String, Object> body);
 
     @POST("http://{url}" + Constants.ADD_NEW_SCHEDULE)
     Call<JsonElement> AddSchedule(@Path("url") String url, @Body Object body);
@@ -308,8 +309,6 @@ public interface ApiInterface {
     @POST("http://{url}" + Constants.deviceadd)
     Call<JsonElement> addDevice(@Path("url") String url, @Body Object body);
 
-    @POST("http://{url}" + Constants.getRoomCameraList)
-    Call<JsonElement> getroomcameralist(@Path("url") String url, @Body Object body);
 
     @POST("http://{url}" + Constants.GET_ORIGINAL_DEVICES)
     Call<JsonElement> getCustomPanelDetail(@Path("url") String url, @Body Object body);

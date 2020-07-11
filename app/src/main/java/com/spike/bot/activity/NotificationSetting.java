@@ -11,6 +11,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.kp.core.ActivityHelper;
 import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
@@ -94,21 +96,19 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
 
 //        JSONObject dataObject = new JSONObject();
 
-        try {
-
             //changes in
             //URL: getNotificationList, URL: saveNotificationList
             //Added multisensor and gas enable/disable option.
 
-            JSONArray dataArray = new JSONArray();
+            JsonArray dataArray = new JsonArray();
             for (NotificationListRes.Data data : notificationDataList) {
-                JSONObject homeObject = new JSONObject();
-                homeObject.put("id", data.getId());
-                homeObject.put("title", data.getTitle());
-                homeObject.put("value", data.getValue());
+                JsonObject homeObject = new JsonObject();
+                homeObject.addProperty("id", data.getId());
+                homeObject.addProperty("title", data.getTitle());
+                homeObject.addProperty("value", data.getValue());
 
 
-                dataArray.put(homeObject);
+                dataArray.add(homeObject);
             }
 
 //            dataObject.put("data",dataArray);
@@ -180,10 +180,6 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
                 }
             });
 
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
 
     }

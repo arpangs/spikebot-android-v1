@@ -45,6 +45,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -540,7 +541,8 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         deviceVOArrayListTemp.addAll(deviceVOArrayList);
         deviceVOArrayList.clear();
         deviceVOArrayList = removeDuplicates(deviceVOArrayListTemp);
-        JSONObject moodObj = new JSONObject();
+
+        HashMap<String, Object> moodObj = new HashMap<>();
         try {
             if (editMode) {
                 /*old_mood_id : last mood_id
@@ -613,7 +615,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                 }
             });
 
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

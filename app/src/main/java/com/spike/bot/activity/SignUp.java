@@ -107,10 +107,10 @@ public class SignUp extends AppCompatActivity {
         edt_phone_no = findViewById(R.id.edt_phone_no_su);
         edtIPAddress = findViewById(R.id.edtIPAddress);
 
-        //  countryCodePicker = findViewById(R.id.ccp);
+          countryCodePicker = findViewById(R.id.ccp);
 
-        //  countryCodePicker.setNumberAutoFormattingEnabled(true);
-        //  countryCodePicker.registerCarrierNumberEditText(edt_phone_no);
+          countryCodePicker.setNumberAutoFormattingEnabled(true);
+          countryCodePicker.registerCarrierNumberEditText(edt_phone_no);
 
         Gson gson = new Gson();
         String jsonText = Common.getPrefValue(getApplicationContext(), Common.USER_JSON);
@@ -267,8 +267,8 @@ public class SignUp extends AppCompatActivity {
         }
 //        webUrl = app.url;
         /*set statically ip address*/
-        String url = "http://" + ipAddressPI + ":" + Constants.SIGNUP_API;
-//        String url = "http://" + "192.168.175.121" + ":"  + Constants.SIGNUP_API;//111
+//        String url = "http://" + ipAddressPI + ":" + Constants.SIGNUP_API;
+        String url = "http://" + "192.168.175.119" + ":"  + Constants.SIGNUP_API;//111
 //        String url = "http://" + edtIPAddress.getText().toString() + ":"  + Constants.SIGNUP_API;//117
         String token = FirebaseInstanceId.getInstance().getToken();
         Common.savePrefValue(getApplicationContext(), Constants.DEVICE_PUSH_TOKEN, token);
@@ -386,12 +386,12 @@ public class SignUp extends AppCompatActivity {
         }).execute();*/
 
 
-        if (ChatApplication.url.contains("http://"))
+        if (ChatApplication.url.contains("http://192.168.175.119"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
 
         SpikeBotApi.getInstance().Signup(ipAddressPI + ":", edt_first_name.getText().toString(), edt_last_name.getText().toString(), edt_user_name.getText().toString().trim(),
-                edt_email_id.getText().toString(), edt_password.getText().toString(), edt_phone_no.getText().toString(), imei
+                edt_email_id.getText().toString(), edt_password.getText().toString(),"+" + countryCodePicker.getSelectedCountryCode() + edt_phone_no.getText().toString(), imei
                 , token, new DataResponseListener() {
                     @Override
                     public void onData_SuccessfulResponse(String stringResponse) {

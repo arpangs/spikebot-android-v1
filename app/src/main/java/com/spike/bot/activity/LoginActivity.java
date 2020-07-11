@@ -330,7 +330,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                         JSONObject data = result.getJSONObject("data");
                         String cloudIp = data.getString("ip");
-                        String local_ip = data.getString("local_ip");
+                        String local_ip = data.getString("local_ip_address");
                         ChatApplication.logDisplay("login response is " + data.toString());
 
                         Common.savePrefValue(LoginActivity.this, Constants.PREF_CLOUDLOGIN, "true");

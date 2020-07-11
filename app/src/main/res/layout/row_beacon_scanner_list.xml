@@ -129,7 +129,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:nestedScrollingEnabled="false"
-            android:visibility="visible"
+            android:visibility="gone"
             tools:listitem="@layout/row_room_edit_device_v2">
 
         </androidx.recyclerview.widget.RecyclerView>
@@ -144,14 +144,16 @@
 
             <TextView
                 android:id="@+id/room_name"
-                android:layout_width="wrap_content"
+                android:layout_width="130dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginBottom="15dp"
-                android:text="Room Name"
+                android:maxLines="2"
+                android:text="[ Brijesh sir office dsdfdsfdfdffd]"
                 android:textColor="@color/signupblack" />
 
             <LinearLayout
+                android:id="@+id/linear_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -174,7 +176,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|center"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:text="20:00"
                         android:textColor="@color/signupblack"
                         android:textSize="@dimen/_10sdp" />
@@ -183,7 +185,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|center"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:text="-"
                         android:textColor="@color/signupblack" />
 
@@ -192,7 +194,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|center"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:text="20:00"
                         android:textColor="@color/signupblack"
                         android:textSize="@dimen/_10sdp" />
@@ -217,7 +219,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:text="20:00"
                         android:textColor="@color/signupblack"
                         android:textSize="@dimen/_10sdp" />

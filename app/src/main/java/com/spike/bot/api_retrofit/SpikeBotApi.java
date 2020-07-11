@@ -5,6 +5,8 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.widget.Spinner;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.kp.core.DateHelper;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.core.APIConst;
@@ -549,6 +551,23 @@ public class SpikeBotApi {
 
     }
 
+    /*UserProfileFragment*/  //  akhil add on 8th july 2020
+    public void ChangePassword(String old_password,String newpassword, DataResponseListener dataResponseListener) {
+
+
+        HashMap<String, Object> params = new HashMap<>();
+
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        params.put("password", newpassword);
+        params.put("old_password", old_password);
+
+        new GeneralRetrofit(apiService.ChangePassword(ChatApplication.url, params), params, dataResponseListener).call();
+
+    }
+
 
 
     /*AddRoomDialog */  // dev arpan add on 27 june 2020
@@ -653,7 +672,7 @@ public class SpikeBotApi {
 
     /*UserChildActivity*/ // dev arpan add on 29 june 2020
 
-    public void AddUserChild(String modeType, String child_user_id, JSONArray roomlist, JSONArray cameraList, String user_name, String display_name, String strPassword, DataResponseListener dataResponseListener) {
+    public void AddUserChild(String modeType, String child_user_id, ArrayList<String> roomlist, ArrayList<String> cameraList, String user_name, String display_name, String strPassword, DataResponseListener dataResponseListener) {
 
         HashMap<String, Object> params = new HashMap<>();
 
@@ -767,7 +786,7 @@ public class SpikeBotApi {
         params.put("device_push_token", token);
 
 
-        new GeneralRetrofit(apiService.Signup(url, params), params, dataResponseListener).call();
+        new GeneralRetrofit(apiService.Signup(params), params, dataResponseListener).call();
 
     }
 
@@ -775,7 +794,7 @@ public class SpikeBotApi {
     /*ScheduleActivity*/  // dev arpan add on 29 june 2020
 
 
-    public void AddSchedule(boolean isEdit, Object deviceObj, DataResponseListener dataResponseListener) {
+    public void AddSchedule(boolean isEdit, HashMap<String, Object> deviceObj, DataResponseListener dataResponseListener) {
         if (isEdit) {
             new GeneralRetrofit(apiService.EditSchedule(ChatApplication.url, deviceObj), deviceObj, dataResponseListener).call();
         } else {
@@ -792,7 +811,7 @@ public class SpikeBotApi {
 
 
     /*RoomEditActivity2*/  // dev arpan add on 29 june 2020
-    public void SaveRoom(String room_id, String room_name, JSONArray panelArray, DataResponseListener dataResponseListener) {
+    public void SaveRoom(String room_id, String room_name, JsonArray panelArray, DataResponseListener dataResponseListener) {
 
         HashMap<String, Object> params = new HashMap<>();
 
@@ -801,7 +820,7 @@ public class SpikeBotApi {
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
         params.put("room_id", room_id);
         params.put("room_name", room_name);
-        if (panelArray != null && panelArray.length() > 0) {
+        if (panelArray != null && panelArray.size() > 0) {
             params.put("panel_data", panelArray);
         }
 
@@ -856,11 +875,11 @@ public class SpikeBotApi {
     }
 
 
-    public void SaveNotiSettingList(JSONArray dataArray, DataResponseListener dataResponseListener) {
+    public void SaveNotiSettingList(JsonArray dataArray, DataResponseListener dataResponseListener) {
 
         HashMap<String, Object> params = new HashMap<>();
 
-        if (dataArray != null && dataArray.length() > 0) {
+        if (dataArray != null && dataArray.size() > 0) {
 
             params.put("data", dataArray);
             params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
@@ -919,9 +938,9 @@ public class SpikeBotApi {
     }
 
 
-    public void CallreadCountApi(JSONArray jsonArray, DataResponseListener dataResponseListener) {
+    public void CallreadCountApi(JsonArray jsonArray, DataResponseListener dataResponseListener) {
 
-        if (jsonArray != null && jsonArray.length() > 0) {
+        if (jsonArray != null && jsonArray.size() > 0) {
             HashMap<String, Object> params = new HashMap<>();
             params.put("update_logs", jsonArray);
 
@@ -1218,7 +1237,6 @@ public class SpikeBotApi {
 
         HashMap<String, Object> params = new HashMap<>();
 
-        try {
             if (isFilterActive) {
                 params.put("notification_number", position);
                 params.put("room_id", "" + mRoomId);
@@ -1227,7 +1245,7 @@ public class SpikeBotApi {
 
 
                 RoomVO roomVO = (RoomVO) mSpinnerRoomList.getSelectedItem();
-                JSONArray array = new JSONArray();
+                JsonArray array = new JsonArray();
                 if (mSpinnerRoomMood.getSelectedItem().toString().equals("All")) {
                     if (isFilterType) {
                         params.put("sensor_type", "all");
@@ -1248,10 +1266,10 @@ public class SpikeBotApi {
                                     actionname = actionname + "'" + stringArrayList.get(i) + "',";
                                 }
                             }
-                            JSONObject subObject = new JSONObject();
-                            subObject.put("activity_action", actionname);
-                            subObject.put("activity_type", "All");
-                            array.put(subObject);
+                            JsonObject subObject = new JsonObject();
+                            subObject.addProperty("activity_action", actionname);
+                            subObject.addProperty("activity_type", "All");
+                            array.add(subObject);
                             params.put("filter_data", array);
                         }
 
@@ -1272,11 +1290,11 @@ public class SpikeBotApi {
                                     actionname = actionname + "'" + stringArrayList.get(i) + "',";
                                 }
                             }
-                            JSONObject subObject = new JSONObject();
-                            subObject.put("activity_action", actionname);
+                            JsonObject subObject = new JsonObject();
+                            subObject.addProperty("activity_action", actionname);
 
-                            subObject.put("activity_type", "All");
-                            array.put(subObject);
+                            subObject.addProperty("activity_type", "All");
+                            array.add(subObject);
                             params.put("filter_data", array);
                         }
                     }
@@ -1332,11 +1350,11 @@ public class SpikeBotApi {
                             actionname = actionname + "'" + stringArrayList.get(i) + "',";
                         }
                     }
-                    JSONObject subObject = new JSONObject();
-                    subObject.put("activity_action", actionname);
-                    subObject.put("activity_type", "" + actionType);
+                    JsonObject subObject = new JsonObject();
+                    subObject.addProperty("activity_action", actionname);
+                    subObject.addProperty("activity_type", "" + actionType);
 
-                    array.put(subObject);
+                    array.add(subObject);
                     params.put("filter_data", array);
                 }
 
@@ -1366,9 +1384,7 @@ public class SpikeBotApi {
             params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
             params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+
 
 
         new GeneralRetrofit(apiService.GetDeviceLog(ChatApplication.url, params), params, dataResponseListener).call();
@@ -1392,12 +1408,12 @@ public class SpikeBotApi {
     }
 
 
-    public void SaveMood(boolean editMode, JSONObject jsonObject, DataResponseListener dataResponseListener) {
+    public void SaveMood(boolean editMode, HashMap<String, Object> moodObj, DataResponseListener dataResponseListener) {
 
         if (editMode) {
-            new GeneralRetrofit(apiService.EditMood(ChatApplication.url, jsonObject), jsonObject, dataResponseListener).call();
+            new GeneralRetrofit(apiService.EditMood(ChatApplication.url, moodObj), moodObj, dataResponseListener).call();
         } else {
-            new GeneralRetrofit(apiService.AddMood(ChatApplication.url, jsonObject), jsonObject, dataResponseListener).call();
+            new GeneralRetrofit(apiService.AddMood(ChatApplication.url, moodObj), moodObj, dataResponseListener).call();
         }
 
     }
@@ -1600,7 +1616,8 @@ public class SpikeBotApi {
         params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
-        new GeneralRetrofit(apiService.getroomcameralist(ChatApplication.url, params), params, dataResponseListener).call();
+
+        new GeneralRetrofit(apiService.getroomcameralist(ChatApplication.url), params, dataResponseListener).call();
     }
 
     // addexisting panel - get custompanel detail
@@ -1617,7 +1634,7 @@ public class SpikeBotApi {
     }
 
     // addexisting panel - save existing panel
-    public void saveExistPanel(String room_id, String panel_name, String panel_id, boolean isDeviceAdd, JSONArray jsonArrayDevice, DataResponseListener dataResponseListener) {
+    public void saveExistPanel(String room_id, String panel_name, String panel_id, boolean isDeviceAdd, ArrayList<String> listDevice, DataResponseListener dataResponseListener) {
 
         HashMap<String, Object> params = new HashMap<>();
 
@@ -1628,7 +1645,7 @@ public class SpikeBotApi {
             params.put("panel_id", panel_id);
         }
 
-        params.put("devices", jsonArrayDevice);
+        params.put("devices", listDevice);
 
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
         params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -1763,26 +1780,23 @@ public class SpikeBotApi {
         params.put("end_time", offTime);
         params.put("alert_interval", edIntervalTime);
 
-        JSONArray roomDeviceArray = new JSONArray();
+        JsonArray roomDeviceArray = new JsonArray();
         for (CameraVO dPanel : getCameraList) {
 
             if (dPanel.getIsSelect()) {
-                JSONObject object = new JSONObject();
-                try {
-                    object.put("camera_id", dPanel.getCamera_id());
-                    object.put("camera_name", "" + dPanel.getCamera_name());
-                    object.put("camera_url", "" + dPanel.getCamera_url());
-                    object.put("camera_ip", "" + dPanel.getCamera_ip());
-                    object.put("camera_videopath", "" + dPanel.getCamera_videopath());
-                    object.put("camera_icon", "" + dPanel.getCamera_icon());
-                    object.put("camera_vpn_port", "" + dPanel.getCamera_vpn_port());
-                    object.put("user_name", "" + dPanel.getUserName());
-                    object.put("password", "" + dPanel.getPassword());
+                JsonObject object = new JsonObject();
+                    object.addProperty("camera_id", dPanel.getCamera_id());
+                    object.addProperty("camera_name", "" + dPanel.getCamera_name());
+                    object.addProperty("camera_url", "" + dPanel.getCamera_url());
+                    object.addProperty("camera_ip", "" + dPanel.getCamera_ip());
+                    object.addProperty("camera_videopath", "" + dPanel.getCamera_videopath());
+                    object.addProperty("camera_icon", "" + dPanel.getCamera_icon());
+                    object.addProperty("camera_vpn_port", "" + dPanel.getCamera_vpn_port());
+                    object.addProperty("user_name", "" + dPanel.getUserName());
+                    object.addProperty("password", "" + dPanel.getPassword());
 
-                    roomDeviceArray.put(object);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                    roomDeviceArray.add(object);
+
             }
         }
 
@@ -1796,7 +1810,7 @@ public class SpikeBotApi {
 
     // CameraNotification - Update camera
     public void callUpdateCamera(String start_time, String end_time, CameraAlertList cameraAlertList, String jetson_id, int edIntervalTime,
-                                 ArrayList<CameraVO> getCameraList, DataResponseListener dataResponseListener) {
+                                 ArrayList<CameraVO> getCameraList, JsonArray array, JsonArray roomDeviceArray, DataResponseListener dataResponseListener) {
 
         String onTime = "", offTime = "";
 
@@ -1816,31 +1830,6 @@ public class SpikeBotApi {
         params.put("jetson_id", jetson_id);
         params.put("camera_notification_id", cameraAlertList.getCameraNotificationId());
 
-        JSONArray roomDeviceArray = new JSONArray();
-        JSONArray array = new JSONArray();
-        for (CameraVO dPanel : getCameraList) {
-
-            if (dPanel.getIsSelect()) {
-                JSONObject object = new JSONObject();
-                try {
-                    object.put("camera_id", dPanel.getCamera_id());
-                    object.put("camera_name", "" + dPanel.getCamera_name());
-                    object.put("camera_url", "" + dPanel.getCamera_url());
-                    object.put("camera_ip", "" + dPanel.getCamera_ip());
-                    object.put("camera_videopath", "" + dPanel.getCamera_videopath());
-                    object.put("camera_icon", "" + dPanel.getCamera_icon());
-                    object.put("camera_vpn_port", "" + dPanel.getCamera_vpn_port());
-                    object.put("user_name", "" + dPanel.getUserName());
-                    object.put("password", "" + dPanel.getPassword());
-
-                    roomDeviceArray.put(object);
-
-                    array.put(dPanel.getCamera_id());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
         params.put("camera_ids", array);
         params.put("cameraList", roomDeviceArray);
 
@@ -1947,22 +1936,18 @@ public class SpikeBotApi {
         params.put("camera_start_date", start_date);
         params.put("camera_end_date", end_date);
 
-        try {
-            JSONArray jsonArray = new JSONArray();
+            JsonArray jsonArray = new JsonArray();
             for (CameraVO cameraVO : cameraVOArrayList) {
                 for (String ss : selectedCamera) {
                     if (cameraVO.getCamera_name().equalsIgnoreCase(ss)) {
-                        JSONObject ob = new JSONObject();
-                        ob.put("camera_id", cameraVO.getCamera_id());
-                        ob.put("camera_name", cameraVO.getCamera_name());
-                        jsonArray.put(ob);
+                        JsonObject ob = new JsonObject();
+                        ob.addProperty("camera_id", cameraVO.getCamera_id());
+                        ob.addProperty("camera_name", cameraVO.getCamera_name());
+                        jsonArray.add(ob);
                     }
                 }
             }
             params.put("camera_details", jsonArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         new GeneralRetrofit(apiService.GET_CAMERA_RECORDING_BY_DATE(ChatApplication.url, params), params, dataResponseListener).call();
     }
@@ -2115,12 +2100,12 @@ public class SpikeBotApi {
 
     //IRRemoteBrandList - getIRDetailsList
     public void getIRDetailsList(DataResponseListener dataResponseListener) {
-        new GeneralRetrofit(apiService.getIRDeviceTypeBrands(Constants.getIRDeviceTypeBrands, "/" + "1"), null, dataResponseListener).call();
+        new GeneralRetrofit(apiService.getIRDeviceTypeBrands(ChatApplication.url,  "1"), null, dataResponseListener).call();
     }
 
     //IRRemoteBrandList - getIRRemoteDetails
     public void getIRRemoteDetails(int device_brand_id, DataResponseListener dataResponseListener) {
-        new GeneralRetrofit(apiService.getDeviceBrandRemoteList(Constants.getDeviceBrandRemoteList, "/" + device_brand_id), null, dataResponseListener).call();
+        new GeneralRetrofit(apiService.getDeviceBrandRemoteList(ChatApplication.url,  device_brand_id), null, dataResponseListener).call();
     }
 
     //IRRemoteConfig - sendOnOfOffRequest
@@ -2208,24 +2193,8 @@ public class SpikeBotApi {
         }
     }
 
-
     //DoorSensorInfo - add Notification
-    public void addNotification(String start_time, String end_time, String alert_id, String device_id, boolean isEdit, DataResponseListener dataResponseListener) {
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("start_time", start_time);
-        params.put("end_time", end_time);
-        params.put("alert_type", "door_open_close");
-        params.put("days", "0,1,2,3,4,5,6");
-        if (isEdit) {
-            params.put("alert_id", alert_id);
-
-        } else {
-            params.put("device_id", device_id);
-        }
-
-        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
-        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+    public void addNotification(HashMap<String, Object> params,boolean isEdit, DataResponseListener dataResponseListener) {
 
         if (isEdit) {
             new GeneralRetrofit(apiService.UPDATE_TEMP_SENSOR_NOTIFICATION(ChatApplication.url, params), params, dataResponseListener).call();
@@ -2297,7 +2266,7 @@ public class SpikeBotApi {
         } else {
             params.put("device_id", device_id);
         }
-        params.put("days", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
         params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
@@ -2664,7 +2633,7 @@ public class SpikeBotApi {
     }
 
     // Beaconconfig - saveBeacon
-    public void saveBeacon(String device_name, String device_id, String module_id, JSONArray array, boolean editBeacon, DataResponseListener dataResponseListener) {
+    public void saveBeacon(String device_name, String device_id, String module_id,   ArrayList<String> deviceIdList, boolean editBeacon, DataResponseListener dataResponseListener) {
 
         HashMap<String, Object> params = new HashMap<>();
         params.put("device_name", device_name);
@@ -2675,7 +2644,7 @@ public class SpikeBotApi {
             params.put("module_id", module_id);
         }
         params.put("module_type", "beacon");
-        params.put("related_devices", array);
+        params.put("related_devices", deviceIdList);
 
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
         params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);

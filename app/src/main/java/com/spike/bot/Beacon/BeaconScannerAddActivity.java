@@ -296,6 +296,7 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
                 Intent intent = new Intent(BeaconScannerAddActivity.this, WifiScannerActivity.class);
                 //  intent.putExtra("roomId",""+room.getRoomId());
                 //  intent.putExtra("roomName",""+room.getRoomName());
+                intent.putExtra("roomListArray", roomListArray);
                 startActivity(intent);
             }
         });

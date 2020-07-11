@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
 import com.spike.bot.ChatApplication;
@@ -261,8 +262,11 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
 
         inputRoom.setVisibility(View.GONE);
         inputPassword.setVisibility(View.VISIBLE);
-        inputnewPassword.setVisibility(View.VISIBLE);
-        inputconfirmPassword.setVisibility(View.VISIBLE);
+        inputnewPassword.setVisibility(View.GONE);
+        inputconfirmPassword.setVisibility(View.GONE);
+
+        inputPassword.setHint("Enter Password");
+        edtPasswordChild.setHint("Enter Password");
 
         TextView tv_title = dialog.findViewById(R.id.tv_title);
         Button btnSave = dialog.findViewById(R.id.btn_save);
@@ -444,7 +448,7 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
 
-        SpikeBotApi.getInstance().GetRoomList(new DataResponseListener() {
+        SpikeBotApi.getInstance().getroomcameralist("room",new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
@@ -597,15 +601,15 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
 
 
-        JSONArray jsonArray3 = new JSONArray(roomListString);
-        JSONArray jsonArray4 = new JSONArray(cameraList);
+      //  JsonArray jsonArray3 = new JsonArray(roomListString);
+       // JsonArray jsonArray4 = new JsonArray(cameraList);
 
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
 
 
-        SpikeBotApi.getInstance().AddUserChild(modeType, user.getUser_id(), jsonArray3, jsonArray4,
+        SpikeBotApi.getInstance().AddUserChild(modeType, user.getUser_id(), roomListString, cameraList,
                 edtUsername.getText().toString(), edDisplayName.getText().toString(), strPassword,new DataResponseListener() {
                     @Override
                     public void onData_SuccessfulResponse(String stringResponse) {

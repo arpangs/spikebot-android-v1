@@ -53,7 +53,6 @@ public class TempActivity extends AppCompatActivity implements View.OnClickListe
 
         arrayList.add("http://18.237.74.22:8079");
         arrayList.add("http://34.212.76.50:8079");
-        arrayList.add("http://52.24.23.7:8079");
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, arrayList);
@@ -81,10 +80,10 @@ public class TempActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void callIntent() {
-        Constants.CLOUD_SERVER_URL = Common.getPrefValue(this, "couldIp");
+       // Constants.CLOUD_SERVER_URL = Common.getPrefValue(this, "couldIp");
         Constants.IP_END = Common.getPrefValue(this, "startIp");
 
-        ChatApplication.logDisplay("CLOUD_SERVER_URL is " + Constants.CLOUD_SERVER_URL);
+      //  ChatApplication.logDisplay("CLOUD_SERVER_URL is " + Constants.CLOUD_SERVER_URL);
         ChatApplication.logDisplay("CLOUD_SERVER_URL is IP_END " + Constants.IP_END);
 
         Intent intent = new Intent(this, Main2Activity.class);

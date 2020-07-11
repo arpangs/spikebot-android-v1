@@ -72,12 +72,13 @@ public class WifiBlasterActivity extends AppCompatActivity implements View.OnCli
 
         roomId = getIntent().getStringExtra("roomId");
         roomName = getIntent().getStringExtra("roomName");
+        roomListArray = (ArrayList<UnassignedListRes.Data.RoomList>) getIntent().getSerializableExtra("roomListArray");
 
         setUi();
     }
 
     private void setUi() {
-        getRoomList();
+        //getRoomList();
         Constants.isWifiConnect = true;
         progressBar = new ProgressDialog(WifiBlasterActivity.this);
         toolbar =  findViewById(R.id.toolbar);

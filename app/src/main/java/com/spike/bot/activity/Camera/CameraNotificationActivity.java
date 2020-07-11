@@ -28,6 +28,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
 import com.kp.core.DateHelper;
@@ -422,11 +424,38 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
     // Call update camera
     private void callUpdateCamera(String et_schedule_on_time, String et_schedule_off_time, String strflag, CameraAlertList cameraAlertList, int edIntervalTime) {
+        JsonArray roomDeviceArray = new JsonArray();
+        JsonArray array = new JsonArray();
+        for (CameraVO dPanel : getCameraList) {
+
+            if (dPanel.getIsSelect()) {
+                JsonObject object = new JsonObject();
+              //  try {
+                    object.addProperty("camera_id", dPanel.getCamera_id());
+                    object.addProperty("camera_name", "" + dPanel.getCamera_name());
+                    object.addProperty("camera_url", "" + dPanel.getCamera_url());
+                    object.addProperty("camera_ip", "" + dPanel.getCamera_ip());
+                    object.addProperty("camera_videopath", "" + dPanel.getCamera_videopath());
+                    object.addProperty("camera_icon", "" + dPanel.getCamera_icon());
+                    object.addProperty("camera_vpn_port", "" + dPanel.getCamera_vpn_port());
+                    object.addProperty("user_name", "" + dPanel.getUser_name());
+                    object.addProperty("password", "" + dPanel.getPassword());
+
+                    roomDeviceArray.add(object);
+
+                    array.add(dPanel.getCamera_id());
+               /* } catch (JSONException e) {
+                    e.printStackTrace();
+                }*/
+            }
+        }
+
+
 
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
         ActivityHelper.showProgressDialog(this, "Please Wait...", false);
-        SpikeBotApi.getInstance().callUpdateCamera(et_schedule_on_time, et_schedule_off_time, cameraAlertList, jetson_id, edIntervalTime, getCameraList, new DataResponseListener() {
+        SpikeBotApi.getInstance().callUpdateCamera(et_schedule_on_time, et_schedule_off_time, cameraAlertList, jetson_id, edIntervalTime, getCameraList,array,roomDeviceArray,new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();

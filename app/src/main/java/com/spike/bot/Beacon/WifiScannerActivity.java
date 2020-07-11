@@ -61,12 +61,13 @@ public class WifiScannerActivity extends AppCompatActivity implements View.OnCli
 
         roomId = getIntent().getStringExtra("roomId");
         roomName = getIntent().getStringExtra("roomName");
+        roomListArray = (ArrayList<UnassignedListRes.Data.RoomList>) getIntent().getSerializableExtra("roomListArray");
 
         setUi();
     }
 
     private void setUi() {
-        getRoomList();
+        //getRoomList();
         Constants.isWifiConnect = true;
         progressBar = new ProgressDialog(WifiScannerActivity.this);
         toolbar =  findViewById(R.id.toolbar);
@@ -167,6 +168,8 @@ public class WifiScannerActivity extends AppCompatActivity implements View.OnCli
             showToast("" + R.string.disconnect);
             return;
         }
+   /*     if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");*/
 
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
 
@@ -235,8 +238,7 @@ public class WifiScannerActivity extends AppCompatActivity implements View.OnCli
 
                 try {
 
-                    if (result != null)
-                    {
+                    if (result != null) {
 
                         JSONObject object = result;
 
@@ -263,7 +265,7 @@ public class WifiScannerActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
-                Toast.makeText(WifiScannerActivity.this.getApplicationContext(), "" + error.toString(), Toast.LENGTH_SHORT).show();
+               // Toast.makeText(WifiScannerActivity.this.getApplicationContext(), "" + error.toString(), Toast.LENGTH_SHORT).show();
             }
         }).execute();
     }
