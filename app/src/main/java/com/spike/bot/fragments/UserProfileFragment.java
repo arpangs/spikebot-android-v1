@@ -56,9 +56,9 @@ import in.aabhasjindal.otptextview.OtpTextView;
  * Gmail : jethvasagar2@gmail.com
  */
 
-public class UserProfileFragment extends Fragment implements View.OnClickListener{
+public class UserProfileFragment extends Fragment implements View.OnClickListener {
 
-    String  TAG = "ProfileActivity",stroldPassword="",strconfirmpassword="",strnewpassword="";
+    String TAG = "ProfileActivity", stroldPassword = "", strconfirmpassword = "", strnewpassword = "";
 
     EditText et_profile_first_name, et_profile_last_name, et_profile_contact_no, et_profile_email, et_profile_user_name;
     LinearLayout ll_password_view_expand, ll_pass_edittext_view;
@@ -69,6 +69,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     Dialog otpdialog, passworddialog;
     OtpTextView otp_view;
     ProgressDialog m_progressDialog;
+    Dialog dialog;
 
     public UserProfileFragment() {
         super();
@@ -436,9 +437,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             }
         }).execute();*/
 
-        if (ChatApplication.url.contains("http://"))
-            ChatApplication.url = ChatApplication.url.replace("http://", "");
-
         SpikeBotApi.getInstance().SaveProfile(et_profile_first_name.getText().toString(), et_profile_last_name.getText().toString(),
                 et_profile_user_name.getText().toString(), et_profile_contact_no.getText().toString(), et_profile_email.getText().toString(),
                 stroldPassword, new DataResponseListener() {
@@ -514,15 +512,63 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                     @Override
                     public void onData_FailureResponse_with_Message(String error) {
                         ActivityHelper.dismissProgressDialog();
-                        Toast.makeText(getContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
 
+    public void ChangePassword(String stroldPassword, String strnewpassword) {
+
+        if (!ActivityHelper.isConnectingToInternet(getContext())) {
+            Toast.makeText(getContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+        ActivityHelper.showProgressDialog(getContext(), "Please wait.", false);
+
+        SpikeBotApi.getInstance().ChangePassword(stroldPassword, strnewpassword, new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try {
+                    ActivityHelper.dismissProgressDialog();
+                    JSONObject result = new JSONObject(stringResponse);
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        dialog.dismiss();
+                        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                    } else{
+                        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ChatApplication.logDisplay("Exception saveProfile e.getMessage() " + e.getMessage());
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
     public void addCustomRoom() {
-        final Dialog dialog = new Dialog(getActivity());
+        dialog = new Dialog(getActivity());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setContentView(R.layout.dialog_add_custome_room);
@@ -533,9 +579,9 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         final TextInputLayout inputnewPassword = dialog.findViewById(R.id.inputnewPassword);
         final TextInputLayout inputconfirmPassword = dialog.findViewById(R.id.inputconfirmPassword);
 
-        final TextInputEditText edtOldPasswordChild=dialog.findViewById(R.id.edtOldPasswordChild);
-        final TextInputEditText edtnewPasswordChild=dialog.findViewById(R.id.edtnewPasswordChild);
-        final TextInputEditText edtconfirmPasswordChild=dialog.findViewById(R.id.edtconfirmPasswordChild);
+        final TextInputEditText edtOldPasswordChild = dialog.findViewById(R.id.edtOldPasswordChild);
+        final TextInputEditText edtnewPasswordChild = dialog.findViewById(R.id.edtnewPasswordChild);
+        final TextInputEditText edtconfirmPasswordChild = dialog.findViewById(R.id.edtconfirmPasswordChild);
 
         inputRoom.setVisibility(View.GONE);
         inputPassword.setVisibility(View.VISIBLE);
@@ -577,19 +623,21 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                     ChatApplication.showToast(getActivity(), "Please enter password");
                 }*/
 
+                strnewpassword=edtnewPasswordChild.getText().toString();
+                strconfirmpassword=edtconfirmPasswordChild.getText().toString();
 
-                if(TextUtils.isEmpty(edtOldPasswordChild.getText().toString())){
+                if (TextUtils.isEmpty(edtOldPasswordChild.getText().toString())) {
                     ChatApplication.showToast(getActivity(), "Please enter old password");
-                } else if(TextUtils.isEmpty(edtnewPasswordChild.getText().toString())){
+                } else if (TextUtils.isEmpty(edtnewPasswordChild.getText().toString())) {
                     ChatApplication.showToast(getActivity(), "Please enter new password");
-                } else if(TextUtils.isEmpty(edtconfirmPasswordChild.getText().toString())){
+                } else if (TextUtils.isEmpty(edtconfirmPasswordChild.getText().toString())) {
                     ChatApplication.showToast(getActivity(), "Please enter confirm password");
-                } else if(strnewpassword.equals(strconfirmpassword)){
+                } else if (!strnewpassword.equals(strconfirmpassword)) {
                     ChatApplication.showToast(getActivity(), "New password and confirm password must be same");
-                } else{
-                    stroldPassword=edtOldPasswordChild.getText().toString();
-                    strnewpassword=edtnewPasswordChild.getText().toString();
-
+                } else {
+                    stroldPassword = edtOldPasswordChild.getText().toString();
+                    strnewpassword = edtnewPasswordChild.getText().toString();
+                    ChangePassword(stroldPassword, strnewpassword);
                 }
             }
         });
@@ -772,7 +820,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                 ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
                 return;
             }
-            showProgressDialog(getActivity(),"Please wait...",false);
+            showProgressDialog(getActivity(), "Please wait...", false);
             SpikeBotApi.getInstance().OTPVerify(otp_view.getOTP(), new DataResponseListener() {
                 @Override
                 public void onData_SuccessfulResponse(String stringResponse) {
@@ -853,7 +901,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                     ChatApplication.showToast(getActivity(), getResources().getString(R.string.disconnect));
                     return;
                 }
-                showProgressDialog(getActivity(),"Please wait...",false);
+                showProgressDialog(getActivity(), "Please wait...", false);
                 SpikeBotApi.getInstance().SetNewPassword(mPassword.getText().toString(), new DataResponseListener() {
                     @Override
                     public void onData_SuccessfulResponse(String stringResponse) {
