@@ -384,7 +384,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
                 //lastAMPM.contains("AM") &&
 
-                if (lastAMPMoff.contains("AM")) {
+                if (lastAMPMoff.equalsIgnoreCase("AM")) {
                     String lastamon="",lastamooff="";
                     if(scheduleVO.getSchedule_type() == 1){
                         lastamon = Common.getConvertDateForScheduleTimer(scheduleVO.getSchedule_device_on_time());
@@ -415,7 +415,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
                     }
 
-                } else if (lastAMPMoff.contains("PM")) {
+                } else if (lastAMPMoff.equalsIgnoreCase("PM")) {
                     String lastamooff="";
                     if(scheduleVO.getSchedule_type() == 1){
                         lastamooff = Common.getConvertDateForScheduleTimer(scheduleVO.getSchedule_device_off_time());
@@ -476,7 +476,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             holder.tv_schedule_name.setText(scheduleVO.getSchedule_name());
             holder.tv_name.setText(scheduleVO.getRoom_name());
 
-            holder.tv_schedule_name.setOnClickListener(new View.OnClickListener() {
+           /* holder.tv_schedule_name.setOnClickListener(new View.OnClickListener() {  // dev arpan comment this due to bug generate from
                 @Override
                 public void onClick(View v) {
                     PopupMenu popup = new PopupMenu(mContext, v);
@@ -490,7 +490,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     popup.show();
 
                 }
-            });
+            });*/
 
             // YELLOW background means AM timeing
             // Grey BAckground means PM timening

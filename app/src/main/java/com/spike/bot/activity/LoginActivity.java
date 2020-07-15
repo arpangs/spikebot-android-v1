@@ -218,7 +218,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                         JSONObject data = result.getJSONObject("data");
                         String cloudIp = data.getString("ip");
-                        String local_ip = data.getString("local_ip");
+//                        String local_ip = data.getString("local_ip");
+                        String local_ip = data.getString("local_ip_address"); // web developer change the key on 10 july 2020 - update by dev arpan
                         ChatApplication.logDisplay("login response is " + data.toString());
 
                         Common.savePrefValue(LoginActivity.this, Constants.PREF_CLOUDLOGIN, "true");

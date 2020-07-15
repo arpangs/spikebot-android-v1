@@ -31,6 +31,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.JsonObject;
 import com.kp.core.ActivityHelper;
 import com.kp.core.DateHelper;
 import com.kp.core.GetJsonTask;
@@ -102,7 +103,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             et_off_time_bottom_header_at, et_off_time_bottom_header_at_time, et_off_time_bottom_header_at_ampm, tv_schedule_list;
     RecyclerView rv_auto_mode, rv_schedule;
     View view_header, view_starttime, view_moodlist;
-   // JSONObject deviceObj = new JSONObject();
+//    JSONObject deviceObj = new JSONObject();
     HashMap<String, Object> deviceObj = new HashMap<>();
     ScheduleVO scheduleVO = new ScheduleVO();
     int position = 0, selection = 0, nextFalse = 0;
@@ -1736,6 +1737,20 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     e.printStackTrace();
                 } finally {
                     ActivityHelper.dismissProgressDialog();
+                }
+
+                if (roomListAdd.size() == 0) {
+                    empty_ll_view.setVisibility(View.VISIBLE);
+                    txt_empty_sch.setText("No Room Found");
+                    rv_schedule.setVisibility(View.GONE);
+                } else {
+                    if (linear_header.getVisibility() == View.VISIBLE) {
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.VISIBLE);
+                    } else {
+                        empty_ll_view.setVisibility(View.GONE);
+                        rv_schedule.setVisibility(View.GONE);
+                    }
                 }
 
 

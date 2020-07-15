@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.spike.bot.ChatApplication;
-import com.spike.bot.model.SendRemoteCommandReq;
 import com.spike.bot.model.User;
 
 import java.lang.reflect.Type;
@@ -131,7 +130,7 @@ public class Constants {
     public static final String cameralistbyjetson = "/camera/list-by-jetson";
     public static final String devicemoduledelete = "/device/module/delete";
     public static final String beaconscannerscan = "/device/beacon-scanner/scan";
-    public static final String GET_BEACON_LOCATION= "/device/beacon/locations";
+    public static final String GET_BEACON_LOCATION = "/device/beacon/locations";
 
     //temp sensor
     public static final String ADD_TEMP_SENSOR_NOTIFICATION = "/alert/add";
@@ -224,6 +223,7 @@ public class Constants {
     public static final String OTP_VERIFY = "/auth/forget-password/verify-otp";
     public static final String RETRY_OTP = "/auth/forget-password/resend-otp";
     public static final String SET_NEW_PASSWORD = "/auth/forget-password/reset-password";
+
 
 
     /*----------------------------------------------------------------------*/

@@ -430,20 +430,20 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
             if (dPanel.getIsSelect()) {
                 JsonObject object = new JsonObject();
-              //  try {
-                    object.addProperty("camera_id", dPanel.getCamera_id());
-                    object.addProperty("camera_name", "" + dPanel.getCamera_name());
-                    object.addProperty("camera_url", "" + dPanel.getCamera_url());
-                    object.addProperty("camera_ip", "" + dPanel.getCamera_ip());
-                    object.addProperty("camera_videopath", "" + dPanel.getCamera_videopath());
-                    object.addProperty("camera_icon", "" + dPanel.getCamera_icon());
-                    object.addProperty("camera_vpn_port", "" + dPanel.getCamera_vpn_port());
-                    object.addProperty("user_name", "" + dPanel.getUser_name());
-                    object.addProperty("password", "" + dPanel.getPassword());
+                //  try {
+                object.addProperty("camera_id", dPanel.getCamera_id());
+                object.addProperty("camera_name", "" + dPanel.getCamera_name());
+                object.addProperty("camera_url", "" + dPanel.getCamera_url());
+                object.addProperty("camera_ip", "" + dPanel.getCamera_ip());
+                object.addProperty("camera_videopath", "" + dPanel.getCamera_videopath());
+                object.addProperty("camera_icon", "" + dPanel.getCamera_icon());
+                object.addProperty("camera_vpn_port", "" + dPanel.getCamera_vpn_port());
+                object.addProperty("user_name", "" + dPanel.getUser_name());
+                object.addProperty("password", "" + dPanel.getPassword());
 
-                    roomDeviceArray.add(object);
+                roomDeviceArray.add(object);
 
-                    array.add(dPanel.getCamera_id());
+                array.add(dPanel.getCamera_id());
                /* } catch (JSONException e) {
                     e.printStackTrace();
                 }*/

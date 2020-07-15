@@ -792,7 +792,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             startActivity(intent);
         } else if (action.equalsIgnoreCase("icnBeacon")) {
             Intent intent = new Intent(activity, BeaconDetailActivity.class);
-            intent.putExtra("room_id",  roomVO.getRoomId());
+            intent.putExtra("room_id", roomVO.getRoomId());
             startActivity(intent);
         }
     }
@@ -2446,6 +2446,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                     dismissProgressDialog();
                     if (result.getInt("code") == 200) {
                         Constants.socketIp = ChatApplication.url;
+                        if (!Constants.socketIp.startsWith("http")) {  // dev arpan add this due to logout time exception issue or 443 add before url
+                            Constants.socketIp = "http://" + Constants.socketIp;
+                        }
                         hideAdapter(true);
                         JSONObject dataObject = result.getJSONObject("data");
                         ((Main2Activity) activity).getUserDialogClick(true);
@@ -3029,6 +3032,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         }
                         ((Main2Activity) activity).tabShow(true);
                         Constants.socketIp = ChatApplication.url;
+                        if (!Constants.socketIp.startsWith("http")) {  // dev arpan add this due to logout time exception issue or 443 add before url
+                            Constants.socketIp = "http://" + Constants.socketIp;
+                        }
                         hideAdapter(true);
                         mMessagesView.setVisibility(View.VISIBLE);
                         txt_empty_schedule.setVisibility(View.GONE);
@@ -3071,10 +3077,10 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                          */
                         Gson gson = new Gson();
                         if (!TextUtils.isEmpty(userPassword)) {
-                            String jsonTextTemp1="";
+                            String jsonTextTemp1 = "";
                             try {
-                                 jsonTextTemp1 = Common.getPrefValue(getContext(), Common.USER_JSON);
-                            }catch (Exception e){
+                                jsonTextTemp1 = Common.getPrefValue(getContext(), Common.USER_JSON);
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
 
@@ -3109,7 +3115,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         }
 
                         Common.savePrefValue(ChatApplication.getInstance(), Common.camera_key, camera_key);
-                        Common.savePrefValue(getContext(), Constants.USER_PASSWORD, userPassword);
+                        Common.savePrefValue(ChatApplication.getInstance(), Constants.USER_PASSWORD, userPassword);
 
 
                         /**
@@ -3220,7 +3226,11 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                     showDialog = 0;
                     if (roomList != null && roomList.size() > 0) {  // dev arpan add  roomList.size() > 0 condition on 26 june 2020 due to exception
                         if (roomList.get(roomList.size() - 1).getPanelList() != null)  // dev arpan add this condition on 26 june 2020 due to exception
-                            CameraDeviceLogActivity.getCameraList = roomList.get(roomList.size() - 1).getPanelList().get(0).getCameraList();
+                            if (roomList.get(roomList.size() - 1).getPanelList() != null && roomList.get(roomList.size() - 1).getPanelList().size() > 0) {
+                                CameraDeviceLogActivity.getCameraList = roomList.get(roomList.size() - 1).getPanelList().get(0).getCameraList();
+                            } else {
+                                ChatApplication.logDisplay("Room or panel list not found");
+                            }
                     }
                     mMessagesView.setClickable(true);
                     swipeRefreshLayout.setRefreshing(false);

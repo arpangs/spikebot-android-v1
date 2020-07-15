@@ -437,6 +437,9 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             }
         }).execute();*/
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().SaveProfile(et_profile_first_name.getText().toString(), et_profile_last_name.getText().toString(),
                 et_profile_user_name.getText().toString(), et_profile_contact_no.getText().toString(), et_profile_email.getText().toString(),
                 stroldPassword, new DataResponseListener() {

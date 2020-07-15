@@ -33,21 +33,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
-import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.CameraVO;
 import com.spike.bot.model.UnassignedListRes;
 import com.spike.bot.model.User;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -265,7 +262,7 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
         inputnewPassword.setVisibility(View.GONE);
         inputconfirmPassword.setVisibility(View.GONE);
 
-        inputPassword.setHint("Enter Password");
+//        inputPassword.setHint("Enter Password");
         edtPasswordChild.setHint("Enter Password");
 
         TextView tv_title = dialog.findViewById(R.id.tv_title);
@@ -448,7 +445,7 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
 
-        SpikeBotApi.getInstance().getroomcameralist("room",new DataResponseListener() {
+        SpikeBotApi.getInstance().getroomcameralist("room", new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
@@ -601,16 +598,15 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
 
 
-      //  JsonArray jsonArray3 = new JsonArray(roomListString);
-       // JsonArray jsonArray4 = new JsonArray(cameraList);
+        //  JsonArray jsonArray3 = new JsonArray(roomListString);
+        // JsonArray jsonArray4 = new JsonArray(cameraList);
 
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
 
-
         SpikeBotApi.getInstance().AddUserChild(modeType, user.getUser_id(), roomListString, cameraList,
-                edtUsername.getText().toString(), edDisplayName.getText().toString(), strPassword,new DataResponseListener() {
+                edtUsername.getText().toString(), edDisplayName.getText().toString(), strPassword, new DataResponseListener() {
                     @Override
                     public void onData_SuccessfulResponse(String stringResponse) {
 

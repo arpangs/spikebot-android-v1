@@ -388,6 +388,8 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
             }
         }).execute();*/
 
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
         SpikeBotApi.getInstance().GetMoodNameList(new DataResponseListener() {
             @Override
@@ -407,7 +409,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                         RoomVO roomVO2 = new RoomVO();
                         roomVO2.setRoomId(moodVO.getMood_name_id());
                         roomVO2.setRoomName(moodVO.getRoomName());
-                        moodIconList.add( roomVO2);
+                        moodIconList.add(roomVO2);
                     }
 
                     for (int i = 0; i < moodNamesArray.length(); i++) {
@@ -561,9 +563,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
             for (DeviceVO dPanel : deviceVOArrayList) {
                 deviceIdList.add(dPanel.getPanel_device_id());
             }
-
-            JSONArray array = new JSONArray(deviceIdList);
-            moodObj.put("panel_device_ids", array);
+            moodObj.put("panel_device_ids", deviceIdList);
 //
 
        /* ChatApplication.logDisplay("modd add code is " + url + "  " + moodObj);
@@ -587,6 +587,8 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
             }
         }).execute();*/
 
+            if (ChatApplication.url.contains("http://"))
+                ChatApplication.url = ChatApplication.url.replace("http://", "");
 
             SpikeBotApi.getInstance().SaveMood(editMode, moodObj, new DataResponseListener() {
                 @Override

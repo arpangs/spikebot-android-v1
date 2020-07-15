@@ -82,7 +82,6 @@ public interface ApiInterface {
     Call<JsonElement> getroomcameralist(@Path("localip") String localip);
 
 
-
     /*
      *
      * Post apis
@@ -93,23 +92,23 @@ public interface ApiInterface {
     Call<JsonElement> postLoginWebserviceCall(@Body HashMap<String, Object> body);
 
     @POST("https://live.spikebot.io:8443" + Constants.GET_CAMERA_NOTIFICATION_COUNTER)
-    // updated on july 07 2020
+        // updated on july 07 2020
     Call<JsonElement> postGetCameraBadgeCount(@Body HashMap<String, Object> body);
 
     @POST("https://live.spikebot.io:8443" + Constants.APP_LOGOUT)
-    // updated on july 07 2020
+        // updated on july 07 2020
     Call<JsonElement> LogoutCloudUser(@Body HashMap<String, Object> body);
 
     @POST("https://live.spikebot.io:8443" + Constants.reportFalseImage)
-    // updated on july 07 2020
+        // updated on july 07 2020
     Call<JsonElement> reportFalseImage(@Body HashMap<String, Object> body);
 
     @POST("https://live.spikebot.io:8443" + Constants.getUnseenCameraLog)
-    // updated on july 07 2020
+        // updated on july 07 2020
     Call<JsonElement> getUnseenCameraLog(@Body HashMap<String, Object> body);
 
     @POST("https://live.spikebot.io:8443" + Constants.getCameraLogs)
-    // updated on july 07 2020
+        // updated on july 07 2020
     Call<JsonElement> getCameraLogs(@Body HashMap<String, Object> body);
 
 
@@ -450,5 +449,15 @@ public interface ApiInterface {
 
     @POST("http://{url}" + Constants.GET_BEACON_LOCATION)
     Call<JsonElement> GET_BEACON_LOCATION(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.moodsmartremote)
+    Call<JsonElement> CallSmartRemote(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.SAVE_EDIT_SWITCH)
+    Call<JsonElement> SaveSmartRemote(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.DELETE_MODULE)
+    Call<JsonElement> DeleteRemote(@Path("url") String url, @Body Object body);
+
 
 }

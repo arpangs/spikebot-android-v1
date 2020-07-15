@@ -22,8 +22,6 @@ import com.spike.bot.model.ScheduleVO;
 import com.spike.bot.model.UnassignedListRes;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -546,25 +544,7 @@ public class SpikeBotApi {
         }
 
 
-
         new GeneralRetrofit(apiService.SaveProfile(ChatApplication.url, params), params, dataResponseListener).call();
-
-    }
-
-    /*UserProfileFragment*/  //  akhil add on 8th july 2020
-    public void ChangePassword(String old_password,String newpassword, DataResponseListener dataResponseListener) {
-
-
-        HashMap<String, Object> params = new HashMap<>();
-
-        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
-        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        params.put("password", newpassword);
-        params.put("old_password", old_password);
-
-        new GeneralRetrofit(apiService.ChangePassword(ChatApplication.url, params), params, dataResponseListener).call();
 
     }
 
@@ -1237,154 +1217,153 @@ public class SpikeBotApi {
 
         HashMap<String, Object> params = new HashMap<>();
 
-            if (isFilterActive) {
-                params.put("notification_number", position);
-                params.put("room_id", "" + mRoomId);
-                params.put("start_datetime", start_date);
-                params.put("end_datetime", end_date);
+        if (isFilterActive) {
+            params.put("notification_number", position);
+            params.put("room_id", "" + mRoomId);
+            params.put("start_datetime", start_date);
+            params.put("end_datetime", end_date);
 
 
-                RoomVO roomVO = (RoomVO) mSpinnerRoomList.getSelectedItem();
-                JsonArray array = new JsonArray();
-                if (mSpinnerRoomMood.getSelectedItem().toString().equals("All")) {
-                    if (isFilterType) {
-                        params.put("sensor_type", "all");
+            RoomVO roomVO = (RoomVO) mSpinnerRoomList.getSelectedItem();
+            JsonArray array = new JsonArray();
+            if (mSpinnerRoomMood.getSelectedItem().toString().equals("All")) {
+                if (isFilterType) {
+                    params.put("sensor_type", "all");
 
-                        String actionname = "";
-                        ArrayList<String> stringArrayList = new ArrayList<>();
-                        if (filterArrayList.size() > 0) {
-                            for (int i = 0; i < filterArrayList.size(); i++) {
-                                if (filterArrayList.get(i).isChecked()) {
-                                    stringArrayList.add(filterArrayList.get(i).getName());
-                                }
-                            }
-
-                            for (int i = 0; i < stringArrayList.size(); i++) {
-                                if (i == stringArrayList.size() - 1) {
-                                    actionname = actionname + "'" + stringArrayList.get(i) + "'";
-                                } else {
-                                    actionname = actionname + "'" + stringArrayList.get(i) + "',";
-                                }
-                            }
-                            JsonObject subObject = new JsonObject();
-                            subObject.addProperty("activity_action", actionname);
-                            subObject.addProperty("activity_type", "All");
-                            array.add(subObject);
-                            params.put("filter_data", array);
-                        }
-
-                    } else {
-                        String actionname = "";
-                        ArrayList<String> stringArrayList = new ArrayList<>();
-                        if (filterArrayList.size() > 0) {
-                            for (int i = 0; i < filterArrayList.size(); i++) {
-                                if (filterArrayList.get(i).isChecked()) {
-                                    stringArrayList.add(filterArrayList.get(i).getName());
-                                }
-                            }
-
-                            for (int i = 0; i < stringArrayList.size(); i++) {
-                                if (i == stringArrayList.size() - 1) {
-                                    actionname = actionname + "'" + stringArrayList.get(i) + "'";
-                                } else {
-                                    actionname = actionname + "'" + stringArrayList.get(i) + "',";
-                                }
-                            }
-                            JsonObject subObject = new JsonObject();
-                            subObject.addProperty("activity_action", actionname);
-
-                            subObject.addProperty("activity_type", "All");
-                            array.add(subObject);
-                            params.put("filter_data", array);
-                        }
-                    }
-
-                } else {
-
-                    if (isFilterType) {
-
-                        if (actionType.equalsIgnoreCase("Door Sensor")) {
-                            params.put("sensor_type", "door");
-                        } else {
-                            params.put("sensor_type", "temp");
-                        }
-
-                        params.put("room_id", "");
-                        params.put("panel_id", "");
-                        if (roomVO != null) {
-                            params.put("module_id", "" + (roomVO.getRoomId().equalsIgnoreCase("0") ? "" : roomVO.getRoomId()));
-                        } else {
-                            params.put("module_id", "");
-                        }
-
-                    } else {
-                        if (roomVO != null) {
-                            params.put("room_id", "" + (roomVO.getRoomId().equalsIgnoreCase("0") ? "" : roomVO.getRoomId()));
-                        } else if (isCheckActivity.equals("room")) {
-                            params.put("room_id", "" + mRoomId);
-                        } else {
-                            params.put("room_id", "");
-                        }
-
-                        if (actionType.equals("Room")) {
-                            params.put("module_id", "" + strDeviceId);
-                            params.put("panel_id", "" + strpanelId);
-                        } else {
-                            params.put("panel_id", "");
-                            params.put("module_id", "");
-                        }
-                    }
                     String actionname = "";
                     ArrayList<String> stringArrayList = new ArrayList<>();
-                    for (int i = 0; i < filterArrayList.size(); i++) {
-
-                        if (filterArrayList.get(i).isChecked()) {
-                            stringArrayList.add(filterArrayList.get(i).getName());
+                    if (filterArrayList.size() > 0) {
+                        for (int i = 0; i < filterArrayList.size(); i++) {
+                            if (filterArrayList.get(i).isChecked()) {
+                                stringArrayList.add(filterArrayList.get(i).getName());
+                            }
                         }
+
+                        for (int i = 0; i < stringArrayList.size(); i++) {
+                            if (i == stringArrayList.size() - 1) {
+                                actionname = actionname + "'" + stringArrayList.get(i) + "'";
+                            } else {
+                                actionname = actionname + "'" + stringArrayList.get(i) + "',";
+                            }
+                        }
+                        JsonObject subObject = new JsonObject();
+                        subObject.addProperty("activity_action", actionname);
+                        subObject.addProperty("activity_type", "All");
+                        array.add(subObject);
+                        params.put("filter_data", array);
                     }
 
-                    for (int i = 0; i < stringArrayList.size(); i++) {
-                        if (i == stringArrayList.size() - 1) {
-                            actionname = actionname + "'" + stringArrayList.get(i) + "'";
-                        } else {
-                            actionname = actionname + "'" + stringArrayList.get(i) + "',";
+                } else {
+                    String actionname = "";
+                    ArrayList<String> stringArrayList = new ArrayList<>();
+                    if (filterArrayList.size() > 0) {
+                        for (int i = 0; i < filterArrayList.size(); i++) {
+                            if (filterArrayList.get(i).isChecked()) {
+                                stringArrayList.add(filterArrayList.get(i).getName());
+                            }
                         }
-                    }
-                    JsonObject subObject = new JsonObject();
-                    subObject.addProperty("activity_action", actionname);
-                    subObject.addProperty("activity_type", "" + actionType);
 
-                    array.add(subObject);
-                    params.put("filter_data", array);
+                        for (int i = 0; i < stringArrayList.size(); i++) {
+                            if (i == stringArrayList.size() - 1) {
+                                actionname = actionname + "'" + stringArrayList.get(i) + "'";
+                            } else {
+                                actionname = actionname + "'" + stringArrayList.get(i) + "',";
+                            }
+                        }
+                        JsonObject subObject = new JsonObject();
+                        subObject.addProperty("activity_action", actionname);
+
+                        subObject.addProperty("activity_type", "All");
+                        array.add(subObject);
+                        params.put("filter_data", array);
+                    }
                 }
-
 
             } else {
-                params.put("notification_number", position);
-                params.put("start_datetime", "");
-                params.put("end_datetime", "");
-                params.put("filter_data", "");
-                if (TextUtils.isEmpty(mRoomId)) {
+
+                if (isFilterType) {
+
+                    if (actionType.equalsIgnoreCase("Door Sensor")) {
+                        params.put("sensor_type", "door");
+                    } else {
+                        params.put("sensor_type", "temp");
+                    }
+
                     params.put("room_id", "");
+                    params.put("panel_id", "");
+                    if (roomVO != null) {
+                        params.put("module_id", "" + (roomVO.getRoomId().equalsIgnoreCase("0") ? "" : roomVO.getRoomId()));
+                    } else {
+                        params.put("module_id", "");
+                    }
+
                 } else {
-                    params.put("room_id", "" + mRoomId);
+                    if (roomVO != null) {
+                        params.put("room_id", "" + (roomVO.getRoomId().equalsIgnoreCase("0") ? "" : roomVO.getRoomId()));
+                    } else if (isCheckActivity.equals("room")) {
+                        params.put("room_id", "" + mRoomId);
+                    } else {
+                        params.put("room_id", "");
+                    }
+
+                    if (actionType.equals("Room")) {
+                        params.put("module_id", "" + strDeviceId);
+                        params.put("panel_id", "" + strpanelId);
+                    } else {
+                        params.put("panel_id", "");
+                        params.put("module_id", "");
+                    }
+                }
+                String actionname = "";
+                ArrayList<String> stringArrayList = new ArrayList<>();
+                for (int i = 0; i < filterArrayList.size(); i++) {
+
+                    if (filterArrayList.get(i).isChecked()) {
+                        stringArrayList.add(filterArrayList.get(i).getName());
+                    }
                 }
 
-                params.put("panel_id", "");
-                if (isCheckActivity.equals("mode")) {
-                    params.put("filter_type", "mood");
-                } else if (isCheckActivity.equalsIgnoreCase("mood")) {
-                    params.put("filter_type", "room");
-                } else if (isCheckActivity.equalsIgnoreCase("schedule")) {
-                    params.put("filter_type", "schedule");
-                } else {
-                    params.put("filter_type", "");
+                for (int i = 0; i < stringArrayList.size(); i++) {
+                    if (i == stringArrayList.size() - 1) {
+                        actionname = actionname + "'" + stringArrayList.get(i) + "'";
+                    } else {
+                        actionname = actionname + "'" + stringArrayList.get(i) + "',";
+                    }
                 }
+                JsonObject subObject = new JsonObject();
+                subObject.addProperty("activity_action", actionname);
+                subObject.addProperty("activity_type", "" + actionType);
+
+                array.add(subObject);
+                params.put("filter_data", array);
             }
-            params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
-            params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
+
+        } else {
+            params.put("notification_number", position);
+            params.put("start_datetime", "");
+            params.put("end_datetime", "");
+            params.put("filter_data", "");
+            if (TextUtils.isEmpty(mRoomId)) {
+                params.put("room_id", "");
+            } else {
+                params.put("room_id", "" + mRoomId);
+            }
+
+            params.put("panel_id", "");
+            if (isCheckActivity.equals("mode")) {
+                params.put("filter_type", "mood");
+            } else if (isCheckActivity.equalsIgnoreCase("mood")) {
+                params.put("filter_type", "room");
+            } else if (isCheckActivity.equalsIgnoreCase("schedule")) {
+                params.put("filter_type", "schedule");
+            } else {
+                params.put("filter_type", "");
+            }
+        }
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
 
         new GeneralRetrofit(apiService.GetDeviceLog(ChatApplication.url, params), params, dataResponseListener).call();
@@ -1473,12 +1452,12 @@ public class SpikeBotApi {
     public void updateDevice(String device_id, String device_name, DataResponseListener dataResponseListener) {
         HashMap<String, Object> params = new HashMap<>();
 
-            params.put("device_id", device_id);
-            params.put("device_name", device_name);
+        params.put("device_id", device_id);
+        params.put("device_name", device_name);
 
-            params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
 
         new GeneralRetrofit(apiService.SAVE_EDIT_SWITCH(ChatApplication.url, params), params, dataResponseListener).call();
     }
@@ -1785,17 +1764,17 @@ public class SpikeBotApi {
 
             if (dPanel.getIsSelect()) {
                 JsonObject object = new JsonObject();
-                    object.addProperty("camera_id", dPanel.getCamera_id());
-                    object.addProperty("camera_name", "" + dPanel.getCamera_name());
-                    object.addProperty("camera_url", "" + dPanel.getCamera_url());
-                    object.addProperty("camera_ip", "" + dPanel.getCamera_ip());
-                    object.addProperty("camera_videopath", "" + dPanel.getCamera_videopath());
-                    object.addProperty("camera_icon", "" + dPanel.getCamera_icon());
-                    object.addProperty("camera_vpn_port", "" + dPanel.getCamera_vpn_port());
-                    object.addProperty("user_name", "" + dPanel.getUserName());
-                    object.addProperty("password", "" + dPanel.getPassword());
+                object.addProperty("camera_id", dPanel.getCamera_id());
+                object.addProperty("camera_name", "" + dPanel.getCamera_name());
+                object.addProperty("camera_url", "" + dPanel.getCamera_url());
+                object.addProperty("camera_ip", "" + dPanel.getCamera_ip());
+                object.addProperty("camera_videopath", "" + dPanel.getCamera_videopath());
+                object.addProperty("camera_icon", "" + dPanel.getCamera_icon());
+                object.addProperty("camera_vpn_port", "" + dPanel.getCamera_vpn_port());
+                object.addProperty("user_name", "" + dPanel.getUserName());
+                object.addProperty("password", "" + dPanel.getPassword());
 
-                    roomDeviceArray.add(object);
+                roomDeviceArray.add(object);
 
             }
         }
@@ -1812,7 +1791,9 @@ public class SpikeBotApi {
     public void callUpdateCamera(String start_time, String end_time, CameraAlertList cameraAlertList, String jetson_id, int edIntervalTime,
                                  ArrayList<CameraVO> getCameraList, JsonArray array, JsonArray roomDeviceArray, DataResponseListener dataResponseListener) {
 
+
         String onTime = "", offTime = "";
+
 
         try {
             onTime = DateHelper.formateDate(DateHelper.parseTimeSimple(start_time, DateHelper.DATE_FROMATE_H_M_AMPM), DateHelper.DATE_FROMATE_HH_MM);
@@ -1821,9 +1802,7 @@ public class SpikeBotApi {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
         HashMap<String, Object> params = new HashMap<>();
-
         params.put("start_time", onTime);
         params.put("end_time", offTime);
         params.put("alert_interval", edIntervalTime);
@@ -1840,6 +1819,7 @@ public class SpikeBotApi {
         new GeneralRetrofit(apiService.updateCameraNotification(ChatApplication.url, params), params, dataResponseListener).call();
 
     }
+
 
     // CameraNotification - getconfigureData
     public void getconfigureData(boolean jetsoncameranotification, String jetson_id, DataResponseListener dataResponseListener) {
@@ -1936,18 +1916,18 @@ public class SpikeBotApi {
         params.put("camera_start_date", start_date);
         params.put("camera_end_date", end_date);
 
-            JsonArray jsonArray = new JsonArray();
-            for (CameraVO cameraVO : cameraVOArrayList) {
-                for (String ss : selectedCamera) {
-                    if (cameraVO.getCamera_name().equalsIgnoreCase(ss)) {
-                        JsonObject ob = new JsonObject();
-                        ob.addProperty("camera_id", cameraVO.getCamera_id());
-                        ob.addProperty("camera_name", cameraVO.getCamera_name());
-                        jsonArray.add(ob);
-                    }
+        JsonArray jsonArray = new JsonArray();
+        for (CameraVO cameraVO : cameraVOArrayList) {
+            for (String ss : selectedCamera) {
+                if (cameraVO.getCamera_name().equalsIgnoreCase(ss)) {
+                    JsonObject ob = new JsonObject();
+                    ob.addProperty("camera_id", cameraVO.getCamera_id());
+                    ob.addProperty("camera_name", cameraVO.getCamera_name());
+                    jsonArray.add(ob);
                 }
             }
-            params.put("camera_details", jsonArray);
+        }
+        params.put("camera_details", jsonArray);
 
         new GeneralRetrofit(apiService.GET_CAMERA_RECORDING_BY_DATE(ChatApplication.url, params), params, dataResponseListener).call();
     }
@@ -2100,12 +2080,12 @@ public class SpikeBotApi {
 
     //IRRemoteBrandList - getIRDetailsList
     public void getIRDetailsList(DataResponseListener dataResponseListener) {
-        new GeneralRetrofit(apiService.getIRDeviceTypeBrands(ChatApplication.url,  "1"), null, dataResponseListener).call();
+        new GeneralRetrofit(apiService.getIRDeviceTypeBrands(ChatApplication.url, "1"), null, dataResponseListener).call();
     }
 
     //IRRemoteBrandList - getIRRemoteDetails
     public void getIRRemoteDetails(int device_brand_id, DataResponseListener dataResponseListener) {
-        new GeneralRetrofit(apiService.getDeviceBrandRemoteList(ChatApplication.url,  device_brand_id), null, dataResponseListener).call();
+        new GeneralRetrofit(apiService.getDeviceBrandRemoteList(ChatApplication.url, device_brand_id), null, dataResponseListener).call();
     }
 
     //IRRemoteConfig - sendOnOfOffRequest
@@ -2194,7 +2174,7 @@ public class SpikeBotApi {
     }
 
     //DoorSensorInfo - add Notification
-    public void addNotification(HashMap<String, Object> params,boolean isEdit, DataResponseListener dataResponseListener) {
+    public void addNotification(HashMap<String, Object> params, boolean isEdit, DataResponseListener dataResponseListener) {
 
         if (isEdit) {
             new GeneralRetrofit(apiService.UPDATE_TEMP_SENSOR_NOTIFICATION(ChatApplication.url, params), params, dataResponseListener).call();
@@ -2633,7 +2613,7 @@ public class SpikeBotApi {
     }
 
     // Beaconconfig - saveBeacon
-    public void saveBeacon(String device_name, String device_id, String module_id,   ArrayList<String> deviceIdList, boolean editBeacon, DataResponseListener dataResponseListener) {
+    public void saveBeacon(String device_name, String device_id, String module_id, ArrayList<String> deviceIdList, boolean editBeacon, DataResponseListener dataResponseListener) {
 
         HashMap<String, Object> params = new HashMap<>();
         params.put("device_name", device_name);
@@ -2696,7 +2676,7 @@ public class SpikeBotApi {
     }
 
     //BeaconScannerAdd - update Beacon Scanner
-    public void updateBeaconScanner(String device_id, String device_name,String on_time,String off_time,String rangevalue, DataResponseListener dataResponseListener){
+    public void updateBeaconScanner(String device_id, String device_name, String on_time, String off_time, String rangevalue, DataResponseListener dataResponseListener) {
         HashMap<String, Object> params = new HashMap<>();
 
         params.put("device_id", device_id);
@@ -2764,7 +2744,7 @@ public class SpikeBotApi {
         HashMap<String, Object> params = new HashMap<>();
 
         params.put("otp", OTP);
-        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.FORGETPASSWORD_MOBILENUMBER));
+        params.put("user_phone", Common.getPrefValue(ChatApplication.getContext(), Constants.FORGETPASSWORD_MOBILENUMBER));
 
         new GeneralRetrofit(apiService.verifyOTP(params), params, dataResponseListener).call();
 
@@ -2779,8 +2759,74 @@ public class SpikeBotApi {
         params.put("user_password", password);
         params.put("user_phone", Common.getPrefValue(ChatApplication.getContext(), Constants.FORGETPASSWORD_MOBILENUMBER));
         params.put("otp", Common.getPrefValue(ChatApplication.getContext(), Constants.CURRENT_OPT));
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+        params.put("fcm_token", Common.getPrefValue(ChatApplication.getContext(), Constants.DEVICE_PUSH_TOKEN));
 
         new GeneralRetrofit(apiService.SetNewPassword(params), params, dataResponseListener).call();
 
+    }
+
+    /*UserProfileFragment*/  //  akhil add on 8th july 2020
+    public void ChangePassword(String old_password, String newpassword, DataResponseListener dataResponseListener) {
+
+
+        HashMap<String, Object> params = new HashMap<>();
+
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        params.put("password", newpassword);
+        params.put("old_password", old_password);
+
+        new GeneralRetrofit(apiService.ChangePassword(ChatApplication.url, params), params, dataResponseListener).call();
+
+    }
+
+    /*Mood fragment - smart remote digits*/
+
+    public void CallSmartRemote(String module_id, String Smart_remote_number, DataResponseListener dataResponseListener) {
+
+        HashMap<String, Object> params = new HashMap<>();
+
+        params.put("mood_id", module_id);
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+        params.put("smart_remote_no", "" + Smart_remote_number);
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+
+        new GeneralRetrofit(apiService.CallSmartRemote(ChatApplication.url, params), params, dataResponseListener).call();
+    }
+
+    /*Smart remote save*/
+
+    public void SaveSmartRemote(String device_id, String device_name, DataResponseListener dataResponseListener) {
+
+        HashMap<String, Object> params = new HashMap<>();
+
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+        params.put("device_id", device_id);
+        params.put("device_name", device_name);
+
+
+        new GeneralRetrofit(apiService.SaveSmartRemote(ChatApplication.url, params), params, dataResponseListener).call();
+    }
+
+    /* Delete Smart remote*/
+
+    public void DeleteRemote(String module_id, DataResponseListener dataResponseListener) {
+
+        HashMap<String, Object> params = new HashMap<>();
+
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+        params.put("device_id", module_id);
+
+        new GeneralRetrofit(apiService.DeleteRemote(ChatApplication.url, params), params, dataResponseListener).call();
     }
 }

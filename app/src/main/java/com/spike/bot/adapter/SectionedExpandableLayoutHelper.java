@@ -693,7 +693,7 @@ public class SectionedExpandableLayoutHelper implements SectionStateChangeListen
 
 
         if (!mRecyclerView.isComputingLayout()) {
-//            section.isExpanded = isOpen;
+
             section.setExpanded(isOpen);
 
             for (Map.Entry<RoomVO, ArrayList<PanelVO>> entry : mSectionDataMap.entrySet()) {

@@ -2,8 +2,6 @@ package com.spike.bot;
 
 import android.app.Activity;
 import android.app.Application;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -19,9 +17,6 @@ import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.DateHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
-import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.core.TypefaceUtil;
@@ -32,8 +27,6 @@ import com.spike.bot.receiver.ConnectivityReceiver;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
@@ -107,7 +100,6 @@ public class ChatApplication extends Application {
     private static ChatApplication instance;
 
 
-
     /*{
         try {
             mSocket = IO.socket(Constants.CHAT_SERVER_URL);
@@ -125,11 +117,21 @@ public class ChatApplication extends Application {
             ChatApplication.logDisplay("chat onDisconnect call");
             if (Constants.socketIp.length() > 0) {
                 ChatApplication.logDisplay("chat onDisconnect callll " + url);
-                openSocket(url);
+
+                if (!url.startsWith("http")) {  // dev arpan add this due to logout time exception issue or 443 add before url
+                    openSocket("http://" + url);
+                } else {
+                    openSocket(url);
+                }
             }
+
             if (Constants.socketIp.length() > 0) {
                 ChatApplication.logDisplay("chat onDisconnect callll " + url);
-                openCloudSocket(CloudUrl);
+                if (!url.startsWith("http")) {  // dev arpan add this due to logout time exception issue or 443 add before url
+                    openCloudSocket("http://" + url);
+                } else {
+                    openCloudSocket(CloudUrl);
+                }
             }
 
         }
@@ -207,33 +209,33 @@ public class ChatApplication extends Application {
 
     }
 
-    public static String getCurrentDateFormat(){
+    public static String getCurrentDateFormat() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateandTime = sdf.format(new Date());
 //yyyy-MM-dd HH:mm:ss
-        return currentDateandTime+" 00:01:00";
+        return currentDateandTime + " 00:01:00";
 
     }
 
 
-    public static String getCurrentDateOnly(boolean isflag,String onTime ,String offTime){
+    public static String getCurrentDateOnly(boolean isflag, String onTime, String offTime) {
 
-        String currentDateandTime="";
+        String currentDateandTime = "";
         Calendar calendar = Calendar.getInstance();
 
-        if(isflag){
+        if (isflag) {
 //            calendar.add(Calendar.DAY_OF_YEAR, 1);
             SimpleDateFormat sdfCurrent = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
             Date currentDate = calendar.getTime();
 
-            String currentStr= sdfCurrent.format(currentDate);
+            String currentStr = sdfCurrent.format(currentDate);
 
-            if(offTime.length()>1){
-                currentStr=currentStr+" "+offTime;
-            }else {
-                currentStr=currentStr+" "+onTime;
+            if (offTime.length() > 1) {
+                currentStr = currentStr + " " + offTime;
+            } else {
+                currentStr = currentStr + " " + onTime;
             }
 
             try {
@@ -242,14 +244,14 @@ public class ChatApplication extends Application {
                 Date date1 = sdf.parse(currentStr);
 
                 String str1 = sdf.format(new Date());
-                Date date2=sdf.parse(str1);
+                Date date2 = sdf.parse(str1);
 
 //                Date date2 = sdf.parse(calendar.getTime().toString());
 
 //                if (new Date().after(date2)) {
                 if (date1.after(date2)) {
                     currentDateandTime = sdfFormat.format(date1);
-                } else{
+                } else {
                     Calendar calendar1 = Calendar.getInstance();
                     calendar1.add(Calendar.DAY_OF_YEAR, 1);
                     Date tomorrow = calendar1.getTime();
@@ -262,11 +264,10 @@ public class ChatApplication extends Application {
             }
 
 
-
 //            Date tomorrow = calendar.getTime();
 //            SimpleDateFormat sdf = new SimpleDateFormat("dd EEEE, MMM ");
 //            currentDateandTime= sdf.format(tomorrow);
-        }else {
+        } else {
             Date tomorrow = calendar.getTime();
             SimpleDateFormat sdf = new SimpleDateFormat("EEE dd, MMM ");
             currentDateandTime = sdf.format(tomorrow);
@@ -277,18 +278,18 @@ public class ChatApplication extends Application {
 
     }
 
-    public static void showToast(Context context,String message){
-        Toast.makeText(context,""+message,Toast.LENGTH_LONG).show();
+    public static void showToast(Context context, String message) {
+        Toast.makeText(context, "" + message, Toast.LENGTH_LONG).show();
     }
 
-    public static void logDisplay(String message){
+    public static void logDisplay(String message) {
         if (BuildConfig.DEBUG) {
 //            createFileLog(message);
-             Log.d("System out",""+message);
+            Log.d("System out", "" + message);
         }
     }
 
-    public static String getUuid(){
+    public static String getUuid() {
         String uniqueID = UUID.randomUUID().toString();
         return uniqueID;
     }
@@ -297,7 +298,7 @@ public class ChatApplication extends Application {
     public static List<User> getUserList(Context context) {
         List<User> userList = new ArrayList<>();
         String jsonText = Common.getPrefValue(context, Common.USER_JSON);
-        if (!TextUtils.isEmpty(jsonText) && jsonText.length()>2) {
+        if (!TextUtils.isEmpty(jsonText) && jsonText.length() > 2) {
             Gson gson = new Gson();
             Type type = new TypeToken<List<User>>() {
             }.getType();
@@ -305,12 +306,13 @@ public class ChatApplication extends Application {
         }
         return userList;
     }
-    public static void keyBoardHideForce(Context activity){
+
+    public static void keyBoardHideForce(Context activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        if (imm.isActive()){
+        if (imm.isActive()) {
             imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0); // hide
         } else {
-           // imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY); // show
+            // imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY); // show
         }
     }
 
@@ -336,15 +338,16 @@ public class ChatApplication extends Application {
         this.url = url;
         try {
 
-            String urltoken = this.url + "?" + "token=" + Common.getPrefValue(this, Constants.USER_ID);
+            String newURL = url;
+            if (url.startsWith("4")) {
+                newURL = url.substring(3, url.length());      // dev arpan add due to add 443 before the string
+            }
+
+            String urltoken = newURL + "?" + "token=" + Common.getPrefValue(this, Constants.USER_ID);
             IO.Options opts = new IO.Options();
             opts.reconnection = true;
 //            opts.reconnectionDelay=200;
 
-            String newURL = urltoken;
-            if (urltoken.startsWith("4")) {
-                newURL = urltoken.substring(3, urltoken.length());      // dev arpan add due to add 443 before the string
-            }
 
 //            mSocket = IO.socket(newURL, opts);
             mSocket = IO.socket(newURL, opts);

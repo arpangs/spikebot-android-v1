@@ -100,30 +100,6 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
             }
         });
 
-
-     /*   switchtemp.setOnTouchListener(new OnSwipeTouchListener(this) {
-            @Override
-            public void onClick() {
-                super.onClick();
-                isAlertOn = true;
-                switchtemp.setChecked(switchtemp.isChecked());
-             //   onNotificationContextMenu.onSwitchChanged(notificationList.get(holder.imgOptions.getId()), holder.switchCompat, holder.switchCompat.getId(), !holder.switchCompat.isChecked());
-            }
-
-            @Override
-            public void onSwipeLeft() {
-                super.onSwipeLeft();
-                switchtemp.setChecked(switchtemp.isChecked());
-                           }
-
-            @Override
-            public void onSwipeRight() {
-                super.onSwipeRight();
-                switchtemp.setChecked(switchtemp.isChecked());
-            }
-
-        });
-*/
         imgEdit.setOnClickListener(this);
         btnDelete.setOnClickListener(this);
 

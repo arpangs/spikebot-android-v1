@@ -26,6 +26,8 @@ import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.api_retrofit.DataResponseListener;
+import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
@@ -461,7 +463,10 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
         }
         ActivityHelper.showProgressDialog(mContext, "Please wait...", false);
 
-        JSONObject obj = new JSONObject();
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+       /* JSONObject obj = new JSONObject();
         try {
 
             obj.put("mood_id", module_id);
@@ -475,8 +480,8 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
         }
 
         String url = ChatApplication.url + Constants.moodsmartremote;
-        ChatApplication.logDisplay("remote is " + url + " " + obj);
-        new GetJsonTask(mContext, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        ChatApplication.logDisplay("remote is " + url + " " + obj);*/
+       /* new GetJsonTask(mContext, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 try {
@@ -508,7 +513,48 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
             public void onFailure(Throwable throwable, String error) {
                 ActivityHelper.dismissProgressDialog();
             }
-        }).execute();
+        }).execute();*/
+
+        SpikeBotApi.getInstance().CallSmartRemote(module_id,value, new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try {
+
+                    JSONObject result = new JSONObject(stringResponse);
+
+                    //{"code":200,"message":"success"}
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+
+                    if (code == 200) {
+                        section.setSmart_remote_number(value);
+                        if (!TextUtils.isEmpty(message)) {
+                            ChatApplication.showToast(mContext, message);
+                        }
+                        notifyDataSetChanged();
+
+                        ActivityHelper.dismissProgressDialog();
+                    } else {
+                        ChatApplication.showToast(mContext, message);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    ActivityHelper.dismissProgressDialog();
+
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
     }
 
     @Override
