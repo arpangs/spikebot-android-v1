@@ -63,7 +63,7 @@ public interface ApiInterface {
     @GET("http://{localip}" + Constants.getIRDeviceTypeBrands + "{original_room_device_id}")
     Call<JsonElement> getIRDeviceTypeBrands(@Path("localip") String localip, @Path("original_room_device_id") String original_room_device_id);
 
-    @GET("http://{localip}" + Constants.getIRDeviceTypeBrands + "{original_room_device_id}")
+    @GET("http://{localip}" + Constants.getDeviceBrandRemoteList + "{original_room_device_id}")
     Call<JsonElement> getDeviceBrandRemoteList(@Path("localip") String localip, @Path("original_room_device_id") int original_room_device_id);
 
     @GET("http://{localip}" + Constants.getUnassignedRepeaterList)

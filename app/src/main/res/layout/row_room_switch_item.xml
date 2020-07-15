@@ -50,6 +50,7 @@
                 android:layout_height="@dimen/_40sdp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/_15sdp"
+                android:layout_marginLeft="@dimen/_5sdp"
                 android:adjustViewBounds="true"
                 android:gravity="center_horizontal"
                 android:scaleType="fitXY"

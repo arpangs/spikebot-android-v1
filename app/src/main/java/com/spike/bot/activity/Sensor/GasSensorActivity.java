@@ -202,7 +202,11 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
             showEditDialog();
         } else if (v == imgEdit)
         {
-            showBottomSheetDialog();
+            if(isClick == false) {
+                showBottomSheetDialog();
+            } else{
+                updateGasSensor();
+            }
         }
     }
 
@@ -236,7 +240,6 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
                         imgEdit.setImageResource(R.drawable.edit_blue);
                         ChatApplication.keyBoardHideForce(GasSensorActivity.this);
                         bottomsheetdialog.dismiss();
-                        updateGasSensor();
                     }
                 } else {
                     isClick = true;

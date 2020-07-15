@@ -147,6 +147,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                                 showGasSensor(object.optString("module_id"), object.optString("module_type"));
                             }
                         } else {
+
                             showConfigAlert(object.getString("message"));
                         }
 

@@ -42,21 +42,22 @@ import io.socket.emitter.Emitter;
 
 import static com.spike.bot.core.Common.showToast;
 
-public class WaterSensorActivity extends AppCompatActivity implements View.OnClickListener{
+public class WaterSensorActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Socket mSocket;
     Toolbar toolbar;
     EditText edSensorName;
     TextView txtbatterylevel;
     Button btnDelete;
-    ImageView imgEdit,img_water_status,img_watersensor;
+    ImageView imgEdit, img_water_status, img_watersensor;
     AppCompatTextView txtSpeedCount;
     SwitchCompat switchtemp;
     String room_id = "", room_name = "", sensor_id = "", device_id = "",
-            water_detector_module_id = "", water_detector_id = "",battery_level, is_alert_set="",water_sensor_name;
+            water_detector_module_id = "", water_detector_id = "", battery_level, is_alert_set = "", water_sensor_name;
     JSONObject objectValue;
-    boolean isClick = false,isAlertOn=false;
+    boolean isClick = false, isAlertOn = false;
     BottomSheetDialog bottomsheetdialog;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,10 +92,9 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
         switchtemp.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked)
-                {
+                if (isChecked) {
                     addalert();
-                } else{
+                } else {
                     deletealert();
                 }
             }
@@ -144,7 +144,7 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
                         try {
                             //{"room_id":"1568962984563_I4dhDWr54","gas_sensor_id":"1568968977282_uG3YUsQ1I","gas_value":"Normal","gas_current_value":2,"threshold_value":10}
                             JSONObject object = new JSONObject(args[0].toString());
-                            ChatApplication.logDisplay("water socket is update :-" + device_id +"  "+ object);
+                            ChatApplication.logDisplay("water socket is update :-" + device_id + "  " + object);
 
                             if (device_id.equals(object.optString("device_id"))) {
                                 setLevel(object.optString("device_status"));
@@ -207,7 +207,11 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
         if (v == btnDelete) {
             showEditDialog();
         } else if (v == imgEdit) {
-            showBottomSheetDialog();
+            if(isClick == false) {
+                showBottomSheetDialog();
+            } else{
+                updateWaterSensor();
+            }
         }
     }
 
@@ -241,7 +245,7 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
                         edSensorName.setClickable(false);
                         imgEdit.setImageResource(R.drawable.edit_blue);
                         ChatApplication.keyBoardHideForce(WaterSensorActivity.this);
-                        updateWaterSensor();
+                        bottomsheetdialog.dismiss();
                     }
                 } else {
                     isClick = true;
@@ -285,7 +289,7 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
 
     }
 
-    private void addalert(){
+    private void addalert() {
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
@@ -321,7 +325,7 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
 
     }
 
-    private void deletealert(){
+    private void deletealert() {
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
@@ -439,10 +443,9 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
             JSONObject device = data.optJSONObject("device");
             String is_active = device.optString("is_active");
             is_alert_set = data.optString("is_alert_set");
+            battery_level = device.optString("meta_battery_level");
 
-
-
-          //  JSONArray alerts = data.getJSONArray("alerts");
+            //  JSONArray alerts = data.getJSONArray("alerts");
 
 
          /*   for (int i = 0; i < alerts.size(); i++) {
@@ -462,66 +465,65 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
                 }
             }catch (Exception e){
                 e.printStackTrace();
-            }
-*/
-            if(is_alert_set.equalsIgnoreCase("false")){
+            }*/
+
+            if (is_alert_set.equalsIgnoreCase("false")) {
                 switchtemp.setChecked(false);
-            } else{
+            } else {
                 switchtemp.setChecked(true);
 
             }
+            if(!battery_level.equals("null"))
+            {
 
-            water_detector_module_id = device.optString("module_id");
-            water_detector_id = device.optString("device_id");
-            water_sensor_name = device.optString("device_name");
-            edSensorName.setText("" + device.optString("device_name"));
-            battery_level = device.optString("meta_battery_level");
+                water_detector_module_id = device.optString("module_id");
+                water_detector_id = device.optString("device_id");
+                water_sensor_name = device.optString("device_name");
+                edSensorName.setText("" + device.optString("device_name"));
 
-            toolbar.setTitle(water_sensor_name);
+                toolbar.setTitle(water_sensor_name);
+                int btrPer = (int) Double.parseDouble(battery_level);
+                if (btrPer >= 0 && btrPer <= 25)
+                    txtbatterylevel.setTextColor(getResources().getColor(R.color.battery_low));
+                else if (btrPer >= 26 && btrPer <= 50)
+                    txtbatterylevel.setTextColor(getResources().getColor(R.color.battery_low1));
+                else if (btrPer >= 51 && btrPer <= 75)
+                    txtbatterylevel.setTextColor(getResources().getColor(R.color.battery_medium));
+                else if (btrPer >= 76 && btrPer <= 100)
+                    txtbatterylevel.setTextColor(getResources().getColor(R.color.battery_high));
 
-
-            int btrPer = (int) Double.parseDouble(battery_level);
-            if (btrPer >= 0 && btrPer <= 25)
-                txtbatterylevel.setTextColor(getResources().getColor(R.color.battery_low));
-            else if (btrPer >= 26 && btrPer <= 50)
-                txtbatterylevel.setTextColor(getResources().getColor(R.color.battery_low1));
-            else if (btrPer >= 51 && btrPer <= 75)
-                txtbatterylevel.setTextColor(getResources().getColor(R.color.battery_medium));
-            else if (btrPer >= 76 && btrPer <= 100)
-                txtbatterylevel.setTextColor(getResources().getColor(R.color.battery_high));
-
-            if(btrPer > 100){
-                txtbatterylevel.setText("100" + "%");
-                txtbatterylevel.setTextColor(getResources().getColor(R.color.battery_high));
-            }
-
-            int perc = 0;
-            if (!TextUtils.isEmpty(""+battery_level)) {
+                int perc = 0;
                 try {
                     perc = Integer.parseInt(battery_level);
                 } catch (Exception ex) {
                     perc = 100;
                     ex.printStackTrace();
-                }
-            }
+                } if (!TextUtils.isEmpty("" + battery_level)) {
 
-            if(battery_level.equals("null")){
+                }
+                if (btrPer > 100) {
+                    txtbatterylevel.setText("100" + "%");
+                    txtbatterylevel.setTextColor(getResources().getColor(R.color.battery_high));
+                } else {
+                    txtbatterylevel.setText(perc + "%");
+                }
+            } else {
                 txtbatterylevel.setText("- -");
+
             }
-            txtbatterylevel.setText(perc + "%");
 
             objectValue = new JSONObject();
             objectValue.put("module_id", water_detector_module_id);
 
             /* device_status is 0 than show green color set
              * another high value than set red color*/
-            if(is_active.equalsIgnoreCase("n")){
+            if (is_active.equalsIgnoreCase("n")) {
                 txtSpeedCount.setText("- -");
                 txtbatterylevel.setText("- -");
                 txtbatterylevel.setTextColor(getResources().getColor(R.color.signupblack));
                 img_watersensor.setBackgroundResource(R.drawable.drop_disabled);
                 img_water_status.setVisibility(View.GONE);
-            } else{
+            } else {
                 img_water_status.setVisibility(View.VISIBLE);
                 img_watersensor.setBackgroundResource(R.drawable.drop);
                 if (!TextUtils.isEmpty(device.optString("device_status"))) {
@@ -574,7 +576,7 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-        SpikeBotApi.getInstance().updateDevice(device_id,edSensorName.getText().toString(), new DataResponseListener() {
+        SpikeBotApi.getInstance().updateDevice(device_id, edSensorName.getText().toString(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();

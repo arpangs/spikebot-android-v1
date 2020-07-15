@@ -1163,7 +1163,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                 view_line_top_temp.setVisibility(View.VISIBLE);
               //  edt_txt_layout_temp.setBackground(getResources().getDrawable(R.drawable.background_shadow_bottom_side));
             }
-        } else if (v == iv_icon_edit || v == edsensorName) {
+        } else if (v == iv_icon_edit) {
 
             showBottomSheetDialog();
         } else if (v == toggleAlertSensor || v == linearMultisensor) {
@@ -1599,7 +1599,13 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             }
 
 
-            txt_battery_level.setText(perc + " %");
+            if(perc > 100){
+                txt_battery_level.setText("100" + "%");
+                txt_battery_level.setTextColor(getResources().getColor(R.color.battery_high));
+            } else{
+                txt_battery_level.setText(perc + " %");
+            }
+
             if (perc >= 0 && perc <= 25)
                 txt_battery_level.setTextColor(getResources().getColor(R.color.battery_low));
             else if (perc >= 26 && perc <= 50)
@@ -1609,10 +1615,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             else if (perc >= 76 && perc <= 100)
                 txt_battery_level.setTextColor(getResources().getColor(R.color.battery_high));
 
-            if(perc > 100){
-                txt_battery_level.setText("100" + "%");
-                txt_battery_level.setTextColor(getResources().getColor(R.color.battery_high));
-            }
         } else{
             txt_battery_level.setText("- -");
         }

@@ -144,6 +144,7 @@ public class Constants {
     public static final String ADD_IR_BLASTER = "/AddIRBlaster";
     public static final String GET_IR_BLASTER_INFO = "/getIRBlasterInfo";
     public static final String getIRDeviceTypeBrands = "/getIRDeviceTypeBrands/";
+    public static final String getDeviceBrandRemoteList = "/getDeviceBrandRemoteList/";
     public static final String GET_REMOTE_SCHEDULE_LIST = "/getRemoteScheduleList";
     public static final String ADD_REMOTE_SCHEDULE = "/addRemoteSchedule";
     public static final String UPDATE_REMOTE_SCHEDULE = "/updateRemoteSchedule";

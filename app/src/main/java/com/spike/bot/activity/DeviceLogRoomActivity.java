@@ -130,7 +130,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
         rv_device_log.setLayoutManager(linearLayoutManager);
 
         if (isNotification.equalsIgnoreCase("roomSensorUnreadLogs")) {
-            setTitel("Notification");
+            setTitel("Notifications");
             getDeviceList(mStartIndex);
         } else {
             setTitel("All Logs");
