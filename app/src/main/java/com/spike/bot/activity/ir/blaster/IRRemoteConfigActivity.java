@@ -403,7 +403,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().saveremote(mIRDeviceId, mIrDeviceType, remoteName, mIRBLasterId, mIRBlasterModuleId, mRoomId, mSpinnerMode.getSelectedItem().toString() + "-" + mRemoteDefaultTemp.getText().toString().trim(),
-                mBrandId, mCodeSet, model_number, onOffValue, new DataResponseListener() {
+                mBrandId, remote_codeset_id, model_number, onOffValue, new DataResponseListener() {
                     @Override
                     public void onData_SuccessfulResponse(String stringResponse) {
                         try {

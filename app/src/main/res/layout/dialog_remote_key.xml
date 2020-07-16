@@ -57,7 +57,7 @@
             android:layout_marginLeft="@dimen/_10sdp"
             android:layout_marginBottom="@dimen/_25sdp"
             android:inputType="number"
-            android:hint="Please enter value"/>
+            android:hint="Please enter remote name"/>
 
 
         <View

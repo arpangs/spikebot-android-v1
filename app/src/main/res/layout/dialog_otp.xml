@@ -61,7 +61,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:layout_weight="0.5"
-            android:text="Retry OTP"
+            android:text="Resend OTP"
             android:textColor="@color/sensor_button"
             android:textStyle="bold" />
     </LinearLayout>

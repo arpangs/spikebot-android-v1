@@ -75,7 +75,7 @@ import io.socket.emitter.Emitter;
  */
 public class AddDeviceTypeListActivity extends AppCompatActivity {
 
-    public static int SENSOR_TYPE_PANAL = 0, SENSOR_TYPE_DOOR = 1, SENSOR_TYPE_TEMP = 2, SENSOR_GAS = 5, Curtain = 6, typeSync = 0, SENSOR_WATER = 7;
+    public static int SENSOR_TYPE_PANAL = 0, SENSOR_TYPE_DOOR = 1, SENSOR_TYPE_TEMP = 2, SENSOR_GAS = 5, Curtain = 6, typeSync = 0, SENSOR_WATER = 7, sensorposition = 0, type1 = 0;
     public AddRoomDialog addRoomDialog;
     Toolbar toolbar;
     RecyclerView recyclerSmartDevice;
@@ -148,7 +148,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                             }
                         } else {
 
-                            showConfigAlert(object.getString("message"));
+                            showConfigAlert(object.getString("message"), object.optString("module_type"));
                         }
 
                     } catch (Exception e) {
@@ -292,6 +292,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
         list = new DeviceList("Beacon Scanner", covers[16]);
         arrayList.add(list);
+
 /*
         arrayList.add("Unassigned List");
         arrayList.add("Room");
@@ -349,6 +350,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             addCustomRoom();
         } else if (position == 2) {
             showPanelOption(position);
+            sensorposition = position;
         }/* else if (position == 3) {
             Intent intent = new Intent(this, BrandListActivity.class);
             startActivity(intent);
@@ -365,12 +367,16 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             startActivity(new Intent(this, LockBrandActivity.class));
         } else if (position == 7) {
             showOptionDialog(SENSOR_TYPE_DOOR);
+            sensorposition = position;
         } else if (position == 8) {
             showOptionDialog(SENSOR_GAS);
+            sensorposition = position;
         } else if (position == 9) {
             showOptionDialog(SENSOR_TYPE_TEMP);
+            sensorposition = position;
         } else if (position == 10) {
             showOptionDialog(Curtain);
+            sensorposition = position;
         } else if (position == 11) {
             startActivity(new Intent(this, RepeaterActivity.class));
         } else if (position == 12) {
@@ -384,6 +390,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             startActivity(intent);
         } else if (position == 14) {
             showOptionDialog(SENSOR_WATER);
+            sensorposition = position;
         } else if (position == 15) {
             /*Intent intent = new Intent(this, AddBeaconActivity.class);
             startActivity(intent);*/
@@ -679,7 +686,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             ChatApplication.showToast(AddDeviceTypeListActivity.this, getResources().getString(R.string.disconnect));
             return;
         }
-
+        type1 = type;
         if (type == SENSOR_GAS) {
             ActivityHelper.showProgressDialog(AddDeviceTypeListActivity.this, "Searching for new gas sensor", false);
         } else if (type == Curtain) {
@@ -1170,14 +1177,63 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
      *
      * @param alertMessage
      */
-    private void showConfigAlert(String alertMessage) {
+    private void showConfigAlert(String alertMessage, String module_type) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(AddDeviceTypeListActivity.this);
-        builder.setMessage(alertMessage);
+
+
+        if (!module_type.equals("5f") || !module_type.equals("5") && sensorposition == 2) {
+            builder.setMessage("Attached device is not switch board");
+        } else {
+            builder.setMessage(alertMessage);
+        }
+
+        if (!module_type.equals("heavy_load") || !module_type.equals("double_heavy_load") && sensorposition == 2) {
+            builder.setMessage("Attached device is not heavy load");
+        } else {
+            builder.setMessage(alertMessage);
+        }
+
+        if (!module_type.equals("door_sensor") && sensorposition == 7) {
+            builder.setMessage("Attached device is not door sensor");
+        } else {
+            builder.setMessage(alertMessage);
+        }
+
+        if (!module_type.equals("gas_sensor") && sensorposition == 8) {
+            builder.setMessage("Attached device is not gas sensor");
+        } else {
+            builder.setMessage(alertMessage);
+        }
+
+        if (!module_type.equals("temp_sensor") && sensorposition == 9) {
+            builder.setMessage("Attached device is not temprature sensor");
+        } else {
+            builder.setMessage(alertMessage);
+        }
+
+        if (!module_type.equals("curtain") && sensorposition == 10) {
+            builder.setMessage("Attached device is not curtain");
+        } else {
+            builder.setMessage(alertMessage);
+        }
+
+        if (!module_type.equals("water_detector") && sensorposition == 14) {
+            builder.setMessage("Attached device is not water detector");
+        } else {
+            builder.setMessage(alertMessage);
+        }
+
+
+
+      /*  else {
+            builder.setMessage(alertMessage);
+        }*/
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                dialog.dismiss();
+                mSocket.off("configureDevice", configureDevice);
             }
         });
         builder.create().show();

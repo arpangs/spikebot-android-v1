@@ -279,7 +279,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
                 //  && lastAMPMoff.contains("AM") || lastAMPMoff.contains("am")
 
-                if (lastAMPM.contains("AM")) {
+                if (lastAMPM.equalsIgnoreCase("AM")) {
                     String lastamon="",lastamooff="";
                     if(scheduleVO.getSchedule_type() == 1){
                         lastamon = Common.getConvertDateForScheduleTimer(scheduleVO.getSchedule_device_on_time());
@@ -303,13 +303,13 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
                     ChatApplication.logDisplay("SPLIT OFF TIME" + offtime);
 
-                    if (ontime >= 12 || ontime <= 6) {
+                    if (ontime >= 12 || ontime < 6) {
                         holder.ll_on.setBackgroundResource(R.drawable.blue_border_purple_top);
                         holder.img_moon.setImageResource(R.drawable.sun_moon);
 
                       /*  holder.ll_off.setBackgroundResource(R.drawable.blue_border_purple_bottom);
                         holder.img_sun.setImageResource(R.drawable.sun_moon);*/
-                    } else if (ontime > 6) {
+                    } else if (ontime >= 6) {
 
                         holder.ll_on.setBackgroundResource(R.drawable.blue_border_yellow_top);
                         holder.img_moon.setImageResource(R.drawable.sun);
@@ -319,7 +319,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                         holder.img_moon.setImageResource(R.drawable.moon);
                     }
 
-                } else if (lastAMPM.contains("PM"))
+                } else if (lastAMPM.equalsIgnoreCase("PM"))
                 {
                     String lastamon="";
                     if(scheduleVO.getSchedule_type() == 1){
@@ -406,7 +406,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     ChatApplication.logDisplay("SPLIT OFF TIME" + offtime);
 
 
-                    if (offtime >= 12 || offtime <= 6) {
+                    if (offtime >= 12 || offtime < 6) {
                         holder.ll_off.setBackgroundResource(R.drawable.blue_border_purple_bottom);
                         holder.img_sun.setImageResource(R.drawable.sun_moon);
                     } else {

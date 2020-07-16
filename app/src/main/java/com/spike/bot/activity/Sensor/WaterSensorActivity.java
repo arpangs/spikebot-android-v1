@@ -592,6 +592,9 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
                         edSensorName.setFocusable(false);
                         edSensorName.setFocusableInTouchMode(false); // user touches widget on phone with touch screen
                         edSensorName.setClickable(false);
+
+                        imgEdit.setImageResource(R.drawable.edit_blue);
+                        getWaterdetectorDetails();
                     }
 
                 } catch (JSONException e) {

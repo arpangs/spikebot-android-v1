@@ -120,77 +120,81 @@
         </FrameLayout>
 
         <LinearLayout
-            android:layout_width="379dp"
-            android:layout_height="54dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginTop="10dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:gravity="center|bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:layout_marginLeft="4dp"
-                android:layout_weight="0.4">
+                android:layout_width="0dp"
+                android:textColorHint="@color/signupblack"
+                android:layout_height="wrap_content">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_remote_tmp"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
                     android:hint="Default Temp"
                     android:inputType="number"
+                    android:singleLine="true"
                     android:maxLength="2"
-                    android:singleLine="true" />
+                    android:textColor="@color/signupblack"
+                    android:textColorHint="@color/signupblack"
+                    android:lines="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <LinearLayout
+            <!--  <LinearLayout
+                  android:layout_gravity="center"
+                  android:layout_marginLeft="4dp"
+                  android:layout_weight="1"
+                  android:background="@drawable/view_border_bottom_spinner"
+                  android:layout_width="0dp"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical">
+
+                  <Spinner
+                      android:overlapAnchor="false"
+                      android:id="@+id/remote_mode_spinner"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"/>
+
+              </LinearLayout>-->
+
+
+            <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center|bottom"
-                android:layout_marginLeft="4dp"
-                android:layout_marginBottom="7dp"
-                android:layout_weight="0.6"
-                android:orientation="vertical">
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:background="@drawable/drawable_gray_schedule">
 
-                <!--  <Spinner
-                    android:overlapAnchor="false"
+                <Spinner
                     android:id="@+id/remote_mode_spinner"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>-->
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:background="@android:color/transparent"
+                    android:gravity="center" />
 
-                <FrameLayout
-                    android:id="@+id/frame_all_devices"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_32sdp"
-                    android:layout_marginLeft="@dimen/_5sdp"
-                    android:layout_marginRight="@dimen/_36sdp"
-                    android:background="@drawable/edt_border_blue">
-
-                    <Spinner
-                        android:id="@+id/remote_mode_spinner"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft= "@dimen/_8sdp"
-                        android:background="@android:color/transparent"
-                        android:textColor="@color/signupblack"
-                        android:textColorHint="@color/signupblack" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:layout_gravity="right|center"
-                        android:src="@drawable/ic_arrow_drop_down_blue" />
-                </FrameLayout>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_arrow_drop_down_blue" />
 
 
-            </LinearLayout>
-
+            </RelativeLayout>
 
         </LinearLayout>
+
 
         <TextView
             android:layout_marginLeft="26dp"

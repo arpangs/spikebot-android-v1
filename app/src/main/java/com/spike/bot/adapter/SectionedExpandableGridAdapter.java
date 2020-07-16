@@ -848,6 +848,14 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         }
                     }
 
+                    if (item.getDevice_icon().equalsIgnoreCase("ac")) {
+                        if (item.getIsActive() == 1) {
+                            itemIcon = item.getDeviceStatus() == 1 ? R.drawable.ac : R.drawable.ac_off;
+                        } else {
+                            itemIcon = R.drawable.ac_off_inactive;
+                        }
+                    }
+
 
                 } else {
                     /*--Sensor type start--*/

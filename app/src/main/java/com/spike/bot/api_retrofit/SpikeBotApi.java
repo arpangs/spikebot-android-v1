@@ -2264,8 +2264,11 @@ public class SpikeBotApi {
             params.put("min_temp", min_temp);
             params.put("max_temp", max_temp);
         } else {
-            params.put("min_temp", min_temp);
-            params.put("max_temp", max_temp);
+           /* params.put("min_temp", min_temp);
+            params.put("max_temp", max_temp);*/
+
+            params.put("min_temp", Constants.getCTemp(String.valueOf(min_temp)));
+            params.put("max_temp", Constants.getCTemp(String.valueOf(max_temp)));
         }
 
         params.put("alert_type", "temperature");

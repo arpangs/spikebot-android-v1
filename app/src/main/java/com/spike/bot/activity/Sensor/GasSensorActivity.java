@@ -475,6 +475,8 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
                         edSensorName.setFocusable(false);
                         edSensorName.setFocusableInTouchMode(false); // user touches widget on phone with touch screen
                         edSensorName.setClickable(false);
+                        imgEdit.setImageResource(R.drawable.edit_blue);
+                        getGasSensorDetails();
                     }
 
                 } catch (JSONException e) {
