@@ -397,12 +397,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                         ex.printStackTrace();
                     }
                 }
-                if(perc > 100){
-                    txt_battery_level.setText("100" + "%");
-                    txt_battery_level.setTextColor(getResources().getColor(R.color.battery_high));
-                } else{
-                    txt_battery_level.setText(perc + " %");
-                }
+
 
              //   imgBattery.setImageResource(Common.getBatteryIcon(""+doorSensorResModel.getDevice().getMeta_battery_level()));
 
@@ -415,6 +410,12 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                 else if (perc >= 76 && perc <= 100)
                     batteryPercentage.setTextColor(getResources().getColor(R.color.battery_high));
 
+                if(perc > 100){
+                    txt_battery_level.setText("100" + "%");
+                    txt_battery_level.setTextColor(getResources().getColor(R.color.battery_high));
+                } else{
+                    txt_battery_level.setText(perc + " %");
+                }
             } else{
                 batteryPercentage.setText("- -");
             }
