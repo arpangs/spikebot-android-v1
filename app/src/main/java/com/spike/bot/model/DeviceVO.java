@@ -29,6 +29,15 @@ public class DeviceVO implements Serializable,Cloneable {
     private String deviceType;
     private String enable_lock_unlock_from_app;
     private String meta_ir_blaster_id;
+    private String meta_pir_timer;
+
+    public String getMeta_pir_timer() {
+        return meta_pir_timer;
+    }
+
+    public void setMeta_pir_timer(String meta_pir_timer) {
+        this.meta_pir_timer = meta_pir_timer;
+    }
 
     public String getEnable_lock_unlock_from_app() {
         return enable_lock_unlock_from_app;

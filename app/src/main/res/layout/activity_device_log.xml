@@ -139,7 +139,8 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/swiperefresh"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

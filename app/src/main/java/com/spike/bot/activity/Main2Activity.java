@@ -76,8 +76,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     public static boolean flagPicheck = false, flagLogin = false, isResumeConnect = false, isCloudConnected = false;
     public Toolbar toolbar;
-    public ImageView mToolBarSettings, deepsImage, mImageCloud, img_profile;
-    public TextView toolbarTitle, toolbarwifiname, txt_connection, txt_add_acoount, toolbarImage;
+    public ImageView mToolBarSettings, deepsImage, mImageCloud, img_profile, mToolBarNotification;
+    public TextView toolbarTitle, toolbarwifiname, txt_connection, txt_add_acoount, toolbarImage, toolbarNotificationCount;
     public LinearLayout linear_main, linear_progress, linearTab;
     public FrameLayout linearCloud;
     public DashBoardFragment dashBoardFragment1;
@@ -218,14 +218,17 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         toolbarwifiname = findViewById(R.id.toolbarwifiname);
         img_profile = findViewById(R.id.img_profile);
         mToolBarSettings = findViewById(R.id.toolbar_setting);
+        mToolBarNotification = findViewById(R.id.toolbar_notification);
         linearCloud = findViewById(R.id.linear_progress_cloud);
         linearTab = findViewById(R.id.linearTab);
+        toolbarNotificationCount = findViewById(R.id.img_setting_badge_count);
 
         //   tabLayout.setOnNavigationItemSelectedListener(this);
         toolbarImage.setOnClickListener(this);
         toolbarTitle.setOnClickListener(this);
         mImageCloud.setOnClickListener(this);
         mToolBarSettings.setOnClickListener(this);
+        mToolBarNotification.setOnClickListener(this);
         navigation_bar.setOnItemSelectedListener(this);
         img_profile.setOnClickListener(this);
 
@@ -282,6 +285,10 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             } else {
                 openSettingPopup(toolbar);
             }
+        } else if (view.getId() == R.id.toolbar_notification) {
+            Intent intent = new Intent(Main2Activity.this, DeviceLogActivity.class);
+            intent.putExtra("isCheckActivity", "AllTypeNotification");
+            startActivity(intent);
         } else if (view.getId() == R.id.img_profile) {
             Intent i = new Intent(Main2Activity.this, ProfileActivity.class);
             startActivity(i);
@@ -613,6 +620,15 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     }
 
+
+    public void setAllNotificationCount(int count) {
+        if (count != 0 && count > 99) {
+            toolbarNotificationCount.setText("99+");
+        } else {
+            toolbarNotificationCount.setText("" + count);
+        }
+    }
+
     /* port & url set */
     private void listServiceTemp(final String msg, String ip, final int port, final boolean isFound, boolean isShow) {
         String openIp = "";
@@ -852,7 +868,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                         Common.savePrefValue(Main2Activity.this, Constants.USER_PASSWORD, tempList.get(0).getPassword());
                         Common.savePrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE, tempList.get(0).getAdmin());
 
-                        Common.savePrefValue(Main2Activity.this,Constants.AUTHORIZATION_TOKEN,tempList.get(0).getAuth_key());
+                        Common.savePrefValue(Main2Activity.this, Constants.AUTHORIZATION_TOKEN, tempList.get(0).getAuth_key());
 
 
                         if (Common.getPrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("1")) {
@@ -890,7 +906,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     Common.savePrefValue(Main2Activity.this, Constants.USER_ID, "");
                     Common.savePrefValue(Main2Activity.this, Constants.USER_PASSWORD, "");
                     Common.savePrefValue(Main2Activity.this, Constants.USER_ADMIN_TYPE, "");
-                    Common.savePrefValue(Main2Activity.this,Constants.AUTHORIZATION_TOKEN,"");
+                    Common.savePrefValue(Main2Activity.this, Constants.AUTHORIZATION_TOKEN, "");
 
                     webUrl = "";
                     ChatApplication app = ChatApplication.getInstance();

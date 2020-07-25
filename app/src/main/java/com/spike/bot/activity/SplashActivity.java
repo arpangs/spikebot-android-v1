@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.kp.core.ActivityHelper;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Constants;
 import com.spike.bot.receiver.ConnectivityReceiver;
 
@@ -42,6 +44,15 @@ public class SplashActivity extends Activity {
 
     /* start home screen */
     private void startHomeIntent() {
+
+        try {
+            String a = ActivityHelper.getIMEI(ChatApplication.getInstance());
+            APIConst.PHONE_ID_VALUE = a;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
         ConnectivityReceiver.counter = 0;
         Intent intent = new Intent(this, Main2Activity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);

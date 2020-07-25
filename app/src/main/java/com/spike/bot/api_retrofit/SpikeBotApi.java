@@ -131,6 +131,13 @@ public class SpikeBotApi {
             params.put("is_rgb", "0");//1;
             params.put("rgb_array", "");
             params.put("room_device_id", deviceVO.getRoomDeviceId());
+        } else if (deviceVO.getDeviceType().equalsIgnoreCase("pir_device")) {
+            params.put("device_id", deviceVO.getDeviceId());
+            params.put("panel_id", deviceVO.getPanel_id());
+            params.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
+            params.put("device_sub_status", deviceVO.getDevice_sub_status());
+            params.put("device_sub_type", deviceVO.getDevice_sub_type());
+
         } else {
             try {
                 if (deviceVO.getDevice_sub_type() != null) {
@@ -231,7 +238,7 @@ public class SpikeBotApi {
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
         params.put("room_type", "room");
         params.put("device_push_token", Common.getPrefValue(ChatApplication.getContext(), Constants.DEVICE_PUSH_TOKEN));
-        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE != null ? APIConst.PHONE_ID_VALUE : "");
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
         new GeneralRetrofit(apiService.postDeviceLocal_Cloud(ChatApplication.url, params), params, dataResponseListener).call();
@@ -939,34 +946,34 @@ public class SpikeBotApi {
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
         switch (room.toLowerCase()) {
-            case "Room":
+            case "room":
                 params.put("room_type", "room");
                 new GeneralRetrofit(apiService.RoomLogListApi(ChatApplication.url, params), params, dataResponseListener).call();
                 break;
-            case "Mood":
+            case "mood":
                 params.put("room_type", "mood");
                 new GeneralRetrofit(apiService.MoodLogListApi(ChatApplication.url, params), params, dataResponseListener).call();
                 break;
-            case "Schedule":
+            case "schedule":
                 new GeneralRetrofit(apiService.ScheduleLogListApi(ChatApplication.url, params), params, dataResponseListener).call();
                 break;
-            case "Gas sensor":
+            case "gas sensor":
                 params.put("device_type", "gas_sensor");
                 new GeneralRetrofit(apiService.SensorLogListApi(ChatApplication.url, params), params, dataResponseListener).call();
                 break;
-            case "Temp sensor":
+            case "temp sensor":
                 params.put("device_type", "temp_sensor");
                 new GeneralRetrofit(apiService.SensorLogListApi(ChatApplication.url, params), params, dataResponseListener).call();
                 break;
-            case "Door sensor":
+            case "door sensor":
                 params.put("device_type", "door_sensor");
                 new GeneralRetrofit(apiService.SensorLogListApi(ChatApplication.url, params), params, dataResponseListener).call();
                 break;
-            case "Water detector":
+            case "water detector":
                 params.put("device_type", "water_detector");
                 new GeneralRetrofit(apiService.SensorLogListApi(ChatApplication.url, params), params, dataResponseListener).call();
                 break;
-            case "Lock":
+            case "lock":
                 params.put("device_type", "lock");
                 new GeneralRetrofit(apiService.SensorLogListApi(ChatApplication.url, params), params, dataResponseListener).call();
                 break;
@@ -979,230 +986,10 @@ public class SpikeBotApi {
     }
 
 
-    public void CallFilterData(boolean isFilterActive, int position, String mRoomId, String start_date, String end_date, Spinner mSpinnerRoomList, Spinner mSpinnerRoomMood,
+    /*public void CallFilterData(boolean isFilterActive, int position, String mRoomId, String start_date, String end_date, Spinner mSpinnerRoomList, Spinner mSpinnerRoomMood,
                                boolean isFilterType, ArrayList<Filter> filterArrayList, String actionType, String isCheckActivity, String strDeviceId, String strpanelId, String typeofFilter, boolean userChange,
-                               DataResponseListener dataResponseListener) {
-
-        HashMap<String, Object> params = new HashMap<>();
-
-        params.put("notification_number", position);
-
-
-//            if (actionType.equals("Mood") || actionType.equals("Room")) {
-//                object.put("is_room", 1);
-//            } else {
-//                object.put("is_room", 0);
-//            }
-
-        if (typeofFilter.equalsIgnoreCase("refresh")) {
-            params.put("start_date", "");
-            params.put("end_date", "");
-//                if (isCheckActivity.equals("room") || isCheckActivity.equals("mood")) {
-            if (isCheckActivity.equals("room")) {
-                params.put("room_id", "" + mRoomId);
-            } else if (isCheckActivity.equals("mode")) {
-                params.put("mood_id", "" + mRoomId);
-            } else if (isCheckActivity.equalsIgnoreCase("schedule")) {
-                params.put("schedule_id", "" + mRoomId);
-            }
-
-            if (isCheckActivity.equals("room")) {
-                params.put("filter_type", "room");
-            } else if (isCheckActivity.equalsIgnoreCase("mode")) {
-                params.put("filter_type", "mood");
-            } else if (isCheckActivity.equals("schedule")) {
-                params.put("filter_type", "schedule");
-            } else if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor")
-                    || isCheckActivity.equals("yalelock")) {
-                params.put("filter_type", "device");
-                params.put("device_id", "" + mRoomId);
-            } else {
-                params.put("filter_type", "all");
-            }
-
-
-            params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
-
-        } else {
-
-            if (userChange) {
-                params.put("start_date", "");
-                params.put("end_date", "");
-                params.put("filter_type", "all");
-            } else {
-                params.put("start_date", start_date);
-                params.put("end_date", end_date);
-                params.put("filter_type", "all");
-            }
-
-            RoomVO roomVO = null;
-            if (mSpinnerRoomList != null) {
-                roomVO = (RoomVO) mSpinnerRoomList.getSelectedItem();
-                if (mSpinnerRoomMood.getSelectedItem().toString().equals("All")) {
-                    if (isFilterType) {
-                        String actionname = "";
-                        ArrayList<String> stringArrayList = new ArrayList<>();
-                        if (filterArrayList.size() > 0) {
-                            for (int i = 0; i < filterArrayList.size(); i++) {
-                                if (filterArrayList.get(i).isChecked()) {
-                                    stringArrayList.add(filterArrayList.get(i).getName());
-                                }
-                            }
-
-                            for (int i = 0; i < stringArrayList.size(); i++) {
-                                if (i == 0) {
-                                    actionname = stringArrayList.get(i).toLowerCase();
-                                } else {
-                                    actionname = actionname + "," + stringArrayList.get(i).toLowerCase();
-                                }
-                            }
-                            params.put("filter_action", actionname.replace(" ", "_"));
-                        }
-
-                        if (actionType.equalsIgnoreCase("Door sensor")) {
-                            params.put("filter_type", "door_sensor");
-                        } else if (actionType.equalsIgnoreCase("Gas sensor")) {
-                            params.put("filter_type", "gas_sensor");
-                        } else if (actionType.equalsIgnoreCase("Temp sensor")) {
-                            params.put("filter_type", "temp_sensor");
-                        } else if (actionType.equalsIgnoreCase("Water detector")) {
-                            params.put("filter_type", "water_detector");
-                        } else if (actionType.equalsIgnoreCase("Lock")) {
-                            params.put("filter_type", "lock");
-                        } else {
-                            params.put("filter_type", "all_sensor");
-                        }
-
-                        if (roomVO != null) {
-                            params.put("device_id", roomVO.getRoomId());
-                        }
-                    }
-
-
-                } else {
-
-                    if (isFilterType) {
-
-                        if (actionType.equalsIgnoreCase("Door sensor")) {
-                            params.put("filter_type", "door_sensor");
-                        } else if (actionType.equalsIgnoreCase("Gas sensor")) {
-                            params.put("filter_type", "gas_sensor");
-                        } else if (actionType.equalsIgnoreCase("Temp sensor")) {
-                            params.put("filter_type", "temp_sensor");
-                        } else if (actionType.equalsIgnoreCase("Water detector")) {
-                            params.put("filter_type", "water_detector");
-                        } else if (actionType.equalsIgnoreCase("Lock")) {
-                            params.put("filter_type", "lock");
-                        } else {
-                            params.put("filter_type", "all_sensor");
-                        }
-
-                        if (roomVO != null) {
-                            params.put("device_id", roomVO.getRoomId());
-                        }
-
-                    } else {
-
-                        if (roomVO != null && !roomVO.getRoomId().equalsIgnoreCase("0")) {
-
-                            if (mSpinnerRoomMood != null) {
-                                if (mSpinnerRoomMood.getSelectedItem().toString().toLowerCase().equals("mood")) {
-                                    params.put("mood_id", "" + roomVO.getRoomId());
-                                } else {
-                                    params.put("room_id", "" + roomVO.getRoomId());
-                                }
-                            } else {
-                                params.put("room_id", "" + roomVO.getRoomId());
-                            }
-                        }
-
-                        if (!TextUtils.isEmpty(strDeviceId) && strDeviceId.length() > 0) {
-                            params.put("device_id", "" + strDeviceId);
-                        } else {
-                            params.put("device_id", "");
-                        }
-
-                        if (!TextUtils.isEmpty(strpanelId) && strpanelId.length() > 0) {
-                            params.put("panel_id", "" + strpanelId);
-                        } else {
-                            params.put("panel_id", "");
-                        }
-
-                    }
-                    String actionname = "";
-                    ArrayList<String> stringArrayList = new ArrayList<>();
-                    for (int i = 0; i < filterArrayList.size(); i++) {
-
-                        if (filterArrayList.get(i).isChecked()) {
-                            stringArrayList.add(filterArrayList.get(i).getName());
-                        }
-                    }
-
-                    for (int i = 0; i < stringArrayList.size(); i++) {
-                        if (i == 0) {
-                            actionname = stringArrayList.get(i).toLowerCase();
-                        } else {
-                            actionname = actionname + "," + stringArrayList.get(i).toLowerCase();
-                        }
-                    }
-
-                    params.put("filter_action", actionname.replace(" ", "_"));
-                }
-            } else {
-                if (roomVO != null) {
-                    params.put("room_id", "" + roomVO.getRoomId());
-                } else if (isCheckActivity.equals("room") || isCheckActivity.equalsIgnoreCase("mode")) {
-                    if (isCheckActivity.equalsIgnoreCase("mode")) {
-                        params.put("mood_id", "" + mRoomId);
-                    } else {
-                        params.put("room_id", "" + mRoomId);
-                    }
-                } else if (isCheckActivity.equalsIgnoreCase("schedule")) {
-                    params.put("schedule_id", "" + mRoomId);
-                } else if (isCheckActivity.equals("AllType")) {
-                    params.put("filter_type", "all");
-                } else {
-                    params.put("room_id", "");
-                }
-            }
-
-            if (mSpinnerRoomMood != null) {
-                if (mSpinnerRoomMood.getSelectedItemPosition() == 0 && isFilterType) {
-                    params.put("filter_type", "all_sensor");
-                } else {
-                    if (actionType.equalsIgnoreCase("Door sensor")) {
-                        params.put("filter_type", "door_sensor");
-                    } else if (actionType.equalsIgnoreCase("Gas sensor")) {
-                        params.put("filter_type", "gas_sensor");
-                    } else if (actionType.equalsIgnoreCase("Temp sensor")) {
-                        params.put("filter_type", "temp_sensor");
-                    } else if (actionType.equalsIgnoreCase("Water detector")) {
-                        params.put("filter_type", "water_detector");
-                    } else if (actionType.equalsIgnoreCase("Lock")) {
-                        params.put("filter_type", "lock");
-                    }
-                }
-
-            } else {
-                if (isCheckActivity.equals("room")) {
-                    params.put("filter_type", "room");
-                } else if (isCheckActivity.equalsIgnoreCase("mode")) {
-                    params.put("filter_type", "mood");
-                } else if (isCheckActivity.equals("schedule")) {
-                    params.put("filter_type", "schedule");
-                } else if (isCheckActivity.equals("doorSensor") || isCheckActivity.equals("tempsensor") ||
-                        isCheckActivity.equals("yalelock")) {
-                    params.put("filter_type", "device");
-                    params.put("device_id", "" + mRoomId);
-                } else {
-                    params.put("filter_type", "all");
-                }
-
-            }
-        }
-
+                               DataResponseListener dataResponseListener) {*/
+    public void CallFilterData(HashMap<String, Object> params,DataResponseListener dataResponseListener) {
 
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
         params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -1530,11 +1317,12 @@ public class SpikeBotApi {
             case 7:
                 new GeneralRetrofit(apiService.getConfigData(ChatApplication.url, "water_detector"), null, dataResponseListener).call();
                 break;
+            case 8:
+                new GeneralRetrofit(apiService.getConfigData(ChatApplication.url, "pir_detector"), null, dataResponseListener).call();
+                break;
             default:
                 new GeneralRetrofit(apiService.getConfigData(ChatApplication.url, "5"), null, dataResponseListener).call();
                 break;
-
-
         }
 
     }
@@ -2211,7 +1999,8 @@ public class SpikeBotApi {
     public void tempSensorNotificationStatus(String alert_id, boolean is_active, DataResponseListener dataResponseListener) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("alert_id", alert_id);
-        params.put("is_active", is_active);
+//        params.put("is_active", is_active);
+        params.put("is_active", is_active ? "y" : "n");
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
         params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -2831,5 +2620,24 @@ public class SpikeBotApi {
         params.put("device_id", module_id);
 
         new GeneralRetrofit(apiService.DeleteRemote(ChatApplication.url, params), params, dataResponseListener).call();
+    }
+
+    /*Update PIR device*/
+    public void updatePIRDevice(DeviceVO deviceVO, String timer, DataResponseListener dataResponseListener) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("device_id", deviceVO.getDeviceId());
+        params.put("panel_id", deviceVO.getPanel_id());
+        params.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
+        params.put("device_sub_status", deviceVO.getDevice_sub_status());
+        params.put("device_sub_type", deviceVO.getDevice_sub_type());
+        params.put("pir_timer", timer);
+        params.put("device_name", deviceVO.getDeviceName());
+
+
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        new GeneralRetrofit(apiService.SAVE_EDIT_SWITCH(ChatApplication.url, params), params, dataResponseListener).call();
     }
 }

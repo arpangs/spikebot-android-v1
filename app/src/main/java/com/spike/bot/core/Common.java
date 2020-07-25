@@ -13,32 +13,19 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.spike.bot.ChatApplication;
-import com.spike.bot.R;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.internal.Primitives;
+import com.spike.bot.ChatApplication;
+import com.spike.bot.R;
 import com.ttlock.bl.sdk.net.OkHttpRequest;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.Socket;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
 
 /**
  * Created by kaushal on 28/12/17.
@@ -46,11 +33,11 @@ import java.util.Scanner;
 
 public class Common {
 
+    public static final String SP_NAME = "PREFS_SPIKE_BOT";
     public static String USER_JSON = "user_pref_json";
     public static String camera_key = "camera_key"; //key : spike123
-
-    public static final String SP_NAME = "PREFS_SPIKE_BOT";
-
+    public static String TAG = "isReachableURL";
+    private static Toast mToast;
 
     /**
      * @param context
@@ -91,8 +78,6 @@ public class Common {
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
-    public static String TAG = "isReachableURL";
-
     public static int getDoorIcon(int status) {
         return status == 0 ? R.drawable.dooron : R.drawable.dooroff;
     }
@@ -104,12 +89,11 @@ public class Common {
      */
     public static int getIcon(int status, String type) {
         int resource = R.drawable.oncfl;
-        ChatApplication.logDisplay("type is "+type);
+        ChatApplication.logDisplay("type is " + type);
         switch (status) {
 
             case -1:
-                switch (type)
-                {
+                switch (type) {
                     case "curtain":
                         resource = R.drawable.curtain_closed_inactive;
                         break;
@@ -139,6 +123,10 @@ public class Common {
                         break;
                     case "beacon":
                         resource = R.drawable.beaconsearch;
+                        break;
+                    case "pir_device":
+                        resource = R.drawable.pir_detector_inactive;
+                        break;
                 }
                 break;
             case 0:
@@ -252,6 +240,9 @@ public class Common {
                     case "beacon":
                         resource = R.drawable.beaconsearch;
                         break;
+                    case "pir_device":
+                        resource = R.drawable.pir_detector_off;
+                        break;
 
                     default:
                         resource = R.drawable.offcfl;
@@ -357,6 +348,10 @@ public class Common {
                     case "beacon":
                         resource = R.drawable.beaconsearch;
                         break;
+                    case "pir_device":
+                        resource = R.drawable.pir_detector_on;
+                        break;
+
                     default:
                         resource = R.drawable.oncfl;
                         break;
@@ -373,7 +368,6 @@ public class Common {
         }
         return resource;
     }
-
 
     public static int getIconForEditRoom(int status, String type) {
         int resource = R.drawable.oncfl;
@@ -413,7 +407,7 @@ public class Common {
                     case "tempsensor":
                         resource = R.drawable.off_temperature;
                         break;
-                        case "temp_sensor":
+                    case "temp_sensor":
                         resource = R.drawable.off_temperature;
                         break;
                     case "doorsensor":
@@ -449,7 +443,6 @@ public class Common {
                     case "curtain":
                         resource = R.drawable.curtains_off;
                         break;
-
 
 
                     default:
@@ -511,8 +504,8 @@ public class Common {
                 resource = R.drawable.headload_inactive;
                 break;
             case "curtain":
-               resource = R.drawable.curtain_closed_inactive;
-               break;
+                resource = R.drawable.curtain_closed_inactive;
+                break;
             case "lock":
                 resource = R.drawable.gray_lock_disabled;
                 break;
@@ -614,7 +607,6 @@ public class Common {
         return deviceString;
     }
 
-
     /**
      * @param schedule_device_day
      * @return
@@ -695,13 +687,11 @@ public class Common {
         return value;
     }
 
-
-
     /*
-    *
-    * if user not authorised then remove all preference value and logout the user
-    *
-    * */
+     *
+     * if user not authorised then remove all preference value and logout the user
+     *
+     * */
     public static void removeAllKey() {
         getSharedPreferences(ChatApplication.getContext()).edit().clear().apply();
     }
@@ -715,7 +705,6 @@ public class Common {
     private static SharedPreferences getSharedPreferences(Context context) {
         return context.getSharedPreferences(SP_NAME, 0); // Context.MODE_PRIVATE);
     }
-
 
     /**
      * hideSoftKeyBoard
@@ -760,101 +749,98 @@ public class Common {
 
     public static String getConvertDateForSchedule(String value) {
         //Nov 11, 2019 52: ,,  Nov 10, 2019 10:45
-        SimpleDateFormat spf=new SimpleDateFormat("MMM dd, yyyy hh:mm aa");
-        Date newDate= null;
+        SimpleDateFormat spf = new SimpleDateFormat("MMM dd, yyyy hh:mm aa");
+        Date newDate = null;
         try {
             newDate = spf.parse(value);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        spf= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        spf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String date = spf.format(newDate);
         return date;
     }
 
     public static String getHH(String value) {
         //Nov 11, 2019 52:52
-        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date newDate= null;
+        SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date newDate = null;
         try {
             newDate = spf.parse(value);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        spf= new SimpleDateFormat("HH:mm");
+        spf = new SimpleDateFormat("HH:mm");
         String date = spf.format(newDate);
         return date;
     }
 
-
     public static String getTimeHH(String value) {
         //Nov 11, 2019 52:52
-        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd H:mm");
-        Date newDate= null;
+        SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd H:mm");
+        Date newDate = null;
         try {
             newDate = spf.parse(value);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        spf= new SimpleDateFormat("h:mm");
+        spf = new SimpleDateFormat("h:mm");
         String date = spf.format(newDate);
         return date;
     }
 
     public static String getTimeAM(String value) {
         //Nov 11, 2019 52:52
-        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date newDate= null;
+        SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date newDate = null;
         try {
             newDate = spf.parse(value);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        spf= new SimpleDateFormat("a");
+        spf = new SimpleDateFormat("a");
         String date = spf.format(newDate);
         return date;
     }
 
     public static String getDateTime(String value) {
         //Nov 11, 2019 52:52
-        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date newDate= null;
+        SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date newDate = null;
         try {
             newDate = spf.parse(value);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        spf= new SimpleDateFormat("dd-MM-yy");
+        spf = new SimpleDateFormat("dd-MM-yy");
         String date = spf.format(newDate);
         return date;
     }
-
 
     public static String getConvertDateForScheduleHour(String value) {
         //Nov 11, 2019 52:52
-        SimpleDateFormat spf=new SimpleDateFormat("H:mm");
-        Date newDate= null;
+        SimpleDateFormat spf = new SimpleDateFormat("H:mm");
+        Date newDate = null;
         try {
             newDate = spf.parse(value);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        spf= new SimpleDateFormat("h:mm a");
+        spf = new SimpleDateFormat("h:mm a");
         String date = spf.format(newDate);
         return date;
     }
 
-
     public static String getConvertDateForScheduleTimer(String value) {
         //Nov 11, 2019 52:52
-        SimpleDateFormat spf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date newDate= null;
+        SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date newDate = null;
         try {
             newDate = spf.parse(value);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        spf= new SimpleDateFormat("h:mm a");
+        spf = new SimpleDateFormat("h:mm a");
         String date = spf.format(newDate);
         return date;
     }
@@ -920,7 +906,6 @@ public class Common {
         return "F";
     }
 
-
     /**
      * Convert String to ℉ value
      *
@@ -931,7 +916,8 @@ public class Common {
         return String.format("%s℉", String.format("%.2f", Double.parseDouble(fahrenheit)));
     }*/
     public static String parseFahrenheit(String fahrenheit) {
-        return String.format("%s ℉", (int) Double.parseDouble(fahrenheit));
+//        return String.format("%s ℉", (int) Double.parseDouble(fahrenheit));
+        return String.format("%s F", (int) Double.parseDouble(fahrenheit));
     }
 
     /**
@@ -977,8 +963,6 @@ public class Common {
         return Math.round((float) dp * density);
     }
 
-    private static Toast mToast;
-
     /**
      * showToast
      *
@@ -1007,7 +991,6 @@ public class Common {
         mToast.setGravity(Gravity.CENTER, 0, 0);
         mToast.show();
     }
-
 
 
     public static Object fromJson(String jsonString, Type type) {

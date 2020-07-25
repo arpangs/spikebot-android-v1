@@ -780,6 +780,10 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         }
                     });
 
+                } else if (panel1.getPanelName().toLowerCase().contains("pir")) { /*dev arpan add condition for remove toggle switch from PIR panel*/
+
+                    holder.iv_room_panel_onoff.setVisibility(View.GONE);
+
                 } else {
                     holder.sectionTextView.setVisibility(View.VISIBLE);
                     holder.txt_recording.setVisibility(View.GONE);
@@ -856,6 +860,15 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         }
                     }
 
+                    if (item.getDevice_icon().equalsIgnoreCase("pir")) { // dev arpan added 20 july 2020
+                        if (item.getIsActive() == 1) {
+                            itemIcon = item.getDeviceStatus() == 1 ? R.drawable.pir_detector_on : R.drawable.pir_detector_off;
+                            item.setDevice_sub_type(item.getDeviceStatus() == 1 ? "pir" : "normal");
+                        } else {
+                            itemIcon = R.drawable.pir_detector_inactive;
+                        }
+                    }
+
 
                 } else {
                     /*--Sensor type start--*/
@@ -870,8 +883,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         holder.itemTextView.setAlpha(1);
                     }
 
-                    if (item.getDeviceType().equalsIgnoreCase("remote"))
-                    {
+                    if (item.getDeviceType().equalsIgnoreCase("remote")) {
                         holder.txt_temp_in_cf.setVisibility(View.INVISIBLE);
                         holder.iv_icon.setVisibility(View.VISIBLE);
 
@@ -886,9 +898,9 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         holder.itemTextView.setVisibility(View.VISIBLE);
                         holder.itemTextView.setText(item.getSensor_name());
 
-                        if(item.getTemprature().equals("0")){
+                        if (item.getTemprature().equals("0")) {
                             holder.txt_temp_in_cf.setVisibility(View.INVISIBLE);
-                        } else{
+                        } else {
                             holder.txt_temp_in_cf.setVisibility(View.VISIBLE);
                             String[] temp = item.getTemprature().split("\\.");
                             String replacetemp = temp[0];
@@ -1307,7 +1319,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                                 mItemClickListener.itemClicked(item, "philipsClick", position);
                             } else if (item.getDevice_icon().equalsIgnoreCase("curtain")) {
                                 mItemClickListener.itemClicked(item, "curtain", position);
-                            } else {
+                            }else {
                                 mItemClickListener.itemClicked(item, "itemclick", position);
                             }
                         } else {
@@ -1350,6 +1362,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             tempClickListener.itemClicked(item, "isIRSensorLongClick", true, position);
                         } else if (item.getDeviceType().equalsIgnoreCase("lock")) {
                             tempClickListener.itemClicked(item, "isLockLongClick", true, position);
+                        } else if (item.getDeviceType().equalsIgnoreCase("pir_device")) {
+                            tempClickListener.itemClicked(item, "isPIRLongClick", true, position);
                         }
                         return false;
                     }
@@ -1357,7 +1371,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
 
                 if (item.getDeviceType().equals("remote") || item.getDeviceType().equalsIgnoreCase("heavyload") || item.getDeviceType().equalsIgnoreCase("fan") ||
-                        item.getDeviceType().equalsIgnoreCase("2") || item.getDeviceType().equalsIgnoreCase("3") || item.getDeviceType().equalsIgnoreCase("lock")) {
+                        item.getDeviceType().equalsIgnoreCase("2") || item.getDeviceType().equalsIgnoreCase("3") || item.getDeviceType().equalsIgnoreCase("lock")
+                        || item.getDeviceType().equalsIgnoreCase("pir_device")) {
                     holder.imgLongClick.setVisibility(View.VISIBLE);
                 } else {
                     if (!item.getDeviceType().equalsIgnoreCase("1")) {

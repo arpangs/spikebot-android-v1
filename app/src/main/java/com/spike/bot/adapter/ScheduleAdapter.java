@@ -27,7 +27,6 @@ import com.spike.bot.model.ScheduleVO;
 
 import java.util.ArrayList;
 
-
 import static com.spike.bot.core.Common.getDateTime;
 
 /**
@@ -36,13 +35,13 @@ import static com.spike.bot.core.Common.getDateTime;
 
 public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHolder> {
 
+    public boolean isClickable = true;
     Activity mContext;
     ArrayList<ScheduleVO> scheduleArrayList;
     ScheduleClickListener scheduleClickListener;
-    private boolean isMoodAdapter;
     ScheduleVO scheduleVO;
     String lastAMPM = "", color;
-    public boolean isClickable = true;
+    private boolean isMoodAdapter;
 
     public ScheduleAdapter(Activity context, ArrayList<ScheduleVO> scheduleArrayList, ScheduleClickListener scheduleClickListener, boolean isMood, boolean isType) {
         this.scheduleArrayList = scheduleArrayList;
@@ -96,8 +95,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         scheduleVO = scheduleArrayList.get(listPosition);
         holder.card_layout.setBackground(mContext.getDrawable(R.drawable.background_with_shadow_yellow));
         try {
-            if (scheduleVO.getSchedule_type() == 1)
-            {
+            if (scheduleVO.getSchedule_type() == 1) {
 
                 if (scheduleVO.getIs_active() == 1) {
                     holder.iv_sch_type.setImageResource(R.drawable.panel_disable);
@@ -184,8 +182,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     holder.tv_schedule_off_time.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
                 }
 
-            }
-            else {
+            } else {
 
                 if (scheduleVO.getIs_active() == 1) {
                     holder.iv_sch_type.setImageResource(R.drawable.panel_disable);
@@ -237,8 +234,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 ChatApplication.logDisplay("ON TIME" + " " + scheduleVO.getSchedule_device_on_time());
 
                 if (scheduleVO.getSchedule_type() == 1) {
-                    if (!scheduleVO.getSchedule_device_on_time().equals("null"))
-                    {
+                    if (!scheduleVO.getSchedule_device_on_time().equals("null")) {
                         holder.tv_schedule_on_time.setText(DateHelper.formateDate(DateHelper.parseTimeSimple(scheduleVO.getSchedule_device_on_time(), DateHelper.DATE_FROMATE_H_M_AMPM1), DateHelper.DATE_FROMATE_H_M_AMPM123));
                     }
 
@@ -279,14 +275,15 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
                 //  && lastAMPMoff.contains("AM") || lastAMPMoff.contains("am")
 
+//                if (lastAMPM.contains("AM")) {
                 if (lastAMPM.equalsIgnoreCase("AM")) {
-                    String lastamon="",lastamooff="";
-                    if(scheduleVO.getSchedule_type() == 1){
+                    String lastamon = "", lastamooff = "";
+                    if (scheduleVO.getSchedule_type() == 1) {
                         lastamon = Common.getConvertDateForScheduleTimer(scheduleVO.getSchedule_device_on_time());
 
                         ChatApplication.logDisplay("Active ON TIME" + scheduleVO.getSchedule_device_on_time());
                         lastamooff = Common.getConvertDateForScheduleTimer(scheduleVO.getSchedule_device_off_time());
-                    } else{
+                    } else {
                         lastamon = Common.getConvertDateForScheduleHour(scheduleVO.getSchedule_device_on_time());
                         lastamooff = Common.getConvertDateForScheduleHour(scheduleVO.getSchedule_device_off_time());
                     }
@@ -303,12 +300,14 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
                     ChatApplication.logDisplay("SPLIT OFF TIME" + offtime);
 
-                    if (ontime >= 12 || ontime < 6) {
+//                    if (ontime >= 12 || ontime <= 6) {
+                    if (ontime > 12 || ontime < 6) {
                         holder.ll_on.setBackgroundResource(R.drawable.blue_border_purple_top);
                         holder.img_moon.setImageResource(R.drawable.sun_moon);
 
                       /*  holder.ll_off.setBackgroundResource(R.drawable.blue_border_purple_bottom);
                         holder.img_sun.setImageResource(R.drawable.sun_moon);*/
+//                    } else if (ontime > 6) {
                     } else if (ontime >= 6) {
 
                         holder.ll_on.setBackgroundResource(R.drawable.blue_border_yellow_top);
@@ -319,13 +318,13 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                         holder.img_moon.setImageResource(R.drawable.moon);
                     }
 
-                } else if (lastAMPM.equalsIgnoreCase("PM"))
-                {
-                    String lastamon="";
-                    if(scheduleVO.getSchedule_type() == 1){
-                         lastamon = Common.getConvertDateForScheduleTimer(scheduleVO.getSchedule_device_on_time());
-                    } else{
-                         lastamon = Common.getConvertDateForScheduleHour(scheduleVO.getSchedule_device_on_time());
+//                } else if (lastAMPM.contains("PM")) {
+                } else if (lastAMPM.equalsIgnoreCase("PM")) {
+                    String lastamon = "";
+                    if (scheduleVO.getSchedule_type() == 1) {
+                        lastamon = Common.getConvertDateForScheduleTimer(scheduleVO.getSchedule_device_on_time());
+                    } else {
+                        lastamon = Common.getConvertDateForScheduleHour(scheduleVO.getSchedule_device_on_time());
                     }
                     String spliton[] = lastamon.split(":");
                     int ontime = Integer.parseInt(spliton[0]);
@@ -385,11 +384,11 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 //lastAMPM.contains("AM") &&
 
                 if (lastAMPMoff.equalsIgnoreCase("AM")) {
-                    String lastamon="",lastamooff="";
-                    if(scheduleVO.getSchedule_type() == 1){
+                    String lastamon = "", lastamooff = "";
+                    if (scheduleVO.getSchedule_type() == 1) {
                         lastamon = Common.getConvertDateForScheduleTimer(scheduleVO.getSchedule_device_on_time());
-                        lastamooff  = Common.getConvertDateForScheduleTimer(scheduleVO.getSchedule_device_off_time());
-                    } else{
+                        lastamooff = Common.getConvertDateForScheduleTimer(scheduleVO.getSchedule_device_off_time());
+                    } else {
                         lastamon = Common.getConvertDateForScheduleHour(scheduleVO.getSchedule_device_on_time());
                         lastamooff = Common.getConvertDateForScheduleHour(scheduleVO.getSchedule_device_off_time());
                     }
@@ -406,7 +405,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     ChatApplication.logDisplay("SPLIT OFF TIME" + offtime);
 
 
-                    if (offtime >= 12 || offtime < 6) {
+//                    if (offtime >= 12 || offtime <= 6) {
+                    if (offtime > 12 || offtime < 6) {
                         holder.ll_off.setBackgroundResource(R.drawable.blue_border_purple_bottom);
                         holder.img_sun.setImageResource(R.drawable.sun_moon);
                     } else {
@@ -416,23 +416,14 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     }
 
                 } else if (lastAMPMoff.equalsIgnoreCase("PM")) {
-                    String lastamooff="";
-                    if(scheduleVO.getSchedule_type() == 1){
+                    String lastamooff = "";
+                    if (scheduleVO.getSchedule_type() == 1) {
                         lastamooff = Common.getConvertDateForScheduleTimer(scheduleVO.getSchedule_device_off_time());
-                    } else{
+                    } else {
                         lastamooff = Common.getConvertDateForScheduleHour(scheduleVO.getSchedule_device_off_time());
                     }
                     String splitoff[] = lastamooff.split(":");
                     int offtime = Integer.parseInt(splitoff[0]);
-
-                   /* if (offtime > 6) {
-                        holder.ll_off.setBackgroundResource(R.drawable.blue_border_fill_rectangle);
-                        holder.img_sun.setImageResource(R.drawable.moon);
-
-                    } else {
-                        holder.ll_off.setBackgroundResource(R.drawable.blue_border_yellow_right);
-                        holder.img_sun.setImageResource(R.drawable.sun);
-                    }*/
 
                     if (offtime == 12 || offtime == 1 || offtime == 2 || offtime == 3 || offtime == 4 ||
                             offtime == 5 || offtime == 6) {
@@ -445,18 +436,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                         holder.img_sun.setImageResource(R.drawable.moon);
                     }
 
-
-                 /*   holder.ll_schedule_on_off.setBackgroundResource(R.drawable.blue_border_fill_rectangle);
-                    holder.img_moon.setImageResource(R.drawable.moon);
-
-                    // holder.ll_off.setBackgroundResource(R.drawable.blue_border_purple_bottom);
-                    holder.img_sun.setImageResource(R.drawable.moon);*/
                 }
 
-               /* if ((lastAMPM.equalsIgnoreCase("AM") || lastAMPM.equalsIgnoreCase("am")) && scheduleVO.getSchedule_device_on_time().equalsIgnoreCase("")) {
-                    holder.ll_off.setBackgroundResource(R.drawable.yellow_border_fill_rectangle);
-                    holder.img_sun.setImageResource(R.drawable.sun);
-                }*/
 
             } else {
 
@@ -498,7 +479,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
                 holder.linearRoomSchedule.setBackgroundColor(mContext.getResources().getColor(R.color.automation_white));
                 holder.tv_schedule_name.setTextColor(mContext.getResources().getColor(R.color.sensor_button));
-             //   holder.ll_schedule_on_off.setBackgroundResource(R.drawable.blue_border_fill_rectangle);
+                //   holder.ll_schedule_on_off.setBackgroundResource(R.drawable.blue_border_fill_rectangle);
                 holder.tv_schedule_on_time.setTextColor(mContext.getResources().getColor(R.color.automation_white));
                 holder.tv_schedule_on.setTextColor(mContext.getResources().getColor(R.color.automation_white));
                 holder.tv_schedule_off_time.setTextColor(mContext.getResources().getColor(R.color.automation_white));
@@ -676,7 +657,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         View view, view_line_top;
         int viewType;
         TextView tv_schedule_name, tv_schedule_days, tv_name, tv_schedule_on, tv_schedule_off, /*tv_auto_on,*/
-                tv_auto_off, tv_schedule_on_time, tv_schedule_off_time,txt_schedule_status;
+                tv_auto_off, tv_schedule_on_time, tv_schedule_off_time, txt_schedule_status;
         ImageView iv_schedule_edit, iv_schedule_delete, iv_schedule_dots, iv_sch_type, image_section_edit,
                 img_sun, img_moon, iv_sche_type_enable;
         LinearLayout ll_schedule_on_off, linearRoomSchedule, ll_on, ll_off;

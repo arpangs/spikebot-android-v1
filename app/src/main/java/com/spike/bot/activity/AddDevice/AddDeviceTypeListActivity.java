@@ -52,7 +52,6 @@ import com.spike.bot.activity.ir.blaster.IRRemoteAdd;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
-import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.dialog.AddRoomDialog;
@@ -75,7 +74,7 @@ import io.socket.emitter.Emitter;
  */
 public class AddDeviceTypeListActivity extends AppCompatActivity {
 
-    public static int SENSOR_TYPE_PANAL = 0, SENSOR_TYPE_DOOR = 1, SENSOR_TYPE_TEMP = 2, SENSOR_GAS = 5, Curtain = 6, typeSync = 0, SENSOR_WATER = 7, sensorposition = 0, type1 = 0;
+    public static int SENSOR_TYPE_PANAL = 0, SENSOR_TYPE_DOOR = 1, SENSOR_TYPE_TEMP = 2, SENSOR_GAS = 5, Curtain = 6, typeSync = 0, SENSOR_WATER = 7, PIR_DETECTOR = 8, type1 = 0, sensorposition = 0;
     public AddRoomDialog addRoomDialog;
     Toolbar toolbar;
     RecyclerView recyclerSmartDevice;
@@ -147,7 +146,6 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                                 showGasSensor(object.optString("module_id"), object.optString("module_type"));
                             }
                         } else {
-
                             showConfigAlert(object.getString("message"), object.optString("module_type"));
                         }
 
@@ -236,7 +234,10 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                 R.drawable.smart_camera,
                 R.drawable.drop,
                 R.drawable.beaconsearch,
-                R.drawable.beaconscanner,};
+                R.drawable.beaconscanner,
+                R.drawable.pir_detector_on,
+
+        };
 
 
         DeviceList list = new DeviceList("Unassigned List", covers[0]);
@@ -293,6 +294,8 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         list = new DeviceList("Beacon Scanner", covers[16]);
         arrayList.add(list);
 
+        list = new DeviceList("PIR Detector", covers[17]);
+        arrayList.add(list);
 /*
         arrayList.add("Unassigned List");
         arrayList.add("Room");
@@ -399,6 +402,9 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         } else if (position == 16) {
             Intent intent = new Intent(this, BeaconScannerAddActivity.class);
             startActivity(intent);
+        } else if (position == 17) {
+            showOptionDialog(PIR_DETECTOR);
+            sensorposition = position;
         }
     }
 
@@ -571,6 +577,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                     mSocket.on("configureDevice", configureDevice);
                 }
                 getgasConfigData(SENSOR_TYPE_PANAL);
+
             }
         });
         btn_unaasign.setOnClickListener(new View.OnClickListener() {
@@ -627,6 +634,8 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             txtDialogTitle.setText("Door Sensor");
         } else if (sensor_type == SENSOR_WATER) {
             txtDialogTitle.setText("Water Detector");
+        } else if (sensor_type == PIR_DETECTOR) {
+            txtDialogTitle.setText("PIR Detector");
         } else {
             txtDialogTitle.setText("Panel");
         }
@@ -656,6 +665,8 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                     unassignIntent("door_sensor");
                 } else if (sensor_type == 2) {
                     unassignIntent("temp_sensor");
+                } else if (sensor_type == PIR_DETECTOR) {
+                    unassignIntent("pir_device");
                 } else {
                     unassignIntent("gas_sensor");
                 }
@@ -697,6 +708,8 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             ActivityHelper.showProgressDialog(AddDeviceTypeListActivity.this, "Searching for new door sensor", false);
         } else if (type == SENSOR_WATER) {
             ActivityHelper.showProgressDialog(AddDeviceTypeListActivity.this, "Searching for new water detector", false);
+        } else if (type == PIR_DETECTOR) {
+            ActivityHelper.showProgressDialog(AddDeviceTypeListActivity.this, "Searching for new PIR detector", false);
         } else {
             ActivityHelper.showProgressDialog(AddDeviceTypeListActivity.this, "Searching for new panel", false);
         }
@@ -814,15 +827,15 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             return;
         }
 
-        JSONObject object = new JSONObject();
+       /* JSONObject object = new JSONObject();
         try {
-            object.put("key", roomName.getText().toString()); /*key is spike123*/
+            object.put("key", roomName.getText().toString()); *//*key is spike123*//*
             object.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
         } catch (JSONException e) {
             e.printStackTrace();
-        }
+        }*/
 
         showProgressDialog(this, "Searching Device attached ", false);
 
@@ -1060,6 +1073,10 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         final TextView edt_door_module_id = dialog.findViewById(R.id.txt_module_id);
         final Spinner sp_room_list = dialog.findViewById(R.id.sp_room_list);
 
+        TextView mTxtDeviceType = dialog.findViewById(R.id.txt_device_type);
+        LinearLayout llview = dialog.findViewById(R.id.ll_device_type);
+
+
         TextView dialogTitle = dialog.findViewById(R.id.tv_title);
         TextView txt_sensor_name = dialog.findViewById(R.id.txt_sensor_name);
 
@@ -1079,6 +1096,10 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         } else if (typeSync == SENSOR_WATER) {
             dialogTitle.setText("Add Water Detector");
             txt_sensor_name.setText("Detector Name");
+        } else if (typeSync == PIR_DETECTOR) {
+            dialogTitle.setText("Add PIR Detector");
+            txt_sensor_name.setText("Detector Name");
+            llview.setVisibility(View.VISIBLE);
         } else {
             dialogTitle.setText("Add Panel");
             txt_sensor_name.setText("Panel Name");
@@ -1086,6 +1107,10 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
         edt_door_module_id.setText(door_module_id);
         edt_door_module_id.setFocusable(false);
+
+
+        mTxtDeviceType.setText(module_type != null ? module_type.toUpperCase() : "Device type not found");
+
 
         TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(AddDeviceTypeListActivity.this, roomNameList, 1, false);
         sp_room_list.setAdapter(customAdapter);
@@ -1220,6 +1245,12 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
         if (!module_type.equals("water_detector") && sensorposition == 14) {
             builder.setMessage("Attached device is not water detector");
+        } else {
+            builder.setMessage(alertMessage);
+        }
+
+        if (!module_type.equals("pir_detector") && sensorposition == 17) {
+            builder.setMessage("Attached device is not pir detector");
         } else {
             builder.setMessage(alertMessage);
         }

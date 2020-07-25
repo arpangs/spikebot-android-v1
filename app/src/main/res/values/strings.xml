@@ -83,5 +83,6 @@
     <string name="add_schedule">ADD A SCHEDULE</string>
     <string name="add_smartremote">ADD A SMART REMOTE</string>
     <string name="connected">CONNECTED TO</string>
+    <string name="maxvaluecondition">Max value should bigger than the Min value.</string>
 
 </resources>

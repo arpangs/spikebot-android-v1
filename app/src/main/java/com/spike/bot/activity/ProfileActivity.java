@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Spannable;
@@ -25,6 +24,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
+import com.kp.core.ActivityHelper;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.core.Common;
@@ -35,16 +35,16 @@ import com.spike.bot.fragments.UserProfileFragment;
 import java.util.ArrayList;
 
 public class ProfileActivity extends AppCompatActivity {
+    public ViewPager mViewPager;
+    public TextView txtVersionCode;
     String TAG = "ProfileActivity";
     boolean isFlagUser = false;
     Activity activity;
     TabLayout tabLayout;
-    public ViewPager mViewPager;
-    public TextView txtVersionCode;
-    private SectionsPagerAdapter mSectionsPagerAdapter;
     ArrayList<Fragment> fragmentList = new ArrayList<>();
     ArrayList<String> strList = new ArrayList<>();
     MenuItem menuAdd, menuAddSave, menuaddtext;
+    private SectionsPagerAdapter mSectionsPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,11 +81,11 @@ public class ProfileActivity extends AppCompatActivity {
 
 
         SpannableString s = new SpannableString("User Details");
-        s.setSpan(new TypefaceSpan( "Axiforma.ttf"), 0, s.length(),
+        s.setSpan(new TypefaceSpan("Axiforma.ttf"), 0, s.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         SpannableString s1 = new SpannableString("Child Users");
-        s1.setSpan(new TypefaceSpan( "Axiforma.ttf"), 0, s1.length(),
+        s1.setSpan(new TypefaceSpan("Axiforma.ttf"), 0, s1.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -98,13 +98,15 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
+                ActivityHelper.hideKeyboard(ProfileActivity.this);
             }
 
             @Override
             public void onPageSelected(int position) {
 
+                ActivityHelper.hideKeyboard(ProfileActivity.this);
                 //lock second
-                if (isFlagUser && menuAdd!=null) {
+                if (isFlagUser && menuAdd != null) {
                     if (position == 1) {
                         menuaddtext.setVisible(true);
                     } else {
@@ -116,7 +118,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
+                ActivityHelper.hideKeyboard(ProfileActivity.this);
             }
         });
 
@@ -181,6 +183,17 @@ public class ProfileActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        ChatApplication.logDisplay("activity is " + requestCode + " " + requestCode);
+        if (requestCode == 1001 && resultCode == RESULT_OK) {
+            for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                fragment.onActivityResult(requestCode, resultCode, data);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -214,16 +227,5 @@ public class ProfileActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             return strList.get(position);
         }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        ChatApplication.logDisplay("activity is " + requestCode + " " + requestCode);
-        if (requestCode == 1001 && resultCode == RESULT_OK) {
-            for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                fragment.onActivityResult(requestCode, resultCode, data);
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 }

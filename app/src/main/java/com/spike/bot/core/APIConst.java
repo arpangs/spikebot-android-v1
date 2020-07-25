@@ -13,6 +13,7 @@ public class APIConst {
     public static final String  PHONE_ID_KEY       = "phone_id";
     public static final String  PHONE_TYPE_KEY     = "phone_type";
 
-    public static final String PHONE_ID_VALUE      = ActivityHelper.getIMEI(ChatApplication.getInstance());
+//    public static final String PHONE_ID_VALUE      = ActivityHelper.getIMEI(ChatApplication.getInstance());
+    public static String PHONE_ID_VALUE      = ActivityHelper.getIMEI(ChatApplication.getInstance());
     public static final String PHONE_TYPE_VALUE    = Constants.ANDROID;
 }

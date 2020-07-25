@@ -543,7 +543,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                     if (code == 200) {
                         dialog.dismiss();
                         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-                    } else{
+                    } else {
                         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                     }
 
@@ -591,6 +591,8 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         inputnewPassword.setVisibility(View.VISIBLE);
         inputconfirmPassword.setVisibility(View.VISIBLE);
 
+        inputPassword.setHint("Enter current password");
+
         TextView tv_title = dialog.findViewById(R.id.tv_title);
         Button btnSave = dialog.findViewById(R.id.btn_save);
         Button btn_cancel = dialog.findViewById(R.id.btn_cancel);
@@ -626,8 +628,8 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                     ChatApplication.showToast(getActivity(), "Please enter password");
                 }*/
 
-                strnewpassword=edtnewPasswordChild.getText().toString();
-                strconfirmpassword=edtconfirmPasswordChild.getText().toString();
+                strnewpassword = edtnewPasswordChild.getText().toString();
+                strconfirmpassword = edtconfirmPasswordChild.getText().toString();
 
                 if (TextUtils.isEmpty(edtOldPasswordChild.getText().toString())) {
                     ChatApplication.showToast(getActivity(), "Please enter old password");

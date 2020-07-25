@@ -605,7 +605,12 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
 
-        SpikeBotApi.getInstance().AddUserChild(modeType, user.getUser_id(), roomListString, cameraList,
+        String mUserID = "";
+        if(user != null && user.getUser_id() != null){
+            mUserID = user.getUser_id();
+        }
+
+        SpikeBotApi.getInstance().AddUserChild(modeType, mUserID, roomListString, cameraList,
                 edtUsername.getText().toString(), edDisplayName.getText().toString(), strPassword, new DataResponseListener() {
                     @Override
                     public void onData_SuccessfulResponse(String stringResponse) {

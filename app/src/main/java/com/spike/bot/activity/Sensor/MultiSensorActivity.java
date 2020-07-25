@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -40,8 +39,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
@@ -50,7 +47,6 @@ import com.spike.bot.adapter.HumiditySensorAdapter;
 import com.spike.bot.adapter.TempMultiSensorAdapter;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
-import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.listener.OnHumitySensorContextMenu;
@@ -80,39 +76,90 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         OnNotificationSensorContextMenu, OnHumitySensorContextMenu,
         ConnectivityReceiver.ConnectivityReceiverListener {
 
-    private RecyclerView sensor_list, recyclerAlert, sensor_list_temp;
-    private TempMultiSensorAdapter tempSensorInfoAdapter;
-    private HumiditySensorAdapter humiditySensorAdapter;
-
     public NestedScrollView scrollviewMulti;
-    private EditText edsensorName;
     public View viewEditSensor;
-    private ImageView view_rel_badge, iv_icon_edit, imgLog;
-    private TextView txtAlertCount, txtEmpty, txtEmpty_temp, txtHumity, txtTempCount, tempCFValue,
-            txtTempAlertCount, txtCButton, txtFButton, txtTempAlertCount_temp, txtTempCount_temp, txtAddButton, txtAddButtonTemp,txt_battery_level;
-    private Button btn_delete;
-    private ToggleButton toggleAlert, toggleAlert_temp, toggleAlertSensor;
-    private LinearLayout linearAlertExpand, linearAlertDown, linearAlertExpand_temp, linearAlertDown_temp, linearMultisensor,edt_txt_layout2,edt_txt_layout_temp;
-    private boolean flagAlert = false, flagAlertTemp = false, flagEditSensor = false, flagSensorNoti = false;
+    public boolean isCFDone = false;
+    /**
+     * fill Date from model class
+     *
+     * @param sensorResModel
+     * @param isCF
+     */
 
-    private String temp_room_name, temp_room_id, temp_module_id, temp_sensor_name;
-    private int isCFSelected = -1;
-    private Socket mSocket;
-
-    private RemoteDetailsRes mRemoteList;
-    private RemoteDetailsRes.Data mRemoteCommandList;
+    public int init = 1;
     //    SensorResModel.DATA.TempList[] tempLists;
     ArrayList<RemoteDetailsRes.Data.Alert> notificationList = new ArrayList<>();
     ArrayList<RemoteDetailsRes.Data.Alert> notificationHumidityList = new ArrayList<>();
-
+    Dialog tempSensorNotificationDialog;
+    View view_line_top_temp, view_line_top;
+    String repeatDayString = "";
+    private RecyclerView sensor_list, recyclerAlert, sensor_list_temp;
+    private TempMultiSensorAdapter tempSensorInfoAdapter;
+    private HumiditySensorAdapter humiditySensorAdapter;
+    private EditText edsensorName;
+    private ImageView view_rel_badge, iv_icon_edit, imgLog;
+    private TextView txtAlertCount, txtEmpty, txtEmpty_temp, txtHumity, txtTempCount, tempCFValue,
+            txtTempAlertCount, txtCButton, txtFButton, txtTempAlertCount_temp, txtTempCount_temp, txtAddButton, txtAddButtonTemp, txt_battery_level;
+    private Button btn_delete;
+    private ToggleButton toggleAlert, toggleAlert_temp, toggleAlertSensor;
+    private LinearLayout linearAlertExpand, linearAlertDown, linearAlertExpand_temp, linearAlertDown_temp, linearMultisensor, edt_txt_layout2, edt_txt_layout_temp;
+    private boolean flagAlert = false, flagAlertTemp = false, flagEditSensor = false, flagSensorNoti = false;
+    private String temp_room_name, temp_room_id, temp_module_id, temp_sensor_name;
+    private int isCFSelected = -1;
+    private Socket mSocket;
+    private RemoteDetailsRes mRemoteList;
+    private RemoteDetailsRes.Data mRemoteCommandList;
     private int mScrollState = AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
     private int lastVisibleItem;
     private boolean isScrollToEndPosition = false;
-
     private TextView text_day_1, text_day_2, text_day_3, text_day_4, text_day_5, text_day_6, text_day_7;
-    Dialog tempSensorNotificationDialog;
-    public boolean isCFDone = false;
-    View view_line_top_temp,view_line_top;
+    /*change device status socket getting
+     * defult value is celsius */
+    private Emitter.Listener changeDeviceStatus = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+
+            MultiSensorActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    if (args != null) {
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+
+                            //{"device_id":"1571998596623_EE9U9Ovz7w","device_type":"temp_sensor","device_status":"28","device_sub_status":43}
+
+                            ChatApplication.logDisplay("temp is " + object);
+
+                            if (mRemoteCommandList.getDevice().getDevice_id().equalsIgnoreCase(object.optString("device_id"))) {
+                                if (!TextUtils.isEmpty(object.optString("device_sub_status"))) {
+                                    txtHumity.setText(object.optString("device_sub_status") + " %");
+                                } else {
+                                    txtHumity.setText("--");
+                                }
+
+                                if (!TextUtils.isEmpty(object.optString("device_status"))) {
+                                    mRemoteCommandList.getDevice().setDeviceStatus(object.optString("device_status"));
+                                    mRemoteCommandList.getDevice().setFahrenheitvalue(Constants.getFTemp(object.optString("device_status")));
+                                }
+
+                                if (isCFSelected == 1) {
+                                    setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_yellow, R.drawable.txt_background_white, Color.parseColor("#FFFFFF"), Color.parseColor("#111111"));
+                                    tempCFValue.setText(mRemoteCommandList.getDevice().getDeviceStatus() + " " + Common.getC());
+                                } else {
+                                    setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_white_temp, R.drawable.txt_background_blue, Color.parseColor("#111111"), Color.parseColor("#FFFFFF"));
+                                    tempCFValue.setText(mRemoteCommandList.getDevice().getFahrenheitvalue() + " " + "F");
+                                }
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+    };
 
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
@@ -165,58 +212,9 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         }
 
         if (mSocket != null) {
-            mSocket.on("changeDeviceStatus", changeDeviceStatus );
+            mSocket.on("changeDeviceStatus", changeDeviceStatus);
         }
     }
-
-
-    /*change device status socket getting
-    * defult value is celsius */
-    private Emitter.Listener changeDeviceStatus  = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-
-            MultiSensorActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    if (args != null) {
-                        try {
-                            JSONObject object = new JSONObject(args[0].toString());
-
-                            //{"device_id":"1571998596623_EE9U9Ovz7w","device_type":"temp_sensor","device_status":"28","device_sub_status":43}
-
-                            ChatApplication.logDisplay("temp is " + object);
-
-                            if(mRemoteCommandList.getDevice().getDevice_id().equalsIgnoreCase(object.optString("device_id"))) {
-                                if (!TextUtils.isEmpty(object.optString("device_sub_status"))) {
-                                    txtHumity.setText(object.optString("device_sub_status") + " %");
-                                } else {
-                                    txtHumity.setText("--");
-                                }
-
-                                if (!TextUtils.isEmpty(object.optString("device_status"))) {
-                                    mRemoteCommandList.getDevice().setDeviceStatus(object.optString("device_status"));
-                                    mRemoteCommandList.getDevice().setFahrenheitvalue(Constants.getFTemp(object.optString("device_status")));
-                                }
-
-                                if (isCFSelected == 1) {
-                                    setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_yellow, R.drawable.txt_background_white, Color.parseColor("#FFFFFF"), Color.parseColor("#111111"));
-                                    tempCFValue.setText(mRemoteCommandList.getDevice().getDeviceStatus() + " " +  Common.getC());
-                                } else {
-                                    setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_white_temp, R.drawable.txt_background_blue, Color.parseColor("#111111"), Color.parseColor("#FFFFFF"));
-                                    tempCFValue.setText(mRemoteCommandList.getDevice().getFahrenheitvalue() + " " + "F");
-                                }
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-        }
-    };
 
     @Override
     protected void onDestroy() {
@@ -225,7 +223,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             mSocket.off("changeDeviceStatus ", changeDeviceStatus);
         }
     }
-
 
     private void bindView() {
 
@@ -266,7 +263,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         linearMultisensor = findViewById(R.id.linearMultisensor);
         imgLog = findViewById(R.id.imgLog);
         view_line_top_temp = findViewById(R.id.view_line_top_temp);
-        view_line_top= findViewById(R.id.view_line_top);
+        view_line_top = findViewById(R.id.view_line_top);
 
         txtTempCount = findViewById(R.id.txtTempCount);
         txtTempCount_temp = findViewById(R.id.txtTempCount_temp);
@@ -327,13 +324,13 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                     toggleAlert.setChecked(flagAlert);
                     linearAlertExpand.setVisibility(View.GONE);
                     view_line_top.setVisibility(View.GONE);
-                  //  edt_txt_layout2.setBackground(getResources().getDrawable(R.drawable.background_shadow));
+                    //  edt_txt_layout2.setBackground(getResources().getDrawable(R.drawable.background_shadow));
                 } else {
                     flagAlert = true;
                     toggleAlert.setChecked(flagAlert);
                     view_line_top.setVisibility(View.VISIBLE);
                     linearAlertExpand.setVisibility(View.VISIBLE);
-                   // edt_txt_layout2.setBackground(getResources().getDrawable(R.drawable.background_shadow_bottom_side));
+                    // edt_txt_layout2.setBackground(getResources().getDrawable(R.drawable.background_shadow_bottom_side));
                 }
             }
         });
@@ -346,13 +343,13 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                     toggleAlert_temp.setChecked(flagAlertTemp);
                     linearAlertExpand_temp.setVisibility(View.GONE);
                     view_line_top_temp.setVisibility(View.GONE);
-                //    edt_txt_layout_temp.setBackground(getResources().getDrawable(R.drawable.background_shadow));
+                    //    edt_txt_layout_temp.setBackground(getResources().getDrawable(R.drawable.background_shadow));
                 } else {
                     flagAlertTemp = true;
                     toggleAlert_temp.setChecked(flagAlertTemp);
                     linearAlertExpand_temp.setVisibility(View.VISIBLE);
                     view_line_top_temp.setVisibility(View.VISIBLE);
-                  //  edt_txt_layout_temp.setBackground(getResources().getDrawable(R.drawable.background_shadow_bottom_side));
+                    //  edt_txt_layout_temp.setBackground(getResources().getDrawable(R.drawable.background_shadow_bottom_side));
                 }
             }
         });
@@ -434,21 +431,21 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                 ActivityHelper.dismissProgressDialog();
                 try {
                     JSONObject result = new JSONObject(stringResponse);
-                    ChatApplication.logDisplay("url is result "+result);
+                    ChatApplication.logDisplay("url is result " + result);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     if (code == 200) {
 
                         if (isType == 1) {
                             if (position != -1) {
-                                notificationList.get(position).setIsActive(isActive ? "y" :"n");
+                                notificationList.get(position).setIsActive(isActive ? "y" : "n");
                             }
 
                             tempSensorInfoAdapter.notifyItemChanged(position, notificationList.get(position));
                             tempSensorInfoAdapter.notifyDataSetChanged();
-                        }else {
+                        } else {
                             if (position != -1) {
-                                notificationHumidityList.get(position).setIsActive(isActive ? "y" :"n");
+                                notificationHumidityList.get(position).setIsActive(isActive ? "y" : "n");
                             }
 
                             humiditySensorAdapter.notifyItemChanged(position, notificationHumidityList.get(position));
@@ -755,8 +752,17 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         button_save_notification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 hideKeyboard();
-                addHumity(txt_notification_alert, edit_min_value, edit_max_value, isEdit, isEdit ? notificationList.getDeviceId() : "");
+                if ((!(edit_max_value.getText().toString().equals(null)) && !(edit_max_value.getText().toString().equals(""))) && (!(edit_min_value.getText().toString().equals(null)) && !(edit_min_value.getText().toString().equals("")))) {
+                    int Min = Integer.parseInt(edit_min_value.getText().toString());
+                    int Max = Integer.parseInt(edit_max_value.getText().toString());
+                    if (Min > Max) {
+                        Toast.makeText(MultiSensorActivity.this, R.string.maxvaluecondition, Toast.LENGTH_SHORT).show();
+                    } else {
+                        addHumity(txt_notification_alert, edit_min_value, edit_max_value, isEdit, isEdit ? notificationList.getDeviceId() : "", isEdit ? notificationList.getAlertId() : "");
+                    }
+                }
             }
 
         });
@@ -937,7 +943,19 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             public void onClick(View v) {
 
                 hideKeyboard();
-                addNotification(txt_notification_alert, edit_min_value, edit_max_value, isEdit, isEdit ? notificationList.getAlertId() : "");
+                if ((!(edit_max_value.getText().toString().equals(null)) && !(edit_max_value.getText().toString().equals(""))) && (!(edit_min_value.getText().toString().equals(null)) && !(edit_min_value.getText().toString().equals("")))) {
+                    int Min = Integer.parseInt(edit_min_value.getText().toString());
+                    int Max = Integer.parseInt(edit_max_value.getText().toString());
+
+                    if (Min > Max) {
+                        Toast.makeText(MultiSensorActivity.this, R.string.maxvaluecondition, Toast.LENGTH_SHORT).show();
+                        return;
+                    } else {
+                        addNotification(txt_notification_alert, edit_min_value, edit_max_value, isEdit, isEdit ? notificationList.getAlertId() : "");
+                    }
+                }
+
+
             }
 
         });
@@ -957,7 +975,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     /**
      * add humidity
      */
-    private void addHumity(final TextView txt_notification_alert, EditText minValue, final EditText maxValue, boolean isEdit, String temp_sensor_notification_id) {
+    private void addHumity(final TextView txt_notification_alert, EditText minValue, final EditText maxValue, boolean isEdit, String temp_sensor_notification_id, String alert_ID) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             showToast("" + R.string.disconnect);
@@ -985,9 +1003,13 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-        SpikeBotApi.getInstance().addHumity(Integer.parseInt(minValue.getText().toString().trim()), Integer.parseInt(maxValue.getText().toString().trim()),
-                repeatDayString, temp_module_id, mRemoteCommandList.getDevice().getDevice_id(), isEdit, new DataResponseListener()
-                {
+
+        SpikeBotApi.getInstance().addHumity(Integer.parseInt(minValue.getText().toString().trim()),
+                Integer.parseInt(maxValue.getText().toString().trim()),
+                repeatDayString,
+                alert_ID,
+                mRemoteCommandList.getDevice().getDevice_id(),
+                isEdit, new DataResponseListener() {
                     @Override
                     public void onData_SuccessfulResponse(String stringResponse) {
                         ActivityHelper.dismissProgressDialog();
@@ -1062,9 +1084,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-        SpikeBotApi.getInstance().addTempNotification(Integer.parseInt(minValue.getText().toString().trim()),Integer.parseInt(maxValue.getText().toString().trim()),repeatDayString,
-                temp_sensor_notification_id,mRemoteCommandList.getDevice().getDevice_id(),isEdit,isCFSelected, new DataResponseListener()
-                {
+        SpikeBotApi.getInstance().addTempNotification(Integer.parseInt(minValue.getText().toString().trim()), Integer.parseInt(maxValue.getText().toString().trim()), repeatDayString,
+                temp_sensor_notification_id, mRemoteCommandList.getDevice().getDevice_id(), isEdit, isCFSelected, new DataResponseListener() {
                     @Override
                     public void onData_SuccessfulResponse(String stringResponse) {
                         ActivityHelper.dismissProgressDialog();
@@ -1127,7 +1148,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         } else if (id == R.id.txt_f_button) {
             setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_white_temp, R.drawable.txt_background_blue, Color.parseColor("#111111"), Color.parseColor("#FFFFFF"));
             isCFSelected = 0;
-         //   ChatApplication.showToast(MultiSensorActivity.this,"F CLick");
+            //   ChatApplication.showToast(MultiSensorActivity.this,"F CLick");
             notifyAdapter(false);
 
         } else if (id == R.id.btn_delete) {
@@ -1140,13 +1161,13 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                 toggleAlert.setChecked(flagAlert);
                 linearAlertExpand.setVisibility(View.GONE);
                 view_line_top.setVisibility(View.GONE);
-               // edt_txt_layout2.setBackground(getResources().getDrawable(R.drawable.background_shadow));
+                // edt_txt_layout2.setBackground(getResources().getDrawable(R.drawable.background_shadow));
             } else {
                 flagAlert = true;
                 toggleAlert.setChecked(flagAlert);
                 linearAlertExpand.setVisibility(View.VISIBLE);
                 view_line_top.setVisibility(View.VISIBLE);
-               // edt_txt_layout2.setBackground(getResources().getDrawable(R.drawable.background_shadow_bottom_side));
+                // edt_txt_layout2.setBackground(getResources().getDrawable(R.drawable.background_shadow_bottom_side));
 
             }
         } else if (id == R.id.linearAlertDown_temp) {
@@ -1155,13 +1176,13 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                 toggleAlert_temp.setChecked(flagAlertTemp);
                 linearAlertExpand_temp.setVisibility(View.GONE);
                 view_line_top_temp.setVisibility(View.GONE);
-             //   edt_txt_layout_temp.setBackground(getResources().getDrawable(R.drawable.background_shadow));
+                //   edt_txt_layout_temp.setBackground(getResources().getDrawable(R.drawable.background_shadow));
             } else {
                 flagAlertTemp = true;
                 toggleAlert_temp.setChecked(flagAlertTemp);
                 linearAlertExpand_temp.setVisibility(View.VISIBLE);
                 view_line_top_temp.setVisibility(View.VISIBLE);
-              //  edt_txt_layout_temp.setBackground(getResources().getDrawable(R.drawable.background_shadow_bottom_side));
+                //  edt_txt_layout_temp.setBackground(getResources().getDrawable(R.drawable.background_shadow_bottom_side));
             }
         } else if (v == iv_icon_edit) {
 
@@ -1189,11 +1210,11 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
 
 
-        BottomSheetDialog dialog = new BottomSheetDialog(MultiSensorActivity.this,R.style.AppBottomSheetDialogTheme);
+        BottomSheetDialog dialog = new BottomSheetDialog(MultiSensorActivity.this, R.style.AppBottomSheetDialogTheme);
         dialog.setContentView(view);
         dialog.show();
 
-        txt_bottomsheet_title.setText("What would you like to do in" + " " + temp_sensor_name + " " +"?");
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + temp_sensor_name + " " + "?");
         linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1237,7 +1258,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             }
         });
     }
-
 
     /**
      * delete individual temp sensor
@@ -1286,7 +1306,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
     }
 
-
     /**
      * notify adapter if user selected C or F toggle button
      *
@@ -1296,7 +1315,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
         if (isCF) {
             setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_yellow, R.drawable.txt_background_white, Color.parseColor("#FFFFFF"), Color.parseColor("#111111"));
-            tempCFValue.setText(mRemoteCommandList.getDevice().getDeviceStatus() + " " +  Common.getC());
+            tempCFValue.setText(mRemoteCommandList.getDevice().getDeviceStatus() + " " + Common.getC());
 
         } else {
             setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_white_temp, R.drawable.txt_background_blue, Color.parseColor("#111111"), Color.parseColor("#FFFFFF"));
@@ -1328,10 +1347,9 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     public void onEditOpetion(final RemoteDetailsRes.Data.Alert notification, int position, boolean isEdit) {
 
         if (isEdit) {
-            showBottomSheetDialognotification(notification,isEdit);
+            showBottomSheetDialognotification(notification, isEdit);
         }
     }
-
 
     public void showBottomSheetDialognotification(final RemoteDetailsRes.Data.Alert notification, boolean isEdit) {
         View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
@@ -1341,11 +1359,11 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
 
 
-        BottomSheetDialog dialog = new BottomSheetDialog(MultiSensorActivity.this,R.style.AppBottomSheetDialogTheme);
+        BottomSheetDialog dialog = new BottomSheetDialog(MultiSensorActivity.this, R.style.AppBottomSheetDialogTheme);
         dialog.setContentView(view);
         dialog.show();
 
-        txt_bottomsheet_title.setText("What would you like to do in" + " " + "temperature notification" + " " +"?");
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + "temperature notification" + " " + "?");
         linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1373,7 +1391,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             }
         });
     }
-
 
     /**
      * check if temp sensro notification status update or not
@@ -1452,9 +1469,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         });
     }
 
-
-    String repeatDayString = "";
-
     public void getRepeatString() {
 
         repeatDayString = "";
@@ -1487,7 +1501,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
 
     }
-
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -1535,7 +1548,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                         fillData(mRemoteCommandList, true);
                     }
                     ActivityHelper.dismissProgressDialog();
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -1552,15 +1565,6 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             }
         });
     }
-
-    /**
-     * fill Date from model class
-     *
-     * @param sensorResModel
-     * @param isCF
-     */
-
-    public int init = 1;
 
     private void fillData(RemoteDetailsRes.Data sensorResModel, boolean isCF) {
 
@@ -1585,11 +1589,10 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             tempCFValue.setText(sensorResModel.getDevice().getFahrenheitvalue() + " " + "F");
         }
 
-        if(sensorResModel.getDevice().getMeta_battery_level()!=null)
-        {
+        if (sensorResModel.getDevice().getMeta_battery_level() != null) {
 
             int perc = 0;
-            if (!TextUtils.isEmpty(""+sensorResModel.getDevice().getMeta_battery_level())) {
+            if (!TextUtils.isEmpty("" + sensorResModel.getDevice().getMeta_battery_level())) {
                 try {
                     perc = Integer.parseInt(sensorResModel.getDevice().getMeta_battery_level());
                 } catch (Exception ex) {
@@ -1599,10 +1602,10 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             }
 
 
-            if(perc > 100){
+            if (perc > 100) {
                 txt_battery_level.setText("100" + "%");
                 txt_battery_level.setTextColor(getResources().getColor(R.color.battery_high));
-            } else{
+            } else {
                 txt_battery_level.setText(perc + " %");
             }
 
@@ -1615,7 +1618,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             else if (perc >= 76 && perc <= 100)
                 txt_battery_level.setTextColor(getResources().getColor(R.color.battery_high));
 
-        } else{
+        } else {
             txt_battery_level.setText("- -");
         }
 
@@ -1626,7 +1629,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             txtHumity.setText("   - -");
         }
 
-        if(sensorResModel.getDevice().getIsActive().contains("n")){
+        if (sensorResModel.getDevice().getIsActive().contains("n")) {
             tempCFValue.setText("   - -");
             txtHumity.setText("   - -");
             txt_battery_level.setText("- -");
@@ -1641,8 +1644,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         }
 
         //humibity
-        if (notificationHumidityList != null && notificationHumidityList.size() > 0)
-        {
+        if (notificationHumidityList != null && notificationHumidityList.size() > 0) {
             txtEmpty_temp.setVisibility(View.GONE);
             sensor_list_temp.setVisibility(View.VISIBLE);
             txtTempAlertCount_temp.setVisibility(View.VISIBLE);
@@ -1711,15 +1713,14 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
 
         } else {
-            txtTempAlertCount_temp.setText("0"+ " " + " Humidity Notification");
+            txtTempAlertCount_temp.setText("0" + " " + " Humidity Notification");
             txtTempCount_temp.setText("Humidity Notification");
             sensor_list_temp.setVisibility(View.GONE);
             txtEmpty_temp.setVisibility(View.GONE);
         }
 
         /*for temp list set*/
-        if (notificationList != null && notificationList.size() > 0)
-        {
+        if (notificationList != null && notificationList.size() > 0) {
             txtEmpty.setVisibility(View.GONE);
             sensor_list.setVisibility(View.VISIBLE);
             txtTempAlertCount.setVisibility(View.VISIBLE);
@@ -1784,7 +1785,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             }
 
         } else {
-            txtTempAlertCount.setText("0" + " " +" Temperature Notification");
+            txtTempAlertCount.setText("0" + " " + " Temperature Notification");
             txtTempCount.setText("Temperature Notification");
             sensor_list.setVisibility(View.GONE);
             txtEmpty.setVisibility(View.GONE);
@@ -1798,7 +1799,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
         if (isEdit) {
 
-            showBottomSheetDialoghumidity(notification,isEdit);
+            showBottomSheetDialoghumidity(notification, isEdit);
         }
     }
 
@@ -1810,11 +1811,11 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
 
 
-        BottomSheetDialog dialog = new BottomSheetDialog(MultiSensorActivity.this,R.style.AppBottomSheetDialogTheme);
+        BottomSheetDialog dialog = new BottomSheetDialog(MultiSensorActivity.this, R.style.AppBottomSheetDialogTheme);
         dialog.setContentView(view);
         dialog.show();
 
-        txt_bottomsheet_title.setText("What would you like to do in" + " " + "humidity notification" + " " +"?");
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + "humidity notification" + " " + "?");
         linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

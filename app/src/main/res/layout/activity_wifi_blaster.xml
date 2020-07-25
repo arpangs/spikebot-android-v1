@@ -67,7 +67,7 @@
                     android:layout_marginTop="25dp"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:text="Your device has created a temporary Wi-Fi hotspot. To set it up, connect to it in the Wi-Fi settinds by the following the instructions below."
+                    android:text="Your device has created a temporary Wi-Fi hotspot. To set it up, connect to it in the Wi-Fi settings by the following the instructions below."
                     android:textColor="@color/txtPanal"
                     android:textSize="@dimen/_14sdp" />
 

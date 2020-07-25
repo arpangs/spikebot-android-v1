@@ -19,15 +19,12 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.camera.CameraPlayer;
-import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.core.JsonHelper;
 import com.spike.bot.fragments.CameraListFragment;
@@ -46,17 +43,31 @@ import java.util.List;
  */
 public class CameraGridActivity extends AppCompatActivity {
 
+    public static boolean isCamera = false;
     public int counTab = 0, totalTab = 0;
     public Toolbar toolbar;
     public TabLayout tabLayout;
     public ViewPager recyclerDvr;
-    private ArrayList<CameraVO> cameraVOArrayList = new ArrayList<>();
-    private ArrayList<CameraVO> jetsonArrayList = new ArrayList<>();
     String jetson_id;
-    public static boolean isCamera=false;
-
     toolBarImageCapture toolBarImageCapture;
     CameraListFragment cameraListFragment;
+    private ArrayList<CameraVO> cameraVOArrayList = new ArrayList<>();
+    private ArrayList<CameraVO> jetsonArrayList = new ArrayList<>();
+
+    /*checkPermission */
+    public static boolean checkPermission(Activity context) {
+        List arrayList = new ArrayList();
+        for (String str : CameraPlayer.permissions) {
+            if (ContextCompat.checkSelfPermission(context, str) != 0) {
+                arrayList.add(str);
+            }
+        }
+        if (arrayList.isEmpty()) {
+            return true;
+        }
+        ActivityCompat.requestPermissions(context, (String[]) arrayList.toArray(new String[arrayList.size()]), 100);
+        return false;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,7 +84,7 @@ public class CameraGridActivity extends AppCompatActivity {
         // roomVO = (RoomVO) getIntent().getExtras().getSerializable("room");
         try {
             isCamera = getIntent().getExtras().getBoolean("isshowGridCamera");
-            jetson_id =  getIntent().getExtras().getString("jetson_device_id");
+            jetson_id = getIntent().getExtras().getString("jetson_device_id");
 
             // jetson_id = new ArrayList<>();
 /*
@@ -82,7 +93,7 @@ public class CameraGridActivity extends AppCompatActivity {
                     jetson_id = cameraVO.getJetson_device_id();
                 }
             }*/
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -133,21 +144,6 @@ public class CameraGridActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /*checkPermission */
-    public static boolean checkPermission(Activity context) {
-        List arrayList = new ArrayList();
-        for (String str : CameraPlayer.permissions) {
-            if (ContextCompat.checkSelfPermission(context, str) != 0) {
-                arrayList.add(str);
-            }
-        }
-        if (arrayList.isEmpty()) {
-            return true;
-        }
-        ActivityCompat.requestPermissions(context, (String[]) arrayList.toArray(new String[arrayList.size()]), 100);
-        return false;
-    }
-
     /**
      * Get all camera list based on user_id
      */
@@ -173,12 +169,12 @@ public class CameraGridActivity extends AppCompatActivity {
                         ChatApplication.logDisplay("cameraVOArrayList is " + cameraVOArrayList.size());
 
                         if (cameraVOArrayList.size() > 0) {
-                            setAdapter();
+                            setAdapter(ChatApplication.url);
                         }
                     } else {
                         ChatApplication.showToast(CameraGridActivity.this, "" + message);
                     }
-                }catch (JSONException e) {
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
@@ -198,14 +194,18 @@ public class CameraGridActivity extends AppCompatActivity {
     }
 
     /*set view*/
-    private void setAdapter() {
+    private void setAdapter(String ChatApplicationurl) {
         String url = "";
         for (int i = 0; i < cameraVOArrayList.size(); i++) {
             url = "";
             if (Main2Activity.isCloudConnected) {
                 url = Constants.CAMERA_DEEP + ":" + cameraVOArrayList.get(i).getCamera_vpn_port() + "" + cameraVOArrayList.get(i).getCamera_url();
             } else {
-                String tmpurl = ChatApplication.url + "" + cameraVOArrayList.get(i).getCamera_url();
+
+                if (ChatApplication.url == null) {
+                    ChatApplication.url = ChatApplicationurl;
+                }
+                String tmpurl = "http://" + ChatApplication.url + "" + cameraVOArrayList.get(i).getCamera_url();
                 url = tmpurl.replace("http", "rtmp").replace(":80", ""); //replace port number to blank String
             }
             cameraVOArrayList.get(i).setLoadingUrl(url);
@@ -224,6 +224,11 @@ public class CameraGridActivity extends AppCompatActivity {
         recyclerDvr.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
         tabLayout.setupWithViewPager(recyclerDvr, true);
 
+    }
+
+    public interface toolBarImageCapture {
+
+        void imageCapture();
     }
 
     private class MyPagerAdapter extends FragmentPagerAdapter {
@@ -248,10 +253,5 @@ public class CameraGridActivity extends AppCompatActivity {
         public int getCount() {
             return totalTab;
         }
-    }
-
-    public interface toolBarImageCapture {
-
-        void imageCapture();
     }
 }

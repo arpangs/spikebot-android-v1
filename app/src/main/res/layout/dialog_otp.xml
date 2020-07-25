@@ -90,7 +90,7 @@
         android:layout_margin="15dp"
         android:layout_marginBottom="@dimen/_16sdp"
         android:background="@drawable/drawable_blue_schedule"
-        android:text="Submit"
+        android:text="SUBMIT"
         android:textAllCaps="false"
         android:textColor="@color/automation_white"
         android:textSize="@dimen/_14sdp" />

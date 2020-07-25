@@ -37,6 +37,7 @@ public class Constants {
     //device type =3 - philip
     // device type = 2 = Ac
 
+
     public static final String LIVE = "LIVE-";     // live for notification subscribe/unsubscribe topic
     public static final String LOCAL = "LOCAL-";   // local for notification subscribe/unsubscribe topic
     public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";

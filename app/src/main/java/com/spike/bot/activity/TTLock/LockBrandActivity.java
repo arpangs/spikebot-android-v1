@@ -138,12 +138,12 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
         smartLockOptionBrandAdapter.notifyDataSetChanged();
     }
 
-    private void setAdapterTTlock(){
+   /* private void setAdapterTTlock(){
         recyclerViewLock.setLayoutManager(new LinearLayoutManager(this));
         ttlockoptionadapter = new TTLockOptionBrandAdapter(this, stringArrayList);
         recyclerViewLock.setAdapter(ttlockoptionadapter);
         ttlockoptionadapter.notifyDataSetChanged();
-    }
+    }*/
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -372,7 +372,8 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
         LinearLayout linearListRoom = dialogtemp.findViewById(R.id.linearListRoom);
         linearListRoom.setVisibility(View.VISIBLE);
 
-        dialogTitle.setText("Add Yale Lock");
+//        dialogTitle.setText("Add Yale Lock");
+        dialogTitle.setText("Add Door Lock");
         txt_sensor_name.setText("Lock Name");
 
         edt_door_module_id.setText(door_module_id);
@@ -868,33 +869,33 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
         @Override
         public void onBindViewHolder(final SensorViewHolder holder, final int position) {
             //SmartLockBrandAdapter
-            if(position ==0){
+            /*if(position ==0){
                 holder.imgBrand.setImageResource(R.drawable.smart_lock_icon_brand);
                 holder.txtBrandName.setText("TT Lock");
-            } else {
+            } else {*/
                 holder.imgBrand.setImageResource(R.drawable.ic_yale_lock);
                 holder.txtBrandName.setText("Yale Lock");
-            }
+//            }
 
             holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(position == 0){
+                    /*if(position == 0){
                         isFlagClick = true;
-                        setAdapterTTlock();
-                    } else {
+//                        setAdapterTTlock();
+                    } else {*/
                         isFlagClick = true;
                         toolbar.setTitle("Lock List");
                         menuAdd.setVisible(true);
                         getLockList();
-                    }
+//                    }
                 }
             });
         }
 
         @Override
         public int getItemCount() {
-            return 2;
+            return 1;
         }
 
 
