@@ -308,7 +308,7 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
                                                     @Override
                                                     public void run() {
                                                         //Do something after 20 seconds
-                                                        mBeaconList.clear();
+                                                       // mBeaconList.clear();
                                                         handler.postDelayed(this, 5000);
                                                         getbeaconDeviceDetails(device_id);
                                                     }

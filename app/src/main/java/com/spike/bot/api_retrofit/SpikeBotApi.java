@@ -2405,28 +2405,11 @@ public class SpikeBotApi {
     }
 
     // Beaconconfig - saveBeacon
-    public void saveBeacon(String device_name, String device_id, String module_id, ArrayList<String> deviceIdList, boolean editBeacon, DataResponseListener dataResponseListener) {
-
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("device_name", device_name);
-
+    public void saveBeacon(HashMap<String, Object> deviceObj, boolean editBeacon, DataResponseListener dataResponseListener) {
         if (editBeacon) {
-            params.put("device_id", device_id);
+            new GeneralRetrofit(apiService.SAVE_EDIT_SWITCH(ChatApplication.url, deviceObj), deviceObj, dataResponseListener).call();
         } else {
-            params.put("module_id", module_id);
-        }
-        params.put("module_type", "beacon");
-        params.put("related_devices", deviceIdList);
-
-        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
-        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-
-        if (editBeacon) {
-            new GeneralRetrofit(apiService.SAVE_EDIT_SWITCH(ChatApplication.url, params), params, dataResponseListener).call();
-        } else {
-            new GeneralRetrofit(apiService.deviceadd(ChatApplication.url, params), params, dataResponseListener).call();
+            new GeneralRetrofit(apiService.deviceadd(ChatApplication.url, deviceObj), deviceObj, dataResponseListener).call();
         }
     }
 
