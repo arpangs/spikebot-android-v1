@@ -587,7 +587,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                                         section.getPanelList().get(i).getDeviceList().get(j).getDeviceType().equalsIgnoreCase("door_sensor") ||
                                         section.getPanelList().get(i).getDeviceList().get(j).getDeviceType().equalsIgnoreCase("water_detector")) {
 
-                                    flag = true;
+//                                    flag = true;
+                                    flag = false; // dev arpan set condition for notiication con only shows on camera and jetson only other notifition merge with toolbar notifiation
                                 }
                             }
                         }
@@ -620,7 +621,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     } else {
                         holder.txt_notify_label.setVisibility(View.VISIBLE);
                     }
-                    if (flag || section.getRoomId().startsWith("JETSON-")) {
+                    if (flag || section.getRoomId().startsWith("JETSON-") || section.getRoomId().equalsIgnoreCase("Camera")) {
                         ChatApplication.logDisplay("total notification is " + isunRead);
                         holder.frame_camera_alert_bell.setVisibility(View.VISIBLE);
                         //  holder.linear_camera_bell.setVisibility(View.VISIBLE);
@@ -780,7 +781,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         }
                     });
 
-                } else if (panel1.getPanelName().toLowerCase().contains("pir")) { /*dev arpan add condition for remove toggle switch from PIR panel*/
+                } else if (panel1.getPanelName().toLowerCase().contains("motion")) { /*dev arpan add condition for remove toggle switch from PIR panel*/
 
                     holder.iv_room_panel_onoff.setVisibility(View.GONE);
 
@@ -863,7 +864,6 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     if (item.getDevice_icon().equalsIgnoreCase("pir")) { // dev arpan added 20 july 2020
                         if (item.getIsActive() == 1) {
                             itemIcon = item.getDeviceStatus() == 1 ? R.drawable.pir_detector_on : R.drawable.pir_detector_off;
-                            item.setDevice_sub_type(item.getDeviceStatus() == 1 ? "pir" : "normal");
                         } else {
                             itemIcon = R.drawable.pir_detector_inactive;
                         }
@@ -1310,16 +1310,24 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
 
                         } else {
                             item.setOldStatus(item.getDeviceStatus());
-                            item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1 : 0);
-                            notifyItemChanged(position, item);
+
+                            if (!item.getDeviceType().equalsIgnoreCase("pir_device")) {
+                                item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1 : 0);
+                                notifyItemChanged(position, item);
+                            }
                         }
 
                         if (!item.isSensor()) {
-                            if (item.getDeviceType().equalsIgnoreCase("3")) {
+                            if (item.getDeviceType().equalsIgnoreCase("pir_device")) {
+                                if (item.getIsActive() != -1)
+                                    if (item.getDevice_sub_type().equalsIgnoreCase("normal")) {
+                                        tempClickListener.itemClicked(item, "pir", true, position);
+                                    }
+                            } else if (item.getDeviceType().equalsIgnoreCase("3")) {
                                 mItemClickListener.itemClicked(item, "philipsClick", position);
                             } else if (item.getDevice_icon().equalsIgnoreCase("curtain")) {
                                 mItemClickListener.itemClicked(item, "curtain", position);
-                            }else {
+                            } else {
                                 mItemClickListener.itemClicked(item, "itemclick", position);
                             }
                         } else {
@@ -1349,10 +1357,13 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         }*/
                         item.setOldStatus(item.getDeviceStatus());
                         if (item.getIs_locked() == 1) {
-                            item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1 : 0);
+
+                            if (!item.getDeviceType().equalsIgnoreCase("pir_device")) {
+                                item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1 : 0);
+                                notifyItemChanged(position, item);
+                            }
                         }
 
-                        notifyItemChanged(position, item);
 
                         if (item.getDeviceType().equalsIgnoreCase("heavyload")) {
                             tempClickListener.itemClicked(item, "heavyloadlongClick", true, position);

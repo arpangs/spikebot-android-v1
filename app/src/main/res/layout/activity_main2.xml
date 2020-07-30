@@ -104,11 +104,11 @@
 
                             <ImageView
                                 android:id="@+id/toolbar_notification"
-                                android:layout_width="@dimen/_30sdp"
-                                android:layout_height="@dimen/_30sdp"
+                                android:layout_width="@dimen/_25sdp"
+                                android:layout_height="@dimen/_25sdp"
                                 android:layout_gravity="center|end"
                                 android:layout_marginRight="20dp"
-                                android:src="@drawable/all_notification" />
+                                android:src="@drawable/bell" />
 
                             <TextView
                                 android:id="@+id/img_setting_badge_count"
@@ -128,8 +128,8 @@
 
                         <ImageView
                             android:id="@+id/toolbar_setting"
-                            android:layout_width="@dimen/_30sdp"
-                            android:layout_height="@dimen/_30sdp"
+                            android:layout_width="@dimen/_25sdp"
+                            android:layout_height="@dimen/_25sdp"
                             android:layout_gravity="center|end"
                             android:layout_marginRight="15dp"
                             android:src="@drawable/settings_white" />

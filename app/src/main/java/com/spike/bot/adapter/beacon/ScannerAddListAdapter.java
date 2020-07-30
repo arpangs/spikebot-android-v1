@@ -51,7 +51,8 @@ public class ScannerAddListAdapter extends RecyclerView.Adapter<ScannerAddListAd
                 holder.ir_rrot_click.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        irDeviceClikListener.onBeaconDeviceClick(devicelist);
+//                        irDeviceClikListener.onBeaconDeviceClick(devicelist);
+                        irDeviceClikListener.onBeaconDeviceClick(mIRDeviceList.get(position));
                     }
                 });
             }

@@ -127,6 +127,10 @@ public class Common {
                     case "pir_device":
                         resource = R.drawable.pir_detector_inactive;
                         break;
+
+                    case "pir":
+                        resource = R.drawable.pir_detector_inactive;
+                        break;
                 }
                 break;
             case 0:
@@ -244,6 +248,10 @@ public class Common {
                         resource = R.drawable.pir_detector_off;
                         break;
 
+                    case "pir":
+                        resource = R.drawable.pir_detector_off;
+                        break;
+
                     default:
                         resource = R.drawable.offcfl;
                         break;
@@ -349,6 +357,9 @@ public class Common {
                         resource = R.drawable.beaconsearch;
                         break;
                     case "pir_device":
+                        resource = R.drawable.pir_detector_on;
+                        break;
+                    case "pir":
                         resource = R.drawable.pir_detector_on;
                         break;
 

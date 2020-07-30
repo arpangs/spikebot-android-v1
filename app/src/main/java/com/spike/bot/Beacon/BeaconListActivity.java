@@ -71,8 +71,8 @@ public class BeaconListActivity extends AppCompatActivity implements BeaconListA
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        toolbar.setTitle("Beacon List");
-        getSupportActionBar().setTitle("Beacon List");
+        toolbar.setTitle("Radar List");
+        getSupportActionBar().setTitle("Radar List");
 
         recycler_beaconlist.setLayoutManager(new GridLayoutManager(this, 1));
         getBeaconList();
@@ -310,7 +310,7 @@ public class BeaconListActivity extends AppCompatActivity implements BeaconListA
         InputFilter[] filterArray = new InputFilter[1];
         filterArray[0] = new InputFilter.LengthFilter(25);
         edSensorName.setFilters(filterArray);
-        tv_title.setText("Scan Beacon Using");
+        tv_title.setText("Scan Radar Using");
 
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -347,7 +347,7 @@ public class BeaconListActivity extends AppCompatActivity implements BeaconListA
         dialog.setContentView(R.layout.dialog_panel_option);
 
         TextView txtDialogTitle = dialog.findViewById(R.id.txt_dialog_title);
-        txtDialogTitle.setText("Scan Beacon");
+        txtDialogTitle.setText("Scan Radar");
 
 
         Button btn_bluetooth = dialog.findViewById(R.id.btn_panel_sync);

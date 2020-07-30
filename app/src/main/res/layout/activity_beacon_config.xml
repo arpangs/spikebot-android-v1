@@ -50,7 +50,7 @@
                 android:ems="10"
                 android:textSize="18sp"
                 android:gravity="center"
-                android:hint="Beacon Name"
+                android:hint="Radar Name"
                 android:imeOptions="actionDone"
                 android:inputType="textCapSentences|textAutoCorrect|textMultiLine|textShortMessage"
                 android:visibility="visible" />
@@ -65,7 +65,7 @@
             android:layout_marginBottom="@dimen/_10sdp"
             android:textStyle="bold"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:text="CHOOSE YOUR DEVICES FOR THIS BEACON"/>
+            android:text="CHOOSE YOUR DEVICES FOR THIS RADAR"/>
 
     </LinearLayout>
 

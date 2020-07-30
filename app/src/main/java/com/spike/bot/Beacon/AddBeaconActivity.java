@@ -77,8 +77,8 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        toolbar.setTitle("Add Beacon");
-        getSupportActionBar().setTitle("Add Beacon");
+        toolbar.setTitle("Add Radar");
+        getSupportActionBar().setTitle("Add Radar");
 
         ll_scanner_list = findViewById(R.id.ll_scanner_list);
         linear_beacon_progress = findViewById(R.id.linear_beacon_progress);
@@ -130,7 +130,7 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
                             mBeaconList.clear();
                             tempBeaconList = new ArrayList<>();
                             tempBeaconList.clear();
-                            ChatApplication.logDisplay("beacon list res : " + result.toString());
+                            ChatApplication.logDisplay("radar list res : " + result.toString());
                             IRDeviceDetailsRes irDeviceDetailsRes = Common.jsonToPojo(result.toString(), IRDeviceDetailsRes.class);
                             mBeaconList = irDeviceDetailsRes.getData();
                             tempBeaconList = irDeviceDetailsRes.getData();
@@ -261,7 +261,7 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
                     if (code == 200) {
                         try {
                             mBeaconDeviceList.clear();
-                            ChatApplication.logDisplay("beacon res : " + result.toString());
+                            ChatApplication.logDisplay("radar res : " + result.toString());
                             IRDeviceDetailsRes irDeviceDetailsRes = Common.jsonToPojo(result.toString(), IRDeviceDetailsRes.class);
                             mBeaconDeviceList = irDeviceDetailsRes.getData();
 
@@ -451,8 +451,8 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
         ImageView iv_close = beacondialog.findViewById(R.id.iv_close);
         TextView tv_title = beacondialog.findViewById(R.id.tv_title);
 
-        txtInputSensor.setHint("Enter Beacon Name");
-        tv_title.setText("Set Beacon Name");
+        txtInputSensor.setHint("Enter Radar Name");
+        tv_title.setText("Set Radar Name");
 
 
         iv_close.setOnClickListener(new View.OnClickListener() {
@@ -475,7 +475,7 @@ public class AddBeaconActivity extends AppCompatActivity implements View.OnClick
             public void onClick(View v) {
                 beacondialog.dismiss();
                 if (edSensorName.getText().toString().length() == 0) {
-                    ChatApplication.showToast(AddBeaconActivity.this, "Please enter beacon name");
+                    ChatApplication.showToast(AddBeaconActivity.this, "Please enter radar name");
                 } else {
                     handler.removeCallbacksAndMessages(null);
                     Intent intent = new Intent(AddBeaconActivity.this, BeaconConfigActivity.class);

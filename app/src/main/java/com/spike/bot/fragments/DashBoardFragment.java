@@ -202,7 +202,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                             String device_status = object.getString("device_status");
                             String device_sub_status = object.getString("device_sub_status");
 
-//                            sectionedExpandableLayoutHelper.updateItem(module_id, device_id, device_status, is_locked);
                             sectionedExpandableLayoutHelper.updateDeviceItem(device_type, device_id, device_status, device_sub_status);
 
                         } catch (Exception ex) {
@@ -415,7 +414,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                             //  String user_id = object.getString("user_id");
                             String room_id = object.getString("room_id");
                             String device_count = object.getString("device_count");
-                            ChatApplication.logDisplay("beacon counter socket" + object.toString());
+                            ChatApplication.logDisplay("radar counter socket" + object.toString());
                             //if(!device_count.equals("0")) {
                             sectionedExpandableLayoutHelper.updateBeaconBadgeCount(room_id, device_count);
                             //  }
@@ -1031,6 +1030,8 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         } else if (action.equalsIgnoreCase("isPIRLongClick")) {
             if (item.getIsActive() != -1)
                 dialogNewPassword(item);
+        } else if (action.equalsIgnoreCase("pir")) {
+            deviceOnOff(item, position);
         }
 
     }
@@ -3146,7 +3147,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         homecontrollerid = userObject.optString("mac_address");
 
 
-
                         if (is_active.equalsIgnoreCase("0")) {
                             ((Main2Activity) activity).logoutCloudUser();
                             return;
@@ -3936,11 +3936,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                     case "4 minutes":
                         pir_device_on_off_timer = "240";
                         break;
-
-
                 }
-
-
             }
 
             @Override
@@ -3960,7 +3956,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         mDialogEdit.setVisibility(View.VISIBLE);
 
 
-        mTextInput.setHint("PIR Detector name");
+        mTextInput.setHint("Motion Detector name");
         edSensorName.setText(item.getDeviceName());
 
         edSensorName.setEnabled(false);
@@ -3968,6 +3964,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
         if (item.getDevice_sub_type().equalsIgnoreCase("pir")) {
             mImgPIRMode.setImageResource(R.drawable.switch_enable);
+            mDeviceTurnOnOffTimer.setEnabled(false);
         } else {
             mImgPIRMode.setImageResource((R.drawable.switch_disable));
         }
@@ -4105,7 +4102,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 if (!isPIREdit) {
                     isPIREdit = true;
                     edSensorName.setEnabled(true);
-                    mDeviceTurnOnOffTimer.setEnabled(true);
                     btnPIRSave.setAlpha(1.0f);
                     edSensorName.requestFocus();
 

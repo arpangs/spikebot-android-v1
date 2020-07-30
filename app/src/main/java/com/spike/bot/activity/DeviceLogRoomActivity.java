@@ -31,7 +31,6 @@ import com.spike.bot.model.DeviceLog;
 import com.spike.bot.model.Filter;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -111,6 +110,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
             intent.putExtra("ROOM_ID", ROOM_ID);
             intent.putExtra("activity_type", "room");
             intent.putExtra("isCheckActivity", "room");
+            intent.putExtra("isCheckActivity", "AllTypeNotification"); // for notification log dev arpan added on 29 july 2020
             startActivity(intent);
         }
 
@@ -118,8 +118,12 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
     }
 
 
-    public void setTitel(String titel) {
-        toolbar.setTitle(room_name + " " + titel);
+    public void setTitel(String title) {
+        if (room_name != null) {
+            toolbar.setTitle(room_name + " " + title);
+        } else {
+            toolbar.setTitle(title);
+        }
     }
 
     private void init() {
@@ -131,6 +135,9 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
 
         if (isNotification.equalsIgnoreCase("roomSensorUnreadLogs")) {
             setTitel("Notifications");
+            getDeviceList(mStartIndex);
+        } else if (isNotification.equalsIgnoreCase("All Notification")) {
+            setTitel("All Notification");
             getDeviceList(mStartIndex);
         } else {
             setTitel("All Logs");
@@ -352,14 +359,14 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
 
 //        JSONObject jsonObject = new JSONObject();
 
-            JsonArray jsonArray = new JsonArray();
+        JsonArray jsonArray = new JsonArray();
 
-            JsonObject object = new JsonObject();
-            object.addProperty("sensor_type", "");
-            object.addProperty("module_id", "");
-            object.addProperty("room_id", "" + ROOM_ID);
-            object.addProperty("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonArray.add(object);
+        JsonObject object = new JsonObject();
+        object.addProperty("sensor_type", "");
+        object.addProperty("module_id", "");
+        object.addProperty("room_id", "" + ROOM_ID);
+        object.addProperty("user_id", Common.getPrefValue(this, Constants.USER_ID));
+        jsonArray.add(object);
 //            jsonObject.put("update_logs", jsonArray);
 
 
@@ -380,25 +387,25 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
                 executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
 
 
-            if (ChatApplication.url.contains("http://"))
-                ChatApplication.url = ChatApplication.url.replace("http://", "");
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
-            SpikeBotApi.getInstance().CallreadCountApi(jsonArray, new DataResponseListener() {
-                @Override
-                public void onData_SuccessfulResponse(String stringResponse) {
-                    DeviceLogRoomActivity.this.finish();
-                }
+        SpikeBotApi.getInstance().CallreadCountApi(jsonArray, new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                DeviceLogRoomActivity.this.finish();
+            }
 
-                @Override
-                public void onData_FailureResponse() {
-                    DeviceLogRoomActivity.this.finish();
-                }
+            @Override
+            public void onData_FailureResponse() {
+                DeviceLogRoomActivity.this.finish();
+            }
 
-                @Override
-                public void onData_FailureResponse_with_Message(String error) {
-                    DeviceLogRoomActivity.this.finish();
-                }
-            });
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                DeviceLogRoomActivity.this.finish();
+            }
+        });
 
     }
 }

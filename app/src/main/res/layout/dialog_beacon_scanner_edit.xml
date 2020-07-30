@@ -24,7 +24,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="Beacon Scanner Details"
+                android:text="Beamer Details"
                 android:textColor="@color/signupblack"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -45,7 +45,7 @@
             android:background="@color/automation_dark" />
 
         <TextView
-            android:text="Beacon Scanner Name"
+            android:text="Beamer Name"
             android:layout_width="wrap_content"
             android:textColor="@color/txtPanal"
             android:textSize="@dimen/_12sdp"
@@ -212,7 +212,7 @@
                 android:gravity="center_vertical"
                 android:textSize="@dimen/_10sdp"
                 android:textColor="@color/txtPanal"
-                android:hint="Beacon scanner detection range in (meters)" />
+                android:hint="Beamer detection range in (meters)" />
 
             <LinearLayout
                 android:layout_width="match_parent"

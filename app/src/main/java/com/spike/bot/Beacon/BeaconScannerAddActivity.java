@@ -98,7 +98,7 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toolbar.setTitle("Beacon Scanner List");
+        toolbar.setTitle("Radar Scanner List");
 
         mBeaconList = findViewById(R.id.list_scanner);
         mEmptyView = findViewById(R.id.txt_empty_scanner);
@@ -281,7 +281,7 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
         dialog.setContentView(R.layout.dialog_panel_option);
 
         TextView txtDialogTitle = dialog.findViewById(R.id.txt_dialog_title);
-        txtDialogTitle.setText("Beacon Scanner");
+        txtDialogTitle.setText("Beamer");
 
         Button btn_sync = dialog.findViewById(R.id.btn_panel_sync);
         Button btn_unaasign = dialog.findViewById(R.id.btn_panel_unasigned);
@@ -684,8 +684,8 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
         TextView dialogTitle = irDialog.findViewById(R.id.tv_title);
         TextView txt_sensor_name = irDialog.findViewById(R.id.txt_sensor_name);
 
-        dialogTitle.setText("Add Beacon Scanner");
-        txt_sensor_name.setText("Scanner Name");
+        dialogTitle.setText("Add Beamer");
+        txt_sensor_name.setText("Beamer Name");
 
         edt_door_module_id.setText(ir_module_id);
         edt_door_module_id.setFocusable(false);

@@ -5,12 +5,9 @@ import android.graphics.Canvas;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
@@ -41,19 +38,16 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
-import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.DataHeavyModel;
 import com.spike.bot.receiver.MarkerBoxView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -64,40 +58,75 @@ import java.util.Calendar;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
-import static com.spike.bot.core.Constants.getNextDate;
-
 /**
  * Created by Sagar on 29/6/19.
  * Gmail : vipul patel
  */
 public class HeavyLoadDetailActivity extends AppCompatActivity {
 
-    public Toolbar toolbar;
-    public LineChart barChart;
-    public ImageView imgHL,imageShowNext;
-    public FrameLayout frameChart;
-    public TextView txtGraphType,txtYAxis,txtGraphTital,txtNodataFound;
-    public TextView txtCurrentValue,label_watts;
-    public Spinner spinnerYear, spinnerMonth;
-
-    DataHeavyModel heavyModel = new DataHeavyModel();
-    public CountDownTimer countDownTimerSocket = null;
-    private Socket mSocket;
-    IAxisValueFormatter formatter;
-
-    public boolean isApiStatus=false;
-    public int currentDay = 0;
-    public String getRoomName="",device_id="";
-
-    ArrayList arrayListYearList = new ArrayList<>();
-    ArrayList<Entry> entries = new ArrayList<>();
     final ArrayList<String> arrayDay = new ArrayList<>();
     final ArrayList<String> arrayDayTemp = new ArrayList<>();
-    RecyclerView rv_month_list,rv_year_list;
+    public Toolbar toolbar;
+    public LineChart barChart;
+    public ImageView imgHL, imageShowNext;
+    public FrameLayout frameChart;
+    public TextView txtGraphType, txtYAxis, txtGraphTital, txtNodataFound;
+    public TextView txtCurrentValue, label_watts;
+    public Spinner spinnerYear, spinnerMonth;
+    public CountDownTimer countDownTimerSocket = null;
+    public boolean isApiStatus = false;
+    public int currentDay = 0;
+    public String getRoomName = "", device_id = "";
+    DataHeavyModel heavyModel = new DataHeavyModel();
+    IAxisValueFormatter formatter;
+    ArrayList arrayListYearList = new ArrayList<>();
+    ArrayList<Entry> entries = new ArrayList<>();
+    RecyclerView rv_month_list, rv_year_list;
     ArrayList<String> monthlist = new ArrayList();
     ArrayList<String> yearlist = new ArrayList();
-    int row_index = 1, mStartIndex = 4,strmonth=0,row_index_year = 1,stryear ;
+    int row_index = 1, mStartIndex = 4, strmonth = 0, row_index_year = 1, stryear;
     String selectedyear;
+    private Socket mSocket;
+    /*heavy load value get & update view */
+    private Emitter.Listener heavyLoadValue = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (this == null) {
+                return;
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+//  {"room_device_id":"1561365773929_OvHzT5WcFU","real_power":25}
+                            ChatApplication.logDisplay("object  heavyLoadValue socket " + object);
+                            if (device_id.equals(object.optString("device_id"))) {
+                                String real_power = object.optString("real_power");
+                                if (Integer.parseInt(object.optString("real_power")) > 0) {
+                                    imgHL.setVisibility(View.VISIBLE);
+                                    label_watts.setVisibility(View.VISIBLE);
+                                    real_power = object.optString("real_power");
+                                } else {
+                                    real_power = "--";
+                                    imgHL.setVisibility(View.GONE);
+                                    label_watts.setVisibility(View.GONE);
+                                }
+                                txtCurrentValue.setText(real_power);
+
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -123,7 +152,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
         txtNodataFound = findViewById(R.id.txtNodataFound);
         rv_month_list = findViewById(R.id.rv_month_list);
         rv_year_list = findViewById(R.id.rv_year_list);
-        toolbar =  findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -167,15 +196,17 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
         /*every 10 sec after emit data for status of heavyload data*/
         countDownTimerSocket = new CountDownTimer(10000, 1000) {
             public void onTick(long millisUntilFinished) {
-            }public void onFinish() {
-                if(countDownTimerSocket!=null){
+            }
+
+            public void onFinish() {
+                if (countDownTimerSocket != null) {
                     countDownTimerSocket.start();
                 }
 
                 getHeavyLoadValue();
             }
         };
-        if(countDownTimerSocket!=null){
+        if (countDownTimerSocket != null) {
             countDownTimerSocket.start();
         }
 
@@ -189,7 +220,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
         int month = c.get(Calendar.MONTH) + 1;
 
 
-        ArrayAdapter adapterMonth = new ArrayAdapter<String>(this,R.layout.item_spinner_selected_month, Constants.getMonthList());
+        ArrayAdapter adapterMonth = new ArrayAdapter<String>(this, R.layout.item_spinner_selected_month, Constants.getMonthList());
         spinnerMonth.setAdapter(adapterMonth);
         spinnerMonth.setSelection(month);
 
@@ -264,7 +295,6 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
         rv_year_list.setHasFixedSize(true);
     }
 
-
     private void setMonthList() {
         monthlist.add("January");
         monthlist.add("February");
@@ -285,8 +315,8 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
 
-        for(int i=2016; i<=year; i++){
-            yearlist.add(""+i);
+        for (int i = 2016; i <= year; i++) {
+            yearlist.add("" + i);
         }
     }
 
@@ -304,65 +334,24 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
         } else {
             mSocket = app.getSocket();
         }
-        if(mSocket!=null){
+        if (mSocket != null) {
             mSocket.on("statusMapping:heavy_load_voltage", heavyLoadValue);
         }
     }
 
     @Override
     protected void onStop() {
-        if(mSocket!=null){
+        if (mSocket != null) {
             mSocket.on("statusMapping:heavy_load_voltage", heavyLoadValue);
         }
 
-        if(countDownTimerSocket!=null){
+        if (countDownTimerSocket != null) {
             countDownTimerSocket.cancel();
             countDownTimerSocket.onFinish();
-            countDownTimerSocket=null;
+            countDownTimerSocket = null;
         }
         super.onStop();
     }
-
-    /*heavy load value get & update view */
-    private Emitter.Listener heavyLoadValue = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            if (this == null) {
-                return;
-            }
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-
-                        try {
-                            JSONObject object = new JSONObject(args[0].toString());
-//  {"room_device_id":"1561365773929_OvHzT5WcFU","real_power":25}
-                            ChatApplication.logDisplay("object  heavyLoadValue socket " + object);
-                            if(device_id.equals(object.optString("device_id"))){
-                                String real_power=object.optString("real_power");
-                                if(Integer.parseInt(object.optString("real_power"))>0){
-                                    imgHL.setVisibility(View.VISIBLE);
-                                    label_watts.setVisibility(View.VISIBLE);
-                                    real_power=object.optString("real_power");
-                                }else {
-                                    real_power="--";
-                                    imgHL.setVisibility(View.GONE);
-                                    label_watts.setVisibility(View.GONE);
-                                }
-                                txtCurrentValue.setText(real_power);
-
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }
-            });
-        }
-    };
 
     /*call service for heavy load*/
     public void getHeavyLoadValue() {
@@ -405,14 +394,15 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             return;
         }
 
-        isApiStatus=true;
+        isApiStatus = true;
         ActivityHelper.showProgressDialog(HeavyLoadDetailActivity.this, "Please wait... ", false);
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().getHeavyloadDetails(device_id, new DataResponseListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
-            public void onData_SuccessfulResponse(String stringResponse) { ActivityHelper.dismissProgressDialog();
+            public void onData_SuccessfulResponse(String stringResponse) {
+                ActivityHelper.dismissProgressDialog();
                 try {
                     ActivityHelper.dismissProgressDialog();
                     JSONObject result = new JSONObject(stringResponse);
@@ -420,29 +410,40 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                     String message = result.getString("message");
                     if (code == 200) {
                         ChatApplication.logDisplay("json filter is first " + result);
-                        JSONObject object = result.optJSONObject("data");
+//                        JSONObject object = result.optJSONObject("data");
 
-                        heavyModel = (DataHeavyModel) Common.fromJson(result.toString(), new TypeToken<DataHeavyModel>() {}.getType());
+                        try {
+                            JSONArray jsonArray = result.optJSONArray("data");
+                            if (jsonArray.length() == 0) {
+                                Toast.makeText(HeavyLoadDetailActivity.this, "No data found...", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        heavyModel = (DataHeavyModel) Common.fromJson(result.toString(), new TypeToken<DataHeavyModel>() {
+                        }.getType());
                         chartDataset(false);
                     }
 
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
-                    isApiStatus=false;
+                    isApiStatus = false;
                 }
             }
+
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
-                isApiStatus=false;
+                isApiStatus = false;
                 ChatApplication.showToast(HeavyLoadDetailActivity.this, getResources().getString(R.string.something_wrong1));
             }
 
             @Override
             public void onData_FailureResponse_with_Message(String error) {
                 ActivityHelper.dismissProgressDialog();
-                isApiStatus=false;
+                isApiStatus = false;
                 ChatApplication.showToast(HeavyLoadDetailActivity.this, getResources().getString(R.string.something_wrong1));
             }
         });
@@ -457,17 +458,17 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
         }
 
         Calendar c = Calendar.getInstance();
-        int month = c.get(Calendar.MONTH)+1;
+        int month = c.get(Calendar.MONTH) + 1;
         int year = c.get(Calendar.YEAR);
-        int strYear =  year;
+        int strYear = year;
 
-        if(strYear== year && strmonth > month){
+        if (strYear == year && strmonth > month) {
 
-            ChatApplication.showToast(this,"Please select valid month");
+            ChatApplication.showToast(this, "Please select valid month");
             return;
         }
 
-        int value = row_index+1;
+        int value = row_index + 1;
         String strLess = "";
         if (value < 10) {
             strLess = "0";
@@ -481,7 +482,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
-                try{
+                try {
                     JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     if (code == 200) {
@@ -489,13 +490,14 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
 
                         JSONObject object = result.optJSONObject("data");
 
-                        heavyModel = (DataHeavyModel) Common.fromJson(result.toString(), new TypeToken<DataHeavyModel>() {}.getType());
+                        heavyModel = (DataHeavyModel) Common.fromJson(result.toString(), new TypeToken<DataHeavyModel>() {
+                        }.getType());
 
-                        formatter=null;
+                        formatter = null;
                         entries.clear();
                         arrayDay.clear();
                         arrayDayTemp.clear();
-                        currentDay=0;
+                        currentDay = 0;
                         barChart.invalidate();
                         barChart.clear();
                         barChart.notifyDataSetChanged();
@@ -523,7 +525,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
     }
 
     /*chart data set
-    * */
+     * */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void chartDataset(boolean isFlag) {
         if (heavyModel != null && heavyModel.getGraphData() != null && heavyModel.getGraphData().size() > 0) {
@@ -534,7 +536,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             if (isFlag) {
                 if (spinnerMonth.getSelectedItem().equals("All")) {
                     currentDay = 12;
-                    ArrayList<String> arrayList= monthlist;
+                    ArrayList<String> arrayList = monthlist;
                     for (int i = 0; i < arrayList.size(); i++) {
                         arrayDay.add("" + arrayList.get(i));
                     }
@@ -559,7 +561,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                 for (int j = 0; j < arrayDay.size(); j++) {
                     isflag = false;
                     for (int i = 0; i < heavyModel.getGraphData().size(); i++) {
-                        if (j+1 == Integer.parseInt(heavyModel.getGraphData().get(i).getMonth())) {
+                        if (j + 1 == Integer.parseInt(heavyModel.getGraphData().get(i).getMonth())) {
                             isflag = true;
                             entries.add(new Entry(j, heavyModel.getGraphData().get(i).getEnergy()));
 
@@ -567,7 +569,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                         }
                     }
                     if (!isflag) {
-                        entries.add(new Entry(j,0));
+                        entries.add(new Entry(j, 0));
                     }
                 }
 
@@ -584,7 +586,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                         }
                     }
                     if (!isflag) {
-                        entries.add(new Entry(j,0));
+                        entries.add(new Entry(j, 0));
                     }
                 }
             }
@@ -617,8 +619,8 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                 formatter = new IAxisValueFormatter() {
                     @Override
                     public String getFormattedValue(float value, AxisBase axis) {
-                        if(value>=arrayDayTemp.size()){
-                            return String.valueOf(arrayDayTemp.get(arrayDayTemp.size()-1));
+                        if (value >= arrayDayTemp.size()) {
+                            return String.valueOf(arrayDayTemp.get(arrayDayTemp.size() - 1));
                         }
 //                        return String.valueOf(getXAxisValues().get((int) value));
                         return String.valueOf(arrayDayTemp.get((int) value));
@@ -628,13 +630,13 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                 formatter = new IAxisValueFormatter() {
                     @Override
                     public String getFormattedValue(float value, AxisBase axis) {
-                        if(value>=arrayDayTemp.size()){
+                        if (value >= arrayDayTemp.size()) {
 
-                            return String.valueOf(arrayDayTemp.get(arrayDayTemp.size()-1));
+                            return String.valueOf(arrayDayTemp.get(arrayDayTemp.size() - 1));
                         }
-                        if(value>28){
+                        if (value > 28) {
                             imageShowNext.setVisibility(View.GONE);
-                        }else {
+                        } else {
                             imageShowNext.setVisibility(View.VISIBLE);
                         }
                         return String.valueOf(arrayDayTemp.get((int) value));
@@ -663,7 +665,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             barChart.animateX(1500);
 
 
-            IMarker marker = new MarkerBoxView(this,R.layout.activity_text_label);
+            IMarker marker = new MarkerBoxView(this, R.layout.activity_text_label);
             barChart.setMarker(marker);
             barChart.setScaleYEnabled(false);
             barChart.setScaleXEnabled(false);
@@ -671,10 +673,10 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
 
             if (spinnerMonth.getSelectedItem().equals("All")) {
 
-                barChart.setScaleMinima(5f,0);
+                barChart.setScaleMinima(5f, 0);
                 barChart.setScaleX(5f);
-            }else {
-                barChart.setScaleMinima(5,0);
+            } else {
+                barChart.setScaleMinima(5, 0);
                 barChart.setScaleX(5);
             }
 
@@ -685,15 +687,14 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             txtYAxis.setVisibility(View.VISIBLE);
             txtGraphTital.setVisibility(View.VISIBLE);
 
-            int totalWv=0;
-            for(int i=0; i<heavyModel.getGraphData().size(); i++){
-                totalWv=totalWv+heavyModel.getGraphData().get(i).getEnergy();
+            int totalWv = 0;
+            for (int i = 0; i < heavyModel.getGraphData().size(); i++) {
+                totalWv = totalWv + heavyModel.getGraphData().get(i).getEnergy();
             }
-            if(currentDay==12)
-            {
-                txtGraphType.setText("Year : " +stryear);
-               // txtGraphTital.setText("Yearly Graph : "+totalWv);
-            }else {
+            if (currentDay == 12) {
+                txtGraphType.setText("Year : " + stryear);
+                // txtGraphTital.setText("Yearly Graph : "+totalWv);
+            } else {
 
                 Calendar cal = Calendar.getInstance();
                 SimpleDateFormat month_date = new SimpleDateFormat("MMM");
@@ -701,67 +702,56 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
 
                 ChatApplication.logDisplay("Current Month" + month);
 
-                txtGraphType.setText("Month : "+ month);
+                txtGraphType.setText("Month : " + month);
                 //txtGraphTital.setText("Monthly Graph : "+totalWv);
 
-                if (strmonth == 1){
-                    txtGraphType.setText("Month : "+ "Jan");
+                if (strmonth == 1) {
+                    txtGraphType.setText("Month : " + "Jan");
                     //txtGraphTital.setText("Monthly Graph : "+totalWv);
-                } else if(strmonth == 2)
-                {
-                    txtGraphType.setText("Month : "+ "Feb");
+                } else if (strmonth == 2) {
+                    txtGraphType.setText("Month : " + "Feb");
                     //txtGraphTital.setText("Monthly Graph : "+totalWv);
-                }else if(strmonth == 3)
-                {
-                    txtGraphType.setText("Month : "+ "Mar");
+                } else if (strmonth == 3) {
+                    txtGraphType.setText("Month : " + "Mar");
                     //txtGraphTital.setText("Monthly Graph : "+totalWv);
-                }else if(strmonth == 4)
-                {
-                    txtGraphType.setText("Month : "+ "Apr");
+                } else if (strmonth == 4) {
+                    txtGraphType.setText("Month : " + "Apr");
                     //txtGraphTital.setText("Monthly Graph : "+totalWv);
-                }else if(strmonth == 5)
-                {
-                    txtGraphType.setText("Month : "+ "May");
+                } else if (strmonth == 5) {
+                    txtGraphType.setText("Month : " + "May");
                     //txtGraphTital.setText("Monthly Graph : "+totalWv);
-                }else if(strmonth == 6)
-                {
-                    txtGraphType.setText("Month : "+ "Jun");
+                } else if (strmonth == 6) {
+                    txtGraphType.setText("Month : " + "Jun");
                     //txtGraphTital.setText("Monthly Graph : "+totalWv);
-                }else if(strmonth == 7)
-                {
-                    txtGraphType.setText("Month : "+ "Jul");
+                } else if (strmonth == 7) {
+                    txtGraphType.setText("Month : " + "Jul");
                     //txtGraphTital.setText("Monthly Graph : "+totalWv);
-                }else if(strmonth == 8)
-                {
-                    txtGraphType.setText("Month : "+ "Aug");
+                } else if (strmonth == 8) {
+                    txtGraphType.setText("Month : " + "Aug");
                     //txtGraphTital.setText("Monthly Graph : "+totalWv);
-                }else if(strmonth == 9)
-                {
-                    txtGraphType.setText("Month : "+ "Sep");
+                } else if (strmonth == 9) {
+                    txtGraphType.setText("Month : " + "Sep");
                     //txtGraphTital.setText("Monthly Graph : "+totalWv);
-                }else if(strmonth == 10)
-                {
-                    txtGraphType.setText("Month : "+ "Oct");
+                } else if (strmonth == 10) {
+                    txtGraphType.setText("Month : " + "Oct");
                     //txtGraphTital.setText("Monthly Graph : "+totalWv);
-                }else if(strmonth == 11)
-                {
-                    txtGraphType.setText("Month : "+ "Nov");
+                } else if (strmonth == 11) {
+                    txtGraphType.setText("Month : " + "Nov");
                     //txtGraphTital.setText("Monthly Graph : "+totalWv);
-                }else if(strmonth == 12)
-                {
-                    txtGraphType.setText("Month : "+ "Dec");
+                } else if (strmonth == 12) {
+                    txtGraphType.setText("Month : " + "Dec");
                     //txtGraphTital.setText("Monthly Graph : "+totalWv);
                 }
             }
 
-        }else {
+        } else {
             frameChart.setVisibility(View.VISIBLE);
             txtNodataFound.setVisibility(View.GONE);
             barChart.setVisibility(View.VISIBLE);
             txtGraphType.setVisibility(View.VISIBLE);
             txtYAxis.setVisibility(View.VISIBLE);
             txtGraphTital.setVisibility(View.GONE);
-            ChatApplication.showToast(this,"No data found.");
+            ChatApplication.showToast(this, "No data found.");
 
 
             Calendar cal = Calendar.getInstance();
@@ -770,55 +760,44 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
 
             ChatApplication.logDisplay("Current Month" + month);
 
-            txtGraphType.setText("Month : "+ month);
+            txtGraphType.setText("Month : " + month);
             //txtGraphTital.setText("Monthly Graph : "+totalWv);
 
-            if (strmonth == 1){
-                txtGraphType.setText("Month : "+ "Jan");
+            if (strmonth == 1) {
+                txtGraphType.setText("Month : " + "Jan");
                 //txtGraphTital.setText("Monthly Graph : "+totalWv);
-            } else if(strmonth == 2)
-            {
-                txtGraphType.setText("Month : "+ "Feb");
+            } else if (strmonth == 2) {
+                txtGraphType.setText("Month : " + "Feb");
                 //txtGraphTital.setText("Monthly Graph : "+totalWv);
-            }else if(strmonth == 3)
-            {
-                txtGraphType.setText("Month : "+ "Mar");
+            } else if (strmonth == 3) {
+                txtGraphType.setText("Month : " + "Mar");
                 //txtGraphTital.setText("Monthly Graph : "+totalWv);
-            }else if(strmonth == 4)
-            {
-                txtGraphType.setText("Month : "+ "Apr");
+            } else if (strmonth == 4) {
+                txtGraphType.setText("Month : " + "Apr");
                 //txtGraphTital.setText("Monthly Graph : "+totalWv);
-            }else if(strmonth == 5)
-            {
-                txtGraphType.setText("Month : "+ "May");
+            } else if (strmonth == 5) {
+                txtGraphType.setText("Month : " + "May");
                 //txtGraphTital.setText("Monthly Graph : "+totalWv);
-            }else if(strmonth == 6)
-            {
-                txtGraphType.setText("Month : "+ "Jun");
+            } else if (strmonth == 6) {
+                txtGraphType.setText("Month : " + "Jun");
                 //txtGraphTital.setText("Monthly Graph : "+totalWv);
-            }else if(strmonth == 7)
-            {
-                txtGraphType.setText("Month : "+ "Jul");
+            } else if (strmonth == 7) {
+                txtGraphType.setText("Month : " + "Jul");
                 //txtGraphTital.setText("Monthly Graph : "+totalWv);
-            }else if(strmonth == 8)
-            {
-                txtGraphType.setText("Month : "+ "Aug");
+            } else if (strmonth == 8) {
+                txtGraphType.setText("Month : " + "Aug");
                 //txtGraphTital.setText("Monthly Graph : "+totalWv);
-            }else if(strmonth == 9)
-            {
-                txtGraphType.setText("Month : "+ "Sep");
+            } else if (strmonth == 9) {
+                txtGraphType.setText("Month : " + "Sep");
                 //txtGraphTital.setText("Monthly Graph : "+totalWv);
-            }else if(strmonth == 10)
-            {
-                txtGraphType.setText("Month : "+ "Oct");
+            } else if (strmonth == 10) {
+                txtGraphType.setText("Month : " + "Oct");
                 //txtGraphTital.setText("Monthly Graph : "+totalWv);
-            }else if(strmonth == 11)
-            {
-                txtGraphType.setText("Month : "+ "Nov");
+            } else if (strmonth == 11) {
+                txtGraphType.setText("Month : " + "Nov");
                 //txtGraphTital.setText("Monthly Graph : "+totalWv);
-            }else if(strmonth == 12)
-            {
-                txtGraphType.setText("Month : "+ "Dec");
+            } else if (strmonth == 12) {
+                txtGraphType.setText("Month : " + "Dec");
                 //txtGraphTital.setText("Monthly Graph : "+totalWv);
             }
         }
@@ -860,8 +839,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(MonthAdapter.MonthViewHolder holder, final int position)
-        {
+        public void onBindViewHolder(MonthAdapter.MonthViewHolder holder, final int position) {
             holder.txtmonth.setText(monthlist.get(position));
             holder.linearlayout_month.setId(position);
             holder.linearlayout_month.setOnClickListener(new View.OnClickListener() {
@@ -869,7 +847,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     row_index = holder.linearlayout_month.getId();
                     strmonth = row_index + 1;
-                    if(!isApiStatus){
+                    if (!isApiStatus) {
                         filter();
                     }
                     //   getDatesInMonth(Calendar.getInstance().get(Calendar.YEAR), row_index);
@@ -931,10 +909,10 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                     row_index_year = holder.linearlayout_year.getId();
                     stryear = Integer.parseInt(yearlist.get(position));
                     mStartIndex = position;
-                    if(!isApiStatus){
+                    if (!isApiStatus) {
                         filter();
                     }
-                     selectedyear  = String.valueOf(stryear);
+                    selectedyear = String.valueOf(stryear);
 
                     notifyDataSetChanged();
                 }
@@ -943,8 +921,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             int year = c.get(Calendar.YEAR);
             String stryear1 = String.valueOf(year);
 
-            if (mStartIndex == position)
-            {
+            if (mStartIndex == position) {
                 holder.txtyear.setTextColor(getResources().getColor(R.color.automation_black));
                 holder.imgdots.setVisibility(View.VISIBLE);
 

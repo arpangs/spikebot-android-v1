@@ -286,8 +286,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                 openSettingPopup(toolbar);
             }
         } else if (view.getId() == R.id.toolbar_notification) {
-            Intent intent = new Intent(Main2Activity.this, DeviceLogActivity.class);
-            intent.putExtra("isCheckActivity", "AllTypeNotification");
+            Intent intent = new Intent(Main2Activity.this, DeviceLogRoomActivity.class);
+            intent.putExtra("isNotification", "All Notification");
             startActivity(intent);
         } else if (view.getId() == R.id.img_profile) {
             Intent i = new Intent(Main2Activity.this, ProfileActivity.class);
@@ -622,9 +622,13 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
 
     public void setAllNotificationCount(int count) {
-        if (count != 0 && count > 99) {
+        if (count == 0) {
+            toolbarNotificationCount.setVisibility(View.GONE);
+        } else if (count != 0 && count > 99) {
+            toolbarNotificationCount.setVisibility(View.VISIBLE);
             toolbarNotificationCount.setText("99+");
         } else {
+            toolbarNotificationCount.setVisibility(View.VISIBLE);
             toolbarNotificationCount.setText("" + count);
         }
     }

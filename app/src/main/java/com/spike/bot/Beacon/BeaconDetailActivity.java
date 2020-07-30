@@ -152,7 +152,7 @@ public class BeaconDetailActivity extends AppCompatActivity {
                 try {
                     ActivityHelper.dismissProgressDialog();
                     JSONObject result = new JSONObject(stringResponse);
-                    ChatApplication.logDisplay("beacon list is room " + result);
+                    ChatApplication.logDisplay("radar list is room " + result);
                     //  JSONObject dataObject = result.getJSONObject("data");
                     JSONArray roomArray = result.getJSONArray("data");
                     if (roomArray != null && roomArray.length() > 0) {
@@ -412,7 +412,7 @@ public class BeaconDetailActivity extends AppCompatActivity {
                             String room_id = object.getString("room_id");
                             String device_id = object.getString("device_id");
                             String device = object.getString("device");
-                            ChatApplication.logDisplay("add beacon socket" + object.toString());
+                            ChatApplication.logDisplay("add radar socket" + object.toString());
                             getBeaconLocationList();
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -436,7 +436,7 @@ public class BeaconDetailActivity extends AppCompatActivity {
                             JSONObject object = new JSONObject(args[0].toString());
                             String room_id = object.getString("room_id");
                             String device_id = object.getString("device_id");
-                            ChatApplication.logDisplay("remove beacon socket" + object.toString());
+                            ChatApplication.logDisplay("remove radar socket" + object.toString());
                             getBeaconLocationList();
                         } catch (JSONException e) {
                             e.printStackTrace();

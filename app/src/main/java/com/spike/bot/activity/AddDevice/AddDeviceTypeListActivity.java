@@ -74,7 +74,7 @@ import io.socket.emitter.Emitter;
  */
 public class AddDeviceTypeListActivity extends AppCompatActivity {
 
-    public static int SENSOR_TYPE_PANAL = 0, SENSOR_TYPE_DOOR = 1, SENSOR_TYPE_TEMP = 2, SENSOR_GAS = 5, Curtain = 6, typeSync = 0, SENSOR_WATER = 7, PIR_DETECTOR = 8, type1 = 0, sensorposition = 0;
+    public static int SENSOR_TYPE_PANAL = 0, SENSOR_TYPE_DOOR = 1, SENSOR_TYPE_TEMP = 2, SENSOR_GAS = 5, Curtain = 6, typeSync = 0, SENSOR_WATER = 7, PIR_DETECTOR = 8, PIR_DEVICE = 9, type1 = 0, sensorposition = 0;
     public AddRoomDialog addRoomDialog;
     Toolbar toolbar;
     RecyclerView recyclerSmartDevice;
@@ -82,6 +82,8 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
     ArrayList<DeviceList> arrayList = new ArrayList<>();
     ArrayList<String> roomIdList = new ArrayList<>();
     ArrayList<String> roomNameList = new ArrayList<>();
+    ArrayList<String> moodIdList = new ArrayList<>();
+    ArrayList<String> moodNameList = new ArrayList<>();
     ProgressDialog m_progressDialog;
     RoomVO room;
     Dialog dialog;
@@ -105,6 +107,10 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                         roomIdList.clear();
                         roomNameList.clear();
 
+                        moodIdList.clear();
+                        moodNameList.clear();
+
+
                         //message, gas_sensor_module_id,room_list
                         JSONObject object = new JSONObject(args[0].toString());
 
@@ -120,6 +126,18 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
                                 roomIdList.add(room_id);
                                 roomNameList.add(room_name);
+                            }
+
+                            if (object.has("mood_list")) {
+                                JSONArray jsonArraymood = object.getJSONArray("mood_list");
+                                for (int i = 0; i < jsonArraymood.length(); i++) {
+                                    JSONObject objectRoom = jsonArraymood.getJSONObject(i);
+                                    String mood_id = objectRoom.getString("mood_id");
+                                    String mood_name = objectRoom.getString("mood_name");
+
+                                    moodIdList.add(mood_id);
+                                    moodNameList.add(mood_name);
+                                }
                             }
                         }
 
@@ -288,13 +306,13 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         list = new DeviceList("Water Detector", covers[14]);
         arrayList.add(list);
 
-        list = new DeviceList("Beacon", covers[15]);
+        list = new DeviceList("Radar", covers[15]);
         arrayList.add(list);
 
-        list = new DeviceList("Beacon Scanner", covers[16]);
+        list = new DeviceList("Beamer", covers[16]);
         arrayList.add(list);
 
-        list = new DeviceList("PIR Detector", covers[17]);
+        list = new DeviceList("Motion Detector", covers[17]);
         arrayList.add(list);
 /*
         arrayList.add("Unassigned List");
@@ -635,7 +653,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         } else if (sensor_type == SENSOR_WATER) {
             txtDialogTitle.setText("Water Detector");
         } else if (sensor_type == PIR_DETECTOR) {
-            txtDialogTitle.setText("PIR Detector");
+            txtDialogTitle.setText("Motion Detector");
         } else {
             txtDialogTitle.setText("Panel");
         }
@@ -666,6 +684,8 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                 } else if (sensor_type == 2) {
                     unassignIntent("temp_sensor");
                 } else if (sensor_type == PIR_DETECTOR) {
+                    unassignIntent("pir_detector");
+                } else if (sensor_type == PIR_DEVICE) {
                     unassignIntent("pir_device");
                 } else {
                     unassignIntent("gas_sensor");
@@ -709,7 +729,9 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         } else if (type == SENSOR_WATER) {
             ActivityHelper.showProgressDialog(AddDeviceTypeListActivity.this, "Searching for new water detector", false);
         } else if (type == PIR_DETECTOR) {
-            ActivityHelper.showProgressDialog(AddDeviceTypeListActivity.this, "Searching for new PIR detector", false);
+            ActivityHelper.showProgressDialog(AddDeviceTypeListActivity.this, "Searching for new Motion detector", false);
+        } else if (type == PIR_DEVICE) {
+            ActivityHelper.showProgressDialog(AddDeviceTypeListActivity.this, "Searching for new Motion device", false);
         } else {
             ActivityHelper.showProgressDialog(AddDeviceTypeListActivity.this, "Searching for new panel", false);
         }
@@ -1097,8 +1119,12 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             dialogTitle.setText("Add Water Detector");
             txt_sensor_name.setText("Detector Name");
         } else if (typeSync == PIR_DETECTOR) {
-            dialogTitle.setText("Add PIR Detector");
+            dialogTitle.setText("Add Motion Detector");
             txt_sensor_name.setText("Detector Name");
+            llview.setVisibility(View.VISIBLE);
+        } else if (typeSync == PIR_DEVICE) {
+            dialogTitle.setText("Add Motion Device");
+            txt_sensor_name.setText("Device Name");
             llview.setVisibility(View.VISIBLE);
         } else {
             dialogTitle.setText("Add Panel");
@@ -1250,7 +1276,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         }
 
         if (!module_type.equals("pir_detector") && sensorposition == 17) {
-            builder.setMessage("Attached device is not pir detector");
+            builder.setMessage("Attached device is not motion detector");
         } else {
             builder.setMessage(alertMessage);
         }

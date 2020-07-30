@@ -910,10 +910,14 @@ public class SpikeBotApi {
 
         HashMap<String, Object> params = new HashMap<>();
 
+        if (ROOM_ID == null) {   // for all notification
+            ROOM_ID = "";
+        }
+
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
         params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        params.put("filter_action", "door_open,door_close,temp_alert,gas_detected,water_detected,door_lock,door_unlock");
+        params.put("filter_action", "door_open,door_close,temp_alert,gas_detected,water_detected,door_lock,door_unlock,home_controller_active,home_controller_inactive"); // dev arpan add two field as per web developer suggest - home_controller_active,home_controller_inactive on 29 july 2020
         params.put("filter_type", "room");
         params.put("room_id", "" + ROOM_ID);
         params.put("unseen", 1);
@@ -989,7 +993,7 @@ public class SpikeBotApi {
     /*public void CallFilterData(boolean isFilterActive, int position, String mRoomId, String start_date, String end_date, Spinner mSpinnerRoomList, Spinner mSpinnerRoomMood,
                                boolean isFilterType, ArrayList<Filter> filterArrayList, String actionType, String isCheckActivity, String strDeviceId, String strpanelId, String typeofFilter, boolean userChange,
                                DataResponseListener dataResponseListener) {*/
-    public void CallFilterData(HashMap<String, Object> params,DataResponseListener dataResponseListener) {
+    public void CallFilterData(HashMap<String, Object> params, DataResponseListener dataResponseListener) {
 
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
         params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -2053,9 +2057,6 @@ public class SpikeBotApi {
             params.put("min_temp", min_temp);
             params.put("max_temp", max_temp);
         } else {
-           /* params.put("min_temp", min_temp);
-            params.put("max_temp", max_temp);*/
-
             params.put("min_temp", Constants.getCTemp(String.valueOf(min_temp)));
             params.put("max_temp", Constants.getCTemp(String.valueOf(max_temp)));
         }

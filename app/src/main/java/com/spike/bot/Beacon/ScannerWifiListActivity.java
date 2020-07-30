@@ -143,8 +143,8 @@ public class ScannerWifiListActivity extends AppCompatActivity implements WifiLi
         linear_off_time.setVisibility(View.VISIBLE);
         linear_range.setVisibility(View.VISIBLE);
 
-        dialogTitle.setText("Add Beacon Scanner");
-        txt_sensor_name.setText("Scanner Name");
+        dialogTitle.setText("Add Beamer");
+        txt_sensor_name.setText("Beamer Name");
         txtSelectRoom.setText("Room List");
 
         edt_door_module_id.setText(moduleId);
