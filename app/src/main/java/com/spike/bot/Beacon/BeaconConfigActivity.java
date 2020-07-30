@@ -50,6 +50,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -275,12 +276,28 @@ public class BeaconConfigActivity extends AppCompatActivity implements ItemClick
             deviceIdList.add(dPanel.getPanel_device_id());
         }
 
+
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("device_name", beaconname);
+
+        if (editBeacon) {
+            params.put("device_id",  beaconmodel.getDeviceId());
+        } else {
+            params.put("module_id", moduleid);
+        }
+        params.put("module_type", "beacon");
+        params.put("related_devices", deviceIdList);
+
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
        // JSONArray array = new JSONArray(deviceIdList);
 
         ActivityHelper.showProgressDialog(this, "Please wait.", true);
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-        SpikeBotApi.getInstance().saveBeacon(beaconname, beaconmodel.getDeviceId(), moduleid, deviceIdList, editBeacon, new DataResponseListener() {
+        SpikeBotApi.getInstance().saveBeacon(params, editBeacon, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
