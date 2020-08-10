@@ -241,7 +241,7 @@ public class SpikeBotApi {
         params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE != null ? APIConst.PHONE_ID_VALUE : "");
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
-        new GeneralRetrofit(apiService.postDeviceLocal_Cloud(ChatApplication.url, params), params, dataResponseListener).call();
+        new GeneralRetrofit(apiService.postDeviceLocal_Cloud_NEW(ChatApplication.url, params), params, dataResponseListener).call();
     }
 
 
@@ -257,6 +257,19 @@ public class SpikeBotApi {
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
         new GeneralRetrofit(apiService.postDeviceLocal_Cloud(ChatApplication.url, params), params, dataResponseListener).call(); // for device cloud and local both use same method
+    }
+
+
+    public void GetDeviceClould_New(DataResponseListener dataResponseListener) {
+
+        HashMap<String, Object> params = new HashMap<>();
+
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+        params.put("room_type", "room");
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        new GeneralRetrofit(apiService.postDeviceLocal_Cloud_NEW(ChatApplication.url, params), params, dataResponseListener).call(); // for device cloud and local both use same method
     }
 
     /*Dashboard Fragment*/

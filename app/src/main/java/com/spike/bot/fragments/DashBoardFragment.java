@@ -2211,7 +2211,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
-        SpikeBotApi.getInstance().GetDeviceClould(new DataResponseListener() {
+        SpikeBotApi.getInstance().GetDeviceClould_New(new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
 
@@ -2332,7 +2332,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
 
                         JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
-                        roomList = JsonHelper.parseRoomArray(roomArray, false);
+                        roomList = JsonHelper.parseRoomArrayNew(roomArray, false);
                         sectionedExpandableLayoutHelper.addSectionList(roomList);
 
                         JSONArray cameraArray = dataObject.getJSONArray("cameradeviceList");
@@ -2653,7 +2653,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         mCallback.onArticleSelected("" + userFirstName);
 
                         JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
-                        roomList = JsonHelper.parseRoomArray(roomArray, false);
+                        roomList = JsonHelper.parseRoomArrayNew(roomArray, false);
                         sectionedExpandableLayoutHelper.addSectionList(roomList);
 
 

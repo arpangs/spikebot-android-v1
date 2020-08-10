@@ -134,6 +134,9 @@ public interface ApiInterface {
     @POST("http://{url}" + Constants.GET_DEVICES_LIST)
     Call<JsonElement> postDeviceLocal_Cloud(@Path("url") String url, @Body HashMap<String, Object> body);
 
+    @POST("http://{url}" + Constants.GET_DEVICES_LIST_NEW)
+    Call<JsonElement> postDeviceLocal_Cloud_NEW(@Path("url") String url, @Body HashMap<String, Object> body);
+
 
     @POST("http://{url}" + Constants.changeHueLightState)
     Call<JsonElement> DeviceOnOff_Type3(@Path("url") String url, @Body HashMap<String, Object> body);

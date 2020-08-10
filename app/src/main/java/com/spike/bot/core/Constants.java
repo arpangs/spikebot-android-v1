@@ -73,7 +73,8 @@ public class Constants {
     public static final String SIGNUP_API = "/signupdetails";
 
     //room
-    public static final String GET_DEVICES_LIST = "/rooms/get-all-room-details";
+    public static final String GET_DEVICES_LIST = "/device/list";
+    public static final String GET_DEVICES_LIST_NEW = "/rooms/get-all-room-details";
     public static final String moodList = "/mood/list";
     public static final String roomsget = "/rooms/get";
     public static final String roomslist = "/rooms/list";
