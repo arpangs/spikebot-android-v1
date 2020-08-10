@@ -523,7 +523,7 @@ public class SmartRemoteActivity extends AppCompatActivity {
                         setAdapter();
                     }else {
                         txtNodataFound.setVisibility(View.VISIBLE);
-                        recyclerRemoteList.setVisibility(View.VISIBLE);
+                        recyclerRemoteList.setVisibility(View.GONE);
                         ChatApplication.showToast(getApplicationContext(),"No data found.");
                     }
                 } catch (Exception e) {

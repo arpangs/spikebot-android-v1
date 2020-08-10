@@ -2624,4 +2624,29 @@ public class SpikeBotApi {
 
         new GeneralRetrofit(apiService.SAVE_EDIT_SWITCH(ChatApplication.url, params), params, dataResponseListener).call();
     }
+
+    /* Get Room Detail*/
+    public void getRoomDetail(String room_id,DataResponseListener dataResponseListener){
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("room_id", room_id);
+        params.put("room_type", "room");
+
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        new GeneralRetrofit(apiService.GET_ROOM_DETAILS(ChatApplication.url, params), params, dataResponseListener).call();
+    }
+
+    /* Get Room Detail*/
+    public void getCameraDetail(String jetson_id,DataResponseListener dataResponseListener){
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("jetson_id", jetson_id);
+
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        new GeneralRetrofit(apiService.GET_CAMERA_DETAILS(ChatApplication.url, params), params, dataResponseListener).call();
+    }
 }

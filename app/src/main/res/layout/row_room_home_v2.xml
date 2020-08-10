@@ -63,12 +63,12 @@
                         android:layout_height="16dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginRight="1dp"
-                        android:background="@drawable/selector_section_toggle"
+                        android:background="@drawable/down"
                         android:contentDescription="Change state of section"
                         android:padding="15dp"
                         android:textOff=""
                         android:textOn=""
-                        android:visibility="visible"/>
+                        android:visibility="gone"/>
 
                     <RelativeLayout
                         android:id="@+id/rel_main_view"
@@ -83,7 +83,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:gravity="center_vertical|left|start"
-                            android:paddingStart="5dp"
+                            android:paddingStart="2dp"
                             android:paddingTop="@dimen/section_padding"
                             android:paddingBottom="@dimen/section_padding"
                             android:text="Room Name"
@@ -188,9 +188,11 @@
                         android:paddingTop="10dp">
 
                         <LinearLayout
+                            android:id="@+id/linear_schedule"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="13dp"
+                            android:visibility="visible"
                             android:orientation="vertical">
 
                             <ImageView
@@ -215,7 +217,7 @@
 
                         <LinearLayout
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_marginRight="13dp"
                             android:layout_marginLeft="@dimen/_5sdp"
                             android:orientation="vertical">
@@ -233,6 +235,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
                                 android:gravity="bottom"
+                                android:layout_marginTop="@dimen/_5sdp"
                                 android:text="Logs"
                                 android:textColor="@color/signupblack"
                                 android:textSize="10sp" />
@@ -294,6 +297,7 @@
                                     android:layout_height="wrap_content"
                                     android:text="Notifications"
                                     android:layout_gravity="bottom"
+                                    android:layout_marginTop="@dimen/_5sdp"
                                     android:textColor="@color/signupblack"
                                     android:textSize="10sp" />
 
@@ -452,7 +456,18 @@
                         android:layout_height="match_parent"
                         android:orientation="horizontal">
 
-
+                        <TextView
+                            android:id="@+id/txt_total_devices"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:layout_weight="1.5"
+                            android:gravity="right|center"
+                            android:text="0 Device"
+                            android:textAllCaps="true"
+                            android:visibility="visible"
+                            android:textColor="@color/redminus"
+                            android:textSize="12sp" />
 
                     </LinearLayout>
 

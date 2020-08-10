@@ -29,8 +29,37 @@ public class PanelVO implements Serializable {
     private boolean isSensorPanel;
     private boolean isActivePanel;
     private String roomId;
+    public boolean isExpanded=false;
+    private boolean isSensorPanelOnly;
+    String paneltype;
 
+    public String getPaneltype() {
+        return paneltype;
+    }
 
+    public void setPaneltype(String paneltype) {
+        this.paneltype = paneltype;
+    }
+
+    public boolean isExpanded() {
+        return isExpanded;
+    }
+
+    public void setExpanded(boolean expanded) {
+        isExpanded = expanded;
+    }
+
+    public void setPanel_type(int panel_type) {
+        this.panel_type = panel_type;
+    }
+
+    public boolean isDevicePanel() {
+        return isSensorPanelOnly;
+    }
+
+    public void setDevicePanel(boolean sensorPanelOnly) {
+        isSensorPanelOnly = sensorPanelOnly;
+    }
 
     public String getPanel_name_sub() {
         return panel_name_sub;

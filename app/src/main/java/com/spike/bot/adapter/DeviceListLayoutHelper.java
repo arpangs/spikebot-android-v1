@@ -132,4 +132,9 @@ public class DeviceListLayoutHelper implements SectionStateChangeListener {
             notifyDataSetChanged();
         }
     }
+
+    @Override
+    public void onSectionStateChanged(PanelVO section, boolean isOpen) {
+
+    }
 }

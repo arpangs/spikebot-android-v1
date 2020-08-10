@@ -350,7 +350,7 @@ public class ChatApplication extends Application {
 
 
 //            mSocket = IO.socket(newURL, opts);
-            mSocket = IO.socket(newURL, opts);
+            mSocket = IO.socket(urltoken, opts);
             mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
             ChatApplication.logDisplay("chat onDisconnect callll connect done ");
         } catch (URISyntaxException e) {

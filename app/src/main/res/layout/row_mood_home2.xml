@@ -252,19 +252,6 @@
                 </FrameLayout>
                 </LinearLayout>
 
-             <!--   <TextView
-                    android:id="@+id/txt_total_devices"
-                    android:gravity="right|center"
-                    android:layout_marginRight="@dimen/_12sdp"
-                    android:layout_gravity="center"
-                    android:textColor="@color/sky_blue"
-                    android:text="0 Devices"
-                    android:textSize="@dimen/_12sdp"
-                    android:layout_weight="1.5"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />-->
-
-
                 <TextView
                     android:id="@+id/txt_total_devices"
                     android:layout_width="match_parent"
@@ -276,8 +263,7 @@
                     android:text="0 Device"
                     android:textAllCaps="true"
                     android:textColor="@color/redminus"
-                    android:textSize="10sp" />
-
+                    android:textSize="12sp" />
 
             </LinearLayout>
 

@@ -44,10 +44,11 @@
             <!--android:layout_width="wrap_content"-->
             <!--android:layout_height="wrap_content">-->
 
+            <!-- below layout height and width connected with sectionexpandablegridadpater and roomdetailactivity-->
             <ImageView
                 android:id="@+id/iv_icon"
-                android:layout_width="@dimen/_40sdp"
-                android:layout_height="@dimen/_40sdp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/_15sdp"
                 android:layout_marginLeft="@dimen/_5sdp"

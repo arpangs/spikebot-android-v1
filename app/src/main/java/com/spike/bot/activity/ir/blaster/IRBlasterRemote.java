@@ -409,7 +409,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
             case R.id.remote_temp_minus:
                 ChatApplication.logDisplay("isOn : " + isPowerOn);
-                if (isRemoteActive == 1) {
+               // if (isRemoteActive == 1) {
                     if (tempCurrent != tempMinus) {
                         tempCurrent--;
                         setangle(tempCurrent);
@@ -419,15 +419,15 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                         tempCurrent = tempMinus;
                     }
                     sendRemoteCommand(1);
-                } else {
+               /* } else {
                     Common.showToast("Remote is not active");
-                }
+                }*/
                 break;
 
             case R.id.remote_temp_plus:
                 ChatApplication.logDisplay("isOn : " + isPowerOn);
                 if (isRemoteActive == 1) {
-                    if (tempCurrent != tempPlus) {
+                    //if (tempCurrent != tempPlus) {
                         tempCurrent++;
                         setangle(tempCurrent);
                         ChatApplication.logDisplay("temperature plus" + tempCurrent);
@@ -436,13 +436,13 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                         tempCurrent = tempPlus;
                     }
                     sendRemoteCommand(1);
-                } else {
+               /* } else {
                     Common.showToast("Remote is not active");
-                }
+                }*/
 
                 break;
             case R.id.relative_plus:
-                if (isRemoteActive == 1) {
+                //if (isRemoteActive == 1) {
                     if (tempCurrent != tempPlus) {
                         tempCurrent++;
                         setangle(tempCurrent);
@@ -452,12 +452,12 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                         tempCurrent = tempPlus;
                     }
                     sendRemoteCommand(1);
-                } else {
+              /*  } else {
                     Common.showToast("Remote is not active");
-                }
+                }*/
                 break;
             case R.id.relative_minus:
-                if (isRemoteActive == 1) {
+              //  if (isRemoteActive == 1) {
                     if (tempCurrent != tempMinus) {
                         tempCurrent--;
                         setangle(tempCurrent);
@@ -467,9 +467,9 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                         tempCurrent = tempMinus;
                     }
                     sendRemoteCommand(1);
-                } else {
+               /* } else {
                     Common.showToast("Remote is not active");
-                }
+                }*/
                 break;
             case R.id.remote_toolbar_back:
                 onBackPressed();

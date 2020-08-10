@@ -60,6 +60,7 @@ import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.activity.DeviceLogRoomActivity;
 import com.spike.bot.activity.HeavyLoad.HeavyLoadDetailActivity;
 import com.spike.bot.activity.Main2Activity;
+import com.spike.bot.activity.RoomDetailActivity;
 import com.spike.bot.activity.RoomEditActivity_v2;
 import com.spike.bot.activity.ScheduleActivity;
 import com.spike.bot.activity.ScheduleListActivity;
@@ -183,7 +184,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
     /*change device status socket getting
     like devic eon /  off , value change
     * */
-    private Emitter.Listener changeDeviceStatus = new Emitter.Listener() {
+   /* private Emitter.Listener changeDeviceStatus = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             if (activity == null) {
@@ -212,12 +213,12 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 }
             });
         }
-    };
+    };*/
     /**
      * Update panel status
      * on, off
      */
-    private Emitter.Listener panelStatus = new Emitter.Listener() {
+    /*private Emitter.Listener panelStatus = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             if (activity == null) {
@@ -244,7 +245,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 }
             });
         }
-    };
+    };*/
     /**
      * Update Room status
      * on , off
@@ -278,7 +279,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
     };
     /* door sensor open / close
      * sensor temp , door , ir remote */
-    private Emitter.Listener changeModuleStatus = new Emitter.Listener() {
+   /* private Emitter.Listener changeModuleStatus = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             if (activity == null) {
@@ -305,9 +306,10 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 }
             });
         }
-    };
+    };*/
+
     /* uprecount like notification icon upper showing count*/
-    private Emitter.Listener unReadCount = new Emitter.Listener() {
+   /* private Emitter.Listener unReadCount = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             if (activity == null) {
@@ -336,7 +338,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 }
             });
         }
-    };
+    };*/
     /*update alert socket to display badgecount */
     private Emitter.Listener updateRoomAlertCounter = new Emitter.Listener() {
         @Override
@@ -427,7 +429,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             });
         }
     };
-    private Emitter.Listener changeIrBlasterTemperature = new Emitter.Listener() {
+    /*private Emitter.Listener changeIrBlasterTemperature = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             if (activity == null) {
@@ -453,7 +455,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 }
             });
         }
-    };
+    };*/
     private Emitter.Listener onConnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -499,64 +501,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                                 showDialog = 1;
                                 getDeviceList(showDialog);
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener beaconInRoomCountUpdate = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            if (activity == null) {
-                return;
-            }
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-
-                        try {
-                            JSONObject object = new JSONObject(args[0].toString());
-                            //  String user_id = object.getString("user_id");
-                            String room_id = object.getString("room_id");
-                            String device_count = object.getString("device_count");
-                            ChatApplication.logDisplay("beacon counter socket" + object.toString());
-                            //if(!device_count.equals("0")) {
-                            sectionedExpandableLayoutHelper.updateBeaconBadgeCount(room_id, device_count);
-                            //  }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener changeIrBlasterTemperature = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            if (activity == null) {
-                return;
-            }
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-
-                        try {
-                            JSONObject object = new JSONObject(args[0].toString());
-                            //  String user_id = object.getString("user_id");
-                            String ir_blaster_id = object.getString("ir_blaster_id");
-                            String temperature = object.getString("temperature");
-                            ChatApplication.logDisplay("ir remote temp socket" + object.toString());
-                            sectionedExpandableLayoutHelper.updateTempCount(ir_blaster_id, temperature);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -809,15 +753,15 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
     public void onPause() {
         Constants.startUrlset();
         if (mSocket != null) {
-            mSocket.off("changeDeviceStatus", changeDeviceStatus);
+           // mSocket.off("changeDeviceStatus", changeDeviceStatus);
             mSocket.off("changeRoomStatus", roomStatus);
-            mSocket.off("changePanelStatus", panelStatus);
-            mSocket.off("changeModuleStatus", changeModuleStatus);
-            mSocket.off("updateDeviceBadgeCounter", unReadCount);
+         //   mSocket.off("changePanelStatus", panelStatus);
+          //  mSocket.off("changeModuleStatus", changeModuleStatus);
+          //  mSocket.off("updateDeviceBadgeCounter", unReadCount);
             mSocket.off("updateChildUser", updateChildUser);
             mSocket.off("updateRoomAlertCounter", updateRoomAlertCounter);
             mSocket.off("beaconInRoomCountUpdate", beaconInRoomCountUpdate);
-            mSocket.off("changeIrBlasterTemperature", changeIrBlasterTemperature);
+         //   mSocket.off("changeIrBlasterTemperature", changeIrBlasterTemperature);
 
         }
 
@@ -852,7 +796,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 roomPanelOnOff(null, roomVO, roomVO.getRoomId(), "", roomVO.getRoom_status(), 1);
             }
         } else if (action.equalsIgnoreCase("editclick_false")) {
-            showBottomSheetDialog(roomVO);
+          //  showBottomSheetDialog(roomVO);
 
         } else if (action.equalsIgnoreCase("cameraopen")) {
 
@@ -874,7 +818,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ?", new ConfirmDialog.IDialogCallback() {
                 @Override
                 public void onConfirmDialogYesClick() {
-                    deleteRoom(roomVO);
+                    //deleteRoom(roomVO);
                 }
 
                 @Override
@@ -921,6 +865,26 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         } else if (action.equalsIgnoreCase("icnBeacon")) {
             Intent intent = new Intent(activity, BeaconDetailActivity.class);
             intent.putExtra("room_id", roomVO.getRoomId());
+            startActivity(intent);
+        }  else if (action.equalsIgnoreCase("camera_click")) {
+            Intent intent = new Intent(activity, RoomDetailActivity.class);
+            intent.putExtra("camera_id", roomVO.getRoomId());
+            intent.putExtra("room_name", roomVO.getRoomName());
+            startActivity(intent);
+
+        }  else if (action.equalsIgnoreCase("jetson_click")) {
+            Intent intent = new Intent(activity, RoomDetailActivity.class);
+            intent.putExtra("jetson_id", roomVO.getRoomId());
+            intent.putExtra("room_name", roomVO.getRoomName());
+            intent.putExtra("homecontrollerId", homecontrollerid);
+            startActivity(intent);
+
+        } else if(action.equalsIgnoreCase("room_click")){
+            Intent intent = new Intent(activity, RoomDetailActivity.class);
+            intent.putExtra("room_id", roomVO.getRoomId());
+            intent.putExtra("room_name", roomVO.getRoomName());
+            intent.putExtra("room", roomVO);
+            ChatApplication.logDisplay("room id is callingclick fire !! " + roomVO.getRoomId());
             startActivity(intent);
         }
     }
@@ -1067,7 +1031,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             //on-off remote
             sendRemoteCommand(item, "isIRSensorClick");
         } else if (action.equalsIgnoreCase("doorOpenClose") && item.getDoor_subtype() != 1) {
-            callDoorRemotly(item);
+           // callDoorRemotly(item);
         } else if (action.equalsIgnoreCase("isIRSensorLongClick")) {
 
             Intent intent = new Intent(activity, IRBlasterRemote.class);
@@ -1086,8 +1050,8 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             intent.putExtra("door_module_id", item.getModuleId());
             startActivity(intent);
         } else if (action.equalsIgnoreCase("isPIRLongClick")) {
-            if (item.getIsActive() != -1)
-                dialogNewPassword(item);
+           /* if (item.getIsActive() != -1)
+                dialogNewPassword(item);*/
         } else if (action.equalsIgnoreCase("pir")) {
             deviceOnOff(item, position);
         }
@@ -1276,15 +1240,15 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
     }
 
     private void socketOn() {
-        mSocket.on("changeDeviceStatus", changeDeviceStatus);  // ac on off
+       // mSocket.on("changeDeviceStatus", changeDeviceStatus);  // ac on off
         mSocket.on("changeRoomStatus", roomStatus);
-        mSocket.on("changePanelStatus", panelStatus);
-        mSocket.on("changeModuleStatus", changeModuleStatus);
-        mSocket.on("updateDeviceBadgeCounter", unReadCount);
+       // mSocket.on("changePanelStatus", panelStatus);
+        //mSocket.on("changeModuleStatus", changeModuleStatus);
+       // mSocket.on("updateDeviceBadgeCounter", unReadCount);
         mSocket.on("updateChildUser", updateChildUser);
         mSocket.on("updateRoomAlertCounter", updateRoomAlertCounter);
         mSocket.on("beaconInRoomCountUpdate", beaconInRoomCountUpdate);
-        mSocket.on("changeIrBlasterTemperature", changeIrBlasterTemperature);
+       // mSocket.on("changeIrBlasterTemperature", changeIrBlasterTemperature);
     }
 
     private void cloudsocket() {
@@ -1316,63 +1280,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
     /*device on off */
     private void deviceOnOff(final DeviceVO deviceVO, final int position) {
-
-        /*dev arpan commented on 24 june 2020*/
-
-       /* JSONObject obj = new JSONObject();
-        try {
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            obj.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
-
-            if (deviceVO.getDeviceType().equalsIgnoreCase("3")) {
-                obj.put("status", deviceVO.getDeviceStatus());
-                obj.put("bright", "");
-                obj.put("is_rgb", "0");//1;
-                obj.put("rgb_array", "");
-                obj.put("room_device_id", deviceVO.getRoomDeviceId());
-            } else {
-                //{
-                //	"device_id": "1571407908196_uEVHoQJNR",
-                //	"device_status": "0n"  on means = 1,  off means 0
-                //}
-                try {
-                    if (deviceVO.getDevice_sub_type() != null) {
-                        if (deviceVO.getDeviceType().equalsIgnoreCase("fan") && deviceVO.getDevice_sub_type().equalsIgnoreCase("normal")) {
-                            obj.put("device_id", deviceVO.getDeviceId());
-                            obj.put("panel_id", deviceVO.getPanel_id());
-                            obj.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
-                            obj.put("device_sub_status", "5");
-                        } else if (deviceVO.getDeviceType().equalsIgnoreCase("fan") && deviceVO.getDevice_sub_type().equalsIgnoreCase("dimmer")) {
-                            obj.put("device_id", deviceVO.getDeviceId());
-                            obj.put("panel_id", deviceVO.getPanel_id());
-                            obj.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
-                            obj.put("device_sub_status", deviceVO.getDevice_sub_status());
-                        } else {
-                            obj.put("device_id", deviceVO.getDeviceId());
-                            obj.put("panel_id", deviceVO.getPanel_id());
-                            obj.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
-                        }
-                    }
-
-                    obj.put("device_id", deviceVO.getDeviceId());
-                    obj.put("panel_id", deviceVO.getPanel_id());
-                    obj.put("device_sub_status", deviceVO.getDevice_sub_status());
-                    obj.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-           *//*     obj.put("device_id", deviceVO.getDeviceId());
-                obj.put("panel_id",deviceVO.getPanel_id());
-                obj.put("device_status", deviceVO.getOldStatus() == 0 ? "1" : "0");
-*//*
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }*/
-
         callDeviceOnOffApi(deviceVO);
 
     }
@@ -1393,7 +1300,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
     private void callDeviceOnOffApi(final DeviceVO deviceVO) {
 
-
         String url = "";
         if (deviceVO.getDeviceType().equalsIgnoreCase("3")) {
             url = ChatApplication.url + Constants.changeHueLightState;
@@ -1406,35 +1312,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
         ChatApplication.logDisplay("Device roomPanelOnOff obj " + url + " "); //+ obj.toString());
-
-        /*dev arpan update on 24 june 2020*/
-
-       /* new GetJsonTask(activity, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                ChatApplication.logDisplay("Device roomPanelOnOff obj result" + result.toString());
-                try {
-                    int code = result.getInt("code"); //message
-                    String message = result.getString("message");
-                    if (code == 200) {
-//                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
-                    } else {
-                        updateDeviceOfflineMode(deviceVO);
-                        ChatApplication.showToast(activity, message);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                    ChatApplication.logDisplay("Device roomPanelOnOff finally ");
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ChatApplication.logDisplay("Device roomPanelOnOff error " + error);
-                updateDeviceOfflineMode(deviceVO);
-            }
-        }).execute();*/
 
         SpikeBotApi.getInstance().CallDeviceOnOffApi(deviceVO, new DataResponseListener() {
             @Override
@@ -1475,30 +1352,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
     /*panel on off */
     private void roomPanelOnOff(final PanelVO panelVO, final RoomVO roomVO, String roomId, String panelId, int panel_status, int type) {
-
-       /* final JSONObject obj = new JSONObject();
-        try {
-            if (type == 1) {
-                obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-                obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-                obj.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
-                obj.put("room_id", roomId);
-                obj.put("room_status", panel_status);
-            } else {
-                obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-                obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-                obj.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
-                obj.put("panel_id", panelId);
-                obj.put("panel_status", panel_status);
-
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }*/
-
         ChatApplication.logDisplay("roomPanelOnOff ");
-
         callPanelOnOffApi(roomId, panelId, panel_status, type);
 
     }
@@ -1514,39 +1368,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             url = ChatApplication.url + Constants.CHANGE_PANELSTATUS;
         }
 
-
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-
-//        ChatApplication.logDisplay("room is " + url + " " + obj);
         ChatApplication.logDisplay("room is " + url + " ");
-
-        // dev arpan updated on 24 june 2020
-
-        /*new GetJsonTask(activity, url, "POST", obj.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                ChatApplication.logDisplay("roomPanelOnOff onSuccess " + result.toString());
-                try {
-                    int code = result.getInt("code"); //message
-                    String message = result.getString("message");
-                    if (code == 200) {
-//                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
-                    } else {
-                        ChatApplication.showToast(activity, message);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                    ChatApplication.logDisplay("roomPanelOnOff finally ");
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ChatApplication.logDisplay("roomPanelOnOff onFailure " + error);
-            }
-        }).execute();*/
 
         SpikeBotApi.getInstance().CallPanelOnOffApi(roomId, panelId, panel_status, type, new DataResponseListener() {
             @Override
@@ -1582,10 +1406,10 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
     /**
      * Delete Room
      *
-     * @param roomVO
+     * @param //roomVO
      */
 
-    private void deleteRoom(RoomVO roomVO) {
+  /*  private void deleteRoom(RoomVO roomVO) {
 
 
         if (ChatApplication.url.contains("http://"))
@@ -1595,7 +1419,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             ChatApplication.showToast(activity, getResources().getString(R.string.disconnect));
             return;
         }
-       /* JSONObject object = new JSONObject();
+       *//* JSONObject object = new JSONObject();
         try {
             object.put("room_id", roomVO.getRoomId());
             object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -1603,11 +1427,11 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             object.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
         } catch (JSONException e) {
             e.printStackTrace();
-        }*/
+        }*//*
 
 //        ChatApplication.logDisplay("ob : " + object.toString());
         String url = webUrl + Constants.DELETE_ROOM;
-        /*new GetJsonTask(activity, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
+        *//*new GetJsonTask(activity, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
             @Override
             public void onSuccess(JSONObject result) {
                 dismissProgressDialog();
@@ -1632,7 +1456,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 ChatApplication.logDisplay("getconfigureData onFailure " + error);
                 ChatApplication.showToast(activity, getResources().getString(R.string.disconnect));
             }
-        }).execute();*/
+        }).execute();*//*
 
         SpikeBotApi.getInstance().DeleteRoom(roomVO.getRoomId(), new DataResponseListener() {
             @Override
@@ -1672,9 +1496,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             }
         });
 
-    }
+    }*/
 
-    private void doorOpenCLose(DeviceVO item) {
+   /* private void doorOpenCLose(DeviceVO item) {
         if (mSocket != null) {
             JSONObject object = new JSONObject();
             try {
@@ -1721,60 +1545,15 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 ChatApplication.logDisplay("tt lock reponse is error");
             }
         });
-    }
+    }*/
 
     /*send ir remote command */
+
     private void sendRemoteCommand(final DeviceVO item, String philipslongClick) {
-
-
         if (!ActivityHelper.isConnectingToInternet(getContext())) {
             ChatApplication.showToast(activity, getResources().getString(R.string.disconnect));
             return;
         }
-
-        /* deav arpan update on 25 june 2020*/
-     /*   String url = "";
-
-        url = ChatApplication.url + Constants.CHANGE_DEVICE_STATUS;
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            obj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            obj.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
-            obj.put("device_id", item.getDeviceId());
-            obj.put("device_status", item.getDeviceStatus());
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-*/
-        /*new GetJsonTaskRemote(getContext(), url, "POST", obj.toString(), new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
-                dismissProgressDialog();
-                try {
-                    int code = result.getInt("code");
-                    ChatApplication.logDisplay("result is ir " + result);
-                    if (code == 200) {
-                        ChatApplication.isMoodFragmentNeedResume = true;
-                    } else {
-                        sectionedExpandableLayoutHelper.updateDeviceBlaster(item.getDeviceId(), "" + item.getOldStatus());
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                dismissProgressDialog();
-                sectionedExpandableLayoutHelper.updateDeviceBlaster(item.getDeviceId(), "" + item.getOldStatus());
-                ChatApplication.logDisplay("result is ir error " + error.toString());
-                ChatApplication.showToast(activity, item.getSensor_name() + " " + activity.getString(R.string.ir_error));
-            }
-        }).execute();*/
 
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
@@ -1822,55 +1601,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         String url = ChatApplication.url + Constants.getCameraToken + item.getCamera_id();
 
         ChatApplication.logDisplay("url is " + url);
-
-        /*dev arpan update on 24 june 2020*/
-
-        /*new GetJsonTask(activity, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                int code = 0;
-                try {
-                    code = result.getInt("code");
-
-                    if (code == 200) {
-                        dismissProgressDialog();
-                        JSONObject dataObject = result.optJSONObject("data");
-
-                        String camera_vpn_port = dataObject.optString("camera_vpn_port");
-                        String camera_url = dataObject.optString("camera_url");
-
-                        String url = "";
-
-                        String camera_name = item.getCamera_name();
-
-
-                        if (Main2Activity.isCloudConnected) {
-                            url = Constants.CAMERA_DEEP + ":" + camera_vpn_port + "" + camera_url;
-                        } else {
-                            String tmpurl = ChatApplication.url + "" + camera_url;
-                            url = tmpurl.replace("http", "rtmp").replace(":80", ""); //replace port number to blank String
-                        }
-                        ChatApplication.logDisplay("isCloudConnect : " + camera_vpn_port + " " + url);
-                        Intent intent = new Intent(activity, CameraPlayer.class);
-                        intent.putExtra("videoUrl", url);
-                        intent.putExtra("name", camera_name);
-                        intent.putExtra("isCloudConnect", Main2Activity.isCloudConnected);
-                        startActivity(intent);
-                        dismissProgressDialog();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                    dismissProgressDialog();
-                }
-
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                dismissProgressDialog();
-            }
-        }).execute();*/
 
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
@@ -1987,7 +1717,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
      */
     private void saveCustomRoom(EditText roomName, final Dialog dialog) {
 
-
         if (!ActivityHelper.isConnectingToInternet(activity)) {
             ChatApplication.showToast(activity, getResources().getString(R.string.disconnect));
             return;
@@ -2000,60 +1729,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
         /*dev arpan update on 24 june 2020*/
 
-       /* JSONObject object = new JSONObject();
-        try {
-            object.put("room_name", roomName.getText().toString());
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ChatApplication.logDisplay("ob : " + object.toString());*/
         showProgressDialog(activity, "Searching Device attached ", false);
-
-//        String url = webUrl + Constants.ADD_CUSTOME_ROOM;
-
-
-
-
-
-      /*  new GetJsonTask(activity, url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                dismissProgressDialog();
-                ChatApplication.logDisplay("getconfigureData onSuccess " + result.toString());
-                try {
-                    //{"code":200,"message":"success"}
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-
-                    if (code == 200) {
-                        dialog.dismiss();
-                        ChatApplication.showToast(activity, message);
-                        getDeviceList(9);
-                    } else if (code == 301) {
-                        ChatApplication.showToast(activity, message);
-                    } else {
-                        ChatApplication.showToast(activity, message);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    {
-                        dismissProgressDialog();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                dismissProgressDialog();
-                ChatApplication.logDisplay("getconfigureData onFailure " + error);
-                ChatApplication.showToast(activity, getResources().getString(R.string.disconnect));
-            }
-        }).execute();*/
 
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
@@ -2118,41 +1794,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         String url = ChatApplication.http + locaIp + Constants.getLocalMacAddress;
 
         ChatApplication.logDisplay("url is " + url);
-        /*new GetJsonTaskMacAddress(activity, url, "GET", "", new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                countFlow = 1;
-
-                ChatApplication.logDisplay("reponse is mac " + result.toString());
-                try {
-                    JSONObject object = new JSONObject(result.toString());
-                    JSONObject jsonObject = object.optJSONObject("data");
-
-                    if (jsonObject != null && countFlow != 2) {
-                        if (jsonObject.optString("mac_address").equalsIgnoreCase(Constants.getMacAddress(activity))) {
-                            callCloud(true);
-                        } else {
-                            callCloud(false);
-                        }
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                if (countFlow != 2) {
-                    countFlow = 1;
-                    callCloud(false);
-                }
-
-
-            }
-        }).execute();*/
-
-
         if (locaIp.contains("http://"))
             locaIp = locaIp.replace("http://", "");
 
@@ -2303,257 +1944,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         if (sectionedExpandableLayoutHelper != null) {
             sectionedExpandableLayoutHelper.notifyDataSetChanged();
         }
-
-        String url = ChatApplication.url + Constants.GET_DEVICES_LIST;
-       /* JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
-            jsonObject.put("room_type", "room");
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("jsonObject is dashboard cloud " + url + "   " + jsonObject.toString());
-        new GetJsonTask2(activity, url, "POST", jsonObject.toString(), new ICallBack2() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                dismissProgressDialog();
-                ChatApplication.isCallDeviceList = false;
-                if (ChatApplication.isPushFound) {
-                    getBadgeClear(activity);
-                }
-                addDeviceFab.setVisibility(View.VISIBLE);
-                mMessagesView.setClickable(true);
-                responseErrorCode.onSuccess();
-                swipeRefreshLayout.setRefreshing(false);
-                sectionedExpandableLayoutHelper.setClickable(true);
-                ChatApplication.logDisplay("getDeviceList onSuccess " + result.toString());
-
-                try {
-                    ((Main2Activity) activity).tabShow(true);
-                    Main2Activity.isCloudConnected = true;
-                    webUrl = ChatApplication.url;
-                    startSocketConnection();
-                    startLiveSocketConnection();
-                    dismissProgressDialog();
-                    if (result.getInt("code") == 200) {
-                        Constants.socketIp = ChatApplication.url;
-                        hideAdapter(true);
-                        JSONObject dataObject = result.getJSONObject("data");
-                        ((Main2Activity) activity).getUserDialogClick(true);
-
-                        if (gsonType == null) {
-                            gsonType = new Gson();
-                        }
-
-                        JSONArray userListArray = dataObject.optJSONArray("userList");
-
-                        *//*userListArray =0 found than logout user  *//*
-                        if (userListArray.length() == 0) {
-                            if (!TextUtils.isEmpty(Common.getPrefValue(activity, Constants.USER_ID))) {
-                                ((Main2Activity) activity).logoutCloudUser();
-                            }
-
-                            return;
-                        }
-
-                        JSONObject userObject = userListArray.optJSONObject(0);
-                        String userId = userObject.getString("user_id");
-                        String userFirstName = userObject.getString("first_name");
-                        String userLastName = userObject.getString("last_name");
-                        String camera_key = userObject.optString("camera_key");
-                        String is_active = userObject.optString("is_active");
-                        homecontrollerid = userObject.optString("mac_address");
-
-                        *//*is_active ==0 than user logout means delete this user*//*
-                        if (is_active.equalsIgnoreCase("0")) {
-                            ((Main2Activity) activity).logoutCloudUser();
-                            return;
-                        }
-
-
-                        String userPassword = "";
-                        if (userObject.has("user_password")) {
-                            userPassword = userObject.getString("user_password");
-                        }
-
-
-                        *//**
-         * If Network connected on cloud then check user password is changed or not
-         * if changed then logout user
-         *//*
-                        if (!TextUtils.isEmpty(userPassword)) {
-                            String jsonTextTemp1 = Common.getPrefValue(getContext(), Common.USER_JSON);
-                            List<User> userList1 = new ArrayList<User>();
-                            if (!TextUtils.isEmpty(jsonTextTemp1)) {
-                                Type type = new TypeToken<List<User>>() {
-                                }.getType();
-                                userList1 = gsonType.fromJson(jsonTextTemp1, type);
-                            }
-
-                            for (User user : userList1) {
-                                if (user.isActive()) {
-                                    *//*if user password changed than logout *//*
-                                    if (user.getUser_id().equalsIgnoreCase(userId) && !user.getPassword().equalsIgnoreCase(userPassword)) {
-                                        ChatApplication.showToast(activity, "Password has been changed!");
-                                        ((Main2Activity) activity).logoutCloudUser();
-                                    }
-
-                                }
-                            }
-                        }
-                        //End user pass checking
-                        try {
-                            if (userObject.has("is_logout")) {
-                                int isLogout = userObject.getInt("is_logout");
-                                if (isLogout == 1 && Main2Activity.isCloudConnected) {
-                                    mCallback.onLogout(true);
-                                }
-                            }
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-
-                        Common.savePrefValue(ChatApplication.getInstance(), Common.camera_key, camera_key);
-                        *//* user name*//*
-                        mCallback.onArticleSelected("" + userFirstName);
-
-
-                        JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
-                        roomList = JsonHelper.parseRoomArray(roomArray, false);
-                        sectionedExpandableLayoutHelper.addSectionList(roomList);
-                        JSONArray cameraArray = dataObject.getJSONArray("cameradeviceList");
-                        if (cameraArray.length() > 0) {
-
-                            cameraList = JsonHelper.parseCameraArray(cameraArray);
-
-                            RoomVO section = new RoomVO();
-                            section.setRoomName("Camera");
-                            section.setRoomId("Camera");
-
-                            ArrayList<PanelVO> panelList = new ArrayList<>();
-                            PanelVO panel = new PanelVO();
-                            panel.setPanelName("Devices");
-                            panel.setType("camera");
-                            panel.setCameraList(cameraList);
-
-                            panelList.add(panel);
-
-                            section.setPanelList(panelList);
-                            section.setIs_unread(cameraList.get(0).getTotal_unread());
-
-                            roomList.add(section);
-
-                            *//*camera device counting*//*
-                            for (int i = 0; i < roomList.size(); i++) {
-                                if (roomList.get(i).getRoomId().equalsIgnoreCase("Camera")) {
-                                    roomList.get(i).setDevice_count("" + roomList.get(i).getPanelList().get(0).getCameraList().size());
-                                }
-                            }
-
-                            //comment if roomList empty could not display cameraList for remove this conditions
-                            // sectionedExpandableLayoutHelper.addCameraList(JsonHelper.parseCameraArray(cameraArray));
-                            sectionedExpandableLayoutHelper.addSectionList(roomList);
-                        }
-
-                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
-                        ((Main2Activity) activity).invalidateToolbarCloudImage();
-
-                        JSONArray jetsonList = dataObject.optJSONArray("jetsonList");
-
-                        if (jetsonList != null && jetsonList.length() > 0) {
-
-                            for (int i = 0; i < jetsonList.length(); i++) {
-//
-                                JSONObject object = jetsonList.optJSONObject(i);
-                                jetsonlist = JsonHelper.parseCameraArray(object.optJSONArray("cameraList"));
-
-                                RoomVO section1 = new RoomVO();
-                                section1.setRoomName(object.optString("jetson_name"));
-                                section1.setRoomId(object.optString("jetson_id"));
-
-
-                                ArrayList<PanelVO> panelList1 = new ArrayList<>();
-                                PanelVO panel1 = new PanelVO();
-                                panel1.setType("JETSON-");
-                                panel1.setPanelName("Devices");
-                                panel1.setCameraList(jetsonlist);
-
-                                panelList1.add(panel1);
-
-                                section1.setPanelList(panelList1);
-                                //    section1.setIs_unread(jetsonlist.get(0).getTotal_unread());
-
-                                roomList.add(section1);
-                            }
-
-                        }
-
-                        sectionedExpandableLayoutHelper.addSectionList(roomList);
-                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
-                        ((Main2Activity) activity).changestatus();
-                        if (roomArray.length() == 0) {
-                            mMessagesView.setVisibility(View.GONE);
-                            txt_empty_schedule.setVisibility(View.VISIBLE);
-                        } else {
-                            mMessagesView.setVisibility(View.VISIBLE);
-                            txt_empty_schedule.setVisibility(View.GONE);
-                        }
-
-
-                    }
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                    showDialog = 0;
-                    if (roomList != null) {
-                        CameraDeviceLogActivity.getCameraList = roomList.get(roomList.size() - 1).getPanelList().get(0).getCameraList();
-                    }
-                    mMessagesView.setClickable(true);
-                    swipeRefreshLayout.setRefreshing(false);
-                    if (roomList.size() == 0) {
-                        mMessagesView.setVisibility(View.GONE);
-                        txt_empty_schedule.setVisibility(View.VISIBLE);
-                    } else {
-                        mMessagesView.setVisibility(View.VISIBLE);
-                        txt_empty_schedule.setVisibility(View.GONE);
-                    }
-                    getCameraBadgeCount();
-                    setUserTypeValue();
-                    dismissProgressDialog();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error, int reCode) {
-                swipeRefreshLayout.setRefreshing(false);
-                addDeviceFab.setVisibility(View.VISIBLE);
-                dismissProgressDialog();
-                //set custom homer controller not found error message on dashboard
-                if (reCode == 503 || reCode == 404) {
-                    responseErrorCode.onErrorCode(reCode);
-                }
-                ChatApplication.logDisplay("show is call could error" + error + " " + reCode);
-                if (!TextUtils.isEmpty(error)) {
-                    ((Main2Activity) activity).tabShow(false);
-                    ChatApplication.logDisplay("reCode getDeviceList onFailure " + reCode);
-                    sectionedExpandableLayoutHelper = new SectionedExpandableLayoutHelper(activity, mMessagesView, DashBoardFragment.this, DashBoardFragment.this, DashBoardFragment.this, Constants.SWITCH_NUMBER);
-                    sectionedExpandableLayoutHelper.setCameraClick(DashBoardFragment.this);
-                    sectionedExpandableLayoutHelper.setjetsonClick(DashBoardFragment.this);
-                    sectionedExpandableLayoutHelper.setClickable(true);
-                    sectionedExpandableLayoutHelper.notifyDataSetChanged();
-
-                    ChatApplication.isCallDeviceList = true;
-                    errorViewClick();
-                }
-
-            }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
-
         SpikeBotApi.getInstance().GetDeviceClould(new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -2673,6 +2063,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
                         roomList = JsonHelper.parseRoomArray(roomArray, false);
                         sectionedExpandableLayoutHelper.addSectionList(roomList);
+
                         JSONArray cameraArray = dataObject.getJSONArray("cameradeviceList");
                         if (cameraArray.length() > 0) {
 
@@ -2715,7 +2106,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         if (jetsonList != null && jetsonList.length() > 0) {
 
                             for (int i = 0; i < jetsonList.length(); i++) {
-//
+
                                 JSONObject object = jetsonList.optJSONObject(i);
                                 jetsonlist = JsonHelper.parseCameraArray(object.optJSONArray("cameraList"));
 
@@ -2855,288 +2246,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         if (sectionedExpandableLayoutHelper != null) {
             sectionedExpandableLayoutHelper.notifyDataSetChanged();
         }
-
-      /*  String url = ChatApplication.url + Constants.GET_DEVICES_LIST;
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
-            jsonObject.put("room_type", "room");
-            jsonObject.put("device_push_token", Common.getPrefValue(activity, Constants.DEVICE_PUSH_TOKEN));
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ChatApplication.logDisplay("jsonObject is dashboard local " + url + "   " + jsonObject.toString().replaceAll("\\\\", ""));
-        new GetJsonTaslLocal(activity, url, "POST", jsonObject.toString().replaceAll("\\\\", ""), new ICallBack() { //Constants.CHAT_SERVER_URL
-            @SuppressLint("RestrictedApi")
-            @Override
-            public void onSuccess(JSONObject result) {
-                dismissProgressDialog();
-                ChatApplication.isCallDeviceList = false;
-                if (ChatApplication.isPushFound) {
-                    getBadgeClear(activity);
-                }
-                addDeviceFab.setVisibility(View.VISIBLE);
-                mMessagesView.setClickable(true);
-                responseErrorCode.onSuccess();
-                swipeRefreshLayout.setRefreshing(false);
-                sectionedExpandableLayoutHelper.setClickable(true);
-                ChatApplication.logDisplay("getDeviceList onSuccess local " + result.toString());
-
-                try {
-                    Main2Activity.isCloudConnected = false;
-                    ((Main2Activity) activity).tabShow(true);
-                    webUrl = ChatApplication.url;
-                    startSocketConnection();
-                    startLiveSocketConnection();
-                    if (result.getInt("code") == 200) {
-                        if (gsonType == null) {
-                            gsonType = new Gson();
-                        }
-                        ((Main2Activity) activity).tabShow(true);
-                        Constants.socketIp = ChatApplication.url;
-                        hideAdapter(true);
-                        mMessagesView.setVisibility(View.VISIBLE);
-                        txt_empty_schedule.setVisibility(View.GONE);
-
-                        sectionedExpandableLayoutHelper.clearData();
-
-                        JSONObject dataObject = result.optJSONObject("data");
-                        ((Main2Activity) activity).getUserDialogClick(true);
-                        JSONArray userListArray = dataObject.getJSONArray("userList");
-
-                        //oppen signup page if userList found zero length
-                        if (userListArray.length() == 0) {
-                            if (!TextUtils.isEmpty(Common.getPrefValue(activity, Constants.USER_ID))) {
-                                ((Main2Activity) activity).logoutCloudUser();
-                            }
-                            return;
-                        }
-
-                        JSONObject userObject = userListArray.optJSONObject(0);
-                        String userId = userObject.optString("user_id");
-                        String userFirstName = userObject.optString("first_name");
-                        String camera_key = userObject.optString("camera_key");
-                        String is_active = userObject.optString("is_active");
-                        homecontrollerid = userObject.optString("mac_address");
-
-                        if (is_active.equalsIgnoreCase("0")) {
-                            ((Main2Activity) activity).logoutCloudUser();
-                            return;
-                        }
-
-                        Common.savePrefValue(ChatApplication.getInstance(), Common.camera_key, camera_key);
-                        String userPassword = "";
-                        if (userObject.has("user_password")) {
-                            userPassword = userObject.optString("user_password");
-                        }
-
-                        *//**
-         * If Network connected on cloud then check user password is changed or not
-         * if changed then logout user
-         *//*
-                        Gson gson = new Gson();
-                        if (!TextUtils.isEmpty(userPassword)) {
-                            String jsonTextTemp1 = Common.getPrefValue(getContext(), Common.USER_JSON);
-                            List<User> userList1 = new ArrayList<User>();
-                            if (!TextUtils.isEmpty(jsonTextTemp1)) {
-                                Type type = new TypeToken<List<User>>() {
-                                }.getType();
-                                userList1 = gson.fromJson(jsonTextTemp1, type);
-                            }
-
-                            for (User user : userList1) {
-                                if (user.isActive()) {
-                                    if (user.getUser_id().equalsIgnoreCase(userId) && !user.getPassword().equalsIgnoreCase(userPassword)) {
-                                        ChatApplication.showToast(activity, "Password has been changed!");
-                                        ((Main2Activity) activity).logoutCloudUser();
-                                    }
-
-                                }
-                            }
-                        }
-                        //End user pass checking
-                        try {
-                            if (userObject.has("is_logout")) {
-                                int isLogout = userObject.getInt("is_logout");
-                                if (isLogout == 1 && Main2Activity.isCloudConnected) {
-                                    mCallback.onLogout(true);
-                                }
-                            }
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-
-                        Common.savePrefValue(ChatApplication.getInstance(), Common.camera_key, camera_key);
-                        Common.savePrefValue(getContext(), Constants.USER_PASSWORD, userPassword);
-
-
-                        *//**
-         * <h1>for set ToolBar title in MainActivity2</h1>
-         * {@link Main2Activity#toolbarTitle}
-         * @see Main2Activity#toolbar
-         *//*
-                        mCallback.onArticleSelected("" + userFirstName);
-
-                        JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
-                        roomList = JsonHelper.parseRoomArray(roomArray, false);
-                        sectionedExpandableLayoutHelper.addSectionList(roomList);
-
-
-                        JSONArray cameraArray = dataObject.getJSONArray("cameradeviceList");
-                        if (cameraArray.length() > 0) {
-                            cameraList = JsonHelper.parseCameraArray(cameraArray);
-
-
-                            RoomVO section = new RoomVO();
-                            section.setRoomName("Camera");
-                            section.setRoomId("Camera");
-
-                            ArrayList<PanelVO> panelList = new ArrayList<>();
-                            PanelVO panel = new PanelVO();
-                            panel.setPanelName("Devices");
-                            panel.setType("camera");
-                            panel.setCameraList(cameraList);
-
-                            panelList.add(panel);
-
-                            section.setPanelList(panelList);
-                            section.setIs_unread(cameraList.get(0).getTotal_unread());
-                            section.setIs_unread(cameraList.get(0).getTotal_unread());
-
-                            roomList.add(section);
-
-
-                            *//*camera device counting*//*
-                            for (int i = 0; i < roomList.size(); i++) {
-                                if (roomList.get(i).getRoomId().equalsIgnoreCase("Camera")) {
-                                    roomList.get(i).setDevice_count("" + roomList.get(i).getPanelList().get(0).getCameraList().size());
-
-                                }
-                            }
-                        }
-//                        sectionedExpandableLayoutHelper.addSectionList(roomList);
-//                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
-
-                        //for jetson
-                        JSONArray jetsonList = dataObject.optJSONArray("jetsonList");
-                        JSONObject object = new JSONObject();
-                        if (jetsonList != null && jetsonList.length() > 0) {
-
-                            for (int i = 0; i < jetsonList.length(); i++) {
-//
-                                object = jetsonList.optJSONObject(i);
-
-                                ArrayList<CameraVO> jetsonlist1 = JsonHelper.parseCameraArray(object.optJSONArray("cameraList"));
-
-
-                                RoomVO section1 = new RoomVO();
-                                section1.setRoomName(object.optString("jetson_name"));
-                                section1.setRoomId(object.optString("jetson_id"));
-
-
-                                ArrayList<PanelVO> panelList1 = new ArrayList<>();
-                                PanelVO panel1 = new PanelVO();
-                                panel1.setType("JETSON-");
-                                panel1.setPanelName("Devices");
-                                panel1.setCameraList(jetsonlist1);
-                                panelList1.add(panel1);
-
-                                section1.setPanelList(panelList1);
-//                                section1.setIs_unread(getTotal_unread());
-                                section1.setIs_unread("0");
-                                roomList.add(section1);
-
-
-
-                              *//*  for (CameraVO cameraVO : jetsonlist) {
-                                        jetsonCameraList.add(cameraVO);
-                                }*//*
-                            }
-
-                            *//*camera device counting*//*
-                            for (int i = 0; i < roomList.size(); i++) {
-                                if (roomList.get(i).getRoomId().startsWith("JETSON-")) {
-                                    roomList.get(i).setDevice_count("" + roomList.get(i).getPanelList().get(0).getCameraList().size());
-                                    //  jetsonCameraList = roomList.get(i).getPanelList().get(0).getCameraList();
-                                    //  ChatApplication.logDisplay("jetson cameralist" + " " + jetsonCameraList);
-                                }
-                            }
-
-
-                        }
-                        sectionedExpandableLayoutHelper.addSectionList(roomList);
-                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
-                        ((Main2Activity) activity).invalidateToolbarCloudImage();
-
-                        ((Main2Activity) activity).changestatus();
-                        if (roomArray.length() == 0) {
-                            mMessagesView.setVisibility(View.GONE);
-                            txt_empty_schedule.setVisibility(View.VISIBLE);
-                        } else {
-                            mMessagesView.setVisibility(View.VISIBLE);
-                            txt_empty_schedule.setVisibility(View.GONE);
-                        }
-
-
-                    }
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    ChatApplication.logDisplay("json Exception==========================" + e.getMessage());
-                } finally {
-                    dismissProgressDialog();
-                    showDialog = 0;
-                    if (roomList != null) {
-                        CameraDeviceLogActivity.getCameraList = roomList.get(roomList.size() - 1).getPanelList().get(0).getCameraList();
-                    }
-                    mMessagesView.setClickable(true);
-                    swipeRefreshLayout.setRefreshing(false);
-                    if (roomList.size() == 0) {
-                        mMessagesView.setVisibility(View.GONE);
-                        txt_empty_schedule.setVisibility(View.VISIBLE);
-                    } else {
-                        mMessagesView.setVisibility(View.VISIBLE);
-                        txt_empty_schedule.setVisibility(View.GONE);
-                    }
-                    getCameraBadgeCount();
-                    setUserTypeValue();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                swipeRefreshLayout.setRefreshing(false);
-                ChatApplication.logDisplay("show is call local error" + error);
-                ChatApplication.logDisplay("On Failure==========================" + " " + error);
-                addDeviceFab.setVisibility(View.VISIBLE);
-                if (!TextUtils.isEmpty(error)) {
-                    ChatApplication.logDisplay("show is call local error22 " + error);
-                    sectionedExpandableLayoutHelper = new SectionedExpandableLayoutHelper(activity, mMessagesView, DashBoardFragment.this, DashBoardFragment.this, DashBoardFragment.this, Constants.SWITCH_NUMBER);
-                    sectionedExpandableLayoutHelper.setCameraClick(DashBoardFragment.this);
-                    sectionedExpandableLayoutHelper.setjetsonClick(DashBoardFragment.this);
-                    sectionedExpandableLayoutHelper.setClickable(true);
-                    sectionedExpandableLayoutHelper.notifyDataSetChanged();
-
-                    if (roomList.size() == 0) {
-                        mMessagesView.setVisibility(View.GONE);
-                        txt_empty_schedule.setVisibility(View.VISIBLE);
-                    } else {
-                        mMessagesView.setVisibility(View.VISIBLE);
-                        txt_empty_schedule.setVisibility(View.GONE);
-                    }
-                    if (mSocket != null) {
-                        mSocket.disconnect();
-                    }
-                    ((Main2Activity) activity).tabShow(false);
-                    callCloud(false);
-                }
-            }
-
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
 
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
@@ -3440,96 +2549,6 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             Toast.makeText(activity, R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-        /*dev arpan update this code on 24 june 2020 */
-
-//        JSONObject object = new JSONObject();
-//        try {
-//
-//            object.put("user_id", Common.getPrefValue(activity, Constants.USER_ID));
-//            object.put("home_controller_device_id", homecontrollerid);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        //   ActivityHelper.showProgressDialog(getActivity(), "Please wait...", false);
-//        String url = Constants.CAMERA_CLOUD_SERVER_URL + Constants.GET_CAMERA_NOTIFICATION_COUNTER;
-//
-//        ChatApplication.logDisplay("camera counter is " + url + " " + object);
-        /*new GetJsonTask(getActivity(), url, "POST", object.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                //       ActivityHelper.dismissProgressDialog();
-                try {
-
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    if (code == 200) {
-                        ChatApplication.logDisplay("Camera Badge onSuccess " + result.toString());
-
-                        JSONObject object = result.optJSONObject("data");
-                        JSONArray jsonArray = object.optJSONArray("camera_counter_list");
-
-                        CameraCounterModel counterres = Common.jsonToPojo(result.toString(), CameraCounterModel.class);
-                        cameracounterlist = counterres.getData().getCameraCounterList();
-
-                    *//*    RoomVO section1 = new RoomVO();
-                        section1.setIs_unread(String.valueOf(object.optInt(String.valueOf(counterres.getData().getTotalCameraNotification()))));
-                        roomList.add(section1);*//**//*
-
-                        String roomid = "";
-                        String cameras_id = "";
-                        int total_unread = 0;
-                        ArrayList<CameraVO> roomcameralist= new ArrayList<>();
-                        for (int i = 0; i < cameracounterlist.size(); i++){
-                            cameras_id = cameracounterlist.get(i).getCameraId();
-                            String jetson_device_id = cameracounterlist.get(i).getJetsonDeviceId();
-                            total_unread = cameracounterlist.get(i).getTotalUnread();
-
-                          *//**//**//**//*  ChatApplication.logDisplay("camera_id" + " " + cameras_id);
-                            ChatApplication.logDisplay("jetson_device_id " + " " + jetson_device_id);
-                            ChatApplication.logDisplay("total_unread " + " " + total_unread);*//**//**//**//*
-                            boolean found = false;
-                            *//**//**//**//*camera device counting*//**//**//**//*
-                            for (int j = 0; j < roomList.size(); j++) {
-
-
-                                if (roomList.get(j).getRoomId().equalsIgnoreCase("Camera"))
-                                {
-
-                                    roomcameralist = roomList.get(j).getPanelList().get(0).getCameraList();
-                                    for (int k = 0; k < roomcameralist.size(); k++) {
-                                        if(cameracounterlist.get(i).getCameraId().equals(roomcameralist.get(k).getCamera_id()))
-                                        {
-                                            found = true;
-                                          //  ChatApplication.logDisplay("camera total unread" + " " + cameracounterlist.get(i).getTotalUnread());
-                                        }
-                                    }
-
-                                }
-                            }
-
-                        }*//**//*
-         *//*
-                        sectionedExpandableLayoutHelper.setCounterlist(cameracounterlist);
-                        sectionedExpandableLayoutHelper.setCounterres(counterres.getData());
-                        //sectionedExpandableLayoutHelper.getCameracounter();
-                        sectionedExpandableLayoutHelper.notifyDataSetChanged();
-                        ChatApplication.logDisplay("total_camera_list " + cameracounterlist.size());
-                        ChatApplication.logDisplay("total_camera_notification " + counterres.getData().getTotalCameraNotification());
-                    }
-                } catch (Exception e) {
-                    ChatApplication.logDisplay("total_camera_list Exception " + e.getMessage());
-                } finally {
-                }
-
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
-              //  Toast.makeText(getActivity(), R.string.disconnect, Toast.LENGTH_SHORT).show();
-            }
-        }).execute();*/
-
         SpikeBotApi.getInstance().GetCameraBadgeCount(homecontrollerid, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -3748,7 +2767,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         });
     }
 
-    public void showBottomSheetDialog(RoomVO roomVO) {
+    /*public void showBottomSheetDialog(RoomVO roomVO) {
         View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
 
         TextView txt_bottomsheet_title = view.findViewById(R.id.txt_bottomsheet_title);
@@ -3778,7 +2797,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 deleteRoomAction(roomVO);
             }
         });
-    }
+    }*/
 
     public void showProgressDialog(Context context, String message, boolean iscancle) {
         m_progressDialog = new ProgressDialog(activity);
@@ -3814,54 +2833,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         }
         webUrl = app.url;
 
-        String url = webUrl + Constants.DELETE_CAMERA;
-
-        // dev arpan update on 24 june 2020
-
-        /*JSONObject object = new JSONObject();
-
-        try {
-            object.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            object.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-            object.put("user_id", Common.getPrefValue(getActivity(), Constants.USER_ID));
-            object.put("camera_id", camera_id);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-*/
         ActivityHelper.showProgressDialog(getActivity(), "Please wait...", false);
-
-        /*new GetJsonTask(getActivity(), url, "POST", object.toString(), new ICallBack() {
-            @Override
-            public void onSuccess(JSONObject result) {
-                ActivityHelper.dismissProgressDialog();
-                try {
-
-                    int code = result.getInt("code");
-                    String message = result.getString("message");
-                    if (code == 200) {
-                        ChatApplication.isMainFragmentNeedResume = true;
-                        if (!TextUtils.isEmpty(message)) {
-                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                    ActivityHelper.dismissProgressDialog();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
-            }
-        }).execute();*/
-
 
         SpikeBotApi.getInstance().DeleteCamera(camera_id, new DataResponseListener() {
             @Override
@@ -3869,7 +2841,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 ActivityHelper.dismissProgressDialog();
                 try {
 
-                    JSONObject result = new JSONObject();
+                    JSONObject result = new JSONObject(stringResponse);
 
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -3902,7 +2874,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
     }
 
-    private void deleteRoomAction(final RoomVO room) {
+ /*   private void deleteRoomAction(final RoomVO room) {
         ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure you want to Delete ? \nNote: All the devices and sensors associated with this room will be deleted", new ConfirmDialog.IDialogCallback() {
             @Override
             public void onConfirmDialogYesClick() {
@@ -3914,9 +2886,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             }
         });
         newFragment.show(activity.getFragmentManager(), "dialog");
-    }
+    }*/
 
-    private void dialogNewPassword(DeviceVO item) {
+   /* private void dialogNewPassword(DeviceVO item) {
 
         isPIREdit = false;
 
@@ -4093,9 +3065,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             }
         });
         mPIRModedialog.show();
-    }
+    }*/
 
-    private void UpdatePIRDevice(DeviceVO item) {
+   /* private void UpdatePIRDevice(DeviceVO item) {
 
         if (!ActivityHelper.isConnectingToInternet(getActivity())) {
             showToast("" + R.string.disconnect);
@@ -4138,9 +3110,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         });
 
 
-    }
+    }*/
 
-    public void showBottomSheetDialog_PIR(DeviceVO item) {
+    /*public void showBottomSheetDialog_PIR(DeviceVO item) {
         View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
 
         TextView txt_bottomsheet_title = view.findViewById(R.id.txt_bottomsheet_title);
@@ -4178,9 +3150,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 showDelete(item);
             }
         });
-    }
+    }*/
 
-    private void showDelete(DeviceVO item) {
+    /*private void showDelete(DeviceVO item) {
         ConfirmDialog newFragment = new ConfirmDialog("Yes", "No", "Confirm", "Are you sure want to delete?", new ConfirmDialog.IDialogCallback() {
             @Override
             public void onConfirmDialogYesClick() {
@@ -4193,9 +3165,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
         });
         newFragment.show(activity.getFragmentManager(), "dialog");
-    }
+    }*/
 
-    private void deletePIRDetector(DeviceVO item) {
+    /*private void deletePIRDetector(DeviceVO item) {
         ActivityHelper.showProgressDialog(getActivity(), "Please wait.", false);
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
@@ -4230,10 +3202,10 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             }
         });
 
-    }
+    }*/
 
     public interface OnHeadlineSelectedListener {
-        public void onArticleSelected(String name);
+        void onArticleSelected(String name);
 
         void onLogout(boolean isLogout);
     }

@@ -73,7 +73,7 @@ public class Constants {
     public static final String SIGNUP_API = "/signupdetails";
 
     //room
-    public static final String GET_DEVICES_LIST = "/device/list";
+    public static final String GET_DEVICES_LIST = "/rooms/get-all-room-details";
     public static final String moodList = "/mood/list";
     public static final String roomsget = "/rooms/get";
     public static final String roomslist = "/rooms/list";
@@ -132,6 +132,8 @@ public class Constants {
     public static final String devicemoduledelete = "/device/module/delete";
     public static final String beaconscannerscan = "/device/beacon-scanner/scan";
     public static final String GET_BEACON_LOCATION = "/device/beacon/locations";
+    public static final String GET_ROOM_DETAILS = "/rooms/get-room-details";
+    public static final String GET_CAMERA_DETAILS = "/camera/list";
 
     //temp sensor
     public static final String ADD_TEMP_SENSOR_NOTIFICATION = "/alert/add";

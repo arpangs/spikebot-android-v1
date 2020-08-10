@@ -136,4 +136,9 @@ public class BeaconDeviceListLayoutHelper implements SectionStateChangeListener 
             notifyDataSetChanged();
         }
     }
+
+    @Override
+    public void onSectionStateChanged(PanelVO section, boolean isOpen) {
+
+    }
 }

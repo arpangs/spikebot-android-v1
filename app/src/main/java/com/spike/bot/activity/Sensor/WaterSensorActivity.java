@@ -473,15 +473,14 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
                 switchtemp.setChecked(true);
 
             }
+
+            water_detector_module_id = device.optString("module_id");
+            water_detector_id = device.optString("device_id");
+            water_sensor_name = device.optString("device_name");
+            edSensorName.setText("" + device.optString("device_name"));
+            toolbar.setTitle(water_sensor_name);
             if(!battery_level.equals("null"))
             {
-
-                water_detector_module_id = device.optString("module_id");
-                water_detector_id = device.optString("device_id");
-                water_sensor_name = device.optString("device_name");
-                edSensorName.setText("" + device.optString("device_name"));
-
-                toolbar.setTitle(water_sensor_name);
                 int btrPer = (int) Double.parseDouble(battery_level);
                 if (btrPer >= 0 && btrPer <= 25)
                     txtbatterylevel.setTextColor(getResources().getColor(R.color.battery_low));

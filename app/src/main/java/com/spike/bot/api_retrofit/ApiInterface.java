@@ -459,5 +459,9 @@ public interface ApiInterface {
     @POST("http://{url}" + Constants.DELETE_MODULE)
     Call<JsonElement> DeleteRemote(@Path("url") String url, @Body Object body);
 
+    @POST("http://{url}" + Constants.GET_ROOM_DETAILS)
+    Call<JsonElement> GET_ROOM_DETAILS(@Path("url") String url, @Body Object body);
 
+    @POST("http://{url}" + Constants.GET_CAMERA_DETAILS)
+    Call<JsonElement> GET_CAMERA_DETAILS(@Path("url") String url, @Body Object body);
 }

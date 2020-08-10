@@ -157,4 +157,9 @@ public class MoodDeviceListLayoutHelper implements SectionStateChangeListener {
             notifyDataSetChanged();
         }
     }
+
+    @Override
+    public void onSectionStateChanged(PanelVO section, boolean isOpen) {
+
+    }
 }
