@@ -1,77 +1,39 @@
 package com.kp.core;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.telephony.TelephonyManager;
+import android.util.Log;
+import android.view.inputmethod.InputMethodManager;
+
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.kaushalprajapti.util.R;
-
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Build;
-import android.telephony.TelephonyManager;
-import android.util.Base64;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.util.Patterns;
-import android.view.View;
-import android.view.ViewConfiguration;
-import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.Transformation;
-import android.view.inputmethod.InputMethodManager;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebSettings.LayoutAlgorithm;
-import android.webkit.WebView;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout.LayoutParams;
-import android.widget.Spinner;
-import android.widget.TextView;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
-import static androidx.core.app.ActivityCompat.requestPermissions;
-import static androidx.core.content.ContextCompat.checkSelfPermission;
 
 /**
  * @author kaushal Prajapati (kaushal2406@gmail.com)
  */
 public class ActivityHelper {
-    public static String TAG = "ActivityHelper";
-
     // Dialog Action
     public static final int NO_ACTION = 1;
     public static final int CLOSE_ACTIVITY = 2;
     private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
+    public static String TAG = "ActivityHelper";
+    // Progress dialog
+    public static ProgressDialog m_progressDialog;
 
     public static void hideKeyboard(final Activity p_context) {
         try {
@@ -85,9 +47,6 @@ public class ActivityHelper {
             // TODO: handle exception
         }
     }
-
-    // Progress dialog
-    public static ProgressDialog m_progressDialog;
 
     public static void showProgressDialog(final Context p_context, final String p_loadingMessage, final boolean p_isCancelable) {
         // m_progressDialog = null;
@@ -216,11 +175,16 @@ public class ActivityHelper {
         final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 
         final String tmDevice, tmSerial, androidId;
-        tmDevice = "" + tm.getDeviceId();
-        tmSerial = "" + tm.getSimSerialNumber();
+
+
+        /*tmDevice = "" + tm.getDeviceId();
+        tmSerial = "" + tm.getSimSerialNumber();*/
+        tmDevice = "";
+        tmSerial = "";
+
         androidId = "" + android.provider.Settings.Secure.getString(context.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
 
-        UUID deviceUuid = new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode());
+        UUID deviceUuid = new UUID(androidId.hashCode(), ((long) tmDevice.hashCode() << 32) | tmSerial.hashCode());
         String deviceId = deviceUuid.toString();
 
         return deviceId;
