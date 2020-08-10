@@ -22,13 +22,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
-import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.customview.recycle.ItemClickMoodListener;
@@ -38,11 +35,9 @@ import com.spike.bot.model.DeviceVO;
 import com.spike.bot.model.PanelVO;
 import com.spike.bot.model.RoomVO;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-
 
 import static android.view.View.GONE;
 
@@ -51,21 +46,19 @@ import static android.view.View.GONE;
  */
 public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandableGridAdapter.ViewHolder> {
 
-    //data array
-    private ArrayList<Object> mDataArrayList;
-
-    //context
-    private final Context mContext;
-
-    //listeners
-    private final ItemClickMoodListener mItemClickListener;
-    private final MoodStateChangeListener mSectionStateChangeListener;
-    public NotifityData notifityData;
-
     //view type
     private static final int VIEW_TYPE_SECTION = R.layout.row_mood_home2;
     private static final int VIEW_TYPE_PANEL = R.layout.row_mood_panel;
     private static final int VIEW_TYPE_ITEM = R.layout.row_room_switch_item_mood; //TODO : change this
+    //context
+    private final Context mContext;
+    //listeners
+    private final ItemClickMoodListener mItemClickListener;
+    private final MoodStateChangeListener mSectionStateChangeListener;
+    public NotifityData notifityData;
+    public boolean isClickable = true;
+    //data array
+    private ArrayList<Object> mDataArrayList;
 
     public MoodExpandableGridAdapter(Context context, ArrayList<Object> dataArrayList,
                                      final GridLayoutManager gridLayoutManager,
@@ -93,8 +86,6 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
     private boolean isPanel(int position) {
         return mDataArrayList.get(position) instanceof PanelVO;
     }
-
-    public boolean isClickable = true;
 
     public void setClickabl(boolean isClickable) {
         this.isClickable = isClickable;
@@ -369,18 +360,18 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     holder.view.setOnLongClickListener(null);
                 }
 
-                if(item.getDeviceType().equalsIgnoreCase("remote") || item.getDeviceType().equalsIgnoreCase("heavyload")){
+                if (item.getDeviceType().equalsIgnoreCase("remote") || item.getDeviceType().equalsIgnoreCase("heavyload")) {
                     holder.imgLongClick.setVisibility(View.VISIBLE);
-                }else if(item.getDeviceType().equalsIgnoreCase("fan") ||item.getDeviceType().equalsIgnoreCase("-1") || item.getDeviceType().equalsIgnoreCase("3")){
+                } else if (item.getDeviceType().equalsIgnoreCase("fan") || item.getDeviceType().equalsIgnoreCase("-1") || item.getDeviceType().equalsIgnoreCase("3")) {
                     holder.imgLongClick.setVisibility(View.VISIBLE);
-                }else {
-                    if(item.getDeviceType().equalsIgnoreCase("1")){
-                        if(Integer.parseInt(item.getDeviceId()) == 1 && Integer.parseInt(item.getDeviceType()) == 1){
+                } else {
+                    if (item.getDeviceType().equalsIgnoreCase("1")) {
+                        if (Integer.parseInt(item.getDeviceId()) == 1 && Integer.parseInt(item.getDeviceType()) == 1) {
                             holder.imgLongClick.setVisibility(View.VISIBLE);
-                        }else{
+                        } else {
                             holder.imgLongClick.setVisibility(GONE);
                         }
-                    }else {
+                    } else {
                         holder.imgLongClick.setVisibility(View.GONE);
                     }
                 }
@@ -515,7 +506,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
             }
         }).execute();*/
 
-        SpikeBotApi.getInstance().CallSmartRemote(module_id,value, new DataResponseListener() {
+        SpikeBotApi.getInstance().CallSmartRemote(module_id, value, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
@@ -578,12 +569,12 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
         //common
         View view, ll_top_section, vi_test;
         int viewType;
-        ImageView iv_mood_panel_schedule_click, view_line_top, imgRemote, imgLog, icnSchedule, iv_mood_delete, iv_mood_edit, iv_icon_text, imgLongClick, iv_icon;
+        ImageView iv_mood_panel_schedule_click, view_line_top, imgRemote, imgLog, icnSchedule, iv_mood_delete, iv_mood_edit, iv_icon_text, imgLongClick, iv_icon, view_line_bottom;
 
         //for section
         TextView sectionTextView, txtLine, text_section_on_off, txtRemote, text_section_edit, txtTotalDevices, itemTextView;
         ToggleButton sectionToggleButton;
-        LinearLayout ll_room_item,linear_top_section;
+        LinearLayout ll_room_item, linear_top_section;
         RelativeLayout view_rel;
         FrameLayout frameRemote;
         //View cardview_mood;

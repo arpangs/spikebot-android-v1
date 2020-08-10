@@ -25,6 +25,8 @@ public class ScheduleVO implements Serializable{
     String room_device_id;
     String room_name;
     boolean updated;
+    String on_time_difference;
+    String  off_time_difference;
 
     private int is_timer;
     private String timer_on_after;
@@ -106,6 +108,9 @@ public class ScheduleVO implements Serializable{
 
         schedule_device_on_time ="";
         schedule_device_off_time = "";
+
+        on_time_difference ="";
+        off_time_difference = "";
 
     }
 
@@ -259,6 +264,22 @@ public class ScheduleVO implements Serializable{
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getOn_time_difference() {
+        return on_time_difference;
+    }
+
+    public void setOn_time_difference(String on_time_difference) {
+        this.on_time_difference = on_time_difference;
+    }
+
+    public String getOff_time_difference() {
+        return off_time_difference;
+    }
+
+    public void setOff_time_difference(String off_time_difference) {
+        this.off_time_difference = off_time_difference;
     }
 
     @Override

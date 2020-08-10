@@ -60,7 +60,7 @@
                 android:typeface="serif"
                 android:drawableRight="@drawable/icn_arrow_down_spinner2"
                 android:ems="10"
-                android:hint="Mood Name"
+                android:hint="Select Mood Name"
                 android:imeOptions="actionDone"
                 android:inputType="textCapSentences|textAutoCorrect|textMultiLine|textShortMessage"
                 android:text=""

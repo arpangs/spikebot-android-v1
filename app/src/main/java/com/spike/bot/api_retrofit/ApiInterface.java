@@ -165,7 +165,7 @@ public interface ApiInterface {
     @POST("http://{url}" + Constants.DELETE_SCHEDULE)
     Call<JsonElement> DeleteSchedule(@Path("url") String url, @Body HashMap<String, Object> body);
 
-    @POST("http://{url}" + Constants.scheduleedit)
+    @POST("http://{url}" + Constants.schedulestatus)
     Call<JsonElement> ChangeScheduleStatus(@Path("url") String url, @Body HashMap<String, Object> body);
 
     @POST("http://{url}" + Constants.DeleteChildUser)

@@ -329,6 +329,7 @@ public class DeviceLogActivity extends AppCompatActivity implements OnLoadMoreLi
 
     @Override
     public void onBackPressed() {
+        ChatApplication.CurrnetFragment = R.id.navigationDashboard;  // dev arpan on 30 july 2020
         start_date = "";
         end_date = "";
         ListUtils.start_date_filter = "";

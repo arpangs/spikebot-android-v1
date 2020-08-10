@@ -332,8 +332,6 @@ public class SpikeBotApi {
         new GeneralRetrofit(apiService.GetDeviceDetails(ChatApplication.url, original_room_device_id), null, dataResponseListener).call();
     }
 
-
-
     /*Mood fragment */ /*ScheduleActivity*/       // dev arpan add on 27 june 2020
 
     public void GetMoodList(DataResponseListener dataResponseListener) {
@@ -347,11 +345,7 @@ public class SpikeBotApi {
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
         new GeneralRetrofit(apiService.GetMoodList(ChatApplication.url, params), params, dataResponseListener).call();
-
-
     }
-
-
 
     /*ScheduleFragment */  // dev arpan add on 27 june 2020
 
@@ -600,7 +594,7 @@ public class SpikeBotApi {
 
     /*DeviceEditDialog*/  // dev arpan add on 27 june 2020
 
-    public void SaveSwithcDetails(String device_id, String device_name, String devicetype, String deviceicon, String subtype, DataResponseListener dataResponseListener) {
+    public void SaveSwitchDetails(String device_id, String device_name, String devicetype, String deviceicon, String subtype, DataResponseListener dataResponseListener) {
 
         HashMap<String, Object> params = new HashMap<>();
 
@@ -912,15 +906,19 @@ public class SpikeBotApi {
 
         if (ROOM_ID == null) {   // for all notification
             ROOM_ID = "";
+            params.put("filter_type", "all-general-notifications");
+
+        } else {
+            params.put("unseen", 1);  // to show all notification in general notification apply on 10 aug 2020
+            params.put("filter_type", "room");
+            params.put("room_id", "" + ROOM_ID);
+            params.put("filter_action", "door_open,door_close,temp_alert,gas_detected,water_detected,door_lock,door_unlock,home_controller_active,home_controller_inactive"); // dev arpan add two field as per web developer suggest - home_controller_active,home_controller_inactive on 29 july 2020
         }
 
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
         params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-        params.put("filter_action", "door_open,door_close,temp_alert,gas_detected,water_detected,door_lock,door_unlock,home_controller_active,home_controller_inactive"); // dev arpan add two field as per web developer suggest - home_controller_active,home_controller_inactive on 29 july 2020
-        params.put("filter_type", "room");
-        params.put("room_id", "" + ROOM_ID);
-        params.put("unseen", 1);
+
         params.put("notification_number", "" + position);
 
 
@@ -2626,7 +2624,7 @@ public class SpikeBotApi {
     }
 
     /* Get Room Detail*/
-    public void getRoomDetail(String room_id,DataResponseListener dataResponseListener){
+    public void getRoomDetail(String room_id, DataResponseListener dataResponseListener) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("room_id", room_id);
         params.put("room_type", "room");
@@ -2639,7 +2637,7 @@ public class SpikeBotApi {
     }
 
     /* Get Room Detail*/
-    public void getCameraDetail(String jetson_id,DataResponseListener dataResponseListener){
+    public void getCameraDetail(String jetson_id, DataResponseListener dataResponseListener) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("jetson_id", jetson_id);
 

@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,6 +42,9 @@ public class BeaconListAdapter extends RecyclerView.Adapter<BeaconListAdapter.Se
 
         holder.imgBeacon.setImageResource(R.drawable.beaconsearch);
 
+        if(arrayListbeacon.get(position).getRange() > 0)
+        holder.mBeaconRange.setText(arrayListbeacon.get(position).getRange() + " m");
+
         holder.imgEditBeacon.setId(position);
         holder.imgEditBeacon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,12 +71,14 @@ public class BeaconListAdapter extends RecyclerView.Adapter<BeaconListAdapter.Se
 
         public AppCompatTextView txtName;
         public ImageView imgEditBeacon, imgBeacon;
+        public TextView mBeaconRange;
 
         public SensorViewHolder(View view) {
             super(view);
             txtName = itemView.findViewById(R.id.txtName);
             imgBeacon = itemView.findViewById(R.id.imgRepeatar);
             imgEditBeacon = itemView.findViewById(R.id.imgEditRepeater);
+            mBeaconRange = itemView.findViewById(R.id.txt_beacon_range);
         }
     }
 

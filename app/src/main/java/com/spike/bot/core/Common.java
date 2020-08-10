@@ -828,6 +828,20 @@ public class Common {
         return date;
     }
 
+    public static String getDateTime_MMMFormate(String value) { //dev arp on 080aug 2020
+        //Nov 11, 2019 52:52
+        SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date newDate = null;
+        try {
+            newDate = spf.parse(value);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        spf = new SimpleDateFormat("MMM dd, yyyy");
+        String date = spf.format(newDate);
+        return date;
+    }
+
     public static String getConvertDateForScheduleHour(String value) {
         //Nov 11, 2019 52:52
         SimpleDateFormat spf = new SimpleDateFormat("H:mm");

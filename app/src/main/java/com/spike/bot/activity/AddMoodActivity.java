@@ -550,10 +550,24 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                 /*old_mood_id : last mood_id
                 mood_id select latest mood_id send
                 * */
-                moodObj.put("mood_id", select_mood_id);
+
                 moodObj.put("old_mood_id", moodVO.getRoomId());
+                if (select_mood_id == "") {
+//                    moodObj.put("mood_name_id", select_mood_id);
+                    moodObj.put("mood_name", et_switch_name.getText().toString());
+
+                } else {
+                    moodObj.put("mood_id", select_mood_id);
+                }
+
             } else {
-                moodObj.put("mood_name_id", select_mood_id);
+                if (select_mood_id == "") {
+                    moodObj.put("mood_name_id", select_mood_id);
+                    moodObj.put("mood_name", et_switch_name.getText().toString());
+
+                } else {
+                    moodObj.put("mood_name_id", select_mood_id);
+                }
             }
             moodObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
             moodObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -769,6 +783,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 et_switch_name.showDropDown();
+                select_mood_id = "";
                 return false;
             }
         });
@@ -783,9 +798,18 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
             @Override
             public void onItemClick(AdapterView<?> parent, View arg1, int position, long arg3) {
                 String selectedItem;
-                selectedItem = moodIconList.get(position).getRoomId();
-                select_mood_id = selectedItem;
-                ChatApplication.logDisplay("Selected ITEM id " + " " + selectedItem);
+                String name = parent.getItemAtPosition(position).toString();
+
+                /*update below code on 8 aug 2020 */
+                for (RoomVO mroom : moodIconList) {
+                    if (mroom.getRoomName().toLowerCase().equals(name.toLowerCase())) {
+                        selectedItem = mroom.getRoomId();
+                        select_mood_id = selectedItem;
+                        ChatApplication.logDisplay("Selected ITEM id " + " " + selectedItem);
+                    }
+                }
+
+
             }
         });
 

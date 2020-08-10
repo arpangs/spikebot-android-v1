@@ -117,7 +117,7 @@ public class Constants {
     public static final String GET_UNASSIGNED_SENSORS = "/getUnassignedSensors";
     public static final String SAVE_UNCONFIGURED_SENSOR = "/saveUnconfiguredSensor";
     public static final String UPDATE_UNREAD_LOGS = "/updateUnReadLogs";
-    public static final String MARK_SEEN =  "/logs/seen";
+    public static final String MARK_SEEN = "/logs/seen";
     public static final String SAVE_EDIT_SWITCH = "/device/edit";
     public static final String devicefind = "/device/find";
     public static final String jetsonlist = "/jetson/list";
@@ -184,6 +184,7 @@ public class Constants {
     //schedule
     public static final String ADD_NEW_SCHEDULE = "/schedule/add";
     public static final String scheduleedit = "/schedule/edit";
+    public static final String schedulestatus = "/schedule/status";
     public static final String DELETE_SCHEDULE = "/schedule/delete";
     public static final String GET_SCHEDULE_LIST = "/schedule/list";
     public static final String GET_ORIGINAL_DEVICES = "/device/custom-panel-details";
@@ -214,11 +215,11 @@ public class Constants {
     public static final String updateBadgeCount = "/updateBadgeCount";
     public static final String getCameraToken = "/camera/token/";
     public static final String getAllCameraToken = "/camera/token/all";
-    public static final String getLocalMacAddress = "/system/mac-address";
+    //    public static final String getLocalMacAddress = "/system/mac-address";
+    public static final String getLocalMacAddress = ":8077/sysconfig.json";
     public static final String addTTLock = "/addTTLock";
     public static final String getLockLists = "/getLockLists";
     public static final String deleteTTLock = "/deleteTTLock";
-
 
 
     /*forget password*/
@@ -237,13 +238,12 @@ public class Constants {
     //lock
     public static final String client_id = "439063e312444f1f85050a52efcecd2e";
     public static final String client_secret = "0ef1c49b70c02ae6314bde603d4e9b05";
-    public static String access_token = "a74549ab15d07ecd988e26f50985aee7";
     public static final String locK_base_uri = "http://open.ttlock.com.cn";
     public static final String lockUserName = "ttchatcrash@gmail.com";
     public static final String lockPassword = "ttchat$123";
     public static final String startUrlhttp = "http:";
     public static final int lockUserId = 1941573;
-
+    public static String access_token = "a74549ab15d07ecd988e26f50985aee7";
     /*----------------------------------------------------------------------*/
     public static String CLOUD_SERVER_URL = "https://live.spikebot.io:8443"; //222 live
     public static String IP_END = "222";

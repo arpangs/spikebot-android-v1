@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linear_top_section"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -25,6 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:layout_marginLeft="10dp"
             android:padding="2dp">
 
             <LinearLayout
@@ -58,7 +60,7 @@
                     android:singleLine="true"
                     android:textStyle="bold"
                     android:textColor="@color/sky_blue"
-                    android:textSize="15sp" />
+                    android:textSize="17sp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -81,8 +83,8 @@
 
                 <ImageView
                     android:id="@+id/iv_mood_edit"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_alignParentTop="true"
                     android:layout_gravity="center_vertical"
                     android:layout_marginRight="@dimen/_8sdp"
@@ -133,9 +135,8 @@
 
                 <ImageView
                     android:id="@+id/iv_icon"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_marginRight="@dimen/_10sdp"
                     android:src="@drawable/panel_off" />
             </LinearLayout>
@@ -157,8 +158,8 @@
 
                     <ImageView
                         android:id="@+id/icn_schedule_v2"
-                        android:layout_width="@dimen/_25sdp"
-                        android:layout_height="@dimen/_25sdp"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
                         android:layout_gravity="center"
                         android:layout_marginTop="6dp"
                         android:src="@drawable/blueclock" />
@@ -184,8 +185,8 @@
 
                     <ImageView
                         android:id="@+id/img_icn_log"
-                        android:layout_width="@dimen/_25sdp"
-                        android:layout_height="@dimen/_25sdp"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
                         android:layout_marginTop="6dp"
                         android:scaleType="fitXY"
                         android:src="@drawable/ic_log" />
@@ -213,8 +214,8 @@
 
                     <ImageView
                         android:id="@+id/imgRemote"
-                        android:layout_width="@dimen/_25sdp"
-                        android:layout_height="@dimen/_25sdp"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
                         android:layout_marginLeft="@dimen/_8sdp"
                         android:layout_marginTop="4dp"
                         android:layout_marginRight="10dp"
@@ -223,18 +224,18 @@
 
                     <TextView
                         android:id="@+id/txtRemote"
-                        android:layout_width="@dimen/_25sdp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_26sdp"
-                        android:layout_marginTop="@dimen/_9sdp"
+                        android:layout_width="33dp"
+                        android:layout_height="21dp"
+                        android:layout_marginLeft="36.5dp"
+                        android:layout_marginTop="12dp"
                         android:layout_marginBottom="@dimen/_6sdp"
                         android:background="@drawable/drawable_remote"
                         android:gravity="center"
                         android:paddingLeft="@dimen/_3sdp"
-                        android:paddingTop="@dimen/_2sdp"
+                        android:paddingTop="1dp"
                         android:paddingRight="@dimen/_3sdp"
                         android:paddingBottom="@dimen/_3sdp"
-                        android:text="123"
+                        tools:text="123"
                         android:textColor="@color/automation_white"
                         android:textSize="@dimen/_10sdp"
                         android:visibility="visible" />
@@ -252,6 +253,19 @@
                 </FrameLayout>
                 </LinearLayout>
 
+             <!--   <TextView
+                    android:id="@+id/txt_total_devices"
+                    android:gravity="right|center"
+                    android:layout_marginRight="@dimen/_12sdp"
+                    android:layout_gravity="center"
+                    android:textColor="@color/sky_blue"
+                    android:text="0 Devices"
+                    android:textSize="@dimen/_12sdp"
+                    android:layout_weight="1.5"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />-->
+
+
                 <TextView
                     android:id="@+id/txt_total_devices"
                     android:layout_width="match_parent"
@@ -264,6 +278,7 @@
                     android:textAllCaps="true"
                     android:textColor="@color/redminus"
                     android:textSize="12sp" />
+
 
             </LinearLayout>
 

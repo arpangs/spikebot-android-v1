@@ -110,7 +110,17 @@ public class IRBlasterAddRes {
         @SerializedName("off_time")
         @Expose
         private String off_time;
+        @SerializedName("module_identifier")
+        @Expose
+        private String module_identifier;
 
+        public String getModule_identifier() {
+            return module_identifier;
+        }
+
+        public void setModule_identifier(String module_identifier) {
+            this.module_identifier = module_identifier;
+        }
 
         public String getPanelDeviceId() {
             return panelDeviceId;

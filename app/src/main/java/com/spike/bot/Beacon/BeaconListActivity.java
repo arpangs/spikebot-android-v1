@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,40 +26,82 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.AddDevice.AddDeviceTypeListActivity;
-import com.spike.bot.activity.AddMoodActivity;
-import com.spike.bot.adapter.beacon.BeaconAddAdapter;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
-import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
-import com.spike.bot.core.Constants;
 import com.spike.bot.model.IRBlasterAddRes;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class BeaconListActivity extends AppCompatActivity implements BeaconListAdapter.BeaconClickListener{
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
+
+public class BeaconListActivity extends AppCompatActivity implements BeaconListAdapter.BeaconClickListener {
     RecyclerView recycler_beaconlist;
+    Dialog beacondialog;
     private LinearLayout mEmptyView;
     private BeaconListAdapter beaconlistAdapter;
     private List<IRBlasterAddRes.Datum> beaconList;
-    Dialog beacondialog;
+    private Socket mSocket;
+
+    /*getting socket for beacon scanner any update & change*/
+    private Emitter.Listener changeBeaconRange = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+                        try {
+
+                            ActivityHelper.dismissProgressDialog();
+
+                            JSONObject object = new JSONObject(args[0].toString());
+
+                            String module_identifier = object.has("module_identifier") ? object.getString("module_identifier") : "";
+
+                            int range = object.has("range") ? object.getInt("range") : 0;
+
+                            Log.i("Arpan", "\n module_identifier==" + module_identifier + "\n range==" + range);
+
+
+                            for(IRBlasterAddRes.Datum mItem : beaconList){
+
+                                if(mItem.getModule_identifier().equalsIgnoreCase(module_identifier)){
+                                    mItem.setRange(range);
+                                    break;
+                                }
+
+                            }
+
+                            beaconlistAdapter = new BeaconListAdapter(beaconList, BeaconListActivity.this);
+                            recycler_beaconlist.setAdapter(beaconlistAdapter);
+                            beaconlistAdapter.notifyDataSetChanged();
+
+
+
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beacon_list);
         bindView();
-
 
 
     }
@@ -76,12 +119,41 @@ public class BeaconListActivity extends AppCompatActivity implements BeaconListA
 
         recycler_beaconlist.setLayoutManager(new GridLayoutManager(this, 1));
         getBeaconList();
+        startSocketConnection();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         getBeaconList();
+        startSocketConnection();
+    }
+
+    public void startSocketConnection() {
+        ChatApplication app = (ChatApplication) getApplication();
+        if (mSocket != null && mSocket.connected()) {
+            return;
+        }
+        mSocket = app.getSocket();
+        if (mSocket != null) {
+            mSocket.on("changeBeaconRange", changeBeaconRange);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mSocket != null) {
+            mSocket.off("changeBeaconRange", changeBeaconRange);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mSocket != null) {
+            mSocket.off("changeBeaconRange", changeBeaconRange);
+        }
     }
 
     @Override
@@ -113,14 +185,14 @@ public class BeaconListActivity extends AppCompatActivity implements BeaconListA
             showOptionDialog();
             return true;
         }
-        
+
         return super.onOptionsItemSelected(item);
     }
 
     /**
      * get Beacon list
      */
-    public void getBeaconList(){
+    public void getBeaconList() {
         if (!ActivityHelper.isConnectingToInternet(this)) {
             ChatApplication.showToast(getApplicationContext(), BeaconListActivity.this.getResources().getString(R.string.disconnect));
             return;
@@ -135,7 +207,7 @@ public class BeaconListActivity extends AppCompatActivity implements BeaconListA
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
-        SpikeBotApi.getInstance().getDeviceList("beacon",new DataResponseListener() {
+        SpikeBotApi.getInstance().getDeviceList("beacon", new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
@@ -145,7 +217,7 @@ public class BeaconListActivity extends AppCompatActivity implements BeaconListA
                     if (irBlasterAddRes.getCode() == 200) {
                         ActivityHelper.dismissProgressDialog();
                         beaconList = irBlasterAddRes.getData();
-                        beaconList = irBlasterAddRes.getData();
+
 
                         beaconlistAdapter = new BeaconListAdapter(beaconList, BeaconListActivity.this);
                         recycler_beaconlist.setAdapter(beaconlistAdapter);
@@ -162,7 +234,7 @@ public class BeaconListActivity extends AppCompatActivity implements BeaconListA
                         mEmptyView.setVisibility(View.GONE);
                         recycler_beaconlist.setVisibility(View.VISIBLE);
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -184,10 +256,10 @@ public class BeaconListActivity extends AppCompatActivity implements BeaconListA
 
     @Override
     public void editClicked(IRBlasterAddRes.Datum beaconmodel, int position, int type) {
-        showBottomSheetDialog(beaconmodel,position);
+        showBottomSheetDialog(beaconmodel, position);
     }
 
-    public void showBottomSheetDialog(IRBlasterAddRes.Datum beacon,int position) {
+    public void showBottomSheetDialog(IRBlasterAddRes.Datum beacon, int position) {
         View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
 
         TextView txt_bottomsheet_title = view.findViewById(R.id.txt_bottomsheet_title);
@@ -195,23 +267,23 @@ public class BeaconListActivity extends AppCompatActivity implements BeaconListA
         LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
 
 
-        BottomSheetDialog dialog = new BottomSheetDialog(BeaconListActivity.this,R.style.AppBottomSheetDialogTheme);
+        BottomSheetDialog dialog = new BottomSheetDialog(BeaconListActivity.this, R.style.AppBottomSheetDialogTheme);
         dialog.setContentView(view);
         dialog.show();
 
-        String beaconname =  beaconList.get(position).getDeviceName();
+        String beaconname = beaconList.get(position).getDeviceName();
 
-        txt_bottomsheet_title.setText("What would you like to do in" + " " + beaconname + " " +"?");
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + beaconname + " " + "?");
         linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
                 Intent intent = new Intent(BeaconListActivity.this, BeaconConfigActivity.class);
-                intent.putExtra("editBeacon",true);
-                intent.putExtra("beaconmodel",beacon);
-                intent.putExtra("panel_id",beacon.getPanelDeviceId());
-                intent.putExtra("isMap",true);
-                intent.putExtra("isBeaconListAdapter",true);
+                intent.putExtra("editBeacon", true);
+                intent.putExtra("beaconmodel", beacon);
+                intent.putExtra("panel_id", beacon.getPanelDeviceId());
+                intent.putExtra("isMap", true);
+                intent.putExtra("isBeaconListAdapter", true);
                 startActivity(intent);
                 finish();
             }

@@ -536,7 +536,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener, Swi
         View view_log = view.findViewById(R.id.view_log);
 
         view_log.setVisibility(View.VISIBLE);
-        linear_bottom_log.setVisibility(View.VISIBLE);
+        linear_bottom_log.setVisibility(View.GONE);
 
         BottomSheetDialog dialog = new BottomSheetDialog(getActivity(), R.style.AppBottomSheetDialogTheme);
         dialog.setContentView(view);

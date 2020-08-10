@@ -1453,6 +1453,8 @@ public class JsonHelper {
                 d1.setRoom_name(deviceObj.optString("room_name"));
                 d1.setRoom_device_id(deviceObj.optString("room_device_id"));
                 d1.setSchedule_device_type(deviceObj.optString("schedule_device_type"));
+                d1.setOn_time_difference(deviceObj.optString("on_time_difference"));
+                d1.setOff_time_difference(deviceObj.optString("off_time_difference"));
                 d1.setId(id);
                 d1.setIs_active(deviceObj.optString("is_active").equals("y") ? 1 : 0);
 

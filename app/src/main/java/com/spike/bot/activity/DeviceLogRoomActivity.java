@@ -91,7 +91,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
             MenuItem menuItem = menu.findItem(R.id.action_filter);
             MenuItem menuItemReset = menu.findItem(R.id.action_reset);
             menuItemReset.setVisible(false);
-            menuItem.setVisible(true);
+            menuItem.setVisible(ROOM_ID == null ? false : true);
         }
         return true;
     }

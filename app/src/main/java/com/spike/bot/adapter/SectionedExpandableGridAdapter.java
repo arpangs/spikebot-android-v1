@@ -398,12 +398,12 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             /*
                              * if panel list found 1 or more so change room icon immediately
                              * */
-                            if (section.getPanelList().size() > 0) {
+//                            if (section.getPanelList().size() > 0) {
                                 section.setOld_room_status(section.getRoom_status());
                                 section.setRoom_status(section.getRoom_status() == 0 ? 1 : 0);
                                 notifyItemChanged(position);
 
-                            }
+//                            }
                             mItemClickListener.itemClicked(section, "onoffclick");
                         }
                     });

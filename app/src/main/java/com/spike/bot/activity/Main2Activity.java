@@ -103,6 +103,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     private Socket mSocket;
     private ConnectivityReceiver connectivityReceiver;
 
+
     //Socket
     private Emitter.Listener deleteChildUser = new Emitter.Listener() {
         @Override
@@ -426,6 +427,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     /*user selection set value & refresh*/
     @Override
     public void userSelectclick(User user) {
+
+
         if (dialogUser != null) {
             dialogUser.dismiss();
         }
@@ -488,6 +491,11 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
             ChatApplication.isCallDeviceList = true;
             setWifiLocalflow(local_ip, cloudIp, mac_address, 0);
+
+
+            finish();
+            startActivity(getIntent());
+
         }
 
     }
@@ -589,6 +597,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     public void setUserName() {
         toolbarTitle.setText(Constants.getUserName(this));
+
+
     }
 
     /*tab hide & show*/
@@ -622,14 +632,17 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
 
     public void setAllNotificationCount(int count) {
+
         if (count == 0) {
             toolbarNotificationCount.setVisibility(View.GONE);
         } else if (count != 0 && count > 99) {
+            toolbarNotificationCount.setBackground(getResources().getDrawable(R.drawable.badge_background_oval));
             toolbarNotificationCount.setVisibility(View.VISIBLE);
             toolbarNotificationCount.setText("99+");
         } else {
             toolbarNotificationCount.setVisibility(View.VISIBLE);
             toolbarNotificationCount.setText("" + count);
+            toolbarNotificationCount.setBackground(getResources().getDrawable(R.drawable.badge_background));
         }
     }
 

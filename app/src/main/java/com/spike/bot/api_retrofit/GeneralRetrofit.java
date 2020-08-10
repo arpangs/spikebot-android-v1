@@ -108,7 +108,7 @@ class GeneralRetrofit {
                             }
                         } else if (!jsonObject.getString("code").equalsIgnoreCase("200")) {
                             if (jsonObject.has("message")) {
-                                Toast.makeText(ChatApplication.getContext(), jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(ChatApplication.getContext(), jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
                             }
 
                         }

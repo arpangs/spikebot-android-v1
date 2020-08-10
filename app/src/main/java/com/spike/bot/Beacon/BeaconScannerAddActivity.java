@@ -98,7 +98,7 @@ public class BeaconScannerAddActivity extends AppCompatActivity implements Beaco
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toolbar.setTitle("Radar Scanner List");
+        toolbar.setTitle("Beamer List");
 
         mBeaconList = findViewById(R.id.list_scanner);
         mEmptyView = findViewById(R.id.txt_empty_scanner);

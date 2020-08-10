@@ -31,13 +31,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.gson.JsonObject;
 import com.kp.core.ActivityHelper;
 import com.kp.core.DateHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.GetJsonTask2;
-import com.kp.core.ICallBack;
-import com.kp.core.ICallBack2;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
@@ -76,6 +71,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.TimeZone;
 
 import io.socket.client.Socket;
 
@@ -103,7 +99,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             et_off_time_bottom_header_at, et_off_time_bottom_header_at_time, et_off_time_bottom_header_at_ampm, tv_schedule_list;
     RecyclerView rv_auto_mode, rv_schedule;
     View view_header, view_starttime, view_moodlist;
-//    JSONObject deviceObj = new JSONObject();
+    //    JSONObject deviceObj = new JSONObject();
     HashMap<String, Object> deviceObj = new HashMap<>();
     ScheduleVO scheduleVO = new ScheduleVO();
     int position = 0, selection = 0, nextFalse = 0;
@@ -478,7 +474,15 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     et_schedule_name.setText(scheduleVO.getSchedule_name());
                     et_schedule_name.setSelection(et_schedule_name.getText().length());
 
-                    if (!scheduleVO.getSchedule_device_on_time().equalsIgnoreCase("")) {
+                    if (scheduleVO.getSchedule_type() == 1) {
+                        showTimerUI();
+                        rb_schedule_select_schedule.setVisibility(View.VISIBLE);
+                    } else {
+                        showScheduleUI();
+                        rb_schedule_select_auto.setVisibility(View.VISIBLE);
+                    }
+
+                    if (!scheduleVO.getSchedule_device_on_time().equalsIgnoreCase("") && !scheduleVO.getSchedule_device_on_time().equalsIgnoreCase("null")) {
                         try {
                             if (scheduleVO.getSchedule_type() == 1) {
                                 et_schedule_on_time.setText(DateHelper.formateDate(DateHelper.parseTimeSimple(scheduleVO.getSchedule_device_on_time(), DateHelper.DATE_FROMATE_H_M_AMPM1), DateHelper.DATE_FROMATE_H_M_AMPM123));
@@ -490,7 +494,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                             e.printStackTrace();
                         }
                     }
-                    if (!scheduleVO.getSchedule_device_off_time().equalsIgnoreCase("")) {
+                    if (!scheduleVO.getSchedule_device_off_time().equalsIgnoreCase("") && !scheduleVO.getSchedule_device_off_time().equalsIgnoreCase("null")) {
                         try {
                             if (scheduleVO.getSchedule_type() == 1) {
                                 et_schedule_off_time.setText(DateHelper.formateDate(DateHelper.parseTimeSimple(scheduleVO.getSchedule_device_off_time(), DateHelper.DATE_FROMATE_H_M_AMPM1), DateHelper.DATE_FROMATE_H_M_AMPM123));
@@ -544,69 +548,58 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                         rb_schedule_select_auto.setChecked(true);
                         rb_schedule_select_schedule.setEnabled(true);
 
-                        String on_after = scheduleVO.getSchedule_device_on_time();
-                        if (!TextUtils.isEmpty(on_after)) {
-                            //2019-11-09 23:15:00
-                            ChatApplication.logDisplay("after on is " + on_after);
-                            if (on_after.split(":").length > 0) {
-                                on_after = Common.getHH(on_after);
+//                        String on_after = scheduleVO.getSchedule_device_on_time();
+                        if (scheduleVO.getOn_time_difference() != null) {
+                            String on_after = scheduleVO.getOn_time_difference() != null ? scheduleVO.getOn_time_difference() : "null";
+                            if (!TextUtils.isEmpty(on_after) && !on_after.equalsIgnoreCase("null")) {
+                                //2019-11-09 23:15:00
                                 ChatApplication.logDisplay("after on is " + on_after);
-                                int hOn = Integer.parseInt(on_after.split(":")[0]);
-                                int mOn = Integer.parseInt(on_after.split(":")[1]);
-                                et_on_time_hours.setText(ActivityHelper.hmZero(hOn));
-                                et_on_time_min.setText(ActivityHelper.hmZero(mOn));
-                            } else {
-                                et_on_time_hours.setText("");
-                                et_on_time_min.setText("");
+                                if (on_after.split(":").length > 0) {
+//                                on_after = Common.getHH(on_after);
+                                    ChatApplication.logDisplay("after on is " + on_after);
+                                    int hOn = Integer.parseInt(on_after.split(":")[0]);
+                                    int mOn = Integer.parseInt(on_after.split(":")[1]);
+                                    et_on_time_hours.setText(ActivityHelper.hmZero(hOn));
+                                    et_on_time_min.setText(ActivityHelper.hmZero(mOn));
+                                } else {
+                                    et_on_time_hours.setText("");
+                                    et_on_time_min.setText("");
+                                }
+                            }
+
+                            if (!scheduleVO.getSchedule_device_on_time().equals("null")) {
+                                if (!TextUtils.isEmpty(scheduleVO.getSchedule_device_on_time())) {
+                                    et_on_time_bottom_header.setText(Common.getDateTime_MMMFormate(scheduleVO.getSchedule_device_on_time()));
+                                    et_on_hour_ampm_12 = on_after;
+
+                                    if (!scheduleVO.getSchedule_device_on_time().equals("null") || !scheduleVO.getSchedule_device_on_time().equals(""))
+                                        et_on_time_bottom_header_at_time.setText(Common.getTimeHH(scheduleVO.getSchedule_device_on_time()));
+                                }
                             }
                         }
 
-                        if (!TextUtils.isEmpty(scheduleVO.getSchedule_device_on_time())) {
-                            et_on_time_bottom_header.setText(scheduleVO.getSchedule_device_on_time());
+//                        String off_after = scheduleVO.getSchedule_device_off_time();
+                        if (scheduleVO.getOff_time_difference() != null) {
+                            String off_after = scheduleVO.getOff_time_difference() != null ? scheduleVO.getOff_time_difference() : "null";
+                            if (!TextUtils.isEmpty(off_after) && !off_after.equalsIgnoreCase("null")) {
+//                                off_after = Common.getHH(off_after);
+                                if (off_after.split(":").length > 0) {
 
-//                        Calendar calendar = Calendar.getInstance();
-//                        calendar.setTime(new Date());
-//                        calendar.add(Calendar.HOUR, Integer.parseInt(on_after.split(":")[0]));
-//                        calendar.add(Calendar.MINUTE, Integer.parseInt(on_after.split(":")[1]));
-//
-//                        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm aa");
-//                        String formattedDate = dateFormat.format(calendar.getTime()).toString();
-//
-//                        SimpleDateFormat format = new SimpleDateFormat("MMM dd, yyyy");
-//                        Date sendDate = null;
-//                        try {
-//                            sendDate = format.parse(formattedDate);
-//                        } catch (ParseException e) {
-//                            e.printStackTrace();
-//                        }
-//                        Calendar sendCalendar = Calendar.getInstance();
-//                        sendCalendar.setTime(sendDate);
-//
-//                        String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
-                            et_on_hour_ampm_12 = on_after;
-                            et_on_time_bottom_header_at_time.setText(Common.getTimeHH(scheduleVO.getSchedule_device_on_time()));
-                        }
+                                    int hFn = Integer.parseInt(off_after.split(":")[0]);
+                                    int mFn = Integer.parseInt(off_after.split(":")[1]);
 
-                        String off_after = scheduleVO.getSchedule_device_off_time();
+                                    et_off_time_hours.setText(ActivityHelper.hmZero(hFn));
+                                    et_off_time_min.setText(ActivityHelper.hmZero(mFn));
 
-                        if (!TextUtils.isEmpty(off_after) && !off_after.equalsIgnoreCase("null")) {
-                            off_after = Common.getHH(off_after);
-                            if (off_after.split(":").length > 0) {
-
-                                int hFn = Integer.parseInt(off_after.split(":")[0]);
-                                int mFn = Integer.parseInt(off_after.split(":")[1]);
-
-                                et_off_time_hours.setText(ActivityHelper.hmZero(hFn));
-                                et_off_time_min.setText(ActivityHelper.hmZero(mFn));
-
-                            } else {
-                                et_off_time_hours.setText("");
-                                et_off_time_min.setText("");
+                                } else {
+                                    et_off_time_hours.setText("");
+                                    et_off_time_min.setText("");
+                                }
                             }
-                        }
 
-                        if (!TextUtils.isEmpty(scheduleVO.getTimer_off_date())) {
-                            et_off_time_bottom_header.setText(scheduleVO.getTimer_off_date());
+                            if (!scheduleVO.getTimer_off_date().equals("null") && !scheduleVO.getTimer_off_date().equals("")) {
+                                if (!TextUtils.isEmpty(scheduleVO.getTimer_off_date())) {
+                                    et_off_time_bottom_header.setText(Common.getDateTime_MMMFormate(scheduleVO.getTimer_off_date()));
 
 //                        Calendar calendar = Calendar.getInstance();
 //                        calendar.setTime(new Date());
@@ -627,28 +620,50 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 //                        sendCalendar.setTime(sendDate);
 //
 //                        String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
-                            et_off_hour_ampm_12 = off_after;
+                                    et_off_hour_ampm_12 = off_after;
 
-                            et_off_time_bottom_header_at_time.setText(Common.getTimeHH(scheduleVO.getSchedule_device_on_time()));
+                                    if (!scheduleVO.getSchedule_device_on_time().toString().equalsIgnoreCase("null"))
+                                        et_off_time_bottom_header_at_time.setText(Common.getTimeHH(scheduleVO.getSchedule_device_off_time()));
+
+                                }
+
+                            }
                         }
 
                         off_time_date = scheduleVO.getTimer_off_date();
                         off_at_time = scheduleVO.getSchedule_device_off_time();
 
                         /*on time*/
-                        on_time_date = Common.getDateTime(scheduleVO.getSchedule_device_on_time());
-                        on_at_time = Common.getTimeHH(scheduleVO.getSchedule_device_on_time());
-                        setEtOnTimeHeader(on_time_date, on_at_time, Common.getTimeAM(scheduleVO.getSchedule_device_on_time()));
+                        if (!scheduleVO.getSchedule_device_on_time().equalsIgnoreCase("null") && !scheduleVO.getSchedule_device_on_time().equalsIgnoreCase("")) {
+                            on_time_date = Common.getDateTime_MMMFormate(scheduleVO.getSchedule_device_on_time());  // dev arp change formate here
+                            on_at_time = Common.getTimeHH(scheduleVO.getSchedule_device_on_time());
+                            setEtOnTimeHeader(on_time_date, on_at_time, Common.getTimeAM(scheduleVO.getSchedule_device_on_time()));
+                        } else {
+                            Date c = Calendar.getInstance().getTime();
+                           /* SimpleDateFormat df = new SimpleDateFormat("DD-MM-YY h:mm aa");
+                            SimpleDateFormat df1 = new SimpleDateFormat("h:mm aa");
+                            SimpleDateFormat df2 = new SimpleDateFormat("aa");*/
+                            SimpleDateFormat df = new SimpleDateFormat("MMM dd, yyyy h:mm aa");
+                            SimpleDateFormat df1 = new SimpleDateFormat("h:mm aa");
+                            SimpleDateFormat df2 = new SimpleDateFormat("aa");
+                            String formattedDate = df.format(c);
+                            String formattedDate1 = df1.format(c);
+                            String formattedDate2 = df2.format(c);
 
+                            et_on_time_bottom_header.setText(formattedDate);
+                            et_on_time_bottom_header_at_time.setText(formattedDate1);
+                            et_on_time_bottom_header_at_ampm.setText(formattedDate2);
+                        }
                         /*off time*/
 
-                        if (!scheduleVO.getSchedule_device_off_time().equalsIgnoreCase("null")) {
-                            off_time_date = Common.getDateTime(scheduleVO.getSchedule_device_off_time());
+                        if (!scheduleVO.getSchedule_device_off_time().equalsIgnoreCase("null") && !scheduleVO.getSchedule_device_off_time().equalsIgnoreCase("")) {
+                            off_time_date = Common.getDateTime_MMMFormate(scheduleVO.getSchedule_device_off_time());  // dev arp change formate here
                             off_at_time = Common.getTimeHH(scheduleVO.getSchedule_device_off_time());
                             setEtOffTimeHeader(off_time_date, off_at_time, Common.getTimeAM(scheduleVO.getSchedule_device_off_time()));
                         } else {
                             Date c = Calendar.getInstance().getTime();
-                            SimpleDateFormat df = new SimpleDateFormat("DD-MM-YY h:mm aa");
+//                            SimpleDateFormat df = new SimpleDateFormat("DD-MM-YY h:mm aa");
+                            SimpleDateFormat df = new SimpleDateFormat("MMM dd, yyyy h:mm aa");
                             SimpleDateFormat df1 = new SimpleDateFormat("h:mm aa");
                             SimpleDateFormat df2 = new SimpleDateFormat("aa");
                             String formattedDate = df.format(c);
@@ -846,23 +861,23 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 });
 
                 //   String outputPattern2 = "MMM dd, yyyy";//:ss
-                    String outputPattern2 = Constants.SIMPLE_DATE_FORMAT_1;
-                    SimpleDateFormat outputFormat2 = new SimpleDateFormat(outputPattern2);
-                    String finalJustDate = outputFormat2.format(new Date().getTime());
+                String outputPattern2 = Constants.SIMPLE_DATE_FORMAT_1;
+                SimpleDateFormat outputFormat2 = new SimpleDateFormat(outputPattern2);
+                String finalJustDate = outputFormat2.format(new Date().getTime());
 
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(new Date());
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(new Date());
 
-                    String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
-                    if (TextUtils.isEmpty(et_on_hour_ampm_12)) {
-                        et_on_hour_ampm_12 = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
-                    }
+                String hourMinute = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
+                if (TextUtils.isEmpty(et_on_hour_ampm_12)) {
+                    et_on_hour_ampm_12 = ActivityHelper.hourMinuteZero(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
+                }
 
 
-                    String ampm = DateUtils.getAMPMString(calendar.get(Calendar.AM_PM));
+                String ampm = DateUtils.getAMPMString(calendar.get(Calendar.AM_PM));
 
-                    if (TextUtils.isEmpty(off_time_date)) {
-                        setEtOffTimeHeader(finalJustDate, hourMinute, ampm);
+                if (TextUtils.isEmpty(off_time_date)) {
+                    setEtOffTimeHeader(finalJustDate, hourMinute, ampm);
                 }
                 if (TextUtils.isEmpty(on_time_date)) {
                     setEtOnTimeHeader(finalJustDate, hourMinute, ampm);
@@ -1203,7 +1218,8 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
     /**
      * set Label data at and am/pm
-     *21
+     * 21
+     *
      * @param _finalJustDate: Mar 07, 2018
      * @param _hourMinute     : 15:35
      * @param _ampm           : PM
@@ -1286,6 +1302,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         ll_on_time_bottom.setVisibility(View.VISIBLE);
         ll_off_time_auto.setVisibility(View.VISIBLE);
         ll_off_time_bottom.setVisibility(View.VISIBLE);
+
     }
 
     @Override
@@ -1491,6 +1508,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     return false;
                 }
 
+
                 deviceObj.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
                 deviceObj.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
                 deviceObj.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -1513,21 +1531,44 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 if (rId == R.id.rb_schedule_select_schedule) {
                     getRepeatString();
                     String onTime = "", offTime = "";
+                    Date onDate, offDate;
+                    long onTimeMill = 0, offTimeMill = 0;
+
+                    SimpleDateFormat sdf = new SimpleDateFormat(DateHelper.DATE_FROMATE_HH_MM);
+                    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
                     if (!TextUtils.isEmpty(et_schedule_on_time.getText().toString())) {
                         onTime = DateHelper.formateDate(DateHelper.parseTimeSimple(et_schedule_on_time.getText().toString(), DateHelper.DATE_FROMATE_H_M_AMPM), DateHelper.DATE_FROMATE_HH_MM);
+                        onDate = sdf.parse(onTime);
+                        onTimeMill = onDate.getTime();
                     }
                     if (!TextUtils.isEmpty(et_schedule_off_time.getText().toString())) {
                         offTime = DateHelper.formateDate(DateHelper.parseTimeSimple(et_schedule_off_time.getText().toString(), DateHelper.DATE_FROMATE_H_M_AMPM), DateHelper.DATE_FROMATE_HH_MM);
+                        offDate = sdf.parse(offTime);
+                        offTimeMill = offDate.getTime();
                     }
 
-                    deviceObj.put("on_time", onTime);
-                    deviceObj.put("off_time", offTime);
+
+                    if ((!onTime.equals("")) && (!offTime.equals(""))) {
+                        if (onTimeMill > offTimeMill) {
+                            Toast.makeText(this, "End time should be later than the Start time", Toast.LENGTH_SHORT).show();
+                            return false;
+                        }
+                    }
+
+
+                    if (!onTime.equals(""))
+                        deviceObj.put("on_time", onTime);
+
+                    if (!offTime.equals(""))
+                        deviceObj.put("off_time", offTime);
+
                     deviceObj.put("schedule_type", "schedule");
                     deviceObj.put("schedule_days", repeatDayString);
                 } else {
                     deviceObj.put("schedule_type", "timer");
                     deviceObj.put("schedule_device_day", "");
+
 
                     if (!TextUtils.isEmpty(et_on_time_hours.getText().toString()) && TextUtils.isEmpty(et_on_time_min.getText().toString())) {
                         et_on_time_min.setText("00");
@@ -1543,6 +1584,21 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                         if (hOn == 0 && mOn == 0) {
                         } else {
                             deviceObj.put("on_time", Common.getConvertDateForSchedule(startCheckDate));
+                            if (!et_on_time_hours.getText().toString().equals("") && !et_on_time_min.getText().toString().equals("")) {
+
+                                String on_time_hrs = et_on_time_hours.getText().toString();
+                                if (on_time_hrs.length() == 1) {
+                                    on_time_hrs = on_time_hrs + "0";
+                                }
+
+                                String on_time_min = et_on_time_min.getText().toString();
+                                if (on_time_min.length() == 1) {
+                                    on_time_min = on_time_min + "0";
+                                }
+
+
+                                deviceObj.put("on_time_difference", on_time_hrs + ":" + on_time_min);
+                            }
                             ChatApplication.logDisplay("date is " + Common.getConvertDateForSchedule(startCheckDate));
                         }
                     }
@@ -1562,7 +1618,25 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
                         if (hFn == 0 && mFn == 0) {
                         } else {
-                            deviceObj.put("off_time", Common.getConvertDateForSchedule(endCheckDate));
+                            if (!endCheckDate.equalsIgnoreCase("")) {
+                                deviceObj.put("off_time", Common.getConvertDateForSchedule(endCheckDate));
+                                if (!et_off_time_hours.getText().toString().equals("") && !et_off_time_min.getText().toString().equals("")) {
+
+                                    String off_time_hrs = et_off_time_hours.getText().toString();
+                                    if (off_time_hrs.length() == 1) {
+                                        off_time_hrs = off_time_hrs + "0";
+                                    }
+
+                                    String off_time_min = et_off_time_min.getText().toString();
+                                    if (off_time_min.length() == 1) {
+                                        off_time_min = off_time_min + "0";
+                                    }
+
+
+                                    deviceObj.put("off_time_difference", off_time_hrs + ":" + off_time_min);
+                                }
+                            }
+
                             ChatApplication.logDisplay("date is " + Common.getConvertDateForSchedule(endCheckDate));
 
                         }
@@ -1574,8 +1648,14 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     stringArrayList.add(deviceVOArrayList.get(i).getPanel_device_id());
                 }
 
-                JSONArray jsonArray = new JSONArray(stringArrayList);
-                deviceObj.put("devices", jsonArray);
+//                JSONArray jsonArray = new JSONArray(stringArrayList);
+//                deviceObj.put("devices", jsonArray);
+
+                if (stringArrayList != null && stringArrayList.size() > 0) {
+                    deviceObj.put("devices", stringArrayList);
+                } else {
+                    deviceObj.put("devices", new ArrayList<String>());
+                }
 
                 addSchedule();
 
@@ -1752,7 +1832,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                         rv_schedule.setVisibility(View.GONE);
                     }
                 }
-
 
 
             }
@@ -2138,7 +2217,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 ActivityHelper.dismissProgressDialog();
             }
         });
-
 
 
     }
@@ -2556,7 +2634,6 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         });
 
 
-
     }
 
     public void getRepeatString() {
@@ -2658,7 +2735,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             webUrl = webUrl.replace("http://", "");
 
 
-        SpikeBotApi.getInstance().GetDeviceDetails_Schedule(webUrl, original_room_device_id,new DataResponseListener() {
+        SpikeBotApi.getInstance().GetDeviceDetails_Schedule(webUrl, original_room_device_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 int code = 0;

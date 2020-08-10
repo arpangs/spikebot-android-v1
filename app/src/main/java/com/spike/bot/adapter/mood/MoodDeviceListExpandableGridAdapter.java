@@ -34,22 +34,18 @@ import java.util.List;
  */
 public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<MoodDeviceListExpandableGridAdapter.ViewHolder> {
 
-    //data array
-    private ArrayList<Object> mDataArrayList;
-
-    //context
-    private Context mContext = null;
-
-    //listeners
-    private final ItemClickListener mItemClickListener;
-    private final SectionStateChangeListener mSectionStateChangeListener;
-
     //view type
     private static final int VIEW_TYPE_SECTION = R.layout.row_room_moode_edit;
     private static final int VIEW_TYPE_ITEM = R.layout.row_room_switch_item; //TODO : change this
     private static final int VIEW_TYPE_PANEL = R.layout.row_room_panel;
-
+    //listeners
+    private final ItemClickListener mItemClickListener;
+    private final SectionStateChangeListener mSectionStateChangeListener;
     public boolean isMoodAdapter;
+    //data array
+    private ArrayList<Object> mDataArrayList;
+    //context
+    private Context mContext = null;
 
     /**
      * Mood Device List Expandable Grid Adapter
@@ -159,7 +155,7 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                 holder.sectionToggleButton.setChecked(section.isExpanded());
 
                 if (section.isExpanded()) {
-                    holder.view_line_top.setVisibility(View.VISIBLE);
+                    holder.view_line_top.setVisibility(View.GONE);
                     holder.card_layout.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side_mood));
                     // holder.ll_root_view_section.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side));
                 } else {
@@ -174,13 +170,13 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                 final PanelVO panel1 = (PanelVO) mDataArrayList.get(position);
                 holder.sectionTextView.setText(panel1.getPanelName());
                 holder.iv_room_panel_onoff.setVisibility(View.GONE);
-/*
+
                 if (position == 0) {
                     holder.view_line_top.setVisibility(View.GONE);
                     holder.view_line_top.setBackgroundResource(R.color.automation_white);
                 } else {
                     holder.view_line_top.setVisibility(View.VISIBLE);
-                }*/
+                }
 
                 if (panel1.isActivePanel()) {
                     holder.sectionTextView.setVisibility(View.VISIBLE);
@@ -231,11 +227,11 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
 //
 //                }
 
-//                if(item.getIsActive()==-1){
-//                    holder.iv_icon.setImageResource(Common.getIcon(0, item.getDevice_icon()));//item.getDeviceStatus()
-//                }else {
-                holder.iv_icon.setImageResource(Common.getIcon(0, item.getDevice_icon()));//item.getDeviceStatus()
-//                }
+                if (item.getIsActive() == -1) {
+                    holder.iv_icon.setImageResource(Common.getIcon(-1, item.getDevice_icon()));//item.getDeviceStatus()
+                } else {
+                    holder.iv_icon.setImageResource(Common.getIcon(0, item.getDevice_icon()));//item.getDeviceStatus()
+                }
 
                 if (item.isSensor()) {
 
@@ -314,52 +310,6 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
         }
     }
 
-    protected static class ViewHolder extends RecyclerView.ViewHolder {
-
-        //common
-        View view, view_line_top;
-        int viewType;
-        ImageView iv_room_panel_onoff, img_room_delete, iv_icon, iv_icon_text, iv_icon_select;
-        //for section
-        ToggleButton sectionToggleButton;
-        TextView sectionTextView, text_section_on_off, text_section_edit, itemTextView;
-        LinearLayout ll_room_item,ll_root_view_section;
-        RelativeLayout rel_main_view,card_layout;
-
-        public ViewHolder(View view, int viewType) {
-            super(view);
-            this.viewType = viewType;
-            this.view = view;
-
-            if (viewType == VIEW_TYPE_ITEM) {
-                itemTextView = view.findViewById(R.id.text_item);
-                iv_icon = view.findViewById(R.id.iv_icon);
-                iv_icon_text = view.findViewById(R.id.iv_icon_text);
-                iv_icon_select = view.findViewById(R.id.iv_icon_select);
-                ll_room_item = view.findViewById(R.id.ll_room_item);
-
-            } else if (viewType == VIEW_TYPE_PANEL) {
-                view_line_top = view.findViewById(R.id.view_line_top);
-
-                itemTextView = view.findViewById(R.id.heading);
-                sectionTextView = itemTextView;
-                iv_room_panel_onoff = view.findViewById(R.id.iv_room_panel_onoff);
-
-            } else {
-                card_layout = view.findViewById(R.id.card_layout);
-                view_line_top = view.findViewById(R.id.view_line_top);
-                sectionTextView = view.findViewById(R.id.text_section);
-                ll_root_view_section= view.findViewById(R.id.ll_root_view_section);
-                text_section_on_off = view.findViewById(R.id.text_section_on_off);
-                text_section_edit = view.findViewById(R.id.text_section_edit);
-                img_room_delete = view.findViewById(R.id.iv_room_delete);
-
-                sectionToggleButton = view.findViewById(R.id.toggle_button_section);
-                rel_main_view = view.findViewById(R.id.rel_main_view);
-            }
-        }
-    }
-
     //
     public String getSelectedItemIds() {
         String roomIds = "";
@@ -379,7 +329,6 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
         }
         return roomIds;
     }
-
 
     /*
      * get SelectedItemList Devices in ArrayList
@@ -413,5 +362,50 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
         }
 
         return arrayList;
+    }
+
+    protected static class ViewHolder extends RecyclerView.ViewHolder {
+
+        //common
+        View view, view_line_top;
+        int viewType;
+        ImageView iv_room_panel_onoff, img_room_delete, iv_icon, iv_icon_text, iv_icon_select;
+        //for section
+        ToggleButton sectionToggleButton;
+        TextView sectionTextView, text_section_on_off, text_section_edit, itemTextView;
+        LinearLayout ll_room_item, ll_root_view_section;
+        RelativeLayout rel_main_view, card_layout;
+
+        public ViewHolder(View view, int viewType) {
+            super(view);
+            this.viewType = viewType;
+            this.view = view;
+
+            if (viewType == VIEW_TYPE_ITEM) {
+                itemTextView = view.findViewById(R.id.text_item);
+                iv_icon = view.findViewById(R.id.iv_icon);
+                iv_icon_text = view.findViewById(R.id.iv_icon_text);
+                iv_icon_select = view.findViewById(R.id.iv_icon_select);
+                ll_room_item = view.findViewById(R.id.ll_room_item);
+
+            } else if (viewType == VIEW_TYPE_PANEL) {
+                view_line_top = view.findViewById(R.id.view_line_top);
+                itemTextView = view.findViewById(R.id.heading);
+                sectionTextView = itemTextView;
+                iv_room_panel_onoff = view.findViewById(R.id.iv_room_panel_onoff);
+
+            } else {
+                card_layout = view.findViewById(R.id.card_layout);
+                view_line_top = view.findViewById(R.id.view_line_top);
+                sectionTextView = view.findViewById(R.id.text_section);
+                ll_root_view_section = view.findViewById(R.id.ll_root_view_section);
+                text_section_on_off = view.findViewById(R.id.text_section_on_off);
+                text_section_edit = view.findViewById(R.id.text_section_edit);
+                img_room_delete = view.findViewById(R.id.iv_room_delete);
+
+                sectionToggleButton = view.findViewById(R.id.toggle_button_section);
+                rel_main_view = view.findViewById(R.id.rel_main_view);
+            }
+        }
     }
 }

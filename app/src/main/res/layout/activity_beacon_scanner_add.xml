@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="No Radar Scanner Available"
+                android:text="No Beamer Available"
                 android:textColor="#808080"
                 android:textSize="20dp"
                 android:visibility="visible" />

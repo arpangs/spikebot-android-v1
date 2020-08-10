@@ -17,21 +17,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
-import com.spike.bot.core.APIConst;
-import com.spike.bot.core.Common;
-import com.spike.bot.core.Constants;
 import com.spike.bot.model.DeviceVO;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -337,7 +331,7 @@ public class DeviceEditDialog extends Dialog implements View.OnClickListener {
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
 
-        SpikeBotApi.getInstance().SaveSwithcDetails(deviceVO.getDeviceId(),name,flags.get(sp_device_type.getSelectedItemPosition()),
+        SpikeBotApi.getInstance().SaveSwitchDetails(deviceVO.getDeviceId(),name,flags.get(sp_device_type.getSelectedItemPosition()),
                 flags.get(sp_device_type.getSelectedItemPosition()).toString(),rg_auto_mode_type.getCheckedRadioButtonId() == R.id.rb_auto_mode_type_normal ? "normal" : "dimmer",
                 new DataResponseListener() {
                     @Override

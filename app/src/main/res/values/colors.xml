@@ -26,6 +26,7 @@
     <color name="solid_blue">#0279e1</color>
     <color name="sky_blue_transparent">#90008BE0</color>
     <color name="automation_yellow">#F7E249</color>
+    <color name="automation_orange">#ffcc00</color>
     <color name="automation_red">#e90606</color>
     <color name="automation_purple">#aeaed6</color>
     <color name="automation_transparent">#1F000000</color>
