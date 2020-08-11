@@ -39,23 +39,26 @@ public class IRBlasterAddListAdapter extends RecyclerView.Adapter<IRBlasterAddLi
 
     @Override
     public void onBindViewHolder(IRBlasterHolder holder, int position) {
-        devicelist = mIRDeviceList.get(position);
+        try {
+            devicelist = mIRDeviceList.get(position);
 
-
-        if(position == 0){
-            holder.ir_add_remote_name.setText("AC");
-            holder.ir_add_remote_img.setBackgroundResource(R.drawable.ac);
-        } else{
-            holder.ir_add_remote_name.setText("TV/DTH");
-            holder.ir_add_remote_img.setBackgroundResource(R.drawable.tv_on);
-        }
-
-        holder.ir_rrot_click.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                irDeviceClikListener.onIRDeviceClick(devicelist,position);
+            if (position == 0) {
+                holder.ir_add_remote_name.setText("AC");
+                holder.ir_add_remote_img.setBackgroundResource(R.drawable.ac);
+            } else {
+                holder.ir_add_remote_name.setText("TV/DTH");
+                holder.ir_add_remote_img.setBackgroundResource(R.drawable.tv_on);
             }
-        });
+
+            holder.ir_rrot_click.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    irDeviceClikListener.onIRDeviceClick(devicelist, position);
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

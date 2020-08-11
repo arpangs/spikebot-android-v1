@@ -56,7 +56,7 @@
                     android:layout_marginLeft="@dimen/_10sdp"
                     android:layout_marginRight="@dimen/_13sdp"
                     android:orientation="vertical"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <ImageView
                         android:id="@+id/icn_schedule_v2"
@@ -83,7 +83,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
-                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_marginLeft="@dimen/_10sdp"
                     android:layout_marginRight="@dimen/_13sdp"
                     android:orientation="vertical">
 
@@ -165,7 +165,6 @@
                 android:id="@+id/relativeMainfragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:descendantFocusability="blocksDescendants"
                 android:focusableInTouchMode="true">
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -177,8 +176,8 @@
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginRight="@dimen/_8sdp"
                     android:nestedScrollingEnabled="false"
-                    android:scrollbarStyle="outsideOverlay"
-                    android:scrollbars="none"
+                    android:scrollbars="vertical"
+                    android:scrollbarSize="5dp"
                     android:visibility="visible" />
 
             </RelativeLayout>

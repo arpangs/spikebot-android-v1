@@ -332,10 +332,17 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
         MenuItem action_save = menu.findItem(R.id.action_save);
         menuAdd.setVisible(false);
         action_save.setVisible(false);
+
+
         if (!TextUtils.isEmpty(jetson_id) || !TextUtils.isEmpty(camera_id)) {
             actionEdit.setVisible(false);
         } else {
-            actionEdit.setVisible(true);
+            if (Common.getPrefValue(RoomDetailActivity.this, Constants.USER_ADMIN_TYPE).equals("1")) {
+                actionEdit.setVisible(true);
+            } else{
+                actionEdit.setVisible(false);
+            }
+
         }
         menu.findItem(R.id.actionEdit).setIcon(resizeImage(R.drawable.edit_white_new, 190, 190));
         return super.onCreateOptionsMenu(menu);

@@ -138,11 +138,14 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                                     moodIdList.add(mood_id);
                                     moodNameList.add(mood_name);
 
-                                    roomIdList.clear();;
-                                    roomIdList.addAll(moodIdList);
+                                    if(object.getString("module_type").equalsIgnoreCase("pir_detector")){
+                                        roomIdList.clear();
+                                        roomIdList.addAll(moodIdList);
 
-                                    roomNameList.clear();
-                                    roomNameList.addAll(moodNameList);
+                                        roomNameList.clear();
+                                        roomNameList.addAll(moodNameList);
+                                    }
+
                                 }
                             }
                         }

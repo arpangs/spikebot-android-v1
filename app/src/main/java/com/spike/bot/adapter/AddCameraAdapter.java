@@ -44,7 +44,7 @@ public class AddCameraAdapter extends RecyclerView.Adapter<AddCameraAdapter.Sens
     @Override
     public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
-        holder.iv_icon.setImageResource(Common.getIcon(0,"camera"));
+        holder.iv_icon.setImageResource(Common.getIcon(1,"camera"));
 
         if(arrayListLog.get(position).getIsSelect()){
             holder.iv_icon_active_camera.setVisibility(View.VISIBLE);

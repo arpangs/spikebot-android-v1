@@ -586,7 +586,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
         ToggleButton sectionToggleButton;
         LinearLayout ll_room_item, linear_top_section, ll_motion_detector;
         RelativeLayout view_rel;
-        FrameLayout frameRemote;
+        LinearLayout frameRemote;
         //View cardview_mood;
 
         public ViewHolder(View view, int viewType) {

@@ -203,71 +203,11 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/motion_detector"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <FrameLayout
-                        android:id="@+id/frameRemote"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal">
-
-                        <RelativeLayout
-                            android:layout_width="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_height="wrap_content">
-
-                        <ImageView
-                            android:id="@+id/imgRemote"
-                            android:layout_width="35dp"
-                            android:layout_height="35dp"
-                            android:layout_marginLeft="5dp"
-                            android:layout_marginTop="4dp"
-                            android:src="@drawable/remote" />
-
-
-                        <TextView
-                            android:id="@+id/txtRemote"
-                            android:layout_width="33dp"
-                            android:layout_height="21dp"
-                            android:layout_toRightOf="@+id/imgRemote"
-                            android:layout_marginTop="12dp"
-                            android:layout_marginBottom="@dimen/_6sdp"
-                            android:background="@drawable/drawable_remote"
-                            android:gravity="center"
-                            android:layout_marginLeft="-10dp"
-                            android:paddingLeft="@dimen/_3sdp"
-                            android:paddingTop="1dp"
-                            android:paddingRight="@dimen/_3sdp"
-                            android:paddingBottom="@dimen/_3sdp"
-                            android:textColor="@color/automation_white"
-                            android:textSize="@dimen/_10sdp"
-                            android:visibility="gone"
-                            tools:text="123" />
-                        </RelativeLayout>
-
-                        <TextView
-                            android:id="@+id/txt_remote_label"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="45dp"
-                            android:gravity="bottom"
-                            android:text="Smart remote"
-                            android:textColor="@color/signupblack"
-                            android:textSize="10sp" />
-
-
-                    </FrameLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/motion_detector"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="18dp"
                     android:layout_marginLeft="5dp"
+                    android:layout_marginRight="18dp"
                     android:orientation="vertical"
                     android:visibility="gone">
 
@@ -286,7 +226,7 @@
 
                         <TextView
                             android:id="@+id/txt_motion_count"
-                            android:layout_width="25dp"
+                            android:layout_width="0dp"
                             android:layout_height="25dp"
                             android:layout_marginLeft="25dp"
                             android:layout_marginTop="10dp"
@@ -312,19 +252,83 @@
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/txt_total_devices"
+                    <LinearLayout
+                        android:id="@+id/frameRemote"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal">
+
+                            <ImageView
+                                android:id="@+id/imgRemote"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginTop="5dp"
+                                android:src="@drawable/remote" />
+
+
+                            <TextView
+                                android:id="@+id/txtRemote"
+                                android:layout_width="33dp"
+                                android:layout_height="21dp"
+                                android:layout_marginLeft="-10dp"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="@dimen/_6sdp"
+                                android:layout_toRightOf="@+id/imgRemote"
+                                android:background="@drawable/drawable_remote"
+                                android:gravity="center"
+                                android:paddingLeft="@dimen/_3sdp"
+                                android:paddingTop="1dp"
+                                android:paddingRight="@dimen/_3sdp"
+                                android:paddingBottom="@dimen/_3sdp"
+                                android:textColor="@color/automation_white"
+                                android:textSize="@dimen/_10sdp"
+                                android:visibility="visible"
+                                tools:text="123" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:id="@+id/txt_remote_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="5dp"
+                            android:gravity="bottom"
+                            android:text="Smart remote"
+                            android:textColor="@color/signupblack"
+                            android:textSize="10sp" />
+
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_marginRight="@dimen/_12sdp"
-                    android:layout_weight="1.5"
-                    android:gravity="right|center"
-                    android:text="0 Devices"
-                    android:textColor="@color/redminus"
-                    android:textSize="12sp" />
+                    android:layout_weight="1.5">
 
+                    <TextView
+                        android:id="@+id/txt_total_devices"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginRight="@dimen/_12sdp"
+                        android:gravity="right|center"
+                        android:text="0 Devices"
+                        android:textColor="@color/redminus"
+                        android:textSize="12sp" />
+                </RelativeLayout>
             </LinearLayout>
 
         </LinearLayout>

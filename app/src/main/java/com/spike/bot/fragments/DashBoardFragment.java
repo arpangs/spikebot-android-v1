@@ -683,7 +683,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         empty_add_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addCustomRoom();
+                if (Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE).equals("1")) {
+                    addCustomRoom();
+                }
             }
         });
 
