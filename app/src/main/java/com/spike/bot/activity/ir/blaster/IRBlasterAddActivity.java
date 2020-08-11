@@ -885,7 +885,7 @@ public class IRBlasterAddActivity extends AppCompatActivity implements IRBlaster
 
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-        ChatApplication.showToast(IRBlasterAddActivity.this, getResources().getString(R.string.something_wrong1));
+
         SpikeBotApi.getInstance().updateDevice(irBlasterId,mBlasterName.getText().toString().trim(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {

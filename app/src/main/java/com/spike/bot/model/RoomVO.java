@@ -52,6 +52,15 @@ public class RoomVO implements Serializable{
     private String dropSensorList;
     private boolean isRoomOnOff;
     private String device_count;
+    private int pirDetectorList;
+
+    public int getPirDetectorList() {
+        return pirDetectorList;
+    }
+
+    public void setPirDetectorList(int pirDetectorList) {
+        this.pirDetectorList = pirDetectorList;
+    }
 
     public boolean isIsheavyload() {
         return isheavyload;

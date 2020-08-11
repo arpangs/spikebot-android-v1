@@ -66,6 +66,10 @@ public class JsonHelper {
                     room.setDevice_count("0");
                 }
 
+                if(roomObj.has("pirDetectorList")) {
+                    room.setPirDetectorList(roomObj.optInt("pirDetectorList"));
+                }
+
 //                if(roomObj.has("meta")){
 //                    JSONObject object=new JSONObject(roomObj.optString("meta"));
                 if (roomObj.optString("meta_smart_remote_no") == null) {
@@ -173,6 +177,9 @@ public class JsonHelper {
                     room.setDevice_count(roomObj.optString("total_devices"));
                 } else {
                     room.setDevice_count("0");
+                }
+                if(roomObj.has("pirDetectorList")) {
+                    room.setPirDetectorList(roomObj.optInt("pirDetectorList"));
                 }
 
 //                if(roomObj.has("meta")){
@@ -282,6 +289,10 @@ public class JsonHelper {
                 room.setDevice_count(roomObj.optString("total_devices"));
             } else {
                 room.setDevice_count("0");
+            }
+
+            if(roomObj.has("pirDetectorList")) {
+                room.setPirDetectorList(roomObj.optInt("pirDetectorList"));
             }
 
             if (roomObj.has("is_original")) {
@@ -673,6 +684,10 @@ public class JsonHelper {
                     room.setDevice_count(roomObj.optString("total_devices"));
                 } else {
                     room.setDevice_count("0");
+                }
+
+                if(roomObj.has("pirDetectorList")) {
+                    room.setPirDetectorList(roomObj.optInt("pirDetectorList"));
                 }
 
 //                if(roomObj.has("meta")){

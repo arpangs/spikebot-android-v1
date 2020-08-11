@@ -137,6 +137,12 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
                                     moodIdList.add(mood_id);
                                     moodNameList.add(mood_name);
+
+                                    roomIdList.clear();;
+                                    roomIdList.addAll(moodIdList);
+
+                                    roomNameList.clear();
+                                    roomNameList.addAll(moodNameList);
                                 }
                             }
                         }
@@ -146,6 +152,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                         ChatApplication.logDisplay("typeSync is " + typeSync);
                         if (TextUtils.isEmpty(object.getString("message"))) {
                             if (typeSync == 0) {
+
                                 addRoomDialog = new AddRoomDialog(AddDeviceTypeListActivity.this, roomIdList, roomNameList, object.getString("module_id"), total_devices, object.getString("module_type"), new ICallback() {
                                     @Override
                                     public void onSuccess(String str) {
@@ -253,7 +260,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                 R.drawable.drop,
                 R.drawable.beaconsearch,
                 R.drawable.beaconscanner,
-                R.drawable.pir_detector_on,
+//                R.drawable.pir_detector_on,
 
         };
 
@@ -312,8 +319,8 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         list = new DeviceList("Beamer", covers[16]);
         arrayList.add(list);
 
-        list = new DeviceList("Motion Detector", covers[17]);
-        arrayList.add(list);
+//        list = new DeviceList("Motion Detector", covers[17]);
+//        arrayList.add(list);
 /*
         arrayList.add("Unassigned List");
         arrayList.add("Room");
@@ -420,9 +427,9 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         } else if (position == 16) {
             Intent intent = new Intent(this, BeaconScannerAddActivity.class);
             startActivity(intent);
-        } else if (position == 17) {
+        /*} else if (position == 17) {
             showOptionDialog(PIR_DETECTOR);
-            sensorposition = position;
+            sensorposition = position;*/
         }
     }
 
@@ -1095,12 +1102,17 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         final TextView edt_door_module_id = dialog.findViewById(R.id.txt_module_id);
         final Spinner sp_room_list = dialog.findViewById(R.id.sp_room_list);
 
+        TextView mNameSelectTitle = dialog.findViewById(R.id.txtSelectRoom);
+        TextView mNameTitle = dialog.findViewById(R.id.txt_sensor_name);
+
+
         TextView mTxtDeviceType = dialog.findViewById(R.id.txt_device_type);
         LinearLayout llview = dialog.findViewById(R.id.ll_device_type);
 
 
         TextView dialogTitle = dialog.findViewById(R.id.tv_title);
         TextView txt_sensor_name = dialog.findViewById(R.id.txt_sensor_name);
+        dialogTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
 
 
         if (typeSync == SENSOR_GAS) {
@@ -1137,6 +1149,14 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
         mTxtDeviceType.setText(module_type != null ? module_type.toUpperCase() : "Device type not found");
 
+        if (module_type.equalsIgnoreCase("PIR_DETECTOR")) {
+            mNameSelectTitle.setText("Select Mood");
+            mNameTitle.setText("Detector Name");
+
+        } else if (module_type.equalsIgnoreCase("PIR_DEVICE")) {
+            mNameSelectTitle.setText("Select Room");
+            mNameTitle.setText("Device Name");
+        }
 
         TypeSpinnerAdapter customAdapter = new TypeSpinnerAdapter(AddDeviceTypeListActivity.this, roomNameList, 1, false);
         sp_room_list.setAdapter(customAdapter);
@@ -1169,7 +1189,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                 if (edt_door_name.getText().toString().trim().length() == 0) {
                     ChatApplication.showToast(AddDeviceTypeListActivity.this, "Please enter name");
                 } else {
-                    addDevice(dialog, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list, module_type);
+                   addDevice(dialog, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list, module_type);
                     mSocket.off("configureDevice", configureDevice);
                     dialog.dismiss();
 
@@ -1322,12 +1342,6 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
             // loading album cover using Glide library
             Glide.with(mContext).load(devielist.getThumbnail()).into(holder.imgAdd);
             holder.txtUserName.setText(devielist.getDevicename());
-
-           /* if (position == 0 || position == 3 || position == 4 || position == 6 || position == 7 || position == 12 || position == 14) {
-                holder.imgAdd.setVisibility(View.INVISIBLE);
-            } else {
-                holder.imgAdd.setVisibility(View.VISIBLE);
-            }*/
 
             holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override

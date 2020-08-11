@@ -570,6 +570,7 @@ public class SpikeBotApi {
 
         HashMap<String, Object> params = new HashMap<>();
 
+
         params.put("room_id", room_id);
         params.put("panel_name", panelname);
         params.put("module_id", module_id);
@@ -1377,7 +1378,12 @@ public class SpikeBotApi {
 
         HashMap<String, Object> params = new HashMap<>();
 
-        params.put("room_id", room_id);
+        if (module_type.equalsIgnoreCase("pir_detector")) {
+            params.put("mood_id", room_id);
+        } else {
+            params.put("room_id", room_id);
+        }
+
         params.put("device_name", device_name);
         params.put("module_id", module_id);
         params.put("module_type", module_type);

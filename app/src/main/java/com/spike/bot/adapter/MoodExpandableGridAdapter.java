@@ -208,6 +208,11 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
 
                 holder.txtTotalDevices.setText("" + section.getDevice_count() + "  DEVICE");
 
+                if (section.getPirDetectorList() > 0) {
+                    holder.ll_motion_detector.setVisibility(View.VISIBLE);
+                    holder.mMotionDetectorCount.setText(section.getPirDetectorList() + "");
+                }
+
 
                 if (section.isExpanded()) {
                     holder.linear_top_section.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side_mood));
@@ -572,9 +577,9 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
         ImageView iv_mood_panel_schedule_click, view_line_top, imgRemote, imgLog, icnSchedule, iv_mood_delete, iv_mood_edit, iv_icon_text, imgLongClick, iv_icon, view_line_bottom;
 
         //for section
-        TextView sectionTextView, txtLine, text_section_on_off, txtRemote, text_section_edit, txtTotalDevices, itemTextView;
+        TextView sectionTextView, txtLine, text_section_on_off, txtRemote, text_section_edit, txtTotalDevices, itemTextView, mMotionDetectorCount;
         ToggleButton sectionToggleButton;
-        LinearLayout ll_room_item, linear_top_section;
+        LinearLayout ll_room_item, linear_top_section, ll_motion_detector;
         RelativeLayout view_rel;
         FrameLayout frameRemote;
         //View cardview_mood;
@@ -615,6 +620,8 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                 txtRemote = view.findViewById(R.id.txtRemote);
                 imgRemote = view.findViewById(R.id.imgRemote);
                 frameRemote = view.findViewById(R.id.frameRemote);
+                ll_motion_detector = view.findViewById(R.id.motion_detector);
+                mMotionDetectorCount = view.findViewById(R.id.txt_motion_count);
             }
         }
     }

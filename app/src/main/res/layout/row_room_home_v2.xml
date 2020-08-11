@@ -383,6 +383,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="@dimen/_5sdp"
                         android:layout_marginTop="11dp"
+                        android:visibility="gone"
                         android:layout_marginRight="13dp"
                         android:orientation="vertical">
 
@@ -417,6 +418,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginTop="15dp"
                         android:layout_marginRight="13dp"
+                        android:visibility="gone"
                         android:orientation="vertical">
 
                         <TextView
