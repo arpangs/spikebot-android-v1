@@ -9,8 +9,7 @@
     <ImageView
         android:id="@+id/ir_add_remote_img"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/ac"
-        android:layout_width="wrap_content"
+        android:layout_width="80dp"
         android:layout_height="80dp" />
     
     <TextView

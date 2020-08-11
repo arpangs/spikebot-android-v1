@@ -206,7 +206,12 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                 });
 
 
-                holder.txtTotalDevices.setText("" + section.getDevice_count() + "  DEVICE");
+                if (section.getDevice_count().equalsIgnoreCase("0")) {
+                    holder.txtTotalDevices.setVisibility(View.GONE);
+                } else {
+                    holder.txtTotalDevices.setVisibility(View.VISIBLE);
+                    holder.txtTotalDevices.setText("" + section.getDevice_count() + "  DEVICE");
+                }
 
                 if (section.getPirDetectorList() > 0) {
                     holder.ll_motion_detector.setVisibility(View.VISIBLE);

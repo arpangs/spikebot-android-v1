@@ -66,5 +66,7 @@
     <color name="light_blue">#DBF3FA</color>
 
     <color name="dashboardwhite">#fafafa</color>
+    <color name="remote_background">#F4F0F0</color>
+    <color name="automation_light">#AAD3F1</color>
 
 </resources>

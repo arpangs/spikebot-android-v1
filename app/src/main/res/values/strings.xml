@@ -45,6 +45,7 @@
     <string name="socket_disconnected">socket disconnected</string>
     <string name="confgi_1">Device need some time to respond,\nwait a moment after the action</string>
     <string name="config_2">Point the Remote at AC and press the\n button\n Release when AC responds</string>
+    <string name="config_2_tvremote">Point the Remote at TV and press the\n button\n Release when TV responds</string>
 
     <string name="menu_dashboard">Dashboard</string>
     <string name="menu_dashboard1">DASHBOARD</string>
@@ -84,6 +85,8 @@
     <string name="add_smartremote">ADD A SMART REMOTE</string>
     <string name="connected">CONNECTED TO</string>
     <string name="maxvaluecondition">Max value should bigger than the Min value.</string>
-    <string name="gridcolumnwidth">60</string>
-
+    <string name="gridcolumnwidth">50</string>
+    <string name="label_tv_remote">Do you want to associate your DTH/Settop box?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

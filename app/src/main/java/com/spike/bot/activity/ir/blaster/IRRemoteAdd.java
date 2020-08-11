@@ -23,6 +23,7 @@ import com.kp.core.GetJsonTask;
 import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.TvDthRemote.TVRemoteBrandListActivity;
 import com.spike.bot.adapter.irblaster.IRBlasterAddListAdapter;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
@@ -199,7 +200,7 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
     }
 
     @Override
-    public void onIRDeviceClick(IRDeviceDetailsRes.Data devicelist) {
+    public void onIRDeviceClick(IRDeviceDetailsRes.Data devicelist,int position) {
         //call listing all device on off screen
 
         if (roomId==null) {
@@ -210,16 +211,31 @@ public class IRRemoteAdd extends AppCompatActivity implements View.OnClickListen
             return;
         }
 
-        Intent intent = new Intent(this, IRRemoteBrandListActivity.class);
+        if(position == 0){
+            Intent intent = new Intent(this, IRRemoteBrandListActivity.class);
 //        intent.putExtra("REMOTE_NAME", devicelist.getDeviceName());
-        intent.putExtra("BLASTER_NAME", mSpinnerBlaster.getSelectedItem().toString());
-        intent.putExtra("ROOM_NAME", mRoomText.getText().toString());
-        intent.putExtra("ROOM_ID", "" + roomId);
-        intent.putExtra("SENSOR_ID", mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId());
-        intent.putExtra("IR_DEVICE_ID", ""+mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId());
-        intent.putExtra("IR_DEVICE_TYPE", "remote");
-        intent.putExtra("IR_BLASTER_MODULE_ID", mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId());
-        startActivityForResult(intent, Constants.REMOTE_REQUEST_CODE);
+            intent.putExtra("BLASTER_NAME", mSpinnerBlaster.getSelectedItem().toString());
+            intent.putExtra("ROOM_NAME", mRoomText.getText().toString());
+            intent.putExtra("ROOM_ID", "" + roomId);
+            intent.putExtra("SENSOR_ID", mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId());
+            intent.putExtra("IR_DEVICE_ID", ""+mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId());
+            intent.putExtra("IR_DEVICE_TYPE", "remote");
+            intent.putExtra("IR_BLASTER_MODULE_ID", mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId());
+            startActivityForResult(intent, Constants.REMOTE_REQUEST_CODE);
+        } else{
+            Intent intent = new Intent(this, TVRemoteBrandListActivity.class);
+//        intent.putExtra("REMOTE_NAME", devicelist.getDeviceName());
+            intent.putExtra("BLASTER_NAME", mSpinnerBlaster.getSelectedItem().toString());
+            intent.putExtra("ROOM_NAME", mRoomText.getText().toString());
+            intent.putExtra("ROOM_ID", "" + roomId);
+            intent.putExtra("SENSOR_ID", mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId());
+            intent.putExtra("IR_DEVICE_ID", ""+mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId());
+            intent.putExtra("IR_DEVICE_TYPE", "remote");
+            intent.putExtra("IR_BLASTER_MODULE_ID", mIRDeviceList.get(mSpinnerBlaster.getSelectedItemPosition()).getDeviceId());
+            startActivityForResult(intent, Constants.REMOTE_REQUEST_CODE);
+        }
+
+
 
     }
 

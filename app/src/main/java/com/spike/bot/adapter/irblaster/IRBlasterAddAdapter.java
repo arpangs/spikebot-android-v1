@@ -56,14 +56,14 @@ public class IRBlasterAddAdapter extends RecyclerView.Adapter<IRBlasterAddAdapte
         holder.mIrEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                blasterAction.onEdit(position, ir);
+                blasterAction.onEdit(position, irList.get(position));
             }
         });
 
         holder.mIrDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                blasterAction.onDelete(position, ir);
+                blasterAction.onDelete(position, irList.get(position));
             }
         });
 

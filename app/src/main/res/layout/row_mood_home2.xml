@@ -88,7 +88,6 @@
                     android:layout_height="30dp"
                     android:layout_alignParentTop="true"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginTop="@dimen/_4sdp"
                     android:layout_marginRight="@dimen/_8sdp"
                     android:adjustViewBounds="true"
                     android:gravity="center_horizontal"
@@ -324,7 +323,7 @@
                     android:gravity="right|center"
                     android:text="0 Devices"
                     android:textColor="@color/redminus"
-                    android:textSize="@dimen/_12sdp" />-->
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
