@@ -323,8 +323,10 @@ public class Common {
                     case "heavy_load":
                         resource = R.drawable.high_wolt_on;
                         break;
-
                     case "heavyload":
+                        resource = R.drawable.high_wolt_on;
+                        break;
+                    case "double_heavy_load":
                         resource = R.drawable.high_wolt_on;
                         break;
 

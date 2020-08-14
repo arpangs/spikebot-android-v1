@@ -227,6 +227,20 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
 //
 //                }
 
+                if (item.getDevice_icon().equalsIgnoreCase("heavyload")) {
+                    if (item.getIsActive() == 1) {
+                        holder.iv_icon.setImageResource(item.getDeviceStatus() == 1 ? R.drawable.high_wolt_on : R.drawable.high_wolt_off);
+                        holder.iv_icon.setEnabled(true);
+                        holder.iv_icon.setClickable(true);
+                    } else {
+                        holder.iv_icon.setImageResource(R.drawable.headload_inactive);
+                        holder.iv_icon.setEnabled(false);
+                        holder.iv_icon.setClickable(false);
+                    }
+                } else {
+                    holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(), item.getDevice_icon()));
+                }
+
                 if (item.getIsActive() == -1) {
                     holder.iv_icon.setImageResource(Common.getIcon(-1, item.getDevice_icon()));//item.getDeviceStatus()
                 } else {
