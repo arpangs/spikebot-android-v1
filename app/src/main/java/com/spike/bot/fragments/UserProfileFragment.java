@@ -33,11 +33,13 @@ import com.kp.core.ActivityHelper;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.LoginSplashActivity;
+import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.User;
+import com.spike.bot.receiver.ConnectivityReceiver;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -742,7 +744,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
             @Override
             public void onOTPComplete(String otp) {
-                OTPValidate();
+//                OTPValidate();  // this facility disable due to consistency with IOS
             }
         });
 
@@ -833,6 +835,20 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                     if (stringResponse.contains("Success")) {
                         dialogNewPassword();
                         Common.savePrefValue(getActivity(), Constants.CURRENT_OPT, otp_view.getOTP().toString());
+                    } else {
+                        try {
+                            JSONObject jsonObject = new JSONObject(stringResponse);
+                            if (!stringResponse.contains("200")) {
+                                if (jsonObject.has("message")) {
+                                    Toast.makeText(getActivity(), jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 }
 
@@ -911,6 +927,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                     @Override
                     public void onData_SuccessfulResponse(String stringResponse) {
                         dismissProgressDialog();
+                        dismissProgressDialog();
                         if (stringResponse.contains("Success")) {
                             Intent intent = new Intent(getActivity(), LoginSplashActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -952,5 +969,14 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         }
     }
 
+    /* start home screen */
+    private void startHomeIntent() {
+        ConnectivityReceiver.counter = 0;
+        Intent intent = new Intent(getActivity(), Main2Activity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        getActivity().finish();
+
+    }
 
 }

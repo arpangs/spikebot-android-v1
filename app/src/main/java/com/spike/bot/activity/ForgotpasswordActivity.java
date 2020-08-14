@@ -29,6 +29,9 @@ import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import in.aabhasjindal.otptextview.OTPListener;
 import in.aabhasjindal.otptextview.OtpTextView;
 
@@ -113,6 +116,7 @@ public class ForgotpasswordActivity extends AppCompatActivity implements View.On
         otpdialog.setContentView(R.layout.dialog_otp);
 
         otp_view = otpdialog.findViewById(R.id.otp_view);
+
         ImageView iv_close = otpdialog.findViewById(R.id.iv_close);
         Button btnSave = otpdialog.findViewById(R.id.btn_save);
 
@@ -126,7 +130,7 @@ public class ForgotpasswordActivity extends AppCompatActivity implements View.On
 
             @Override
             public void onOTPComplete(String otp) {
-                OTPValidate();
+//                OTPValidate();  // this facility disable due to consistency with IOS
             }
         });
 
@@ -315,6 +319,21 @@ public class ForgotpasswordActivity extends AppCompatActivity implements View.On
                     if (stringResponse.contains("Success")) {
                         dialogNewPassword();
                         Common.savePrefValue(ForgotpasswordActivity.this, Constants.CURRENT_OPT, otp_view.getOTP().toString());
+                    } else {
+                        try {
+                            JSONObject jsonObject = new JSONObject(stringResponse);
+                            if (!stringResponse.contains("200")) {
+                                if (jsonObject.has("message")) {
+                                    Toast.makeText(ForgotpasswordActivity.this, jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
                     }
                 }
 

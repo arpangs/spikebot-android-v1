@@ -1549,12 +1549,14 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     }
 
 
-                    if ((!onTime.equals("")) && (!offTime.equals(""))) {
+                    /*for ignore this condition on 14 aug 2020*/
+
+                  /*  if ((!onTime.equals("")) && (!offTime.equals(""))) {
                         if (onTimeMill > offTimeMill) {
                             Toast.makeText(this, "End time should be later than the Start time", Toast.LENGTH_SHORT).show();
                             return false;
                         }
-                    }
+                    }*/
 
 
                     if (!onTime.equals(""))
