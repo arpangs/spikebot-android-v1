@@ -110,6 +110,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
     public SwitchCompat switchAutoLock;
     private String mSensorName;
     private boolean flagAlert = false, isRefreshAll = false;
+    private RelativeLayout mRelLog;
 
     //Declare timer
     CountDownTimer cTimer = null;
@@ -193,6 +194,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
             getDoorSensorDetails();
         }
         view_rel_badge.setClickable(true);
+        mRelLog.setClickable(true);
         ChatApplication.logDisplay("door call is " + ChatApplication.url);
 
         startSocketConnection();
@@ -1292,6 +1294,8 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
         view_rel_badge =  findViewById(R.id.view_rel_badge);
 
+        mRelLog = findViewById(R.id.rel_log);
+
         sensorName =  findViewById(R.id.sensor_name);
         linearAlertDown =  findViewById(R.id.linearAlertDown);
         linearAlertExpand =  findViewById(R.id.linearAlertExpand);
@@ -1344,6 +1348,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         btn_delete.setVisibility(View.GONE);
         btn_delete.setOnClickListener(this);
         view_rel_badge.setOnClickListener(this);
+        mRelLog.setOnClickListener(this);
         linearAlertDown.setOnClickListener(this);
         txtAddLock.setOnClickListener(this);
         imgLock.setOnClickListener(this);
@@ -1473,6 +1478,9 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
 
         } else if (id == R.id.view_rel_badge) {
             view_rel_badge.setClickable(false);
+            checkIntent(true);
+        } else if (id == R.id.rel_log) {
+            mRelLog.setClickable(false);
             checkIntent(true);
         } else if (id == R.id.linearAlertDown) {
             if (flagAlert) {
