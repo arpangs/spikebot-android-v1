@@ -13,7 +13,7 @@
     <ImageView
         android:id="@+id/view_line_top"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="3dp"
         android:background="@color/automation_gray_2"
         android:visibility="gone" />
 
@@ -38,6 +38,7 @@
             android:textColor="@color/signupblack"
             android:padding="7dp"
             android:textStyle="bold"
+            android:gravity="center"
             android:textSize="18sp"/>
 
         <ImageView

@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.kp.core.ActivityHelper;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.ir.blaster.IRRemoteBrandListActivity;
 import com.spike.bot.activity.ir.blaster.IRRemoteConfigActivity;
 import com.spike.bot.adapter.irblaster.IRRemoteBrandListAdapter;
 import com.spike.bot.api_retrofit.DataResponseListener;
@@ -36,7 +35,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TVRemoteBrandListActivity extends AppCompatActivity implements IRRemoteBrandListAdapter.IRRemoteListClickEvent {
+public class DTHRemoteBrandListActivity extends AppCompatActivity implements IRRemoteBrandListAdapter.IRRemoteListClickEvent {
 
     public static DataSearch arrayList = new DataSearch();
     List<IRRemoteListRes.Data.BrandList> brandLists = new ArrayList<>();
@@ -69,7 +68,7 @@ public class TVRemoteBrandListActivity extends AppCompatActivity implements IRRe
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Select TV brand");
+        getSupportActionBar().setTitle("Select DTH/Set top box brand");
 
         mSearchBrand = findViewById(R.id.search_brand);
         linear_progress = findViewById(R.id.linear_progress);
@@ -126,7 +125,7 @@ public class TVRemoteBrandListActivity extends AppCompatActivity implements IRRe
         }
 
         showProgress();
-        ActivityHelper.showProgressDialog(TVRemoteBrandListActivity.this, "Please Wait...", false);
+        ActivityHelper.showProgressDialog(DTHRemoteBrandListActivity.this, "Please Wait...", false);
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().getIRDetailsList(new DataResponseListener() {
@@ -177,7 +176,7 @@ public class TVRemoteBrandListActivity extends AppCompatActivity implements IRRe
      */
     private void updateAdapter(List<IRRemoteListRes.Data.BrandList> brandLists) {
 
-        irRemoteBrandListAdapter = new IRRemoteBrandListAdapter(brandLists, TVRemoteBrandListActivity.this);
+        irRemoteBrandListAdapter = new IRRemoteBrandListAdapter(brandLists, DTHRemoteBrandListActivity.this);
         mIRListView.setAdapter(irRemoteBrandListAdapter);
         irRemoteBrandListAdapter.notifyDataSetChanged();
     }
@@ -222,7 +221,7 @@ public class TVRemoteBrandListActivity extends AppCompatActivity implements IRRe
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
         }
-        ActivityHelper.showProgressDialog(TVRemoteBrandListActivity.this, "Please Wait...", false);
+        ActivityHelper.showProgressDialog(DTHRemoteBrandListActivity.this, "Please Wait...", false);
 
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
@@ -247,7 +246,7 @@ public class TVRemoteBrandListActivity extends AppCompatActivity implements IRRe
                         if (arrayList.getDeviceBrandRemoteList() != null &&
                                 arrayList.getDeviceBrandRemoteList().size() > 0) {
 
-                            Intent intent = new Intent(TVRemoteBrandListActivity.this, TVRemoteConfingActivity.class);
+                            Intent intent = new Intent(DTHRemoteBrandListActivity.this, DTHRemoteConfigActivity.class);
                             intent.putExtra("BRAND_NAME", brandList.getBrandType());
                             intent.putExtra("BLASTER_NAME", mBlasterName);
                             intent.putExtra("ROOM_ID", mRoomId);

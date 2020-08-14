@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.kp.core.ActivityHelper;
 import com.spike.bot.R;
+import com.spike.bot.activity.TvDthRemote.DTHRemoteBrandListActivity;
+import com.spike.bot.activity.TvDthRemote.TVRemoteBrandListActivity;
 import com.spike.bot.adapter.SearchAdapter;
 import com.spike.bot.adapter.SearchClick;
 import com.spike.bot.model.DataSearch;
@@ -35,6 +37,7 @@ public class SearchActivity extends AppCompatActivity implements SearchClick {
 
     SearchAdapter searchAdapter;
     ArrayList<DeviceBrandRemoteList> filterdNames = new ArrayList<>();
+    boolean istvremote=false,isdthremote=false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,7 +45,16 @@ public class SearchActivity extends AppCompatActivity implements SearchClick {
         setContentView(R.layout.activity_search);
 
         mBrandId = getIntent().getStringExtra("mBrandId");
-        arrayList = IRRemoteBrandListActivity.arrayList;
+        istvremote = getIntent().getBooleanExtra("TVRemote",false);
+        isdthremote = getIntent().getBooleanExtra("DTHRemote",false);
+
+        if(istvremote){
+            arrayList = TVRemoteBrandListActivity.arrayList;
+        } else if(isdthremote){
+            arrayList = DTHRemoteBrandListActivity.arrayList;
+        } else {
+            arrayList = IRRemoteBrandListActivity.arrayList;
+        }
 
         Toolbar toolbar =  findViewById(R.id.toolbar);
 

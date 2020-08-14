@@ -12,6 +12,7 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.InputFilter;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -429,6 +430,29 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             });
         }
     };
+
+    private Emitter.Listener generalNotificationCounter = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (activity == null) {
+                return;
+            }
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+
+                            String device_count = args[0].toString();
+
+                            Log.i("total count", "\n total counter socket==" + device_count);
+                            ((Main2Activity) activity).setAllNotificationCount(Integer.parseInt(device_count));
+
+
+                    }
+                }
+            });
+        }
+    };
     /*private Emitter.Listener changeIrBlasterTemperature = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -764,6 +788,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             mSocket.off("updateChildUser", updateChildUser);
             mSocket.off("updateRoomAlertCounter", updateRoomAlertCounter);
             mSocket.off("beaconInRoomCountUpdate", beaconInRoomCountUpdate);
+            mSocket.off("generalNotificationCounter",generalNotificationCounter);
          //   mSocket.off("changeIrBlasterTemperature", changeIrBlasterTemperature);
 
         }
@@ -1251,6 +1276,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         mSocket.on("updateChildUser", updateChildUser);
         mSocket.on("updateRoomAlertCounter", updateRoomAlertCounter);
         mSocket.on("beaconInRoomCountUpdate", beaconInRoomCountUpdate);
+        mSocket.on("generalNotificationCounter",generalNotificationCounter);
        // mSocket.on("changeIrBlasterTemperature", changeIrBlasterTemperature);
     }
 

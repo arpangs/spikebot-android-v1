@@ -64,9 +64,9 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
     RelativeLayout relative_plus, relative_minus;
     private Button mBrandBottom, mTempMinus, mTempPlus;
     private ImageView mImageAuto, mToolbarBack, imgRemoteStatus, mImageEdit, mImageDelete;
-    private TextView mTemp, mDefaultTemp, mImageAutoText, mRemoteName, txtRemoteState, txtAcState;
+    private TextView mTemp, mDefaultTemp, mImageAutoText, mRemoteName, txtRemoteState, txtAcState,txtswingState;
 
-    private String mRemoteId, moodName = "", mRoomDeviceId, module_id = "", modeType = "";
+    private String mRemoteId, moodName = "", mRoomDeviceId, module_id = "", modeType = "",strswing="";
     private boolean isPowerOn = false;
     private int isRemoteActive, tempMinus, tempPlus, tempCurrent, tempdefaultstatus;
 
@@ -126,6 +126,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         imgRemoteStatus = findViewById(R.id.imgRemoteStatus);
         mImageAutoText = findViewById(R.id.remote_speed_text);
         txtRemoteState = findViewById(R.id.txtRemoteState);
+        txtswingState = findViewById(R.id.txtswingState);
         mPowerButton = findViewById(R.id.remote_power_button);
         mTempMinus = findViewById(R.id.remote_temp_minus);
         mTempPlus = findViewById(R.id.remote_temp_plus);
@@ -143,6 +144,7 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         mImageDelete.setOnClickListener(this);
         relative_plus.setOnClickListener(this);
         relative_minus.setOnClickListener(this);
+        txtswingState.setOnClickListener(this);
 
         protractorView1.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -478,6 +480,11 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
                 showBottomSheetDialog();
                 break;
             case R.id.action_delete:
+                break;
+
+            case R.id.txtswingState:
+                strswing ="1";
+                sendRemoteCommand(1);
                 break;
         }
     }
@@ -872,14 +879,15 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
-        SpikeBotApi.getInstance().sendRemoteCommand(mRemoteId, isRemoteActive == 1 ? "0" : "1", moodName.trim() + "-" + tempCurrent, counting,
+        SpikeBotApi.getInstance().sendRemoteCommand(mRemoteId, isRemoteActive == 1 ? "0" : "1", moodName.trim() + "-" + tempCurrent,strswing ,counting,
                 new DataResponseListener() {
                     @Override
                     public void onData_SuccessfulResponse(String stringResponse) {
                         try {
                             JSONObject result = new JSONObject(stringResponse);
                             int code = result.getInt("code");
-                            if (code == 200) {
+                            if (code == 200)
+                            {
                                 ChatApplication.isMoodFragmentNeedResume = true;
 //                        SendRemoteCommandRes tmpIrBlasterCurrentStatusList = Common.jsonToPojo(result.toString(), SendRemoteCommandRes.class);
 
@@ -900,7 +908,10 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
 
                                 updateRemoteUI();
 
-                            } else {
+                            }  else if(code==500){
+                                ChatApplication.showToast(IRBlasterRemote.this, result.getString("message"));
+                            }
+                            else {
                                 ChatApplication.showToast(IRBlasterRemote.this, mRemoteName.getText() + " " + getString(R.string.ir_error));
                             }
 

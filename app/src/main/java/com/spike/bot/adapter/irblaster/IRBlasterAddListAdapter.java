@@ -40,7 +40,7 @@ public class IRBlasterAddListAdapter extends RecyclerView.Adapter<IRBlasterAddLi
     @Override
     public void onBindViewHolder(IRBlasterHolder holder, int position) {
         try {
-            devicelist = mIRDeviceList.get(position);
+           // devicelist = mIRDeviceList.get(position);
 
             if (position == 0) {
                 holder.ir_add_remote_name.setText("AC");
@@ -53,7 +53,15 @@ public class IRBlasterAddListAdapter extends RecyclerView.Adapter<IRBlasterAddLi
             holder.ir_rrot_click.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    irDeviceClikListener.onIRDeviceClick(devicelist, position);
+                    try {
+                        if (position == 0) {
+                            irDeviceClikListener.onIRDeviceClick(mIRDeviceList.get(0), 0);
+                        } else{
+                            irDeviceClikListener.onIRDeviceClick(mIRDeviceList.get(1), 1);
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
             });
         }catch (Exception e){

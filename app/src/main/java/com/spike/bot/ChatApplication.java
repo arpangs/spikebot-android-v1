@@ -285,7 +285,7 @@ public class ChatApplication extends Application {
     public static void logDisplay(String message) {
         if (BuildConfig.DEBUG) {
 //            createFileLog(message);
-            Log.d("System out", "" + message);
+            Log.i("System out", "" + message);
         }
     }
 

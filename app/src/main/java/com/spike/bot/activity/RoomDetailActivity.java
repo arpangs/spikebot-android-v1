@@ -381,7 +381,7 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
             return;
         }
 
-        showProgressDialog(RoomDetailActivity.this, "Please wait...", false);
+        showProgressDialog(RoomDetailActivity.this, "Please wait...", true);
 
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
@@ -437,7 +437,7 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
             return;
         }
 
-        showProgressDialog(RoomDetailActivity.this, "Please wait...", false);
+        showProgressDialog(RoomDetailActivity.this, "Please wait...", true);
 
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");

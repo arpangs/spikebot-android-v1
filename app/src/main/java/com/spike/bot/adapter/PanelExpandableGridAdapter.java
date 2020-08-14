@@ -155,6 +155,11 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
                 } else {
                     holder.ll_background.setVisibility(View.VISIBLE);
                     holder.sectionTextView.setText(panel1.getPanelName());
+
+                    holder.sectionTextView.setText(Html.fromHtml("<u>Text to underline</u>"));
+
+                    String styledText = "<u><font>"+panel1.getPanelName()+"</font></u>";
+                    holder.sectionTextView.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
                 }
 
 

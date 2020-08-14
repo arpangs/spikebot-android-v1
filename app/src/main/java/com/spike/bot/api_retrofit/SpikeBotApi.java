@@ -1869,7 +1869,7 @@ public class SpikeBotApi {
     }
 
     // IRBlasterRemote - sendRemoteCommand
-    public void sendRemoteCommand(String device_id, String device_status, String device_sub_status, int counting, DataResponseListener dataResponseListener) {
+    public void sendRemoteCommand(String device_id, String device_status, String device_sub_status,String device_swing, int counting, DataResponseListener dataResponseListener) {
         HashMap<String, Object> params = new HashMap<>();
 
         params.put("device_id", device_id);
@@ -1880,6 +1880,7 @@ public class SpikeBotApi {
         }
 
         params.put("device_sub_status", device_sub_status);//1;
+        params.put("device_swing",device_swing);
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
         params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);

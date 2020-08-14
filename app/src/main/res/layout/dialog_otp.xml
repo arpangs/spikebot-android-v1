@@ -79,7 +79,6 @@
         app:height="40dp"
         app:length="6"
         app:otp=""
-
         app:otp_text_size="24dp"
         app:width="40dp" />
 

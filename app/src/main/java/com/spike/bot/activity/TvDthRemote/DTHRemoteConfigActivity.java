@@ -31,14 +31,12 @@ import com.google.gson.Gson;
 import com.kp.core.ActivityHelper;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.ir.blaster.IRRemoteBrandListActivity;
 import com.spike.bot.activity.ir.blaster.IRRemoteConfigActivity;
 import com.spike.bot.activity.ir.blaster.SearchActivity;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
-import com.spike.bot.core.Constants;
 import com.spike.bot.model.DataSearch;
 import com.spike.bot.model.DeviceBrandRemoteList;
 import com.spike.bot.model.IRRemoteOnOffReq;
@@ -48,7 +46,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-public class TVRemoteConfingActivity extends AppCompatActivity implements View.OnClickListener {
+public class DTHRemoteConfigActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static DataSearch arrayList;
     private TextView remote_room_txt, mTestButtons, mRespondNo, mRespondYes, mPowerValue, mTxtBlasterName, txtModelNumber;
@@ -77,7 +75,7 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tv_remote_config);
 
-        arrayList = TVRemoteBrandListActivity.arrayList;
+        arrayList = DTHRemoteBrandListActivity.arrayList;
 
 
         isRequestTypeOn = true;
@@ -166,7 +164,7 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
         if (id == R.id.action_filter) {
             Intent intent = new Intent(this, SearchActivity.class);
             intent.putExtra("mBrandId", "" + mBrandId);
-            intent.putExtra("TVRemote",true);
+            intent.putExtra("DTHRemote",true);
             startActivityForResult(intent, 1);
             return true;
         } else if (id == android.R.id.home) {
@@ -286,7 +284,7 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
 
             mTxtBlasterName =  mDialog.findViewById(R.id.txt_blastername);
 
-//            mRemoteDefaultTemp.setError(null);
+            mRemoteDefaultTemp.setError(null);
             mEdtRemoteName.requestFocus();
 
             remote_room_txt.setText("" + mBlasterName);
@@ -309,15 +307,13 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
                         mEdtRemoteName.setError("Enter Remote name");
                         return;
                     }
-                   // saveRemote(mEdtRemoteName.getText().toString().trim());
+                    // saveRemote(mEdtRemoteName.getText().toString().trim());
                 }
             });
 
             relative_yes.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(TVRemoteConfingActivity.this, DTHRemoteBrandListActivity.class);
-                    startActivity(intent);
                 }
             });
 
@@ -576,7 +572,7 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
     private void respondYesEvent() {
         if (RESPOND_CONST == 2) {
             resetConfig();
-           // showRemoteSaveDialog();
+            // showRemoteSaveDialog();
 
             showTvRemoteSaveDailog();
             return;
