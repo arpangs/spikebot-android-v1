@@ -3050,7 +3050,8 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         Constants.startUrlset();
 
         /*check is wifi or mobile network*/
-        if (ChatApplication.isCallDeviceList) {
+        if (ChatApplication.isCallDeviceList)
+        {
             ChatApplication app = ChatApplication.getInstance();
             app.closeSocket(webUrl);
             app.closecloudSocket(cloudurl);

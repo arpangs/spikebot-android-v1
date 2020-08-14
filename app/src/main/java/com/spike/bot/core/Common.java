@@ -131,6 +131,16 @@ public class Common {
                     case "pir":
                         resource = R.drawable.pir_detector_inactive;
                         break;
+
+                    case "heavyload":
+                        resource = R.drawable.headload_inactive;
+                        break;
+                    case "heavy_load":
+                        resource = R.drawable.headload_inactive;
+
+                    case "double_heavy_load":
+                        resource = R.drawable.high_wolt_off;
+                        break;
                 }
                 break;
             case 0:

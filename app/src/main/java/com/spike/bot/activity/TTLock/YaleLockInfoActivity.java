@@ -54,6 +54,7 @@ import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.activity.Sensor.DoorSensorInfoActivity;
+import com.spike.bot.activity.Sensor.GasSensorActivity;
 import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
 import com.spike.bot.adapter.DoorAlertAdapter;
 import com.spike.bot.adapter.DoorSensorInfoAdapter;
@@ -955,7 +956,13 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         MenuItem action_save = menu.findItem(R.id.action_save);
         menuAdd.setVisible(false);
         action_save.setVisible(false);
-        actionEdit.setVisible(true);
+
+        if (!Common.getPrefValue(YaleLockInfoActivity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
+            actionEdit.setVisible(true);
+        } else{
+            actionEdit.setVisible(false);
+        }
+
         return super.onCreateOptionsMenu(menu);
     }
 

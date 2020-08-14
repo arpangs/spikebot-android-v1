@@ -26,6 +26,7 @@ import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
+import com.spike.bot.activity.TTLock.YaleLockInfoActivity;
 import com.spike.bot.activity.ir.blaster.IRBlasterAddActivity;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
@@ -135,7 +136,12 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
         MenuItem action_save = menu.findItem(R.id.action_save);
         menuAdd.setVisible(false);
         action_save.setVisible(false);
-        actionEdit.setVisible(true);
+
+        if (!Common.getPrefValue(CurtainActivity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
+            actionEdit.setVisible(true);
+        } else{
+            actionEdit.setVisible(false);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 

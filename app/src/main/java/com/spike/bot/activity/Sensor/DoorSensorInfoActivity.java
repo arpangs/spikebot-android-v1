@@ -1330,6 +1330,14 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         imgDoorDelete = findViewById(R.id.imgDoorDelete);
         imgLockDelete = findViewById(R.id.imgLockDelete);
 
+
+
+        if (!Common.getPrefValue(DoorSensorInfoActivity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
+            imgDoorDelete.setVisibility(View.VISIBLE);
+        } else{
+            imgDoorDelete.setVisibility(View.GONE);
+        }
+
         if (!Common.getPrefValue(this, Constants.USER_ADMIN_TYPE).equals("1")) {
             btn_delete.setVisibility(View.GONE);
         }

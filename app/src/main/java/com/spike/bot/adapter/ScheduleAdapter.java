@@ -98,6 +98,14 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         holder.setIsRecyclable(false);
         scheduleVO = scheduleArrayList.get(listPosition);
         holder.card_layout.setBackground(mContext.getDrawable(R.drawable.background_with_shadow_yellow));
+
+        if (!Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
+            holder.image_section_edit.setVisibility(View.VISIBLE);
+            holder.iv_sch_type.setVisibility(View.VISIBLE);
+        } else{
+            holder.image_section_edit.setVisibility(View.GONE);
+            holder.iv_sch_type.setVisibility(View.GONE);
+        }
         try {
             if (scheduleVO.getSchedule_type() == 1) {
 
@@ -334,7 +342,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
                 if (scheduleVO.getSchedule_type() != 1) {
                     holder.tv_schedule_on.setText("\t\t\t-\t\t\t");
-                }else{
+                } else {
                     holder.ll_on.setVisibility(View.GONE);
                 }
 

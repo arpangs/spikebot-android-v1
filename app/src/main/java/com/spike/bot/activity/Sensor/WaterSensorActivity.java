@@ -88,6 +88,12 @@ public class WaterSensorActivity extends AppCompatActivity implements View.OnCli
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        if (!Common.getPrefValue(WaterSensorActivity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
+            imgEdit.setVisibility(View.VISIBLE);
+        } else{
+            imgEdit.setVisibility(View.GONE);
+        }
+
 
         switchtemp.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

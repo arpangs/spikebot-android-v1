@@ -136,6 +136,14 @@ public class IRBlasterRemote extends AppCompatActivity implements View.OnClickLi
         relative_plus = findViewById(R.id.relative_plus);
         relative_minus = findViewById(R.id.relative_minus);
 
+
+
+        if (!Common.getPrefValue(IRBlasterRemote.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
+            mImageEdit.setVisibility(View.VISIBLE);
+        } else{
+            mImageEdit.setVisibility(View.GONE);
+        }
+
         mToolbarBack.setOnClickListener(this);
         mPowerButton.setOnClickListener(this);
         mTempMinus.setOnClickListener(this);

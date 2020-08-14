@@ -122,7 +122,7 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         isJetsonCameralog = getIntent().getExtras().getBoolean("isshowJestonCameraLog");
         // getCameraList = (ArrayList<CameraVO>) getIntent().getExtras().getSerializable("cameraList");
 
-        toolbar.setTitle("Camera Logs");
+        toolbar.setTitle("Camera Notifications");
         rvDeviceLog = findViewById(R.id.rv_device_log);
         rv_month_list = findViewById(R.id.rv_monthlist);
         ll_empty = findViewById(R.id.ll_empty);

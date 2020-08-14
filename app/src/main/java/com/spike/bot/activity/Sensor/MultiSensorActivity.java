@@ -280,6 +280,12 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         edsensorName.setFilters(new InputFilter[]{new InputFilter.LengthFilter(25)});
         edsensorName.setTypeface(edsensorName.getTypeface(), Typeface.BOLD);
 
+        if (!Common.getPrefValue(MultiSensorActivity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
+            iv_icon_edit.setVisibility(View.VISIBLE);
+        } else{
+            iv_icon_edit.setVisibility(View.GONE);
+        }
+
         txtCButton.setOnClickListener(this);
         txtFButton.setOnClickListener(this);
         btn_delete.setOnClickListener(this);

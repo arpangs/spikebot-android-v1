@@ -93,7 +93,11 @@ public class GasSensorActivity extends AppCompatActivity implements View.OnClick
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-
+        if (!Common.getPrefValue(GasSensorActivity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
+            imgEdit.setVisibility(View.VISIBLE);
+        } else{
+            imgEdit.setVisibility(View.GONE);
+        }
         imgEdit.setOnClickListener(this);
         btnDelete.setOnClickListener(this);
 
