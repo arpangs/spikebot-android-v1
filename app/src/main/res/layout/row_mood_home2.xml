@@ -326,7 +326,7 @@
                         android:layout_marginRight="@dimen/_12sdp"
                         android:gravity="right|center"
                         android:text="0 Devices"
-                        android:textColor="@color/solid_blue"
+                        android:textColor="@color/blueplus"
                         android:textSize="12sp" />
                 </RelativeLayout>
             </LinearLayout>

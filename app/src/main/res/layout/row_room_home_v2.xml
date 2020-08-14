@@ -463,10 +463,11 @@
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:layout_weight="1.5"
-                        android:gravity="right|center"
+                        android:gravity="right"
+                        android:layout_marginTop="@dimen/_4sdp"
                         android:text="0 Device"
                         android:textAllCaps="true"
-                        android:textColor="@color/solid_blue"
+                        android:textColor="@color/blueplus"
                         android:textSize="12sp"
                         android:visibility="visible" />
 
