@@ -44,7 +44,7 @@ import static android.widget.NumberPicker.OnScrollListener.SCROLL_STATE_IDLE;
  */
 public class DeviceLogRoomActivity extends AppCompatActivity {
 
-    public String isNotification = "", room_name = "", ROOM_ID = "", IS_SENSOR = "", typeSelection = "1";
+    public String isNotification = "", room_name = "", ROOM_ID = "", IS_SENSOR = "", typeSelection = "1",mSensorName="";
     public int mStartIndex = 0, lastVisibleItem, row_index = -1;
     public boolean isScrollDown = false, isLoading = false;
     public List<DeviceLog> deviceLogList = new ArrayList<>();
@@ -74,6 +74,9 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
         IS_SENSOR = getIntent().getStringExtra("IS_SENSOR");
         isNotification = getIntent().getStringExtra("isNotification");
         room_name = getIntent().getStringExtra("room_name");
+        if(getIntent().hasExtra("Sensorname")){
+          mSensorName = getIntent().getStringExtra("Sensorname");
+        }
         init();
     }
 
@@ -138,6 +141,12 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
             getDeviceList(mStartIndex);
         } else if (isNotification.equalsIgnoreCase("All Notification")) {
             setTitel("All Notification");
+            getDeviceList(mStartIndex);
+        } else if (isNotification.equalsIgnoreCase("DoorSensor")) {
+            setTitel(mSensorName + " Notification");
+            getDeviceList(mStartIndex);
+        } else if (isNotification.equalsIgnoreCase("YaleLock")) {
+            setTitel(mSensorName + " Notification");
             getDeviceList(mStartIndex);
         } else {
             setTitel("All Logs");
@@ -263,7 +272,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
-        SpikeBotApi.getInstance().GetLogFind(ROOM_ID, position, new DataResponseListener() {
+        SpikeBotApi.getInstance().GetLogFind(ROOM_ID, position,isNotification, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
 

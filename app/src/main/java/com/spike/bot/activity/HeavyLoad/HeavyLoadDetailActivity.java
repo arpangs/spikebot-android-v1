@@ -27,14 +27,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.IMarker;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
@@ -44,6 +44,7 @@ import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
+import com.spike.bot.customview.chart.MyMarkerView;
 import com.spike.bot.model.DataHeavyModel;
 import com.spike.bot.receiver.MarkerBoxView;
 
@@ -67,7 +68,8 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
     final ArrayList<String> arrayDay = new ArrayList<>();
     final ArrayList<String> arrayDayTemp = new ArrayList<>();
     public Toolbar toolbar;
-    public LineChart barChart;
+    //        public LineChart barChart;
+    public BarChart barChart;
     public ImageView imgHL, imageShowNext;
     public FrameLayout frameChart;
     public TextView txtGraphType, txtYAxis, txtGraphTital, txtNodataFound;
@@ -80,13 +82,18 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
     DataHeavyModel heavyModel = new DataHeavyModel();
     IAxisValueFormatter formatter;
     ArrayList arrayListYearList = new ArrayList<>();
-    ArrayList<Entry> entries = new ArrayList<>();
+    //    ArrayList<Entry> entries = new ArrayList<>();
+    ArrayList<BarEntry> entries = new ArrayList<>();
     RecyclerView rv_month_list, rv_year_list;
     ArrayList<String> monthlist = new ArrayList();
     ArrayList<String> yearlist = new ArrayList();
     int row_index = 1, mStartIndex = 4, strmonth = 0, row_index_year = 1, stryear;
     String selectedyear;
     private Socket mSocket;
+
+
+
+
     /*heavy load value get & update view */
     private Emitter.Listener heavyLoadValue = new Emitter.Listener() {
         @Override
@@ -502,6 +509,11 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                         barChart.clear();
                         barChart.notifyDataSetChanged();
                         barChart.resetZoom();
+                        barChart.setPinchZoom(true);
+
+                      /*  MyMarkerView mv = new MyMarkerView(HeavyLoadDetailActivity.this, R.layout.custom_marker_view);
+                        mv.setChartView(barChart); // For bounds control
+                        barChart.setMarker(mv); // Set the marker to the chart*/
 
                         chartDataset(true);
                     }
@@ -563,13 +575,15 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                     for (int i = 0; i < heavyModel.getGraphData().size(); i++) {
                         if (j + 1 == Integer.parseInt(heavyModel.getGraphData().get(i).getMonth())) {
                             isflag = true;
-                            entries.add(new Entry(j, heavyModel.getGraphData().get(i).getEnergy()));
+//                            entries.add(new Entry(j, heavyModel.getGraphData().get(i).getEnergy()));
+                            entries.add(new BarEntry(j, heavyModel.getGraphData().get(i).getEnergy()));
 
                             break;
                         }
                     }
                     if (!isflag) {
-                        entries.add(new Entry(j, 0));
+//                        entries.add(new Entry(j, 0));
+                        entries.add(new BarEntry(j, 0));
                     }
                 }
 
@@ -580,29 +594,39 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                     for (int i = 0; i < heavyModel.getGraphData().size(); i++) {
                         if (Integer.parseInt(arrayDay.get(j)) == Integer.parseInt(heavyModel.getGraphData().get(i).getDay())) {
                             isflag = true;
-                            entries.add(new Entry(j, heavyModel.getGraphData().get(i).getEnergy()));
-
+//                            entries.add(new Entry(j, heavyModel.getGraphData().get(i).getEnergy()));
+                            entries.add(new BarEntry(j, heavyModel.getGraphData().get(i).getEnergy()));
                             break;
                         }
                     }
                     if (!isflag) {
-                        entries.add(new Entry(j, 0));
+//                        entries.add(new Entry(j, 0));
+                        entries.add(new BarEntry(j, 0));
                     }
                 }
             }
 
 
-            LineDataSet dataSet = new LineDataSet(entries, "");
+//            LineDataSet dataSet = new LineDataSet(entries, "");
+
+            BarDataSet dataSet = new BarDataSet(entries, "");
+
             dataSet.setColor(ContextCompat.getColor(this, R.color.sensor_button));
             dataSet.setValueTextColor(ContextCompat.getColor(this, R.color.automation_black));
-            dataSet.setCircleColor(ContextCompat.getColor(this, R.color.sensor_button));
-            dataSet.setCircleColorHole(ContextCompat.getColor(this, R.color.sensor_button));
-            dataSet.setValueTextSize(13);
-            dataSet.setLineWidth(2);
-            dataSet.setCircleRadius(10);
+//            dataSet.setCircleColor(ContextCompat.getColor(this, R.color.sensor_button));
+//            dataSet.setCircleColorHole(ContextCompat.getColor(this, R.color.sensor_button));
+            dataSet.setValueTextSize(13f);
+
+//            dataSet.setLineWidth(2);
+            dataSet.setFormLineWidth(1.0f);
+
+            dataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+
+//            dataSet.setCircleRadius(10);
             dataSet.setDrawValues(false);
             barChart.getDescription().setEnabled(false);
             barChart.getLegend().setEnabled(false);
+            barChart.setFitBars(true);
 
             //setfull zooom disble
 //            barChart.setTouchEnabled(false);
@@ -648,6 +672,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             xAxis.setAxisMinimum(0);
             xAxis.setValueFormatter(formatter);
 
+
             //***
             // Controlling right side of y axis
             YAxis yAxisRight = barChart.getAxisRight();
@@ -660,7 +685,18 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             yAxisLeft.setAxisMinimum(0);
 
             // Setting Data
-            LineData data = new LineData(dataSet);
+//            LineData data = new LineData(dataSet);
+
+
+
+            BarData data = new BarData(dataSet);
+//            data.setBarWidth(barWidth);
+            data.setValueTextSize(10f);
+            data.setBarWidth(0.8f);
+
+
+
+
             barChart.setData(data);
             barChart.animateX(1500);
 
@@ -677,7 +713,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                 barChart.setScaleX(5f);
             } else {
                 barChart.setScaleMinima(5, 0);
-                barChart.setScaleX(5);
+                barChart.setScaleX(5f);
             }
 
             //refresh

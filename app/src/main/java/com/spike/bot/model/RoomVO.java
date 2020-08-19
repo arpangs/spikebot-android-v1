@@ -10,6 +10,16 @@ import java.util.ArrayList;
 public class RoomVO implements Serializable{
     private String room_id;
 
+    private String created_by;
+
+    public String getCreated_by() {
+        return created_by;
+    }
+
+    public void setCreated_by(String created_by) {
+        this.created_by = created_by;
+    }
+
     public String getTotalDevice() {
         return totalDevice;
     }

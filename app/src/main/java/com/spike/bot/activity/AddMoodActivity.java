@@ -492,7 +492,14 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
-        SpikeBotApi.getInstance().GetDeviceList(new DataResponseListener() {
+        String Createdby = "";
+        try {
+            Createdby = moodVO.getCreated_by() != null ? moodVO.getCreated_by() : "";
+        } catch (Exception e) {
+
+        }
+
+        SpikeBotApi.getInstance().GetDeviceList(editMode, Createdby, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
@@ -559,6 +566,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                 } else {
                     moodObj.put("mood_id", select_mood_id);
                 }
+
 
             } else {
                 if (select_mood_id == "") {

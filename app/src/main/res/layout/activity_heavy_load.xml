@@ -40,9 +40,9 @@
 
 
             <LinearLayout
-                android:background="@drawable/edt_border"
                 android:layout_width="200dp"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="@drawable/edt_border">
 
                 <Spinner
                     android:id="@+id/spinnerYear"
@@ -55,41 +55,41 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/_10sdp"
                 android:layout_weight="0.9"
+                android:padding="@dimen/_10sdp"
                 android:singleLine="true"
                 android:text="Current usage :"
-                android:textStyle="bold"
-                android:visibility="gone"
                 android:textColor="@color/sensor_button"
-                android:textSize="@dimen/_14sdp" />
+                android:textSize="@dimen/_14sdp"
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:visibility="gone"
                 android:gravity="left|center"
+                android:orientation="horizontal"
                 android:padding="@dimen/_10sdp"
-                android:orientation="horizontal">
+                android:visibility="gone">
 
 
-             <!--   <TextView
-                    android:id="@+id/txtCurrentValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center|left"
-                    android:textStyle="bold"
-                    android:text="&#45;&#45;"
-                    android:textColor="@color/automation_black"
-                    android:textSize="@dimen/_16sdp" />-->
+                <!--   <TextView
+                       android:id="@+id/txtCurrentValue"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:gravity="center|left"
+                       android:textStyle="bold"
+                       android:text="&#45;&#45;"
+                       android:textColor="@color/automation_black"
+                       android:textSize="@dimen/_16sdp" />-->
 
-             <!--   <ImageView
-                    android:id="@+id/imgHL"
-                    android:layout_width="@dimen/_22sdp"
-                    android:layout_height="@dimen/_22sdp"
-                    android:visibility="gone"
-                    android:layout_marginLeft="@dimen/_15sdp" /-->>
+                <!--   <ImageView
+                       android:id="@+id/imgHL"
+                       android:layout_width="@dimen/_22sdp"
+                       android:layout_height="@dimen/_22sdp"
+                       android:visibility="gone"
+                       android:layout_marginLeft="@dimen/_15sdp" /-->>
 
             </LinearLayout>
 
@@ -100,8 +100,8 @@
             android:id="@+id/rv_year_list"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:visibility="visible"
-            android:layout_marginTop="@dimen/_10sdp" />
+            android:layout_marginTop="@dimen/_10sdp"
+            android:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_month_list"
@@ -113,27 +113,26 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="visible"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="visible">
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/_9sdp"
                 android:layout_margin="@dimen/_10sdp"
-                android:visibility="gone"
                 android:background="@drawable/drawable_white_cornor"
-                android:orientation="horizontal">
-
+                android:orientation="horizontal"
+                android:padding="@dimen/_9sdp"
+                android:visibility="gone">
 
 
                 <LinearLayout
-                    android:background="@drawable/edt_border"
                     android:layout_width="match_parent"
-                    android:layout_weight="1"
+                    android:layout_height="@dimen/_32sdp"
                     android:layout_marginRight="@dimen/_10sdp"
-                    android:layout_height="@dimen/_32sdp">
+                    android:layout_weight="1"
+                    android:background="@drawable/edt_border">
 
                     <Spinner
                         android:id="@+id/spinnerMonth"
@@ -143,21 +142,21 @@
 
                 </LinearLayout>
 
-<!--
-                <LinearLayout
-                    android:background="@drawable/edt_border"
-                    android:layout_width="match_parent"
-                    android:layout_marginLeft="@dimen/_10sdp"
-                    android:layout_weight="1"
-                    android:layout_height="@dimen/_32sdp">
+                <!--
+                                <LinearLayout
+                                    android:background="@drawable/edt_border"
+                                    android:layout_width="match_parent"
+                                    android:layout_marginLeft="@dimen/_10sdp"
+                                    android:layout_weight="1"
+                                    android:layout_height="@dimen/_32sdp">
 
-                    <Spinner
-                        android:id="@+id/spinnerYear"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/_32sdp"
-                        android:layout_weight="1" />
+                                    <Spinner
+                                        android:id="@+id/spinnerYear"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="@dimen/_32sdp"
+                                        android:layout_weight="1" />
 
-                </LinearLayout>-->
+                                </LinearLayout>-->
 
             </LinearLayout>
 
@@ -168,13 +167,13 @@
             android:id="@+id/txtNodataFound"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
-            android:textSize="@dimen/_15sdp"
-            android:text="No data found."
+            android:layout_marginTop="@dimen/_40sdp"
             android:gravity="center"
-            android:textStyle="bold"
+            android:text="No data found."
             android:textColor="@color/automation_black"
-            android:layout_marginTop="@dimen/_40sdp"/>
+            android:textSize="@dimen/_15sdp"
+            android:textStyle="bold"
+            android:visibility="gone" />
 
 
         <RelativeLayout
@@ -228,7 +227,6 @@
         </RelativeLayout>
 
 
-
         <FrameLayout
             android:id="@+id/frameChart"
             android:layout_width="match_parent"
@@ -239,9 +237,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginBottom="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_20sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:layout_weight="1"
                 android:background="@color/automation_white"
                 android:orientation="vertical">
 
@@ -254,63 +252,75 @@
                         android:id="@+id/txtGraphTital"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="@dimen/_15sdp"
-                        android:gravity="center"
                         android:layout_marginLeft="@dimen/_12sdp"
-                        android:textColor="@color/sensor_button"/>
+                        android:gravity="center"
+                        android:textColor="@color/sensor_button"
+                        android:textSize="@dimen/_15sdp" />
 
 
-                    <com.github.mikephil.charting.charts.LineChart
+                    <!--<com.github.mikephil.charting.charts.LineChart-->
+                    <com.github.mikephil.charting.charts.BarChart
                         android:id="@+id/barChart"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="@dimen/_2sdp"
                         android:layout_marginTop="@dimen/_10sdp"
-                        android:layout_marginBottom="@dimen/_15sdp" />
+                        android:layout_marginBottom="@dimen/_15sdp"
+                        android:paddingBottom="@dimen/_10sdp" />
+
+                    <!--<com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/barChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="@dimen/_2sdp"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:paddingBottom="@dimen/_10sdp"
+                        android:layout_marginBottom="@dimen/_15sdp" />-->
 
                     <ImageView
                         android:id="@+id/imageShowNext"
                         android:layout_width="@dimen/_42sdp"
                         android:layout_height="@dimen/_42sdp"
-                        android:layout_marginRight="@dimen/_5sdp"
                         android:layout_gravity="center|right"
-                        android:src="@drawable/next_scoll"/>
+                        android:layout_marginRight="@dimen/_5sdp"
+                        android:src="@drawable/next_scoll" />
 
                     <TextView
                         android:id="@+id/txtGraphType"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textStyle="bold"
-                        android:paddingTop="@dimen/_5sdp"
-                        android:gravity="center"
                         android:layout_gravity="center|bottom"
+                        android:gravity="center"
+                        android:paddingTop="@dimen/_5sdp"
+
+                        android:textColor="@color/automation_black"
                         android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/automation_black"/>
+                        android:textStyle="bold" />
 
                 </FrameLayout>
 
             </LinearLayout>
 
 
-        <FrameLayout
-            android:layout_width="@dimen/_70sdp"
-            android:layout_height="match_parent"
-            android:layout_gravity="left">
-
-            <TextView
-                android:id="@+id/txtYAxis"
-                android:layout_width="wrap_content"
+            <FrameLayout
+                android:layout_width="@dimen/_70sdp"
                 android:layout_height="match_parent"
-                android:src="@color/automation_black"
-                android:gravity="left|center"
-                android:lines="1"
-                android:rotation="-90"
-                android:text="kWh (Units)"
-                android:textStyle="bold"
-                android:scaleType="fitCenter"
-                android:textSize="@dimen/_12sdp"
-                android:textColor="@color/automation_black"/>
-        </FrameLayout>
+                android:layout_gravity="left">
+
+                <TextView
+                    android:id="@+id/txtYAxis"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="left|center"
+                    android:lines="1"
+                    android:rotation="-90"
+                    android:scaleType="fitCenter"
+                    android:src="@color/automation_black"
+                    android:text="kWh (Units)"
+                    android:textColor="@color/automation_black"
+                    android:textSize="@dimen/_12sdp"
+                    android:textStyle="bold" />
+            </FrameLayout>
 
         </FrameLayout>
 

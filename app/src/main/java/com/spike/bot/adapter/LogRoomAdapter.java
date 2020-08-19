@@ -66,6 +66,27 @@ public class LogRoomAdapter extends RecyclerView.Adapter<LogRoomAdapter.ViewHold
                 holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_red));
                 holder.tv_room_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
                 holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+            } else if (isNotification.equals("All Notification") && deviceLog.seen_by == null) {
+                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_room_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+            } else if (isNotification.equals("DoorSensor") && deviceLog.seen_by == null) {
+                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_room_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+            } else if (isNotification.equals("YaleLock") && deviceLog.seen_by == null) {
+                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_room_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
             } else {
                 holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_black));
                 holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_black));

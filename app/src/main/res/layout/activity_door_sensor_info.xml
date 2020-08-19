@@ -247,7 +247,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
                                     android:layout_marginRight="20dp"
-                                    android:text=""
+                                    tools:text="100"
                                     android:textSize="@dimen/_11sdp"
                                     android:visibility="visible" />
 
@@ -852,16 +852,7 @@
                                 android:gravity="center"
                                 android:orientation="horizontal">
 
-                                <ToggleButton
-                                    android:id="@+id/toggleAlert"
-                                    android:layout_width="40dp"
-                                    android:layout_height="40dp"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_marginRight="8dp"
-                                    android:background="@drawable/bell"
-                                    android:contentDescription="Change state of section"
-                                    android:textOff=""
-                                    android:textOn="" />
+
 
                                 <TextView
                                     android:id="@+id/txtTempCount"
@@ -886,6 +877,18 @@
                                     android:textColor="#545454"
                                     android:textSize="@dimen/_12sdp"
                                     android:textStyle="bold" />
+
+                                <ToggleButton
+                                    android:id="@+id/toggleAlert"
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginRight="8dp"
+                                    android:background="@drawable/bell"
+                                    android:contentDescription="Change state of section"
+                                    android:textOff=""
+                                    android:layout_marginTop="5dp"
+                                    android:textOn="" />
 
 
                                 <!--  android:background="@drawable/btn_background_alert"-->
@@ -1008,17 +1011,12 @@
 
 
                     <androidx.cardview.widget.CardView
-                        android:id="@+id/edt_txt_layout3"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="@dimen/_5sdp"
-                        android:layout_marginTop="@dimen/_8sdp"
-                        android:layout_marginRight="@dimen/_5sdp"
-                        android:layout_marginBottom="@dimen/_8sdp"
                         android:background="@color/automation_white"
                         android:orientation="vertical"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         app:cardCornerRadius="8dp"
                         app:cardElevation="8dp"
                         app:elevation="8dp">

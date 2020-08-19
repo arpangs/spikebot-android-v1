@@ -33,6 +33,7 @@ import com.spike.bot.R;
 import com.spike.bot.activity.AddMoodActivity;
 import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.activity.HeavyLoad.HeavyLoadDetailActivity;
+import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.activity.ScheduleListActivity;
 import com.spike.bot.activity.SmartColorPickerActivity;
 import com.spike.bot.activity.ir.blaster.IRBlasterRemote;
@@ -205,6 +206,12 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener, Swi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        try {
+            ((Main2Activity) activity).invalidateToolbarCloudImage();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -302,9 +309,11 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener, Swi
             ChatApplication.isMoodFragmentNeedResume = false;
             try {
                 startSocketConnection();
+                ((Main2Activity) activity).invalidateToolbarCloudImage();
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
             onLoadFragment();
         }
     }
@@ -822,6 +831,9 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener, Swi
                 }
             }
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
+        ((Main2Activity) activity).invalidateToolbarCloudImage();
+
+
 
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");

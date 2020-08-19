@@ -974,8 +974,8 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                 }
             } else {
                 //add default room checked
-                rb_schedule_type_room.setChecked(true);
-                setBackGroundColorButton(true);
+//                rb_schedule_type_room.setChecked(true);
+//                setBackGroundColorButton(true);
             }
 
             int rId = rg_schedule_select.getCheckedRadioButtonId();
@@ -1525,6 +1525,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
                 if (isEdit) {
                     deviceObj.put("schedule_id", scheduleVO.getSchedule_id());
+
                 }
 
                 int rId = rg_schedule_select.getCheckedRadioButtonId();
@@ -1590,12 +1591,12 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
                                 String on_time_hrs = et_on_time_hours.getText().toString();
                                 if (on_time_hrs.length() == 1) {
-                                    on_time_hrs ="0"+ on_time_hrs ;
+                                    on_time_hrs = "0" + on_time_hrs;
                                 }
 
                                 String on_time_min = et_on_time_min.getText().toString();
                                 if (on_time_min.length() == 1) {
-                                    on_time_min ="0"+ on_time_min ;
+                                    on_time_min = "0" + on_time_min;
                                 }
 
 
@@ -1626,12 +1627,12 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
 
                                     String off_time_hrs = et_off_time_hours.getText().toString();
                                     if (off_time_hrs.length() == 1) {
-                                        off_time_hrs = "0"+ off_time_hrs;
+                                        off_time_hrs = "0" + off_time_hrs;
                                     }
 
                                     String off_time_min = et_off_time_min.getText().toString();
                                     if (off_time_min.length() == 1) {
-                                        off_time_min =  "0" + off_time_min;
+                                        off_time_min = "0" + off_time_min;
                                     }
 
 
@@ -1782,7 +1783,15 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
-        SpikeBotApi.getInstance().GetDeviceClould(new DataResponseListener() {  // due to same api calling from dashboard fragment with same param // dev arpan add this on 29 june 2020
+
+        String createcby = "";
+        try {
+            createcby = scheduleVO.getCreated_by() != null ? scheduleVO.getCreated_by() : "";
+        } catch (Exception e) {
+
+        }
+
+        SpikeBotApi.getInstance().GetDeviceList(isEdit, createcby, new DataResponseListener() {  // due to same api calling from dashboard fragment with same param // dev arpan add this on 29 june 2020
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
 

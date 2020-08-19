@@ -249,6 +249,7 @@ public class Constants {
     public static String CLOUD_SERVER_URL = "https://live.spikebot.io:8443"; //222 live
     public static String IP_END = "222";
     public static String startUrl = "http://home.d";
+    public static String ContainsUrl = "home.deepfoods";
     public static int lockDate = 0;
     public static String socketIp = "";
     public static int adminType = 1;

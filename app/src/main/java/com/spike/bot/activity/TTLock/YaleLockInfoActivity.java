@@ -53,6 +53,7 @@ import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.DeviceLogActivity;
+import com.spike.bot.activity.DeviceLogRoomActivity;
 import com.spike.bot.activity.Sensor.DoorSensorInfoActivity;
 import com.spike.bot.activity.Sensor.GasSensorActivity;
 import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
@@ -280,7 +281,7 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         imgDoorDelete.setOnClickListener(this);
         img_passcode.setOnClickListener(this);
 
-        toggleAlert.setOnClickListener(new View.OnClickListener() {
+        txtAlertTempCount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (flagAlert) {
@@ -299,6 +300,18 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
                 }
             }
         });
+
+        toggleAlert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(YaleLockInfoActivity.this, DeviceLogRoomActivity.class);
+                intent.putExtra("isNotification", "YaleLock");
+                intent.putExtra("ROOM_ID",doorSensorResModel.getDevice().getDevice_id());
+                intent.putExtra("Sensorname",doorSensorResModel.getDevice().getDeviceName());
+                startActivity(intent);
+            }
+        });
+
         linear_lock_enable_disable.setVisibility(View.VISIBLE);
         linear_set_passcode.setVisibility(View.VISIBLE);
         linear_set_onetimecode.setVisibility(View.VISIBLE);
@@ -1344,7 +1357,7 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
     private void showAlertDialog(final String doorSensorNotificationId, final SwitchCompat notiSwitchOnOff, final boolean isActive, final boolean isNotification) {
 
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-        builder1.setTitle("Notification Alert");
+//        builder1.setTitle("Notification Alert");
         builder1.setMessage("Do you want to " + (isActive ? "enable " : "disable ") + " notificaiton ?");
         builder1.setCancelable(true);
 

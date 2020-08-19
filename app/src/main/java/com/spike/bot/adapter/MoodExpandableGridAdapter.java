@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -24,7 +23,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.kp.core.ActivityHelper;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.RoomDetailActivity;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.Common;
@@ -120,8 +118,6 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                 }
 
                 holder.sectionToggleButton.setChecked(section.isExpanded());
-
-
 
 
                 if (section.isExpanded()) {
@@ -229,17 +225,14 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     holder.linear_top_section.setBackground(mContext.getDrawable(R.drawable.background_with_shadow_green));
                 }
 
-                if (!Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0"))
-                {
-                    if (section.getSmart_remote_number().length() == 0 || section.getSmart_remote_number().equals("null"))
-                    {
+                if (!Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
+                    if (section.getSmart_remote_number().length() == 0 || section.getSmart_remote_number().equals("null") || section.getSmart_remote_number() == null) {
                         holder.txtRemote.setVisibility(GONE);
-                        holder.imgRemote.setVisibility(View.VISIBLE);
                     } else {
                         holder.txtRemote.setVisibility(View.VISIBLE);
-                        holder.imgRemote.setVisibility(View.VISIBLE);
                         holder.txtRemote.setText(section.getSmart_remote_number());
                     }
+                    holder.imgRemote.setVisibility(View.VISIBLE);
 
                     holder.imgRemote.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -264,8 +257,14 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     });
 
                 } else {
-                    holder.txtRemote.setVisibility(GONE);
+                    if (section.getSmart_remote_number().length() == 0 || section.getSmart_remote_number().equals("null") || section.getSmart_remote_number() == null) {
+                        holder.txtRemote.setVisibility(GONE);
+                    } else {
+                        holder.txtRemote.setVisibility(View.VISIBLE);
+                        holder.txtRemote.setText(section.getSmart_remote_number());
+                    }
                     holder.imgRemote.setVisibility(View.VISIBLE);
+                    holder.txtRemote.setText(section.getSmart_remote_number());
 
                     holder.imgRemote.setOnClickListener(new View.OnClickListener() {
                         @Override

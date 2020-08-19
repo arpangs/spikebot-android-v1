@@ -2,7 +2,6 @@ package com.spike.bot.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.text.TextUtils;
@@ -23,8 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.Camera.CameraGridActivity;
-import com.spike.bot.activity.RoomDetailActivity;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.customview.recycle.ItemClickListener;
@@ -241,8 +238,8 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                     ChatApplication.logDisplay("is expanded is " + section.getRoomId() + " " + section.isExpanded());
 
 
-                    if (section.getRoomId().equalsIgnoreCase("camera") || section.getRoomId().startsWith("JETSON-"))
-                    {
+                    if (section.getRoomId().equalsIgnoreCase("camera") || section.getRoomId().startsWith("JETSON-")) {
+                        holder.ll_log.setVisibility(View.GONE);
                         holder.txt_total_devices.setVisibility(View.GONE);
                         holder.textShowCamera.setVisibility(View.VISIBLE);
                         holder.textRefreshCamera.setVisibility(View.VISIBLE);
@@ -291,6 +288,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             }
                         });
                     } else {
+                        holder.ll_log.setVisibility(View.VISIBLE);
                         holder.linear_schedule.setVisibility(View.VISIBLE);
                         holder.textShowCamera.setVisibility(View.GONE);
                         holder.textRefreshCamera.setVisibility(View.GONE);
@@ -399,9 +397,9 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                              * if panel list found 1 or more so change room icon immediately
                              * */
 //                            if (section.getPanelList().size() > 0) {
-                                section.setOld_room_status(section.getRoom_status());
-                                section.setRoom_status(section.getRoom_status() == 0 ? 1 : 0);
-                                notifyItemChanged(position);
+                            section.setOld_room_status(section.getRoom_status());
+                            section.setRoom_status(section.getRoom_status() == 0 ? 1 : 0);
+                            notifyItemChanged(position);
 
 //                            }
                             mItemClickListener.itemClicked(section, "onoffclick");
@@ -501,7 +499,7 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                             } else {
                                 mItemClickListener.itemClicked(section, "room_click");
                             }
-                          //   mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded());
+                            //   mSectionStateChangeListener.onSectionStateChanged(section, !section.isExpanded());
                         }
                     });
 
@@ -664,7 +662,12 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                         }
                     } else {
                         // holder.linear_camera_bell.setVisibility(View.GONE);
-                        holder.frame_camera_alert_bell.setVisibility(View.GONE);
+
+                        if(!section.getRoomId().equalsIgnoreCase("Camera")){
+                            holder.frame_camera_alert_bell.setVisibility(View.GONE);
+                        }
+
+
                         holder.txt_notify_label.setVisibility(View.VISIBLE);
                         //  holder.img_setting_badge.setVisibility(View.GONE);
                     }
@@ -1584,9 +1587,9 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 txt_schedulelabel, txt_log_label, txt_notify_label, txt_preview_label, txt_refresh_label, txt_total_devices;
         RelativeLayout rel_main_view;
         LinearLayout ll_background, ll_room_item, linearRowRoom, linearPanelList, ll_root_view_section,
-                linearClickExpanded;  /*linear_camera_bell*/
+                linearClickExpanded, ll_log;  /*linear_camera_bell*/
         FrameLayout frame_camera_alert, frame_camera_alert_bell, frame_beacon_alert_bell;
-        LinearLayout card_layout,linear_preview,linear_refresh,linear_schedule;
+        LinearLayout card_layout, linear_preview, linear_refresh, linear_schedule;
 
         public ViewHolder(View view, int viewType) {
             super(view);
@@ -1656,9 +1659,11 @@ public class SectionedExpandableGridAdapter extends RecyclerView.Adapter<Section
                 txtTotalDevices = view.findViewById(R.id.txtTotalDevices);
                 linearClickExpanded = view.findViewById(R.id.linearClickExpanded);
                 txt_total_devices = view.findViewById(R.id.txt_total_devices);
-                linear_preview= view.findViewById(R.id.linear_preview);
-                linear_refresh= view.findViewById(R.id.linear_refresh);
-                linear_schedule= view.findViewById(R.id.linear_schedule);
+                linear_preview = view.findViewById(R.id.linear_preview);
+                linear_refresh = view.findViewById(R.id.linear_refresh);
+                linear_schedule = view.findViewById(R.id.linear_schedule);
+
+                ll_log = view.findViewById(R.id.ll_log);
             }
         }
     }

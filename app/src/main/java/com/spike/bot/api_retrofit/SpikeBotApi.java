@@ -46,6 +46,7 @@ public class SpikeBotApi {
         return SpikeBotApi;
     }
 
+
     /*Login screen */ // dev arpan on 23 june 2020
     public void loginUser(String userName, String password, String imei, DataResponseListener dataResponseListener) {
         // Constants.isNotStaticURL = false;
@@ -840,6 +841,21 @@ public class SpikeBotApi {
     }
 
 
+    public void GetDeviceList(Boolean isEdit, String createdby, DataResponseListener dataResponseListener) {
+
+        HashMap<String, Object> params = new HashMap<>();
+
+        if (isEdit) {
+            params.put("child_user_id", createdby);
+        }
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        new GeneralRetrofit(apiService.GetDeviceList(ChatApplication.url, params), params, dataResponseListener).call();
+    }
+
+
     /*RoomEditActivity2*/  // dev arpan add on 29 june 2020
 
     public void ShowDeviceEditDialog(DataResponseListener dataResponseListener) {
@@ -914,7 +930,7 @@ public class SpikeBotApi {
 
     }
 
-    public void GetLogFind(String ROOM_ID, int position, DataResponseListener dataResponseListener) {
+    public void GetLogFind(String ROOM_ID, int position,String NotificationType, DataResponseListener dataResponseListener) {
 
         HashMap<String, Object> params = new HashMap<>();
 
@@ -927,6 +943,10 @@ public class SpikeBotApi {
             params.put("filter_type", "room");
             params.put("room_id", "" + ROOM_ID);
             params.put("filter_action", "door_open,door_close,temp_alert,gas_detected,water_detected,door_lock,door_unlock,home_controller_active,home_controller_inactive"); // dev arpan add two field as per web developer suggest - home_controller_active,home_controller_inactive on 29 july 2020
+        }
+
+        if(NotificationType != null || !NotificationType.equalsIgnoreCase("")){
+            params.put("device_id",ROOM_ID);
         }
 
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
@@ -1869,7 +1889,7 @@ public class SpikeBotApi {
     }
 
     // IRBlasterRemote - sendRemoteCommand
-    public void sendRemoteCommand(String device_id, String device_status, String device_sub_status,String device_swing, int counting, DataResponseListener dataResponseListener) {
+    public void sendRemoteCommand(String device_id, String device_status, String device_sub_status, String device_swing, int counting, DataResponseListener dataResponseListener) {
         HashMap<String, Object> params = new HashMap<>();
 
         params.put("device_id", device_id);
@@ -1880,7 +1900,7 @@ public class SpikeBotApi {
         }
 
         params.put("device_sub_status", device_sub_status);//1;
-        params.put("device_swing",device_swing);
+        params.put("device_swing", device_swing);
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
         params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);

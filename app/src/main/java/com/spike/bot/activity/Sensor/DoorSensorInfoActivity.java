@@ -50,6 +50,7 @@ import com.spike.bot.R;
 import com.spike.bot.Retrofit.GetDataService;
 import com.spike.bot.Retrofit.RetrofitAPIManager;
 import com.spike.bot.activity.DeviceLogActivity;
+import com.spike.bot.activity.DeviceLogRoomActivity;
 import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
 import com.spike.bot.adapter.DoorAlertAdapter;
 import com.spike.bot.adapter.DoorSensorInfoAdapter;
@@ -415,9 +416,13 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                 if(perc > 100){
                     txt_battery_level.setText("100" + "%");
                     txt_battery_level.setTextColor(getResources().getColor(R.color.battery_high));
+                    batteryPercentage.setText("100" + "%");
+                    batteryPercentage.setTextColor(getResources().getColor(R.color.battery_high));
                 } else{
                     txt_battery_level.setText(perc + " %");
+                    batteryPercentage.setText(perc + " %");
                 }
+
             } else{
                 batteryPercentage.setText("- -");
             }
@@ -1356,7 +1361,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
         imgLockDelete.setOnClickListener(this);
         imgDoorDelete.setOnClickListener(this);
 
-        toggleAlert.setOnClickListener(new View.OnClickListener() {
+        txtAlertTempCount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (flagAlert) {
@@ -1373,6 +1378,17 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
                         recyclerAlert.setLayoutParams(lp);
                     }
                 }
+            }
+        });
+
+        toggleAlert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DoorSensorInfoActivity.this, DeviceLogRoomActivity.class);
+                intent.putExtra("isNotification", "DoorSensor");
+                intent.putExtra("ROOM_ID",doorSensorResModel.getDevice().getDevice_id());
+                intent.putExtra("Sensorname",doorSensorResModel.getDevice().getDeviceName());
+                startActivity(intent);
             }
         });
 
@@ -1394,7 +1410,7 @@ public class DoorSensorInfoActivity extends AppCompatActivity implements View.On
     private void showAlertDialog(final String doorSensorNotificationId, final SwitchCompat notiSwitchOnOff, final boolean isActive, final boolean isNotification) {
 
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-        builder1.setTitle("Notification Alert");
+//        builder1.setTitle("Notification Alert");
         builder1.setMessage("Do you want to " + (isActive ? "enable " : "disable ") + " notificaiton ?");
         builder1.setCancelable(true);
 

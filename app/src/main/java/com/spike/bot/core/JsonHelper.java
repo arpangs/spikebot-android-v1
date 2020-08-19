@@ -57,6 +57,7 @@ public class JsonHelper {
                 room.setRoomName(roomObj.optString("room_name"));
                 // room.setRoom_order(roomObj.optInt("room_order"));
                 room.setRoomId(roomObj.optString("room_id"));
+                room.setCreated_by(roomObj.optString("created_by"));
                 room.setRoom_status(roomObj.optInt("room_status"));
                 room.setSensor_panel(roomObj.optString("sensor_panel"));
                 room.setMood_name_id(roomObj.optString("mood_name_id"));
@@ -171,6 +172,7 @@ public class JsonHelper {
                 // room.setRoom_order(roomObj.optInt("room_order"));
                 room.setRoomId(roomObj.optString("room_id"));
                 room.setRoom_status(roomObj.optInt("room_status"));
+                room.setCreated_by(roomObj.optString("created_by"));
                 room.setSensor_panel(roomObj.optString("sensor_panel"));
                 room.setMood_name_id(roomObj.optString("mood_name_id"));
                 if (roomObj.has("total_devices")) {
@@ -284,6 +286,7 @@ public class JsonHelper {
             room.setRoomId(roomObj.optString("room_id"));
             room.setRoom_status(roomObj.optInt("room_status"));
             room.setSensor_panel(roomObj.optString("sensor_panel"));
+            room.setCreated_by(roomObj.optString("created_by"));
             room.setMood_name_id(roomObj.optString("mood_name_id"));
             if (roomObj.has("total_devices")) {
                 room.setDevice_count(roomObj.optString("total_devices"));
@@ -361,7 +364,7 @@ public class JsonHelper {
                 room.setRoomId(objRoom.optString("room_id"));
                 room.setPanel_id(objRoom.optString("module_id"));
                 room.setModule_name(objRoom.optString("module_name"));
-
+                room.setCreated_by(objRoom.optString("created_by"));
                 JSONObject roomArrayList = objRoom.getJSONObject("roomList");
 
                 room.setRoomName(roomArrayList.optString("room_name"));
@@ -678,6 +681,7 @@ public class JsonHelper {
                 // room.setRoom_order(roomObj.optInt("room_order"));
                 room.setRoomId(roomObj.optString("room_id"));
                 room.setRoom_status(roomObj.optInt("room_status"));
+
                 room.setSensor_panel(roomObj.optString("sensor_panel"));
                 room.setMood_name_id(roomObj.optString("mood_name_id"));
                 if (roomObj.has("total_devices")) {

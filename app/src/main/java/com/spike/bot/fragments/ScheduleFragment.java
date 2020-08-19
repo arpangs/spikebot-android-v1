@@ -209,6 +209,11 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         // startSocketConnection();
+        try {
+            ((Main2Activity) activity).invalidateToolbarCloudImage();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -295,25 +300,25 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             public void onClick(View v) {
 
                 Intent intent = new Intent(getActivity(), ScheduleActivity.class);
-                if (selection != 0) {
-                    intent.putExtra("selection", selection);
-                } else {
-                    intent.putExtra("selection", !isMood ? 1 : 2);
-                }
+//                if (selection != 0) {
+//                    intent.putExtra("selection", selection);
+//                } else {
+//                    intent.putExtra("selection", !isMood ? 1 : 2);
+//                }
 
                 String moodIdPass = moodId3;
                 if (TextUtils.isEmpty(moodId3)) {
                     moodIdPass = moodId2;
                 }
-                intent.putExtra("isScheduleClick", true);
-                intent.putExtra("moodId", moodIdPass);
-                intent.putExtra("roomId", moodIdPass);
+//                intent.putExtra("isScheduleClick", true);
+//                intent.putExtra("moodId", moodIdPass);
+//                intent.putExtra("roomId", moodIdPass);
                 if (TextUtils.isEmpty(moodId) && TextUtils.isEmpty(moodId2) && TextUtils.isEmpty(moodId3)) {
                     intent.putExtra("isEditOpen", false);
                 } else {
                     intent.putExtra("isEditOpen", true);
                 }
-                intent.putExtra("isMoodSelected", true);
+//                intent.putExtra("isMoodSelected", true);
                 intent.putExtra("isActivityType", "" + 2);
                 startActivity(intent);
 
@@ -363,7 +368,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         if (TextUtils.isEmpty(moodId) && TextUtils.isEmpty(moodId2) && TextUtils.isEmpty(moodId3)) {
             intent.putExtra("isEditOpen", false);
         } else {
-            intent.putExtra("isEditOpen", true);
+            intent.putExtra("isEditOpen", false);
         }
         intent.putExtra("isMoodSelected", isFilterType);
         intent.putExtra("isActivityType", "" + 2);
@@ -402,6 +407,12 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void onResume() {
         super.onResume();
+
+        try {
+            ((Main2Activity) activity).invalidateToolbarCloudImage();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         // 11
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         rv_mood.setLayoutManager(linearLayoutManager);
@@ -627,6 +638,12 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
     /// all webservice call below.
     public void getDeviceList() {
+
+        try {
+            ((Main2Activity) activity).invalidateToolbarCloudImage();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         if (ChatApplication.url.contains("http://")) // dev arpan add this condition on 27 june
             ChatApplication.url = ChatApplication.url.replace("http://", "");

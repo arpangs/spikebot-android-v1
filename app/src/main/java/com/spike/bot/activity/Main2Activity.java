@@ -202,6 +202,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             showAlertDialog(ERROR_STRING);
         }
 
+        invalidateToolbarCloudImage();
+        setUserTypeValue();
         navigation_bar.setItemSelected(ChatApplication.CurrnetFragment, true); // dev arpan add on 15 june 2020
     }
 
@@ -617,10 +619,10 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             @Override
             public void run() {
                 if (!TextUtils.isEmpty(ChatApplication.url)) {
-                    if (ChatApplication.url.startsWith(Constants.startUrl)) {
+                    if (ChatApplication.url.contains(Constants.ContainsUrl)) {
                         mImageCloud.setImageResource(R.drawable.cloud);
                         toolbarwifiname.setText("Cloud");
-                    } else {
+                    } else if (ChatApplication.url.contains("192.168")) {
                         mImageCloud.setImageResource(R.drawable.wifi);
                         toolbarwifiname.setText("Wifi");
                     }
@@ -1305,6 +1307,4 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             }
         }, 2000);
     }
-
-
 }

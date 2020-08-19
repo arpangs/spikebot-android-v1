@@ -386,7 +386,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     private void showAlertDialog(final String tempSensorNotificationId, final SwitchCompat notiSwitchOnOff, final boolean isActive, final boolean isNotification, final int position, int isType) {
 
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-        builder1.setTitle("Notification Alert");
+//        builder1.setTitle("Notification Alert");
         builder1.setMessage("Do you want to " + (isActive ? "enable " : "disable ") + " notificaiton ?");
         builder1.setCancelable(true);
 

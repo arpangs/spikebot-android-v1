@@ -185,8 +185,8 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         });
 
         if (strFlag.equalsIgnoreCase("update")) {
-            txtSave.setText("Update");
-            tv_title.setText("Update Alert");
+            txtSave.setText("SAVE");
+            tv_title.setText("Edit Camera Notification");
 
             edIntervalTime.setText("" + cameraAlertList.getAlert_interval());
             try {
@@ -223,7 +223,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             }
 
         } else {
-            txtSave.setText("Save");
+            txtSave.setText("SAVE");
             for (int i = 0; i < getCameraList.size(); i++) {
                 getCameraList.get(i).setIsSelect(false);
             }
@@ -708,7 +708,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
     }
 
     private void setAlert() {
-        recyclerAlert.setVisibility(View.VISIBLE);
+        recyclerAlert.setVisibility(View.GONE);
         txt_empty_notification.setVisibility(View.GONE);
         txtAlertCount.setText("" + arrayListAlert.size());
 
@@ -861,7 +861,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
     private void showAlertDialog(final CameraAlertList cameraAlertList, final String strFlag, final SwitchCompat switchAlert, final int position) {
 
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-        builder1.setTitle("Notification Alert");
+//        builder1.setTitle("Notification Alert");
         builder1.setMessage("Do you want to " + (cameraAlertList.getIsActive().toString().equalsIgnoreCase("1") ? "disable " : "enable") + " notificaiton ?");
         builder1.setCancelable(true);
 

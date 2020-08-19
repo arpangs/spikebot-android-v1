@@ -1371,7 +1371,7 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
     private void showAlertDialog(final String doorSensorNotificationId, final SwitchCompat notiSwitchOnOff, final boolean isActive, final boolean isNotification) {
 
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-        builder1.setTitle("Notification Alert");
+//        builder1.setTitle("Notification Alert");
         builder1.setMessage("Do you want to " + (isActive ? "enable " : "disable ") + " notificaiton ?");
         builder1.setCancelable(true);
 

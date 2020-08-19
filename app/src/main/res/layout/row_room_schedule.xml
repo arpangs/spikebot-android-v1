@@ -18,7 +18,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_10sdp"
+            android:layout_marginBottom="10dp"
             android:orientation="horizontal">
 
             <RelativeLayout
@@ -95,11 +95,12 @@
 
                         <ImageView
                             android:id="@+id/iv_sche_type"
-                            android:layout_width="90dp"
-                            android:layout_height="30dp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
                             android:layout_marginLeft="5dp"
+                            android:layout_marginTop="-15dp"
                             android:layout_marginRight="5dp"
-                            android:src="@drawable/panel_disable_orange_new" />
+                            android:src="@drawable/panel_on" />
 
                         <TextView
                             android:id="@+id/txt_schedule_status"
@@ -125,7 +126,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="@dimen/_5sdp"
-            android:layout_marginTop="25dp"
+
             android:gravity="center"
             android:orientation="horizontal"
             android:padding="2dp">
@@ -155,7 +156,7 @@
                     android:layout_gravity="center"
                     android:layout_weight="1.1"
                     android:background="@drawable/blue_border_fill_rectangle"
-                    android:gravity="left|center"
+                    android:gravity="center"
                     android:orientation="horizontal"
                     android:paddingTop="6dp"
                     android:paddingBottom="6dp">
@@ -215,7 +216,7 @@
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:background="@drawable/blue_border_fill_rectangle"
-                    android:gravity="left|center"
+                    android:gravity="center"
                     android:orientation="horizontal"
                     android:paddingTop="6dp"
                     android:paddingBottom="6dp">

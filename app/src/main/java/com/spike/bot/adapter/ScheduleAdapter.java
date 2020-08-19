@@ -103,19 +103,28 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             holder.image_section_edit.setVisibility(View.VISIBLE);
             holder.iv_sch_type.setVisibility(View.VISIBLE);
         } else{
-            holder.image_section_edit.setVisibility(View.GONE);
-            holder.iv_sch_type.setVisibility(View.GONE);
+           /* holder.image_section_edit.setVisibility(View.GONE);
+            holder.iv_sch_type.setVisibility(View.GONE);*/
+            if(!scheduleArrayList.get(listPosition).getCreated_by().equalsIgnoreCase(Common.getPrefValue(mContext, Constants.USER_ID))) {
+                holder.image_section_edit.setVisibility(View.GONE);
+                holder.iv_sch_type.setVisibility(View.GONE);
+            } else{
+                holder.image_section_edit.setVisibility(View.VISIBLE);
+                holder.iv_sch_type.setVisibility(View.VISIBLE);
+            }
         }
         try {
             if (scheduleVO.getSchedule_type() == 1) {
 
                 if (scheduleVO.getIs_active() == 1) {
-                    holder.iv_sch_type.setImageResource(R.drawable.panel_disable_orange_new);
+//                    holder.iv_sch_type.setImageResource(R.drawable.panel_disable_orange_new);
+                    holder.iv_sch_type.setImageResource(R.drawable.panel_on);
                     holder.txt_schedule_status.setText("Enabled");
 
                 } else {
 
-                    holder.iv_sch_type.setImageDrawable(mContext.getResources().getDrawable(R.drawable.panel_enable_gray_new));
+//                    holder.iv_sch_type.setImageDrawable(mContext.getResources().getDrawable(R.drawable.panel_enable_gray_new));
+                    holder.iv_sch_type.setImageDrawable(mContext.getResources().getDrawable(R.drawable.panel_off));
                     holder.txt_schedule_status.setText("Disabled");
                 }
 
@@ -199,11 +208,13 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             } else {
 
                 if (scheduleVO.getIs_active() == 1) {
-                    holder.iv_sch_type.setImageResource(R.drawable.panel_disable_orange_new);
+//                    holder.iv_sch_type.setImageResource(R.drawable.panel_disable_orange_new);
+                    holder.iv_sch_type.setImageResource(R.drawable.panel_on);
                     holder.txt_schedule_status.setText("Enabled");
 
                 } else {
-                    holder.iv_sch_type.setImageDrawable(mContext.getResources().getDrawable(R.drawable.panel_enable_gray_new));
+//                    holder.iv_sch_type.setImageDrawable(mContext.getResources().getDrawable(R.drawable.panel_enable_gray_new));
+                    holder.iv_sch_type.setImageDrawable(mContext.getResources().getDrawable(R.drawable.panel_off));
                     holder.txt_schedule_status.setText("Disabled");
                 }
 
@@ -341,7 +352,9 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 //                holder.ll_OnView.setVisibility(View.VISIBLE);
 
                 if (scheduleVO.getSchedule_type() != 1) {
-                    holder.tv_schedule_on.setText("\t\t\t-\t\t\t");
+//                    holder.tv_schedule_on.setText("\t\t\t-\t\t\t");
+                    holder.tv_schedule_on.setText("");
+                    holder.ll_on.setVisibility(View.GONE);
                 } else {
                     holder.ll_on.setVisibility(View.GONE);
                 }
@@ -464,7 +477,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 holder.tv_schedule_off_time.setVisibility(View.GONE);
                 holder.tv_schedule_off.setText("\t\t\t-\t\t\t");
 
-                holder.tv_schedule_on_time.setText(holder.tv_schedule_on_time.getText().toString() + "\t\t\t\t\t\t\t\t\t-");
+//                holder.tv_schedule_on_time.setText(holder.tv_schedule_on_time.getText().toString() + "\t\t\t\t\t\t\t\t\t-");
+                holder.tv_schedule_on_time.setText(holder.tv_schedule_on_time.getText().toString() );
             }
 
 
