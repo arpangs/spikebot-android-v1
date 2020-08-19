@@ -42,23 +42,14 @@ public class IRBlasterAddListAdapter extends RecyclerView.Adapter<IRBlasterAddLi
         try {
            // devicelist = mIRDeviceList.get(position);
 
-            if (position == 0) {
-                holder.ir_add_remote_name.setText("AC");
-                holder.ir_add_remote_img.setBackgroundResource(R.drawable.ac);
-            } else {
-                holder.ir_add_remote_name.setText("TV/DTH");
-                holder.ir_add_remote_img.setBackgroundResource(R.drawable.tv_on);
-            }
+            holder.ir_add_remote_name.setText("AC");
+            holder.ir_add_remote_img.setBackgroundResource(R.drawable.ac);
 
             holder.ir_rrot_click.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     try {
-                        if (position == 0) {
-                            irDeviceClikListener.onIRDeviceClick(mIRDeviceList.get(0), 0);
-                        } else{
-                            irDeviceClikListener.onIRDeviceClick(mIRDeviceList.get(1), 1);
-                        }
+                        irDeviceClikListener.onIRDeviceClick(mIRDeviceList.get(position));
                     }catch (Exception e){
                         e.printStackTrace();
                     }
@@ -71,7 +62,7 @@ public class IRBlasterAddListAdapter extends RecyclerView.Adapter<IRBlasterAddLi
 
     @Override
     public int getItemCount() {
-        return 2;
+        return 1;
     }
 
     class IRBlasterHolder extends RecyclerView.ViewHolder {
@@ -91,6 +82,6 @@ public class IRBlasterAddListAdapter extends RecyclerView.Adapter<IRBlasterAddLi
     }
 
     public interface IRDeviceClikListener {
-        void onIRDeviceClick(IRDeviceDetailsRes.Data devicelist,int position);
+        void onIRDeviceClick(IRDeviceDetailsRes.Data devicelist);
     }
 }

@@ -1556,7 +1556,9 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
                         if (Main2Activity.isCloudConnected) {
                             url = Constants.CAMERA_DEEP + ":" + camera_vpn_port + "" + camera_url;
                         } else {
-                            String tmpurl = ChatApplication.url + "" + camera_url;
+
+
+                            String tmpurl = "http://" + ChatApplication.url + "" + camera_url;
                             url = tmpurl.replace("http", "rtmp").replace(":80", ""); //replace port number to blank String
                         }
                         ChatApplication.logDisplay("isCloudConnect : " + camera_vpn_port + " " + url);

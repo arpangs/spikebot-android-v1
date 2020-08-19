@@ -6,8 +6,10 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -59,6 +61,7 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
 
         //rtmp://home.deepfoods.net:11111/live/livestream3
         mMediaUrl = getIntent().getExtras().getString("videoUrl");
+        Log.i("Camera Url ",mMediaUrl);
         String name = getIntent().getExtras().getString("name");
         setTitle(name);
 
@@ -66,8 +69,15 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
         progressDialog.setMessage("Please wait...");
         progressDialog.show();
         player = findViewById(R.id.player);
-        player.setUIViewContentMode(NodePlayerView.UIViewContentMode.ScaleAspectFit);
-        player.setRenderType(NodePlayerView.RenderType.TEXTUREVIEW);
+
+        int orientation = this.getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            player.setUIViewContentMode(NodePlayerView.UIViewContentMode.ScaleAspectFit);
+            player.setRenderType(NodePlayerView.RenderType.TEXTUREVIEW);
+        } else {
+            player.setUIViewContentMode(NodePlayerView.UIViewContentMode.ScaleToFill);
+            player.setRenderType(NodePlayerView.RenderType.TEXTUREVIEW);
+        }
 
         relativeLayout = findViewById(R.id.relativeLayout);
 
@@ -100,6 +110,7 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
                 return false;
             }
         });
+
 
     }
     @Override
@@ -157,6 +168,15 @@ public class CameraPlayer extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+
+        int orientation = this.getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            player.setUIViewContentMode(NodePlayerView.UIViewContentMode.ScaleAspectFit);
+            player.setRenderType(NodePlayerView.RenderType.TEXTUREVIEW);
+        } else {
+            player.setUIViewContentMode(NodePlayerView.UIViewContentMode.ScaleToFill);
+            player.setRenderType(NodePlayerView.RenderType.TEXTUREVIEW);
+        }
     }
 
     @Override

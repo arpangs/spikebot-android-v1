@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,14 +19,14 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.spike.bot.R;
 
-public class TVRemote extends AppCompatActivity {
+public class TVRemote extends AppCompatActivity implements View.OnClickListener {
 
+    TextView txt_tv_remote, txt_dth_remote;
+    RelativeLayout relative_dth_remote, relative_tv_remote;
     Toolbar toolbar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tv_remote);
 
@@ -36,7 +39,40 @@ public class TVRemote extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-       // toolbar.setTitle(room_name);
+        // toolbar.setTitle(room_name);
+
+        txt_tv_remote = findViewById(R.id.txt_tv_remote);
+        txt_dth_remote = findViewById(R.id.txt_dth_remote);
+        relative_dth_remote = findViewById(R.id.relative_dth_remote);
+        relative_tv_remote = findViewById(R.id.relative_tv_remote);
+
+        txt_tv_remote.setOnClickListener(this);
+        txt_dth_remote.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+            case R.id.txt_tv_remote:
+                relative_tv_remote.setVisibility(View.VISIBLE);
+                relative_dth_remote.setVisibility(View.GONE);
+                txt_tv_remote.setBackgroundColor(getResources().getColor(R.color.solid_blue));
+                txt_dth_remote.setBackgroundColor(getResources().getColor(R.color.automation_gray));
+                break;
+            case R.id.txt_dth_remote:
+                relative_dth_remote.setVisibility(View.VISIBLE);
+                relative_tv_remote.setVisibility(View.GONE);
+                txt_tv_remote.setBackgroundColor(getResources().getColor(R.color.automation_gray));
+                txt_dth_remote.setBackgroundColor(getResources().getColor(R.color.solid_blue));
+                break;
+           /* case R.id.remote_power_onoff:
+                break;
+            case R.id.remote_respond_no:
+                break;
+            case R.id.remote_respond_yes:
+                break;*/
+        }
     }
 
 
@@ -62,7 +98,7 @@ public class TVRemote extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.actionEdit) {
-          //  showBottomSheetDialog(room);
+            //  showBottomSheetDialog(room);
 
         }
         return super.onOptionsItemSelected(item);

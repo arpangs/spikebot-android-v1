@@ -99,12 +99,10 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         scheduleVO = scheduleArrayList.get(listPosition);
         holder.card_layout.setBackground(mContext.getDrawable(R.drawable.background_with_shadow_yellow));
 
-        if (!Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
+        if (!Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0") ) {
             holder.image_section_edit.setVisibility(View.VISIBLE);
             holder.iv_sch_type.setVisibility(View.VISIBLE);
         } else{
-           /* holder.image_section_edit.setVisibility(View.GONE);
-            holder.iv_sch_type.setVisibility(View.GONE);*/
             if(!scheduleArrayList.get(listPosition).getCreated_by().equalsIgnoreCase(Common.getPrefValue(mContext, Constants.USER_ID))) {
                 holder.image_section_edit.setVisibility(View.GONE);
                 holder.iv_sch_type.setVisibility(View.GONE);
@@ -446,7 +444,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     int offtime = Integer.parseInt(splitoff[0]);
 
                     if (offtime == 12 || offtime == 1 || offtime == 2 || offtime == 3 || offtime == 4 ||
-                            offtime == 5 || offtime == 6) {
+                            offtime == 5) {
 
                         holder.ll_off.setBackgroundResource(R.drawable.blue_border_orange);
                         holder.img_sun.setImageResource(R.drawable.sun);

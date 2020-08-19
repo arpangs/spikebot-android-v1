@@ -172,7 +172,7 @@ public class VideoViewPLayer extends AppCompatActivity {
 
             ChatApplication.showToast(this, "Saved.");
 
-            ChatApplication.showToast(this, "Capture screenshot");
+
         } catch (Throwable e) {
             e.printStackTrace();
         }
