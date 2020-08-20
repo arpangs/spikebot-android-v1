@@ -927,12 +927,106 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                     @Override
                     public void onData_SuccessfulResponse(String stringResponse) {
                         dismissProgressDialog();
-                        dismissProgressDialog();
-                        if (stringResponse.contains("Success")) {
-                            Intent intent = new Intent(getActivity(), LoginSplashActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(intent);
-                            getActivity().finish();
+                        try {
+                            JSONObject result = new JSONObject(stringResponse);
+                            int code = result.getInt("code");
+                            String message = result.getString("message");
+                            if (code == 200) {
+
+                                JSONObject data = result.getJSONObject("data");
+                                String cloudIp = data.getString("ip");
+                                String local_ip = data.getString("local_ip_address");
+                                ChatApplication.logDisplay("login response is " + data.toString());
+
+                                Common.savePrefValue(getActivity(), Constants.PREF_CLOUDLOGIN, "true");
+                                Common.savePrefValue(getActivity(), Constants.PREF_IP, cloudIp);
+
+                                String first_name = data.getString("first_name");
+                                String last_name = data.getString("last_name");
+                                String user_id = data.getString("user_id");
+                                String admin = data.getString("admin");
+                                String mac_address = data.getString("mac_address");
+                                String auth_key = "";
+
+                                if (data.has("auth_key"))
+                                    auth_key = data.getString("auth_key"); // dev arp add on 22 june 2020
+
+                                Constants.adminType = Integer.parseInt(admin);
+
+                                ChatApplication.currentuserId = user_id;
+                                Common.savePrefValue(getActivity(), Constants.PREF_CLOUDLOGIN, "true");
+                                Common.savePrefValue(getActivity(), Constants.PREF_IP, cloudIp);
+                                Common.savePrefValue(getActivity(), Constants.USER_ID, user_id);
+                                Common.savePrefValue(getActivity(), Constants.USER_ADMIN_TYPE, admin);
+                                Common.savePrefValue(getActivity(), Constants.USER_TYPE, user_id);
+
+                                Common.savePrefValue(getActivity(), Constants.AUTHORIZATION_TOKEN, auth_key); // dev arp add new key on 22 june 2020
+
+                                if (Common.getPrefValue(getActivity(), Constants.USER_ADMIN_TYPE).equalsIgnoreCase("1")) {
+                                    Constants.room_type = 0;
+                                    Common.savePrefValue(getActivity(), Constants.USER_ROOM_TYPE, "" + 0);
+                                } else {
+                                    Constants.room_type = 2;
+                                    Common.savePrefValue(getActivity(), Constants.USER_ROOM_TYPE, "" + 2);
+                                }
+                                String user_password = "";
+                                if (data.has("user_password")) {
+                                    user_password = data.getString("user_password");
+                                }
+                                Common.savePrefValue(getActivity(), Constants.USER_PASSWORD, user_password);
+
+                                User user = new User(user_id, first_name, last_name, cloudIp, false, user_password, admin, local_ip, mac_address, auth_key);
+                                Gson gson = new Gson();
+                                String jsonText = Common.getPrefValue(getActivity(), Common.USER_JSON);
+                                List<User> userList = new ArrayList<User>();
+                                //*set active user *//*
+                                if (!TextUtils.isEmpty(jsonText) && !jsonText.equals("[]") && !jsonText.equals("null")) {
+                                    Type type = new TypeToken<List<User>>() {
+                                    }.getType();
+                                    userList = gson.fromJson(jsonText, type);
+
+                                    if (userList != null && userList.size() != 0) {
+                                        boolean isFound = false;
+                                        for (User user1 : userList) {
+                                            if (user1.getUser_id().equalsIgnoreCase(user.getUser_id())) {
+                                                isFound = true;
+                                                user1.setIsActive(true);
+                                            } else {
+                                                user1.setIsActive(false);
+                                            }
+                                        }
+                                        if (!isFound) {
+                                            user.setIsActive(true);
+                                            userList.add(user);
+                                        }
+                                    }
+
+                                    String jsonCurProduct = gson.toJson(userList);
+                                    Common.savePrefValue(getActivity(), Common.USER_JSON, jsonCurProduct);
+
+
+                                } else {
+
+                                    user.setIsActive(true);
+                                    userList.add(user);
+
+                                    String jsonCurProduct = gson.toJson(userList);
+                                    Common.savePrefValue(getActivity(), Common.USER_JSON, jsonCurProduct);
+                                }
+
+                                ChatApplication.isCallDeviceList = true;
+                                startHomeIntent();
+
+                                ActivityHelper.dismissProgressDialog();
+
+                            } else {
+                                ChatApplication.showToast(getActivity(), message);
+                            }
+                        } catch (Exception e) {
+                            ActivityHelper.dismissProgressDialog();
+                            e.printStackTrace();
+                        } finally {
+                            ActivityHelper.dismissProgressDialog();
                         }
                     }
 
@@ -951,6 +1045,16 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             }
         });
         passworddialog.show();
+
+    }
+
+    /* start home screen */
+    private void startHomeIntent() {
+        ConnectivityReceiver.counter = 0;
+        Intent intent = new Intent(getActivity(), Main2Activity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        getActivity().finish();
 
     }
 

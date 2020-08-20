@@ -186,7 +186,7 @@
 
         <activity android:name="com.spike.bot.camera.CameraPlayer"
             android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"/>
+            android:configChanges="orientation|screenSize|keyboardHidden"/>
 
 
         <activity

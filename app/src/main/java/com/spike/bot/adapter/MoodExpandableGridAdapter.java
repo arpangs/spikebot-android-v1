@@ -264,7 +264,6 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                         holder.txtRemote.setText(section.getSmart_remote_number());
                     }
                     holder.imgRemote.setVisibility(View.VISIBLE);
-                    holder.txtRemote.setText(section.getSmart_remote_number());
 
                     holder.imgRemote.setOnClickListener(new View.OnClickListener() {
                         @Override

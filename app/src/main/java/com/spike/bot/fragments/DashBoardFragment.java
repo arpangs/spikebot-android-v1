@@ -2554,7 +2554,8 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                     webUrl = ChatApplication.url;
                     startSocketConnection();
                     startLiveSocketConnection();
-                    if (result.getInt("code") == 200) {
+                    if (result.getInt("code") == 200)
+                    {
                         if (gsonType == null) {
                             gsonType = new Gson();
                         }

@@ -97,7 +97,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener, Swi
                             String message = object.optString("message");
                             String user_id = object.optString("user_id");
                             if (Common.getPrefValue(getActivity(), Constants.USER_ID).equalsIgnoreCase(user_id)) {
-                                getDeviceList();
+                                //getDeviceList();
                                 ChatApplication.showToast(getActivity(), message);
                             }
                         } catch (JSONException e) {
@@ -833,7 +833,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener, Swi
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);*/
         ((Main2Activity) activity).invalidateToolbarCloudImage();
 
-
+        ActivityHelper.showProgressDialog(getActivity(), "Please wait.", false);
 
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
@@ -841,7 +841,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener, Swi
         SpikeBotApi.getInstance().GetMoodList(new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
-
+                ActivityHelper.dismissProgressDialog();
                 responseErrorCode.onSuccess();
                 sectionedExpandableLayoutHelper.setClickable(true);
                 swipeRefreshLayout.setRefreshing(false);
@@ -881,6 +881,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener, Swi
 
             @Override
             public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
                 swipeRefreshLayout.setRefreshing(false);
                 sectionedExpandableLayoutHelper.setClickable(true);
 
@@ -894,6 +895,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener, Swi
 
             @Override
             public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
                 swipeRefreshLayout.setRefreshing(false);
                 sectionedExpandableLayoutHelper.setClickable(true);
                 if (moodList.size() == 0) {
