@@ -81,11 +81,11 @@ public class ProfileActivity extends AppCompatActivity {
 
 
         SpannableString s = new SpannableString("User Details");
-        s.setSpan(new TypefaceSpan("Axiforma.ttf"), 0, s.length(),
+        s.setSpan(new TypefaceSpan("axiforma.ttf"), 0, s.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         SpannableString s1 = new SpannableString("Child Users");
-        s1.setSpan(new TypefaceSpan("Axiforma.ttf"), 0, s1.length(),
+        s1.setSpan(new TypefaceSpan("axiforma.ttf"), 0, s1.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -147,7 +147,7 @@ public class ProfileActivity extends AppCompatActivity {
                 if (tabViewChild instanceof TextView) {
                     //Put your font in assests folder
                     //assign name of the font here (Must be case sensitive)
-                    ((TextView) tabViewChild).setTypeface(Typeface.createFromAsset(getAssets(), "Axiforma.ttf"));
+                    ((TextView) tabViewChild).setTypeface(Typeface.createFromAsset(getAssets(), "axiforma.ttf"));
                 }
             }
         }

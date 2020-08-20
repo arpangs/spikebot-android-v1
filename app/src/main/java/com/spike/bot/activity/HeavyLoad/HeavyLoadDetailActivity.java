@@ -35,7 +35,7 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
 import com.spike.bot.ChatApplication;
@@ -44,7 +44,6 @@ import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
-import com.spike.bot.customview.chart.MyMarkerView;
 import com.spike.bot.model.DataHeavyModel;
 import com.spike.bot.receiver.MarkerBoxView;
 
@@ -80,7 +79,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
     public int currentDay = 0;
     public String getRoomName = "", device_id = "";
     DataHeavyModel heavyModel = new DataHeavyModel();
-    IAxisValueFormatter formatter;
+    MyFormater formatter;
     ArrayList arrayListYearList = new ArrayList<>();
     //    ArrayList<Entry> entries = new ArrayList<>();
     ArrayList<BarEntry> entries = new ArrayList<>();
@@ -90,8 +89,6 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
     int row_index = 1, mStartIndex = 4, strmonth = 0, row_index_year = 1, stryear;
     String selectedyear;
     private Socket mSocket;
-
-
 
 
     /*heavy load value get & update view */
@@ -510,6 +507,9 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                         barChart.notifyDataSetChanged();
                         barChart.resetZoom();
                         barChart.setPinchZoom(true);
+                        barChart.getDescription().setEnabled(false);
+                        barChart.setHighlightFullBarEnabled(true);
+                        barChart.setDrawValueAboveBar(true);
 
                       /*  MyMarkerView mv = new MyMarkerView(HeavyLoadDetailActivity.this, R.layout.custom_marker_view);
                         mv.setChartView(barChart); // For bounds control
@@ -622,8 +622,9 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
 
             dataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
 
+
 //            dataSet.setCircleRadius(10);
-            dataSet.setDrawValues(false);
+            dataSet.setDrawValues(true);
             barChart.getDescription().setEnabled(false);
             barChart.getLegend().setEnabled(false);
             barChart.setFitBars(true);
@@ -635,23 +636,25 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             // Controlling X axis
             XAxis xAxis = barChart.getXAxis();
             // Set the xAxis position to bottom. Default is top
-            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
 
             arrayDayTemp.addAll(arrayDay);
 
             if (spinnerMonth.getSelectedItem().equals("All")) {
-                formatter = new IAxisValueFormatter() {
+                formatter = new MyFormater() {
+
                     @Override
                     public String getFormattedValue(float value, AxisBase axis) {
                         if (value >= arrayDayTemp.size()) {
                             return String.valueOf(arrayDayTemp.get(arrayDayTemp.size() - 1));
                         }
 //                        return String.valueOf(getXAxisValues().get((int) value));
-                        return String.valueOf(arrayDayTemp.get((int) value));
+                        return String.valueOf(arrayDayTemp.get(Math.round(value)));
                     }
                 };
             } else {
-                formatter = new IAxisValueFormatter() {
+                formatter = new MyFormater() {
+
                     @Override
                     public String getFormattedValue(float value, AxisBase axis) {
                         if (value >= arrayDayTemp.size()) {
@@ -663,14 +666,19 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                         } else {
                             imageShowNext.setVisibility(View.VISIBLE);
                         }
-                        return String.valueOf(arrayDayTemp.get((int) value));
+                        return String.valueOf(arrayDayTemp.get(Math.round(value)));
                     }
                 };
             }
 
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
             xAxis.setGranularity(1f); // minimum axis-step (interval) is 1
-            xAxis.setAxisMinimum(0);
-            xAxis.setValueFormatter(formatter);
+            xAxis.setValueFormatter(new MyFormater());
+            xAxis.setDrawGridLines(false);
+            xAxis.setGranularityEnabled(true);
+            xAxis.setDrawLabels(true);
+            xAxis.setLabelCount(7);
+
 
 
             //***
@@ -683,18 +691,16 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             YAxis yAxisLeft = barChart.getAxisLeft();
             yAxisLeft.setGranularity(1f);
             yAxisLeft.setAxisMinimum(0);
+            yAxisLeft.setDrawGridLines(false);
 
             // Setting Data
 //            LineData data = new LineData(dataSet);
 
 
-
             BarData data = new BarData(dataSet);
 //            data.setBarWidth(barWidth);
             data.setValueTextSize(10f);
-            data.setBarWidth(0.8f);
-
-
+            data.setBarWidth(0.5f);
 
 
             barChart.setData(data);
@@ -703,8 +709,8 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
 
             IMarker marker = new MarkerBoxView(this, R.layout.activity_text_label);
             barChart.setMarker(marker);
-            barChart.setScaleYEnabled(false);
-            barChart.setScaleXEnabled(false);
+            barChart.setScaleYEnabled(true);
+            barChart.setScaleXEnabled(true);
 
 
             if (spinnerMonth.getSelectedItem().equals("All")) {
@@ -1000,5 +1006,6 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
         }
 
     }
+
 
 }

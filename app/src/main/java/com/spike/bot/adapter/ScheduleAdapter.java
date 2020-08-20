@@ -102,13 +102,13 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         if (!Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
             holder.image_section_edit.setVisibility(View.VISIBLE);
             holder.iv_sch_type.setVisibility(View.VISIBLE);
-        } else{
+        } else {
            /* holder.image_section_edit.setVisibility(View.GONE);
             holder.iv_sch_type.setVisibility(View.GONE);*/
-            if(!scheduleArrayList.get(listPosition).getCreated_by().equalsIgnoreCase(Common.getPrefValue(mContext, Constants.USER_ID))) {
+            if (!scheduleArrayList.get(listPosition).getCreated_by().equalsIgnoreCase(Common.getPrefValue(mContext, Constants.USER_ID))) {
                 holder.image_section_edit.setVisibility(View.GONE);
                 holder.iv_sch_type.setVisibility(View.GONE);
-            } else{
+            } else {
                 holder.image_section_edit.setVisibility(View.VISIBLE);
                 holder.iv_sch_type.setVisibility(View.VISIBLE);
             }
@@ -118,13 +118,15 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
                 if (scheduleVO.getIs_active() == 1) {
 //                    holder.iv_sch_type.setImageResource(R.drawable.panel_disable_orange_new);
-                    holder.iv_sch_type.setImageResource(R.drawable.panel_on);
+//                    holder.iv_sch_type.setImageResource(R.drawable.panel_on);
+                    holder.iv_sch_type.setBackgroundResource(R.drawable.panel_on_new);
                     holder.txt_schedule_status.setText("Enabled");
 
                 } else {
 
 //                    holder.iv_sch_type.setImageDrawable(mContext.getResources().getDrawable(R.drawable.panel_enable_gray_new));
-                    holder.iv_sch_type.setImageDrawable(mContext.getResources().getDrawable(R.drawable.panel_off));
+//                    holder.iv_sch_type.setImageDrawable(mContext.getResources().getDrawable(R.drawable.panel_off));
+                    holder.iv_sch_type.setBackgroundResource(R.drawable.panel_off_new);
                     holder.txt_schedule_status.setText("Disabled");
                 }
 
@@ -209,12 +211,14 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
                 if (scheduleVO.getIs_active() == 1) {
 //                    holder.iv_sch_type.setImageResource(R.drawable.panel_disable_orange_new);
-                    holder.iv_sch_type.setImageResource(R.drawable.panel_on);
+//                    holder.iv_sch_type.setImageResource(R.drawable.panel_on);
+                    holder.iv_sch_type.setBackgroundResource(R.drawable.panel_on_new);
                     holder.txt_schedule_status.setText("Enabled");
 
                 } else {
 //                    holder.iv_sch_type.setImageDrawable(mContext.getResources().getDrawable(R.drawable.panel_enable_gray_new));
-                    holder.iv_sch_type.setImageDrawable(mContext.getResources().getDrawable(R.drawable.panel_off));
+//                    holder.iv_sch_type.setImageDrawable(mContext.getResources().getDrawable(R.drawable.panel_off));
+                    holder.iv_sch_type.setBackgroundResource(R.drawable.panel_off_new);
                     holder.txt_schedule_status.setText("Disabled");
                 }
 
@@ -446,7 +450,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     int offtime = Integer.parseInt(splitoff[0]);
 
                     if (offtime == 12 || offtime == 1 || offtime == 2 || offtime == 3 || offtime == 4 ||
-                            offtime == 5 || offtime == 6) {
+                            offtime == 5) {
 
                         holder.ll_off.setBackgroundResource(R.drawable.blue_border_orange);
                         holder.img_sun.setImageResource(R.drawable.sun);
@@ -478,7 +482,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 holder.tv_schedule_off.setText("\t\t\t-\t\t\t");
 
 //                holder.tv_schedule_on_time.setText(holder.tv_schedule_on_time.getText().toString() + "\t\t\t\t\t\t\t\t\t-");
-                holder.tv_schedule_on_time.setText(holder.tv_schedule_on_time.getText().toString() );
+                holder.tv_schedule_on_time.setText(holder.tv_schedule_on_time.getText().toString());
             }
 
 

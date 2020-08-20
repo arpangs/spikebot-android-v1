@@ -69,4 +69,6 @@
     <color name="remote_background">#D9D9D9</color>
     <color name="automation_light">#AAD3F1</color>
 
+    <color name="remote_thumb">#3d9ff5</color>
+
 </resources>

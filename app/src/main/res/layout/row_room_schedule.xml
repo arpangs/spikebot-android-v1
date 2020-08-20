@@ -96,11 +96,10 @@
                         <ImageView
                             android:id="@+id/iv_sche_type"
                             android:layout_width="60dp"
-                            android:layout_height="60dp"
+                            android:layout_height="40dp"
                             android:layout_marginLeft="5dp"
-                            android:layout_marginTop="-15dp"
                             android:layout_marginRight="5dp"
-                            android:src="@drawable/panel_on" />
+                            android:background="@drawable/panel_on_new" />
 
                         <TextView
                             android:id="@+id/txt_schedule_status"

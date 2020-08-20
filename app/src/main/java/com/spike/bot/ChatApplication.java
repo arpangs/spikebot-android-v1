@@ -474,7 +474,7 @@ public class ChatApplication extends Application {
             mScanner.scanLeDevice(-1, true);
         }*/
 
-        TypefaceUtil.overrideFont(getApplicationContext(), "Axiforma-Regular", "fonts/Axiforma-Regular.otf");
+        TypefaceUtil.overrideFont(getApplicationContext(), "axiforma-Regular", "fonts/Axiforma-Regular.otf");
 
 
     }
