@@ -200,7 +200,7 @@ public class ImageZoomActivity extends AppCompatActivity{
                         img_playvideo.setVisibility(View.VISIBLE);
                         imageViewZoom.setVisibility(View.VISIBLE);
                         videoView.setVisibility(View.INVISIBLE);
-                      //  videoView.setZOrderOnTop(true);
+                        videoView.setZOrderOnTop(true);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
