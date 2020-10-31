@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.spike.bot.R;
 import com.spike.bot.model.IRDeviceDetailsRes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,13 +23,15 @@ public class IRBlasterAddListAdapter extends RecyclerView.Adapter<IRBlasterAddLi
 
 
     List<IRDeviceDetailsRes.Data> mIRDeviceList;
-    IRDeviceDetailsRes.Data devicelist;
+    IRDeviceDetailsRes.Data mIRBlaster;
+    ArrayList<String> mRemoteTypeList;
 
     private IRDeviceClikListener irDeviceClikListener;
 
-    public IRBlasterAddListAdapter(List<IRDeviceDetailsRes.Data> mIRDeviceList, IRDeviceClikListener irDeviceClikListener) {
-        this.mIRDeviceList = mIRDeviceList;
+    public IRBlasterAddListAdapter(IRDeviceDetailsRes.Data mIRDevice, ArrayList<String> mRemoteTypeList, IRDeviceClikListener irDeviceClikListener) {
+        this.mIRBlaster = mIRDevice;
         this.irDeviceClikListener = irDeviceClikListener;
+        this.mRemoteTypeList = mRemoteTypeList;
     }
 
     @Override
@@ -40,29 +43,48 @@ public class IRBlasterAddListAdapter extends RecyclerView.Adapter<IRBlasterAddLi
     @Override
     public void onBindViewHolder(IRBlasterHolder holder, int position) {
         try {
-           // devicelist = mIRDeviceList.get(position);
+            // devicelist = mIRDeviceList.get(position);
 
-            holder.ir_add_remote_name.setText("AC");
-            holder.ir_add_remote_img.setBackgroundResource(R.drawable.ac);
+            switch (mRemoteTypeList.get(position).toLowerCase()) {
+
+                case "ac":
+                    holder.ir_add_remote_name.setText("AC");
+                    holder.ir_add_remote_img.setBackgroundResource(R.drawable.ac_remote_on);
+                    break;
+
+                case "tv":
+                    holder.ir_add_remote_name.setText("TV");
+                    holder.ir_add_remote_img.setBackgroundResource(R.drawable.tv_on);
+                    break;
+
+                case "dth":
+                    holder.ir_add_remote_name.setText("DTH");
+                    holder.ir_add_remote_img.setBackgroundResource(R.drawable.dth_on);
+                    break;
+            }
 
             holder.ir_rrot_click.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     try {
-                        irDeviceClikListener.onIRDeviceClick(mIRDeviceList.get(position));
-                    }catch (Exception e){
+                        irDeviceClikListener.onIRDeviceClick(mIRBlaster, position);
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Override
     public int getItemCount() {
-        return 1;
+        return mRemoteTypeList.size();
+    }
+
+    public interface IRDeviceClikListener {
+        void onIRDeviceClick(IRDeviceDetailsRes.Data devicelist, int position);
     }
 
     class IRBlasterHolder extends RecyclerView.ViewHolder {
@@ -74,14 +96,10 @@ public class IRBlasterAddListAdapter extends RecyclerView.Adapter<IRBlasterAddLi
         IRBlasterHolder(View itemView) {
             super(itemView);
 
-            ir_rrot_click =  itemView.findViewById(R.id.ir_rrot_click);
+            ir_rrot_click = itemView.findViewById(R.id.ir_rrot_click);
 
-            ir_add_remote_img =  itemView.findViewById(R.id.ir_add_remote_img);
-            ir_add_remote_name =  itemView.findViewById(R.id.ir_add_remote_name);
+            ir_add_remote_img = itemView.findViewById(R.id.ir_add_remote_img);
+            ir_add_remote_name = itemView.findViewById(R.id.ir_add_remote_name);
         }
-    }
-
-    public interface IRDeviceClikListener {
-        void onIRDeviceClick(IRDeviceDetailsRes.Data devicelist);
     }
 }

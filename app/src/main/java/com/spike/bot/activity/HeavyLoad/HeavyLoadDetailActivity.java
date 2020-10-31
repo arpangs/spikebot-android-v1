@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +36,9 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
 import com.spike.bot.ChatApplication;
@@ -51,7 +54,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -88,9 +93,10 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
     ArrayList<String> yearlist = new ArrayList();
     int row_index = 1, mStartIndex = 4, strmonth = 0, row_index_year = 1, stryear;
     String selectedyear;
+    TextView mCurrentMonthEnergy;
     private Socket mSocket;
-
-
+    private DecimalFormat mFormat;
+    private int currentmonthenergy = 0;
     /*heavy load value get & update view */
     private Emitter.Listener heavyLoadValue = new Emitter.Listener() {
         @Override
@@ -141,7 +147,10 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
         device_id = getIntent().getStringExtra("device_id");
 
         setUiId();
+
+
     }
+
 
     private void setUiId() {
         barChart = findViewById(R.id.barChart);
@@ -164,6 +173,10 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
         toolbar.setTitle(getRoomName);
         txtCurrentValue = findViewById(R.id.txtCurrentValue);
         label_watts = findViewById(R.id.label_watts);
+
+        mCurrentMonthEnergy = findViewById(R.id.txt_currnt_month);
+
+        mFormat = new DecimalFormat("0,000");
 
         Glide.with(this)
                 .load(R.drawable.heavy_load_yellow)
@@ -213,6 +226,12 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
         if (countDownTimerSocket != null) {
             countDownTimerSocket.start();
         }
+
+
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        stryear = year;
+
 
        /* RotateAnimation rotate= (RotateAnimation) AnimationUtils.loadAnimation(this,R.anim.rotation_animation);
         txtYAxis.setAnimation(rotate);*/
@@ -425,6 +444,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
 
+
                         heavyModel = (DataHeavyModel) Common.fromJson(result.toString(), new TypeToken<DataHeavyModel>() {
                         }.getType());
                         chartDataset(false);
@@ -464,9 +484,8 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
         Calendar c = Calendar.getInstance();
         int month = c.get(Calendar.MONTH) + 1;
         int year = c.get(Calendar.YEAR);
-        int strYear = year;
 
-        if (strYear == year && strmonth > month) {
+        if (stryear == year && strmonth > month) {
 
             ChatApplication.showToast(this, "Please select valid month");
             return;
@@ -481,7 +500,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
         ActivityHelper.showProgressDialog(HeavyLoadDetailActivity.this, "Please wait... ", false);
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-        SpikeBotApi.getInstance().HeavyloadFilter(device_id, strLess, value, strYear, new DataResponseListener() {
+        SpikeBotApi.getInstance().HeavyloadFilter(device_id, strLess, value, stryear, new DataResponseListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -551,39 +570,46 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                     ArrayList<String> arrayList = monthlist;
                     for (int i = 0; i < arrayList.size(); i++) {
                         arrayDay.add("" + arrayList.get(i));
+                        Log.i("All===?>", "" + arrayList.get(i));
                     }
                 } else {
                     currentDay = Constants.getMonthOfDay(row_index, stryear);
                     ChatApplication.logDisplay("current day" + " " + row_index);
                     for (int i = 1; i <= currentDay; i++) {
                         arrayDay.add("" + i);
+                        Log.i("All else===?>", "" + i);
                     }
                 }
             } else {
                 currentDay = Constants.getCurrentMonth();
                 for (int i = 1; i <= currentDay; i++) {
                     arrayDay.add("" + i);
+                    Log.i("All flag off else===?>", "" + i);
                 }
             }
 
             boolean isflag = false;
 
+            currentmonthenergy = 0;
             if (spinnerMonth.getSelectedItem().equals("All")) {
 
                 for (int j = 0; j < arrayDay.size(); j++) {
                     isflag = false;
+
                     for (int i = 0; i < heavyModel.getGraphData().size(); i++) {
                         if (j + 1 == Integer.parseInt(heavyModel.getGraphData().get(i).getMonth())) {
                             isflag = true;
 //                            entries.add(new Entry(j, heavyModel.getGraphData().get(i).getEnergy()));
+                            currentmonthenergy = currentmonthenergy + heavyModel.getGraphData().get(i).getEnergy();
                             entries.add(new BarEntry(j, heavyModel.getGraphData().get(i).getEnergy()));
-
+                            Log.i("All spinnerMonth===?>", "" + j);
                             break;
                         }
                     }
                     if (!isflag) {
 //                        entries.add(new Entry(j, 0));
                         entries.add(new BarEntry(j, 0));
+
                     }
                 }
 
@@ -591,23 +617,31 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
 
                 for (int j = 0; j < arrayDay.size(); j++) {
                     isflag = false;
+
                     for (int i = 0; i < heavyModel.getGraphData().size(); i++) {
                         if (Integer.parseInt(arrayDay.get(j)) == Integer.parseInt(heavyModel.getGraphData().get(i).getDay())) {
+
                             isflag = true;
 //                            entries.add(new Entry(j, heavyModel.getGraphData().get(i).getEnergy()));
-                            entries.add(new BarEntry(j, heavyModel.getGraphData().get(i).getEnergy()));
+                            currentmonthenergy = currentmonthenergy + heavyModel.getGraphData().get(i).getEnergy();
+                            entries.add(new BarEntry(Integer.parseInt(arrayDay.get(j)), heavyModel.getGraphData().get(i).getEnergy()));
+                            Log.i("Else spinnerMonth===?>", "" + j);
                             break;
                         }
                     }
                     if (!isflag) {
 //                        entries.add(new Entry(j, 0));
                         entries.add(new BarEntry(j, 0));
+
                     }
                 }
             }
 
 
 //            LineDataSet dataSet = new LineDataSet(entries, "");
+
+
+            mCurrentMonthEnergy.setText("Monthly Usage : " + currentmonthenergy + " KWh(Units)");
 
             BarDataSet dataSet = new BarDataSet(entries, "");
 
@@ -622,12 +656,30 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
 
             dataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
 
+            dataSet.setValueFormatter(new IValueFormatter() {
+
+                @Override
+                public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+                    return "" + (int) value;
+                }
+            });
+
 
 //            dataSet.setCircleRadius(10);
             dataSet.setDrawValues(true);
             barChart.getDescription().setEnabled(false);
             barChart.getLegend().setEnabled(false);
             barChart.setFitBars(true);
+
+
+            LocalDate today = LocalDate.now();
+            int day = today.getDayOfMonth();
+
+            barChart.moveViewToX((day - 1) + 0.5f);
+
+
+            Log.i("day========?>", "" + day);
+//
 
             //setfull zooom disble
 //            barChart.setTouchEnabled(false);
@@ -648,8 +700,8 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                         if (value >= arrayDayTemp.size()) {
                             return String.valueOf(arrayDayTemp.get(arrayDayTemp.size() - 1));
                         }
-//                        return String.valueOf(getXAxisValues().get((int) value));
-                        return String.valueOf(arrayDayTemp.get(Math.round(value)));
+                        return String.valueOf(getXAxisValues().get((int) value));
+
                     }
                 };
             } else {
@@ -666,7 +718,7 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
                         } else {
                             imageShowNext.setVisibility(View.VISIBLE);
                         }
-                        return String.valueOf(arrayDayTemp.get(Math.round(value)));
+                        return String.valueOf(arrayDayTemp.get((int) value));
                     }
                 };
             }
@@ -678,7 +730,6 @@ public class HeavyLoadDetailActivity extends AppCompatActivity {
             xAxis.setGranularityEnabled(true);
             xAxis.setDrawLabels(true);
             xAxis.setLabelCount(7);
-
 
 
             //***

@@ -1,6 +1,5 @@
 package com.spike.bot.activity.TTLock;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,7 +8,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.InputFilter;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,8 +26,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.ContextThemeWrapper;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,12 +41,10 @@ import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.AddDevice.AllUnassignedPanel;
-import com.spike.bot.activity.ir.blaster.IRBlasterRemote;
 import com.spike.bot.adapter.LockClickListener;
 import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
-import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.dialog.AddRoomDialog;
@@ -74,6 +68,8 @@ import static com.spike.bot.core.Common.showToast;
  */
 public class LockBrandActivity extends AppCompatActivity implements LockClickListener {
 
+    public boolean isFlagClick = false;
+    public AddRoomDialog addRoomDialog;
     Toolbar toolbar;
     FloatingActionButton fab;
     RecyclerView recyclerViewLock;
@@ -84,149 +80,26 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
     ArrayList<String> stringArrayList = new ArrayList<>();
     List<YaleLockVO.Data> yalelocklist = new ArrayList<>();
     YaleLockVO.Data yalelockVO;
-    public boolean isFlagClick = false;
     MenuItem menuAdd;
-    private Socket mSocket;
     Dialog dialog;
-    public AddRoomDialog addRoomDialog;
     ArrayList<String> roomIdList = new ArrayList<>();
     ArrayList<String> roomNameList = new ArrayList<>();
     int typeSync = 0;
     TextView label_add;
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_smart_device_list);
-
-        setviewId();
-    }
-
-    private void setviewId() {
-        toolbar = findViewById(R.id.toolbar);
-        fab = findViewById(R.id.fab);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toolbar.setTitle("Select Your Brand");
-
-        fab.setVisibility(View.GONE);
-        txtNodataFound = findViewById(R.id.txtNodataFound);
-        recyclerViewLock = findViewById(R.id.recyclerSmartDevice);
-        label_add = findViewById(R.id.label_add);
-
-        label_add.setVisibility(View.GONE);
-        setAdapter();
-        stringArrayList.add("Bridge");
-        stringArrayList.add("Lock");
-
-        startSocketConnection();
-    }
-
-    private void setAdapter() {
-        recyclerViewLock.setLayoutManager(new LinearLayoutManager(this));
-        smartLockBrandAdapter = new SmartLockBrandAdapter(this);
-        recyclerViewLock.setAdapter(smartLockBrandAdapter);
-        smartLockBrandAdapter.notifyDataSetChanged();
-    }
-
-    private void setAdapter1() {
-        recyclerViewLock.setLayoutManager(new LinearLayoutManager(this));
-        smartLockOptionBrandAdapter = new SmartLockOptionBrandAdapter(this, yalelocklist, LockBrandActivity.this);
-        recyclerViewLock.setAdapter(smartLockOptionBrandAdapter);
-        smartLockOptionBrandAdapter.notifyDataSetChanged();
-    }
-
-   /* private void setAdapterTTlock(){
-        recyclerViewLock.setLayoutManager(new LinearLayoutManager(this));
-        ttlockoptionadapter = new TTLockOptionBrandAdapter(this, stringArrayList);
-        recyclerViewLock.setAdapter(ttlockoptionadapter);
-        ttlockoptionadapter.notifyDataSetChanged();
-    }*/
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_room_edit, menu);
-        menuAdd = menu.findItem(R.id.action_add_text);
-        MenuItem actionsave = menu.findItem(R.id.action_add);
-        MenuItem actionEdit = menu.findItem(R.id.actionEdit);
-        MenuItem action_save = menu.findItem(R.id.action_save);
-        menuAdd.setVisible(false);
-        action_save.setVisible(false);
-        actionEdit.setVisible(false);
-        actionsave.setVisible(false);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_add_text) {
-            showOptionDialog();
-            return true;
+    AlertDialog.Builder builder;
+    boolean isDialogShow = true;
+    /*searching device wait for 7 sec*/
+    CountDownTimer countDownTimer = new CountDownTimer(7000, 4000) {
+        public void onTick(long millisUntilFinished) {
         }
-        return super.onOptionsItemSelected(item);
-    }
 
-    /*start socket connection*/
-    public void startSocketConnection() {
-        ChatApplication app = (ChatApplication) getApplication();
-        mSocket = app.getSocket();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mSocket != null) {
-            mSocket.off("configureDevice", configureDevice);
+        public void onFinish() {
+            ActivityHelper.dismissProgressDialog();
+            ChatApplication.showToast(getApplicationContext(), "No New Device detected!");
         }
-    }
 
-  /*  private Emitter.Listener configureDevice = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            LockBrandActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        if (countDownTimer != null) {
-                            countDownTimer.cancel();
-                        }
-
-                        JSONObject object = new JSONObject(args[0].toString());
-                        ChatApplication.logDisplay("configureDevice is " + object);
-
-                        //{"message":"","module_id":"1572951765645_ZE3EGTF4n","module_type":"smart_remote","total_devices":1,"room_list":[{"room_id":"1571986283894_cvUfVSpja","room_name":"Jhanvi M."},{"room_id":"1572851100674_c2sWW4eIR","room_name":"testRoom"}]}
-                        String message = object.optString("message");
-                        String module_id = object.optString("module_id");
-
-                        ActivityHelper.dismissProgressDialog();
-
-                        if (TextUtils.isEmpty(message)) {
-                            showAddSensorDialog(module_id, object.optString("module_type"));
-                        } else {
-                            showConfigAlert(message);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }
-    };*/
-
+    };
+    private Socket mSocket;
     /**
      * Socket Listner for configure devices
      */
@@ -270,7 +143,11 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
                         if (TextUtils.isEmpty(message)) {
                             showLockSensor(module_id, module_type);
                         } else {
+//                            if (message.toLowerCase().contains("lock")) {
                             showConfigAlert(message);
+//                            } else {
+//                                showConfigAlert("Attached device is not yale lock");
+//                            }
                         }
 
 
@@ -283,6 +160,138 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
         }
     };
 
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_smart_device_list);
+
+        setviewId();
+    }
+
+    private void setviewId() {
+        toolbar = findViewById(R.id.toolbar);
+        fab = findViewById(R.id.fab);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbar.setTitle("Select Your Brand");
+
+        fab.setVisibility(View.GONE);
+        txtNodataFound = findViewById(R.id.txtNodataFound);
+        recyclerViewLock = findViewById(R.id.recyclerSmartDevice);
+        label_add = findViewById(R.id.label_add);
+
+        label_add.setVisibility(View.GONE);
+        setAdapter();
+        stringArrayList.add("Bridge");
+        stringArrayList.add("Lock");
+
+        startSocketConnection();
+    }
+
+   /* private void setAdapterTTlock(){
+        recyclerViewLock.setLayoutManager(new LinearLayoutManager(this));
+        ttlockoptionadapter = new TTLockOptionBrandAdapter(this, stringArrayList);
+        recyclerViewLock.setAdapter(ttlockoptionadapter);
+        ttlockoptionadapter.notifyDataSetChanged();
+    }*/
+
+    private void setAdapter() {
+        recyclerViewLock.setLayoutManager(new LinearLayoutManager(this));
+        smartLockBrandAdapter = new SmartLockBrandAdapter(this);
+        recyclerViewLock.setAdapter(smartLockBrandAdapter);
+        smartLockBrandAdapter.notifyDataSetChanged();
+    }
+
+    private void setAdapter1() {
+        recyclerViewLock.setLayoutManager(new LinearLayoutManager(this));
+        smartLockOptionBrandAdapter = new SmartLockOptionBrandAdapter(this, yalelocklist, LockBrandActivity.this);
+        recyclerViewLock.setAdapter(smartLockOptionBrandAdapter);
+        smartLockOptionBrandAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_room_edit, menu);
+        menuAdd = menu.findItem(R.id.action_add_text);
+        MenuItem actionsave = menu.findItem(R.id.action_add);
+        MenuItem actionEdit = menu.findItem(R.id.actionEdit);
+        MenuItem action_save = menu.findItem(R.id.action_save);
+        menuAdd.setVisible(false);
+        action_save.setVisible(false);
+        actionEdit.setVisible(false);
+        actionsave.setVisible(false);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_add_text) {
+            showOptionDialog();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /*start socket connection*/
+    public void startSocketConnection() {
+        ChatApplication app = (ChatApplication) getApplication();
+        mSocket = app.getSocket();
+    }
+
+  /*  private Emitter.Listener configureDevice = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            LockBrandActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (countDownTimer != null) {
+                            countDownTimer.cancel();
+                        }
+
+                        JSONObject object = new JSONObject(args[0].toString());
+                        ChatApplication.logDisplay("configureDevice is " + object);
+
+                        //{"message":"","module_id":"1572951765645_ZE3EGTF4n","module_type":"smart_remote","total_devices":1,"room_list":[{"room_id":"1571986283894_cvUfVSpja","room_name":"Jhanvi M."},{"room_id":"1572851100674_c2sWW4eIR","room_name":"testRoom"}]}
+                        String message = object.optString("message");
+                        String module_id = object.optString("module_id");
+
+                        ActivityHelper.dismissProgressDialog();
+
+                        if (TextUtils.isEmpty(message)) {
+                            showAddSensorDialog(module_id, object.optString("module_type"));
+                        } else {
+                            showConfigAlert(message);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+    };*/
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mSocket != null) {
+            mSocket.off("configureDevice", configureDevice);
+        }
+    }
 
     /*dialog for sensor */
     private void showLockSensor(String door_module_id, String module_type) {
@@ -341,7 +350,7 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
                     ChatApplication.showToast(LockBrandActivity.this, "Please enter Yale lock name");
                 } else {
                     ChatApplication.keyBoardHideForce(LockBrandActivity.this);
-                    saveSensor(dialog, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list,module_type);
+                    saveSensor(dialog, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list, module_type);
                     mSocket.off("configureDevice", configureDevice);
                     dialog.dismiss();
                 }
@@ -349,7 +358,6 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
         });
         dialog.show();
     }
-
 
     /**
      * showAddSensorDialog
@@ -421,19 +429,23 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
      * @param alertMessage
      */
     private void showConfigAlert(String alertMessage) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+
+        builder = new AlertDialog.Builder(LockBrandActivity.this);
         builder.setMessage(alertMessage);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                isDialogShow = true;
             }
         });
-        builder.create().show();
+        if (isDialogShow) {
+            isDialogShow = false;
+            builder.create().show();
+        }
     }
 
-
-    private void saveSensor(final Dialog dialog, String lock_name, String lock_module_id,  Spinner sp_room_list,String module_type) {
+    private void saveSensor(final Dialog dialog, String lock_name, String lock_module_id, Spinner sp_room_list, String module_type) {
 
         if (!ActivityHelper.isConnectingToInternet(LockBrandActivity.this)) {
             Toast.makeText(LockBrandActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -444,7 +456,7 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
         int room_pos = sp_room_list.getSelectedItemPosition();
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-        SpikeBotApi.getInstance().addDevice(roomIdList.get(room_pos), lock_name,lock_module_id, module_type, new DataResponseListener() {
+        SpikeBotApi.getInstance().addDevice(roomIdList.get(room_pos), lock_name, lock_module_id, module_type, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
@@ -482,18 +494,6 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
             }
         });
     }
-
-    /*searching device wait for 7 sec*/
-    CountDownTimer countDownTimer = new CountDownTimer(7000, 4000) {
-        public void onTick(long millisUntilFinished) {
-        }
-
-        public void onFinish() {
-            ActivityHelper.dismissProgressDialog();
-            ChatApplication.showToast(getApplicationContext(), "No New Device detected!");
-        }
-
-    };
 
     public void startTimer() {
         try {
@@ -536,7 +536,7 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-        SpikeBotApi.getInstance().getDeviceList("lock",new DataResponseListener() {
+        SpikeBotApi.getInstance().getDeviceList("lock", new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 ActivityHelper.dismissProgressDialog();
@@ -601,7 +601,7 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
         dialog.setContentView(R.layout.dialog_panel_option);
 
         TextView txtDialogTitle = dialog.findViewById(R.id.txt_dialog_title);
-        txtDialogTitle.setText("Select Type");
+        txtDialogTitle.setText("Door Lock");
 
         Button btn_sync = dialog.findViewById(R.id.btn_panel_sync);
         Button btn_unaasign = dialog.findViewById(R.id.btn_panel_unasigned);
@@ -614,7 +614,7 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
             public void onClick(View v) {
                 dialog.dismiss();
                 if (mSocket != null) {
-                    mSocket.on("configureDevice", configureDevice);
+                    mSocket.on("configureDevice", configureDevice)  ;
                 }
                 getconfigureyalelockRequest();
             }
@@ -660,11 +660,11 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
 
         TextView txt_edit = view.findViewById(R.id.txt_edit);
 
-        BottomSheetDialog dialog = new BottomSheetDialog(LockBrandActivity.this,R.style.AppBottomSheetDialogTheme);
+        BottomSheetDialog dialog = new BottomSheetDialog(LockBrandActivity.this, R.style.AppBottomSheetDialogTheme);
         dialog.setContentView(view);
         dialog.show();
 
-        txt_bottomsheet_title.setText("What would you like to do in" + " " + yalelockVO.getDeviceName() + " " +"?");
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + yalelockVO.getDeviceName() + " " + "?");
         linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -851,10 +851,25 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
 
     }
 
+    @Override
+    public void onBackPressed() {
+        if (isFlagClick) {
+            isFlagClick = false;
+            menuAdd.setVisible(false);
+            toolbar.setTitle("Select Your Brand");
+
+            txtNodataFound.setVisibility(View.GONE);
+            recyclerViewLock.setVisibility(View.VISIBLE);
+            setAdapter();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     public class SmartLockBrandAdapter extends RecyclerView.Adapter<SmartLockBrandAdapter.SensorViewHolder> {
 
-        private Context mContext;
         public int type = 0;
+        private Context mContext;
 
         public SmartLockBrandAdapter(Context context) {
             this.mContext = context;
@@ -873,8 +888,8 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
                 holder.imgBrand.setImageResource(R.drawable.smart_lock_icon_brand);
                 holder.txtBrandName.setText("TT Lock");
             } else {*/
-                holder.imgBrand.setImageResource(R.drawable.ic_yale_lock);
-                holder.txtBrandName.setText("Yale Lock");
+            holder.imgBrand.setImageResource(R.drawable.ic_yale_lock);
+            holder.txtBrandName.setText("Yale Lock");
 //            }
 
             holder.view.setOnClickListener(new View.OnClickListener() {
@@ -884,10 +899,10 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
                         isFlagClick = true;
 //                        setAdapterTTlock();
                     } else {*/
-                        isFlagClick = true;
-                        toolbar.setTitle("Lock List");
-                        menuAdd.setVisible(true);
-                        getLockList();
+                    isFlagClick = true;
+                    toolbar.setTitle("Lock List");
+                    menuAdd.setVisible(true);
+                    getLockList();
 //                    }
                 }
             });
@@ -921,9 +936,9 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
 
     public class SmartLockOptionBrandAdapter extends RecyclerView.Adapter<SmartLockOptionBrandAdapter.SensorViewHolder> {
 
-        private Context mContext;
         public int type = 0;
         LockClickListener lockClickListener;
+        private Context mContext;
 
         public SmartLockOptionBrandAdapter(Context context, List<YaleLockVO.Data> yaleLockList, LockClickListener lockClickListener1) {
             this.mContext = context;
@@ -947,7 +962,14 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
 
             yalelockVO = yalelocklist.get(position);
 
-            holder.imgBrand.setImageResource(R.drawable.lock_only);
+
+            if (yalelocklist.get(position).getIsActive().equalsIgnoreCase("y")) {
+                holder.imgBrand.setImageResource(R.drawable.lock_only);
+            } else {
+                holder.imgBrand.setImageResource(R.drawable.door_lock_inactive);
+            }
+
+
             holder.txtBrandName.setText(yalelocklist.get(position).getDeviceName());
 
             holder.img_more_option.setId(position);
@@ -1030,8 +1052,8 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
 
     public class TTLockOptionBrandAdapter extends RecyclerView.Adapter<TTLockOptionBrandAdapter.SensorViewHolder> {
 
-        private Context mContext;
         public int type = 0;
+        private Context mContext;
 
         public TTLockOptionBrandAdapter(Context context, ArrayList<String> stringArrayList) {
             this.mContext = context;
@@ -1089,21 +1111,6 @@ public class LockBrandActivity extends AppCompatActivity implements LockClickLis
                 txtBrandName = itemView.findViewById(R.id.txtBrandName);
                 imgBrand = itemView.findViewById(R.id.img_Brand);
             }
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (isFlagClick) {
-            isFlagClick = false;
-            menuAdd.setVisible(false);
-            toolbar.setTitle("Select Your Brand");
-
-            txtNodataFound.setVisibility(View.GONE);
-            recyclerViewLock.setVisibility(View.VISIBLE);
-            setAdapter();
-        } else {
-            super.onBackPressed();
         }
     }
 }

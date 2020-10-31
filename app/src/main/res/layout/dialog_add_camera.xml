@@ -293,7 +293,7 @@
                 android:layout_height="@dimen/_25sdp"
                 android:layout_gravity="center"
                 android:layout_marginRight="@dimen/_5sdp"
-                android:src="@drawable/cross" />
+                android:src="@drawable/round_cross" />
 
         </LinearLayout>
 

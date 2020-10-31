@@ -51,7 +51,7 @@
                 android:layout_height="@dimen/_250sdp"
                 android:layout_marginLeft="@dimen/_30sdp"
                 android:layout_marginRight="@dimen/_30sdp"
-                android:background="@drawable/smart_lock_01"
+
                 android:layout_marginTop="@dimen/_30sdp" />
 
             <TextView

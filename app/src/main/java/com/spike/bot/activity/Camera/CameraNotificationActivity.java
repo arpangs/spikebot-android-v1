@@ -2,9 +2,11 @@ package com.spike.bot.activity.Camera;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -23,6 +25,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -52,6 +55,7 @@ import com.spike.bot.dialog.TimePickerFragment;
 import com.spike.bot.listener.SelectCamera;
 import com.spike.bot.listener.UpdateCameraAlert;
 import com.spike.bot.model.CameraAlertList;
+import com.spike.bot.model.CameraCounterModel;
 import com.spike.bot.model.CameraPushLog;
 import com.spike.bot.model.CameraVO;
 
@@ -63,6 +67,11 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
+
+import static com.kp.core.ActivityHelper.dismissProgressDialog;
 
 /**
  * Created by Sagar on 26/11/18.
@@ -85,7 +94,74 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
     ArrayList<CameraVO> cameraVOArrayList = new ArrayList<>();
     Dialog dialog;
     View view_starttime, view_header;
+    ProgressDialog m_progressDialog;
+    List<CameraCounterModel.Data.CameraCounterList> cameracounterlist;
+    List<CameraCounterModel.Data.TotalCounterList> totalList;
+    String cloudurl = "";
+    CardView notificationView;
     private String homecontroller_id = "", jetson_id = "";
+    private LinearLayout ll_notification;
+    private TextView mNotificationCount;
+    private Socket mSocket, cloudsocket;
+    private Boolean isSocketConnected = true;
+    private long mLastClickTime = 0;
+    private Emitter.Listener updateCameraCounter = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+                            String user_id = object.getString("user_id");
+                            String camera_id = object.getString("user_id");
+                            int unseen_log = object.getInt("unseen_log");
+                            ChatApplication.logDisplay("camera counter socket" + object.toString());
+                            getCameraBadgeCount();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
+    private Emitter.Listener onConnect = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (!isSocketConnected) {
+                            isSocketConnected = true;
+                        }
+                        Constants.startUrlset();
+                        mSocket.emit("socketconnection", "android == startconnect  " + mSocket.id());
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+    };
+    private Emitter.Listener onDisconnect = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    isSocketConnected = false;
+                }
+            });
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -98,6 +174,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        m_progressDialog = new ProgressDialog(this);
         setUi();
 
     }
@@ -114,15 +191,144 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         txt_empty_notification = (TextView) findViewById(R.id.txt_empty_notification);
         txtEmptyAlert = (TextView) findViewById(R.id.txtEmptyAlert);
         view_rel_badge = (ImageView) findViewById(R.id.view_rel_badge);
+        ll_notification = findViewById(R.id.ll_camera_notification);
         view_header = findViewById(R.id.view_header);
 
+        notificationView = findViewById(R.id.edt_txt_layout);
+
+        mNotificationCount = findViewById(R.id.txt_notification_badge);
+
         view_rel_badge.setOnClickListener(this);
+        ll_notification.setOnClickListener(this);
+
+        getCameraBadgeCount();
+        startLiveSocketConnection();
+    }
+
+    public void startLiveSocketConnection() {
+
+        ChatApplication app = ChatApplication.getInstance();
+
+        if (cloudsocket != null && cloudsocket.connected()) {
+        } else {
+
+            cloudurl = "https://live.spikebot.io:";
+//            cloudurl = "https://beta.spikebot.io";
+            cloudsocket = app.getCloudSocket();
+
+            if (cloudsocket != null) {
+                if (cloudsocket.connected() == false) {
+                    cloudsocket = null;
+                }
+            }
+
+            if (cloudsocket == null) {
+                cloudsocket = app.openCloudSocket(cloudurl);
+                cloudsocket.on(Socket.EVENT_CONNECT, onConnect);
+                cloudsocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
+                cloudsocket.connect();
+            }
+            try {
+                cloudsocket.on("camera-" + Common.getPrefValue(this, Constants.USER_ID), updateCameraCounter);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if (cloudsocket != null) {
+            cloudsocket.off("camera-" + Common.getPrefValue(this, Constants.USER_ID), updateCameraCounter);
+        }
+        super.onPause();
     }
 
     @Override
     protected void onResume() {
         getconfigureData();
+
+        if (cloudsocket != null) {
+            cloudsocket.on("camera-" + Common.getPrefValue(CameraNotificationActivity.this, Constants.USER_ID), updateCameraCounter);
+            ChatApplication.logDisplay("socket is null");
+        }
         super.onResume();
+    }
+
+    private void getCameraBadgeCount() {
+
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            Toast.makeText(this, R.string.disconnect, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        SpikeBotApi.getInstance().GetCameraBadgeCount(homecontroller_id, new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try {
+                    dismissProgressDialog();
+
+                    if (m_progressDialog != null && m_progressDialog.isShowing()) {
+                        dismissProgressDialog();
+                    }
+
+                    JSONObject result = new JSONObject(stringResponse);
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        ChatApplication.logDisplay("Camera Badge onSuccess " + result.toString());
+
+                        CameraCounterModel counterres = Common.jsonToPojo(result.toString(), CameraCounterModel.class);
+                        cameracounterlist = counterres.getData().getCameraCounterList();
+                        totalList = counterres.getData().getTotalCounterList();
+
+                        try {
+                            for (CameraCounterModel.Data.TotalCounterList lModel : totalList) {
+                                if (lModel.getJetsonDeviceId().equals(jetson_id)) {
+                                    int count = lModel.getTotalUnread();
+                                    if (count > 0) {
+                                        mNotificationCount.setVisibility(View.VISIBLE);
+                                    } else {
+                                        mNotificationCount.setVisibility(View.INVISIBLE);
+                                    }
+
+                                    if (count > 99) {
+                                        mNotificationCount.setText("99+");
+                                        mNotificationCount.setBackground(getResources().getDrawable(R.drawable.badge_background_oval));
+                                    } else {
+                                        mNotificationCount.setText("" + count);
+                                        mNotificationCount.setBackground(getResources().getDrawable(R.drawable.badge_background));
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        ChatApplication.logDisplay("total_camera_list " + totalList.size());
+                        ChatApplication.logDisplay("total_camera_notification " + counterres.getData().getTotalCameraNotification());
+                        dismissProgressDialog();
+                    }
+                } catch (Exception e) {
+                    ChatApplication.logDisplay("total_camera_list Exception " + e.getMessage());
+                    if (m_progressDialog != null && m_progressDialog.isShowing()) {
+                        dismissProgressDialog();
+                    }
+
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                dismissProgressDialog();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                dismissProgressDialog();
+            }
+        });
+
     }
 
     @Override
@@ -133,7 +339,22 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
     @Override
     public void onClick(View v) {
+
         if (v == view_rel_badge) {
+
+            if (SystemClock.elapsedRealtime() - mLastClickTime < 2000) {
+                return;
+            }
+            mLastClickTime = SystemClock.elapsedRealtime();
+
+            callupdateUnReadCameraLogs(true);
+            callCameraUnseenLog();
+        }
+        if (v == ll_notification) {
+            if (SystemClock.elapsedRealtime() - mLastClickTime < 2000) {
+                return;
+            }
+            mLastClickTime = SystemClock.elapsedRealtime();
             callupdateUnReadCameraLogs(true);
             callCameraUnseenLog();
         }
@@ -268,7 +489,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             @Override
             public void afterTextChanged(Editable s) {
                 if (et_schedule_on_time.length() > 0) {
-                    et_schedule_on_time.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icn_close, 0);
+                    et_schedule_on_time.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icn_close_view, 0);
                     et_schedule_on_time.setCompoundDrawablePadding(8);
                 }
             }
@@ -303,7 +524,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             @Override
             public void afterTextChanged(Editable s) {
                 if (et_schedule_off_time.length() > 0) {
-                    et_schedule_off_time.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icn_close, 0);
+                    et_schedule_off_time.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icn_close_view, 0);
                     et_schedule_off_time.setCompoundDrawablePadding(8);
                 }
             }
@@ -390,7 +611,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         SpikeBotApi.getInstance().callAddCamera(et_schedule_on_time, et_schedule_off_time, edIntervalTime, getCameraList, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
-                ActivityHelper.dismissProgressDialog();
+                dismissProgressDialog();
                 try {
                     JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
@@ -409,13 +630,13 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
             @Override
             public void onData_FailureResponse() {
-                ActivityHelper.dismissProgressDialog();
+                dismissProgressDialog();
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onData_FailureResponse_with_Message(String error) {
-                ActivityHelper.dismissProgressDialog();
+                dismissProgressDialog();
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         });
@@ -451,14 +672,13 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         }
 
 
-
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
         ActivityHelper.showProgressDialog(this, "Please Wait...", false);
-        SpikeBotApi.getInstance().callUpdateCamera(et_schedule_on_time, et_schedule_off_time, cameraAlertList, jetson_id, edIntervalTime, getCameraList,array,roomDeviceArray,new DataResponseListener() {
+        SpikeBotApi.getInstance().callUpdateCamera(et_schedule_on_time, et_schedule_off_time, cameraAlertList, jetson_id, edIntervalTime, getCameraList, array, roomDeviceArray, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
-                ActivityHelper.dismissProgressDialog();
+                dismissProgressDialog();
                 try {
                     JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
@@ -477,13 +697,13 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
             @Override
             public void onData_FailureResponse() {
-                ActivityHelper.dismissProgressDialog();
+                dismissProgressDialog();
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onData_FailureResponse_with_Message(String error) {
-                ActivityHelper.dismissProgressDialog();
+                dismissProgressDialog();
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         });
@@ -525,13 +745,13 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
-                    ActivityHelper.dismissProgressDialog();
+                    dismissProgressDialog();
                 }
             }
 
             @Override
             public void onFailure(Throwable throwable, String error) {
-                ActivityHelper.dismissProgressDialog();
+                dismissProgressDialog();
                 Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         }).execute();
@@ -565,14 +785,24 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                             recyclerAlert.setVisibility(View.GONE);
                             txt_empty_notification.setVisibility(View.VISIBLE);
                             txtAlertCount.setVisibility(View.GONE);
+                            notificationView.setVisibility(View.GONE);
                             return;
+                        } else {
+                            notificationView.setVisibility(View.VISIBLE);
                         }
+
 
                         JSONArray jsonArray = object.optJSONArray("cameraAlertList");
                         String unreadCount = object.optString("unreadCount");
 
                         JSONArray jsonArray2 = object.optJSONArray("cameraPushLogs");
                         JSONArray jsonArray3 = object.optJSONArray("cameraIdList");
+
+                        if (jsonArray.length() == 0) {
+                            notificationView.setVisibility(View.GONE);
+                        } else {
+                            notificationView.setVisibility(View.VISIBLE);
+                        }
 
                         arrayListLog.clear();
                         arrayListAlert.clear();
@@ -624,13 +854,13 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
             @Override
             public void onData_FailureResponse() {
-                ActivityHelper.dismissProgressDialog();
+                dismissProgressDialog();
                 Toast.makeText(CameraNotificationActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onData_FailureResponse_with_Message(String error) {
-                ActivityHelper.dismissProgressDialog();
+                dismissProgressDialog();
                 Toast.makeText(CameraNotificationActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         });
@@ -655,7 +885,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
-                    ActivityHelper.dismissProgressDialog();
+                    dismissProgressDialog();
                     JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -697,12 +927,12 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
             @Override
             public void onData_FailureResponse() {
-                ActivityHelper.dismissProgressDialog();
+                dismissProgressDialog();
             }
 
             @Override
             public void onData_FailureResponse_with_Message(String error) {
-                ActivityHelper.dismissProgressDialog();
+                dismissProgressDialog();
             }
         });
     }
@@ -840,18 +1070,18 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } finally {
-                    ActivityHelper.dismissProgressDialog();
+                    dismissProgressDialog();
                 }
             }
 
             @Override
             public void onData_FailureResponse() {
-                ActivityHelper.dismissProgressDialog();
+                dismissProgressDialog();
             }
 
             @Override
             public void onData_FailureResponse_with_Message(String error) {
-                ActivityHelper.dismissProgressDialog();
+                dismissProgressDialog();
             }
         });
 
@@ -893,7 +1123,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
     /*clear unread count*/
     private void callupdateUnReadCameraLogs(final boolean b) {
-        if (arrayListAlert.size() > 0) {
+        /*if (arrayListAlert.size() > 0) {
             if (b) {
                 Intent intent = new Intent(CameraNotificationActivity.this, CameraDeviceLogActivity.class);
                 if (jetsoncameranotification) {
@@ -928,7 +1158,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
                 CameraNotificationActivity.this.finish();
             }
             return;
-        }
+        }*/
         if (!ActivityHelper.isConnectingToInternet(CameraNotificationActivity.this)) {
             Toast.makeText(CameraNotificationActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             return;
@@ -942,7 +1172,7 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
         SpikeBotApi.getInstance().callupdateUnReadCameraLogs(new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
-                ActivityHelper.dismissProgressDialog();
+                dismissProgressDialog();
                 try {
                     if (b) {
                         Intent intent = new Intent(CameraNotificationActivity.this, CameraDeviceLogActivity.class);
@@ -968,13 +1198,13 @@ public class CameraNotificationActivity extends AppCompatActivity implements Sel
 
             @Override
             public void onData_FailureResponse() {
-                ActivityHelper.dismissProgressDialog();
+                dismissProgressDialog();
                 Toast.makeText(CameraNotificationActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onData_FailureResponse_with_Message(String error) {
-                ActivityHelper.dismissProgressDialog();
+                dismissProgressDialog();
                 Toast.makeText(CameraNotificationActivity.this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
             }
         });

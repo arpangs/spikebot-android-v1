@@ -160,7 +160,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
                 } else {
                     // ll_pass_edittext_view.setAnimation(slideUpAnimation);
-                    img_pass_arrow.setImageResource(R.drawable.icn_arrow_down);
+                    img_pass_arrow.setImageResource(R.drawable.down);
                     ll_pass_edittext_view.setVisibility(View.VISIBLE);
 
                 }

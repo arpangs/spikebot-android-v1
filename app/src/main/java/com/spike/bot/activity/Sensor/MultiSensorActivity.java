@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -16,12 +17,14 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,18 +34,21 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.kp.core.ActivityHelper;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.DeviceLogActivity;
+import com.spike.bot.activity.DeviceLogRoomActivity;
+import com.spike.bot.activity.Temperature.TemperatureGraphActivity;
 import com.spike.bot.adapter.HumiditySensorAdapter;
 import com.spike.bot.adapter.TempMultiSensorAdapter;
 import com.spike.bot.api_retrofit.DataResponseListener;
@@ -79,6 +85,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     public NestedScrollView scrollviewMulti;
     public View viewEditSensor;
     public boolean isCFDone = false;
+
     /**
      * fill Date from model class
      *
@@ -93,15 +100,20 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     Dialog tempSensorNotificationDialog;
     View view_line_top_temp, view_line_top;
     String repeatDayString = "";
+    String counter;
+    String hucounter;
+    boolean isBackTemp;
+    boolean isBackHdty;
     private RecyclerView sensor_list, recyclerAlert, sensor_list_temp;
     private TempMultiSensorAdapter tempSensorInfoAdapter;
     private HumiditySensorAdapter humiditySensorAdapter;
     private EditText edsensorName;
-    private ImageView view_rel_badge, iv_icon_edit, imgLog;
+    private ImageView view_rel_badge, iv_icon_edit, imgLog, imgBattery, imgTempGraph;
     private TextView txtAlertCount, txtEmpty, txtEmpty_temp, txtHumity, txtTempCount, tempCFValue,
             txtTempAlertCount, txtCButton, txtFButton, txtTempAlertCount_temp, txtTempCount_temp, txtAddButton, txtAddButtonTemp, txt_battery_level;
     private Button btn_delete;
-    private ToggleButton toggleAlert, toggleAlert_temp, toggleAlertSensor;
+    private ToggleButton toggleAlertSensor;
+    private ImageView toggleAlert, toggleAlert_temp;
     private LinearLayout linearAlertExpand, linearAlertDown, linearAlertExpand_temp, linearAlertDown_temp, linearMultisensor, edt_txt_layout2, edt_txt_layout_temp;
     private boolean flagAlert = false, flagAlertTemp = false, flagEditSensor = false, flagSensorNoti = false;
     private String temp_room_name, temp_room_id, temp_module_id, temp_sensor_name;
@@ -113,6 +125,11 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     private int lastVisibleItem;
     private boolean isScrollToEndPosition = false;
     private TextView text_day_1, text_day_2, text_day_3, text_day_4, text_day_5, text_day_6, text_day_7;
+    private TextView mDeviceName;
+    private ImageView mBack;
+    private RelativeLayout mTempCount, mHumidityCount;
+    private TextView mTempNotiCount, mHumidityNotiCount;
+    private long mLastClickTime = 0;
     /*change device status socket getting
      * defult value is celsius */
     private Emitter.Listener changeDeviceStatus = new Emitter.Listener() {
@@ -161,6 +178,96 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         }
     };
 
+
+    private Emitter.Listener updateDeviceSubBadgeCounter = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            MultiSensorActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    if (args != null) {
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+                            String device_id = object.getString("device_id");
+                            String subType = object.getString("log_sub_type");
+
+                            if (subType.toLowerCase().equals("temp_alert")) {
+                                counter = object.getString("counter");
+                            } else if (subType.toLowerCase().equals("humidity_alert")) {
+                                hucounter = object.getString("counter");
+                            }
+
+                            String user_id = object.getString("user_id");
+
+                            if (user_id.equalsIgnoreCase(Common.getPrefValue(MultiSensorActivity.this, Constants.USER_ID))) {
+
+                                if (subType.toLowerCase().equals("temp_alert")) {
+
+                                    if (mRemoteCommandList.getDevice().getDevice_id().equalsIgnoreCase(device_id)) {
+                                        try {
+                                            if (!counter.equalsIgnoreCase("") || !counter.equalsIgnoreCase("null") || !counter.equalsIgnoreCase("0")) {
+
+                                                int count = Integer.parseInt(counter);
+
+                                                if (count > 0) {
+                                                    mTempNotiCount.setVisibility(View.VISIBLE);
+                                                    mTempNotiCount.setText(count + "");
+
+                                                    if (count > 99) {
+                                                        mTempNotiCount.setText("99+");
+                                                        mTempNotiCount.setBackground(getResources().getDrawable(R.drawable.badge_background_oval));
+                                                    } else {
+                                                        mTempNotiCount.setBackground(getResources().getDrawable(R.drawable.badge_background));
+                                                    }
+                                                } else {
+                                                    mTempNotiCount.setVisibility(View.INVISIBLE);
+                                                }
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                } else if (subType.toLowerCase().equals("humidity_alert")) {
+
+                                    try {
+                                        if (mRemoteCommandList.getDevice().getDevice_id().equalsIgnoreCase(device_id)) {
+                                            if (!hucounter.equalsIgnoreCase("") || !hucounter.equalsIgnoreCase("null") || !hucounter.equalsIgnoreCase("0")) {
+
+                                                int count = Integer.parseInt(hucounter);
+
+                                                if (count > 0) {
+                                                    mHumidityNotiCount.setVisibility(View.VISIBLE);
+                                                    mHumidityNotiCount.setText(count + "");
+
+                                                    if (count > 99) {
+                                                        mHumidityNotiCount.setText("99+");
+                                                        mHumidityNotiCount.setBackground(getResources().getDrawable(R.drawable.badge_background_oval));
+                                                    } else {
+                                                        mHumidityNotiCount.setBackground(getResources().getDrawable(R.drawable.badge_background));
+                                                    }
+                                                } else {
+                                                    mHumidityNotiCount.setVisibility(View.INVISIBLE);
+                                                }
+                                            }
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+    };
+
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
         if (!isConnected) {
@@ -173,23 +280,29 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multi_sensor);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-
         temp_sensor_name = getIntent().getStringExtra("temp_sensor_name");
         temp_room_name = getIntent().getStringExtra("temp_room_name");
         temp_room_id = getIntent().getStringExtra("temp_room_id");
         temp_module_id = getIntent().getStringExtra("temp_module_id");
 
-        toolbar.setTitle(temp_sensor_name);
+        isBackTemp = false;
+        isBackHdty = false;
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+
+        if (isBackTemp) {
+            unreadApiCall(false);
+        }
+
+        if (isBackHdty) {
+            unreadApiCallHumidity(false);
+        }
+
         ChatApplication.getInstance().setConnectivityListener(this);
         if (ChatApplication.isLogResume) {
             ChatApplication.isLogResume = false;
@@ -213,6 +326,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
         if (mSocket != null) {
             mSocket.on("changeDeviceStatus", changeDeviceStatus);
+            mSocket.on("updateDeviceSubBadgeCounter", updateDeviceSubBadgeCounter);
         }
     }
 
@@ -220,7 +334,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     protected void onDestroy() {
         super.onDestroy();
         if (mSocket != null) {
-            mSocket.off("changeDeviceStatus ", changeDeviceStatus);
+            mSocket.off("changeDeviceStatus", changeDeviceStatus);
+            mSocket.off("updateDeviceSubBadgeCounter", updateDeviceSubBadgeCounter);
         }
     }
 
@@ -265,6 +380,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         view_line_top_temp = findViewById(R.id.view_line_top_temp);
         view_line_top = findViewById(R.id.view_line_top);
 
+        imgTempGraph = findViewById(R.id.imgTempGraph);
+
         txtTempCount = findViewById(R.id.txtTempCount);
         txtTempCount_temp = findViewById(R.id.txtTempCount_temp);
 
@@ -276,13 +393,33 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
 
         btn_delete = findViewById(R.id.btn_delete);
 
+        imgBattery = findViewById(R.id.img_battery);
+
+        mDeviceName = findViewById(R.id.remote_name);
+
+        mDeviceName.setText(temp_sensor_name);
+
+        mTempCount = findViewById(R.id.rel_notification);
+        mHumidityCount = findViewById(R.id.rel_notification_humadity);
+
+        mTempNotiCount = findViewById(R.id.txt_notification_badge);
+        mHumidityNotiCount = findViewById(R.id.txt_notification_badge_humadity);
+
+        mBack = findViewById(R.id.remote_toolbar_back);
+        mBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
+
         edsensorName.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         edsensorName.setFilters(new InputFilter[]{new InputFilter.LengthFilter(25)});
         edsensorName.setTypeface(edsensorName.getTypeface(), Typeface.BOLD);
 
         if (!Common.getPrefValue(MultiSensorActivity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
             iv_icon_edit.setVisibility(View.VISIBLE);
-        } else{
+        } else {
             iv_icon_edit.setVisibility(View.GONE);
         }
 
@@ -322,41 +459,80 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         edsensorName.setFocusableInTouchMode(false);
         edsensorName.setClickable(false);
 
-        toggleAlert.setOnClickListener(new View.OnClickListener() {
+        mTempCount.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                if (flagAlert) {
-                    flagAlert = false;
-                    toggleAlert.setChecked(flagAlert);
-                    linearAlertExpand.setVisibility(View.GONE);
-                    view_line_top.setVisibility(View.GONE);
-                    //  edt_txt_layout2.setBackground(getResources().getDrawable(R.drawable.background_shadow));
-                } else {
-                    flagAlert = true;
-                    toggleAlert.setChecked(flagAlert);
-                    view_line_top.setVisibility(View.VISIBLE);
-                    linearAlertExpand.setVisibility(View.VISIBLE);
-                    // edt_txt_layout2.setBackground(getResources().getDrawable(R.drawable.background_shadow_bottom_side));
+            public void onClick(View view) {
+
+                if (SystemClock.elapsedRealtime() - mLastClickTime < 3000) {
+                    return;
                 }
+                mLastClickTime = SystemClock.elapsedRealtime();
+                isBackTemp = true;
+                Intent intent = new Intent(MultiSensorActivity.this, DeviceLogRoomActivity.class);
+                intent.putExtra("isNotification", "TempSensor");
+                intent.putExtra("ROOM_ID", mRemoteCommandList.getDevice().getDevice_id());
+                intent.putExtra("Sensorname", temp_sensor_name);
+                intent.putExtra("log_sub_type", "temp_alert");
+                startActivity(intent);
+
             }
         });
 
+        toggleAlert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (SystemClock.elapsedRealtime() - mLastClickTime < 3000) {
+                    return;
+                }
+                mLastClickTime = SystemClock.elapsedRealtime();
+
+                isBackTemp = true;
+                Intent intent = new Intent(MultiSensorActivity.this, DeviceLogRoomActivity.class);
+                intent.putExtra("isNotification", "TempSensor");
+                intent.putExtra("ROOM_ID", mRemoteCommandList.getDevice().getDevice_id());
+                intent.putExtra("Sensorname", temp_sensor_name);
+                intent.putExtra("log_sub_type", "temp_alert");
+                startActivity(intent);
+
+            }
+        });
+
+        mHumidityCount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (SystemClock.elapsedRealtime() - mLastClickTime < 3000) {
+                    return;
+                }
+                mLastClickTime = SystemClock.elapsedRealtime();
+
+                isBackHdty = true;
+                Intent intent = new Intent(MultiSensorActivity.this, DeviceLogRoomActivity.class);
+                intent.putExtra("isNotification", "TempSensor");
+                intent.putExtra("ROOM_ID", mRemoteCommandList.getDevice().getDevice_id());
+                intent.putExtra("Sensorname", temp_sensor_name);
+                intent.putExtra("log_sub_type", "humidity_alert");
+                startActivity(intent);
+
+            }
+        });
         toggleAlert_temp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (flagAlertTemp) {
-                    flagAlertTemp = false;
-                    toggleAlert_temp.setChecked(flagAlertTemp);
-                    linearAlertExpand_temp.setVisibility(View.GONE);
-                    view_line_top_temp.setVisibility(View.GONE);
-                    //    edt_txt_layout_temp.setBackground(getResources().getDrawable(R.drawable.background_shadow));
-                } else {
-                    flagAlertTemp = true;
-                    toggleAlert_temp.setChecked(flagAlertTemp);
-                    linearAlertExpand_temp.setVisibility(View.VISIBLE);
-                    view_line_top_temp.setVisibility(View.VISIBLE);
-                    //  edt_txt_layout_temp.setBackground(getResources().getDrawable(R.drawable.background_shadow_bottom_side));
+
+                if (SystemClock.elapsedRealtime() - mLastClickTime < 3000) {
+                    return;
                 }
+                mLastClickTime = SystemClock.elapsedRealtime();
+
+                isBackHdty = true;
+                Intent intent = new Intent(MultiSensorActivity.this, DeviceLogRoomActivity.class);
+                intent.putExtra("isNotification", "TempSensor");
+                intent.putExtra("ROOM_ID", mRemoteCommandList.getDevice().getDevice_id());
+                intent.putExtra("Sensorname", temp_sensor_name);
+                intent.putExtra("log_sub_type", "humidity_alert");
+                startActivity(intent);
             }
         });
 
@@ -374,6 +550,69 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                 }
             }
         });
+
+        imgTempGraph.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(MultiSensorActivity.this, TemperatureGraphActivity.class);
+                intent.putExtra("getRoomName", temp_sensor_name);
+                intent.putExtra("getModuleId", temp_module_id);
+                intent.putExtra("device_id", mRemoteCommandList.getDevice().getDevice_id());
+                startActivity(intent);
+
+            }
+        });
+
+        linearAlertExpand.setVisibility(View.VISIBLE);
+        linearAlertExpand_temp.setVisibility(View.VISIBLE);
+        view_line_top.setVisibility(View.VISIBLE);
+        view_line_top_temp.setVisibility(View.VISIBLE);
+    }
+
+    public void unreadApiCall(final boolean b) {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().unreadNotification(temp_module_id, "", "temp_alert", new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+
+
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
+        });
+
+
+    }
+
+    public void unreadApiCallHumidity(final boolean b) {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        SpikeBotApi.getInstance().unreadNotification(temp_module_id, "", "humidity_alert", new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
+        });
+
+
     }
 
     /**
@@ -537,7 +776,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             edsensorName.setFocusableInTouchMode(false);
             edsensorName.setClickable(false);
 
-            updateTempSensor();
+//            updateTempSensor();
         } else if (id == R.id.action_log) {
             checkIntent(true);
         }
@@ -546,7 +785,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     }
 
     /*update sensor value*/
-    private void updateTempSensor() {
+    private void updateTempSensor(String devicename) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             showToast("" + R.string.disconnect);
@@ -561,10 +800,11 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-        SpikeBotApi.getInstance().updateTempSensor(temp_module_id, edsensorName.getText().toString().trim(), isCFSelected, new DataResponseListener() {
+        SpikeBotApi.getInstance().updateTempSensor(temp_module_id, devicename, isCFSelected, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
+                    ActivityHelper.dismissProgressDialog();
                     JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
@@ -572,7 +812,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                         showToast(message);
                     }
                     if (code == 200) {
-                        finish();
+                        mDeviceName.setText(devicename);
+                        edsensorName.setText(devicename);
                     }
 
                 } catch (JSONException e) {
@@ -1147,49 +1388,54 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                 || (id == R.id.text_day_5) || (id == R.id.text_day_6) || (id == R.id.text_day_7)) {
             Common.setOnOffBackground(this, tempSensorNotificationDialog.findViewById(id));
         } else if (id == R.id.txt_c_button) {
-            isCFSelected = 1;
-            setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_yellow, R.drawable.txt_background_white_temp, Color.parseColor("#FFFFFF"), Color.parseColor("#111111"));
-            notifyAdapter(true);
+            if (!mRemoteCommandList.getDevice().getIsActive().contains("n")) {
+                isCFSelected = 1;
+                setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_yellow, R.drawable.txt_background_white_temp, Color.parseColor("#FFFFFF"), Color.parseColor("#111111"));
+                notifyAdapter(true);
+                updateTempSensor(mDeviceName.getText().toString());
+            }
 
         } else if (id == R.id.txt_f_button) {
-            setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_white_temp, R.drawable.txt_background_blue, Color.parseColor("#111111"), Color.parseColor("#FFFFFF"));
-            isCFSelected = 0;
-            //   ChatApplication.showToast(MultiSensorActivity.this,"F CLick");
-            notifyAdapter(false);
+            if (!mRemoteCommandList.getDevice().getIsActive().contains("n")) {
+                setTxtBackColor(txtCButton, txtFButton, R.drawable.txt_background_white_temp, R.drawable.txt_background_blue, Color.parseColor("#111111"), Color.parseColor("#FFFFFF"));
+                isCFSelected = 0;
+                //   ChatApplication.showToast(MultiSensorActivity.this,"F CLick");
+                notifyAdapter(false);
+                updateTempSensor(mDeviceName.getText().toString());
+            }
 
         } else if (id == R.id.btn_delete) {
 
         } else if (id == R.id.view_rel_badge) {
             view_rel_badge.setClickable(false);
         } else if (id == R.id.linearAlertDown) {
-            if (flagAlert) {
-                flagAlert = false;
-                toggleAlert.setChecked(flagAlert);
-                linearAlertExpand.setVisibility(View.GONE);
-                view_line_top.setVisibility(View.GONE);
-                // edt_txt_layout2.setBackground(getResources().getDrawable(R.drawable.background_shadow));
-            } else {
-                flagAlert = true;
-                toggleAlert.setChecked(flagAlert);
-                linearAlertExpand.setVisibility(View.VISIBLE);
-                view_line_top.setVisibility(View.VISIBLE);
-                // edt_txt_layout2.setBackground(getResources().getDrawable(R.drawable.background_shadow_bottom_side));
-
-            }
+//            if (flagAlert) {
+//                flagAlert = false;
+//
+//                linearAlertExpand.setVisibility(View.GONE);
+//                view_line_top.setVisibility(View.GONE);
+//                // edt_txt_layout2.setBackground(getResources().getDrawable(R.drawable.background_shadow));
+//            } else {
+//                flagAlert = true;
+//
+//                linearAlertExpand.setVisibility(View.VISIBLE);
+//                view_line_top.setVisibility(View.VISIBLE);
+//                // edt_txt_layout2.setBackground(getResources().getDrawable(R.drawable.background_shadow_bottom_side));
+//
+//            }
         } else if (id == R.id.linearAlertDown_temp) {
-            if (flagAlertTemp) {
-                flagAlertTemp = false;
-                toggleAlert_temp.setChecked(flagAlertTemp);
-                linearAlertExpand_temp.setVisibility(View.GONE);
-                view_line_top_temp.setVisibility(View.GONE);
-                //   edt_txt_layout_temp.setBackground(getResources().getDrawable(R.drawable.background_shadow));
-            } else {
-                flagAlertTemp = true;
-                toggleAlert_temp.setChecked(flagAlertTemp);
-                linearAlertExpand_temp.setVisibility(View.VISIBLE);
-                view_line_top_temp.setVisibility(View.VISIBLE);
-                //  edt_txt_layout_temp.setBackground(getResources().getDrawable(R.drawable.background_shadow_bottom_side));
-            }
+//            if (flagAlertTemp) {
+//                flagAlertTemp = false;
+//
+//                linearAlertExpand_temp.setVisibility(View.GONE);
+//                view_line_top_temp.setVisibility(View.GONE);
+//                //   edt_txt_layout_temp.setBackground(getResources().getDrawable(R.drawable.background_shadow));
+//            } else {
+//                flagAlertTemp = true;
+//                linearAlertExpand_temp.setVisibility(View.VISIBLE);
+//                view_line_top_temp.setVisibility(View.VISIBLE);
+//                //  edt_txt_layout_temp.setBackground(getResources().getDrawable(R.drawable.background_shadow_bottom_side));
+//            }
         } else if (v == iv_icon_edit) {
 
             showBottomSheetDialog();
@@ -1225,7 +1471,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                if (flagEditSensor) {
+                dialogEditName();
+               /* if (flagEditSensor) {
                     //viewEditSensor.setVisibility(View.GONE);
                     flagEditSensor = false;
                     edsensorName.setCursorVisible(false);
@@ -1242,7 +1489,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
                     edsensorName.setClickable(true);
                     edsensorName.requestFocus();
                     ChatApplication.keyBoardShow(MultiSensorActivity.this, edsensorName);
-                }
+                }*/
             }
         });
 
@@ -1611,18 +1858,25 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             if (perc > 100) {
                 txt_battery_level.setText("100" + "%");
                 txt_battery_level.setTextColor(getResources().getColor(R.color.battery_high));
+                imgBattery.setImageResource(R.drawable.battery_4);
             } else {
                 txt_battery_level.setText(perc + " %");
+                imgBattery.setImageResource(R.drawable.battery_4);
             }
 
-            if (perc >= 0 && perc <= 25)
+            if (perc >= 0 && perc <= 25) {
                 txt_battery_level.setTextColor(getResources().getColor(R.color.battery_low));
-            else if (perc >= 26 && perc <= 50)
+                imgBattery.setImageResource(R.drawable.battery_1);
+            } else if (perc >= 26 && perc <= 50) {
                 txt_battery_level.setTextColor(getResources().getColor(R.color.battery_low1));
-            else if (perc >= 51 && perc <= 75)
+                imgBattery.setImageResource(R.drawable.battery_2);
+            } else if (perc >= 51 && perc <= 75) {
                 txt_battery_level.setTextColor(getResources().getColor(R.color.battery_medium));
-            else if (perc >= 76 && perc <= 100)
+                imgBattery.setImageResource(R.drawable.battery_3);
+            } else if (perc >= 76 && perc <= 100) {
                 txt_battery_level.setTextColor(getResources().getColor(R.color.battery_high));
+                imgBattery.setImageResource(R.drawable.battery_4);
+            }
 
         } else {
             txt_battery_level.setText("- -");
@@ -1655,6 +1909,8 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             sensor_list_temp.setVisibility(View.VISIBLE);
             txtTempAlertCount_temp.setVisibility(View.VISIBLE);
             txtTempAlertCount_temp.setText(notificationHumidityList.size() + " " + " Humidity Notification");
+            linearAlertExpand_temp.setVisibility(View.VISIBLE);
+            view_line_top_temp.setVisibility(View.VISIBLE);
 
             if (isCFDone) {
                 humiditySensorAdapter = new HumiditySensorAdapter(notificationHumidityList, false, MultiSensorActivity.this);
@@ -1723,10 +1979,14 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             txtTempCount_temp.setText("Humidity Notification");
             sensor_list_temp.setVisibility(View.GONE);
             txtEmpty_temp.setVisibility(View.GONE);
+            linearAlertExpand_temp.setVisibility(View.GONE);
+            view_line_top_temp.setVisibility(View.GONE);
         }
 
         /*for temp list set*/
         if (notificationList != null && notificationList.size() > 0) {
+            linearAlertExpand.setVisibility(View.VISIBLE);
+            view_line_top.setVisibility(View.VISIBLE);
             txtEmpty.setVisibility(View.GONE);
             sensor_list.setVisibility(View.VISIBLE);
             txtTempAlertCount.setVisibility(View.VISIBLE);
@@ -1795,8 +2055,52 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
             txtTempCount.setText("Temperature Notification");
             sensor_list.setVisibility(View.GONE);
             txtEmpty.setVisibility(View.GONE);
+            linearAlertExpand.setVisibility(View.GONE);
+            view_line_top.setVisibility(View.GONE);
         }
         txtAlertCount.setVisibility(View.VISIBLE);
+
+
+        try {
+            int Tempcount = sensorResModel.getDevice().getTemp_counter();
+            if (Tempcount > 0) {
+                mTempNotiCount.setVisibility(View.VISIBLE);
+                mTempNotiCount.setText(Tempcount + "");
+
+                if (Tempcount > 99) {
+                    mTempNotiCount.setText("99+");
+                    mTempNotiCount.setBackground(getResources().getDrawable(R.drawable.badge_background_oval));
+                } else {
+                    mTempNotiCount.setBackground(getResources().getDrawable(R.drawable.badge_background));
+                }
+            } else {
+                mTempNotiCount.setVisibility(View.GONE);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            int Humiditycount = sensorResModel.getDevice().getHumidity_counter();
+            if (Humiditycount > 0) {
+                mHumidityNotiCount.setVisibility(View.VISIBLE);
+                mHumidityNotiCount.setText(Humiditycount + "");
+
+                if (Humiditycount > 99) {
+                    mHumidityNotiCount.setText("99+");
+                    mHumidityNotiCount.setBackground(getResources().getDrawable(R.drawable.badge_background_oval));
+                } else {
+                    mHumidityNotiCount.setBackground(getResources().getDrawable(R.drawable.badge_background));
+                }
+            } else {
+                mHumidityNotiCount.setVisibility(View.GONE);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -1858,6 +2162,7 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     private void checkIntent(boolean b) {
         if (b) {
             Intent intent = new Intent(MultiSensorActivity.this, DeviceLogActivity.class);
+
             intent.putExtra("ROOM_ID", "" + mRemoteCommandList.getDevice().getDevice_id());
             intent.putExtra("Mood_Id", "" + mRemoteCommandList.getDevice().getDevice_id());
             intent.putExtra("activity_type", "tempsensor");
@@ -1875,5 +2180,75 @@ public class MultiSensorActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    private void dialogEditName() {
+        final Dialog dialog = new Dialog(MultiSensorActivity.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setContentView(R.layout.dialog_add_custome_room);
+
+        final TextInputLayout txtInputSensor = dialog.findViewById(R.id.txtInputSensor);
+        final TextInputEditText room_name = (TextInputEditText) dialog.findViewById(R.id.edt_room_name);
+        final TextInputEditText edSensorName = (TextInputEditText) dialog.findViewById(R.id.edSensorName);
+        txtInputSensor.setVisibility(View.VISIBLE);
+        edSensorName.setVisibility(View.VISIBLE);
+        room_name.setVisibility(View.GONE);
+        edSensorName.setSingleLine(true);
+
+        InputFilter[] filterArray = new InputFilter[1];
+        filterArray[0] = new InputFilter.LengthFilter(25);
+        edSensorName.setFilters(filterArray);
+
+        Button btnSave = (Button) dialog.findViewById(R.id.btn_save);
+        Button btn_cancel = (Button) dialog.findViewById(R.id.btn_cancel);
+        ImageView iv_close = dialog.findViewById(R.id.iv_close);
+        TextView tv_title = dialog.findViewById(R.id.tv_title);
+
+        edSensorName.setText(mDeviceName.getText().toString());
+
+//        if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equals("1")) {
+        txtInputSensor.setHint("Enter Temperature sensor name");
+        tv_title.setText("Temperature Sensor Name");
+//        }
+//        else if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equals("2")) {
+//            txtInputSensor.setHint("Enter Lock name");
+//            tv_title.setText("Lock Name");
+//        } else {
+//            txtInputSensor.setHint("Enter Door/Lock name");
+//            tv_title.setText("Door/Lock Name");
+//        }
+
+        iv_close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ChatApplication.keyBoardHideForce(MultiSensorActivity.this);
+                dialog.dismiss();
+            }
+        });
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (edSensorName.getText().toString().length() == 0) {
+                    ChatApplication.showToast(MultiSensorActivity.this, "Please enter name");
+                } else {
+                    dialog.dismiss();
+                    updateTempSensor(edSensorName.getText().toString());
+
+                }
+            }
+        });
+
+        dialog.show();
+
     }
 }

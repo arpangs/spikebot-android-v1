@@ -126,10 +126,11 @@
                         android:layout_height="24dp"
                         android:layout_marginLeft="8dp"
                         android:layout_alignParentRight="true"
+                        android:paddingBottom="5dp"
                         android:layout_toRightOf="@+id/spinner_room_list"
                         android:layout_centerVertical="true"
                         android:layout_gravity="center"
-                        android:src="@drawable/icn_arrow_down_spinner2" />
+                        android:src="@drawable/down" />
 
                 </RelativeLayout>
 
@@ -147,7 +148,7 @@
                     android:id="@+id/edt_start_date"
                     android:hint="From Date/Time"
                     android:textSize="12sp"
-                    android:drawableRight="@drawable/icn_close"
+                    android:drawableRight="@drawable/icn_close_view"
                     android:focusable="false"
                     android:layout_weight="1"
                     android:layout_width="0dp"
@@ -157,7 +158,7 @@
                     android:id="@+id/edt_end_date"
                     android:hint="To Date/Time"
                     android:textSize="12sp"
-                    android:drawableRight="@drawable/icn_close"
+                    android:drawableRight="@drawable/icn_close_view"
                     android:focusable="false"
                     android:layout_weight="1"
                     android:layout_width="0dp"

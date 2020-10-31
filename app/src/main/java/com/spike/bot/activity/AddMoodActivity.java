@@ -3,7 +3,9 @@ package com.spike.bot.activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -67,6 +69,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
     ArrayList<String> arrayListRoomId = new ArrayList<>();
     List<String> moodList = new ArrayList<>();
     MoodFragment moodFragment;
+    boolean isTextchange = false;
     private RecyclerView mMessagesView;
     private List<RoomVO> moodIconList = new ArrayList<>();
 
@@ -184,6 +187,11 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                     return true;
                 }
 
+                if (et_switch_name.getText().length() == 0) {
+                    ChatApplication.showToast(AddMoodActivity.this, "Enter/Select Mood");
+                    return true;
+                }
+
                 saveMood();
 
             } catch (Exception ex) {
@@ -271,14 +279,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         }
 
 
-        //sort room list vie selected device list available
         sortList(roomList);
-
-       /* int spanCount = 2; // 3 columns
-        int spacing = 100; // 50px
-        boolean includeEdge = false;
-        mMessagesView.addItemDecoration(new SpacesItemDecoration(spanCount, spacing, includeEdge));
-*/
 
         deviceListLayoutHelper = new MoodDeviceListLayoutHelper(this, mMessagesView, this, Constants.SWITCH_NUMBER, isMoodAdapter);
         deviceListLayoutHelper.addSectionList(roomList);
@@ -289,6 +290,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
     @Override
     public void itemClicked(RoomVO item, String action) {
     }
+
 
     @Override
     public void itemClicked(PanelVO panelVO, String action) {
@@ -319,74 +321,6 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
             return;
         }
         ActivityHelper.showProgressDialog(this, "Please wait...", false);
-
-      /*  JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
-            jsonObject.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
-            jsonObject.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = ChatApplication.url + Constants.getMoodName; //get mood name list with the mood icon name / not display sensor panel
-
-        ChatApplication.logDisplay("add mood is " + url + " " + jsonObject);*/
-
-       /* new GetJsonTask(this, url, "POST", jsonObject.toString(), new ICallBack() { //Constants.CHAT_SERVER_URL
-            @Override
-            public void onSuccess(JSONObject result) {
-                try {
-
-                    ChatApplication.logDisplay("mood list is " + result);
-                    getDeviceList();
-
-                    moodList.clear();
-                    JSONArray moodNamesArray = new JSONArray(result.getString("data"));
-
-               *//*     RoomVO roomVO1 = new RoomVO();
-                    roomVO1.setRoomId("");
-                   // roomVO1.setRoomName("Select Mood");
-                    moodIconList.add(0, roomVO1);*//*
-
-                    if (editMode) {
-                        select_mood_id = moodVO.getMood_name_id();
-                        RoomVO roomVO2 = new RoomVO();
-                        roomVO2.setRoomId(moodVO.getMood_name_id());
-                        roomVO2.setRoomName(moodVO.getRoomName());
-                        moodIconList.add(roomVO2);
-                    }
-
-                    for (int i = 0; i < moodNamesArray.length(); i++) {
-                        JSONObject moodObject = moodNamesArray.getJSONObject(i);
-                        String moodId = moodObject.getString("mood_id");
-                        String moodName = moodObject.getString("mood_name");
-
-                        RoomVO roomVO = new RoomVO();
-                        roomVO.setRoomId(moodId);
-                        roomVO.setRoomName(moodName);
-                        moodList.add(moodName);
-                        moodIconList.add(roomVO);
-
-                    }
-
-                    *//**
-         *  mood icon dropdown spinner...
-         *//*
-                    setDropDown();
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable, String error) {
-                ChatApplication.showToast(AddMoodActivity.this, getResources().getString(R.string.something_wrong1) + "mood name list");
-                ActivityHelper.dismissProgressDialog();
-            }
-        }).execute();*/
 
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
@@ -509,7 +443,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
                     ChatApplication.logDisplay("mood list is room " + result);
                     JSONObject dataObject = result.getJSONObject("data");
                     JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
-                    roomList = JsonHelper.parseRoomArray(roomArray, true);
+                    roomList = JsonHelper.parseRoomArrayForMood(roomArray, true);
                     setData(roomList);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -538,6 +472,20 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
         if (!ActivityHelper.isConnectingToInternet(this)) {
             ChatApplication.showToast(this, getResources().getString(R.string.disconnect));
             return;
+        }
+
+
+        if (isTextchange) {
+            select_mood_id = "";
+            String selectedItem;
+            for (RoomVO mroom : moodIconList) {
+                if (mroom.getRoomName().toLowerCase().equals(et_switch_name.getText().toString().toLowerCase())) {
+                    selectedItem = mroom.getRoomId();
+                    select_mood_id = selectedItem;
+                    ChatApplication.logDisplay("Selected ITEM id " + " " + selectedItem);
+                }
+            }
+            isTextchange = false;
         }
 
         arrayListRoomId.clear();
@@ -754,7 +702,7 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
             }
         }
 
-       /* et_switch_name.addTextChangedListener(new TextWatcher() {
+        et_switch_name.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -762,15 +710,14 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                moodIconArrayAdapter = new RoomListArrayAdapter(AddMoodActivity.this, R.layout.row_spinner_item, R.id.txt_spinner_title, moodIconList, "");
-                et_switch_name.setAdapter(moodIconArrayAdapter);
+                isTextchange = true;
             }
 
             @Override
             public void afterTextChanged(Editable s) {
 
             }
-        });*/
+        });
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, moodList);
         et_switch_name.setAdapter(adapter);
 
@@ -807,6 +754,8 @@ public class AddMoodActivity extends AppCompatActivity implements ItemClickMoodL
             public void onItemClick(AdapterView<?> parent, View arg1, int position, long arg3) {
                 String selectedItem;
                 String name = parent.getItemAtPosition(position).toString();
+
+                isTextchange = false;
 
                 /*update below code on 8 aug 2020 */
                 for (RoomVO mroom : moodIconList) {

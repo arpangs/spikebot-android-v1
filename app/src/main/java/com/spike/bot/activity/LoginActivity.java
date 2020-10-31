@@ -1,29 +1,35 @@
 package com.spike.bot.activity;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatTextView;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.hbb20.CountryCodePicker;
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.api_retrofit.DataResponseListener;
@@ -46,6 +52,7 @@ import java.util.List;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
+    private static String fcmId;
     public EditText et_username, et_password;
     public Button btn_login, btnSignUp;
     public ImageView btn_SKIP;
@@ -74,11 +81,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         btn_login = findViewById(R.id.btn_login);
         btnSignUp = findViewById(R.id.btnSignUp);
         txt_forgot_password = findViewById(R.id.txt_forgot_password);
-     //   edit_contact_number = findViewById(R.id.edit_contact_number);
-      //  countryCodePicker = findViewById(R.id.ccp);
+        //   edit_contact_number = findViewById(R.id.edit_contact_number);
+        //  countryCodePicker = findViewById(R.id.ccp);
 
-      //  countryCodePicker.setNumberAutoFormattingEnabled(true);
-      //  countryCodePicker.registerCarrierNumberEditText(edit_contact_number);
+        //  countryCodePicker.setNumberAutoFormattingEnabled(true);
+        //  countryCodePicker.registerCarrierNumberEditText(edit_contact_number);
 
 
         String styledText = "<u><font color='#333333'>" + getResources().getString(R.string.forgotpassword) + "</font></u>";
@@ -142,10 +149,31 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             imei = ActivityHelper.getIMEI(this);
         }
 
-        token = FirebaseInstanceId.getInstance().getToken();
-        Common.savePrefValue(getApplicationContext(), Constants.DEVICE_PUSH_TOKEN, token);
+//        token = FirebaseInstanceId.getInstance().getToken();
+
+
+            FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("TAG---->", "getInstanceId failed", task.getException());
+
+                            return;
+                        }
+
+                        /*id device token get null- please check your device date and time and network connection first- */
+
+                        token = task.getResult().getToken();
+                        Common.savePrefValue(getApplicationContext(), Constants.DEVICE_PUSH_TOKEN, token);
+
+                    }
+
+                });
 
     }
+
+
 
     @Override
     public void onClick(View v) {
@@ -160,10 +188,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 finish();
             }
 
-        }  else if (v == btnSignUp) {
+        } else if (v == btnSignUp) {
             Intent intent = new Intent(this, SignUp.class);
             startActivity(intent);
-        } else if (v == txt_forgot_password){
+        } else if (v == txt_forgot_password) {
             Intent intent = new Intent(this, ForgotpasswordActivity.class);
             startActivity(intent);
         }

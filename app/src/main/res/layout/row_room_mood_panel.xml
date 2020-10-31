@@ -44,7 +44,6 @@
             android:layout_height="35dp"
             android:layout_gravity="center_vertical"
             android:adjustViewBounds="true"
-            android:padding="1dp"
-            android:src="@drawable/room_off" />
+            android:padding="1dp" />
     </LinearLayout>
 </LinearLayout>

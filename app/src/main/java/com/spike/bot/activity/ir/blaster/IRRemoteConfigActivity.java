@@ -28,16 +28,12 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.gson.Gson;
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
-import com.spike.bot.core.Constants;
-import com.spike.bot.model.AddRemoteReq;
 import com.spike.bot.model.DataSearch;
 import com.spike.bot.model.DeviceBrandRemoteList;
 import com.spike.bot.model.IRRemoteOnOffReq;
@@ -50,33 +46,27 @@ import java.util.List;
 /**
  * Created by Sagar on 2/8/18.
  * Gmail : jethvasagar2@gmail.com
- *
+ * <p>
  * activity drc
  * first on click than set show yes or no dialog than check ac responed or not if yes than click yes & click to no than check to ac reposend or not
- *
  */
 public class IRRemoteConfigActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static DataSearch arrayList;
     private TextView remote_room_txt, mTestButtons, mRespondNo, mRespondYes, mPowerValue, mTxtBlasterName, txtModelNumber;
-    private ImageView mImgLeft, mImgRight,mImgPower;
+    private ImageView mImgLeft, mImgRight, mImgPower;
     private LinearLayout mRespondView;
-    private Spinner  mSpinnerMode;
-    private EditText mRemoteDefaultTemp,mEdtRemoteName;
+    private Spinner mSpinnerMode;
+    private EditText mRemoteDefaultTemp, mEdtRemoteName;
+
 
     private String mIRDeviceId, mIrDeviceType, mRoomId, mBrandId, mIRBlasterModuleId, mIRBrandType, mIRBLasterId, mRoomName,
-    mBlasterName, mBrandType, brand_name = "", model_number = "", onOffValue = "",
-    remote_codeset_id = "", mCodeSet;
+            mBlasterName, mBrandType, brand_name = "", model_number = "", onOffValue = "",
+            remote_codeset_id = "", mCodeSet;
 
     private boolean isRequestTypeOn = false;
     private int mTotalState = 1, mCurrentState = 1, RESPOND_CONST = 1; //1 on command : 2 off command
     private Dialog mDialog;
-
-    public static class Power {
-        public static String ON = "On";
-        public static String OFF = "Off";
-    }
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -116,23 +106,24 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
     }
 
     private void bindView() {
-        Toolbar toolbar =  findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 //        getSupportActionBar().setTitle("Remote Config");
         getSupportActionBar().setTitle("" + mBrandType);
 
-        mTestButtons =  findViewById(R.id.remote_total_step);
-        mImgLeft =  findViewById(R.id.remote_left_slider);
-        mImgRight =  findViewById(R.id.remote_right_slider);
-        mImgPower =  findViewById(R.id.remote_power_onoff);
-        mPowerValue =  findViewById(R.id.remote_power_value);
+        mTestButtons = findViewById(R.id.remote_total_step);
+        mImgLeft = findViewById(R.id.remote_left_slider);
+        mImgRight = findViewById(R.id.remote_right_slider);
+        mImgPower = findViewById(R.id.remote_power_onoff);
+        mPowerValue = findViewById(R.id.remote_power_value);
 
-        mRespondView =  findViewById(R.id.remote_respond_view);
-        mRespondNo =  findViewById(R.id.remote_respond_no);
-        mRespondYes =  findViewById(R.id.remote_respond_yes);
-        txtModelNumber =  findViewById(R.id.txtModelNumber);
+        mRespondView = findViewById(R.id.remote_respond_view);
+        mRespondNo = findViewById(R.id.remote_respond_no);
+        mRespondYes = findViewById(R.id.remote_respond_yes);
+        txtModelNumber = findViewById(R.id.txtModelNumber);
+
 
         mImgLeft.setOnClickListener(this);
         mImgRight.setOnClickListener(this);
@@ -197,7 +188,6 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         }
     }
 
-
     private void initData(List<DeviceBrandRemoteList> data) {
 
         mTotalState = data.size();
@@ -230,7 +220,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
 
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-        SpikeBotApi.getInstance().sendOnOfOffRequest(mIRBlasterModuleId, (RESPOND_CONST == 1) ? "ON" : "OFF", onOffValue, new DataResponseListener() {
+        SpikeBotApi.getInstance().sendOnOfOffRequest(mIRBlasterModuleId, (RESPOND_CONST == 1) ? "ON" : "OFF", onOffValue, "ac", new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
@@ -283,28 +273,32 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         filterArray[0] = new InputFilter.LengthFilter(25); //Remote Name max length to set only 25
         mEdtRemoteName.setFilters(filterArray);
 
-        ImageView iv_close =  mDialog.findViewById(R.id.iv_close);
+        ImageView iv_close = mDialog.findViewById(R.id.iv_close);
         Button mBtnCancel = mDialog.findViewById(R.id.btn_cancel);
         Button mBtnSave = mDialog.findViewById(R.id.btn_save);
+        Spinner mBlasterSpinner;
+        mBlasterSpinner = mDialog.findViewById(R.id.remote_blaster_spinner);
 
-        remote_room_txt =  mDialog.findViewById(R.id.remote_room_txt);
-        mSpinnerMode =  mDialog.findViewById(R.id.remote_mode_spinner);
+        remote_room_txt = mDialog.findViewById(R.id.remote_room_txt);
+        mSpinnerMode = mDialog.findViewById(R.id.remote_mode_spinner);
 
-        mRemoteDefaultTemp =  mDialog.findViewById(R.id.edt_remote_tmp);
+        mRemoteDefaultTemp = mDialog.findViewById(R.id.edt_remote_tmp);
         mRemoteDefaultTemp.setText("");
         mEdtRemoteName.setText("");
 
-        mTxtBlasterName =  mDialog.findViewById(R.id.txt_blastername);
+        mTxtBlasterName = mDialog.findViewById(R.id.txt_blastername);
 
         mRemoteDefaultTemp.setError(null);
         mEdtRemoteName.requestFocus();
 
         remote_room_txt.setText("" + mBlasterName);
         mTxtBlasterName.setText("" + mRoomName);
+        mTxtBlasterName.setVisibility(View.VISIBLE);
+        mBlasterSpinner.setVisibility(View.GONE);
 
         // getIRBlasterList();
 
-        String[] moodList = new String[]{"Select Mode", "AUTO", "LOW", "MEDIUM", "HIGH"};
+        String[] moodList = new String[]{"Select Mode", "Auto", "High", "Medium", "Low", "Dry"};
         final ArrayAdapter roomAdapter1 = new ArrayAdapter(getApplicationContext(), R.layout.spinner, moodList);
         mSpinnerMode.setAdapter(roomAdapter1);
 
@@ -350,6 +344,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
                     Common.showToast("Select Mode");
                     return;
                 }
+                mDialog.dismiss();
                 saveRemote(mEdtRemoteName.getText().toString().trim());
             }
         });
@@ -360,14 +355,18 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
     }
 
     private void hideSaveDialog() {
-        if (mEdtRemoteName != null) {
-            hideSoftKeyboard(mEdtRemoteName);
-        }
-        if (mRemoteDefaultTemp != null) {
-            hideSoftKeyboard(mRemoteDefaultTemp);
-        }
-        if (mDialog != null) {
-            mDialog.dismiss();
+        try {
+            if (mEdtRemoteName != null) {
+                hideSoftKeyboard(mEdtRemoteName);
+            }
+            if (mRemoteDefaultTemp != null) {
+                hideSoftKeyboard(mRemoteDefaultTemp);
+            }
+            if (mDialog != null) {
+                mDialog.dismiss();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -403,7 +402,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
         SpikeBotApi.getInstance().saveremote(mIRDeviceId, mIrDeviceType, remoteName, mIRBLasterId, mIRBlasterModuleId, mRoomId, mSpinnerMode.getSelectedItem().toString() + "-" + mRemoteDefaultTemp.getText().toString().trim(),
-                brand_name, remote_codeset_id, model_number, onOffValue, new DataResponseListener() {
+                brand_name, remote_codeset_id, model_number, onOffValue, "ac", new DataResponseListener() {
                     @Override
                     public void onData_SuccessfulResponse(String stringResponse) {
                         try {
@@ -412,6 +411,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
                             String message = result.getString("message");
 
                             if (code == 200) {
+                                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                                 ChatApplication.isEditActivityNeedResume = true;
                                 hideSaveDialog();
                                 ChatApplication.logDisplay("remote res : " + result.toString());
@@ -513,7 +513,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
             resetConfig();
             showRemoteSaveDialog();
             return;
-        } else{
+        } else {
             setPowerValue(Power.OFF);
         }
         RESPOND_CONST = 2; //send next request for off command
@@ -535,7 +535,7 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         }
 
         mRespondView.setVisibility(View.VISIBLE);
-        mRespondView.setBackgroundColor(Color.parseColor("#20808080"));
+        mRespondView.setBackgroundResource(R.color.automation_blue);
     }
 
     private void hideLeftSlider() {
@@ -629,5 +629,10 @@ public class IRRemoteConfigActivity extends AppCompatActivity implements View.On
         RESPOND_CONST = 1;
         setPowerValue(Power.ON);
         hideRespondView();
+    }
+
+    public static class Power {
+        public static String ON = "On";
+        public static String OFF = "Off";
     }
 }

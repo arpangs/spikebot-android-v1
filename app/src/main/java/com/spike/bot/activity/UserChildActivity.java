@@ -134,8 +134,8 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
             btnChangePassword.setText("Change password");
             toolbar.setTitle("Edit Child User");
             txtPasswordChange.setText("Change Password");
-            edDisplayName.setText(user.getFirstname());
-            edtUsername.setText(user.getFirstname());
+            edDisplayName.setText(user.getFirstname());   // first name as display name
+            edtUsername.setText(user.getLastname());  // first name as User name
             edDisplayName.setSelection(edDisplayName.getText().length());
 
             edtUsername.setClickable(false);
@@ -232,7 +232,7 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
                 ll_pass_edittext_view.setVisibility(View.GONE);
                 img_pass_arrow.setImageResource(R.drawable.icn_arrow_right);
             } else {
-                img_pass_arrow.setImageResource(R.drawable.icn_arrow_down);
+                img_pass_arrow.setImageResource(R.drawable.down);
                 ll_pass_edittext_view.setVisibility(View.VISIBLE);
             }
 
@@ -279,7 +279,7 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
         if (modeType.equalsIgnoreCase("update")) {
             tv_title.setText("Change Password");
         } else {
-            tv_title.setText("Change Password");
+            tv_title.setText("Enter Password");
         }
 
 
@@ -606,7 +606,7 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
 
 
         String mUserID = "";
-        if(user != null && user.getUser_id() != null){
+        if (user != null && user.getUser_id() != null) {
             mUserID = user.getUser_id();
         }
 
@@ -772,7 +772,7 @@ public class UserChildActivity extends AppCompatActivity implements View.OnClick
         @Override
         public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
-            holder.iv_icon.setImageResource(Common.getIcon(0, "camera"));
+            holder.iv_icon.setImageResource(Common.getIcon(1, "camera"));
 
             if (arrayListLog.get(position).isDisable()) {
                 holder.iv_icon_select.setImageDrawable(mContext.getResources().getDrawable(R.drawable.switch_select_));

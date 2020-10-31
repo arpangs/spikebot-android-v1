@@ -125,7 +125,7 @@ public class CameraLogAdapter extends RecyclerView.Adapter<CameraLogAdapter.Sens
                         intent.putExtra("camera_url", "" + arrayListLog.get(position).getImageUrl());
                         intent.putExtra("imgName", "" + arrayListLog.get(position).getActivityDescription());
                         intent.putExtra("imgDate", "" + arrayListLog.get(position).getActivityTime());
-                        //  intent.putExtra("home_controller_id", "" + homecontroller_id);
+                          intent.putExtra("home_controller_id", "" + homecontroller_id);
                         intent.putExtra("camera_id",arrayListLog.get(position).getLog_object_id());
 
                         Common.savePrefValue(mContext, Constants.home_controller_id, "" + homecontroller_id);

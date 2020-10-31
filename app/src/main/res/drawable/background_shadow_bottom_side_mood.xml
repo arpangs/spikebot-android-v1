@@ -1,30 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
-
-    <!-- Border -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
-
-
         <shape android:shape="rectangle">
             <solid android:color="@color/automation_white" />
-            <stroke android:width="0.5dp" android:color="@color/automation_white" />
-            <corners android:topRightRadius="8dp"
+            <corners
+                android:bottomLeftRadius="8dp"
+                android:bottomRightRadius="8dp"
                 android:topLeftRadius="8dp"
-                />
+                android:topRightRadius="8dp" />
         </shape>
 
     </item>
-    <!-- Body -->
-    <item android:left="3.3dp"
-        android:top="3.3dp"
-        android:right="3.3dp">
-        <shape>
-            <solid android:color="@color/automation_white"></solid>
-            <corners android:topRightRadius="8dp"
-                android:topLeftRadius="8dp" />
-
-        </shape>
-    </item>
-
-
 </layer-list>

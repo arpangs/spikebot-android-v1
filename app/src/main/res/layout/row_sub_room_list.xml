@@ -39,7 +39,7 @@
             android:adjustViewBounds="true"
             android:gravity="center_horizontal"
             android:padding="0dp"
-            android:src="@drawable/icn_camera_disable"
+            android:src="@drawable/camera_inactive"
             android:visibility="gone" />
 
         <LinearLayout
@@ -74,7 +74,7 @@
                 android:adjustViewBounds="true"
                 android:gravity="center_horizontal"
                 android:padding="2dp"
-                android:src="@drawable/down_arrow_gray" />
+                android:src="@drawable/down" />
         </LinearLayout>
 
         <LinearLayout

@@ -1,26 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <com.google.android.material.appbar.AppBarLayout
+
+    <LinearLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="56dp"
+        android:background="@color/sky_blue"
+        android:orientation="horizontal">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
-            android:background="@color/sky_blue"
-            app:popupTheme="@style/AppTheme.PopupOverlay">
+        <ImageView
+            android:id="@+id/remote_toolbar_back"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_32sdp"
+            android:layout_gravity="center|left"
+            android:layout_weight="0.2"
+            android:padding="5dp"
+            android:src="@drawable/ic_back" />
 
 
-        </androidx.appcompat.widget.Toolbar>
+        <TextView
+            android:id="@+id/remote_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="0.8"
+            android:ellipsize="end"
+            android:lines="1"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
 
-    </com.google.android.material.appbar.AppBarLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imgEdit"
+                android:layout_width="@dimen/_22sdp"
+                android:layout_height="@dimen/_22sdp"
+                android:layout_gravity="center|right"
+                android:layout_marginRight="@dimen/_15sdp"
+                android:src="@drawable/edit_white_new" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,57 +63,61 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+
+                android:gravity="center"
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-
+                    android:layout_margin="@dimen/_5sdp"
+                    android:layout_weight="1.2"
                     android:gravity="center"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
 
                     <LinearLayout
-                        android:visibility="visible"
+                        android:id="@+id/edt_txt_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/_5sdp"
-                        android:layout_weight="1.2"
-                        android:gravity="center"
+                        android:layout_gravity="center"
                         android:orientation="vertical">
 
-
-                        <LinearLayout
-                            android:id="@+id/edt_txt_layout"
+                        <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:orientation="vertical">
-
-                            <androidx.cardview.widget.CardView
-                                android:layout_width="match_parent"
-                                android:layout_height="90dp"
-                                android:layout_marginTop="10dp"
-                                android:layout_marginLeft="5dp"
-                                android:layout_marginRight="5dp"
-                                android:layout_marginBottom="8dp"
-                                android:layout_gravity="center_vertical"
-                                android:orientation="vertical"
-                                android:visibility="visible"
-                                app:cardCornerRadius="8dp"
-                                app:cardElevation="8dp"
-                                app:elevation="8dp">
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_marginBottom="8dp"
+                            android:orientation="vertical"
+                            android:visibility="visible"
+                            app:cardCornerRadius="8dp"
+                            app:cardElevation="8dp"
+                            app:elevation="8dp">
 
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:padding="@dimen/_5sdp"
+
                                 android:layout_gravity="center_vertical"
-                                android:orientation="horizontal">
+
+                                android:orientation="horizontal"
+                                android:paddingTop="10dp"
+                                android:paddingBottom="10dp"
+                                android:paddingLeft="5dp"
+                                android:paddingRight="5dp">
 
                                 <ImageView
                                     android:id="@+id/img_gassensor"
@@ -91,6 +130,8 @@
                                     android:id="@+id/edSensorName"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
+                                    android:layout_marginLeft="5dp"
+
                                     android:layout_weight="1"
                                     android:background="@null"
                                     android:clickable="false"
@@ -99,185 +140,226 @@
                                     android:imeOptions="actionDone"
                                     android:inputType="text"
                                     android:maxLength="30"
-                                    android:layout_marginLeft="5dp"
                                     android:paddingLeft="@dimen/_5sdp"
                                     android:paddingRight="@dimen/_50sdp"
                                     android:singleLine="true"
-                                    android:textStyle="bold"
                                     android:textColor="#545454"
-                                    android:textSize="@dimen/_14sdp" />
+                                    android:textSize="@dimen/_14sdp"
+                                    android:textStyle="bold" />
 
                                 <ImageView
-                                    android:id="@+id/imgEdit"
+                                    android:id="@+id/imgEdit_"
                                     android:layout_width="35dp"
                                     android:layout_height="@dimen/_32sdp"
                                     android:padding="@dimen/_3sdp"
-                                    android:src="@drawable/edit_blue" />
+                                    android:src="@drawable/edit_blue"
+                                    android:visibility="gone" />
 
                             </LinearLayout>
 
-                          <!--  <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/edt_border"
-                                android:layout_marginTop="@dimen/_2sdp"
-                                android:orientation="horizontal">
+                            <!--  <LinearLayout
+                                  android:layout_width="match_parent"
+                                  android:layout_height="wrap_content"
+                                  android:background="@drawable/edt_border"
+                                  android:layout_marginTop="@dimen/_2sdp"
+                                  android:orientation="horizontal">
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/batter_level"
-                                    android:textSize="@dimen/_12sdp"
-                                    android:layout_weight="1"
-                                    android:layout_margin="@dimen/_10sdp"
-                                    android:textColor="@color/automation_black"/>
+                                  <TextView
+                                      android:layout_width="wrap_content"
+                                      android:layout_height="wrap_content"
+                                      android:text="@string/batter_level"
+                                      android:textSize="@dimen/_12sdp"
+                                      android:layout_weight="1"
+                                      android:layout_margin="@dimen/_10sdp"
+                                      android:textColor="@color/automation_black"/>
 
-                                <TextView
-                                    android:id="@+id/txt_battery_level"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textSize="@dimen/_12sdp"
-                                    android:text=""
-                                    android:textColor="@color/automation_black"
-                                    android:layout_margin="@dimen/_10sdp"/>
+                                  <TextView
+                                      android:id="@+id/txt_battery_level"
+                                      android:layout_width="wrap_content"
+                                      android:layout_height="wrap_content"
+                                      android:textSize="@dimen/_12sdp"
+                                      android:text=""
+                                      android:textColor="@color/automation_black"
+                                      android:layout_margin="@dimen/_10sdp"/>
 
-                            </LinearLayout>-->
-                            </androidx.cardview.widget.CardView>
-                        </LinearLayout>
-
-
-
-
-
-                     <!--   <androidx.cardview.widget.CardView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:orientation="vertical"
-                            app:cardCornerRadius="2dp"
-                            app:cardElevation="5dp"
-                            app:elevation="@dimen/_10sdp">
--->
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/_5sdp"
-                                android:orientation="vertical">
-
-                                <androidx.cardview.widget.CardView
-                                    xmlns:android="http://schemas.android.com/apk/res/android"
-                                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="160dp"
-                                    android:layout_marginTop="10dp"
-                                    android:layout_marginLeft="5dp"
-                                    android:layout_marginRight="5dp"
-                                    android:layout_marginBottom="8dp"
-                                    android:orientation="vertical"
-                                    android:visibility="visible"
-                                    app:cardCornerRadius="8dp"
-                                    app:cardElevation="8dp"
-                                    app:elevation="8dp">
-
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:singleLine="true"
-                                    android:maxLength="25"
-                                    android:padding="@dimen/_12sdp"
-                                    android:textSize="@dimen/_15sdp"
-                                    android:textColor="#545454"
-                                    android:imeOptions="actionDone"
-                                    android:text="Gas / Smoke Level"
-                                    android:textStyle="bold"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:layout_marginTop="10dp"
-                                    android:inputType="textEmailAddress"/>
-
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/txtSpeedCount"
-                                    android:singleLine="true"
-                                    android:maxLength="25"
-                                    android:textSize="@dimen/_30sdp"
-                                    android:padding="@dimen/_12sdp"
-                                    android:layout_marginTop="@dimen/_40sdp"
-                                    android:paddingBottom="@dimen/_55sdp"
-                                    android:textColor="@color/greenDark"
-                                    android:imeOptions="actionDone"
-                                    android:textStyle="bold"
-                                    android:text=""
-                                    android:longClickable="false"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:inputType="textEmailAddress"/>
-
-                                    <ImageView
-                                        android:id="@+id/img_gas_status"
-                                        android:layout_width="@dimen/_100sdp"
-                                        android:layout_height="@dimen/_80sdp"
-                                        android:layout_gravity="end|bottom"
-                                        android:scaleType="fitEnd"
-                                        android:layout_marginBottom="@dimen/_15sdp"
-                                        android:src="@drawable/dry">
-
-                                    </ImageView>
-
-                                </androidx.cardview.widget.CardView>
-                            </LinearLayout>
-
-                       <!-- </androidx.cardview.widget.CardView>-->
-
+                              </LinearLayout>-->
+                        </androidx.cardview.widget.CardView>
                     </LinearLayout>
 
-                </LinearLayout>
 
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_60sdp">
+                    <!--   <androidx.cardview.widget.CardView
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content"
+                           android:layout_gravity="center"
+                           android:orientation="vertical"
+                           app:cardCornerRadius="2dp"
+                           app:cardElevation="5dp"
+                           app:elevation="@dimen/_10sdp">
+-->
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_5sdp"
                         android:orientation="vertical">
-<!--
-                        <com.github.anastr.speedviewlib.SpeedView
-                            android:id="@+id/speedView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:sv_withTremble="false"
-                            app:sv_maxSpeed="20"
-                            app:sv_markColor="@color/automation_white"
-                            app:sv_unitTextColor="@color/automation_white"
-                            app:sv_tickTextFormat="INTEGER"
-                            app:sv_textColor="@color/automation_white"
-                            app:sv_speedTextColor="@color/automation_white"
-                            app:sv_indicator="LineIndicator"
-                            app:sv_withIndicatorLight="false"
-                            app:sv_indicatorColor="@color/sensor_button"
-                            app:sv_centerCircleColor="@color/automation_white"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/_20sdp"/>-->
+
+                        <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                            xmlns:app="http://schemas.android.com/apk/res-auto"
+                            android:layout_width="match_parent"
+                            android:layout_height="160dp"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_marginBottom="8dp"
+                            android:orientation="vertical"
+                            android:visibility="visible"
+                            app:cardCornerRadius="8dp"
+                            app:cardElevation="8dp"
+                            app:elevation="8dp">
 
 
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:layout_weight="1"
+                                android:imeOptions="actionDone"
+                                android:inputType="textEmailAddress"
+                                android:maxLength="25"
+                                android:padding="@dimen/_12sdp"
+                                android:singleLine="true"
+                                android:text="Gas / Smoke Level"
+                                android:textColor="#545454"
+                                android:textSize="@dimen/_15sdp"
+                                android:textStyle="bold" />
+
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtSpeedCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_40sdp"
+                                android:imeOptions="actionDone"
+                                android:inputType="textEmailAddress"
+                                android:longClickable="false"
+                                android:maxLength="25"
+                                android:padding="@dimen/_12sdp"
+                                android:paddingBottom="@dimen/_55sdp"
+                                android:singleLine="true"
+                                android:text=""
+                                android:textColor="@color/greenDark"
+                                android:textSize="@dimen/_30sdp"
+                                android:textStyle="bold" />
+
+                            <ImageView
+                                android:id="@+id/img_gas_status"
+                                android:layout_width="@dimen/_100sdp"
+                                android:layout_height="@dimen/_80sdp"
+                                android:layout_gravity="end|bottom"
+                                android:layout_marginBottom="@dimen/_15sdp"
+                                android:scaleType="fitEnd"
+                                android:src="@drawable/dry">
+
+                            </ImageView>
+
+                        </androidx.cardview.widget.CardView>
                     </LinearLayout>
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:visibility="gone"
-                        android:gravity="center"
-                        android:textColor="@color/automation_black"
-                        android:textSize="@dimen/_30sdp"
-                        android:text="5"/>
+                    <!-- </androidx.cardview.widget.CardView>-->
 
-                </FrameLayout>
+                </LinearLayout>
 
             </LinearLayout>
+
+
+            <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/card_notification"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:orientation="vertical"
+                android:visibility="visible"
+                app:cardCornerRadius="5dp"
+                app:cardElevation="5dp"
+                app:elevation="5dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="10dp">
+
+                    <RelativeLayout
+                        android:id="@+id/rel_log"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.8">
+
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginTop="3dp"
+                            android:layout_marginBottom="5dp"
+                            android:gravity="center_vertical|left|start"
+                            android:paddingLeft="@dimen/_5sdp"
+                            android:text="Notifications"
+                            android:textColor="#545454"
+                            android:textSize="@dimen/_12sdp" />
+
+                        <TextView
+                            android:id="@+id/txtAlertCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_toRightOf="@+id/txtAlert"
+                            android:background="@drawable/badge_background"
+                            android:gravity="center"
+                            android:text="9"
+                            android:textColor="#FFF"
+                            android:textSize="11dp"
+                            android:textStyle="bold"
+                            android:visibility="gone" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/rel_notification"
+                        android:layout_width="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/view_rel_badge"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_gravity="top"
+                            android:layout_marginTop="5dp"
+                            android:layout_weight="0.10"
+                            android:src="@drawable/bell" />
+
+                        <TextView
+                            android:id="@+id/txt_notification_badge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:background="@drawable/badge_background"
+                            android:gravity="center"
+                            android:textColor="#FFF"
+                            android:textSize="12dp"
+                            android:visibility="invisible" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -285,21 +367,21 @@
         android:id="@+id/linearDelete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/_5sdp"
         android:gravity="center"
-        android:visibility="gone"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="@dimen/_5sdp"
+        android:visibility="gone">
 
         <Button
             android:id="@+id/btnDelete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginBottom="16dp"
-            android:text="DELETE"
-            android:textColor="#FFFFFF"
             android:background="@drawable/button_red_border_white_bg"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:text="DELETE"
+            android:textColor="#FFFFFF" />
 
 
     </LinearLayout>

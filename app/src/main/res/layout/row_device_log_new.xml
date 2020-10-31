@@ -13,25 +13,25 @@
             android:id="@+id/txt_log_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
             android:layout_marginLeft="15dp"
-            android:textSize="11sp"
+            android:layout_marginTop="15dp"
             android:layout_weight="1"
             android:text=""
             android:textAllCaps="true"
-            android:textColor="@color/automation_black" />
+            android:textColor="@color/automation_black"
+            android:textSize="11sp" />
 
         <TextView
             android:id="@+id/txt_log_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
             android:layout_marginTop="15dp"
             android:layout_marginRight="15dp"
             android:text=""
-            android:textSize="11sp"
             android:textColor="@color/automation_black"
-            android:textStyle="bold"
-            android:layout_alignParentRight="true"/>
+            android:textSize="11sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
 
@@ -39,18 +39,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
         android:layout_marginTop="2dp"
+        android:layout_marginRight="15dp"
         android:orientation="horizontal">
 
         <TextView
             android:id="@+id/txt_log_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
-            android:textColor="@color/automation_black"
             android:layout_alignParentLeft="true"
             android:layout_marginRight="70dp"
+            android:text=""
+            android:lineSpacingMultiplier="1.2"
+            android:textColor="@color/automation_black"
             android:textStyle="bold" />
 
 
@@ -62,9 +63,9 @@
         android:layout_height="30dp"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="5dp"
-        android:orientation="horizontal"
+        android:background="@color/blue_transparent"
         android:gravity="center"
-        android:background="@color/blue_transparent">
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/txt_device_name"
@@ -72,62 +73,48 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/_5sdp"
             android:layout_marginRight="@dimen/_5sdp"
-            android:textSize="11sp"
             android:text=""
-            android:textStyle="bold"
             android:textAllCaps="true"
-            android:textColor="@color/automation_black" />
-
-    <!--    <TextView
-            android:id="@+id/txt_separator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:textColor="@color/automation_black"
             android:textSize="11sp"
-            android:text="\u2022"/>-->
+            android:textStyle="bold" />
+
 
         <TextView
             android:id="@+id/txt_panel_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:textStyle="bold"
-            android:textAllCaps="true"
             android:text=""
-            android:textColor="@color/automation_black" />
+            android:textAllCaps="true"
+            android:textColor="@color/automation_black"
+            android:textSize="10sp"
+            android:textStyle="bold" />
 
-      <!--  <TextView
-            android:id="@+id/txt_separator1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:textSize="11sp"
-            android:text="\u2022"/>-->
 
         <TextView
             android:id="@+id/txt_room_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
             android:layout_marginLeft="@dimen/_2sdp"
             android:layout_marginRight="@dimen/_5sdp"
             android:text=""
-            android:textStyle="bold"
             android:textAllCaps="true"
-            android:textColor="@color/automation_black" />
+            android:textColor="@color/automation_black"
+            android:textSize="10sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
     <TextView
         android:id="@+id/txt_empty_view"
-        android:textSize="20sp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
         android:gravity="center"
         android:padding="14dp"
-        android:layout_gravity="center"
         android:text="End of Record"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:textSize="20sp"
+        android:visibility="gone" />
 
     <View
         android:id="@+id/view_header"

@@ -289,7 +289,8 @@ public class AllUnassignedPanel extends AppCompatActivity implements AddUnassign
             public void onClick(View v) {
                 dialog.dismiss();
                 if(roomdeviceList.getModuleType().equals("repeater") || roomdeviceList.getModuleType().equals("smart_remote")){
-                    showBottomSheetDialog(roomdeviceList);
+//                    showBottomSheetDialog(roomdeviceList);
+                    repetearAdd(roomdeviceList);
                 } else {
                     if(roomdeviceList.getModuleType().equals("beacon")){
                         Intent intent = new Intent(AllUnassignedPanel.this, BeaconConfigActivity.class);

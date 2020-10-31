@@ -24,17 +24,16 @@ public class DeviceListLayoutHelper implements SectionStateChangeListener {
 
     //data list
     ArrayList<Object> mDataArrayList = new ArrayList<Object>();
-    private LinkedHashMap<RoomVO, ArrayList<PanelVO>> mSectionDataMap = new LinkedHashMap<RoomVO, ArrayList<PanelVO>>();
     ArrayList<PanelVO> panelList;
-    //adapter
-    private DeviceListExpandableGridAdapter mSectionedExpandableGridAdapter;
-
-    private Context context;
     //recycler view
     RecyclerView mRecyclerView;
     SelectDevicesListener selectDevicesListener;
     String room_device_id = "", roomIds = "";
     MoodVO section;
+    private LinkedHashMap<RoomVO, ArrayList<PanelVO>> mSectionDataMap = new LinkedHashMap<RoomVO, ArrayList<PanelVO>>();
+    //adapter
+    private DeviceListExpandableGridAdapter mSectionedExpandableGridAdapter;
+    private Context context;
 
     public DeviceListLayoutHelper(Context ctx, RecyclerView recyclerView, ItemClickListener itemClickListener, int gridSpanCount, boolean isMoodAdapter, SelectDevicesListener selectDevicesListener) {
 
@@ -107,16 +106,17 @@ public class DeviceListLayoutHelper implements SectionStateChangeListener {
                     //add panel
                     mDataArrayList.add(panelList.get(i));
                     //add all device switch
-                    if(panelList.get(i).isSensorPanel()){
+                    if (panelList.get(i).isSensorPanel()) {
                         /*for only remote add*/
-                        ArrayList<DeviceVO> deviceVOArrayList=new ArrayList<>();
-                        for(int k=0; k<panelList.get(i).getDeviceList().size(); k++){
-                            if(panelList.get(i).getDeviceList().get(k).getDeviceType().equalsIgnoreCase("remote")){
+                        ArrayList<DeviceVO> deviceVOArrayList = new ArrayList<>();
+                        for (int k = 0; k < panelList.get(i).getDeviceList().size(); k++) {
+                            if (panelList.get(i).getDeviceList().get(k).getDeviceType().equalsIgnoreCase("remote") ||
+                                    panelList.get(i).getDeviceList().get(k).getDeviceType().equalsIgnoreCase("curtain")) {
                                 deviceVOArrayList.add(panelList.get(i).getDeviceList().get(k));
                             }
                         }
                         mDataArrayList.addAll(deviceVOArrayList);
-                    }else {
+                    } else {
                         mDataArrayList.addAll(panelList.get(i).getDeviceList());
                     }
                 }

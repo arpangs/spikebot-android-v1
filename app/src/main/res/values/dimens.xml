@@ -22,6 +22,8 @@
     <dimen name="otp_view_item_spacing">5dp</dimen>
     <dimen name="otp_view_item_line_width">2dp</dimen>
     <dimen name="otp_view_cursor_width">2dp</dimen>
+    <dimen name="room_sensor_weight">90dp</dimen>
 
+    <dimen name="remote_buttom_size">60dp</dimen>
 
 </resources>

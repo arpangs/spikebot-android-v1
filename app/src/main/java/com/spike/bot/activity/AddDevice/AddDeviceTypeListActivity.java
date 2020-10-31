@@ -1,5 +1,6 @@
 package com.spike.bot.activity.AddDevice;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.SystemClock;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
@@ -27,7 +29,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
@@ -87,8 +88,10 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
     ProgressDialog m_progressDialog;
     RoomVO room;
     Dialog dialog;
-
     boolean addRoom = false, addTempSensor = false;
+    AlertDialog.Builder builder;
+    boolean isDialogShow = true;
+    private long mLastClickTime = 0;
     private Socket mSocket;
     /**
      * Socket Listner for configure devices
@@ -138,7 +141,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                                     moodIdList.add(mood_id);
                                     moodNameList.add(mood_name);
 
-                                    if(object.getString("module_type").equalsIgnoreCase("pir_detector")){
+                                    if (object.getString("module_type").equalsIgnoreCase("pir_detector")) {
                                         roomIdList.clear();
                                         roomIdList.addAll(moodIdList);
 
@@ -204,6 +207,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_smart_device_list);
         setviewId();
+        ChatApplication.CurrnetFragment = R.id.navigationDashboard;
     }
 
     private void setviewId() {
@@ -234,7 +238,6 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
         getArraylist();
         startSocketConnection();
-
     }
 
     public int dpToPixel(int dp) {
@@ -346,6 +349,14 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
 
     /*item click */
     private void setIntent(int position) {
+
+
+        if (SystemClock.elapsedRealtime() - mLastClickTime < 3000) {
+            return;
+        }
+        mLastClickTime = SystemClock.elapsedRealtime();
+
+
       /*  if (position == 0) {
             addCustomRoom();
         } else if (position == 1) {
@@ -697,6 +708,8 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                     unassignIntent("pir_detector");
                 } else if (sensor_type == PIR_DEVICE) {
                     unassignIntent("pir_device");
+                } else if (sensor_type == SENSOR_WATER) {
+                    unassignIntent("water_detector");
                 } else {
                     unassignIntent("gas_sensor");
                 }
@@ -1104,6 +1117,13 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         final EditText edt_door_name = dialog.findViewById(R.id.txt_door_sensor_name);
         final TextView edt_door_module_id = dialog.findViewById(R.id.txt_module_id);
         final Spinner sp_room_list = dialog.findViewById(R.id.sp_room_list);
+        ImageView sp_room_list_dropdown = dialog.findViewById(R.id.sp_drop_down);
+        sp_room_list_dropdown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sp_room_list.showContextMenu();
+            }
+        });
 
         TextView mNameSelectTitle = dialog.findViewById(R.id.txtSelectRoom);
         TextView mNameTitle = dialog.findViewById(R.id.txt_sensor_name);
@@ -1150,7 +1170,7 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         edt_door_module_id.setFocusable(false);
 
 
-        mTxtDeviceType.setText(module_type != null ? module_type.toUpperCase() : "Device type not found");
+        mTxtDeviceType.setText(module_type.toUpperCase() != null ? module_type.toUpperCase() : "Device type not found");
 
         if (module_type.equalsIgnoreCase("PIR_DETECTOR")) {
             mNameSelectTitle.setText("Select Mood");
@@ -1192,14 +1212,17 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
                 if (edt_door_name.getText().toString().trim().length() == 0) {
                     ChatApplication.showToast(AddDeviceTypeListActivity.this, "Please enter name");
                 } else {
-                   addDevice(dialog, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list, module_type);
+                    addDevice(dialog, edt_door_name.getText().toString(), edt_door_module_id.getText().toString(), sp_room_list, module_type);
                     mSocket.off("configureDevice", configureDevice);
                     dialog.dismiss();
 
                 }
             }
         });
-        dialog.show();
+
+        if (!dialog.isShowing())
+            dialog.show();
+
     }
 
     /*add device common service */
@@ -1253,57 +1276,123 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
      */
     private void showConfigAlert(String alertMessage, String module_type) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(AddDeviceTypeListActivity.this);
+        builder = new AlertDialog.Builder(AddDeviceTypeListActivity.this);
 
 
-        if (!module_type.equals("5f") || !module_type.equals("5") && sensorposition == 2) {
+        /*if (!module_type.equals("5f") || !module_type.equals("5") && sensorposition == 2) {
             builder.setMessage("Attached device is not switch board");
-        } else {
-            builder.setMessage(alertMessage);
-        }
-
-        if (!module_type.equals("heavy_load") || !module_type.equals("double_heavy_load") && sensorposition == 2) {
+        } else if (!module_type.equals("heavy_load") || !module_type.equals("double_heavy_load") && sensorposition == 2) {
             builder.setMessage("Attached device is not heavy load");
-        } else {
-            builder.setMessage(alertMessage);
-        }
-
-        if (!module_type.equals("door_sensor") && sensorposition == 7) {
+        } else if (!module_type.equals("door_sensor") && sensorposition == 7) {
             builder.setMessage("Attached device is not door sensor");
-        } else {
-            builder.setMessage(alertMessage);
-        }
-
-        if (!module_type.equals("gas_sensor") && sensorposition == 8) {
+        } else if (!module_type.equals("gas_sensor") && sensorposition == 8) {
             builder.setMessage("Attached device is not gas sensor");
-        } else {
-            builder.setMessage(alertMessage);
-        }
-
-        if (!module_type.equals("temp_sensor") && sensorposition == 9) {
+        } else if (!module_type.equals("temp_sensor") && sensorposition == 9) {
             builder.setMessage("Attached device is not temprature sensor");
-        } else {
-            builder.setMessage(alertMessage);
-        }
-
-        if (!module_type.equals("curtain") && sensorposition == 10) {
+        } else if (!module_type.equals("curtain") && sensorposition == 10) {
             builder.setMessage("Attached device is not curtain");
-        } else {
-            builder.setMessage(alertMessage);
-        }
-
-        if (!module_type.equals("water_detector") && sensorposition == 14) {
+        } else if (!module_type.equals("water_detector") && sensorposition == 14) {
             builder.setMessage("Attached device is not water detector");
-        } else {
-            builder.setMessage(alertMessage);
-        }
-
-        if (!module_type.equals("pir_detector") && sensorposition == 17) {
+        } else if (!module_type.equals("pir_detector") && sensorposition == 17) {
             builder.setMessage("Attached device is not motion detector");
         } else {
             builder.setMessage(alertMessage);
+        }*/
+
+
+        switch (sensorposition) {
+
+
+            case 2:
+
+                switch (module_type) {
+
+                    case "5":
+                    case "5f":
+                        builder.setMessage(alertMessage);
+                        break;
+                    case "heavy_load":
+                    case "double_heavy_load":
+                        builder.setMessage(alertMessage);
+                        break;
+                    default:
+                        builder.setMessage("Attached device is not a panel");
+                        break;
+
+                }
+                break;
+            case 7:
+                if (!module_type.equals("door_sensor")) {
+                    builder.setMessage("Attached device is not door sensor");
+                } else {
+                    builder.setMessage(alertMessage);
+                }
+                break;
+            case 8:
+                if (!module_type.equals("gas_sensor")) {
+                    builder.setMessage("Attached device is not gas sensor");
+                } else {
+                    builder.setMessage(alertMessage);
+                }
+                break;
+            case 9:
+                if (!module_type.equals("temp_sensor")) {
+                    builder.setMessage("Attached device is not temperature sensor");
+                } else {
+                    builder.setMessage(alertMessage);
+                }
+                break;
+            case 10:
+                if (!module_type.equals("curtain")) {
+                    builder.setMessage("Attached device is not curtain");
+                } else {
+                    builder.setMessage(alertMessage);
+                }
+                break;
+            case 14:
+                if (!module_type.equals("water_detector")) {
+                    builder.setMessage("Attached device is not water detector");
+                } else {
+                    builder.setMessage(alertMessage);
+                }
+                break;
+            case 17:
+                if (!module_type.equals("pir_detector")) {
+                    builder.setMessage("Attached device is not motion detector");
+                } else {
+                    builder.setMessage(alertMessage);
+                }
+                break;
+
+            default:
+                builder.setMessage(alertMessage);
+                break;
         }
 
+
+      /*  if (sensorposition == 2 && !module_type.equals("5")) {
+            builder.setMessage("Attached device is not switch board");
+        } else if (sensorposition == 2 && !module_type.contains("5f")) {
+            builder.setMessage("Attached device is not switch board");
+        } else if (sensorposition == 2 && !module_type.equals("heavy_load")) {
+            builder.setMessage("Attached device is not heavy load");
+        } else if (sensorposition == 2 && !module_type.equals("double_heavy_load")) {
+            builder.setMessage("Attached device is not heavy load");
+        } else if (sensorposition == 7 && !module_type.equals("door_sensor")) {
+            builder.setMessage("Attached device is not door sensor");
+        } else if (sensorposition == 8 && !module_type.equals("gas_sensor")) {
+            builder.setMessage("Attached device is not gas sensor");
+        } else if (sensorposition == 9 && !module_type.equals("temp_sensor")) {
+            builder.setMessage("Attached device is not temprature sensor");
+        } else if (sensorposition == 10 && !module_type.equals("curtain")) {
+            builder.setMessage("Attached device is not curtain");
+        } else if (sensorposition == 14 && !module_type.equals("water_detector")) {
+            builder.setMessage("Attached device is not water detector");
+        } else if (sensorposition == 17 && !module_type.equals("pir_detector")) {
+            builder.setMessage("Attached device is not motion detector");
+        } else {
+            builder.setMessage(alertMessage);
+        }*/
 
 
       /*  else {
@@ -1312,11 +1401,17 @@ public class AddDeviceTypeListActivity extends AppCompatActivity {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                isDialogShow = true;
                 dialog.dismiss();
                 mSocket.off("configureDevice", configureDevice);
             }
         });
-        builder.create().show();
+
+        if (isDialogShow) {
+            isDialogShow = false;
+            builder.create().show();
+        }
+
     }
 
     /*device list adapter*/

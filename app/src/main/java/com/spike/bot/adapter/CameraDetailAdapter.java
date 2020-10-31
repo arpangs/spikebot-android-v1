@@ -92,9 +92,11 @@ public class CameraDetailAdapter extends RecyclerView.Adapter<CameraDetailAdapte
             holder.txtCameraCount.setVisibility(View.VISIBLE);
             if (!TextUtils.isEmpty(cameraVO.getIs_unread()) && Integer.parseInt(cameraVO.getIs_unread()) > 99) {
                 holder.txtCameraCount.setText("99+");
+                holder.txtCameraCount.setBackground(mContext.getResources().getDrawable(R.drawable.badge_background_oval));
             } else {
                 holder.txtCameraCount.setVisibility(View.VISIBLE);
                 holder.txtCameraCount.setText("" + cameraVO.getIs_unread());
+                holder.txtCameraCount.setBackground(mContext.getResources().getDrawable(R.drawable.badge_background));
             }
 
         } else {

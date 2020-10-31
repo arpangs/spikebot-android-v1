@@ -74,7 +74,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="2dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/icn_arrow_down_spinner2" />
+                    android:src="@drawable/down_side" />
 
             </LinearLayout>
 

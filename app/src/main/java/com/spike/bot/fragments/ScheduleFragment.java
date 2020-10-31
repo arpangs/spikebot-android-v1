@@ -75,6 +75,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     Menu mainMenu;
     DashBoardFragment.OnHeadlineSelectedListener mCallback;
     View view;
+    String from = "";
     // This event fires 1st, before creation of fragment or any views
     // The onAttach method is called when the Fragment instance is associated with an Activity.
     // This does not mean the Activity is fully initialized.
@@ -166,7 +167,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         return fragment;
     }
 
-    public static ScheduleFragment newInstance(boolean isMood, String moodId, String moodId2, String moodId3, int selection, String roomId, boolean isMoodAdapter, String isActivityType, String isRoomMainFm) {
+    public static ScheduleFragment newInstance(boolean isMood, String moodId, String moodId2, String moodId3, int selection, String roomId, boolean isMoodAdapter, String isActivityType, String isRoomMainFm, String from) {
         ScheduleFragment fragment = new ScheduleFragment();
         Bundle args = new Bundle();
         args.putBoolean("isMood", isMood);
@@ -178,6 +179,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         args.putString("isRoomMainFm", isRoomMainFm);
         args.putInt("selection", selection);
         args.putBoolean("isMoodAdapter", isMoodAdapter);
+        args.putString("from", from);
         fragment.setArguments(args);
         return fragment;
     }
@@ -211,7 +213,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         // startSocketConnection();
         try {
             ((Main2Activity) activity).invalidateToolbarCloudImage();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -240,7 +242,8 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInartanceState) {
         view = inflater.inflate(R.layout.fragment_schedule, container, false);
         try {
-            isMood = getArguments().getBoolean("isMood");
+            from = getArguments().getString("from");
+//            isMood = getArguments().getBoolean("isMood");
             moodId = getArguments().getString("moodId");
             roomId = getArguments().getString("roomId");
             isActivityType = getArguments().getString("isActivityType");
@@ -299,28 +302,28 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(getActivity(), ScheduleActivity.class);
-//                if (selection != 0) {
-//                    intent.putExtra("selection", selection);
-//                } else {
-//                    intent.putExtra("selection", !isMood ? 1 : 2);
+//                Intent intent = new Intent(getActivity(), ScheduleActivity.class);
+////                if (selection != 0) {
+////                    intent.putExtra("selection", selection);
+////                } else {
+////                    intent.putExtra("selection", !isMood ? 1 : 2);
+////                }
+//
+//                String moodIdPass = moodId3;
+//                if (TextUtils.isEmpty(moodId3)) {
+//                    moodIdPass = moodId2;
 //                }
-
-                String moodIdPass = moodId3;
-                if (TextUtils.isEmpty(moodId3)) {
-                    moodIdPass = moodId2;
-                }
-//                intent.putExtra("isScheduleClick", true);
-//                intent.putExtra("moodId", moodIdPass);
-//                intent.putExtra("roomId", moodIdPass);
-                if (TextUtils.isEmpty(moodId) && TextUtils.isEmpty(moodId2) && TextUtils.isEmpty(moodId3)) {
-                    intent.putExtra("isEditOpen", false);
-                } else {
-                    intent.putExtra("isEditOpen", true);
-                }
-//                intent.putExtra("isMoodSelected", true);
-                intent.putExtra("isActivityType", "" + 2);
-                startActivity(intent);
+////                intent.putExtra("isScheduleClick", true);
+////                intent.putExtra("moodId", moodIdPass);
+////                intent.putExtra("roomId", moodIdPass);
+//                if (TextUtils.isEmpty(moodId) && TextUtils.isEmpty(moodId2) && TextUtils.isEmpty(moodId3)) {
+//                    intent.putExtra("isEditOpen", false);
+//                } else {
+//                    intent.putExtra("isEditOpen", true);
+//                }
+////                intent.putExtra("isMoodSelected", true);
+//                intent.putExtra("isActivityType", "" + 2);
+//                startActivity(intent);
 
             }
         });
@@ -348,6 +351,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         isFABOpen = true;
 
         Intent intent = new Intent(getActivity(), ScheduleActivity.class);
+        ChatApplication.CurrnetFragment = R.id.navigationSchedule;
         if (isMood) {
             if (isRoomMainFm.equals("room")) {
                 intent.putExtra("selection", 1);
@@ -408,11 +412,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     public void onResume() {
         super.onResume();
 
-        try {
-            ((Main2Activity) activity).invalidateToolbarCloudImage();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
         // 11
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         rv_mood.setLayoutManager(linearLayoutManager);
@@ -421,11 +420,18 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             userName = ((Main2Activity) getActivity()).toolbarTitle.getText().toString();
         }
         setId();
-        if (isMood) {
-            linearTabSchedule.setVisibility(View.GONE);
-        } else {
+//        if (isMood) {
+//            linearTabSchedule.setVisibility(View.GONE);
+//        } else {
+//            linearTabSchedule.setVisibility(View.VISIBLE);
+//        }
+
+        if (from.equals("")) {
             linearTabSchedule.setVisibility(View.VISIBLE);
+        } else {
+            linearTabSchedule.setVisibility(View.GONE);
         }
+
         if (scheduleRoomArrayList.size() == 0) {
             txt_empty_scheduler.setVisibility(View.VISIBLE);
             rv_mood.setVisibility(View.GONE);
@@ -445,6 +451,12 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             ChatApplication.isScheduleNeedResume = false;
             onLoadFragment(1);
         }
+
+//        try {
+//            ((Main2Activity) activity).invalidateToolbarCloudImage();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
     }
 
@@ -491,6 +503,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                 }
             }
             Intent intent = new Intent(getActivity(), ScheduleActivity.class);
+            ChatApplication.CurrnetFragment = R.id.navigationSchedule;
             //scheduleVO //moodId
             intent.putExtra("isScheduleClick", true);
             intent.putExtra("scheduleVO", scheduleVO);
@@ -501,6 +514,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
         } else if (view.getId() == R.id.iv_room_add) {
             Intent intent = new Intent(getActivity(), ScheduleActivity.class);
+            ChatApplication.CurrnetFragment = R.id.navigationSchedule;
             intent.putExtra("isScheduleClick", true);
             intent.putExtra("roomId", roomId);
             intent.putExtra("selection", 1);
@@ -557,6 +571,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         if (id == R.id.action_add) {
             //openAddPopup(tv_header);
             Intent intent = new Intent(getActivity(), ScheduleActivity.class);
+            ChatApplication.CurrnetFragment = R.id.navigationSchedule;
             if (selection != 0) {
                 intent.putExtra("selection", selection);
             } else {
@@ -640,8 +655,8 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     public void getDeviceList() {
 
         try {
-            ((Main2Activity) activity).invalidateToolbarCloudImage();
-        }catch (Exception e){
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -758,6 +773,10 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                         }
                     }
 
+                    if (scheduleRoomArrayList != null && scheduleRoomArrayList.size() == 0) {
+                        txt_empty_scheduler.setVisibility(View.VISIBLE);
+                    }
+
 
                 } catch (Exception e) {
                     ChatApplication.isScheduleNeedResume = true;
@@ -811,9 +830,9 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             txt_empty_scheduler.setVisibility(View.VISIBLE);
         }
 
-        if (isMood) {
-            linearTabSchedule.setVisibility(View.GONE);
-        }
+//        if (isMood) {
+//            linearTabSchedule.setVisibility(View.GONE);
+//        }
 
     }
 
@@ -831,11 +850,11 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         ll_recycler.setVisibility(View.VISIBLE);
 
         rv_mood.setVisibility(View.VISIBLE);
-        if (isMood) {
-            linearTabSchedule.setVisibility(View.GONE);
-        } else {
-            linearTabSchedule.setVisibility(View.VISIBLE);
-        }
+//        if (isMood) {
+//            linearTabSchedule.setVisibility(View.GONE);
+//        } else {
+//            linearTabSchedule.setVisibility(View.VISIBLE);
+//        }
 
         if (!TextUtils.isEmpty(moodId3) || !TextUtils.isEmpty(moodId2)) {
             if (!TextUtils.isEmpty(moodId3)) {
@@ -1139,6 +1158,27 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                             for (int i = 0; i < scheduleRoomArrayList.size(); i++) {
                                 ScheduleVO scheduleVO2 = scheduleRoomArrayList.get(i);
                                 if (scheduleVO2.getSchedule_id().equalsIgnoreCase(scheduleVO.getSchedule_id())) {
+
+                                    try {
+                                        if (result.has("data")) {
+                                            String newOnTime = "";
+                                            String newOffTime = "";
+                                            JSONObject jsonObject = result.optJSONObject("data");
+
+                                            if (jsonObject.has("on_time")) {
+                                                newOnTime = jsonObject.optString("on_time");
+                                                scheduleVO.setSchedule_device_on_time(newOnTime);
+                                            }
+                                            if (jsonObject.has("off_time")) {
+                                                newOffTime = jsonObject.optString("off_time");
+                                                scheduleVO.setSchedule_device_off_time(newOffTime);
+                                            }
+
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
                                     scheduleRoomAdapter.notifyItemChanged(i, scheduleVO);
                                 }
                             }
@@ -1232,6 +1272,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                 scheduleVO.setRoom_device_id(room_device_id);
                 ChatApplication.isScheduleNeedResume = true;
                 Intent intent = new Intent(getActivity(), ScheduleActivity.class);
+                ChatApplication.CurrnetFragment = R.id.navigationSchedule;
                 intent.putExtra("scheduleVO", scheduleVO);
                 intent.putExtra("isMap", true);
                 intent.putExtra("isEdit", true);
@@ -1270,6 +1311,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
             public void onClick(View v) {
                 dialog.dismiss();
                 Intent intent = new Intent(getActivity(), DeviceLogActivity.class);
+                ChatApplication.CurrnetFragment = R.id.navigationSchedule;
                 intent.putExtra("Schedule_id", "" + scheduleVO.getSchedule_id());
                 intent.putExtra("ROOM_ID", "" + scheduleVO.getSchedule_id());
                 intent.putExtra("activity_type", "" + scheduleVO.getIs_timer());

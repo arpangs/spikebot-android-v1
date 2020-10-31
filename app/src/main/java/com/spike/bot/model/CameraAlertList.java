@@ -75,7 +75,7 @@ public class CameraAlertList implements Serializable {
 
     @SerializedName("isOpen")
     @Expose
-    private boolean isOpen = false;
+    private boolean isOpen = true;
 
     @SerializedName("activity_action")
     @Expose

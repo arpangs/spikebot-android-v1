@@ -59,7 +59,7 @@ public class RestClient {
 
     private RestClient() {
         Retrofit.Builder builder = new Retrofit.Builder();
-        builder.baseUrl("http://home.deepfoods.net:11105");
+        builder.baseUrl("http://vpn.spikebot.io");
         builder.addConverterFactory(GsonConverterFactory.create());
         builder.client(httpClient);  // dev arp   // for http
         Retrofit mretrofit = builder.build();

@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.R;
+import com.spike.bot.core.Constants;
 import com.spike.bot.model.CameraSearchModel;
 import com.spike.bot.model.CameraVO;
 import com.spike.bot.receiver.ExpandableRecyclerView;
@@ -77,7 +78,29 @@ public class ExpandableTestAdapter extends ExpandableRecyclerView.Adapter<Expand
     @Override
     public void onBindChildViewHolder(final ChildViewHolder holder, final int group, final int position) {
         super.onBindChildViewHolder(holder, group, position);
-        holder.txtCameraLink.setText(arrayList.get(group).getArrayList().get(position).getCamera_name() + " " + arrayList.get(group).getArrayList().get(position).getCamera_ip());
+
+        /*original*/
+//        holder.txtCameraLink.setText(arrayList.get(group).getArrayList().get(position).getCamera_name() + " " + arrayList.get(group).getArrayList().get(position).getCamera_ip());
+
+        /*change by arpan - 20 oct 2020*/
+
+        String mMainvideoUrl = arrayList.get(group).getArrayList().get(position).getLoadingUrl();
+
+        try {
+
+            String MainName = mMainvideoUrl.substring(0, mMainvideoUrl.length() - 4);
+
+
+            String arr[] = MainName.split("_");
+            String timestamps = arr[arr.length - 1];
+
+            holder.txtCameraLink.setText(Constants.getDate(timestamps) + " [" + Constants.getStartTime(timestamps).toLowerCase() + " TO " + Constants.getEndTime(timestamps).toLowerCase() + "] ");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            holder.txtCameraLink.setText(arrayList.get(group).getArrayList().get(position).getCamera_name());
+        }
+
 
         holder.view.setId(group);
         holder.view.setOnClickListener(new View.OnClickListener() {
@@ -86,6 +109,10 @@ public class ExpandableTestAdapter extends ExpandableRecyclerView.Adapter<Expand
                 cameraPlayBack.onCameraClick(holder.view.getId(), position, arrayList.get(holder.view.getId()).getArrayList().get(position));
             }
         });
+    }
+
+    public interface CameraClick {
+        void onCameraClick(int group, int child, CameraVO cameraTime);
     }
 
     public class ChildViewHolder extends RecyclerView.ViewHolder {
@@ -97,10 +124,6 @@ public class ExpandableTestAdapter extends ExpandableRecyclerView.Adapter<Expand
             this.view = itemView;
             txtCameraLink = itemView.findViewById(R.id.txtCameraLink);
         }
-    }
-
-    public interface CameraClick {
-        void onCameraClick(int group, int child, CameraVO cameraTime);
     }
 
 }

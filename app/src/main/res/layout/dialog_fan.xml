@@ -40,7 +40,7 @@
             android:backgroundTint="@color/sensor_button"
             android:padding="3dp"
             android:visibility="gone"
-            app:srcCompat="@drawable/cross" />
+            app:srcCompat="@drawable/round_cross" />
 
         <Button
             android:id="@+id/btn_save"

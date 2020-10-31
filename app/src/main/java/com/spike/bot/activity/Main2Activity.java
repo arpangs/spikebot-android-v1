@@ -1,9 +1,11 @@
 package com.spike.bot.activity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
@@ -102,6 +104,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     private FrameLayout mViewPager;
     private Socket mSocket;
     private ConnectivityReceiver connectivityReceiver;
+    private long mLastClickTime = 0;
 
 
     //Socket
@@ -495,8 +498,12 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             setWifiLocalflow(local_ip, cloudIp, mac_address, 0);
 
 
-            finish();
+            ChatApplication.CurrnetFragment = R.id.navigationDashboard;
+//            finish();
+            overridePendingTransition(0, 0);
             startActivity(getIntent());
+            overridePendingTransition(0, 0);
+//            overridePendingTransition(R.anim.slide_out_left, R.anim.slide_in_right);
 
         }
 
@@ -625,6 +632,9 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     } else if (ChatApplication.url.contains("192.168")) {
                         mImageCloud.setImageResource(R.drawable.wifi);
                         toolbarwifiname.setText("Wifi");
+                    } else if (ChatApplication.url.contains("beta")) {
+                        mImageCloud.setImageResource(R.drawable.cloud);
+                        toolbarwifiname.setText("Cloud");
                     }
                 }
             }
@@ -795,6 +805,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     case R.id.action_device_log:
                         if (linearTab.getVisibility() == View.VISIBLE) {
                             Intent intent = new Intent(Main2Activity.this, DeviceLogActivity.class);
+                            ChatApplication.CurrnetFragment = R.id.navigationDashboard;  // dev arpan on 30 july 2020
                             intent.putExtra("isCheckActivity", "AllType");
                             startActivity(intent);
                         } else {
@@ -1075,6 +1086,8 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                         });
 
 
+                    } else {
+                        loginIntent();
                     }
                 }
             } else {
@@ -1179,7 +1192,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     /*login screen */
     private void loginIntent() {
         Intent intent = new Intent(Main2Activity.this, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
         Main2Activity.this.finish();
     }
@@ -1290,21 +1303,51 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onBackPressed() {
-        if (doubleBackToExitPressedOnce) {
-            super.onBackPressed();
-            return;
-        }
+
+
+//        if (doubleBackToExitPressedOnce) {
+//            super.onBackPressed();
+//            return;
+//        }
 
         this.doubleBackToExitPressedOnce = true;
-        ChatApplication.showToast(Main2Activity.this, "Please click BACK again to exit.");
 
-        new Handler().postDelayed(new Runnable() {
+        long now = System.currentTimeMillis();
+        if (now - mLastClickTime >= 2000) {
+            mLastClickTime = now;
+            ChatApplication.showToast(Main2Activity.this, "Please click BACK again to exit.");
 
-            @Override
-            public void run() {
-                doubleBackToExitPressedOnce = false;
-                finish();
+        } else {
+
+            if (ChatApplication.CurrnetFragment == R.id.navigationDashboard) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(Main2Activity.this);
+                builder.setMessage("Are you sure you want to exit?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+//                            doubleBackToExitPressedOnce = false;
+                                Intent intent = new Intent(Intent.ACTION_MAIN);
+                                intent.addCategory(Intent.CATEGORY_HOME);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                                System.exit(1);
+
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+            } else {
+                navigation_bar.setItemSelected(R.id.navigationDashboard, true); // dev arpan add on 15 june 2020
             }
-        }, 2000);
+        }
+
+
     }
 }

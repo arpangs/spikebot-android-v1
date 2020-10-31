@@ -6,33 +6,56 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <LinearLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="56dp"
+        android:background="@color/sky_blue"
+        android:orientation="horizontal">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
-            android:background="@color/sky_blue"
-            app:popupTheme="@style/AppTheme.PopupOverlay">
+        <ImageView
+            android:id="@+id/remote_toolbar_back"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_32sdp"
+            android:layout_gravity="center|left"
+            android:layout_weight="0.2"
+            android:padding="5dp"
+            android:src="@drawable/ic_back" />
 
 
-        </androidx.appcompat.widget.Toolbar>
+        <TextView
+            android:id="@+id/remote_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="0.8"
+            android:ellipsize="end"
+            android:lines="1"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
 
-    </com.google.android.material.appbar.AppBarLayout>
-    <!--
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
 
-        <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            <ImageView
+                android:id="@+id/iv_icon_edit"
+                android:layout_width="@dimen/_22sdp"
+                android:layout_height="@dimen/_22sdp"
+                android:layout_gravity="center|right"
+                android:layout_marginRight="@dimen/_15sdp"
+                android:src="@drawable/edit_white_new" />
 
-            android:orientation="vertical"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            card_view:cardCornerRadius="3dp">
+        </LinearLayout>
 
-    -->
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -45,7 +68,7 @@
             android:id="@+id/scrollviewMulti"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
+c
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -95,8 +118,7 @@
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
-                                    android:layout_marginTop="@dimen/_6sdp"
-                                    android:layout_marginBottom="@dimen/_5sdp"
+                                    android:layout_marginBottom="8dp"
                                     android:orientation="horizontal">
 
                                     <ImageView
@@ -105,7 +127,6 @@
                                         android:layout_height="40dp"
                                         android:layout_gravity="bottom"
                                         android:layout_weight="0.30"
-                                        android:src="@drawable/multi_sensor"
                                         android:visibility="gone" />
 
                                     <LinearLayout
@@ -155,18 +176,28 @@
                                             android:layout_height="@dimen/_25sdp"
                                             android:layout_gravity="center_horizontal"
                                             android:layout_marginLeft="@dimen/_10sdp"
-                                            android:layout_marginRight="@dimen/_10sdp"
                                             android:gravity="center"
                                             android:src="@drawable/ic_log"
                                             android:visibility="visible" />
 
                                         <ImageView
-                                            android:id="@+id/iv_icon_edit"
+                                            android:id="@+id/imgTempGraph"
+                                            android:layout_width="@dimen/_35sdp"
+                                            android:layout_height="@dimen/_25sdp"
+                                            android:layout_gravity="center_horizontal"
+                                            android:layout_marginLeft="@dimen/_10sdp"
+                                            android:gravity="center"
+                                            android:src="@drawable/graph"
+                                            android:visibility="visible" />
+
+                                        <ImageView
+                                            android:id="@+id/iv_icon_edit_"
                                             android:layout_width="25dp"
                                             android:layout_height="35dp"
                                             android:layout_gravity="center_horizontal"
                                             android:layout_marginRight="@dimen/_5sdp"
                                             android:adjustViewBounds="true"
+                                            android:visibility="gone"
                                             android:gravity="center"
                                             android:src="@drawable/edit_blue" />
 
@@ -200,8 +231,8 @@
 
                                         <TextView
                                             android:id="@+id/iv_icon_badge"
-                                            android:layout_width="20dp"
-                                            android:layout_height="20dp"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
                                             android:layout_alignRight="@+id/img_dummy"
                                             android:layout_centerHorizontal="true"
                                             android:background="@drawable/badge_background"
@@ -225,7 +256,7 @@
                                         android:visibility="gone">
 
                                         <ImageView
-                                            android:id="@+id/img_battery"
+
                                             android:layout_width="32dp"
                                             android:layout_height="32dp"
                                             android:layout_gravity="center"
@@ -302,7 +333,7 @@
                                                     android:layout_width="@dimen/_25sdp"
                                                     android:layout_height="@dimen/_25sdp"
                                                     android:layout_gravity="center"
-                                                    android:background="@drawable/background_sensor_right"
+
                                                     android:gravity="center"
                                                     android:padding="5dp"
                                                     android:text="\u2103"
@@ -314,11 +345,10 @@
                                                     android:layout_width="@dimen/_25sdp"
                                                     android:layout_height="@dimen/_25sdp"
                                                     android:layout_gravity="center"
-                                                    android:background="@drawable/background_sensor_left"
                                                     android:gravity="center"
                                                     android:padding="5dp"
                                                     android:text="F"
-                                                    android:textColor="#111"
+                                                    android:textColor="#FFFFFF"
                                                     android:textSize="14dp" />
 
                                             </LinearLayout>
@@ -409,6 +439,7 @@
                                             android:paddingTop="@dimen/_10sdp">
 
                                             <ImageView
+                                                android:id="@+id/img_battery"
                                                 android:layout_width="40dp"
                                                 android:layout_height="31dp"
                                                 android:src="@drawable/battery_4">
@@ -507,8 +538,8 @@
                         android:background="@color/automation_white"
                         android:orientation="vertical"
                         android:visibility="visible"
-                        app:cardCornerRadius="8dp"
-                        app:cardElevation="8dp">
+                        app:cardCornerRadius="5dp"
+                        app:cardElevation="5dp">
 
                         <LinearLayout
                             android:id="@+id/edt_txt_layout2"
@@ -571,17 +602,6 @@
                                     android:gravity="center"
                                     android:orientation="horizontal">
 
-                                    <ToggleButton
-                                        android:id="@+id/toggleAlert"
-                                        android:layout_width="40dp"
-                                        android:layout_height="40dp"
-                                        android:layout_gravity="center_vertical"
-                                        android:layout_marginLeft="5dp"
-                                        android:layout_marginRight="10dp"
-                                        android:background="@drawable/bell"
-                                        android:contentDescription="Change state of section"
-                                        android:textOff=""
-                                        android:textOn="" />
 
                                     <LinearLayout
                                         android:layout_width="0dp"
@@ -611,6 +631,37 @@
                                             android:textSize="@dimen/_12sdp" />
 
                                     </LinearLayout>
+
+                                    <RelativeLayout
+                                        android:id="@+id/rel_notification"
+                                        android:layout_width="wrap_content"
+                                        android:layout_marginLeft="10dp"
+
+                                        android:layout_height="wrap_content">
+
+                                        <ImageView
+                                            android:id="@+id/toggleAlert"
+                                            android:layout_width="35dp"
+                                            android:layout_height="35dp"
+                                            android:layout_gravity="top"
+                                            android:layout_marginTop="5dp"
+                                            android:layout_marginRight="15dp"
+                                            android:layout_weight="0.10"
+                                            android:src="@drawable/bell" />
+
+                                        <TextView
+                                            android:id="@+id/txt_notification_badge"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginLeft="18dp"
+                                            android:background="@drawable/badge_background"
+                                            android:gravity="center"
+                                            android:textColor="#FFF"
+                                            android:textSize="12dp"
+                                            android:visibility="invisible" />
+
+                                    </RelativeLayout>
+
 
                                     <TextView
                                         android:id="@+id/btnAdd"
@@ -733,8 +784,8 @@
                         android:background="@color/automation_white"
                         android:orientation="vertical"
                         android:visibility="visible"
-                        app:cardCornerRadius="8dp"
-                        app:cardElevation="8dp">
+                        app:cardCornerRadius="5dp"
+                        app:cardElevation="5dp">
 
                         <LinearLayout
                             android:id="@+id/edt_txt_layout_temp"
@@ -797,17 +848,7 @@
                                     android:gravity="center"
                                     android:orientation="horizontal">
 
-                                    <ToggleButton
-                                        android:id="@+id/toggleAlert_temp"
-                                        android:layout_width="40dp"
-                                        android:layout_height="40dp"
-                                        android:layout_gravity="center_vertical"
-                                        android:layout_marginLeft="5dp"
-                                        android:layout_marginRight="10dp"
-                                        android:background="@drawable/bell"
-                                        android:contentDescription="Change state of section"
-                                        android:textOff=""
-                                        android:textOn="" />
+
 
                                     <LinearLayout
                                         android:layout_width="0dp"
@@ -837,6 +878,36 @@
 
 
                                     </LinearLayout>
+
+                                    <RelativeLayout
+                                        android:id="@+id/rel_notification_humadity"
+                                        android:layout_width="wrap_content"
+                                        android:layout_marginLeft="10dp"
+                                        android:layout_marginRight="10dp"
+                                        android:layout_height="wrap_content">
+
+                                        <ImageView
+                                            android:id="@+id/toggleAlert_temp"
+                                            android:layout_width="35dp"
+                                            android:layout_height="35dp"
+                                            android:layout_gravity="top"
+                                            android:layout_marginRight="10dp"
+                                            android:layout_marginTop="5dp"
+                                            android:layout_weight="0.10"
+                                            android:src="@drawable/bell" />
+
+                                        <TextView
+                                            android:id="@+id/txt_notification_badge_humadity"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginLeft="18dp"
+                                            android:background="@drawable/badge_background"
+                                            android:gravity="center"
+                                            android:textColor="#FFF"
+                                            android:textSize="12dp"
+                                            android:visibility="invisible" />
+
+                                    </RelativeLayout>
 
                                     <TextView
                                         android:id="@+id/btnAdd_temp"
@@ -999,8 +1070,8 @@
 
                                     <TextView
                                         android:id="@+id/txtAlertCount"
-                                        android:layout_width="24dp"
-                                        android:layout_height="24dp"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
                                         android:layout_centerHorizontal="true"
                                         android:layout_toRightOf="@+id/txtAlert"
                                         android:background="@drawable/badge_background"

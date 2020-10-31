@@ -1,5 +1,6 @@
 package com.spike.bot.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,19 +15,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.adapter.NotificationSettingAdapter;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
-import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
-import com.spike.bot.core.Constants;
 import com.spike.bot.model.NotificationListRes;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -79,9 +75,16 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
             saveNotiSettingList();
             return true;
         } else if (id == android.R.id.home) {
+            ChatApplication.CurrnetFragment = R.id.navigationDashboard;
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        ChatApplication.CurrnetFragment = R.id.navigationDashboard;
+        super.onBackPressed();
     }
 
     /**
@@ -96,20 +99,20 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
 
 //        JSONObject dataObject = new JSONObject();
 
-            //changes in
-            //URL: getNotificationList, URL: saveNotificationList
-            //Added multisensor and gas enable/disable option.
+        //changes in
+        //URL: getNotificationList, URL: saveNotificationList
+        //Added multisensor and gas enable/disable option.
 
-            JsonArray dataArray = new JsonArray();
-            for (NotificationListRes.Data data : notificationDataList) {
-                JsonObject homeObject = new JsonObject();
-                homeObject.addProperty("id", data.getId());
-                homeObject.addProperty("title", data.getTitle());
-                homeObject.addProperty("value", data.getValue());
+        JsonArray dataArray = new JsonArray();
+        for (NotificationListRes.Data data : notificationDataList) {
+            JsonObject homeObject = new JsonObject();
+            homeObject.addProperty("id", data.getId());
+            homeObject.addProperty("title", data.getTitle());
+            homeObject.addProperty("value", data.getValue());
 
 
-                dataArray.add(homeObject);
-            }
+            dataArray.add(homeObject);
+        }
 
 //            dataObject.put("data",dataArray);
 //            dataObject.put("user_id", Common.getPrefValue(this, Constants.USER_ID));
@@ -119,7 +122,7 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
 
        /* String webUrl = ChatApplication.url + Constants.SAVE_NOTIFICATION_LIST;
         ChatApplication.logDisplay("notification result is "+ webUrl + dataObject);*/
-            ActivityHelper.showProgressDialog(this, "Please wait.", false);
+        ActivityHelper.showProgressDialog(this, "Please wait.", false);
 
        /* new GetJsonTask(this, webUrl, "POST", dataObject.toString(), new ICallBack() {
             @Override
@@ -146,40 +149,39 @@ public class NotificationSetting extends AppCompatActivity implements Notificati
                 ActivityHelper.dismissProgressDialog();
             }
         }).execute();*/
-            if (ChatApplication.url.contains("http://"))
-                ChatApplication.url = ChatApplication.url.replace("http://", "");
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
 
-            SpikeBotApi.getInstance().SaveNotiSettingList(dataArray, new DataResponseListener() {
-                @Override
-                public void onData_SuccessfulResponse(String stringResponse) {
-                    ActivityHelper.dismissProgressDialog();
-                    try {
+        SpikeBotApi.getInstance().SaveNotiSettingList(dataArray, new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                ActivityHelper.dismissProgressDialog();
+                try {
 
-                        JSONObject result = new JSONObject(stringResponse);
-                        int code = result.getInt("code");
-                        String message = result.getString("message");
-                        if (code == 200) {
-                            finish();
-                        } else {
-                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                        }
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    JSONObject result = new JSONObject(stringResponse);
+                    int code = result.getInt("code");
+                    String message = result.getString("message");
+                    if (code == 200) {
+                        finish();
+                    } else {
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     }
-                }
 
-                @Override
-                public void onData_FailureResponse() {
-                    ActivityHelper.dismissProgressDialog();
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
+            }
 
-                @Override
-                public void onData_FailureResponse_with_Message(String error) {
-                    ActivityHelper.dismissProgressDialog();
-                }
-            });
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+            }
 
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+            }
+        });
 
 
     }

@@ -201,7 +201,8 @@ public class UserChildListFragment extends Fragment implements View.OnClickListe
 
                             User user = new User();
                             user.setUser_id(object2.optString("user_id"));
-                            user.setFirstname(object2.optString("user_name"));
+                            user.setFirstname(object2.optString("first_name")); //  first name == firstname  as per api
+                            user.setLastname(object2.optString("user_name"));  // last name  == user name as per api
                             user.setAdmin("0");
                             if (userIdDown.equals(object2.optString("user_id"))) {
                                 user.setIsopen(true);

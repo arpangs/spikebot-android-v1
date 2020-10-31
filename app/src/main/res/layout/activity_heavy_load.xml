@@ -185,7 +185,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="@dimen/_8sdp"
+                android:layout_marginRight="10dp"
                 android:layout_toLeftOf="@+id/txtCurrentValue"
                 android:text="Current usage :"
                 android:textColor="@color/automation_black"
@@ -226,6 +226,15 @@
 
         </RelativeLayout>
 
+        <TextView
+            android:id="@+id/txt_currnt_month"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="-10dp"
+            android:gravity="center_horizontal"
+            tools:text="sadasd" />
+
 
         <FrameLayout
             android:id="@+id/frameChart"
@@ -238,7 +247,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="@dimen/_20sdp"
-                android:layout_marginBottom="@dimen/_10sdp"
                 android:layout_weight="1"
                 android:background="@color/automation_white"
                 android:orientation="vertical">
@@ -263,9 +271,9 @@
                         android:id="@+id/barChart"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginLeft="@dimen/_2sdp"
+                        android:layout_marginLeft="@dimen/_10sdp"
                         android:layout_marginTop="@dimen/_10sdp"
-                        android:layout_marginBottom="@dimen/_15sdp"
+                        android:layout_marginBottom="@dimen/_30sdp"
                         android:paddingBottom="@dimen/_10sdp" />
 
                     <!--<com.github.mikephil.charting.charts.BarChart
@@ -290,9 +298,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|bottom"
+                        android:layout_marginBottom="@dimen/_5sdp"
                         android:gravity="center"
                         android:paddingTop="@dimen/_5sdp"
-
                         android:textColor="@color/automation_black"
                         android:textSize="@dimen/_12sdp"
                         android:textStyle="bold" />

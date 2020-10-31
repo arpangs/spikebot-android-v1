@@ -331,8 +331,12 @@ public class DeviceEditDialog extends Dialog implements View.OnClickListener {
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
 
-        SpikeBotApi.getInstance().SaveSwitchDetails(deviceVO.getDeviceId(),name,flags.get(sp_device_type.getSelectedItemPosition()),
-                flags.get(sp_device_type.getSelectedItemPosition()).toString(),rg_auto_mode_type.getCheckedRadioButtonId() == R.id.rb_auto_mode_type_normal ? "normal" : "dimmer",
+        SpikeBotApi.getInstance().SaveSwitchDetails(deviceVO.getDeviceId(),
+                name,
+//                flags.get(sp_device_type.getSelectedItemPosition()),
+                deviceVO.getDeviceType(),  // this change due to fan regulator - dimmer issue
+                flags.get(sp_device_type.getSelectedItemPosition()).toString(),
+                rg_auto_mode_type.getCheckedRadioButtonId() == R.id.rb_auto_mode_type_normal ? "normal" : "dimmer",
                 new DataResponseListener() {
                     @Override
                     public void onData_SuccessfulResponse(String stringResponse) {

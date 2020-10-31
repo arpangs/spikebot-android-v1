@@ -28,8 +28,10 @@ import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,7 +41,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import io.fabric.sdk.android.BuildConfig;
 import io.fabric.sdk.android.Fabric;
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -283,10 +284,10 @@ public class ChatApplication extends Application {
     }
 
     public static void logDisplay(String message) {
-        if (BuildConfig.DEBUG) {
+        //  if (BuildConfig.DEBUG) {
 //            createFileLog(message);
-            Log.d("System out", "" + message);
-        }
+        Log.d("System out", "" + message);
+        //   }
     }
 
     public static String getUuid() {
@@ -343,16 +344,21 @@ public class ChatApplication extends Application {
                 newURL = url.substring(3, url.length());      // dev arpan add due to add 443 before the string
             }
 
-            String urltoken = newURL + "?" + "token=" + Common.getPrefValue(this, Constants.USER_ID);
-            IO.Options opts = new IO.Options();
-            opts.reconnection = true;
-//            opts.reconnectionDelay=200;
-
+            try {
+//            String urltoken = newURL + "?" + "token=" + Common.getPrefValue(this, Constants.USER_ID);
+//            String urltoken = newURL + "?" + "token=" + Common.getPrefValue(this, Constants.AUTHORIZATION_TOKEN);
+                String urltoken = newURL + "?" + "token=" + URLEncoder.encode(Common.getPrefValue(this, Constants.AUTHORIZATION_TOKEN), "UTF-8"); /*change on sep 07 2020*/
+                IO.Options opts = new IO.Options();
+                opts.reconnection = true;
+                opts.reconnectionDelay = 100;
 
 //            mSocket = IO.socket(newURL, opts);
-            mSocket = IO.socket(urltoken, opts);
-            mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
-            ChatApplication.logDisplay("chat onDisconnect callll connect done ");
+                mSocket = IO.socket(urltoken, opts);
+                mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
+                ChatApplication.logDisplay("chat onDisconnect callll connect done " + urltoken);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         } catch (URISyntaxException e) {
             ChatApplication.logDisplay("erro is " + e.toString());
             throw new RuntimeException(e);
@@ -365,7 +371,7 @@ public class ChatApplication extends Application {
         try {
             IO.Options opts = new IO.Options();
             opts.reconnection = true;
-//            opts.reconnectionDelay=200;
+
 
             cloudsocket = IO.socket(url, opts);
             cloudsocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
@@ -474,7 +480,7 @@ public class ChatApplication extends Application {
             mScanner.scanLeDevice(-1, true);
         }*/
 
-        TypefaceUtil.overrideFont(getApplicationContext(), "axiforma-Regular", "fonts/Axiforma-Regular.otf");
+        TypefaceUtil.overrideFont(getApplicationContext(), "axiforma_regular", "fonts/Axiforma-Regular.otf");
 
 
     }

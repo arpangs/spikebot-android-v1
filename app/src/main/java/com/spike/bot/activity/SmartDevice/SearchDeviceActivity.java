@@ -58,7 +58,7 @@ public class SearchDeviceActivity extends AppCompatActivity implements View.OnCl
 
         btnNext.setOnClickListener(this);
 
-        setView(getResources().getDrawable(R.drawable.bulb_image_on), getResources().getString(R.string.bulb_title), getResources().getString(R.string.bulb_info));
+        setView(getResources().getDrawable(R.drawable.smart_bulb_on), getResources().getString(R.string.bulb_title), getResources().getString(R.string.bulb_info));
     }
 
     public void setView(Drawable drawable, String title, String message) {

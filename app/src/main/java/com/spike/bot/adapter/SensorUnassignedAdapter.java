@@ -46,11 +46,13 @@ public class SensorUnassignedAdapter extends RecyclerView.Adapter<SensorUnassign
         if (unassigendSensorList.getSensorIcon().equals("doorsensor")) {
 
             if (unassigendSensorList.getLock_subtype().equals("1")) {
-                holder.sensorImage.setImageResource(R.drawable.off_door);
+                holder.sensorImage.setImageResource(R.drawable.door_off);
             } else if (unassigendSensorList.getLock_subtype().equals("2")) {
-                holder.sensorImage.setImageResource(R.drawable.lock_only_grey);
+//                holder.sensorImage.setImageResource(R.drawable.lock_only_grey);
+                holder.sensorImage.setImageResource(R.drawable.door_off);
             } else {
-                holder.sensorImage.setImageResource(R.drawable.door_locked);
+//                holder.sensorImage.setImageResource(R.drawable.door_locked);
+                holder.sensorImage.setImageResource(R.drawable.door_off);
             }
 
         } else {

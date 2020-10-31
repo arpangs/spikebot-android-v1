@@ -154,6 +154,7 @@ public class PanelVO implements Serializable {
     }
 
     private ArrayList<DeviceVO> deviceList = new ArrayList<DeviceVO>();
+    private ArrayList<DeviceVO> sensorList = new ArrayList<DeviceVO>();
     private ArrayList<CameraVO> cameraList= new ArrayList<CameraVO>();
 
     public PanelVO(String panelName,String panelId){
@@ -227,6 +228,14 @@ public class PanelVO implements Serializable {
 
     public void setDeviceList(ArrayList<DeviceVO> deviceList) {
         this.deviceList = deviceList;
+    }
+
+    public ArrayList<DeviceVO> getSensorList() {
+        return sensorList;
+    }
+
+    public void setSensorList(ArrayList<DeviceVO> sensorList) {
+        this.sensorList = sensorList;
     }
 
     public String getType() {

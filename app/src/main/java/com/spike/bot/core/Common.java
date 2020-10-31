@@ -93,7 +93,7 @@ public class Common {
         switch (status) {
 
             case -1:
-                switch (type) {
+                switch (type.toLowerCase()) {
                     case "curtain":
                         resource = R.drawable.curtain_closed_inactive;
                         break;
@@ -106,14 +106,26 @@ public class Common {
                     case "ac":
                         resource = R.drawable.ac_off_inactive;
                         break;
+                    case "switch_ac":
+                        resource = R.drawable.ac_off_inactive;
+                        break;
+                    case "remote_ac":
+                        resource = R.drawable.ac_off_inactive;
+                        break;
                     case "fridge":
-                        resource = R.drawable.fridge_off_inactive;
+//                        resource = R.drawable.fridge_off_inactive;
                         break;
                     case "tv":
                         resource = R.drawable.tv_off_inactive;
                         break;
+                    case "dth":
+                        resource = R.drawable.dth_inactive;
+                        break;
+                    case "tv_dth":
+                        resource = R.drawable.dth_tv_inactive;
+                        break;
                     case "oven":
-                        resource = R.drawable.microwave_oven_off_inactive;
+//                        resource = R.drawable.microwave_oven_off_inactive;
                         break;
                     case "cfl":
                         resource = R.drawable.cfl_off_inactive;
@@ -141,15 +153,25 @@ public class Common {
                     case "double_heavy_load":
                         resource = R.drawable.high_wolt_off;
                         break;
+
+                    case "yale_lock":
+                        resource = R.drawable.door_lock_inactive;
+                        break;
                 }
                 break;
             case 0:
-                switch (type) {
+                switch (type.toLowerCase()) {
                     case "bulb":
                         resource = R.drawable.offcfl;
                         break;
                     case "ac":
+                        resource = R.drawable.ac_remote_off;
+                        break;
+                    case "switch_ac":
                         resource = R.drawable.ac_off;
+                        break;
+                    case "remote_ac":
+                        resource = R.drawable.ac_remote_off;
                         break;
                     case "fan":
                         resource = R.drawable.offfan;
@@ -158,10 +180,22 @@ public class Common {
                         resource = R.drawable.fridge_off;
                         break;
                     case "tv":
+                    case "remote_tv":
                         resource = R.drawable.tv_off;
                         break;
+
+                    case "dth":
+                    case "remote_dth":
+                        resource = R.drawable.dth_off;
+                        break;
+
+                    case "tv_dth":
+                    case "remote_tv_dth":
+                        resource = R.drawable.dth_tv_off;
+                        break;
+
                     case "oven":
-                        resource = R.drawable.microwave_oven_off;
+//                        resource = R.drawable.microwave_oven_off;
                         break;
                     case "cfl":
                         resource = R.drawable.offcfl;
@@ -183,9 +217,6 @@ public class Common {
                         resource = R.drawable.off_temperature;
                         break;
                     case "door_sensor":
-                        resource = R.drawable.dooroff;
-                        break;
-
                     case "doorsensor":
                         resource = R.drawable.dooroff;
                         break;
@@ -199,10 +230,13 @@ public class Common {
                         resource = R.drawable.remote_ac_off;
                         break;
                     case "ir_blaster":
-                        resource = R.drawable.remote_ac_off;
+                        resource = R.drawable.ir_off;
                         break;
                     case "Remote_AC":
-                        resource = R.drawable.remote_ac_off;
+                        resource = R.drawable.ac_remote_off;
+                        break;
+                    case "Remote_TV":
+                        resource = R.drawable.tv_off;
                         break;
                     case "multisensor":
                         resource = R.drawable.icon_multi_sensor;
@@ -222,10 +256,14 @@ public class Common {
                         break;
 
                     case "lockWithDoor":
-                        resource = R.drawable.door_locked;
+                        resource = R.drawable.door_lock_on;
                         break;
 
                     case "lock":
+                        resource = R.drawable.lock_only;
+                        break;
+
+                    case "yale_lock":
                         resource = R.drawable.lock_only;
                         break;
 
@@ -245,7 +283,7 @@ public class Common {
                         resource = R.drawable.curtains_off;
                         break;
                     case "repeater":
-                        resource = R.drawable.gray_repeater;
+                        resource = R.drawable.repeater_off;
                         break;
                     case "smart_remote":
                         resource = R.drawable.remote;
@@ -268,12 +306,18 @@ public class Common {
                 }
                 break;
             case 1:
-                switch (type) {
+                switch (type.toLowerCase()) {
                     case "bulb":
                         resource = R.drawable.oncfl;
                         break;
                     case "ac":
                         resource = R.drawable.ac;
+                        break;
+                    case "switch_ac":
+                        resource = R.drawable.ac;
+                        break;
+                    case "remote_ac":
+                        resource = R.drawable.ac_remote_on;
                         break;
                     case "fan":
                         resource = R.drawable.onfan;
@@ -282,10 +326,19 @@ public class Common {
                         resource = R.drawable.fridge_on;
                         break;
                     case "tv":
+                    case "remote_tv":
                         resource = R.drawable.tv_on;
                         break;
+                    case "dth":
+                    case "remote_dth":
+                        resource = R.drawable.dth_on;
+                        break;
+                    case "tv_dth":
+                    case "remote_tv_dth":
+                        resource = R.drawable.dth_tv_on;
+                        break;
                     case "oven":
-                        resource = R.drawable.microwave_oven_on;
+//                        resource = R.drawable.microwave_oven_on;
                         break;
                     case "cfl":
                         resource = R.drawable.oncfl;
@@ -312,8 +365,6 @@ public class Common {
                         resource = R.drawable.on_temperature;
                         break;
                     case "door_sensor":
-                        resource = R.drawable.dooron;
-                        break;
                     case "doorsensor":
                         resource = R.drawable.dooron;
                         break;
@@ -324,12 +375,15 @@ public class Common {
                         resource = R.drawable.remote_ac;
                         break;
                     case "ir_blaster":
-                        resource = R.drawable.remote_ac;
+                        resource = R.drawable.ir_on;
                         break;
                     case "Remote_AC":
-                        resource = R.drawable.remote_ac;
+                        resource = R.drawable.ac_remote_on;
                         break;
 
+                    case "Remote_TV":
+                        resource = R.drawable.tv_on;
+                        break;
                     case "heavy_load":
                         resource = R.drawable.high_wolt_on;
                         break;
@@ -345,10 +399,14 @@ public class Common {
                         break;
 
                     case "lockWithDoor":
-                        resource = R.drawable.door_unlocked;
+                        resource = R.drawable.door_lock_on;
                         break;
 
                     case "lock":
+                        resource = R.drawable.unlock_only;
+                        break;
+
+                    case "yale_lock":
                         resource = R.drawable.unlock_only;
                         break;
                     case "gas_sensor":
@@ -381,12 +439,13 @@ public class Common {
                 }
                 break;
 
-//            case 3:
-//                switch (type) {
-//
-//                }
-//
-//                break;
+            case 2:
+
+                if (type.toLowerCase().equals("curtain")) {
+                    resource = R.drawable.curtains_on;
+                }
+                break;
+
 
         }
         return resource;
@@ -396,12 +455,15 @@ public class Common {
         int resource = R.drawable.oncfl;
         switch (status) {
             case 0:
-                switch (type) {
+                switch (type.toLowerCase()) {
                     case "bulb":
                         resource = R.drawable.offcfl;
                         break;
                     case "ac":
                         resource = R.drawable.ac_off;
+                        break;
+                    case "remote_ac":
+                        resource = R.drawable.ac_remote_off;
                         break;
                     case "fan":
                         resource = R.drawable.offfan;
@@ -410,10 +472,19 @@ public class Common {
                         resource = R.drawable.fridge_off;
                         break;
                     case "tv":
+                    case "remote_tv":
                         resource = R.drawable.tv_off;
                         break;
+                    case "dth":
+                    case "remote_dth":
+                        resource = R.drawable.dth_off;
+                        break;
+                    case "tv_dth":
+                    case "remote_tv_dth":
+                        resource = R.drawable.dth_tv_off;
+                        break;
                     case "oven":
-                        resource = R.drawable.microwave_oven_off;
+//                        resource = R.drawable.microwave_oven_off;
                         break;
                     case "cfl":
                         resource = R.drawable.offcfl;
@@ -434,6 +505,7 @@ public class Common {
                         resource = R.drawable.off_temperature;
                         break;
                     case "doorsensor":
+                    case "door_sensor":
                         resource = R.drawable.dooroff;
                         break;
                     case "unavailable":
@@ -443,7 +515,7 @@ public class Common {
                         resource = R.drawable.remote_ac_off;
                         break;
                     case "Remote_AC":
-                        resource = R.drawable.remote_ac_off;
+                        resource = R.drawable.ac_remote_off;
                         break;
                     case "multisensor":
                         resource = R.drawable.icon_multi_sensor;
@@ -457,10 +529,13 @@ public class Common {
                         break;
 
                     case "lockWithDoor":
-                        resource = R.drawable.door_locked;
+                        resource = R.drawable.door_lock_on;
                         break;
 
                     case "lock":
+                        resource = R.drawable.lock_only;
+                        break;
+                    case "yale_lock":
                         resource = R.drawable.lock_only;
                         break;
                     case "curtain":
@@ -491,10 +566,13 @@ public class Common {
                 resource = R.drawable.ac_remote_off_inactive;
                 break;
             case "Remote_AC":
-                resource = R.drawable.ac_remote_off_inactive;
+                resource = R.drawable.ac_remote_inactive;
+                break;
+            case "Remote_TV":
+                resource = R.drawable.tv_inactive;
                 break;
             case "ir_blaster":
-                resource = R.drawable.ac_remote_off_inactive;
+                resource = R.drawable.ir_inactive;
                 break;
             case "gas_sensor":
                 resource = R.drawable.fire_and_gas_gray_with_red_cross;
@@ -506,8 +584,6 @@ public class Common {
                 resource = R.drawable.camera_off_inactive;
                 break;
             case "door_sensor":
-                resource = R.drawable.door_off_inactive;
-                break;
             case "doorsensor":
                 resource = R.drawable.door_off_inactive;
                 break;
@@ -530,6 +606,9 @@ public class Common {
                 resource = R.drawable.curtain_closed_inactive;
                 break;
             case "lock":
+                resource = R.drawable.gray_lock_disabled;
+                break;
+            case "yale_lock":
                 resource = R.drawable.gray_lock_disabled;
                 break;
             case "multisensor":

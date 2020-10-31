@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 public class Constants {
 
@@ -40,7 +41,10 @@ public class Constants {
 
     public static final String LIVE = "LIVE-";     // live for notification subscribe/unsubscribe topic
     public static final String LOCAL = "LOCAL-";   // local for notification subscribe/unsubscribe topic
-    public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";
+    //    public static final String CAMERA_DEEP = "rtmp://home.deepfoods.net";
+//    public static final String CAMERA_DEEP = "rtmp://beta.spikebot.io";
+    public static final String CAMERA_DEEP = "rtmp://live.spikebot.io";
+    public static final String CAMERA_DEEP_VPN = "rtmp://vpn.spikebot.io";
     public static final String CAMERA_PATH = "/static/storage/volume/pi/";
 
     public static final int REMOTE_REQUEST_CODE = 10;
@@ -67,6 +71,7 @@ public class Constants {
     public static final String LOG_DATE_FORMAT_1 = "yyyy-MM-dd HH:mm:ss";
     public static final String DATE_D_MMM_YY_H_MM_AMPM = "dd-MMM-yy hh:mm a";
     public static final String LOG_DATE_FORMAT_2 = "dd-MMM yyyy h:mm a";
+    public static final String LOG_DATE_FORMAT_3 = "dd-MMM yy h:mm a";
 
     public static final String APP_LOGIN = "/auth/login"; // dev arp change on 22 june 2020
     public static final String APP_LOGOUT = "/auth/logout"; // dev arp change on 23 june 2020
@@ -112,6 +117,8 @@ public class Constants {
     public static final String deleteTTLockBridge = "/deleteTTLockBridge";
     public static final String deviceadd = "/device/add";
     public static final String jetsonadd = "/jetson/add";
+
+    public static final String getTempGraph = "/device/temprature/usage";
 
     public static final String deviceheavyloadping = "/device/heavy-load/ping";
 
@@ -232,6 +239,15 @@ public class Constants {
 
 
 
+    /*TV_DTH_Custom Button */
+
+    public static final String TV_REMOTE_COMMAND_NAME = "/device/get-remote-command-name";
+    public static final String TV_REMOTE_ADD_CUSTOM_COMMAND = "/device/add-custome-remote-button";
+    public static final String TV_REMOTE_DELETE_CUSTOM_COMMAND = "/device/delete-custome-button";
+
+
+
+
     /*----------------------------------------------------------------------*/
 
     public static final String ANDROID = "android";
@@ -246,10 +262,14 @@ public class Constants {
     public static final int lockUserId = 1941573;
     public static String access_token = "a74549ab15d07ecd988e26f50985aee7";
     /*----------------------------------------------------------------------*/
-    public static String CLOUD_SERVER_URL = "https://live.spikebot.io:8443"; //222 live
+//    public static String CLOUD_SERVER_URL = "https://live.spikebot.io:8443"; //222 live
+//    public static String CLOUD_SERVER_URL = "https://beta.spikebot.io"; //222 live
+    public static String CLOUD_SERVER_URL = "https://live.spikebot.io"; //222 live
     public static String IP_END = "222";
-    public static String startUrl = "http://home.d";
-    public static String ContainsUrl = "home.deepfoods";
+    //    public static String startUrl = "http://home.d";
+    public static String startUrl = "http://vpn.s";
+    //    public static String ContainsUrl = "home.deepfoods";
+    public static String ContainsUrl = "vpn.spikebot";
     public static int lockDate = 0;
     public static String socketIp = "";
     public static int adminType = 1;
@@ -610,6 +630,32 @@ public class Constants {
             return nextDate;
         }
         return nextDate;
+    }
+
+
+    public static String getDate(String timeimmills) {
+
+        long time = Long.valueOf(timeimmills);
+        Date date = new Date(time*1000); // *1000 is to convert seconds to milliseconds
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy"); // the format of your date
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
+        return sdf.format(date);
+    }
+
+    public static String getStartTime(String timeimmills) {
+        long time = Long.valueOf(timeimmills);
+        Date date = new Date(time*1000);
+        DateFormat formatter = new SimpleDateFormat("hh:mm aa");
+        formatter.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
+        return formatter.format(date);
+    }
+
+    public static String getEndTime(String timeimmills) {
+        long time = Long.valueOf(timeimmills);
+        Date date = new Date((time*1000) + TimeUnit.MINUTES.toMillis(15));
+        DateFormat formatter = new SimpleDateFormat("hh:mm aa");
+        formatter.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
+        return formatter.format(date);
     }
 
 }

@@ -27,12 +27,12 @@ public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapte
     Context context;
     DeviceVO item;
     ArrayList<DeviceVO> deviceVOs;
-    private ItemClickRoomEditListener mItemClickListener;
     String itemDeviceName = "", clickAction = "1";
     int itemIcon = 0;
+    private ItemClickRoomEditListener mItemClickListener;
 
 
-    public RoomEditAdapterDeviceV2(Context context,ArrayList<DeviceVO> deviceVOs1, ItemClickRoomEditListener itemClickRoomEditListener) {
+    public RoomEditAdapterDeviceV2(Context context, ArrayList<DeviceVO> deviceVOs1, ItemClickRoomEditListener itemClickRoomEditListener) {
         this.context = context;
         this.deviceVOs = deviceVOs1;
         this.mItemClickListener = itemClickRoomEditListener;
@@ -54,14 +54,22 @@ public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapte
             if (item.getDevice_icon().equals(context.getResources().getString(R.string.curtain))) {
                 itemIcon = Common.getIcon(0, item.getDevice_icon());
             } else {
-                itemIcon = Common.getIcon(0, item.getDevice_icon());
+                if (item.getDevice_icon().equalsIgnoreCase("ac")) {
+                    itemIcon = R.drawable.ac_off;
+                } else {
+                    itemIcon = Common.getIcon(0, item.getDevice_icon());
+                }
             }
 
             clickAction = "1";
         } else {
 
             itemDeviceName = item.getSensor_name();
-            itemIcon = Common.getIcon(0, item.getDevice_icon());
+            if (item.getDevice_icon().equalsIgnoreCase("ac")) {
+                itemIcon = R.drawable.ac_remote_off;
+            } else {
+                itemIcon = Common.getIcon(0, item.getDevice_icon());
+            }
             clickAction = "isSensorClick";
 
             if (item.getSensor_icon().equals(context.getResources().getString(R.string.door_sensor))) {
@@ -76,6 +84,26 @@ public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapte
         if (item.getDevice_icon().equalsIgnoreCase("lock")) {
             itemIcon = R.drawable.lock_only;
         }
+
+
+        if (item.getDeviceType().toLowerCase().equalsIgnoreCase("remote")) {
+            if (item.getDevice_sub_type().toLowerCase().equalsIgnoreCase("ac")) {
+                itemIcon = R.drawable.ac_remote_off;
+
+            } else if (item.getDevice_sub_type().toLowerCase().equalsIgnoreCase("tv")) {
+
+                itemIcon = R.drawable.tv_off;
+            } else if (item.getDevice_sub_type().toLowerCase().equalsIgnoreCase("dth")) {
+
+                itemIcon = R.drawable.dth_off;
+            } else if (item.getDevice_sub_type().toLowerCase().equalsIgnoreCase("tv_dth")) {
+
+                itemIcon = R.drawable.dth_tv_off;
+            } else {
+                itemIcon = R.drawable.remote_ac_off;
+            }
+        }
+
 
         holder.itemTextView.setText(itemDeviceName);
         holder.iv_icon.setImageResource(itemIcon); //all icon grey
@@ -123,9 +151,9 @@ public class RoomEditAdapterDeviceV2 extends RecyclerView.Adapter<RoomEditAdapte
         public EditDeviceHolder(View view) {
             super(view);
             this.view = view;
-            itemTextView =  view.findViewById(R.id.text_item);
-            iv_icon =  view.findViewById(R.id.iv_icon);
-            iv_icon_text =  view.findViewById(R.id.iv_icon_text);
+            itemTextView = view.findViewById(R.id.text_item);
+            iv_icon = view.findViewById(R.id.iv_icon);
+            iv_icon_text = view.findViewById(R.id.iv_icon_text);
             ll_room_item = view.findViewById(R.id.ll_room_item);
 
         }

@@ -20,8 +20,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.kp.core.ActivityHelper;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.ir.blaster.IRRemoteBrandListActivity;
-import com.spike.bot.activity.ir.blaster.IRRemoteConfigActivity;
 import com.spike.bot.adapter.irblaster.IRRemoteBrandListAdapter;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
@@ -43,7 +41,7 @@ public class TVRemoteBrandListActivity extends AppCompatActivity implements IRRe
     private LinearLayout linear_progress;
     private RecyclerView mIRListView;
     private EditText mSearchBrand;
-    private String mIrDeviceId, mRemoteName, mIrDeviceType, mRoomId, mIRBlasterModuleId, mIrBlasterId, mRoomName, mBlasterName;
+    private String mIrDeviceId, mRemoteName, mIrDeviceType, mRoomId, mIRBlasterModuleId, mIrBlasterId, mRoomName, mBlasterName, mdevice_sub_type = "";
     private IRRemoteBrandListAdapter irRemoteBrandListAdapter;
 
     @Override
@@ -59,6 +57,10 @@ public class TVRemoteBrandListActivity extends AppCompatActivity implements IRRe
         mIrDeviceType = getIntent().getStringExtra("IR_DEVICE_TYPE");
         mIrDeviceId = getIntent().getStringExtra("IR_DEVICE_ID");
         mIRBlasterModuleId = getIntent().getStringExtra("IR_BLASTER_MODULE_ID");
+
+        if (getIntent().hasExtra("device_sub_type")) {
+            mdevice_sub_type = getIntent().getStringExtra("device_sub_type");
+        }
 
         bindView();
         getIRDetailsList();
@@ -129,7 +131,7 @@ public class TVRemoteBrandListActivity extends AppCompatActivity implements IRRe
         ActivityHelper.showProgressDialog(TVRemoteBrandListActivity.this, "Please Wait...", false);
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-        SpikeBotApi.getInstance().getIRDetailsList(new DataResponseListener() {
+        SpikeBotApi.getInstance().getIRDetailsList("3", new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 hideProgress();
@@ -258,6 +260,11 @@ public class TVRemoteBrandListActivity extends AppCompatActivity implements IRRe
                             intent.putExtra("IR_DEVICE_ID", mIrDeviceId);
                             intent.putExtra("BRAND_ID", "" + brandList.getBrandId());
                             intent.putExtra("IR_BLASTER_MODULE_ID", "" + mIRBlasterModuleId);
+                            intent.putExtra("REMOTE_NAME", mRemoteName != null ? mRemoteName : "");
+
+                            if (mdevice_sub_type.length() > 0)
+                                intent.putExtra("device_sub_type", mdevice_sub_type);
+
                             startActivityForResult(intent, Constants.REMOTE_REQUEST_CODE);
                         } else {
                             Toast.makeText(getApplicationContext(), "No remote available", Toast.LENGTH_SHORT).show();

@@ -68,7 +68,7 @@
             android:textColorHint="@color/signupblack"
             android:padding="@dimen/_8sdp"
             android:background="@drawable/edt_border"
-            android:drawableRight="@drawable/icn_close"
+            android:drawableRight="@drawable/icn_close_view"
             android:drawablePadding="8dp"
             android:layout_weight="1"
             android:focusable="false"
@@ -78,8 +78,8 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginRight="@dimen/_8sdp"
-            android:layout_marginLeft="@dimen/_8sdp"
+            android:layout_marginRight="@dimen/_2sdp"
+            android:layout_marginLeft="@dimen/_2sdp"
             android:layout_gravity="center"
             android:src="@drawable/arrow_right"/>
 
@@ -91,7 +91,7 @@
             android:textColorHint="@color/signupblack"
             android:padding="@dimen/_8sdp"
             android:background="@drawable/edt_border"
-            android:drawableRight="@drawable/icn_close"
+            android:drawableRight="@drawable/icn_close_view"
             android:drawablePadding="8dp"
             android:focusable="false"
             android:layout_weight="1"
@@ -126,7 +126,8 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_gravity="right|center"
-            android:src="@drawable/ic_arrow_drop_down_blue" />
+            android:padding="5dp"
+            android:src="@drawable/down_small" />
 
 
     </FrameLayout>
@@ -158,7 +159,8 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_gravity="right|center"
-            android:src="@drawable/ic_arrow_drop_down_blue" />
+            android:padding="5dp"
+            android:src="@drawable/down_small" />
 
     </FrameLayout>
 
@@ -195,7 +197,8 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="right|center"
-                android:src="@drawable/ic_arrow_drop_down_blue" />
+                android:padding="5dp"
+                android:src="@drawable/down_small" />
 
         </FrameLayout>
 
@@ -224,7 +227,8 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="right|center"
-                android:src="@drawable/ic_arrow_drop_down_blue" />
+                android:padding="5dp"
+                android:src="@drawable/down_small" />
         </FrameLayout>
 
     </LinearLayout>
@@ -281,7 +285,7 @@
             <ImageView
                 android:id="@+id/root_arrow"
                 android:visibility="invisible"
-                android:src="@drawable/arrow_down2"
+                android:src="@drawable/down"
                 android:layout_weight="0.2"
                 android:layout_width="0dp"
                 android:layout_height="18dp" />

@@ -36,10 +36,47 @@
 
 
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearTabSchedule"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_8sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginRight="@dimen/_8sdp"
+        android:layout_marginBottom="@dimen/_5sdp"
+        android:paddingBottom="5dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnRoomSchedule"
+            android:background="@drawable/drawable_blue_schedule"
+            android:text="Room"
+            android:layout_weight="0.60"
+            android:layout_width="0dp"
+            android:textAllCaps="false"
+            android:layout_marginLeft="@dimen/_5sdp"
+            android:textColor="@color/automation_white"
+            android:layout_height="@dimen/_40sdp" />
+
+        <Button
+            android:id="@+id/btnMoodSchedule"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_marginLeft="@dimen/_25sdp"
+            android:layout_weight="0.60"
+            android:layout_marginRight="@dimen/_5sdp"
+            android:background="@drawable/drawable_gray_schedule"
+            android:text="Mood"
+            android:textAllCaps="false"
+            android:textColor="@color/solid_blue" />
+
+    </LinearLayout>
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swiperefresh"
         android:layout_above="@+id/view_bottom"
         android:layout_width="match_parent"
+        android:layout_below="@+id/linearTabSchedule"
         android:layout_height="match_parent">
 
         <ScrollView
@@ -74,37 +111,7 @@
                     android:layout_marginBottom="15dp"
                     android:orientation="vertical">
 
-                    <LinearLayout
-                        android:id="@+id/linearTabSchedule"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:orientation="horizontal">
 
-                        <Button
-                            android:id="@+id/btnRoomSchedule"
-                            android:background="@drawable/drawable_blue_schedule"
-                            android:text="Room"
-                            android:layout_weight="0.60"
-                            android:layout_width="0dp"
-                            android:textAllCaps="false"
-                            android:layout_marginLeft="@dimen/_5sdp"
-                            android:textColor="@color/automation_white"
-                            android:layout_height="@dimen/_40sdp" />
-
-                        <Button
-                            android:id="@+id/btnMoodSchedule"
-                            android:layout_width="0dp"
-                            android:layout_height="@dimen/_40sdp"
-                            android:layout_marginLeft="@dimen/_25sdp"
-                            android:layout_weight="0.60"
-                            android:layout_marginRight="@dimen/_5sdp"
-                            android:background="@drawable/drawable_gray_schedule"
-                            android:text="Mood"
-                            android:textAllCaps="false"
-                            android:textColor="@color/solid_blue" />
-
-                    </LinearLayout>
 
                     <LinearLayout
                         android:visibility="gone"
@@ -157,7 +164,6 @@
                         android:layout_width="match_parent"
                         android:nestedScrollingEnabled="false"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
                         android:background="@android:color/transparent"
                         android:scrollbarStyle="outsideOverlay"
                         android:scrollbars="none" />
@@ -276,7 +282,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:visibility="visible"
+                        android:visibility="gone"
                         android:layout_gravity="center"
                         android:layout_marginTop="48dp"
                         android:layout_below="@+id/ll_recycler"
@@ -289,8 +295,8 @@
 
                     <ImageView
                         android:id="@+id/empty_add_image"
-                        android:layout_marginTop="16dp"
-                        android:src="@drawable/icn_empty_plus"
+                        android:layout_margin="50dp"
+                        android:src="@drawable/no_schedule"
                         android:layout_gravity="center"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
@@ -324,7 +330,7 @@
             android:layout_gravity="center_horizontal|bottom"
             android:visibility="visible"
             app:floating_background_color="@color/automation_white"
-            app:floating_left_icon="@drawable/plusbutton"
+            app:floating_left_icon="@drawable/round_plus"
             app:floating_title="@string/add_schedule"
             app:floating_title_color="@color/automation_black">
 

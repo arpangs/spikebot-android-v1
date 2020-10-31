@@ -3,7 +3,6 @@ package com.spike.bot.adapter.mood;
 import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -171,6 +171,8 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
                 final PanelVO panel1 = (PanelVO) mDataArrayList.get(position);
                 holder.sectionTextView.setText(panel1.getPanelName());
                 holder.iv_room_panel_onoff.setVisibility(View.GONE);
+                holder.mPanelCardview.setElevation(0f);
+                holder.sectionToggleButtonpanel.setVisibility(View.GONE);
 
                 if (position == 0) {
                     holder.view_line_top.setVisibility(View.GONE);
@@ -228,24 +230,42 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
 //
 //                }
 
-                if (item.getDevice_icon().equalsIgnoreCase("heavyload")) {
+                if (item.getDeviceType().equalsIgnoreCase("heavyload")) {
                     if (item.getIsActive() == 1) {
                         holder.iv_icon.setImageResource(item.getDeviceStatus() == 1 ? R.drawable.high_wolt_on : R.drawable.high_wolt_off);
                         holder.iv_icon.setEnabled(true);
-                        holder.iv_icon.setClickable(true);
+//                        holder.iv_icon.setClickable(true);
                     } else {
                         holder.iv_icon.setImageResource(R.drawable.headload_inactive);
                         holder.iv_icon.setEnabled(false);
-                        holder.iv_icon.setClickable(false);
+//                        holder.iv_icon.setClickable(false);
                     }
+                } else if (item.getDeviceType().equalsIgnoreCase("remote")) {
+                    String deviceType = item.getDevice_sub_type().toLowerCase();
+                    holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(), "remote_" + deviceType));
                 } else {
                     holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(), item.getDevice_icon()));
                 }
 
                 if (item.getIsActive() == -1) {
-                    holder.iv_icon.setImageResource(Common.getIcon(-1, item.getDevice_icon()));//item.getDeviceStatus()
+
+                    if (item.getDeviceType().toLowerCase().equals("remote")) {
+                        String deviceType = item.getDeviceType();
+                        deviceType = item.getDevice_sub_type().toLowerCase();
+                        holder.iv_icon.setImageResource(Common.getIcon(-1, "remote_" + deviceType));//item.getDeviceStatus()
+                    } else {
+                        holder.iv_icon.setImageResource(Common.getIcon(-1, item.getDevice_icon()));//item.getDeviceStatus()
+                    }
+
                 } else {
-                    holder.iv_icon.setImageResource(Common.getIcon(0, item.getDevice_icon()));//item.getDeviceStatus()
+
+                    if (item.getDeviceType().toLowerCase().equals("remote")) {
+                        String deviceType = item.getDevice_sub_type().toLowerCase();
+                        holder.iv_icon.setImageResource(Common.getIconForEditRoom(0, "remote_" + deviceType));//item.getDeviceStatus()
+                    } else {
+                        holder.iv_icon.setImageResource(Common.getIconForEditRoom(0, item.getDevice_icon()));//item.getDeviceStatus()
+                    }
+
                 }
 
                 if (item.isSensor()) {
@@ -386,10 +406,11 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
         int viewType;
         ImageView iv_room_panel_onoff, img_room_delete, iv_icon, iv_icon_text, iv_icon_select;
         //for section
-        ToggleButton sectionToggleButton;
+        ToggleButton sectionToggleButton, sectionToggleButtonpanel;
         TextView sectionTextView, text_section_on_off, text_section_edit, itemTextView;
         LinearLayout ll_room_item, ll_root_view_section;
         RelativeLayout rel_main_view, card_layout;
+        CardView mPanelCardview;
 
         public ViewHolder(View view, int viewType) {
             super(view);
@@ -406,8 +427,20 @@ public class MoodDeviceListExpandableGridAdapter extends RecyclerView.Adapter<Mo
             } else if (viewType == VIEW_TYPE_PANEL) {
                 view_line_top = view.findViewById(R.id.view_line_top);
                 itemTextView = view.findViewById(R.id.heading);
+                itemTextView.setPadding(0, 13, 13, 13);
+
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                params.setMargins(-2, 0, 0, 0);
+                itemTextView.setLayoutParams(params);
+
+
                 sectionTextView = itemTextView;
                 iv_room_panel_onoff = view.findViewById(R.id.iv_room_panel_onoff);
+                mPanelCardview = view.findViewById(R.id.penal_cardview);
+                sectionToggleButtonpanel = view.findViewById(R.id.toggle_button_section_penel);
 
             } else {
                 card_layout = view.findViewById(R.id.card_layout);

@@ -1,7 +1,6 @@
 package com.spike.bot.activity.Curtain;
 
 import android.app.Dialog;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.view.Menu;
@@ -21,19 +20,13 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.TTLock.YaleLockInfoActivity;
-import com.spike.bot.activity.ir.blaster.IRBlasterAddActivity;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
-import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
-import com.spike.bot.model.IRBlasterAddRes;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,9 +43,36 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
     Socket mSocket;
 
     Toolbar toolbar;
-    ImageView imgClose, imgOpen, imgPause;
+    ImageView imgClose, imgOpen, imgPause, imgCurtain;
     // Button btn_delete;
     String curtain_id = "", module_id = "", curtain_name = "", curtain_status = "", panel_id = "";
+    TextView txtOpen, txtPause, txtClose;
+    /*geting curtain status*/
+    private Emitter.Listener updateCurtainStatus = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+                            ChatApplication.logDisplay("curtain socket is " + object);
+                            String device_id = object.optString("device_id");
+                            curtain_status = object.optString("device_status");
+                            if (device_id.equalsIgnoreCase(curtain_id)) {
+                                setView();
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,14 +95,23 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setTitle(curtain_name);
+
+//        toolbar.setNavigationIcon(R.drawable.ic_back_toolbar);
         imgPause = findViewById(R.id.imgPause);
         imgOpen = findViewById(R.id.imgOpen);
         imgClose = findViewById(R.id.imgClose);
         //   btn_delete = findViewById(R.id.btn_delete);
 
-        imgClose.setOnClickListener(this);
-        imgOpen.setOnClickListener(this);
-        imgPause.setOnClickListener(this);
+        imgCurtain = findViewById(R.id.img_curtain);
+        txtPause = findViewById(R.id.txt_curtain_pause);
+        txtOpen = findViewById(R.id.txt_curtain_open);
+        txtClose = findViewById(R.id.txt_curtain_close);
+
+        imgCurtain.setOnClickListener(this);
+
+        txtPause.setOnClickListener(this);
+        txtOpen.setOnClickListener(this);
+        txtClose.setOnClickListener(this);
         //     btn_delete.setOnClickListener(this);
 
         setView();
@@ -139,7 +168,7 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
 
         if (!Common.getPrefValue(CurtainActivity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
             actionEdit.setVisible(true);
-        } else{
+        } else {
             actionEdit.setVisible(false);
         }
         return super.onCreateOptionsMenu(menu);
@@ -149,59 +178,66 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.actionEdit) {
-            dialogEditName();
+//            dialogEditName();
+            showBottomSheetDialog();
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onClick(View v) {
-        if (v == imgOpen) {
+        if (v == txtOpen) {
             curtain_status = "1";
+            txtOpen.setBackgroundResource(R.drawable.open_enabled);
+            txtClose.setBackgroundResource(R.drawable.close_disabled);
+            txtPause.setBackgroundResource(R.drawable.puse_disabled);
+
+
             updateStatus();
-        } else if (v == imgPause) {
+        } else if (v == txtPause) {
             curtain_status = "2";
             updateStatus();
-        } else if (v == imgClose) {
+            txtOpen.setBackgroundResource(R.drawable.open_disabled);
+            txtClose.setBackgroundResource(R.drawable.close_disabled);
+            txtPause.setBackgroundResource(R.drawable.puse_enabled);
+
+        } else if (v == txtClose) {
             curtain_status = "0";
             updateStatus();
-        }/* else if (v == btn_delete) {
-            callDailog();
-        }*/
+            txtOpen.setBackgroundResource(R.drawable.open_disabled);
+            txtClose.setBackgroundResource(R.drawable.close_enabled);
+            txtPause.setBackgroundResource(R.drawable.puse_disabled);
+
+        }
     }
 
-    /*geting curtain status*/
-    private Emitter.Listener updateCurtainStatus = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-                        try {
-                            JSONObject object = new JSONObject(args[0].toString());
-                            ChatApplication.logDisplay("curtain socket is " + object);
-                            String device_id = object.optString("device_id");
-                            curtain_status = object.optString("device_status");
-                            if (device_id.equalsIgnoreCase(curtain_id)) {
-                                setView();
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }
-            });
-        }
-    };
-
-
     public void setCurtainClick(boolean open, boolean close, boolean pause) {
-        imgOpen.setImageResource(open ? R.drawable.open_enabled : R.drawable.open_disabled);
-        imgClose.setImageResource(close ? R.drawable.close_enabled : R.drawable.close_disabled);
-        imgPause.setImageResource(pause ? R.drawable.puse_enabled : R.drawable.puse_disabled);
+//        imgOpen.setImageResource(open ? R.drawable.open_enabled : R.drawable.open_disabled);
+//        imgClose.setImageResource(close ? R.drawable.close_enabled : R.drawable.close_disabled);
+//        imgPause.setImageResource(pause ? R.drawable.puse_enabled : R.drawable.puse_disabled);
+
+        if (open) {
+            imgCurtain.setImageResource(R.drawable.curtains_on_main);
+
+            txtOpen.setBackgroundResource(R.drawable.open_enabled);
+            txtClose.setBackgroundResource(R.drawable.close_disabled);
+            txtPause.setBackgroundResource(R.drawable.puse_disabled);
+
+        } else if (pause) {
+            imgCurtain.setImageResource(R.drawable.curtains_pause_main);
+            txtOpen.setBackgroundResource(R.drawable.open_disabled);
+            txtClose.setBackgroundResource(R.drawable.close_disabled);
+            txtPause.setBackgroundResource(R.drawable.puse_enabled);
+
+        } else if (close) {
+            imgCurtain.setImageResource(R.drawable.curtains_off_main);
+            txtOpen.setBackgroundResource(R.drawable.open_disabled);
+            txtClose.setBackgroundResource(R.drawable.close_enabled);
+            txtPause.setBackgroundResource(R.drawable.puse_disabled);
+
+        }
+
+
     }
 
     public void showBottomSheetDialog() {
@@ -261,12 +297,13 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
         TextView tv_title = dialog.findViewById(R.id.tv_title);
         edSensorName.setText(curtain_name);
         txtInputSensor.setHint("Enter Curtain name");
-        tv_title.setText("Enter name");
+        tv_title.setText("Curtain name");
         btn_cancel.setText("DELETE");
 
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ChatApplication.keyBoardHideForce(CurtainActivity.this);
                 dialog.dismiss();
             }
         });
@@ -331,6 +368,7 @@ public class CurtainActivity extends AppCompatActivity implements View.OnClickLi
                     e.printStackTrace();
                 }
             }
+
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();

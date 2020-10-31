@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
-
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,28 +41,11 @@ import cn.nodemedia.NodePlayerView;
  */
 public class CameraListFragment extends Fragment implements CameraGridActivity.toolBarImageCapture {
 
-    int height=0,width=0;
+    public RecyclerView recyclerView;
+    int height = 0, width = 0;
     NodePlayer nodePlayer;
     DVRADAapter dvradAapter;
-    public RecyclerView recyclerView;
     ArrayList<CameraVO> cameraVOArrayListTemp = new ArrayList<>();
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.pager_item, container, false);
-
-        recyclerView = v.findViewById(R.id.recyclerView);
-
-        ((CameraGridActivity)getActivity()).setObject(this);
-        cameraVOArrayListTemp = (ArrayList<CameraVO>) getArguments().getSerializable("cameraVOArrayListTemp");
-        height =  getArguments().getInt("height");
-        getWidth();
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 1);
-        recyclerView.setLayoutManager(gridLayoutManager);
-        dvradAapter = new DVRADAapter(getActivity(), cameraVOArrayListTemp);
-        recyclerView.setAdapter(dvradAapter);
-        return v;
-    }
 
     public static Fragment newInstance(ArrayList<CameraVO> cameraVOArrayListTemp, int height) {
         CameraListFragment f = new CameraListFragment();
@@ -74,7 +56,24 @@ public class CameraListFragment extends Fragment implements CameraGridActivity.t
         return f;
     }
 
-    public void getWidth(){
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.pager_item, container, false);
+
+        recyclerView = v.findViewById(R.id.recyclerView);
+
+        ((CameraGridActivity) getActivity()).setObject(this);
+        cameraVOArrayListTemp = (ArrayList<CameraVO>) getArguments().getSerializable("cameraVOArrayListTemp");
+        height = getArguments().getInt("height");
+        getWidth();
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 1);
+        recyclerView.setLayoutManager(gridLayoutManager);
+        dvradAapter = new DVRADAapter(getActivity(), cameraVOArrayListTemp);
+        recyclerView.setAdapter(dvradAapter);
+        return v;
+    }
+
+    public void getWidth() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         width = displayMetrics.widthPixels;
@@ -86,12 +85,12 @@ public class CameraListFragment extends Fragment implements CameraGridActivity.t
     }
 
 
-    public void loadView(View cardView){
+    public void loadView(View cardView) {
         try {
             cardView.setDrawingCacheEnabled(true);
 //            Bitmap bitmap =  CameraPlayer.saveOpenGL(200,200);
 
-            Bitmap bitmap= Constants.takescreenshotOfRootView(recyclerView,recyclerView);
+            Bitmap bitmap = Constants.takescreenshotOfRootView(recyclerView, recyclerView);
             cardView.setDrawingCacheEnabled(false);
 
             String mPath = Environment.getExternalStorageDirectory().toString() + "/camera.jpg";
@@ -109,10 +108,29 @@ public class CameraListFragment extends Fragment implements CameraGridActivity.t
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        if (nodePlayer != null) {
+            nodePlayer.stop();
+            nodePlayer.release();
+        }
+
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onPause() {
+        if (nodePlayer != null) {
+            nodePlayer.stop();
+            nodePlayer.release();
+        }
+        super.onPause();
+    }
+
     public class DVRADAapter extends RecyclerView.Adapter<DVRADAapter.SensorViewHolder> {
 
-        private Context mContext;
         ArrayList<CameraVO> arrayListLog = new ArrayList<>();
+        private Context mContext;
 
         public DVRADAapter(Context context, ArrayList<CameraVO> arrayListLog1) {
             this.mContext = context;
@@ -128,11 +146,11 @@ public class CameraListFragment extends Fragment implements CameraGridActivity.t
         @Override
         public void onBindViewHolder(final DVRADAapter.SensorViewHolder holder, final int position) {
 
-            int heightis = height/3;
+            int heightis = height / 3;
 
             holder.txtCameraName.setText(arrayListLog.get(position).getCamera_name());
 
-            if(arrayListLog.get(position).getIsActive()==1){
+            if (arrayListLog.get(position).getIsActive() == 1) {
 
                 holder.relCamera.setVisibility(View.VISIBLE);
                 holder.relInActiveCamera.setVisibility(View.GONE);
@@ -144,13 +162,13 @@ public class CameraListFragment extends Fragment implements CameraGridActivity.t
                 holder.player.requestLayout();
 
                 holder.progressBar.setVisibility(View.VISIBLE);
-                nodePlayer= new NodePlayer(mContext);
+                nodePlayer = new NodePlayer(mContext);
 
 
                 holder.player.setUIViewContentMode(NodePlayerView.UIViewContentMode.ScaleAspectFill);
                 holder.player.setRenderType(NodePlayerView.RenderType.TEXTUREVIEW);
 
-                ChatApplication.logDisplay("url1 is  "+arrayListLog.get(position).getCamera_name()+"  " + arrayListLog.get(position).getLoadingUrl());
+                ChatApplication.logDisplay("url1 is  " + arrayListLog.get(position).getCamera_name() + "  " + arrayListLog.get(position).getLoadingUrl());
                 nodePlayer.setInputUrl(arrayListLog.get(position).getLoadingUrl());
                 nodePlayer.setAudioEnable(true);
                 nodePlayer.setPlayerView(holder.player);
@@ -158,6 +176,7 @@ public class CameraListFragment extends Fragment implements CameraGridActivity.t
                 holder.player.setUIViewContentMode(NodePlayerView.UIViewContentMode.ScaleAspectFill);
 
                 nodePlayer.start();
+                nodePlayer.setAudioEnable(false);
 
                 nodePlayer.setNodePlayerDelegate(new NodePlayerDelegate() {
                     @Override
@@ -171,7 +190,7 @@ public class CameraListFragment extends Fragment implements CameraGridActivity.t
                                     }
                                 });
 
-                            }catch (Exception e){
+                            } catch (Exception e) {
 
                             }
 
@@ -212,7 +231,7 @@ public class CameraListFragment extends Fragment implements CameraGridActivity.t
                         startActivity(intent);
                     }
                 });
-            }else {
+            } else {
                 holder.progressBar.setVisibility(View.GONE);
                 holder.relCamera.setVisibility(View.GONE);
                 holder.relInActiveCamera.setVisibility(View.VISIBLE);
@@ -238,17 +257,17 @@ public class CameraListFragment extends Fragment implements CameraGridActivity.t
 
         public class SensorViewHolder extends RecyclerView.ViewHolder {
             NodePlayerView player;
-//            ZoomLayout zoomlayout;
+            //            ZoomLayout zoomlayout;
             TextView txtCameraName;
             ProgressBar progressBar;
             View view;
             FrameLayout frameLayout;
             ImageView imgInactiveCamera;
-            RelativeLayout relCamera,relInActiveCamera;
+            RelativeLayout relCamera, relInActiveCamera;
 
             public SensorViewHolder(View view) {
                 super(view);
-                this.view=view;
+                this.view = view;
                 player = view.findViewById(R.id.player);
 //                zoomlayout = view.findViewById(R.id.zoomLayout);
                 txtCameraName = view.findViewById(R.id.txtCameraName);
@@ -259,15 +278,5 @@ public class CameraListFragment extends Fragment implements CameraGridActivity.t
                 relInActiveCamera = view.findViewById(R.id.relInActiveCamera);
             }
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        if(nodePlayer!=null){
-            nodePlayer.stop();
-            nodePlayer.release();
-        }
-
-        super.onDestroyView();
     }
 }

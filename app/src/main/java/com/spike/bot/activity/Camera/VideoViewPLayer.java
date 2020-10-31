@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
@@ -13,6 +14,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
@@ -46,6 +48,19 @@ public class VideoViewPLayer extends AppCompatActivity {
     String videoUrl = "", name = "";
     MediaController mediaController;
     boolean isMute = false;
+    String[] permissions = new String[]{"android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"};
+
+    public static void savePic(Bitmap b, String strFileName) {
+        FileOutputStream fos;
+        try {
+            fos = new FileOutputStream(strFileName);
+            b.compress(Bitmap.CompressFormat.PNG, 90, fos);
+            fos.flush();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,16 +80,36 @@ public class VideoViewPLayer extends AppCompatActivity {
         setTitle(name);
         //String link = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
 
-        videoView = findViewById(R.id.video_view);
+//        videoView = findViewById(R.id.video_view);
         progressBar = findViewById(R.id.progressBar);
         linearPlayer = findViewById(R.id.linearPlayer);
         frameVideo = findViewById(R.id.frameVideo);
+//
+//
+//        Uri uri = Uri.parse(videoUrl);
+//        // create an object of media controller
+//        mediaController = new MediaController(getApplicationContext());
+//        videoView.setMediaController(mediaController);
+//        videoView.setVideoURI(uri);
+//        videoView.requestFocus();
+//        videoView.start();
 
-        videoView.setVideoPath(videoUrl);
-        videoView.requestFocus();
-        // create an object of media controller
-        mediaController = new MediaController(this);
-        videoView.setMediaController(mediaController);
+        /*tets*/
+
+        try {
+            String link=videoUrl;
+            videoView = (VideoView) findViewById(R.id.video_view);
+            MediaController mediaController = new MediaController(this);
+            mediaController.setAnchorView(videoView);
+            mediaController.show(50000);
+            Uri video = Uri.parse(link);
+            videoView.setMediaController(mediaController);
+            videoView.setVideoURI(video);
+            videoView.start();
+        } catch (Exception e) {
+            // TODO: handle exception
+            Toast.makeText(this, "Error connecting", Toast.LENGTH_SHORT).show();
+        }
 
         progressBar.setVisibility(View.VISIBLE);
 
@@ -136,8 +171,6 @@ public class VideoViewPLayer extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    String[] permissions = new String[]{"android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"};
-
     private boolean checkPermission() {
         List arrayList = new ArrayList();
         for (String str : this.permissions) {
@@ -187,17 +220,5 @@ public class VideoViewPLayer extends AppCompatActivity {
 
         Bitmap bmFrame = retriever.getFrameAtTime(currentPosition * 1000); //unit in microsecond
         return bmFrame;
-    }
-
-    public static void savePic(Bitmap b, String strFileName) {
-        FileOutputStream fos;
-        try {
-            fos = new FileOutputStream(strFileName);
-            b.compress(Bitmap.CompressFormat.PNG, 90, fos);
-            fos.flush();
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

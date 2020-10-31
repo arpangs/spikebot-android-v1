@@ -28,7 +28,7 @@
 
             <solid android:color="@color/remote_background" />
             <corners android:topLeftRadius="40dp" android:topRightRadius="40dp"
-                android:bottomLeftRadius="40dp" android:bottomRightRadius="40dp"/>
+                android:bottomLeftRadius="130dp" android:bottomRightRadius="130dp"/>
 
         </shape>
 

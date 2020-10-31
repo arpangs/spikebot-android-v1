@@ -31,7 +31,7 @@
             android:layout_height="35dp"
             android:backgroundTint="@color/sensor_button"
             android:padding="3dp"
-            app:srcCompat="@drawable/cross" />
+            app:srcCompat="@drawable/round_cross" />
 
     </LinearLayout>
 
@@ -48,7 +48,7 @@
 
         <TextView
             android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_weight="0.50"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:text="Enter the OTP"

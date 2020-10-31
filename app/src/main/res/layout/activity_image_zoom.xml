@@ -15,16 +15,6 @@
             android:layout_height="wrap_content"
             android:theme="@style/AppTheme.AppBarOverlay">
 
-            <!-- <androidx.appcompat.widget.Toolbar
-                 android:id="@+id/toolbar"
-                 android:layout_width="match_parent"
-                 android:layout_height="?android:attr/actionBarSize"
-                 android:background="@color/sky_blue"
-                 android:gravity="center"
-                 app:popupTheme="@style/AppTheme.PopupOverlay">
-
-             </androidx.appcompat.widget.Toolbar>-->
-
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -34,7 +24,7 @@
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/ThemeOverlay.AppCompat.ActionBar"></androidx.appcompat.widget.Toolbar>
+                    android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
 
                 <TextView
                     android:id="@+id/txt_title"
@@ -57,6 +47,8 @@
             </RelativeLayout>
 
         </com.google.android.material.appbar.AppBarLayout>
+
+
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -81,7 +73,10 @@
                 android:visibility="invisible" />
 
 
+
+
             <FrameLayout
+                android:id="@+id/frm_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@+id/img_playvideo"
@@ -109,36 +104,38 @@
                         android:scaleType="center"
                         android:visibility="visible" />
 
-                    <!--<VideoView
-                        android:id="@+id/videoView"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/_220sdp"
-                        android:layout_alignParentLeft="true"
-                        android:visibility="gone" />-->
-
 
                     <com.spike.bot.customview.PlayStateBroadcatingVideoView
                         android:id="@+id/videoView"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/_220sdp"
                         android:layout_alignParentLeft="true"
-                        android:visibility="invisible"/>
+                        android:visibility="invisible" />
 
                     <ProgressBar
                         android:id="@+id/progressBar1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        android:layout_gravity="center" />
+                        android:layout_gravity="center"
+                        android:visibility="gone" />
 
                     <FrameLayout
                         android:id="@+id/placeholder"
                         android:layout_width="fill_parent"
-                        android:layout_height="fill_parent">
-                    </FrameLayout>
+                        android:layout_height="fill_parent"/>
 
 
                 </FrameLayout>
+
+                <ImageView
+                    android:id="@+id/img_gifvideo"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_220sdp"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_45sdp"
+                    android:layout_marginRight="@dimen/_5sdp"
+                    android:visibility="visible"/>
+
 
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton

@@ -97,7 +97,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         isOffTime = false;
         holder.setIsRecyclable(false);
         scheduleVO = scheduleArrayList.get(listPosition);
-        holder.card_layout.setBackground(mContext.getDrawable(R.drawable.background_with_shadow_yellow));
+//        holder.card_layout.setBackground(mContext.getDrawable(R.drawable.background_with_shadow_yellow));
+//        holder.card_layout.setBackground(mContext.getDrawable(R.drawable.background_with_shadow_new));
 
         if (!Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
             holder.image_section_edit.setVisibility(View.VISIBLE);
@@ -119,14 +120,14 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 if (scheduleVO.getIs_active() == 1) {
 //                    holder.iv_sch_type.setImageResource(R.drawable.panel_disable_orange_new);
 //                    holder.iv_sch_type.setImageResource(R.drawable.panel_on);
-                    holder.iv_sch_type.setBackgroundResource(R.drawable.panel_on_new);
+                    holder.iv_sch_type.setBackgroundResource(R.drawable.panel_on);
                     holder.txt_schedule_status.setText("Enabled");
 
                 } else {
 
 //                    holder.iv_sch_type.setImageDrawable(mContext.getResources().getDrawable(R.drawable.panel_enable_gray_new));
 //                    holder.iv_sch_type.setImageDrawable(mContext.getResources().getDrawable(R.drawable.panel_off));
-                    holder.iv_sch_type.setBackgroundResource(R.drawable.panel_off_new);
+                    holder.iv_sch_type.setBackgroundResource(R.drawable.panel_off);
                     holder.txt_schedule_status.setText("Disabled");
                 }
 
@@ -163,7 +164,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
                 if (scheduleVO.getIs_active() == 1) {
 
-                    holder.linearRoomSchedule.setBackgroundColor(mContext.getResources().getColor(R.color.automation_white));
+                    holder.linearRoomSchedule.setBackgroundResource(R.drawable.background_with_shadow_new);
                     holder.tv_schedule_name.setTextColor(mContext.getResources().getColor(R.color.black));
                     holder.tv_schedule_on_time.setTextColor(mContext.getResources().getColor(R.color.automation_white));
                     holder.tv_schedule_on.setTextColor(mContext.getResources().getColor(R.color.automation_white));
@@ -181,7 +182,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     //Remove background resources
                     holder.ll_on.setBackgroundResource(0);
                     holder.ll_off.setBackgroundResource(0);
-                    holder.linearRoomSchedule.setBackgroundColor(mContext.getResources().getColor(R.color.automation_gray));
+                    holder.linearRoomSchedule.setBackgroundResource(R.drawable.background_with_shadow_new_gray);
                     holder.tv_schedule_days.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
                     holder.ll_schedule_on_off.setBackgroundResource(R.drawable.drawable_off_schedule);
 
@@ -200,7 +201,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     }
 
                     holder.tv_schedule_on.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
-                    //  holder.tv_auto_on.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+
                     holder.tv_schedule_on_time.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
                     holder.tv_schedule_off.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
                     holder.tv_auto_off.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
@@ -212,13 +213,13 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 if (scheduleVO.getIs_active() == 1) {
 //                    holder.iv_sch_type.setImageResource(R.drawable.panel_disable_orange_new);
 //                    holder.iv_sch_type.setImageResource(R.drawable.panel_on);
-                    holder.iv_sch_type.setBackgroundResource(R.drawable.panel_on_new);
+                    holder.iv_sch_type.setBackgroundResource(R.drawable.panel_on);
                     holder.txt_schedule_status.setText("Enabled");
 
                 } else {
 //                    holder.iv_sch_type.setImageDrawable(mContext.getResources().getDrawable(R.drawable.panel_enable_gray_new));
 //                    holder.iv_sch_type.setImageDrawable(mContext.getResources().getDrawable(R.drawable.panel_off));
-                    holder.iv_sch_type.setBackgroundResource(R.drawable.panel_off_new);
+                    holder.iv_sch_type.setBackgroundResource(R.drawable.panel_off);
                     holder.txt_schedule_status.setText("Disabled");
                 }
 
@@ -509,7 +510,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             // Grey BAckground means PM timening
             if (scheduleVO.getIs_active() == 1) {
 
-                holder.linearRoomSchedule.setBackgroundColor(mContext.getResources().getColor(R.color.automation_white));
+                holder.linearRoomSchedule.setBackgroundResource(R.drawable.background_with_shadow_new);
                 holder.tv_schedule_name.setTextColor(mContext.getResources().getColor(R.color.black));
                 //   holder.ll_schedule_on_off.setBackgroundResource(R.drawable.blue_border_fill_rectangle);
                 holder.tv_schedule_on_time.setTextColor(mContext.getResources().getColor(R.color.automation_white));
@@ -528,7 +529,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 //Remove background resources
                 holder.ll_on.setBackgroundResource(0);
                 holder.ll_off.setBackgroundResource(0);
-                holder.linearRoomSchedule.setBackgroundColor(mContext.getResources().getColor(R.color.automation_gray));
+                holder.linearRoomSchedule.setBackgroundResource(R.drawable.background_with_shadow_new_gray);
                 holder.tv_schedule_days.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
 //                holder.ll_schedule_on_off.setBackgroundResource(R.drawable.drawable_off_schedule);
 
@@ -574,24 +575,24 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         }
 
         holder.ll_schedule_on_off.setId(listPosition);
-        holder.ll_schedule_on_off.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (!isClickable)
-                    return;
-
-                if (scheduleArrayList.get(holder.iv_sch_type.getId()).getIs_active() == 1) {
-                    scheduleArrayList.get(holder.iv_sch_type.getId()).setIs_active(0);
-                } else {
-                    scheduleArrayList.get(holder.iv_sch_type.getId()).setIs_active(1);
-                }
-
-
-                notifyDataSetChanged();
-                scheduleClickListener.itemClicked(scheduleArrayList.get(holder.ll_schedule_on_off.getId()), "active", isMoodAdapter);
-            }
-        });
+//        holder.ll_schedule_on_off.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                if (!isClickable)
+//                    return;
+//
+//                if (scheduleArrayList.get(holder.iv_sch_type.getId()).getIs_active() == 1) {
+//                    scheduleArrayList.get(holder.iv_sch_type.getId()).setIs_active(0);
+//                } else {
+//                    scheduleArrayList.get(holder.iv_sch_type.getId()).setIs_active(1);
+//                }
+//
+//
+//                notifyDataSetChanged();
+//                scheduleClickListener.itemClicked(scheduleArrayList.get(holder.ll_schedule_on_off.getId()), "active", isMoodAdapter);
+//            }
+//        });
 
         holder.iv_sch_type.setId(listPosition);
         holder.iv_sch_type.setOnClickListener(new View.OnClickListener() {
@@ -606,7 +607,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     scheduleArrayList.get(holder.iv_sch_type.getId()).setIs_active(1);
                 }
 
-                notifyDataSetChanged();
+//                notifyDataSetChanged();
+                notifyItemChanged(listPosition);
                 scheduleClickListener.itemClicked(scheduleArrayList.get(holder.iv_sch_type.getId()), "active", isMoodAdapter);
             }
         });

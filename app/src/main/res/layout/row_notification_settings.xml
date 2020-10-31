@@ -23,7 +23,8 @@
         <LinearLayout
             android:visibility="visible"
             android:layout_gravity="center"
-            android:layout_margin="@dimen/_10sdp"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_10sdp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -49,8 +50,8 @@
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/switch_temp"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
                 android:layout_gravity="center"
                 android:layout_marginRight="10dp"
                 android:background="@drawable/selector_section_onoff"

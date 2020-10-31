@@ -109,7 +109,7 @@
 
         <TextView
             android:id="@+id/txt_empty_text"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/empty_add_image"
             android:layout_gravity="center"
@@ -140,7 +140,7 @@
             android:layout_gravity="center_horizontal|bottom"
             android:visibility="visible"
             app:floating_background_color="@color/automation_white"
-            app:floating_left_icon="@drawable/plusbutton"
+            app:floating_left_icon="@drawable/round_plus"
             app:floating_title="@string/add_mood"
             app:floating_title_color="@color/automation_black">
 

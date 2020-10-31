@@ -42,7 +42,7 @@
             <ImageView
                 android:scaleType="fitCenter"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_ir_blaster"
+                android:src="@drawable/irblaster"
                 android:layout_width="72dp"
                 android:layout_height="52dp" />
 

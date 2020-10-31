@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal">
 
     <TextView
         android:id="@+id/txtCurrentValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="@dimen/_5sdp"
+        android:background="@color/automation_white"
+        android:padding="@dimen/_6sdp"
+        android:textColor="@color/automation_blue"
         android:textSize="@dimen/_13sdp"
-        android:textColor="@color/automation_white"
-        android:background="@drawable/drawable_blue_schedule" />
+        tools:text="1" />
 
 </LinearLayout>

@@ -27,6 +27,7 @@ public class LogRoomAdapter extends RecyclerView.Adapter<LogRoomAdapter.ViewHold
     String isNotification = "", strDateOfTime, dateTime;
     String[] strDateOfTimeTemp, actionList;
 
+
     public LogRoomAdapter(Activity context, List<DeviceLog> deviceLogList, String isNotification) {
 
         this.mContext = context;
@@ -59,6 +60,7 @@ public class LogRoomAdapter extends RecyclerView.Adapter<LogRoomAdapter.ViewHold
                 holder.tv_device_log_time.setText(strDateOfTimeTemp[1] + " " + strDateOfTimeTemp[2]);
             }
 
+
             if (isNotification.equals("roomSensorUnreadLogs")) {
                 holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
                 holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_red));
@@ -80,6 +82,27 @@ public class LogRoomAdapter extends RecyclerView.Adapter<LogRoomAdapter.ViewHold
                 holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_red));
                 holder.tv_room_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
                 holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+            } else if (isNotification.equals("TempSensor") && deviceLog.seen_by == null) {
+                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_room_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+            } else if (isNotification.equals("GasSensor") && deviceLog.seen_by == null) {
+                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_room_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+            } else if (isNotification.equals("WaterSensor") && deviceLog.seen_by == null) {
+                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_room_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+                holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
             } else if (isNotification.equals("YaleLock") && deviceLog.seen_by == null) {
                 holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
                 holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_red));
@@ -94,6 +117,7 @@ public class LogRoomAdapter extends RecyclerView.Adapter<LogRoomAdapter.ViewHold
                 holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_black));
                 holder.tv_room_name.setTextColor(mContext.getResources().getColor(R.color.automation_black));
                 holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+                holder.txt_empty_view.setTextColor(mContext.getResources().getColor(R.color.automation_black));
             }
 
             if (deviceLog.getActivity_type().contains("No Record Found")) {
@@ -104,6 +128,15 @@ public class LogRoomAdapter extends RecyclerView.Adapter<LogRoomAdapter.ViewHold
                 holder.tv_panel_name.setVisibility(View.GONE);
                 holder.tv_room_name.setVisibility(View.GONE);
                 holder.view_header.setVisibility(View.GONE);
+            } else if (deviceLog.getActivity_type().contains("End of Record")) {
+                holder.tv_device_description.setVisibility(View.GONE);
+                holder.tv_device_log_date.setVisibility(View.GONE);
+                holder.tv_device_log_time.setVisibility(View.GONE);
+                holder.tv_device_name.setVisibility(View.GONE);
+                holder.tv_panel_name.setVisibility(View.GONE);
+                holder.tv_room_name.setVisibility(View.GONE);
+                holder.view_header.setVisibility(View.GONE);
+                holder.txt_empty_view.setVisibility(View.VISIBLE);
             } else {
                 holder.tv_device_description.setVisibility(View.VISIBLE);
                 holder.tv_device_log_date.setVisibility(View.VISIBLE);
@@ -112,7 +145,7 @@ public class LogRoomAdapter extends RecyclerView.Adapter<LogRoomAdapter.ViewHold
                 holder.tv_panel_name.setVisibility(View.VISIBLE);
                 holder.tv_room_name.setVisibility(View.VISIBLE);
                 holder.view_header.setVisibility(View.VISIBLE);
-
+                holder.txt_empty_view.setVisibility(View.GONE);
                 holder.tv_device_description.setText(deviceLog.getMessage().trim());
                 actionList = deviceLog.getActivity_description().split("\\|");
 

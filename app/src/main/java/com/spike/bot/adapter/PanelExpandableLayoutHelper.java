@@ -15,7 +15,6 @@ import com.spike.bot.listener.OnSmoothScrollList;
 import com.spike.bot.listener.TempClickListener;
 import com.spike.bot.model.CameraCounterModel;
 import com.spike.bot.model.CameraVO;
-import com.spike.bot.model.Device;
 import com.spike.bot.model.DeviceVO;
 import com.spike.bot.model.PanelVO;
 import com.spike.bot.model.RoomVO;
@@ -31,28 +30,29 @@ import java.util.Map;
  */
 public class PanelExpandableLayoutHelper implements SectionStateChangeListener, OnSmoothScrollList {
 
-    //data list
-    private ArrayList<Object> mDataArrayList = new ArrayList<Object>();
-    private ArrayList<CameraCounterModel.Data> mCounterArrayList;
-
-
-    private LinkedHashMap<PanelVO, ArrayList<DeviceVO>> mPanelSectionDataMap = new LinkedHashMap<PanelVO, ArrayList<DeviceVO>>();
-    private LinkedHashMap<PanelVO, ArrayList<DeviceVO>> mPanelSectionDataMapTemp = new LinkedHashMap<PanelVO, ArrayList<DeviceVO>>();
+    public static PanelVO penal_section;
+    public Context context;
+    //recycler view`
+    RecyclerView mRecyclerView;
+    List<CameraCounterModel.Data.CameraCounterList> counterlist = new ArrayList<>();
 
     //section map
     //TODO : look for a way to avoid this1
     //  private HashMap<String, RoomVO> mSectionMap = new HashMap<String, RoomVO>();
-
+    CameraCounterModel.Data counterres = new CameraCounterModel.Data();
+    //data list
+    private ArrayList<Object> mDataArrayList = new ArrayList<Object>();
+    private ArrayList<CameraCounterModel.Data> mCounterArrayList;
+    private LinkedHashMap<PanelVO, ArrayList<DeviceVO>> mPanelSectionDataMap = new LinkedHashMap<PanelVO, ArrayList<DeviceVO>>();
+    private LinkedHashMap<PanelVO, ArrayList<DeviceVO>> mPanelSectionDataMapTemp = new LinkedHashMap<PanelVO, ArrayList<DeviceVO>>();
     //adapter
     private PanelExpandableGridAdapter mSectionedExpandableGridAdapter;
     private OnSmoothScrollList onSmoothScrollList;
-
-    public Context context;
-    //recycler view`
-    RecyclerView mRecyclerView;
+    // variable to track event time
+    private long mLastClickTime = 0;
 
     public PanelExpandableLayoutHelper(final Context context, RecyclerView recyclerView, ItemClickListener itemClickListener, OnSmoothScrollList onSmoothScrollList, TempClickListener tempClickListener,
-                                           int gridSpanCount) {
+                                       int gridSpanCount) {
 
         this.context = context;
         this.onSmoothScrollList = onSmoothScrollList;
@@ -62,7 +62,7 @@ public class PanelExpandableLayoutHelper implements SectionStateChangeListener, 
         mSectionedExpandableGridAdapter = new PanelExpandableGridAdapter(context, mDataArrayList, mCounterArrayList,
                 gridLayoutManager, itemClickListener, onSmoothScrollList, tempClickListener, this);
         recyclerView.setAdapter(mSectionedExpandableGridAdapter);
-      //  recyclerView.setHasFixedSize(false);
+        recyclerView.setHasFixedSize(true);
         mRecyclerView = recyclerView;
 
 
@@ -75,7 +75,6 @@ public class PanelExpandableLayoutHelper implements SectionStateChangeListener, 
     public void setjetsonClick(PanelExpandableGridAdapter.JetsonClickListener jestonClickListener) {
         mSectionedExpandableGridAdapter.setJetsonClickListener(jestonClickListener);
     }
-
 
     public void setClickable(boolean clickable) {
         mSectionedExpandableGridAdapter.setClickable(clickable);
@@ -116,31 +115,56 @@ public class PanelExpandableLayoutHelper implements SectionStateChangeListener, 
         }
     }
 
-
     public void updateDeviceItem(String device_type, String deviceId, String deviceStatus, String device_sub_status) {
+
+        ChatApplication.logDisplay("status update panel adapter match " + "updateDeviceItem Called size " + mDataArrayList.size());
 
         for (int k = 0; k < mDataArrayList.size(); k++) {
 
             if (mDataArrayList.get(k) instanceof DeviceVO) {
                 DeviceVO deviceVO1 = (DeviceVO) mDataArrayList.get(k);
+                ChatApplication.logDisplay("status update panel adapter match null " + (deviceVO1 != null));
                 if (deviceVO1 != null) {
 
                     if (deviceVO1.getDeviceId().equals(deviceId)) {
-                        ChatApplication.logDisplay("status update panel adapter match");
+                        ChatApplication.logDisplay("status update panel adapter match " + deviceVO1.getDeviceName());
                         ((DeviceVO) mDataArrayList.get(k)).setDeviceStatus(Integer.parseInt(deviceStatus));
                         ((DeviceVO) mDataArrayList.get(k)).setDevice_sub_status(device_sub_status);
 
 
                         reloadDeviceList(((DeviceVO) mDataArrayList.get(k)));
 //                        mSectionedExpandableGridAdapter.notifyItemChanged(k);
-                        break;
+//                        break;
                     }
+
+                }
+            } else if (mDataArrayList.get(k) instanceof PanelVO) {
+                PanelVO panelVO = (PanelVO) mDataArrayList.get(k);
+                ChatApplication.logDisplay("status update panel adapter match null " + (panelVO != null));
+                if (panelVO != null) {
+
+                    if (panelVO.getDeviceList() != null && panelVO.getDeviceList().size() > 0) {
+
+
+                        for (int a = 0; a < panelVO.getDeviceList().size(); a++) {
+                            if (panelVO.getDeviceList().get(a).getDeviceId().equals(deviceId)) {
+                                ChatApplication.logDisplay("status update panel adapter match " + panelVO.getDeviceList().get(a).getDeviceName());
+                                panelVO.getDeviceList().get(a).setDeviceStatus(Integer.parseInt(deviceStatus));
+                                panelVO.getDeviceList().get(a).setDevice_sub_status(device_sub_status);
+
+//                                reloadDeviceList(((DeviceVO) mDataArrayList.get(k)));
+//                                break;
+                            }
+                        }
+                    }
+                    reloadDeviceList(((PanelVO) mDataArrayList.get(k)));
 
                 }
             }
         }
 //        mSectionedExpandableGridAdapter.notifyDataSetChanged();
     }
+
 
     public void updateDeviceBlaster(String deviceId, String deviceStatus) {
 
@@ -202,9 +226,6 @@ public class PanelExpandableLayoutHelper implements SectionStateChangeListener, 
             }
         }
     }
-
-    List<CameraCounterModel.Data.CameraCounterList> counterlist = new ArrayList<>();
-    CameraCounterModel.Data counterres = new CameraCounterModel.Data();
 
     public List<CameraCounterModel.Data.CameraCounterList> getCounterlist() {
         return counterlist;
@@ -272,7 +293,6 @@ public class PanelExpandableLayoutHelper implements SectionStateChangeListener, 
 
     }
 
-
     public void getCameracounter() {
 
         for (int i = 0; i < counterlist.size(); i++) {
@@ -310,52 +330,6 @@ public class PanelExpandableLayoutHelper implements SectionStateChangeListener, 
 
         }
 
-        //mSectionedExpandableGridAdapter.notifyDataSetChanged();
-
-
-        /*for (int i = 0; i < counterlist.size(); i++){
-           String cameras_id = counterlist.get(i).getCameraId();
-            String jetson_device_id = counterlist.get(i).getJetsonDeviceId();
-            int total_unread = counterlist.get(i).getTotalUnread();
-
-            ChatApplication.logDisplay("getCameracounter camera_id" + " " + cameras_id);
-            ChatApplication.logDisplay("getCameracounter jetson_device_id " + " " + jetson_device_id);
-            ChatApplication.logDisplay("getCameracounter total_unread " + " " + total_unread);
-
-            ChatApplication.logDisplay("getCameracounter room list size " + " " + roomList.size());
-            boolean found = false;
-            *//*camera device counting*//*
-            for (int j = 0; j < roomList.size(); j++) {
-                if (roomList.get(j).getRoomId().equalsIgnoreCase("Camera"))
-                {
-                    roomcameralist = roomList.get(j).getPanelList().get(0).getCameraList();
-                    for (int k = 0; k < roomcameralist.size(); k++) {
-                        if(counterlist.get(i).getCameraId().equals(roomcameralist.get(k).getCamera_id()))
-                        {
-                            found = true;
-
-                            ChatApplication.logDisplay("getCameracounter camera name " + " " + roomcameralist.get(k).getCamera_name());
-                            ChatApplication.logDisplay("getCameracounter camera total unread" + " " + counterlist.get(i).getTotalUnread());
-
-                            for (int l = 0; l < mDataArrayList.size(); l++) {
-                                if (mDataArrayList.get(l) instanceof CameraVO) {
-                                    CameraVO cameraVO1 = (CameraVO) mDataArrayList.get(l);
-                                    ChatApplication.logDisplay("getCameracounter total unread id" + " " + cameraVO1.getCamera_id());
-                                    if (cameraVO1 != null) {
-                                        ((CameraVO) mDataArrayList.get(l)).setIs_unread(String.valueOf(counterlist.get(i).getTotalUnread()));
-                                        //  mSectionedExpandableGridAdapter.notifyItemChanged(k);
-                                        //   break;
-                                        mSectionedExpandableGridAdapter.notifyItemChanged(l);
-
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-        }*/
     }
 
     public void updateRoom(String id, String deviceStatus) {
@@ -377,8 +351,6 @@ public class PanelExpandableLayoutHelper implements SectionStateChangeListener, 
             }
         }
     }
-
-
 
     public void updateBadgeCount(String deviceId, String counter) {
 
@@ -456,8 +428,6 @@ public class PanelExpandableLayoutHelper implements SectionStateChangeListener, 
         }
     }
 
-
-
     //reload the row item in recycle
     public void reloadDeviceList(Object obj) {
         int position = mDataArrayList.indexOf(obj);
@@ -473,8 +443,6 @@ public class PanelExpandableLayoutHelper implements SectionStateChangeListener, 
         }
     }
 
-    public static PanelVO section;
-
     public void addPanelSectionList(ArrayList<PanelVO> panelList) {
         // mSectionDataMap = new LinkedHashMap<RoomVO, ArrayList<PanelVO>>();
         // mDataArrayList = new ArrayList<Object>();
@@ -483,24 +451,36 @@ public class PanelExpandableLayoutHelper implements SectionStateChangeListener, 
         mDataArrayList.clear();
 
         for (int i = 0; i < panelList.size(); i++) {
-            addPanelSection(panelList.get(i));
+            if (!panelList.get(i).isSensorPanel()) {
+                addPanelSection(panelList.get(i));
+            }
         }
     }
 
-
-
     public void addPanelSection(PanelVO section) {
         //mSectionMap.put(section.getRoomName(), section);
-        if (this.section != null && this.section.equals(section)) {
+        if (this.penal_section != null && this.penal_section.equals(section)) {
 
         }
 
-        for (PanelVO PanelVO : ListUtils.arrayListPanel) {
-            if (PanelVO.isExpanded() == true && PanelVO.getRoomId().equalsIgnoreCase(section.getRoomId())) {
-                section.setExpanded(true);
+        for (PanelVO mPanelVO : ListUtils.arrayListPanel) {
+            if (section.getPanelId().equalsIgnoreCase(section.getPanelId()) && (mPanelVO.isExpanded())) {
+                section.setExpanded(false);
             }
         }
 
+        ArrayList<DeviceVO> deviceVOList = section.getDeviceList();
+
+        boolean isModeStatusOpen = false;
+
+
+        for (DeviceVO deviceVO : deviceVOList) {
+            if (deviceVO.getDeviceStatus() == 1) {
+                isModeStatusOpen = true;
+            }
+        }
+
+        section.setPanel_status(isModeStatusOpen ? 1 : 0);
         mPanelSectionDataMap.put(section, section.getDeviceList());
         mPanelSectionDataMapTemp.put(section, section.getDeviceList());
     }
@@ -514,24 +494,25 @@ public class PanelExpandableLayoutHelper implements SectionStateChangeListener, 
 
             mDataArrayList.add((key = entry.getKey()));
 
+            ChatApplication.logDisplay("panel name is " + key.getPanelName());
+            if (key.isExpanded()) {
 
-            //mDataArrayList.add(new PanelVO("Panel1"));
-            //mDataArrayList.addAll(entry.getValue());
-            ArrayList<DeviceVO> deviceList = entry.getValue();
+                ArrayList<DeviceVO> deviceList = entry.getValue();
 
-            for (int i = 0; i < deviceList.size(); i++) {
-                //add panel
-                mDataArrayList.add(deviceList.get(i));
-                //add all device switch
-                ChatApplication.logDisplay("panel name is " + deviceList.get(i).getPanel_name());
+                for (int i = 0; i < deviceList.size(); i++) {
+                    //add panel
+                    if (key.getPanelId().equalsIgnoreCase(deviceList.get(i).getPanel_id())) {
+                        mDataArrayList.add(deviceList.get(i));
+                    }
+                    //add all device switch
+                    ChatApplication.logDisplay("panel name is " + deviceList.get(i).getModule_type());
 
+//                    mDataArrayList.addAll(deviceList);
+
+                }
             }
         }
     }
-
-
-    // variable to track event time
-    private long mLastClickTime = 0;
 
     @Override
     public void onSectionStateChanged(RoomVO section, boolean isOpen) {
@@ -539,56 +520,55 @@ public class PanelExpandableLayoutHelper implements SectionStateChangeListener, 
     }
 
     @Override
-    public void onSectionStateChanged(PanelVO section, boolean isOpen) {
+    public void onSectionStateChanged(PanelVO panel_section, boolean isOpen) {
         if (SystemClock.elapsedRealtime() - mLastClickTime < 500) {
             return;
         }
         mLastClickTime = SystemClock.elapsedRealtime();
 
-        this.section = section;
-        ListUtils.sectionPanel = section;
-        ListUtils.sectionPanel.setExpanded(isOpen);
-        section.setExpanded(isOpen);
+        this.penal_section = panel_section;
+        panel_section.setExpanded(isOpen);
+
+        ChatApplication.logDisplay("penal id is callingcheck!! " + panel_section.getPanelName() + "  " + isOpen);
 
         if (!isOpen) {
+            ChatApplication.logDisplay("penal id is calling!! " + panel_section.getPanelName() + "  " + isOpen);
             if (ListUtils.arrayListPanel.size() > 0) {
 
                 for (int i = 0; i < ListUtils.arrayListPanel.size(); i++) {
-                    if (section.getRoomId().equals(ListUtils.arrayListPanel.get(i).getRoomId())) {
-                        ChatApplication.logDisplay("room id is same " + section.getRoomId() + " " + ListUtils.arrayListPanel.get(i).getRoomId());
-//                        section.isExpanded = false;
-                        section.setExpanded(false);
-                        ListUtils.arrayListPanel.set(i, section);
+                    if (panel_section.getPanelId().equals(ListUtils.arrayListPanel.get(i).getPanelId())) {
+                        ChatApplication.logDisplay("panel id is same " + panel_section.getPanelId() + " " + ListUtils.arrayListPanel.get(i).getPanelId());
+//                        panel_section.isExpanded = false;
+                        panel_section.setExpanded(false);
+                        ListUtils.arrayListPanel.set(i, panel_section);
                     }
                 }
             }
 
         } else {
-            ListUtils.arrayListPanel.add(section);
+            ListUtils.arrayListPanel.add(panel_section);
         }
 
         if (!mRecyclerView.isComputingLayout()) {
 
-            section.setExpanded(isOpen);
+            panel_section.setExpanded(isOpen);
 
             for (Map.Entry<PanelVO, ArrayList<DeviceVO>> entry : mPanelSectionDataMap.entrySet()) {
                 PanelVO key = entry.getKey();
-                if (key.equals(section)) {
+                if (key.equals(panel_section)) {
                     key.setExpanded(isOpen);
                 } else {
                     key.setExpanded(false);
                 }
             }
-
             notifyDataSetChanged();
-
         }
 
     }
-
 
     @Override
     public void onPoisitionClick(int position) {
         onSmoothScrollList.onPoisitionClick(position);
     }
+
 }

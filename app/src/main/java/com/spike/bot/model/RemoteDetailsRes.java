@@ -1,5 +1,7 @@
 package com.spike.bot.model;
 
+import android.view.ViewDebug;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -69,6 +71,19 @@ public class RemoteDetailsRes implements Serializable {
         @SerializedName("unseen_logs")
         @Expose
         private List<UnseenLog> unseenLogs = null;
+
+        @SerializedName("unread_count")
+        @Expose
+        private String unread_count;
+
+        public String getUnread_count() {
+            return unread_count;
+        }
+
+        public void setUnread_count(String unread_count) {
+            this.unread_count = unread_count;
+        }
+
 
         public Device getDevice() {
             return device;
@@ -352,6 +367,29 @@ public class RemoteDetailsRes implements Serializable {
             @Expose
             private String device_name;
 
+            @SerializedName("device_id")
+            @Expose
+            private String device_id;
+
+            public String getDevice_id() {
+                return device_id;
+            }
+
+            public void setDevice_id(String device_id) {
+                this.device_id = device_id;
+            }
+
+            @SerializedName("module_id\n")
+            @Expose
+            private String module_id;
+
+            public String getModule_id() {
+                return module_id;
+            }
+
+            public void setModule_id(String module_id) {
+                this.module_id = module_id;
+            }
         }
 
         public class Device implements Serializable {
@@ -406,6 +444,32 @@ public class RemoteDetailsRes implements Serializable {
 
             public void setMeta_enable_lock_unlock_from_app(String meta_enable_lock_unlock_from_app) {
                 this.meta_enable_lock_unlock_from_app = meta_enable_lock_unlock_from_app;
+            }
+
+
+            @SerializedName("humidity_counter")
+            @Expose
+            private int humidity_counter ;
+
+
+            @SerializedName("temp_counter")
+            @Expose
+            private int temp_counter ;
+
+            public int getHumidity_counter() {
+                return humidity_counter;
+            }
+
+            public void setHumidity_counter(int humidity_counter) {
+                this.humidity_counter = humidity_counter;
+            }
+
+            public int getTemp_counter() {
+                return temp_counter;
+            }
+
+            public void setTemp_counter(int temp_counter) {
+                this.temp_counter = temp_counter;
             }
 
             public irBlaster getIr_blaster() {
@@ -532,6 +596,7 @@ public class RemoteDetailsRes implements Serializable {
                 this.fahrenheitvalue = fahrenheitvalue;
             }
 
+
             public String fahrenheitvalue;
 
             public String getModuleId() {
@@ -653,6 +718,19 @@ public class RemoteDetailsRes implements Serializable {
             @SerializedName("room_name")
             @Expose
             private String room_name;
+
+
+            @SerializedName("room_id")
+            @Expose
+            private String room_id;
+
+            public String getRoom_id() {
+                return room_id;
+            }
+
+            public void setRoom_id(String room_id) {
+                this.room_id = room_id;
+            }
         }
 
         public class DeviceMeta {

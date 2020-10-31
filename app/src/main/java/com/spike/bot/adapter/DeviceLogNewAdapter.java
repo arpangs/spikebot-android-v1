@@ -12,7 +12,6 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.R;
-import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.DeviceLog;
 
@@ -20,22 +19,21 @@ import java.util.List;
 
 public class DeviceLogNewAdapter extends RecyclerView.Adapter<DeviceLogNewAdapter.ViewHolder> {
 
+    public boolean isEOR = false;
     Activity mContext;
     List<DeviceLog> deviceLogs;
-    public boolean isEOR = false;
     String dateTime = "", strDateOfTime;
     String[] strDateOfTimeTemp, actionList;
     DeviceLog deviceLog;
-
-    public void setEOR(boolean isEOR) {
-        this.isEOR = isEOR;
-    }
-
 
     public DeviceLogNewAdapter(Activity context, List<DeviceLog> deviceLogList) {
 
         this.mContext = context;
         this.deviceLogs = deviceLogList;
+    }
+
+    public void setEOR(boolean isEOR) {
+        this.isEOR = isEOR;
     }
 
     @Override
@@ -65,25 +63,25 @@ public class DeviceLogNewAdapter extends RecyclerView.Adapter<DeviceLogNewAdapte
                 holder.tv_device_log_time.setText(strDateOfTimeTemp[1] + " " + strDateOfTimeTemp[2]);
             }
 
-            if (!deviceLogs.get(listPosition).getSeen_by().replace("|", "").contains(Common.getPrefValue(mContext, Constants.USER_ID))) {
-                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
-                holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_red));
-                holder.tv_device_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
-                holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_red));
-                holder.tv_room_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
-                holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
-            } else {
-                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_black));
-                holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_black));
-                holder.tv_device_name.setTextColor(mContext.getResources().getColor(R.color.automation_black));
-                holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_black));
-                holder.tv_room_name.setTextColor(mContext.getResources().getColor(R.color.automation_black));
-                holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_black));
-            }
+            /*all log in black color from 25 aug 2020*/
+//            if (!deviceLogs.get(listPosition).getSeen_by().replace("|", "").contains(Common.getPrefValue(mContext, Constants.USER_ID))) {
+//                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+//                holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+//                holder.tv_device_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+//                holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+//                holder.tv_room_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+//                holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
+//            } else {
+            holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+            holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+            holder.tv_device_name.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+            holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+            holder.tv_room_name.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+            holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+            holder.txt_empty_view.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+//            }
 
-            if (deviceLog.getActivity_type().contains("No Record Found") || deviceLogs.size() == 0 || deviceLogs.isEmpty() || deviceLogs == null)
-
-            {
+            if (deviceLog.getActivity_type().contains("No Record Found") || deviceLogs.size() == 0 || deviceLogs.isEmpty() || deviceLogs == null) {
                 holder.tv_device_description.setVisibility(View.GONE);
                 holder.tv_device_log_date.setVisibility(View.GONE);
                 holder.tv_device_log_time.setVisibility(View.GONE);
@@ -93,6 +91,18 @@ public class DeviceLogNewAdapter extends RecyclerView.Adapter<DeviceLogNewAdapte
                 holder.view_header.setVisibility(View.GONE);
                 holder.linear_log_desc.setVisibility(View.GONE);
                 holder.linear_log_desc.setBackgroundResource(R.color.automation_white);
+                holder.txt_empty_view.setVisibility(View.VISIBLE);
+            } else if (deviceLog.getActivity_type().contains("End of Record") || deviceLogs.size() == 0 || deviceLogs.isEmpty() || deviceLogs == null) {
+                holder.tv_device_description.setVisibility(View.GONE);
+                holder.tv_device_log_date.setVisibility(View.GONE);
+                holder.tv_device_log_time.setVisibility(View.GONE);
+                holder.tv_device_name.setVisibility(View.GONE);
+                holder.tv_panel_name.setVisibility(View.GONE);
+                holder.tv_room_name.setVisibility(View.GONE);
+                holder.view_header.setVisibility(View.GONE);
+                holder.linear_log_desc.setVisibility(View.GONE);
+                holder.linear_log_desc.setBackgroundResource(R.color.automation_white);
+                holder.txt_empty_view.setVisibility(View.VISIBLE);
             } else {
                 holder.tv_device_description.setVisibility(View.VISIBLE);
                 holder.tv_device_log_date.setVisibility(View.VISIBLE);
@@ -103,7 +113,7 @@ public class DeviceLogNewAdapter extends RecyclerView.Adapter<DeviceLogNewAdapte
                 holder.view_header.setVisibility(View.VISIBLE);
                 holder.linear_log_desc.setVisibility(View.VISIBLE);
                 holder.linear_log_desc.setBackgroundResource(R.color.blue_transparent);
-
+                holder.txt_empty_view.setVisibility(View.GONE);
                 holder.tv_device_description.setText(deviceLog.getMessage().trim());
                 actionList = deviceLog.getActivity_description().split("\\|");
 
@@ -130,6 +140,7 @@ public class DeviceLogNewAdapter extends RecyclerView.Adapter<DeviceLogNewAdapte
                     holder.tv_room_name.setVisibility(View.GONE);
                 }
             }
+
 
         } catch (Exception e) {
             e.printStackTrace();

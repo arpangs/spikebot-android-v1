@@ -93,7 +93,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
     ImageView imgArrow, imgArraoTime;
     LinearLayout ll_schedule, ll_spinner_hide, ll_on_time, ll_off_time, ll_week_title, ll_week_days,
             ll_on_time_auto, ll_on_time_bottom, ll_off_time_auto, ll_off_time_bottom, ll_spinner_mood,
-            empty_ll_view, linear_header, linear_header_textviews, linear_header_buttons;
+            empty_ll_view, linear_header, linear_header_textviews, linear_header_buttons, lltimerTitle;
     CustomEditText et_on_time_hours, et_on_time_min, et_off_time_hours, et_off_time_min;
     TextView et_on_time_bottom_header, et_off_time_bottom_header, et_on_time_bottom_header_at, et_on_time_bottom_header_at_time, et_on_time_bottom_header_at_ampm,
             et_off_time_bottom_header_at, et_off_time_bottom_header_at_time, et_off_time_bottom_header_at_ampm, tv_schedule_list;
@@ -241,6 +241,8 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         et_off_time_bottom_header_at_time = findViewById(R.id.et_off_time_bottom_header_at_time);
         et_off_time_bottom_header_at_ampm = findViewById(R.id.et_off_time_bottom_header_at_ampm);
 
+        lltimerTitle = findViewById(R.id.timer_title);
+
         //auto end
         sp_schedule_list = findViewById(R.id.sp_schedule_list);
         rg_schedule_type = findViewById(R.id.rg_schedule_type);
@@ -339,7 +341,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void afterTextChanged(Editable s) {
                 if (et_schedule_on_time.length() > 0) {
-                    et_schedule_on_time.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icn_close, 0);
+                    et_schedule_on_time.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icn_close_view, 0);
                     et_schedule_on_time.setCompoundDrawablePadding(8);
                 }
             }
@@ -351,7 +353,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             public void onClick(DrawablePosition target) {
                 switch (target) {
                     case RIGHT:
-                        // et_schedule_off_time.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icn_close, 0);
+                        // et_schedule_off_time.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable., icn_close0);
                         et_schedule_off_time.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                         et_schedule_off_time.setText("");
                         break;
@@ -375,7 +377,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void afterTextChanged(Editable s) {
                 if (et_schedule_off_time.length() > 0) {
-                    et_schedule_off_time.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icn_close, 0);
+                    et_schedule_off_time.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icn_close_view, 0);
                     et_schedule_off_time.setCompoundDrawablePadding(8);
                 }
             }
@@ -539,8 +541,10 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                         setBackGroundColorButton(false);
                     }
 
-                    rb_schedule_select_auto.setClickable(false);
-                    rb_schedule_select_schedule.setClickable(false);
+                    /*rb_schedule_select_auto.setClickable(false);
+                    rb_schedule_select_schedule.setClickable(false);*/
+                    /*madhulika remove this code as Ios can edit at 1st oct 2020*/
+
 
                     /*check schedule type*/
                     if (scheduleVO.getSchedule_type() == 1) {
@@ -691,6 +695,17 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
                     showTimerUI();
                     rb_schedule_select_schedule.setVisibility(View.VISIBLE);
                 }
+
+                rg_schedule_select.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(RadioGroup group, int checkedId) {
+                        if (checkedId == R.id.rb_schedule_select_schedule) {
+                            showScheduleUI();
+                        } else if (checkedId == R.id.rb_schedule_select_timer) {
+                            showTimerUI();
+                        }
+                    }
+                });
 
 
                 final Date currentDate = new Date();
@@ -1255,6 +1270,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         ll_off_time_bottom.setVisibility(View.GONE);
         imgArrow.setVisibility(View.VISIBLE);
         imgArraoTime.setVisibility(View.GONE);
+        lltimerTitle.setVisibility(View.VISIBLE);
 
         view_starttime.setVisibility(View.VISIBLE);
 
@@ -1283,7 +1299,7 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
         ll_week_days.setVisibility(View.GONE);
         imgArrow.setVisibility(View.GONE);
         view_starttime.setVisibility(View.GONE);
-
+        lltimerTitle.setVisibility(View.GONE);
         rb_schedule_select_auto.setTextColor(getResources().getColor(R.color.signupblack));
         rb_schedule_select_schedule.setTextColor(getResources().getColor(R.color.signupblack));
 
@@ -2276,8 +2292,12 @@ public class ScheduleActivity extends AppCompatActivity implements View.OnClickL
     public void onBackPressed() {
         //    nextFalse = 0;
         ActivityHelper.hideKeyboard(this);
-        ChatApplication.CurrnetFragment = R.id.navigationSchedule;  // dev arpan on 15 june 2020
-        startActivity(new Intent(this, Main2Activity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)); // dev arpan on 15 june 2020
+
+        finish();
+        overridePendingTransition(0, 0);
+        startActivity(new Intent(this, Main2Activity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        overridePendingTransition(0, 0);
+
         super.onBackPressed();
     }
 

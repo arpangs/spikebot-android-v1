@@ -7,9 +7,9 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.SystemClock;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -29,14 +29,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.SwitchCompat;
-import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -47,15 +45,11 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.kp.core.ActivityHelper;
 import com.kp.core.DateHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.activity.DeviceLogRoomActivity;
-import com.spike.bot.activity.Sensor.DoorSensorInfoActivity;
-import com.spike.bot.activity.Sensor.GasSensorActivity;
 import com.spike.bot.activity.SmartDevice.AddDeviceConfirmActivity;
 import com.spike.bot.adapter.DoorAlertAdapter;
 import com.spike.bot.adapter.DoorSensorInfoAdapter;
@@ -67,6 +61,7 @@ import com.spike.bot.core.Constants;
 import com.spike.bot.customview.OnSwipeTouchListener;
 import com.spike.bot.dialog.ICallback;
 import com.spike.bot.dialog.TimePickerFragment12;
+import com.spike.bot.model.DeviceVO;
 import com.spike.bot.model.LockObj;
 import com.spike.bot.model.RemoteDetailsRes;
 import com.spike.bot.receiver.ConnectivityReceiver;
@@ -93,51 +88,54 @@ import static com.spike.bot.core.Common.showToast;
 
 public class YaleLockInfoActivity extends AppCompatActivity implements View.OnClickListener, DoorSensorInfoAdapter.OnNotificationContextMenu, ConnectivityReceiver.ConnectivityReceiverListener {
 
-    private RecyclerView door_sensor_list, recyclerAlert;
-    private DoorSensorInfoAdapter tempSensorInfoAdapter;
-    public Toolbar toolbar;
+    public static String mSocketCountVal;
 
-    CardView cardview_yalelook;
-    private EditText sensorName;
-    private TextView txt_empty_notification, txt_empty_notificationALert, txtTempCount, txtAlertTempCount, txt_battery_level;
-    private ImageView img_door_on, imgBattery, view_rel_badge, imgLock, imgLockDelete,
-            imgDoorDelete, imgLockBattery,img_passcode,img_onetimecode,img_log_adminpasscode,img_log_guestpasscode;
-    private TextView batteryPercentage, txt_setpasscode, txt_setonetimecode, doorAddButton;
-    private LinearLayout linearAlertDown, linearAlertExpand, linearLock, linearAddlockOptin, linear_yale_status, linear_door,
-            linearLockDoor, linear_lock_enable_disable, linear_set_passcode,linear_set_onetimecode,
-            linear_door_batterylvl, linear_battery, linear_pushnotify;
     public CardView cardViewLock, cardViewDoor;
-    private ToggleButton toggleAlert;
-    private TextView txtAlertCount;
-    private AppCompatTextView txtAddLock, txtBettrylock, txtlockStatus, txtyDooryaleStatus, txtAutoLock;
-    private Button btn_delete;
     public SwitchCompat switchAutoLock, switch_temp_lock;
-    private boolean flagAlert = false, isRefreshAll = false;
+    CardView cardview_yalelook;
     View view_section;
     //Declare timer
     CountDownTimer cTimer = null;
-
-    //    public DoorSensorResModel.DATA.DoorList[] tempLists = new DoorSensorResModel.DATA.DoorList[0];
-    private RemoteDetailsRes doorSensorResModelData;
-    private RemoteDetailsRes.Data doorSensorResModel;
-    private String door_sensor_id, door_room_name, door_unread_count = "", door_subtype = "", door_room_id, door_module_id, mSensorName = "",
-            mac_address = "", enable_lock_unlock_from_app = "",
-            strsensorname = "", strsensorpasscode = "",strguestpasscode="";
-    private Socket mSocket;
+    int devicestatus = 0;
     Dialog editdialog;
+    boolean isFirst = false;
     //gatwway list
     ArrayList<LockObj> gatewayList = new ArrayList<>();
     ArrayList<LockObj> locklistAll = new ArrayList<>();
-    public static String mSocketCountVal;
-    private boolean isRefresh = false, setChecked = false;
-
     /**
      * @param o
      * @param isEdit
      */
 
     Dialog doorSensorNotificationDialog;
-
+    boolean isBack;
+    private RecyclerView door_sensor_list, recyclerAlert;
+    private DoorSensorInfoAdapter tempSensorInfoAdapter;
+    private EditText sensorName;
+    private TextView txt_empty_notification, txt_empty_notificationALert, txtTempCount, txtAlertTempCount, txt_battery_level;
+    private ImageView img_door_on, imgBattery, view_rel_badge, imgLock, imgLockDelete,
+            imgDoorDelete, imgLockBattery, img_passcode, img_onetimecode, img_log_adminpasscode, img_log_guestpasscode;
+    private TextView batteryPercentage, txt_setpasscode, txt_setonetimecode, doorAddButton;
+    private LinearLayout linearAlertDown, linearAlertExpand, linearLock, linearAddlockOptin, linear_yale_status, linear_door,
+            linearLockDoor, linear_lock_enable_disable, linear_set_passcode, linear_set_onetimecode,
+            linear_door_batterylvl, linear_battery, linear_pushnotify;
+    private ImageView toggleAlert;
+    private TextView txtAlertCount;
+    private AppCompatTextView txtAddLock, txtBettrylock, txtlockStatus, txtyDooryaleStatus, txtAutoLock;
+    private Button btn_delete;
+    private boolean flagAlert = false, isRefreshAll = false;
+    //    public DoorSensorResModel.DATA.DoorList[] tempLists = new DoorSensorResModel.DATA.DoorList[0];
+    private RemoteDetailsRes doorSensorResModelData;
+    private RemoteDetailsRes.Data doorSensorResModel;
+    private String door_sensor_id, door_room_name, door_unread_count = "", door_subtype = "", door_room_id, door_module_id, mSensorName = "",
+            mac_address = "", enable_lock_unlock_from_app = "", panelID = "",
+            strsensorname = "", strsensorpasscode = "", strguestpasscode = "";
+    private Socket mSocket;
+    private boolean isRefresh = false, setChecked = false;
+    private TextView mDoorSensorName;
+    private ImageView mBack;
+    private TextView mNotificationCounter;
+    private long mLastClickTime = 0;
     /**
      * @param edtText
      * @param isStartTime
@@ -145,7 +143,199 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
     private String mStartTime = "";
     private String mEndTime = "";
     private SimpleDateFormat startTimeFormat;
+    /*battery vol socket getting socket */
+    private Emitter.Listener doorsensorvoltage = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
 
+            YaleLockInfoActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    if (args != null) {
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+                            String room_order = object.getString("room_order");
+                            String door_sensor_module_id = object.getString("door_sensor_module_id");
+                            String doorSensorVoltage = object.getString("doorSensorVoltage");
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+    };
+    /* unread count getting socket*/
+    private Emitter.Listener unReadCount = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            YaleLockInfoActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    if (args != null) {
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+                            String sensor_type = object.getString("sensor_type");
+                            String sensor_unread = object.getString("sensor_unread");
+                            String module_id = object.getString("module_id");
+                            String room_id = object.getString("room_id");
+
+                            if (sensor_type.equalsIgnoreCase("door") && door_module_id.equalsIgnoreCase(module_id) && door_room_id.equalsIgnoreCase(room_id)) {
+                                mSocketCountVal = sensor_unread;
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+    };
+    /* door/lock status getting*/
+    private Emitter.Listener changeDoorSensorStatus = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+                        try {
+                            //{"door_sensor_id":"1568731205713_SbQBf-JvXS","door_sensor_status":0,"door_lock_status":0}
+                            JSONObject object = new JSONObject(args[0].toString());
+                            ChatApplication.logDisplay("door is " + object);
+
+                            String device_type = object.getString("device_type");
+                            String device_id = object.getString("device_id");
+                            String device_status = object.getString("device_status");
+                            int device_sub_status = object.optInt("device_sub_status");
+
+                            try {
+                                if (device_id.equalsIgnoreCase(door_sensor_id)) {
+                                    doorSensorResModel.getDevice().setDeviceStatus(device_status);
+                                    inActivieStatusDoor(1);
+                                    devicestatus = Integer.valueOf(device_status);
+
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+
+//                            if (door_sensorid.equals(door_sensor_id)) {
+//                                if (!TextUtils.isEmpty(door_lock_status) && !door_lock_status.equals("null") && door_lock_status.length() > 0) {
+//                                    doorSensorResModel.getDate().getDoorLists()[0].setDoor_lock_status(door_lock_status);
+//                                }
+//
+//                                if (!TextUtils.isEmpty(door_sensor_status) && !door_sensor_status.equals("null") && !door_sensor_status.equals("null")) {
+//                                    doorSensorResModel.getDate().getDoorLists()[0].setmDoorSensorStatus("" + door_sensor_status);
+//                                }
+//
+//                                //onlydoor, subtype=1
+//                                //only lock, subtype=2
+//                                //door+lock, subtype=3
+//                                if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("2")) {
+//                                    setLockStatus(2);
+//                                } else if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("3")) {
+//                                    setLockStatus(3);
+//                                } else {
+//                                    setLockStatus(4);
+//                                }
+//                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener unReadCountNotification = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            YaleLockInfoActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    if (args != null) {
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+                            String device_id = object.getString("device_id");
+                            String counter = object.getString("counter");
+                            String user_id = object.getString("user_id");
+
+                            if (user_id.equalsIgnoreCase(Common.getPrefValue(YaleLockInfoActivity.this, Constants.USER_ID))) {
+
+                                if (door_sensor_id.equalsIgnoreCase(device_id)) {
+                                    if (!counter.equalsIgnoreCase("") || !counter.equalsIgnoreCase("null")) {
+                                        try {
+                                            int count = Integer.parseInt(counter);
+
+                                            if (count > 0) {
+                                                mNotificationCounter.setVisibility(View.VISIBLE);
+                                                mNotificationCounter.setText(count + "");
+
+                                                if (count > 99) {
+                                                    mNotificationCounter.setText("99+");
+                                                    mNotificationCounter.setBackground(getResources().getDrawable(R.drawable.badge_background_oval));
+                                                } else {
+                                                    mNotificationCounter.setBackground(getResources().getDrawable(R.drawable.badge_background));
+                                                }
+                                            } else {
+                                                mNotificationCounter.setVisibility(View.INVISIBLE);
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+
+
+                                    }
+                                }
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+    };
+
+
+    /* for remove one time password*/
+    private Emitter.Listener oneTimeCodeUsedStatus = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            YaleLockInfoActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    if (args != null) {
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+                            String device_id = object.getString("device_id");
+                            String counter = object.getString("one_time_code_used");
+                            if (door_sensor_id.equalsIgnoreCase(device_id)) {
+                                if (counter.equalsIgnoreCase("y")) {
+                                    txt_setonetimecode.setText("");
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+    };
 
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
@@ -154,7 +344,6 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -162,11 +351,6 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
 
         ChatApplication.logDisplay("door call is start " + ChatApplication.url);
 
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         door_sensor_id = getIntent().getStringExtra("door_sensor_id");
         door_room_name = getIntent().getStringExtra("door_room_name");
@@ -174,11 +358,27 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         door_unread_count = getIntent().getStringExtra("door_unread_count");
         door_module_id = getIntent().getStringExtra("door_module_id");
         door_subtype = getIntent().getStringExtra("door_subtype");
+
+        if (getIntent().hasExtra("panel_id")) {
+            panelID = getIntent().getStringExtra("panel_id");
+        }
+
+        if (getIntent().hasExtra("device_status")) {
+            devicestatus = getIntent().getIntExtra(("device_status"), 0);
+        }
+
+        isBack = false;
+
     }
 
     @Override
     protected void onResume() {
-        super.onResume();
+
+        if (mSocket != null) {
+            socketOn();
+            ChatApplication.logDisplay("socket is null");
+        }
+
 
         ChatApplication.logDisplay("door call is " + ChatApplication.url);
         if (ChatApplication.isLogResume) {
@@ -193,10 +393,17 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         ChatApplication.logDisplay("door call is " + ChatApplication.url);
 
         startSocketConnection();
+
+        if (isBack) {
+            unreadApiCall(false);
+        }
+
+        super.onResume();
     }
 
     private void bindView() {
 
+        mDoorSensorName = findViewById(R.id.remote_name);
         door_sensor_list = findViewById(R.id.sensor_list);
         recyclerAlert = findViewById(R.id.recyclerAlert);
         door_sensor_list.setLayoutManager(new GridLayoutManager(this, 1));
@@ -204,8 +411,11 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
 
         view_rel_badge = findViewById(R.id.view_rel_badge);
 
+        mNotificationCounter = findViewById(R.id.txt_notification_badge);
+        mNotificationCounter.setVisibility(View.INVISIBLE);
+
         sensorName = findViewById(R.id.sensor_name);
-            linearAlertDown = findViewById(R.id.linearAlertDown);
+        linearAlertDown = findViewById(R.id.linearAlertDown);
         linearAlertExpand = findViewById(R.id.linearAlertExpand);
         toggleAlert = findViewById(R.id.toggleAlert);
         txtAlertTempCount = findViewById(R.id.txtAlertTempCount);
@@ -256,7 +466,7 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         cardview_yalelook = findViewById(R.id.cardview_yalelook);
         linear_yale_status = findViewById(R.id.linear_yale_status);
         linear_door = findViewById(R.id.linear_door);
-        img_log_adminpasscode  = findViewById(R.id.img_log_adminpasscode);
+        img_log_adminpasscode = findViewById(R.id.img_log_adminpasscode);
         img_log_guestpasscode = findViewById(R.id.img_log_guestpasscode);
 
         linear_yale_status.setVisibility(View.VISIBLE);
@@ -281,33 +491,59 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         imgDoorDelete.setOnClickListener(this);
         img_passcode.setOnClickListener(this);
 
-        txtAlertTempCount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (flagAlert) {
-                    flagAlert = false;
-                    toggleAlert.setChecked(flagAlert);
-                    linearAlertExpand.setVisibility(View.GONE);
-                } else {
-                    flagAlert = true;
-                    toggleAlert.setChecked(flagAlert);
-                    linearAlertExpand.setVisibility(View.VISIBLE);
+        linearAlertExpand.setVisibility(View.VISIBLE);
+        if (recyclerAlert.getVisibility() == View.VISIBLE) {
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 400);
+            recyclerAlert.setLayoutParams(lp);
+        }
 
-                    if (recyclerAlert.getVisibility() == View.VISIBLE) {
-                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 400);
-                        recyclerAlert.setLayoutParams(lp);
-                    }
-                }
+        if (!Common.getPrefValue(YaleLockInfoActivity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
+            imgDoorDelete.setVisibility(View.VISIBLE);
+        } else {
+            imgDoorDelete.setVisibility(View.GONE);
+        }
+
+        mBack = findViewById(R.id.remote_toolbar_back);
+        mBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
             }
         });
+
+//        txtAlertTempCount.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (flagAlert) {
+//                    flagAlert = false;
+//
+//                    linearAlertExpand.setVisibility(View.GONE);
+//                } else {
+//                    flagAlert = true;
+//
+//                    linearAlertExpand.setVisibility(View.VISIBLE);
+//
+//                    if (recyclerAlert.getVisibility() == View.VISIBLE) {
+//                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 400);
+//                        recyclerAlert.setLayoutParams(lp);
+//                    }
+//                }
+//            }
+//        });
 
         toggleAlert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                if (SystemClock.elapsedRealtime() - mLastClickTime < 3000) {
+                    return;
+                }
+                mLastClickTime = SystemClock.elapsedRealtime();
+                isBack = true;
                 Intent intent = new Intent(YaleLockInfoActivity.this, DeviceLogRoomActivity.class);
                 intent.putExtra("isNotification", "YaleLock");
-                intent.putExtra("ROOM_ID",doorSensorResModel.getDevice().getDevice_id());
-                intent.putExtra("Sensorname",doorSensorResModel.getDevice().getDeviceName());
+                intent.putExtra("ROOM_ID", doorSensorResModel.getDevice().getDevice_id());
+                intent.putExtra("Sensorname", doorSensorResModel.getDevice().getDeviceName());
                 startActivity(intent);
             }
         });
@@ -326,22 +562,33 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         switch_temp_lock.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
+
                 setChecked = true;
                 return false;
+
             }
         });
 
         switch_temp_lock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (setChecked) {
-                    setChecked = false;
-                    if (isChecked) {
-                        enable_lock_unlock_from_app = "1";
-                        updateDoorSensor(strsensorname, strsensorpasscode, strguestpasscode,enable_lock_unlock_from_app, editdialog);
-                    } else {
-                        enable_lock_unlock_from_app = "0";
-                        updateDoorSensor(strsensorname, strsensorpasscode, strguestpasscode,enable_lock_unlock_from_app, editdialog);
+                if (!Common.getPrefValue(YaleLockInfoActivity.this, Constants.USER_ADMIN_TYPE).equals("1")) {
+                    if (isFirst) {
+                        Toast.makeText(YaleLockInfoActivity.this, "You Do not  have the privileges to perform this action...", Toast.LENGTH_SHORT).show();
+                        switch_temp_lock.setChecked(!isChecked);
+                        switch_temp_lock.setSelected(!isChecked);
+                    }
+                    isFirst = true;
+                } else {
+                    if (setChecked) {
+                        setChecked = false;
+                        if (isChecked) {
+                            enable_lock_unlock_from_app = "1";
+                            updateDoorSensor(strsensorname, strsensorpasscode, strguestpasscode, enable_lock_unlock_from_app, editdialog);
+                        } else {
+                            enable_lock_unlock_from_app = "0";
+                            updateDoorSensor(strsensorname, strsensorpasscode, strguestpasscode, enable_lock_unlock_from_app, editdialog);
+                        }
                     }
                 }
             }
@@ -384,12 +631,11 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         img_passcode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(txt_setpasscode.getTransformationMethod().equals(PasswordTransformationMethod.getInstance())){
+                if (txt_setpasscode.getTransformationMethod().equals(PasswordTransformationMethod.getInstance())) {
                     img_passcode.setImageResource(R.drawable.eyeclosed);
                     //Show Password
                     txt_setpasscode.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                }
-                else{
+                } else {
                     img_passcode.setImageResource(R.drawable.eye);
                     //Hide Password
                     txt_setpasscode.setTransformationMethod(PasswordTransformationMethod.getInstance());
@@ -400,12 +646,11 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         img_onetimecode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(txt_setonetimecode.getTransformationMethod().equals(PasswordTransformationMethod.getInstance())){
+                if (txt_setonetimecode.getTransformationMethod().equals(PasswordTransformationMethod.getInstance())) {
                     img_onetimecode.setImageResource(R.drawable.eyeclosed);
                     //Show Password
                     txt_setonetimecode.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                }
-                else{
+                } else {
                     img_onetimecode.setImageResource(R.drawable.eye);
                     //Hide Password
                     txt_setonetimecode.setTransformationMethod(PasswordTransformationMethod.getInstance());
@@ -423,6 +668,8 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
                 intent.putExtra("IS_SENSOR", true);
                 intent.putExtra("tabSelect", "show");
                 intent.putExtra("isCheckActivity", "yalelock");
+//                intent.putExtra("code_type", "master_code");
+                intent.putExtra("code_type", "user_pin_code");
                 intent.putExtra("isRoomName", "" + sensorName.getText().toString());
                 startActivity(intent);
             }
@@ -437,13 +684,96 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
                 intent.putExtra("activity_type", "door");
                 intent.putExtra("IS_SENSOR", true);
                 intent.putExtra("tabSelect", "show");
+//                intent.putExtra("code_type", "onetime_code");
+                intent.putExtra("code_type", "onetime_pin_code");
                 intent.putExtra("isCheckActivity", "yalelock");
                 intent.putExtra("isRoomName", "" + sensorName.getText().toString());
                 startActivity(intent);
             }
         });
+
+        img_door_on.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (enable_lock_unlock_from_app.equalsIgnoreCase("1")) {
+
+//                    if (SystemClock.elapsedRealtime() - mLastClickTime < 10000) {
+//                        Toast.makeText(YaleLockInfoActivity.this, "Please wait device is performing...", Toast.LENGTH_SHORT).show();
+//                        return;
+//                    }
+
+                    mLastClickTime = SystemClock.elapsedRealtime();
+
+                    if (devicestatus == -1) {
+                        return;
+                    } else {
+
+                        ChatApplication.logDisplay("yale lock call is intent " + mSocket.connected());
+
+                        DeviceVO device = new DeviceVO();
+                        device.setDeviceId(door_sensor_id);
+                        device.setOldStatus(devicestatus);
+                        device.setDeviceType("yalelock");
+                        device.setPanel_id(panelID);
+                        callDeviceOnOffApi(device, devicestatus == 0 ? 1 : 0);
+                    }
+                } else {
+                    Toast.makeText(YaleLockInfoActivity.this, "Enable Lock/Unlock from app", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
     }
 
+
+    private void callDeviceOnOffApi(final DeviceVO deviceVO, int status) {
+
+        String url = "";
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+        ChatApplication.logDisplay("Device roomPanelOnOff obj " + url + " "); //+ obj.toString());
+        SpikeBotApi.getInstance().CallDeviceOnOffApi(deviceVO, new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+
+                try {
+
+                    JSONObject result = new JSONObject(stringResponse);
+
+                    ChatApplication.logDisplay("Device roomPanelOnOff obj result" + result.toString());
+
+                    int code = result.getInt("code"); //message
+                    String message = result.getString("message");
+                    if (code != 200) {
+                        img_door_on.setImageResource(status == 1 ? R.drawable.unlock_only : R.drawable.lock_only);
+                        txtyDooryaleStatus.setText(status == 1 ? "Unlocked" : "Locked");
+                        txtyDooryaleStatus.setTextColor(status == 1 ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.green));
+                        ChatApplication.showToast(YaleLockInfoActivity.this, message);
+                    } else if (message.contains("Success")) {
+                        getDoorSensorDetails();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } finally {
+                    ChatApplication.logDisplay("Device roomPanelOnOff finally ");
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                ChatApplication.logDisplay("Device roomPanelOnOff error ");
+
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ChatApplication.logDisplay("Device roomPanelOnOff error " + error);
+
+            }
+        });
+    }
 
     /*start connection*/
     private void startSocketConnection() {
@@ -455,122 +785,25 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
             mSocket = app.getSocket();
         }
         if (mSocket != null) {
-            mSocket.on("doorsensorvoltage", doorsensorvoltage);
-            mSocket.on("unReadCount", unReadCount);
-            mSocket.on("changeDeviceStatus", changeDoorSensorStatus);
+            socketOn();
+
         }
 
     }
 
-    /*battery vol socket getting socket */
-    private Emitter.Listener doorsensorvoltage = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
+    private void socketOn() {
 
-            YaleLockInfoActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
+        if (!TextUtils.isEmpty(door_sensor_id)) {
+            mSocket.on("doorsensorvoltage", doorsensorvoltage);
+            mSocket.on("unReadCount", unReadCount);
+            mSocket.on("updateDeviceBadgeCounter", unReadCountNotification);
+            mSocket.on("changeDeviceStatus", changeDoorSensorStatus);
+            mSocket.on("oneTimeCodeUsedStatus", oneTimeCodeUsedStatus);
 
-                    if (args != null) {
-                        try {
-                            JSONObject object = new JSONObject(args[0].toString());
-                            String room_order = object.getString("room_order");
-                            String door_sensor_module_id = object.getString("door_sensor_module_id");
-                            String doorSensorVoltage = object.getString("doorSensorVoltage");
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
         }
-    };
-
-    /* unread count getting socket*/
-    private Emitter.Listener unReadCount = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            YaleLockInfoActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    if (args != null) {
-                        try {
-                            JSONObject object = new JSONObject(args[0].toString());
-                            String sensor_type = object.getString("sensor_type");
-                            String sensor_unread = object.getString("sensor_unread");
-                            String module_id = object.getString("module_id");
-                            String room_id = object.getString("room_id");
-
-                            if (sensor_type.equalsIgnoreCase("door") && door_module_id.equalsIgnoreCase(module_id) && door_room_id.equalsIgnoreCase(room_id)) {
-                                mSocketCountVal = sensor_unread;
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-        }
-    };
-
-    /* door/lock status getting*/
-    private Emitter.Listener changeDoorSensorStatus = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-                        try {
-                            //{"door_sensor_id":"1568731205713_SbQBf-JvXS","door_sensor_status":0,"door_lock_status":0}
-                            JSONObject object = new JSONObject(args[0].toString());
-                            ChatApplication.logDisplay("door is " + object);
-
-                            String device_type = object.getString("device_type");
-                            String device_id = object.getString("device_id");
-                            String device_status = object.getString("device_status");
-                            int device_sub_status = object.optInt("device_sub_status");
-
-                            if (device_id.equalsIgnoreCase(door_sensor_id)) {
-                                doorSensorResModel.getDevice().setDeviceStatus(device_status);
-                                inActivieStatusDoor(1);
-                            }
 
 
-//                            if (door_sensorid.equals(door_sensor_id)) {
-//                                if (!TextUtils.isEmpty(door_lock_status) && !door_lock_status.equals("null") && door_lock_status.length() > 0) {
-//                                    doorSensorResModel.getDate().getDoorLists()[0].setDoor_lock_status(door_lock_status);
-//                                }
-//
-//                                if (!TextUtils.isEmpty(door_sensor_status) && !door_sensor_status.equals("null") && !door_sensor_status.equals("null")) {
-//                                    doorSensorResModel.getDate().getDoorLists()[0].setmDoorSensorStatus("" + door_sensor_status);
-//                                }
-//
-//                                //onlydoor, subtype=1
-//                                //only lock, subtype=2
-//                                //door+lock, subtype=3
-//                                if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("2")) {
-//                                    setLockStatus(2);
-//                                } else if (doorSensorResModel.getDate().getDoorLists()[0].getDoor_subtype().equalsIgnoreCase("3")) {
-//                                    setLockStatus(3);
-//                                } else {
-//                                    setLockStatus(4);
-//                                }
-//                            }
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }
-            });
-        }
-    };
+    }
 
     @Override
     protected void onDestroy() {
@@ -578,7 +811,9 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         if (mSocket != null) {
             mSocket.off("doorsensorvoltage", doorsensorvoltage);
             mSocket.off("unReadCount", unReadCount);
+            mSocket.off("updateDeviceBadgeCounter", unReadCountNotification);
             mSocket.on("changeDeviceStatus", changeDoorSensorStatus);
+            mSocket.on("oneTimeCodeUsedStatus", oneTimeCodeUsedStatus);
         }
     }
 
@@ -628,12 +863,37 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
 
     private void fillData(RemoteDetailsRes.Data doorSensorResModel) {
 
-
-        toolbar.setTitle(doorSensorResModel.getDevice().getDeviceName());
+        mDoorSensorName.setText(doorSensorResModel.getDevice().getDeviceName());
         sensorName.setText(doorSensorResModel.getDevice().getDeviceName());
         mSensorName = doorSensorResModel.getDevice().getDeviceName();
         sensorName.setSelection(sensorName.getText().length());
         enable_lock_unlock_from_app = doorSensorResModel.getDevice().getMeta_enable_lock_unlock_from_app();
+
+        String Notificationcounter = doorSensorResModel.getUnread_count();
+
+
+        try {
+            if (!Notificationcounter.equalsIgnoreCase("") || !Notificationcounter.equalsIgnoreCase("null")) {
+
+                int count = Integer.parseInt(Notificationcounter);
+
+                if (count > 0) {
+                    mNotificationCounter.setVisibility(View.VISIBLE);
+                    mNotificationCounter.setText(count + "");
+
+                    if (count > 99) {
+                        mNotificationCounter.setText("99+");
+                        mNotificationCounter.setBackground(getResources().getDrawable(R.drawable.badge_background_oval));
+                    } else {
+                        mNotificationCounter.setBackground(getResources().getDrawable(R.drawable.badge_background));
+                    }
+                } else {
+                    mNotificationCounter.setVisibility(View.GONE);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         strsensorname = doorSensorResModel.getDevice().getDeviceName();
         strsensorpasscode = doorSensorResModel.getDevice().getMeta_pass_code();
@@ -649,6 +909,9 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
             } else {
                 switch_temp_lock.setChecked(false);
             }
+        } else {
+            enable_lock_unlock_from_app = "0";
+            switch_temp_lock.setChecked(false);
         }
 
         if (doorSensorResModel.getDevice().getMeta_battery_level() != null) {
@@ -698,10 +961,12 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
             txtAlertTempCount.setText(doorSensorResModel.getAlerts().size() + " " + "Notification Added");
             tempSensorInfoAdapter = new DoorSensorInfoAdapter(doorSensorResModel.getAlerts(), true, YaleLockInfoActivity.this);
             door_sensor_list.setAdapter(tempSensorInfoAdapter);
+            linearAlertExpand.setVisibility(View.VISIBLE);
         } else {
             txtAlertTempCount.setText("0" + " " + "Notification Added");
             door_sensor_list.setVisibility(View.GONE);
             txt_empty_notification.setVisibility(View.VISIBLE);
+            linearAlertExpand.setVisibility(View.GONE);
         }
 
 
@@ -778,8 +1043,10 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
             int countTemp = doorSensorResModel.getUnseenLogs().size();
             if (countTemp > 99) {
                 txtAlertCount.setText("99+");
+                txtAlertCount.setBackground(getResources().getDrawable(R.drawable.badge_background_oval));
             } else {
                 txtAlertCount.setText("" + countTemp);
+                txtAlertCount.setBackground(getResources().getDrawable(R.drawable.badge_background));
             }
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(YaleLockInfoActivity.this);
             recyclerAlert.setLayoutManager(linearLayoutManager);
@@ -930,12 +1197,13 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
 
     /*inactive status set*/
     public void inActivieStatusDoor(int status) {
+
         if (status == 1) {
             img_door_on.setImageResource(doorSensorResModel.getDevice().getDeviceStatus().equals("0") ? R.drawable.unlock_only : R.drawable.lock_only);
             txtyDooryaleStatus.setText(doorSensorResModel.getDevice().getDeviceStatus().equals("0") ? "Unlocked" : "Locked");
             txtyDooryaleStatus.setTextColor(doorSensorResModel.getDevice().getDeviceStatus().equals("0") ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.green));
             img_door_on.setClickable(true);
-        } else{
+        } else {
             img_door_on.setImageResource(R.drawable.gray_lock_disabled);
             txtyDooryaleStatus.setText("Inactive");
             txtyDooryaleStatus.setTextColor(getResources().getColor(R.color.automation_red));
@@ -972,7 +1240,7 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
 
         if (!Common.getPrefValue(YaleLockInfoActivity.this, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
             actionEdit.setVisible(true);
-        } else{
+        } else {
             actionEdit.setVisible(false);
         }
 
@@ -1024,6 +1292,11 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
 
     /*edit admin password dialog*/
     private void dialogEditName() {
+
+        if (editdialog != null) {
+            editdialog = null;
+        }
+
         editdialog = new Dialog(YaleLockInfoActivity.this);
         editdialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         editdialog.setCanceledOnTouchOutside(false);
@@ -1092,11 +1365,10 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
                     ChatApplication.showToast(YaleLockInfoActivity.this, "Please enter lock name");
                 } else if (edSensorpasscode.getText().toString().length() == 0) {
                     ChatApplication.showToast(YaleLockInfoActivity.this, "Please enter passcode");
-                } else if(edsensorguestpasscode.getText().toString().equals(edSensorpasscode.getText().toString())){
+                } else if (edsensorguestpasscode.getText().toString().equals(edSensorpasscode.getText().toString())) {
                     ChatApplication.showToast(YaleLockInfoActivity.this, "Admin password and guest password does not same");
-                }
-                else {
-                    updateDoorSensor(edSensorName.getText().toString(),edSensorpasscode.getText().toString(), edsensorguestpasscode.getText().toString(),enable_lock_unlock_from_app, editdialog);
+                } else {
+                    updateDoorSensor(edSensorName.getText().toString(), edSensorpasscode.getText().toString(), edsensorguestpasscode.getText().toString(), enable_lock_unlock_from_app, editdialog);
                 }
             }
         });
@@ -1107,6 +1379,11 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
 
     /*edit admin password dialog*/
     private void dialogEditpasscode() {
+
+        if (editdialog != null) {
+            editdialog = null;
+        }
+
         editdialog = new Dialog(YaleLockInfoActivity.this);
         editdialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         editdialog.setCanceledOnTouchOutside(false);
@@ -1117,7 +1394,7 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         final TextInputEditText edSensorName = (TextInputEditText) editdialog.findViewById(R.id.edSensorName);
         final EditText edSensorpasscode = editdialog.findViewById(R.id.edSensorPasscode);
         final EditText edsensorguestpasscode = editdialog.findViewById(R.id.edSensorguestPasscode);
-         RelativeLayout relative_passcode = editdialog.findViewById(R.id.relative_passcode);
+        RelativeLayout relative_passcode = editdialog.findViewById(R.id.relative_passcode);
         ImageView img_show_passcode = editdialog.findViewById(R.id.img_show_passcode);
 
 
@@ -1147,12 +1424,11 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         img_show_passcode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(edSensorpasscode.getTransformationMethod().equals(PasswordTransformationMethod.getInstance())){
+                if (edSensorpasscode.getTransformationMethod().equals(PasswordTransformationMethod.getInstance())) {
                     img_show_passcode.setImageResource(R.drawable.eyeclosed);
                     //Show Password
                     edSensorpasscode.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                }
-                else{
+                } else {
                     img_show_passcode.setImageResource(R.drawable.eye);
                     //Hide Password
                     edSensorpasscode.setTransformationMethod(PasswordTransformationMethod.getInstance());
@@ -1180,12 +1456,19 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void onClick(View v) {
 
-                if (edSensorName.getText().toString().length() == 0) {
-                    ChatApplication.showToast(YaleLockInfoActivity.this, "Please enter lock name");
-                } else if (edSensorpasscode.getText().toString().length() == 0) {
-                    ChatApplication.showToast(YaleLockInfoActivity.this, "Please enter passcode");
+                if (!Common.getPrefValue(YaleLockInfoActivity.this, Constants.USER_ADMIN_TYPE).equals("1")) {
+                    editdialog.dismiss();
+                    Toast.makeText(YaleLockInfoActivity.this, "You Do not  have the privileges to perform this action...", Toast.LENGTH_SHORT).show();
                 } else {
-                    updateDoorSensor(edSensorName.getText().toString(),edSensorpasscode.getText().toString(),edsensorguestpasscode.getText().toString() ,enable_lock_unlock_from_app, editdialog);
+
+                    if (edSensorName.getText().toString().length() == 0) {
+                        ChatApplication.showToast(YaleLockInfoActivity.this, "Please enter lock name");
+                    } else if (edSensorpasscode.getText().toString().length() == 0) {
+                        ChatApplication.showToast(YaleLockInfoActivity.this, "Please enter passcode");
+                    } else {
+                        editdialog.dismiss();
+                        updateDoorSensor(edSensorName.getText().toString(), edSensorpasscode.getText().toString(), "", enable_lock_unlock_from_app, editdialog);
+                    }
                 }
             }
         });
@@ -1197,6 +1480,11 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
 
     /*edit guest password dialog*/
     private void dialogEditguestpasscode() {
+
+        if (editdialog != null) {
+            editdialog = null;
+        }
+
         editdialog = new Dialog(YaleLockInfoActivity.this);
         editdialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         editdialog.setCanceledOnTouchOutside(false);
@@ -1248,15 +1536,18 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         img_show_guestpasscode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(edsensorguestpasscode.getTransformationMethod().equals(PasswordTransformationMethod.getInstance())){
-                    img_show_guestpasscode.setImageResource(R.drawable.eyeclosed);
-                    //Show Password
-                    edsensorguestpasscode.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                }
-                else{
-                    img_show_guestpasscode.setImageResource(R.drawable.eye);
-                    //Hide Password
-                    edsensorguestpasscode.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                try {
+                    if (edsensorguestpasscode.getTransformationMethod().equals(PasswordTransformationMethod.getInstance())) {
+                        img_show_guestpasscode.setImageResource(R.drawable.eyeclosed);
+                        //Show Password
+                        edsensorguestpasscode.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                    } else {
+                        img_show_guestpasscode.setImageResource(R.drawable.eye);
+                        //Hide Password
+                        edsensorguestpasscode.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -1281,12 +1572,18 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void onClick(View v) {
 
-                if (edSensorName.getText().toString().length() == 0) {
-                    ChatApplication.showToast(YaleLockInfoActivity.this, "Please enter lock name");
-                } else if (edSensorpasscode.getText().toString().length() == 0) {
-                    ChatApplication.showToast(YaleLockInfoActivity.this, "Please enter passcode");
+                if (!Common.getPrefValue(YaleLockInfoActivity.this, Constants.USER_ADMIN_TYPE).equals("1")) {
+                    editdialog.dismiss();
+                    Toast.makeText(YaleLockInfoActivity.this, "You Do not  have the privileges to perform this action...", Toast.LENGTH_SHORT).show();
                 } else {
-                    updateDoorSensor(edSensorName.getText().toString(), edSensorpasscode.getText().toString(),edsensorguestpasscode.getText().toString() ,enable_lock_unlock_from_app, editdialog);
+
+                    if (edSensorName.getText().toString().length() == 0) {
+                        ChatApplication.showToast(YaleLockInfoActivity.this, "Please enter lock name");
+                    } else if (edSensorpasscode.getText().toString().length() == 0) {
+                        ChatApplication.showToast(YaleLockInfoActivity.this, "Please enter passcode");
+                    } else {
+                        updateDoorSensor(edSensorName.getText().toString(), "", edsensorguestpasscode.getText().toString(), enable_lock_unlock_from_app, editdialog);
+                    }
                 }
             }
         });
@@ -1296,7 +1593,7 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
     }
 
     /*call update sensor */
-    private void updateDoorSensor(String sensor_name, String passcode, String guestpasscode,String enable_lock_unlock_from_app, Dialog dialog) {
+    private void updateDoorSensor(String sensor_name, String passcode, String guestpasscode, String enable_lock_unlock_from_app, Dialog dialog) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             showToast("" + R.string.disconnect);
@@ -1318,8 +1615,13 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
                         //    showToast(message);
                     }
                     if (code == 200) {
-                        dialog.dismiss();
-                        toolbar.setTitle(sensor_name);
+                        if (dialog != null && dialog.isShowing())
+                            dialog.dismiss();
+                        mDoorSensorName.setText(sensor_name);
+                        bindView();
+                        getDoorSensorDetails();
+                    }else{
+                        showToast(message);
                     }
 
                 } catch (JSONException e) {
@@ -1445,15 +1747,15 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
             view_rel_badge.setClickable(false);
             checkIntent(true);
         } else if (id == R.id.linearAlertDown) {
-            if (flagAlert) {
-                flagAlert = false;
-                toggleAlert.setChecked(flagAlert);
-                linearAlertExpand.setVisibility(View.GONE);
-            } else {
-                flagAlert = true;
-                toggleAlert.setChecked(flagAlert);
-                linearAlertExpand.setVisibility(View.VISIBLE);
-            }
+//            if (flagAlert) {
+//                flagAlert = false;
+//
+//                linearAlertExpand.setVisibility(View.GONE);
+//            } else {
+//                flagAlert = true;
+//
+//                linearAlertExpand.setVisibility(View.VISIBLE);
+//            }
         } else if (v == txtAddLock) {
             Intent intent = new Intent(this, AddDeviceConfirmActivity.class);
             intent.putExtra("isViewType", "ttLock");
@@ -1462,7 +1764,9 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         } else if (v == txtAutoLock) {
             Autolockdialog();
         } else if (v == imgDoorDelete) {
-            deleteSensor(1);
+//            deleteSensor(1);
+            showBottomSheetDialog();
+
         } else if (v == imgLockDelete) {
             deleteSensor(2);
         }
@@ -1829,11 +2133,11 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
         LinearLayout linear_bottom_delete = view.findViewById(R.id.linear_bottom_delete);
 
 
-        BottomSheetDialog dialog = new BottomSheetDialog(YaleLockInfoActivity.this,R.style.AppBottomSheetDialogTheme);
+        BottomSheetDialog dialog = new BottomSheetDialog(YaleLockInfoActivity.this, R.style.AppBottomSheetDialogTheme);
         dialog.setContentView(view);
         dialog.show();
 
-        txt_bottomsheet_title.setText("What would you like to do in" + " " + "notification" + " " +"?");
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + "notification" + " " + "?");
         linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1869,10 +2173,10 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
     public void unreadApiCall(final boolean b) {
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-        SpikeBotApi.getInstance().unreadNotification(door_sensor_id, new DataResponseListener() {
+        SpikeBotApi.getInstance().unreadNotification(door_sensor_id, "", "", new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
-                ChatApplication.logDisplay("log is " + stringResponse);
+
             }
 
             @Override
@@ -1906,7 +2210,7 @@ public class YaleLockInfoActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onBackPressed() {
-        unreadApiCall(false);
+//        unreadApiCall(false);
         super.onBackPressed();
     }
 }

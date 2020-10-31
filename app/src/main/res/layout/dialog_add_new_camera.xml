@@ -49,11 +49,11 @@
 
                         <ImageView
                             android:id="@+id/iv_close"
-                            android:layout_width="30dp"
-                            android:layout_height="35dp"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
                             android:backgroundTint="@color/sensor_button"
                             android:padding="3dp"
-                            app:srcCompat="@drawable/cross" />
+                            app:srcCompat="@drawable/round_cross" />
 
                     </LinearLayout>
 
@@ -94,7 +94,7 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="0.70"
-                                    android:drawableRight="@drawable/icn_close"
+                                    android:drawableRight="@drawable/icn_close_view"
                                     android:drawablePadding="8dp"
                                     android:focusable="false"
                                     android:hint="Start Time"
@@ -135,7 +135,7 @@
                                     android:layout_weight="0.70"
                                     android:hint="End Time"
                                     android:focusable="false"
-                                    android:drawableRight="@drawable/icn_close"
+                                    android:drawableRight="@drawable/icn_close_view"
                                     android:drawablePadding="8dp"
                                     android:textColorHint="@color/signupblack"
                                     android:textColor="@color/signupblack"

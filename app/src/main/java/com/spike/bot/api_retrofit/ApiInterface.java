@@ -87,41 +87,61 @@ public interface ApiInterface {
      * Post apis
      *
      * */
-    @POST("https://live.spikebot.io:8443" + Constants.APP_LOGIN)
+//    @POST("https://live.spikebot.io:8443" + Constants.APP_LOGIN)
+//    @POST("https://beta.spikebot.io" + Constants.APP_LOGIN)
+    @POST("https://live.spikebot.io" + Constants.APP_LOGIN)
     // updated on july 07 2020
     Call<JsonElement> postLoginWebserviceCall(@Body HashMap<String, Object> body);
 
-    @POST("https://live.spikebot.io:8443" + Constants.GET_CAMERA_NOTIFICATION_COUNTER)
+//    @POST("https://live.spikebot.io:8443" + Constants.GET_CAMERA_NOTIFICATION_COUNTER)
+//    @POST("https://beta.spikebot.io" + Constants.GET_CAMERA_NOTIFICATION_COUNTER)
+    @POST("https://live.spikebot.io" + Constants.GET_CAMERA_NOTIFICATION_COUNTER)
         // updated on july 07 2020
     Call<JsonElement> postGetCameraBadgeCount(@Body HashMap<String, Object> body);
 
-    @POST("https://live.spikebot.io:8443" + Constants.APP_LOGOUT)
+//    @POST("https://live.spikebot.io:8443" + Constants.APP_LOGOUT)
+//    @POST("https://beta.spikebot.io" + Constants.APP_LOGOUT)
+    @POST("https://live.spikebot.io" + Constants.APP_LOGOUT)
         // updated on july 07 2020
     Call<JsonElement> LogoutCloudUser(@Body HashMap<String, Object> body);
 
-    @POST("https://live.spikebot.io:8443" + Constants.reportFalseImage)
+//    @POST("https://live.spikebot.io:8443" + Constants.reportFalseImage)
+//    @POST("https://beta.spikebot.io" + Constants.reportFalseImage)
+    @POST("https://live.spikebot.io" + Constants.reportFalseImage)
         // updated on july 07 2020
     Call<JsonElement> reportFalseImage(@Body HashMap<String, Object> body);
 
-    @POST("https://live.spikebot.io:8443" + Constants.getUnseenCameraLog)
+//    @POST("https://live.spikebot.io:8443" + Constants.getUnseenCameraLog)
+//    @POST("https://beta.spikebot.io" + Constants.getUnseenCameraLog)
+    @POST("https://live.spikebot.io" + Constants.getUnseenCameraLog)
         // updated on july 07 2020
     Call<JsonElement> getUnseenCameraLog(@Body HashMap<String, Object> body);
 
-    @POST("https://live.spikebot.io:8443" + Constants.getCameraLogs)
+//    @POST("https://live.spikebot.io:8443" + Constants.getCameraLogs)
+//    @POST("https://beta.spikebot.io" + Constants.getCameraLogs)
+    @POST("https://live.spikebot.io" + Constants.getCameraLogs)
         // updated on july 07 2020
     Call<JsonElement> getCameraLogs(@Body HashMap<String, Object> body);
 
 
-    @POST("https://live.spikebot.io:8443" + Constants.FORGET_PASSWORD)
+//    @POST("https://live.spikebot.io:8443" + Constants.FORGET_PASSWORD)
+//    @POST("https://beta.spikebot.io" + Constants.FORGET_PASSWORD)
+    @POST("https://live.spikebot.io" + Constants.FORGET_PASSWORD)
     Call<JsonElement> forgetpassword(@Body Object body);
 
-    @POST("https://live.spikebot.io:8443" + Constants.RETRY_OTP)
+//    @POST("https://live.spikebot.io:8443" + Constants.RETRY_OTP)
+//    @POST("https://beta.spikebot.io" + Constants.RETRY_OTP)
+    @POST("https://live.spikebot.io" + Constants.RETRY_OTP)
     Call<JsonElement> RetryPassword(@Body Object body);
 
-    @POST("https://live.spikebot.io:8443" + Constants.OTP_VERIFY)
+//    @POST("https://live.spikebot.io:8443" + Constants.OTP_VERIFY)
+//    @POST("https://beta.spikebot.io" + Constants.OTP_VERIFY)
+    @POST("https://live.spikebot.io" + Constants.OTP_VERIFY)
     Call<JsonElement> verifyOTP(@Body Object body);
 
-    @POST("https://live.spikebot.io:8443" + Constants.SET_NEW_PASSWORD)
+//    @POST("https://live.spikebot.io:8443" + Constants.SET_NEW_PASSWORD)
+//    @POST("https://beta.spikebot.io" + Constants.SET_NEW_PASSWORD)
+    @POST("https://live.spikebot.io" + Constants.SET_NEW_PASSWORD)
     Call<JsonElement> SetNewPassword(@Body Object body);
 
 
@@ -214,7 +234,7 @@ public interface ApiInterface {
     @POST("http://{url}" + Constants.getPhilipsHueParams)
     Call<JsonElement> GetPhilipsHueParams(@Path("url") String url, @Body HashMap<String, Object> body);
 
-    @POST("http://192.168.175.119" + Constants.SIGNUP_API)
+    @POST("http://192.168.175.222" + Constants.SIGNUP_API) //TODO update with Dynamic IP - 29 aug 2020
     Call<JsonElement> Signup(@Body HashMap<String, Object> body);
 
     @POST("http://{url}" + Constants.ADD_NEW_SCHEDULE)
@@ -387,6 +407,9 @@ public interface ApiInterface {
     @POST("http://{url}" + Constants.deviceadd)
     Call<JsonElement> deviceadd(@Path("url") String url, @Body Object body);
 
+    @POST("http://{url}" + Constants.SAVE_EDIT_SWITCH)
+    Call<JsonElement> dv_dth_deviceadd(@Path("url") String url, @Body Object body);
+
     @POST("http://{url}" + Constants.CHANGE_DOOR_SENSOR_STATUS)
     Call<JsonElement> CHANGE_DOOR_SENSOR_STATUS(@Path("url") String url, @Body Object body);
 
@@ -467,4 +490,16 @@ public interface ApiInterface {
 
     @POST("http://{url}" + Constants.GET_CAMERA_DETAILS)
     Call<JsonElement> GET_CAMERA_DETAILS(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.TV_REMOTE_COMMAND_NAME)
+    Call<JsonElement> getTVCommand(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.TV_REMOTE_ADD_CUSTOM_COMMAND)
+    Call<JsonElement> AddTVCustomButton(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.TV_REMOTE_DELETE_CUSTOM_COMMAND)
+    Call<JsonElement> delete_custom_remote_button(@Path("url") String url, @Body Object body);
+
+    @POST("http://{url}" + Constants.getTempGraph)
+    Call<JsonElement> getTempGraph(@Path("url") String url, @Body Object body);
 }

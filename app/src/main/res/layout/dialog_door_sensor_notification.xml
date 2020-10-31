@@ -36,7 +36,7 @@
                 android:layout_gravity="right"
                 android:backgroundTint="@color/sensor_button"
                 android:id="@+id/btn_close_notification"
-                android:src="@drawable/cross"
+                android:src="@drawable/round_cross"
                 />
         </LinearLayout>
 

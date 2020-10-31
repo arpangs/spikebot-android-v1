@@ -71,4 +71,9 @@
 
     <color name="remote_thumb">#3d9ff5</color>
 
+
+    <color name="remote_blue">#2a98fd</color>
+    <color name="remote_gray">#c4c4c4</color>
+
+
 </resources>

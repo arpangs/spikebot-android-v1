@@ -4,11 +4,9 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,26 +20,15 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
-import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.adapter.TypeSpinnerAdapter;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
-import com.spike.bot.core.APIConst;
-import com.spike.bot.core.Common;
-import com.spike.bot.core.Constants;
 import com.spike.bot.model.CameraVO;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 import io.socket.client.Socket;
 
@@ -54,22 +41,17 @@ import io.socket.client.Socket;
 public class CameraEdit extends AppCompatActivity {
 
     public boolean isEditable = false, isjetsonedit = false;
+    String webUrl = "", jetsonid;
+    String confidence_score_day, confidence_score_night;
     private CameraVO cameraSelcet;
     private LinearLayout linear_day, linear_night;
-
     private Spinner sp_camera_list;
     private ImageView sp_drop_down, img_show_passcode;
-
     private EditText edt_camera_name, edt_camera_ip, edt_video_path, edt_user_name, edt_user_password;
-
     private TextView txt_daythreashvalue, txt_nightthreashvalue;
     private SeekBar sb_daythresh, sb_nightthresh;
-
     private Button btnDelete;
-    String webUrl = "", jetsonid;
     private Socket mSocket;
-    String confidence_score_day, confidence_score_night;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -263,6 +245,7 @@ public class CameraEdit extends AppCompatActivity {
 
             return true;
         } else if (id == R.id.action_save) {
+            ActivityHelper.hideKeyboard(CameraEdit.this);
             updateCamera();
             return true;
         }

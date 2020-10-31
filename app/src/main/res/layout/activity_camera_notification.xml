@@ -57,7 +57,7 @@
                             android:layout_marginRight="10dp"
                             android:layout_marginBottom="8dp"
                             android:orientation="vertical"
-                            android:visibility="visible"
+                            android:visibility="gone"
                             app:cardCornerRadius="8dp"
                             app:cardElevation="5dp"
                             app:elevation="5dp">
@@ -173,11 +173,11 @@
 
 
                                 <LinearLayout
+                                    android:id="@+id/ll_camera_notification"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginLeft="@dimen/_8sdp"
                                     android:layout_marginRight="@dimen/_5sdp"
-                                    android:layout_marginTop="@dimen/_8sdp"
                                     android:gravity="center"
                                     android:orientation="horizontal">
 
@@ -214,8 +214,8 @@
 
                                         <TextView
                                             android:id="@+id/txtAlertCount"
-                                            android:layout_width="24dp"
-                                            android:layout_height="24dp"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
                                             android:layout_marginBottom="@dimen/_10sdp"
                                             android:layout_centerHorizontal="true"
                                             android:layout_toRightOf="@+id/txtAlert"
@@ -228,14 +228,37 @@
 
                                     </RelativeLayout>
 
-                                    <ImageView
-                                        android:id="@+id/view_rel_badge"
-                                        android:layout_width="0dp"
-                                        android:layout_height="@dimen/_33sdp"
-                                        android:layout_gravity="top"
-                                        android:layout_weight="0.10"
-                                        android:layout_marginRight="@dimen/_7sdp"
-                                        android:src="@drawable/bell" />
+                                    <RelativeLayout
+                                        android:id="@+id/rel_notification"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:layout_marginRight="8dp">
+
+
+                                        <ImageView
+                                            android:id="@+id/view_rel_badge"
+                                            android:layout_width="35dp"
+                                            android:layout_height="35dp"
+                                            android:layout_gravity="top"
+                                            android:layout_marginTop="10dp"
+                                            android:layout_marginRight="10dp"
+                                            android:src="@drawable/bell" />
+
+                                        <TextView
+                                            android:id="@+id/txt_notification_badge"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="3dp"
+                                            android:layout_marginLeft="15dp"
+                                            android:background="@drawable/badge_background"
+                                            android:gravity="center"
+                                            android:textColor="#FFF"
+                                            android:textSize="12dp"
+                                            android:visibility="invisible" />
+
+                                    </RelativeLayout>
 
                                 </LinearLayout>
 

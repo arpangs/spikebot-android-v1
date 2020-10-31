@@ -220,6 +220,15 @@ public class SpikeBotApi {
 
         HashMap<String, Object> params = new HashMap<>();
 
+        try {
+
+            if (deviceVO.getDeviceType().toLowerCase().equals("remote")) {
+                params.put("remote_type", deviceVO.getDevice_sub_type());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
@@ -229,6 +238,21 @@ public class SpikeBotApi {
         new GeneralRetrofit(apiService.DeviceOnOff_Not_Type3(ChatApplication.url, params), params, dataResponseListener).call();
     }
 
+    public void SendRemoteCommand(DeviceVO deviceVO, String remoteType, DataResponseListener dataResponseListener) {
+
+        HashMap<String, Object> params = new HashMap<>();
+
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+        params.put("device_id", deviceVO.getDeviceId());
+        params.put("device_status", deviceVO.getDeviceStatus());
+        params.put("remote_type", remoteType.toLowerCase());
+
+        params.put("isallow", true);
+
+        new GeneralRetrofit(apiService.DeviceOnOff_Not_Type3(ChatApplication.url, params), params, dataResponseListener).call();
+    }
 
     /*Dashboard Fragement*/ // dev arpan add on 25 june 2020
 
@@ -930,23 +954,29 @@ public class SpikeBotApi {
 
     }
 
-    public void GetLogFind(String ROOM_ID, int position,String NotificationType, DataResponseListener dataResponseListener) {
+    public void GetLogFind(String ROOM_ID, int position, String NotificationType, String lastdatetime, int unseen, String subtype, DataResponseListener dataResponseListener) {
 
         HashMap<String, Object> params = new HashMap<>();
 
-        if (ROOM_ID == null) {   // for all notification
+        /*if (ROOM_ID == null) {   // for all notification
             ROOM_ID = "";
             params.put("filter_type", "all-general-notifications");
 
-        } else {
-            params.put("unseen", 1);  // to show all notification in general notification apply on 10 aug 2020
-            params.put("filter_type", "room");
-            params.put("room_id", "" + ROOM_ID);
-            params.put("filter_action", "door_open,door_close,temp_alert,gas_detected,water_detected,door_lock,door_unlock,home_controller_active,home_controller_inactive"); // dev arpan add two field as per web developer suggest - home_controller_active,home_controller_inactive on 29 july 2020
+        } else {*/
+        if (unseen < 2)  // for all notification
+            params.put("unseen", unseen);  // to show all notification in general notification apply on 10 aug 2020
+//            params.put("filter_type", "room");
+        params.put("filter_type", "all-general-notifications");
+//            params.put("room_id", "" + ROOM_ID);
+//        params.put("filter_action", "door_open,door_close,temp_alert,gas_detected,water_detected,door_lock,door_unlock,home_controller_active,home_controller_inactive"); // dev arpan add two field as per web developer suggest - home_controller_active,home_controller_inactive on 29 july 2020
+//        }
+
+        if (NotificationType != null || !NotificationType.equalsIgnoreCase("")) {
+            params.put("device_id", ROOM_ID);
         }
 
-        if(NotificationType != null || !NotificationType.equalsIgnoreCase("")){
-            params.put("device_id",ROOM_ID);
+        if (!subtype.equalsIgnoreCase("")) {
+            params.put("log_sub_type", subtype);
         }
 
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
@@ -954,6 +984,10 @@ public class SpikeBotApi {
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
         params.put("notification_number", "" + position);
+
+        if (!lastdatetime.equals("")) {
+            params.put("timestamp", lastdatetime);
+        }
 
 
         new GeneralRetrofit(apiService.GetLogFind(ChatApplication.url, params), params, dataResponseListener).call();
@@ -1036,7 +1070,8 @@ public class SpikeBotApi {
     }
 
     public void GetDeviceLog(boolean isFilterActive, int position, String mRoomId, String start_date, String end_date, Spinner mSpinnerRoomList, Spinner mSpinnerRoomMood,
-                             boolean isFilterType, ArrayList<Filter> filterArrayList, String actionType, String isCheckActivity, String strDeviceId, String strpanelId, DataResponseListener dataResponseListener) {
+                             boolean isFilterType, ArrayList<Filter> filterArrayList, String actionType,
+                             String isCheckActivity, String strDeviceId, String strpanelId, DataResponseListener dataResponseListener) {
 
         HashMap<String, Object> params = new HashMap<>();
 
@@ -1357,7 +1392,8 @@ public class SpikeBotApi {
                 new GeneralRetrofit(apiService.getConfigData(ChatApplication.url, "pir_detector"), null, dataResponseListener).call();
                 break;
             default:
-                new GeneralRetrofit(apiService.getConfigData(ChatApplication.url, "5"), null, dataResponseListener).call();
+//                new GeneralRetrofit(apiService.getConfigData(ChatApplication.url, "5"), null, dataResponseListener).call();
+                new GeneralRetrofit(apiService.getConfigData(ChatApplication.url, "switch_board"), null, dataResponseListener).call(); /*updated on 1 oct 2020 as per parth suggest (payal)*/
                 break;
         }
 
@@ -1496,6 +1532,7 @@ public class SpikeBotApi {
         } else {
             if (!TextUtils.isEmpty(cameralog)) {
                 params.put("camera_id", "" + camera_id);
+                params.put("jetson_id", jetson_id);
             } else if (!TextUtils.isEmpty(jetsoncameralog)) {
                 params.put("jetson_id", "" + jetson_id);
                 params.put("camera_id", "" + camera_id);
@@ -1772,10 +1809,11 @@ public class SpikeBotApi {
     }
 
     // ImageZoom - CameraRecordingPlay
-    public void CameraRecordingPlay(String camera_id, String timestamp, DataResponseListener dataResponseListener) {
+    public void CameraRecordingPlay(String camera_id, String timestamp,String home_controller_device_id, DataResponseListener dataResponseListener) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("camera_id", camera_id);
         params.put("timestamp", timestamp);
+        params.put("home_controller_device_id", home_controller_device_id);
 
         new GeneralRetrofit(apiService.camerarecording(ChatApplication.url, params), params, dataResponseListener).call();
     }
@@ -1889,18 +1927,33 @@ public class SpikeBotApi {
     }
 
     // IRBlasterRemote - sendRemoteCommand
-    public void sendRemoteCommand(String device_id, String device_status, String device_sub_status, String device_swing, int counting, DataResponseListener dataResponseListener) {
+    public void sendRemoteCommand(String device_id, String device_status, String device_sub_status, String device_swing, int counting, String RemoteType, DataResponseListener dataResponseListener) {
         HashMap<String, Object> params = new HashMap<>();
 
         params.put("device_id", device_id);
         if (counting == 0) {
+            params.put("isallow", true);
             params.put("device_status", device_status);
         } else {
+            params.put("isallow", false);
             params.put("device_status", "1");
         }
 
-        params.put("device_sub_status", device_sub_status);//1;
-        params.put("device_swing", device_swing);
+
+        if (RemoteType.equalsIgnoreCase("ac")) {
+            params.put("device_swing", device_swing);
+
+            if (device_swing.equalsIgnoreCase("1"))
+                params.put("device_status", device_status.equalsIgnoreCase("1") ? "0" : "1");
+
+            params.put("device_sub_status", device_sub_status);//1;
+        } else if (RemoteType.equalsIgnoreCase("tv")) {
+            params.put("remote_type", RemoteType.toLowerCase());
+            params.put("command_type", device_sub_status);
+        } else if (RemoteType.equalsIgnoreCase("dth")) {
+            params.put("remote_type", RemoteType.toLowerCase());
+            params.put("command_type", device_sub_status);
+        }
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
         params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -1909,8 +1962,8 @@ public class SpikeBotApi {
     }
 
     //IRRemoteBrandList - getIRDetailsList
-    public void getIRDetailsList(DataResponseListener dataResponseListener) {
-        new GeneralRetrofit(apiService.getIRDeviceTypeBrands(ChatApplication.url, "1"), null, dataResponseListener).call();
+    public void getIRDetailsList(String remote_type, DataResponseListener dataResponseListener) {
+        new GeneralRetrofit(apiService.getIRDeviceTypeBrands(ChatApplication.url, remote_type), null, dataResponseListener).call();
     }
 
     //IRRemoteBrandList - getIRRemoteDetails
@@ -1919,11 +1972,12 @@ public class SpikeBotApi {
     }
 
     //IRRemoteConfig - sendOnOfOffRequest
-    public void sendOnOfOffRequest(String ir_blaster_module_id, String mode, String ir_code, DataResponseListener dataResponseListener) {
+    public void sendOnOfOffRequest(String ir_blaster_module_id, String mode, String ir_code, String remote_type, DataResponseListener dataResponseListener) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("ir_blaster_module_id", ir_blaster_module_id);
         params.put("mode", mode);
         params.put("ir_code", ir_code);
+        params.put("remote_type", remote_type);
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
         params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -1933,12 +1987,13 @@ public class SpikeBotApi {
 
     //IRRemoteConfig - saveremote
     public void saveremote(String device_id, String module_type, String device_name, String ir_blaster_id, String ir_blaster_module_id, String room_id, String device_default_status,
-                           String device_brand, String device_codeset_id, String device_model, String device_codes, DataResponseListener dataResponseListener) {
+                           String device_brand, String device_codeset_id, String device_model, String device_codes, String device_sub_type, DataResponseListener dataResponseListener) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("device_id", device_id);
         params.put("module_type", module_type);
         params.put("device_name", device_name);
-        params.put("ir_blaster_id", ir_blaster_id);
+//        params.put("ir_blaster_id", ir_blaster_id);
+        params.put("ir_blaster_id", ir_blaster_module_id);
         params.put("ir_blaster_module_id", ir_blaster_module_id);
         params.put("room_id", room_id);
         params.put("device_default_status", device_default_status);
@@ -1947,12 +2002,19 @@ public class SpikeBotApi {
         params.put("device_model", device_model);
         params.put("device_codes", device_codes);
         params.put("update_type", 0);
+        params.put("device_sub_type", device_sub_type);
 
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
         params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
-        new GeneralRetrofit(apiService.deviceadd(ChatApplication.url, params), params, dataResponseListener).call();
+        if (device_sub_type.equalsIgnoreCase("tv_dth")) {
+            new GeneralRetrofit(apiService.dv_dth_deviceadd(ChatApplication.url, params), params, dataResponseListener).call();
+        } else {
+            new GeneralRetrofit(apiService.deviceadd(ChatApplication.url, params), params, dataResponseListener).call();
+        }
+
+
     }
 
     //Repeater - saveRepeater
@@ -2026,10 +2088,19 @@ public class SpikeBotApi {
     }
 
     //DoorSensorInfo - unread notification
-    public void unreadNotification(String device_id, DataResponseListener dataResponseListener) {
+    public void unreadNotification(String device_id, String logType, String log_subType, DataResponseListener dataResponseListener) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("device_id", device_id);
         params.put("log_type", "device");
+
+        if (logType.length() > 2) {
+            params.put("log_type", logType);
+        }
+
+        if (log_subType.length() > 2) {
+            params.put("log_sub_type", log_subType);
+        }
+
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
         params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
@@ -2406,8 +2477,16 @@ public class SpikeBotApi {
 
         params.put("device_id", device_id);
         params.put("enable_lock_unlock_from_app", enable_lock_unlock_from_app);
-        params.put("pass_code", pass_code);
-        params.put("onetime_code", onetime_code);
+        if (pass_code != null && pass_code.length() > 0) {
+            params.put("pass_code", pass_code);
+//            params.put("code_type", "master_code");
+            params.put("code_type", "user_pin_code");
+        }
+        if (onetime_code != null && onetime_code.length() > 0) {
+            params.put("onetime_code", onetime_code);
+//            params.put("code_type", "onetime_code");
+            params.put("code_type", "onetime_pin_code");
+        }
         params.put("device_name", device_name);
 
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
@@ -2664,10 +2743,14 @@ public class SpikeBotApi {
     }
 
     /* Get Room Detail*/
-    public void getRoomDetail(String room_id, DataResponseListener dataResponseListener) {
+    public void getRoomDetail(String room_id, boolean isRefresh, DataResponseListener dataResponseListener) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("room_id", room_id);
         params.put("room_type", "room");
+
+        if (isRefresh) {
+            params.put("refresh", "1");
+        }
 
         params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
         params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
@@ -2686,5 +2769,59 @@ public class SpikeBotApi {
         params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
 
         new GeneralRetrofit(apiService.GET_CAMERA_DETAILS(ChatApplication.url, params), params, dataResponseListener).call();
+    }
+
+    /*get tv custom command list */
+    public void getTVCommand(String remote_type, String device_id, DataResponseListener dataResponseListener) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("remote_type", remote_type);
+        params.put("device_id", device_id);
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        new GeneralRetrofit(apiService.getTVCommand(ChatApplication.url, params), params, dataResponseListener).call();
+    }
+
+    /*add tv custom button command */
+    public void AddTVCustomButton(String device_id, String remote_type, String button_no, String button_name, String button_code, String button_ir_code, DataResponseListener dataResponseListener) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("device_id", device_id);
+        params.put("remote_type", remote_type);
+        params.put("button_no", button_no);
+        params.put("button_name", button_name);
+        params.put("button_code", button_code);
+        params.put("button_ir_code", button_ir_code);
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+
+        new GeneralRetrofit(apiService.AddTVCustomButton(ChatApplication.url, params), params, dataResponseListener).call();
+    }
+
+    /*delete remote custom button*/
+    public void deleteCustomeRemoteButton(String device_id, String button_no, DataResponseListener dataResponseListener) {
+        HashMap<String, Object> params = new HashMap<>();
+
+        params.put("device_id", device_id);
+        params.put("button_no", button_no);
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+
+        new GeneralRetrofit(apiService.delete_custom_remote_button(ChatApplication.url, params), params, dataResponseListener).call();
+    }
+
+    public void TempGraph(String device_id, String filtertype, String filtervalue, String graphtype, DataResponseListener dataResponseListener) {
+        HashMap<String, Object> params = new HashMap<>();
+
+        params.put("filter_type", filtertype);
+        params.put("filter_value", filtervalue);
+        params.put("device_id", device_id);
+        params.put("graph_type", graphtype);
+        params.put(APIConst.PHONE_ID_KEY, APIConst.PHONE_ID_VALUE);
+        params.put(APIConst.PHONE_TYPE_KEY, APIConst.PHONE_TYPE_VALUE);
+        params.put("user_id", Common.getPrefValue(ChatApplication.getContext(), Constants.USER_ID));
+
+        new GeneralRetrofit(apiService.getTempGraph(ChatApplication.url, params), params, dataResponseListener).call();
     }
 }

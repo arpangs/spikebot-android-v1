@@ -88,7 +88,7 @@
             android:layout_gravity="center_horizontal|bottom"
             android:visibility="visible"
             app:floating_background_color="@color/automation_white"
-            app:floating_left_icon="@drawable/plusbutton"
+            app:floating_left_icon="@drawable/round_plus"
             app:floating_title="@string/add_smartremote"
             app:floating_title_color="@color/automation_black">
 

@@ -6,12 +6,10 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,15 +26,18 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
+import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.SizeReadyCallback;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.kp.core.ActivityHelper;
 import com.kp.core.DateHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.BuildConfig;
 import com.spike.bot.ChatApplication;
@@ -49,13 +50,16 @@ import com.spike.bot.customview.PlayStateBroadcatingVideoView;
 import com.spike.bot.customview.TouchImageView;
 import com.spike.bot.model.CameraRecordingResmodel;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -64,24 +68,29 @@ import java.util.concurrent.TimeUnit;
  * Created by Sagar on 25/12/18.
  * Gmail : jethvasagar2@gmail.com
  */
-public class ImageZoomActivity extends AppCompatActivity{
+public class ImageZoomActivity extends AppCompatActivity {
 
+    public static boolean isnotification = false, ispause = false;
+    public Button btnReport;
+    public Bitmap bitmapShare;
+    public String imgName = "", imgUrl = "", imgDate = "", home_controller_device_id = "",
+            camera_id = "", url = "", file1 = "", file2 = "";
     Toolbar toolbar;
-    ProgressBar progressBar,progressBar1;
+    ProgressBar progressBar, progressBar1;
     TouchImageView imageViewZoom;
     FloatingActionButton fabShare;
     PlayStateBroadcatingVideoView videoView;
     TextView txt_title, txt_time;
     ImageView img_playvideo, img_pausevideo;
+    ImageView imgGifVideo;
     FrameLayout placeholder;
-    public Button btnReport;
-    public Bitmap bitmapShare;
-    public String imgName = "", imgUrl = "", imgDate = "", home_controller_device_id = "",
-            camera_id = "", url = "", file1 = "", file2 = "";
-    public static boolean isnotification = false,ispause=false;
     int skiptime, currentposition = 0, bufferpercentage = 0;
     List<String> recoringfiles;
     MediaController mc;
+    String gifUrl = "";
+    FrameLayout mFramlayout;
+    boolean isGifLoad = false;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,7 +107,11 @@ public class ImageZoomActivity extends AppCompatActivity{
         camera_id = getIntent().getStringExtra("camera_id");
         isnotification = getIntent().getBooleanExtra("notification", false);
         home_controller_device_id = getIntent().getStringExtra("home_controller_id");
-        home_controller_device_id = Common.getPrefValue(ImageZoomActivity.this, Constants.home_controller_id);
+
+
+        if (home_controller_device_id.equalsIgnoreCase(""))
+            home_controller_device_id = Common.getPrefValue(ImageZoomActivity.this, Constants.home_controller_id);
+
         setUi();
 
         CameraRecordingPlay();
@@ -117,13 +130,17 @@ public class ImageZoomActivity extends AppCompatActivity{
         imageViewZoom = findViewById(R.id.img_slider_item_zoom);
         videoView = findViewById(R.id.videoView);
         progressBar = findViewById(R.id.progressBar);
-        progressBar1=  findViewById(R.id.progressBar1);
+        progressBar1 = findViewById(R.id.progressBar1);
         fabShare = findViewById(R.id.fabShare);
         btnReport = findViewById(R.id.btnReport);
         txt_title = findViewById(R.id.txt_title);
         txt_time = findViewById(R.id.txt_time);
         img_playvideo = findViewById(R.id.img_playvideo);
         img_pausevideo = findViewById(R.id.img_pausevideo);
+
+        imgGifVideo = findViewById(R.id.img_gifvideo);
+
+        mFramlayout = findViewById(R.id.frameVideo);
 
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
@@ -150,9 +167,6 @@ public class ImageZoomActivity extends AppCompatActivity{
         });
 
 
-
-
-
         // imageViewZoom.setVisibility(View.GONE);
         // videoView.setVisibility(View.VISIBLE);
 
@@ -170,7 +184,6 @@ public class ImageZoomActivity extends AppCompatActivity{
                     }
                 });
                 newFragment.show(getFragmentManager(), "dialog");
-
             }
         });
 
@@ -181,7 +194,7 @@ public class ImageZoomActivity extends AppCompatActivity{
                     if (!recoringfiles.isEmpty()) {
                         imageViewZoom.setVisibility(View.INVISIBLE);
                         videoView.setVisibility(View.VISIBLE);
-                      //  videoView.setZOrderOnTop(false);
+                        //  videoView.setZOrderOnTop(false);
                         img_pausevideo.setVisibility(View.VISIBLE);
                         img_playvideo.setVisibility(View.INVISIBLE);
                         ChatApplication.logDisplay("video play" + " " + ispause);
@@ -189,18 +202,40 @@ public class ImageZoomActivity extends AppCompatActivity{
                             int videoposition = currentposition;
                             videoView.seekTo(videoposition);
                             videoView.start();
-                        } else{
+                        } else {
                             progressBar1.setVisibility(View.VISIBLE);
                             playvideo(skiptime, recoringfiles);
                         }
-
                     } else {
-                        ChatApplication.showToast(ImageZoomActivity.this, "Video in progress please check after some time");
+                        if (gifUrl.length() > 0) {
+
+                            btnReport.setVisibility(View.GONE);
+
+                            isGifLoad = true;
+
+                            imgGifVideo.setVisibility(View.VISIBLE);
+                            mFramlayout.setVisibility(View.GONE);
+                            CircularProgressDrawable circularProgressDrawable = new CircularProgressDrawable(ImageZoomActivity.this);
+                            circularProgressDrawable.setStrokeWidth(7f);
+                            circularProgressDrawable.setColorSchemeColors(R.color.blueplus);
+                            circularProgressDrawable.setCenterRadius(30f);
+                            circularProgressDrawable.start();
+                            Glide
+                                    .with(ImageZoomActivity.this) // replace with 'this' if it's in activity
+//                                .load("https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Rotating_earth_(large).gif/200px-Rotating_earth_(large).gif")
+                                    .load(gifUrl)
+                                    .asGif()
+                                    .placeholder(circularProgressDrawable)
+                                    .error(R.drawable.img_not_load) // show error drawable if the image is not a gif
+                                    .into(imgGifVideo);
+                        }
+
                         img_pausevideo.setVisibility(View.INVISIBLE);
                         img_playvideo.setVisibility(View.VISIBLE);
                         imageViewZoom.setVisibility(View.VISIBLE);
                         videoView.setVisibility(View.INVISIBLE);
-                        videoView.setZOrderOnTop(true);
+                        //  videoView.setZOrderOnTop(true);
+
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -213,7 +248,7 @@ public class ImageZoomActivity extends AppCompatActivity{
             public void onClick(View v) {
                 img_pausevideo.setVisibility(View.INVISIBLE);
                 img_playvideo.setVisibility(View.VISIBLE);
-              //  videoView.setZOrderOnTop(true);
+                //  videoView.setZOrderOnTop(true);
                 if (videoView.isPlaying()) {
                     currentposition = videoView.getCurrentPosition();
                     videoView.pause();
@@ -363,6 +398,7 @@ public class ImageZoomActivity extends AppCompatActivity{
                     ActivityHelper.dismissProgressDialog();
                 }
             }
+
             @Override
             public void onData_FailureResponse() {
                 ActivityHelper.dismissProgressDialog();
@@ -387,19 +423,19 @@ public class ImageZoomActivity extends AppCompatActivity{
         ActivityHelper.showProgressDialog(ImageZoomActivity.this, "Please wait...", false);
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-        SpikeBotApi.getInstance().CameraRecordingPlay(camera_id, imgDate, new DataResponseListener() {
+        SpikeBotApi.getInstance().CameraRecordingPlay(camera_id, imgDate, home_controller_device_id, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
-                try{
+                try {
                     JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
                     String message = result.getString("message");
                     ChatApplication.logDisplay("getCamerarecoring onSuccess " + result.toString());
-                    //  ChatApplication.showToast(ImageZoomActivity.this, "" + message);
                     ActivityHelper.dismissProgressDialog();
                     CameraRecordingResmodel camerarecordingres = Common.jsonToPojo(result.toString(), CameraRecordingResmodel.class);
                     skiptime = camerarecordingres.getData().getSkipTime();
                     recoringfiles = camerarecordingres.getData().getCameraFiles();
+
 
                     url = ChatApplication.url/* + "/static/storage/volume/pi/1589017520398_4HMt9ItNu-2020-05-14_17-00-01.mp4"*/;
                     if (!recoringfiles.isEmpty()) {
@@ -412,7 +448,15 @@ public class ImageZoomActivity extends AppCompatActivity{
                             ChatApplication.logDisplay("Value of element " + file1);
                         }
                     }
-                } catch (Exception e){
+
+                    if (code == 200) {
+                        gifUrl = "https://beta.spikebot.io:443/generate-gif/" + imgDate + "/" + camera_id + "/" + home_controller_device_id + "/1.gif";
+                    } else {
+                        ChatApplication.showToast(ImageZoomActivity.this, "Video in progress please check after some time");
+                    }
+
+
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -435,9 +479,9 @@ public class ImageZoomActivity extends AppCompatActivity{
     }
 
     public void playvideo(int skiptime, List<String> recordingfiles) {
-        ChatApplication.logDisplay("video skip time" + " " +  skiptime);
+        ChatApplication.logDisplay("video skip time" + " " + skiptime);
 
-        ispause =false;
+        ispause = false;
 
         String uriPath1 = file1;
         Uri uri1 = Uri.parse(uriPath1);
@@ -475,10 +519,24 @@ public class ImageZoomActivity extends AppCompatActivity{
 
     /*data sharing*/
     private void shareImage() {
+
         ChatApplication.logDisplay("url is " + imgUrl);
+        ChatApplication.logDisplay("url for gif image " + gifUrl);
+
+        Uri bmpUri = null;
         if (CameraGridActivity.checkPermission(this)) {
 
-            Uri bmpUri = getLocalBitmapUri(imageViewZoom);
+//            if (isGifLoad) {
+//
+//                ShareGifImage();
+//
+//            } else {
+//                bmpUri = getLocalBitmapUri(imageViewZoom);
+//            }
+
+            bmpUri = getLocalBitmapUri(imageViewZoom);
+
+
             if (bmpUri != null) {
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
@@ -501,6 +559,7 @@ public class ImageZoomActivity extends AppCompatActivity{
             }
         }
     }
+
 
     // Returns the URI path to the Bitmap displayed in specified ImageView
     public Uri getLocalBitmapUri(ImageView imageView) {
@@ -540,5 +599,109 @@ public class ImageZoomActivity extends AppCompatActivity{
     public void onBackPressed() {
         super.onBackPressed();
         ispause = false;
+    }
+
+    public void ShareGifImage() {
+
+        Glide.with(ImageZoomActivity.this)
+                .load(gifUrl)
+                .asGif()
+                .into(new Target<GifDrawable>() {
+                    @Override
+                    public void onLoadStarted(Drawable placeholder) {
+
+                    }
+
+                    @Override
+                    public void onLoadFailed(Exception e, Drawable errorDrawable) {
+
+                    }
+
+                    @Override
+                    public void onResourceReady(GifDrawable resource, GlideAnimation<? super GifDrawable> glideAnimation) {
+                        storeImage(resource);
+                    }
+
+                    @Override
+                    public void onLoadCleared(Drawable placeholder) {
+
+                    }
+
+                    @Override
+                    public void getSize(SizeReadyCallback cb) {
+
+                    }
+
+                    @Override
+                    public Request getRequest() {
+                        return null;
+                    }
+
+                    @Override
+                    public void setRequest(Request request) {
+
+                    }
+
+                    @Override
+                    public void onStart() {
+
+                    }
+
+                    @Override
+                    public void onStop() {
+
+                    }
+
+                    @Override
+                    public void onDestroy() {
+
+                    }
+                });
+
+
+    }
+
+    private void storeImage(GifDrawable image) {
+        File pictureFile = getOutputMediaFile();
+        if (pictureFile == null) {
+            return;
+        }
+        try {
+            FileOutputStream output = new FileOutputStream(pictureFile);
+            FileInputStream input = new FileInputStream(String.valueOf(image));
+
+            FileChannel inputChannel = input.getChannel();
+            FileChannel outputChannel = output.getChannel();
+
+            inputChannel.transferTo(0, inputChannel.size(), outputChannel);
+            output.close();
+            input.close();
+//            Toast.makeText(ImageZoomActivity.this, "Image Downloaded", Toast.LENGTH_SHORT).show();
+
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            Uri uri = Uri.fromFile(pictureFile);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+            shareIntent.setType("image/*");
+            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(Intent.createChooser(shareIntent, "Share Image"));
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private File getOutputMediaFile() {
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/Christmas"); /*getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/Christmas/c");*/
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs())
+                return null;
+        }
+
+        File mediaFile;
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_MERRY_CHRISTMAS_" + Calendar.getInstance().getTimeInMillis() + ".gif");
+        return mediaFile;
     }
 }

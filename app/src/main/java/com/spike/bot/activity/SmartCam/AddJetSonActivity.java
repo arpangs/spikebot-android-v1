@@ -25,23 +25,15 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.Repeatar.RepeaterActivity;
 import com.spike.bot.adapter.JetSonAdapter;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
-import com.spike.bot.core.APIConst;
-import com.spike.bot.core.Common;
-import com.spike.bot.core.Constants;
 import com.spike.bot.model.JetSonModel;
-import com.spike.bot.model.RepeaterModel;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -50,15 +42,15 @@ import java.util.ArrayList;
  * Created by vipul on 10/1/20.
  * Gmail : vipul patel
  */
-public class AddJetSonActivity extends AppCompatActivity implements View.OnClickListener , JetSonAdapter.JetsonAction {
+public class AddJetSonActivity extends AppCompatActivity implements View.OnClickListener, JetSonAdapter.JetsonAction {
 
     public Toolbar toolbar;
+    public RecyclerView recyclerview;
+    public JetSonAdapter jetSonAdapter;
+    public ArrayList<JetSonModel.Datum> arrayList = new ArrayList<>();
     ImageView empty_add_image;
     TextView txt_empty_text;
     LinearLayout linearNodataFound;
-    public RecyclerView recyclerview;
-    public JetSonAdapter jetSonAdapter;
-    public ArrayList<JetSonModel.Datum> arrayList=new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,7 +68,8 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toolbar.setTitle("Smart Camera");
+//        toolbar.setTitle("Smart Camera");
+        toolbar.setTitle("Jetson");
         recyclerview = findViewById(R.id.recyclerRemoteList);
         linearNodataFound = findViewById(R.id.linearNodataFound);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -91,8 +84,8 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onClick(View v) {
-        if (v == txt_empty_text || v==empty_add_image) {
-            AddJetsonDialog(false,0);
+        if (v == txt_empty_text || v == empty_add_image) {
+            AddJetsonDialog(false, 0);
         }
     }
 
@@ -114,7 +107,7 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_add_text) {
-            AddJetsonDialog(false,0);
+            AddJetsonDialog(false, 0);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -127,12 +120,13 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
     }
 
     /*view hide use for getting error*/
-    public void showView(boolean isflag){
+    public void showView(boolean isflag) {
         recyclerview.setVisibility(isflag ? View.VISIBLE : View.GONE);
         linearNodataFound.setVisibility(isflag ? View.GONE : View.VISIBLE);
     }
+
     /*add jetson dialog.*/
-    private void AddJetsonDialog(boolean isFlag,int position) {
+    private void AddJetsonDialog(boolean isFlag, int position) {
 
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_add_jetson);
@@ -146,7 +140,7 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
         AppCompatImageView imgClose = dialog.findViewById(R.id.imgClose);
         AppCompatTextView txtTitleJetson = dialog.findViewById(R.id.txtTitleJetson);
 
-        if(isFlag){
+        if (isFlag) {
             txtTitleJetson.setText("Edit Jetson");
             editDeviceName.setText(arrayList.get(position).getJetsonName());
             editIpAddress.setText(arrayList.get(position).getJetsonIp());
@@ -163,14 +157,14 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(editDeviceName.getText().toString().length()==0){
-                    ChatApplication.showToast(AddJetSonActivity.this,"Please enter name address");
-                }else if(editIpAddress.getText().toString().length()==0){
-                    ChatApplication.showToast(AddJetSonActivity.this,"Please enter ip address");
-                }else if(!Patterns.IP_ADDRESS.matcher(editIpAddress.getText()).matches()){
-                    ChatApplication.showToast(AddJetSonActivity.this,"Please enter valid ip address");
-                }else {
-                    callAddJetson(editDeviceName.getText().toString(),editIpAddress.getText().toString(),dialog,isFlag,position);
+                if (editDeviceName.getText().toString().length() == 0) {
+                    ChatApplication.showToast(AddJetSonActivity.this, "Please enter name address");
+                } else if (editIpAddress.getText().toString().length() == 0) {
+                    ChatApplication.showToast(AddJetSonActivity.this, "Please enter ip address");
+                } else if (!Patterns.IP_ADDRESS.matcher(editIpAddress.getText()).matches()) {
+                    ChatApplication.showToast(AddJetSonActivity.this, "Please enter valid ip address");
+                } else {
+                    callAddJetson(editDeviceName.getText().toString(), editIpAddress.getText().toString(), dialog, isFlag, position);
                 }
             }
         });
@@ -181,8 +175,7 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
     }
 
     /*get jetson api call*/
-    private void callGetJetson()
-    {
+    private void callGetJetson() {
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
@@ -192,24 +185,25 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
                 try {
                     JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
-                    ChatApplication.logDisplay("response is "+result);
+                    ChatApplication.logDisplay("response is " + result);
                     String message = result.getString("message");
                     if (code == 200) {
                         showView(true);
-                        JSONObject  object= new JSONObject(String.valueOf(result));
-                        JSONArray jsonArray= object.optJSONArray("data");
+                        JSONObject object = new JSONObject(String.valueOf(result));
+                        JSONArray jsonArray = object.optJSONArray("data");
 
-                        Gson gson=new Gson();
+                        Gson gson = new Gson();
                         arrayList.clear();
-                        arrayList = gson.fromJson(jsonArray.toString(), new TypeToken<ArrayList<JetSonModel.Datum>>(){}.getType());
-                        if(arrayList.size()>0){
+                        arrayList = gson.fromJson(jsonArray.toString(), new TypeToken<ArrayList<JetSonModel.Datum>>() {
+                        }.getType());
+                        if (arrayList.size() > 0) {
                             setAdapter();
-                        }else {
+                        } else {
                             showView(false);
                         }
 
-                        ChatApplication.logDisplay("response is "+result);
-                    }else {
+                        ChatApplication.logDisplay("response is " + result);
+                    } else {
                         ChatApplication.showToast(AddJetSonActivity.this, message);
                         showView(false);
                     }
@@ -236,29 +230,37 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void setAdapter() {
-        jetSonAdapter =new JetSonAdapter(this,this,arrayList);
+        jetSonAdapter = new JetSonAdapter(this, this, arrayList);
         recyclerview.setAdapter(jetSonAdapter);
         jetSonAdapter.notifyDataSetChanged();
     }
 
     /*add jetson api call*/
-    private void callAddJetson(String devicename, String ipaddress, Dialog dialog, boolean isFlag,  int position) {
+    private void callAddJetson(String devicename, String ipaddress, Dialog dialog, boolean isFlag, int position) {
         ActivityHelper.showProgressDialog(this, "Please wait.", false);
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-        SpikeBotApi.getInstance().callAddJetson(arrayList.get(position).getJetsonId(),devicename,ipaddress,isFlag, new DataResponseListener() {
+
+        String mJetsonID = "";
+        if (isFlag) {
+            mJetsonID = arrayList.get(position).getJetsonId();
+        } else {
+            mJetsonID = "";
+        }
+
+        SpikeBotApi.getInstance().callAddJetson(mJetsonID, devicename, ipaddress, isFlag, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
                     JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
-                    ChatApplication.logDisplay("response is "+result);
+                    ChatApplication.logDisplay("response is " + result);
                     String message = result.getString("message");
                     ChatApplication.showToast(AddJetSonActivity.this, message);
                     if (code == 200) {
                         dialog.dismiss();
                         callGetJetson();
-                        ChatApplication.logDisplay("response is "+result);
+                        ChatApplication.logDisplay("response is " + result);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -291,7 +293,7 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
                 try {
                     JSONObject result = new JSONObject(stringResponse);
                     int code = result.getInt("code");
-                    ChatApplication.logDisplay("response is "+result);
+                    ChatApplication.logDisplay("response is " + result);
                     String message = result.getString("message");
                     ChatApplication.showToast(AddJetSonActivity.this, message);
                     if (code == 200) {
@@ -320,13 +322,13 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void action(int position, String action) {
-        if(action.equalsIgnoreCase("edit")){
+        if (action.equalsIgnoreCase("edit")) {
             showBottomSheetDialog(position);
         }
 
     }
 
-    public void showBottomSheetDialog( int postion) {
+    public void showBottomSheetDialog(int postion) {
         View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
 
         TextView txt_bottomsheet_title = view.findViewById(R.id.txt_bottomsheet_title);
@@ -335,16 +337,16 @@ public class AddJetSonActivity extends AppCompatActivity implements View.OnClick
 
         TextView txt_edit = view.findViewById(R.id.txt_edit);
 
-        BottomSheetDialog dialog = new BottomSheetDialog(AddJetSonActivity.this,R.style.AppBottomSheetDialogTheme);
+        BottomSheetDialog dialog = new BottomSheetDialog(AddJetSonActivity.this, R.style.AppBottomSheetDialogTheme);
         dialog.setContentView(view);
         dialog.show();
 
-        txt_bottomsheet_title.setText("What would you like to do in" + " " + arrayList.get(postion).getJetsonName() + " " +"?");
+        txt_bottomsheet_title.setText("What would you like to do in" + " " + arrayList.get(postion).getJetsonName() + " " + "?");
         linear_bottom_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                AddJetsonDialog(true,postion);
+                AddJetsonDialog(true, postion);
             }
         });
 

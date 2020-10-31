@@ -246,8 +246,8 @@
 
                                         <androidx.appcompat.widget.SwitchCompat
                                             android:id="@+id/switchAutoLock"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
+                                            android:layout_width="@dimen/_50sdp"
+                                            android:layout_height="@dimen/_50sdp"
                                             android:layout_gravity="center"
                                             android:background="@drawable/selector_section_onoff"
                                             android:button="@null"
@@ -575,8 +575,8 @@
 
                                         <TextView
                                             android:id="@+id/txtAlertCount"
-                                            android:layout_width="28dp"
-                                            android:layout_height="28dp"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
                                             android:layout_centerHorizontal="true"
                                             android:layout_toRightOf="@+id/txtAlert"
                                             android:background="@drawable/badge_background"

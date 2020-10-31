@@ -18,7 +18,7 @@ public class TypefaceUtil {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Map<String, Typeface> newMap = new HashMap<String, Typeface>();
-            newMap.put("axiforma-Regular", customFontTypeface);
+            newMap.put("axiforma_regular", customFontTypeface);
             try {
                 final Field staticField = Typeface.class
                         .getDeclaredField("sSystemFontMap");

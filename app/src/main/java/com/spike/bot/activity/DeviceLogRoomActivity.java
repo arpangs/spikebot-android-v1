@@ -44,7 +44,7 @@ import static android.widget.NumberPicker.OnScrollListener.SCROLL_STATE_IDLE;
  */
 public class DeviceLogRoomActivity extends AppCompatActivity {
 
-    public String isNotification = "", room_name = "", ROOM_ID = "", IS_SENSOR = "", typeSelection = "1",mSensorName="";
+    public String isNotification = "", room_name = "", ROOM_ID = "", IS_SENSOR = "", typeSelection = "1", mSensorName = "", isSubType = "";
     public int mStartIndex = 0, lastVisibleItem, row_index = -1;
     public boolean isScrollDown = false, isLoading = false;
     public List<DeviceLog> deviceLogList = new ArrayList<>();
@@ -53,6 +53,9 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
     LinearLayout ll_empty;
     LinearLayoutManager linearLayoutManager;
     LogRoomAdapter deviceLogAdapter;
+    String lasttime = "";
+    int unseen = 1;
+
     private int mScrollState = AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
     private ArrayList<Filter> filterArrayList = new ArrayList<>();
     private ArrayList<Filter> filterArrayListTemp = new ArrayList<>();
@@ -64,18 +67,24 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_log_room);
 
+
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+
         ROOM_ID = getIntent().getStringExtra("ROOM_ID");
         IS_SENSOR = getIntent().getStringExtra("IS_SENSOR");
         isNotification = getIntent().getStringExtra("isNotification");
         room_name = getIntent().getStringExtra("room_name");
-        if(getIntent().hasExtra("Sensorname")){
-          mSensorName = getIntent().getStringExtra("Sensorname");
+        if (getIntent().hasExtra("Sensorname")) {
+            mSensorName = getIntent().getStringExtra("Sensorname");
+        }
+
+        if (getIntent().hasExtra("log_sub_type")) {
+            isSubType = getIntent().getStringExtra("log_sub_type");
         }
         init();
     }
@@ -83,7 +92,32 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
+        if (isNotification.equalsIgnoreCase("All Notification")) {
+            unreadApiCall(false);
+        }
         return true;
+    }
+
+    public void unreadApiCall(final boolean b) {
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+        String log_type = "all-general-notifications";
+        String log_sub_type = "";
+        SpikeBotApi.getInstance().unreadNotification("", log_type, log_sub_type, new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+
+            }
+        });
     }
 
     @Override
@@ -94,7 +128,8 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
             MenuItem menuItem = menu.findItem(R.id.action_filter);
             MenuItem menuItemReset = menu.findItem(R.id.action_reset);
             menuItemReset.setVisible(false);
-            menuItem.setVisible(ROOM_ID == null ? false : true);
+//            menuItem.setVisible(ROOM_ID == null ? false : true);
+            menuItem.setVisible(false);
         }
         return true;
     }
@@ -138,19 +173,45 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
 
         if (isNotification.equalsIgnoreCase("roomSensorUnreadLogs")) {
             setTitel("Notifications");
+//            unseen = 1;
+            unseen = 100;
             getDeviceList(mStartIndex);
         } else if (isNotification.equalsIgnoreCase("All Notification")) {
             setTitel("All Notification");
+            unseen = 100;
             getDeviceList(mStartIndex);
         } else if (isNotification.equalsIgnoreCase("DoorSensor")) {
+            setTitel(mSensorName + " Notification");
+//            unseen = 0;
+            unseen = 100;
+            getDeviceList(mStartIndex);
+        } else if (isNotification.equalsIgnoreCase("GasSensor")) {
+            setTitel(mSensorName + " Notification");
+//            unseen = 0;
+            unseen = 100;
+            getDeviceList(mStartIndex);
+        } else if (isNotification.equalsIgnoreCase("WaterSensor")) {
+//            unseen = 0;
+            unseen = 100;
+            setTitel(mSensorName + " Notification");
+            getDeviceList(mStartIndex);
+        } else if (isNotification.equalsIgnoreCase("TempSensor")) {
+//            unseen = 0;
+            unseen = 100;
             setTitel(mSensorName + " Notification");
             getDeviceList(mStartIndex);
         } else if (isNotification.equalsIgnoreCase("YaleLock")) {
             setTitel(mSensorName + " Notification");
+//            unseen = 0;
+            unseen = 100;
             getDeviceList(mStartIndex);
         } else {
             setTitel("All Logs");
+//            unseen = 0;
+            unseen = 100;
             getDeviceList(mStartIndex);
+
+            /*remove unseen param ot 21 sep 2020*/
 
         }
 
@@ -172,6 +233,17 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
                                     isLoading = true;
 
                                     isScrollDown = true;
+                                    lasttime = deviceLogList.get(lastVisibleItem).getActivity_time();
+                                    if (!lasttime.equals("")) {
+                                        getDeviceList(mStartIndex);
+                                    }
+                                }
+                            }
+                        } else {
+                            if (deviceLogList.size() > 0) {
+                                lasttime = deviceLogList.get(deviceLogList.size() - 1).getActivity_time();
+
+                                if (!lasttime.equals("")) {
                                     getDeviceList(mStartIndex);
                                 }
                             }
@@ -272,7 +344,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
-        SpikeBotApi.getInstance().GetLogFind(ROOM_ID, position,isNotification, new DataResponseListener() {
+        SpikeBotApi.getInstance().GetLogFind(ROOM_ID, position, isNotification, lasttime, unseen, isSubType, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
 
@@ -287,7 +359,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
                         Gson gson = new Gson();
                         List<DeviceLog> deviceLogs = gson.fromJson(dataObj.toString(), new TypeToken<List<DeviceLog>>() {
                         }.getType());
-                        ;
+
 
                         deviceLogList.addAll(deviceLogs);
                         if (deviceLogs == null || deviceLogs.size() == 0) {
@@ -298,11 +370,28 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "No data found.", Toast.LENGTH_SHORT).show();
                             }
                             isLoading = true;
+                        } else if (deviceLogs != null && deviceLogs.size() < 25) {
+                            isScrollDown = false;
+                            setAdapter(true);
+                            isLoading = false;
                         } else {
                             isScrollDown = false;
                             isLoading = false;
+                            setAdapter(false);
+                        }
 
-                            setAdapter();
+                        try {
+                            if (deviceLogs.size() == 0) {
+                                if (!deviceLogList.get(lastVisibleItem).getActivity_type().equals("End of Record")) {
+                                    deviceLogList.add(new DeviceLog("End of Record", "End of Record", "", "", "", "", "", "", ""));
+                                    isScrollDown = false;
+                                    isLoading = false;
+                                    setAdapter(true);
+                                }
+
+                            }
+                        } catch (Exception e) {
+
                         }
 
 
@@ -337,7 +426,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
 
     }
 
-    private void setAdapter() {
+    private void setAdapter(boolean isEndOfRecord) {
         if (rv_device_log.getVisibility() == View.GONE) {
             ll_empty.setVisibility(View.GONE);
             rv_device_log.setVisibility(View.VISIBLE);
@@ -350,6 +439,7 @@ public class DeviceLogRoomActivity extends AppCompatActivity {
             deviceLogAdapter.notifyDataSetChanged();
         }
         mStartIndex = mStartIndex + 25;
+
     }
 
     @Override

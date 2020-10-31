@@ -31,7 +31,7 @@
                 android:layout_width="0dp"
                 android:layout_height="52dp"
                 android:layout_weight="0.2"
-                android:src="@drawable/off_door" />
+                android:src="@drawable/dooroff" />
 
             <LinearLayout
                 android:layout_weight="0.6"

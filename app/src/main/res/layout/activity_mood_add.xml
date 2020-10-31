@@ -58,7 +58,7 @@
                 android:layout_marginTop="15dp"
                 android:completionThreshold="1"
                 android:typeface="serif"
-                android:drawableRight="@drawable/icn_arrow_down_spinner2"
+                android:drawableRight="@drawable/down_small"
                 android:ems="10"
                 android:hint="Select Mood Name"
                 android:imeOptions="actionDone"
@@ -99,7 +99,7 @@
                     android:layout_gravity="center"
                     android:layout_marginLeft="8dp"
                     android:layout_toRightOf="@+id/spinner_room_list"
-                    android:src="@drawable/icn_arrow_down_spinner2" />
+                    android:src="@drawable/down" />
 
             </RelativeLayout>
 
@@ -116,18 +116,6 @@
             android:text="CHOOSE YOUR DEVICES FROM THIS MOOD"/>
 
     </LinearLayout>
-
-   <!-- <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/linear_header">
--->
-      <!--  <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">-->
-
-
 
                 <!--<include layout="@layout/content_device_list" />-->
                 <androidx.recyclerview.widget.RecyclerView

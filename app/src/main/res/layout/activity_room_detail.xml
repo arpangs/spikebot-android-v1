@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/automation_white"
     android:orientation="vertical">
 
@@ -49,14 +49,45 @@
                 android:paddingTop="10dp">
 
                 <LinearLayout
+                    android:id="@+id/linear_log"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginRight="@dimen/_8sdp"
+                    android:orientation="vertical"
+                    android:paddingRight="5dp"
+                    android:visibility="visible">
+
+                    <ImageView
+                        android:id="@+id/icn_log"
+                        android:layout_width="@dimen/_25sdp"
+                        android:layout_height="@dimen/_25sdp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="6dp"
+                        android:src="@drawable/ic_log" />
+
+                    <TextView
+                        android:id="@+id/txt_loglabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="1dp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:gravity="bottom"
+                        android:text="Logs"
+                        android:textColor="@color/signupblack"
+                        android:textSize="10dp" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/linear_recording"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginLeft="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginRight="@dimen/_13sdp"
                     android:orientation="vertical"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
                     <ImageView
                         android:id="@+id/icn_schedule_v2"
@@ -82,8 +113,8 @@
                     android:id="@+id/linear_preview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginLeft="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginRight="@dimen/_13sdp"
                     android:orientation="vertical">
 
@@ -91,9 +122,9 @@
                         android:id="@+id/textShowCamera"
                         android:layout_width="@dimen/_25sdp"
                         android:layout_height="@dimen/_25sdp"
+                        android:layout_marginLeft="@dimen/_2sdp"
                         android:layout_marginTop="6dp"
                         android:scaleType="fitXY"
-                        android:layout_marginLeft="@dimen/_2sdp"
                         android:src="@drawable/grid_icon" />
 
                     <TextView
@@ -111,8 +142,8 @@
                     android:id="@+id/linear_refresh"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginRight="@dimen/_13sdp"
                     android:orientation="vertical">
 
@@ -135,14 +166,14 @@
 
             </LinearLayout>
         </LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="@dimen/_2sdp"
             android:layout_below="@+id/card_layout"
-            android:background="@color/automation_dark"/>
+            android:background="@color/automation_dark" />
 
     </LinearLayout>
-
 
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -152,8 +183,7 @@
         android:layout_below="@+id/card_layout"
         android:layout_marginBottom="8dp">
 
-        <androidx.core.widget.NestedScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
+        <androidx.core.widget.NestedScrollView xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/main_scroll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -161,26 +191,75 @@
             android:scrollbars="vertical"
             tools:context="com.spike.bot.fragments.DashBoardFragment">
 
-
             <RelativeLayout
-                android:id="@+id/relativeMainfragment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:focusableInTouchMode="true">
+                android:layout_height="match_parent">
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/room_recycleview"
+
+                <RelativeLayout
+                    android:id="@+id/relativeMainfragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginLeft="@dimen/_8sdp"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:layout_marginRight="@dimen/_8sdp"
-                    android:nestedScrollingEnabled="false"
-                    android:scrollbars="vertical"
-                    android:scrollbarSize="5dp"
-                    android:visibility="visible" />
+                    android:focusableInTouchMode="true">
 
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/room_recycleview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginLeft="@dimen/_8sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginRight="@dimen/_8sdp"
+                        android:nestedScrollingEnabled="false"
+                        android:scrollbarSize="5dp"
+                        android:scrollbars="vertical"
+                        android:visibility="visible" />
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+
+                    android:id="@+id/relativeSensorLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/relativeMainfragment"
+                    android:layout_marginTop="@dimen/_5sdp">
+
+                    <TextView
+                        android:id="@+id/txt_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_6sdp"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:paddingTop="15dp"
+                        android:paddingBottom="15dp"
+                        android:singleLine="true"
+                        android:textColor="@color/automation_black"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        tools:text="Sample Text" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/room_recycleview_sensor"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_below="@+id/txt_title"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginLeft="@dimen/_8sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginRight="@dimen/_8sdp"
+                        android:gravity="center"
+                        android:nestedScrollingEnabled="false"
+                        android:paddingBottom="30dp"
+                        android:scrollbarSize="5dp"
+                        android:scrollbars="vertical"
+                        android:visibility="visible" />
+
+                </RelativeLayout>
             </RelativeLayout>
 
         </androidx.core.widget.NestedScrollView>

@@ -87,6 +87,13 @@ public class DoorAlertAdapter extends RecyclerView.Adapter<DoorAlertAdapter.Sens
             holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
             holder.tv_room_name.setTextColor(mContext.getResources().getColor(R.color.automation_red));
 
+            holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+            holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+            holder.tv_device_log_time.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+            holder.tv_device_name.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+            holder.tv_panel_name.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+            holder.tv_room_name.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+
             holder.tv_device_description.setText( arrayListLog.get(position).getMessage().trim());
             actionList = arrayListLog.get(position).getActivityDescription().split("\\|");
 
@@ -112,6 +119,7 @@ public class DoorAlertAdapter extends RecyclerView.Adapter<DoorAlertAdapter.Sens
             } else {
                 holder.tv_room_name.setVisibility(View.GONE);
             }
+
 
         } catch (Exception e){
             e.printStackTrace();

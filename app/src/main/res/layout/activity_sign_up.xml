@@ -327,14 +327,14 @@
                     android:layout_width="match_parent"
                     android:layout_marginLeft="4dp"
                     android:layout_height="45dp"
-                    android:background="@drawable/background_button_login_gray"
+                    android:background="@drawable/background_button_login"
                     android:clickable="true"
                     android:text="Signup"
                     android:layout_marginTop="10dp"
                     android:textAllCaps="false"
                     android:textSize="@dimen/_15sdp"
                     android:layout_marginBottom="25dp"
-                    android:textColor="@color/signupblack" />
+                    android:textColor="@color/automation_white" />
 
                 <!--<Button
                     android:id="@+id/btn_sign_up"

@@ -4,6 +4,7 @@
     android:id="@+id/card_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+
     android:layout_marginBottom="5dp"
     android:orientation="vertical"
     android:visibility="visible">
@@ -12,6 +13,7 @@
     <LinearLayout
         android:id="@+id/linearRoomSchedule"
         android:layout_width="match_parent"
+        android:background="@drawable/background_shadow_bottom_side_mood"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
@@ -66,7 +68,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:layout_margin="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
                     android:orientation="horizontal">
 
                     <!-- <ImageView
@@ -82,9 +85,10 @@
 
                     <ImageView
                         android:id="@+id/image_section_edit"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
                         android:layout_marginRight="10dp"
+                        android:layout_marginTop="10dp"
                         android:src="@drawable/edit_blue" />
 
                     <LinearLayout
@@ -95,11 +99,11 @@
 
                         <ImageView
                             android:id="@+id/iv_sche_type"
-                            android:layout_width="60dp"
-                            android:layout_height="40dp"
+                            android:layout_width="55dp"
+                            android:layout_height="55dp"
                             android:layout_marginLeft="5dp"
                             android:layout_marginRight="5dp"
-                            android:background="@drawable/panel_on_new" />
+                            android:background="@drawable/panel_on" />
 
                         <TextView
                             android:id="@+id/txt_schedule_status"
@@ -142,7 +146,6 @@
                 android:layout_marginBottom="1dp"
                 android:layout_weight="1"
                 android:gravity="center_vertical|center_horizontal"
-
                 android:minHeight="35dp"
                 android:orientation="horizontal"
                 android:visibility="visible">
@@ -293,7 +296,6 @@
                         android:layout_width="35dp"
                         android:layout_height="35dp"
                         android:layout_gravity="center"
-                        android:layout_marginBottom="@dimen/_5sdp"
                         android:backgroundTint="@color/automation_gray_2"
                         android:backgroundTintMode="src_in"
                         android:src="@drawable/ic_timer_new" />

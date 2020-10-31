@@ -9,22 +9,24 @@
         <item name="colorPrimary">@color/solid_blue</item>
         <item name="colorPrimaryDark">@color/solid_blue</item>
         <item name="colorAccent">@color/solid_blue</item>
-<!--
-        <item name="android:colorControlActivated">@color/automation_yellow</item>
-        <item name="android:colorControlHighlight">@color/automation_yellow</item>-->
+        <!--
+                <item name="android:colorControlActivated">@color/automation_yellow</item>
+                <item name="android:colorControlHighlight">@color/automation_yellow</item>-->
+
 
     </style>
 
-    <style name="Color1SwitchStyle" >
+    <style name="Color1SwitchStyle">
         <item name="colorControlActivated">@color/solid_blue</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
 
         <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item> <item name="android:fontFamily">Axiforma-Regular</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:fontFamily">axiforma_regular</item>
 
-       <!-- <item name="android:typeface">serif</item>-->
+        <!-- <item name="android:typeface">serif</item>-->
 
     </style>
 
@@ -34,13 +36,11 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppBottomSheetDialogTheme"
-        parent="Theme.Design.Light.BottomSheetDialog">
+    <style name="AppBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/AppModalStyle</item>
     </style>
 
-    <style name="AppModalStyle"
-        parent="Widget.Design.BottomSheet.Modal">
+    <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/background_bottomsheet_corner</item>
     </style>
 
@@ -50,17 +50,17 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="colorPrimaryDark">@android:color/background_dark</item>
-        <item name="android:fontFamily">Avenir-Heavy</item>
+        <!--<item name="android:fontFamily">Avenir-Heavy</item>-->
 
     </style>
 
-    <style name="AppTheme.AppBarOverlayWhite" parent="ThemeOverlay.AppCompat.Dark.ActionBar" >
+    <style name="AppTheme.AppBarOverlayWhite" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="colorPrimaryDark">@color/automation_white</item>
     </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="AppTheme.PopupOverlayWhite" parent="ThemeOverlay.AppCompat.Light" >
+    <style name="AppTheme.PopupOverlayWhite" parent="ThemeOverlay.AppCompat.Light">
         <item name="colorPrimaryDark">@color/automation_white</item>
     </style>
 
@@ -77,6 +77,7 @@
         <item name="tabBackground">?attr/selectableItemBackground</item>
         <item name="tabSelectedTextColor">@color/automation_white</item>
     </style>
+
     <style name="MyTabLayoutTextAppearance" parent="android:Widget.Material.TabWidget">
         <item name="android:textSize">16sp</item>
         <item name="android:textAllCaps">false</item>
@@ -116,8 +117,10 @@
         <item name="android:textColor">#ff8bc34a</item>
         <item name="android:itemBackground">#ff8bc34a</item>
     </style>
+
     <item name="player_display" type="id" />
-    <item name="player_display_box" type="id"/>
-    <item name="player_display_float_box" type="id"/>
+    <item name="player_display_box" type="id" />
+    <item name="player_display_float_box" type="id" />
+
 
 </resources>

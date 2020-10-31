@@ -503,8 +503,10 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
             int countTemp = doorSensorResModel.getUnseenLogs().size();
             if (countTemp > 99) {
                 txtAlertCount.setText("99+");
+                txtAlertCount.setBackground(getResources().getDrawable(R.drawable.badge_background_oval));
             } else {
                 txtAlertCount.setText("" + countTemp);
+                txtAlertCount.setBackground(getResources().getDrawable(R.drawable.badge_background));
             }
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(TTlockinfoActivity.this);
             recyclerAlert.setLayoutManager(linearLayoutManager);
@@ -741,7 +743,7 @@ public class TTlockinfoActivity extends AppCompatActivity implements View.OnClic
             txtDoorStatus.setTextColor(getResources().getColor(R.color.automation_red));
             img_door_on.setClickable(false);
         } else {
-            img_door_on.setImageResource(doorSensorResModel.getDevice().getDeviceStatus().equals("0") ? R.drawable.on_door : R.drawable.off_door);
+            img_door_on.setImageResource(doorSensorResModel.getDevice().getDeviceStatus().equals("0") ? R.drawable.door_on : R.drawable.door_off);
             txtDoorStatus.setText(doorSensorResModel.getDevice().getDeviceStatus().equals("0") ? "Door Open" : "Door Close");
             txtDoorStatus.setTextColor(doorSensorResModel.getDevice().getDeviceStatus().equals("0") ? getResources().getColor(R.color.automation_red) : getResources().getColor(R.color.green));
             img_door_on.setClickable(true);

@@ -35,7 +35,7 @@
                 android:layout_height="35dp"
                 android:padding="3dp"
                 android:backgroundTint="@color/sensor_button"
-                app:srcCompat="@drawable/cross" />
+                app:srcCompat="@drawable/round_cross" />
 
         </LinearLayout>
 
@@ -117,7 +117,8 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_arrow_drop_down_blue" />
+                android:padding="5dp"
+                android:src="@drawable/down_small" />
 
 
         </RelativeLayout>

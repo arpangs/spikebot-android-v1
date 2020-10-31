@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -25,8 +24,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.akhilpatoliya.floating_text_button.FloatingTextButton;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask2;
-import com.kp.core.ICallBack2;
 import com.kp.core.dialog.ConfirmDialog;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
@@ -36,11 +33,11 @@ import com.spike.bot.activity.HeavyLoad.HeavyLoadDetailActivity;
 import com.spike.bot.activity.Main2Activity;
 import com.spike.bot.activity.ScheduleListActivity;
 import com.spike.bot.activity.SmartColorPickerActivity;
+import com.spike.bot.activity.TvDthRemote.TVRemote;
 import com.spike.bot.activity.ir.blaster.IRBlasterRemote;
 import com.spike.bot.adapter.MoodExpandableLayoutHelper;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
-import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.core.JsonHelper;
@@ -209,7 +206,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener, Swi
 
         try {
             ((Main2Activity) activity).invalidateToolbarCloudImage();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -356,18 +353,19 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener, Swi
 
         } else if (action.equalsIgnoreCase("imgLog")) {
             Intent intent = new Intent(getActivity(), DeviceLogActivity.class);
+            ChatApplication.CurrnetFragment = R.id.navigationMood;  // dev arpan on 07 sep 2020
             intent.putExtra("ROOM_ID", roomVO.getRoomId());
-//            intent.putExtra("isCheckActivity","mood");
-            intent.putExtra("isCheckActivity", "mode");
+            intent.putExtra("isCheckActivity", "mood");
+//            intent.putExtra("isCheckActivity", "mode");
             intent.putExtra("isRoomName", "" + roomVO.getRoomName());
             startActivity(intent);
         } else if (action.equalsIgnoreCase("imgSch")) {
+            ChatApplication.CurrnetFragment = R.id.navigationMood;  // dev arpan on 07 sep 2020
             Intent intent = new Intent(getActivity(), ScheduleListActivity.class);
 //            intent.putExtra("moodName",roomVO.getRoomName());
 //            intent.putExtra("moodId",roomVO.getRoomId());
 //            intent.putExtra("isMoodAdapter",true); //added in last call
 //            intent.putExtra("isActivityType","2");
-
             intent.putExtra("moodName", roomVO.getRoomName());
             intent.putExtra("roomName", roomVO.getRoomName());
             intent.putExtra("moodId", roomVO.getRoomId());
@@ -376,6 +374,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener, Swi
             intent.putExtra("moodId2", roomVO.getRoomId());
             intent.putExtra("moodId3", roomVO.getRoomId());
             intent.putExtra("isActivityType", "2");
+            intent.putExtra("from","fragment");
             startActivity(intent);
 
         }
@@ -513,13 +512,28 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener, Swi
             getDeviceDetails(item.getOriginal_room_device_id());
 
         } else if (action.equalsIgnoreCase("isIRSensorClick")) {
-            Intent intent = new Intent(getActivity(), IRBlasterRemote.class);
+            Intent intent = new Intent();
             Bundle bundle = new Bundle();
+            if (item.getDevice_sub_type().toLowerCase().equals("ac")) {
+                intent = new Intent(getActivity(), IRBlasterRemote.class);
+            } else if (item.getDevice_sub_type().toLowerCase().equals("tv")) {
+                intent = new Intent(getActivity(), TVRemote.class);
+                intent.putExtra("from", "tv");
+            } else if (item.getDevice_sub_type().toLowerCase().equals("dth")) {
+                intent = new Intent(getActivity(), TVRemote.class);
+                intent.putExtra("from", "dth");
+            } else if (item.getDevice_sub_type().toLowerCase().equals("tv_dth")) {
+                intent = new Intent(getActivity(), TVRemote.class);
+                intent.putExtra("from", "tv_dth");
+            }
+            ChatApplication.CurrnetFragment = R.id.navigationMood;
             bundle.putSerializable("REMOTE_IS_ACTIVE", item.getDeviceStatus());
-            bundle.putSerializable("REMOTE_ID", item.getOriginal_room_device_id());
-            bundle.putSerializable("ROOM_DEVICE_ID", item.getRoomDeviceId()); //MOOD_DEVICE_ID
-            intent.putExtra("IR_BLASTER_ID", item.getSensor_id());
+//            bundle.putSerializable("REMOTE_ID", item.getOriginal_room_device_id());
+            bundle.putSerializable("REMOTE_ID", item.getDeviceId());
+            bundle.putSerializable("ROOM_DEVICE_ID", item.getDeviceId()); //MOOD_DEVICE_ID
+            intent.putExtra("IR_BLASTER_ID", item.getDeviceId());
             intent.putExtras(bundle);
+
             startActivity(intent);
         }
 
@@ -598,6 +612,7 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener, Swi
             public void onClick(View v) {
                 dialog.dismiss();
                 Intent intent = new Intent(getActivity(), DeviceLogActivity.class);
+                ChatApplication.CurrnetFragment = R.id.navigationMood;
                 intent.putExtra("ROOM_ID", roomVO.getRoomId());
 //            intent.putExtra("isCheckActivity","mood");
                 intent.putExtra("isCheckActivity", "mode");
@@ -853,7 +868,8 @@ public class MoodFragment extends Fragment implements ItemClickMoodListener, Swi
                     moodList.clear();
                     JSONObject dataObject = result.getJSONObject("data");
                     JSONArray roomArray = dataObject.getJSONArray("roomdeviceList");
-                    moodList.addAll(JsonHelper.parseRoomArray(roomArray, false));
+                    moodList.addAll(JsonHelper.parseRoomArrayForMood(roomArray, false));
+
 
                     sectionedExpandableLayoutHelper.addSectionList(moodList);
                     sectionedExpandableLayoutHelper.notifyDataSetChanged();

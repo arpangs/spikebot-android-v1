@@ -146,6 +146,7 @@ public class SmartRemoteAdapter extends RecyclerView.Adapter<SmartRemoteAdapter.
         btnCancel.setVisibility(View.GONE);
 
         txtTitalMood.setText("Smart Remote");
+
         editKeyValue.setFilters(new InputFilter[]{ChatApplication.filter, new InputFilter.LengthFilter(30)});
 
         editKeyValue.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);

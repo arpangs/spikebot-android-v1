@@ -39,8 +39,13 @@ public class UnAssignRepeatarAdapter extends RecyclerView.Adapter<UnAssignRepeat
     public void onBindViewHolder(final SensorViewHolder holder, final int position) {
 
         unassigendSensorList = unassigendSensorLists.get(position);
+
+
+
+
+
         holder.sensorName.setText(unassigendSensorList.getSensorName());
-        holder.sensorImage.setImageResource(R.drawable.gray_repeater);
+        holder.sensorImage.setImageResource(R.drawable.repeater_off);
 
         if (unassigendSensorList.isChecked) {
             holder.sensorChecked.setImageResource(R.drawable.icn_circle_grey_checked);

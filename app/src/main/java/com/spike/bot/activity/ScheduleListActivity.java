@@ -1,6 +1,7 @@
 package com.spike.bot.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -23,16 +24,17 @@ public class ScheduleListActivity extends AppCompatActivity {
     int selection = 0;
     String roomName = "", isActivityType = "", isRoomMainFm = "";
     boolean isMoodAdapter = false;
+    String from = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule_list);
-        Toolbar toolbar =  findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
 
         toolbar.setTitle("Schedule");
         activity = this;
-        container =  findViewById(R.id.container);
+        container = findViewById(R.id.container);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -50,6 +52,7 @@ public class ScheduleListActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(isRoomMainFm)) {
             isRoomMainFm = "";
         }
+        from = getIntent().getExtras().getString("from");
 
         // create a FragmentManager
         FragmentManager fm = getSupportFragmentManager();
@@ -62,7 +65,7 @@ public class ScheduleListActivity extends AppCompatActivity {
             toolbar.setTitle(roomName);
         }
 
-        fragmentTransaction.replace(R.id.container, ScheduleFragment.newInstance(true, moodId, moodId2, moodId3, selection, roomId, isMoodAdapter, isActivityType, isRoomMainFm));
+        fragmentTransaction.replace(R.id.container, ScheduleFragment.newInstance(true, moodId, moodId2, moodId3, selection, roomId, isMoodAdapter, isActivityType, isRoomMainFm, from));
         fragmentTransaction.commit(); // save the changes
     }
 
@@ -70,6 +73,16 @@ public class ScheduleListActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (!from.equals("")) {
+            this.finish();
+            startActivity(new Intent(ScheduleListActivity.this, Main2Activity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        }
+        super.onBackPressed();
     }
 
     @Override

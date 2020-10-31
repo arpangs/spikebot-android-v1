@@ -1,18 +1,12 @@
 package com.spike.bot.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.appcompat.view.ContextThemeWrapper;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.R;
@@ -32,8 +26,8 @@ public class AddUnassignedPanelAdapter extends RecyclerView.Adapter<AddUnassigne
     private UnassignedClickEvent unassignedClickEvent;
     private Context mContext;
 
-    public AddUnassignedPanelAdapter(Context context,ArrayList<UnassignedListRes.Data> roomdeviceList, UnassignedClickEvent unassignedClickEvent) {
-        this.mContext= context;
+    public AddUnassignedPanelAdapter(Context context, ArrayList<UnassignedListRes.Data> roomdeviceList, UnassignedClickEvent unassignedClickEvent) {
+        this.mContext = context;
         this.roomdeviceList = roomdeviceList;
         this.unassignedClickEvent = unassignedClickEvent;
     }
@@ -49,18 +43,86 @@ public class AddUnassignedPanelAdapter extends RecyclerView.Adapter<AddUnassigne
 
         holder.mModuleId.setText("[" + roomdeviceList.get(position).getModuleId() + "]");
 
-        if(roomdeviceList.get(position).getModuleType().equalsIgnoreCase("door_sensor")){
+        if (roomdeviceList.get(position).getModuleType().equalsIgnoreCase("door_sensor")) {
             holder.mImageIcon.setImageResource(Common.getIcon(0, roomdeviceList.get(position).getModuleType()));
-        }else {
+        } else {
             holder.mImageIcon.setImageResource(Common.getIcon(0, roomdeviceList.get(position).getModuleType()));
         }
 
-        if(roomdeviceList.get(position).getModuleType().equalsIgnoreCase("5f"))
-        {
+        if (roomdeviceList.get(position).getModuleType().equalsIgnoreCase("5f")) {
             holder.mDeviceName.setText("Switch Board");
             holder.mImageIcon.setImageResource(R.drawable.switchboard);
-        } else{
-            holder.mDeviceName.setText(roomdeviceList.get(position).getModuleType());
+        } else {
+
+            String deviceName = "";
+
+            switch (roomdeviceList.get(position).getModuleType()) {
+
+                case "heavy_load":
+                case "double_heavy_load":
+                    deviceName = "Heavy Load";
+                    break;
+
+                case "door_sensor":
+                    deviceName = "Door Sensor";
+                    break;
+
+                case "gas_sensor":
+                    deviceName = "Gas Sensor";
+                    break;
+
+                case "curtain":
+                    deviceName = "Curtain";
+                    break;
+
+                case "water_detector":
+                    deviceName = "Water Detector";
+                    break;
+
+                case "pir_detector":
+                    deviceName = "Pir Detector";
+                    break;
+
+                case "pir_device":
+                    deviceName = "Pir Device";
+                    break;
+
+                case "repeater":
+                    deviceName = "Repeater";
+                    break;
+
+                case "yale_lock":
+                    deviceName = "Yale Lock";
+                    break;
+
+                case "temp_sensor":
+                    deviceName = "Temperature Sensor";
+                    break;
+
+                case "smart_remote":
+                    deviceName = "Smart Remote";
+                    break;
+
+                case "beacon_scanner":
+                    deviceName = "Beamer";
+                    break;
+
+                case "beacon":
+                    deviceName = "Radar";
+                    break;
+
+                case "remote":
+                    deviceName = "Remote";
+                    break;
+
+                case "ir_blaster":
+                    deviceName = "IR Blaster";
+                    break;
+
+
+            }
+
+            holder.mDeviceName.setText(deviceName);
         }
 
 
@@ -69,7 +131,7 @@ public class AddUnassignedPanelAdapter extends RecyclerView.Adapter<AddUnassigne
             @Override
             public void onClick(View v) {
 
-                unassignedClickEvent.onClick(position,roomdeviceList.get(holder.mImgAdd.getId()), "add");
+                unassignedClickEvent.onClick(position, roomdeviceList.get(holder.mImgAdd.getId()), "add");
 
                /* PopupMenu popup = new PopupMenu(mContext, v);
                 @SuppressLint("RestrictedApi") Context wrapper = new ContextThemeWrapper(mContext, R.style.PopupMenu);
@@ -118,6 +180,10 @@ public class AddUnassignedPanelAdapter extends RecyclerView.Adapter<AddUnassigne
         return roomdeviceList.size();
     }
 
+    public interface UnassignedClickEvent {
+        void onClick(int position, UnassignedListRes.Data roomdeviceList, String action);
+    }
+
     class UnassignedHolder extends RecyclerView.ViewHolder {
 
         private ImageView mImageIcon, mImgAdd;
@@ -125,14 +191,10 @@ public class AddUnassignedPanelAdapter extends RecyclerView.Adapter<AddUnassigne
 
         UnassignedHolder(View itemView) {
             super(itemView);
-            mImageIcon =  itemView.findViewById(R.id.up_device_icon);
+            mImageIcon = itemView.findViewById(R.id.up_device_icon);
             mDeviceName = itemView.findViewById(R.id.up_device_name);
             mModuleId = itemView.findViewById(R.id.up_device_module);
-            mImgAdd =  itemView.findViewById(R.id.up_save);
+            mImgAdd = itemView.findViewById(R.id.up_save);
         }
-    }
-
-    public interface UnassignedClickEvent {
-        void onClick(int position, UnassignedListRes.Data roomdeviceList,String action);
     }
 }

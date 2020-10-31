@@ -53,7 +53,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/_280sdp"
             android:layout_marginTop="50dp"
-            android:src="@drawable/doorlock_icon"/>
+            android:src="@drawable/lock_only"/>
 
         <view
             android:layout_width="match_parent"

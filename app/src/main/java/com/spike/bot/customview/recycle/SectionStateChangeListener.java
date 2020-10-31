@@ -4,6 +4,7 @@ package com.spike.bot.customview.recycle;
  * Created by bpncool on 2/24/2016.
  */
 
+import com.spike.bot.model.DeviceVO;
 import com.spike.bot.model.PanelVO;
 import com.spike.bot.model.RoomVO;
 
@@ -13,4 +14,5 @@ import com.spike.bot.model.RoomVO;
 public interface SectionStateChangeListener {
     void onSectionStateChanged(RoomVO section, boolean isOpen);
     void onSectionStateChanged(PanelVO section, boolean isOpen);
+
 }

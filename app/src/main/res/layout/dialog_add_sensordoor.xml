@@ -35,7 +35,7 @@
                 android:layout_height="35dp"
                 android:backgroundTint="@color/sensor_button"
                 android:padding="3dp"
-                app:srcCompat="@drawable/cross" />
+                app:srcCompat="@drawable/round_cross" />
 
         </LinearLayout>
 
@@ -63,7 +63,7 @@
                 android:textColor="@color/txtPanal"
                 android:textSize="@dimen/_10sdp" />
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="@dimen/_50sdp"
                 android:layout_marginRight="3dp"
@@ -73,28 +73,30 @@
 
                 <Spinner
                     android:id="@+id/sp_room_list"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
                     android:layout_marginLeft="5dp"
-                    android:layout_weight="0.8"
+                    android:layout_weight="1"
                     android:background="@android:color/transparent"
                     android:dropDownVerticalOffset="48dp"
                     android:gravity="center"
+                    android:paddingRight="24dp"
                     android:spinnerMode="dropdown" />
 
                 <ImageView
                     android:id="@+id/sp_drop_down"
-                    android:layout_width="0dp"
+                    android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_gravity="center"
                     android:layout_marginLeft="8dp"
-                    android:layout_weight="0.2"
-                    android:src="@drawable/icn_arrow_down_spinner2"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/down"
                     android:visibility="visible" />
 
-            </LinearLayout>
+            </RelativeLayout>
 
 
         </LinearLayout>

@@ -62,7 +62,7 @@
     <string name="bulb_title">Install Your Smart Blub</string>
     <string name="bulb_info">First, make sure the power is off on the light your replacing. Swap the current blub with your Smart Blub.</string>
     <string name="bulb_title1">Power up your smart blub</string>
-    <string name="bulb_info1">Power on thw light wait about five seconds untill the Smart blub blink  three times.</string>
+    <string name="bulb_info1">Power on thw light wait about five seconds untill the Smart blub blink three times.</string>
 
     <string name="words_wifi_name">WIFI name</string>
     <string name="words_wifi_password">WIFI password</string>
@@ -74,7 +74,8 @@
     <string name="curtain">curtain</string>
     <string name="door_sensor">door_sensor</string>
     <string name="temp_sensor">temp_sensor</string>
-    <string name="add_jetson">Add Smart Camera</string>
+<!--    <string name="add_jetson">Add Smart Camera</string>-->
+    <string name="add_jetson">Add Jetson</string>
     <string name="add">ADD</string>
     <string name="cancel">Cancel</string>
     <string name="save">SAVE</string>
@@ -86,7 +87,9 @@
     <string name="connected">CONNECTED TO</string>
     <string name="maxvaluecondition">Max value should bigger than the Min value.</string>
     <string name="gridcolumnwidth">50</string>
+    <string name="gridSensorcolumnwidth">125</string>
     <string name="label_tv_remote">Do you want to associate your DTH/Settop box?</string>
+    <string name="label_dth_remote">Do you want to associate your TV with DTH box?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
 </resources>

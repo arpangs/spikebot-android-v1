@@ -31,14 +31,12 @@ import com.google.gson.Gson;
 import com.kp.core.ActivityHelper;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
-import com.spike.bot.activity.ir.blaster.IRRemoteBrandListActivity;
 import com.spike.bot.activity.ir.blaster.IRRemoteConfigActivity;
 import com.spike.bot.activity.ir.blaster.SearchActivity;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
-import com.spike.bot.core.Constants;
 import com.spike.bot.model.DataSearch;
 import com.spike.bot.model.DeviceBrandRemoteList;
 import com.spike.bot.model.IRRemoteOnOffReq;
@@ -51,26 +49,20 @@ import java.util.List;
 public class TVRemoteConfingActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static DataSearch arrayList;
+    RelativeLayout relative_yes, relative_no;
     private TextView remote_room_txt, mTestButtons, mRespondNo, mRespondYes, mPowerValue, mTxtBlasterName, txtModelNumber;
-    private ImageView mImgLeft, mImgRight,mImgPower;
+    private ImageView mImgLeft, mImgRight, mImgPower;
     private LinearLayout mRespondView;
     private Spinner mSpinnerMode;
-    private EditText mRemoteDefaultTemp,mEdtRemoteName;
-    RelativeLayout relative_yes,relative_no;
-
+    private EditText mRemoteDefaultTemp, mEdtRemoteName;
     private String mIRDeviceId, mIrDeviceType, mRoomId, mBrandId, mIRBlasterModuleId, mIRBrandType, mIRBLasterId, mRoomName,
-            mBlasterName, mBrandType, brand_name = "", model_number = "", onOffValue = "",
-            remote_codeset_id = "", mCodeSet;
+            mBlasterName, mBrandType, brand_name = "", model_number = "", onOffValue = "", mdevicesubtype = "tv",
+            remote_codeset_id = "", mCodeSet,mRemoteName;
 
     private boolean isRequestTypeOn = false;
     private int mTotalState = 1, mCurrentState = 1, RESPOND_CONST = 1; //1 on command : 2 off command
     private Dialog mDialog;
-
-    public static class Power {
-        public static String ON = "On";
-        public static String OFF = "Off";
-    }
-
+    private TextView mTitle;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,6 +92,14 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
         mBrandId = getIntent().getStringExtra("BRAND_ID");
         mIRBlasterModuleId = getIntent().getStringExtra("IR_BLASTER_MODULE_ID");
 
+        if (getIntent().hasExtra("REMOTE_NAME")) {
+            mRemoteName = getIntent().getStringExtra("REMOTE_NAME");
+        }
+
+        if (getIntent().hasExtra("device_sub_type")) {
+            mdevicesubtype = getIntent().getStringExtra("device_sub_type");
+        }
+
         if (arrayList.getDeviceBrandRemoteList() != null &&
                 arrayList.getDeviceBrandRemoteList().size() > 0) {
             onOffValue = arrayList.getDeviceBrandRemoteList().get(0).getIrCode();
@@ -110,23 +110,26 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
     }
 
     private void bindView() {
-        Toolbar toolbar =  findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 //        getSupportActionBar().setTitle("Remote Config");
         getSupportActionBar().setTitle("" + mBrandType);
 
-        mTestButtons =  findViewById(R.id.remote_total_step);
-        mImgLeft =  findViewById(R.id.remote_left_slider);
-        mImgRight =  findViewById(R.id.remote_right_slider);
-        mImgPower =  findViewById(R.id.remote_power_onoff);
-        mPowerValue =  findViewById(R.id.remote_power_value);
+        mTestButtons = findViewById(R.id.remote_total_step);
+        mImgLeft = findViewById(R.id.remote_left_slider);
+        mImgRight = findViewById(R.id.remote_right_slider);
+        mImgPower = findViewById(R.id.remote_power_onoff);
+        mPowerValue = findViewById(R.id.remote_power_value);
 
-        mRespondView =  findViewById(R.id.remote_respond_view);
-        mRespondNo =  findViewById(R.id.remote_respond_no);
-        mRespondYes =  findViewById(R.id.remote_respond_yes);
-        txtModelNumber =  findViewById(R.id.txtModelNumber);
+        mRespondView = findViewById(R.id.remote_respond_view);
+        mRespondNo = findViewById(R.id.remote_respond_no);
+        mRespondYes = findViewById(R.id.remote_respond_yes);
+        txtModelNumber = findViewById(R.id.txtModelNumber);
+
+        mTitle = findViewById(R.id.txt_title);
+        mTitle.setText("Point the Remote at TV and press the\n button\n Release when TV responds");
 
         mImgLeft.setOnClickListener(this);
         mImgRight.setOnClickListener(this);
@@ -166,7 +169,7 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
         if (id == R.id.action_filter) {
             Intent intent = new Intent(this, SearchActivity.class);
             intent.putExtra("mBrandId", "" + mBrandId);
-            intent.putExtra("TVRemote",true);
+            intent.putExtra("TVRemote", true);
             startActivityForResult(intent, 1);
             return true;
         } else if (id == android.R.id.home) {
@@ -188,10 +191,11 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
                 model_number = data.getStringExtra("model_number");
                 txtModelNumber.setText("Model : " + model_number);
                 ChatApplication.logDisplay("model_number is " + model_number);
+
+
             }
         }
     }
-
 
     private void initData(List<DeviceBrandRemoteList> data) {
 
@@ -225,7 +229,7 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
 
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-        SpikeBotApi.getInstance().sendOnOfOffRequest(mIRBlasterModuleId, (RESPOND_CONST == 1) ? "ON" : "OFF", onOffValue, new DataResponseListener() {
+        SpikeBotApi.getInstance().sendOnOfOffRequest(mIRBlasterModuleId, (RESPOND_CONST == 1) ? "ON" : "OFF", onOffValue, "tv", new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
@@ -265,26 +269,38 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
 
     }
 
-    private void showTvRemoteSaveDailog(){
+    private void showTvRemoteSaveDailog() {
+
+        if (mDialog != null) {
+            mDialog = null;
+        }
+
         if (mDialog == null) {
             mDialog = new Dialog(this);
             mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             mDialog.setContentView(R.layout.dialog_save_tvremote);
+            mDialog.setCanceledOnTouchOutside(false);
 
             mEdtRemoteName = mDialog.findViewById(R.id.edt_remote_name);
             InputFilter[] filterArray = new InputFilter[1];
             filterArray[0] = new InputFilter.LengthFilter(25); //Remote Name max length to set only 25
             mEdtRemoteName.setFilters(filterArray);
 
-            ImageView iv_close =  mDialog.findViewById(R.id.iv_close);
+            ImageView iv_close = mDialog.findViewById(R.id.iv_close);
             Button mBtnSave = mDialog.findViewById(R.id.btn_save);
-            remote_room_txt =  mDialog.findViewById(R.id.remote_room_txt);
+            remote_room_txt = mDialog.findViewById(R.id.remote_room_txt);
             relative_yes = mDialog.findViewById(R.id.relative_yes);
             relative_no = mDialog.findViewById(R.id.relative_no);
 
             mEdtRemoteName.setText("");
 
-            mTxtBlasterName =  mDialog.findViewById(R.id.txt_blastername);
+
+            if (mRemoteName != null || !mRemoteName.equals("null")) {
+                mEdtRemoteName.setText(mRemoteName);
+            }
+
+
+            mTxtBlasterName = mDialog.findViewById(R.id.txt_blastername);
 
 //            mRemoteDefaultTemp.setError(null);
             mEdtRemoteName.requestFocus();
@@ -309,13 +325,19 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
                         mEdtRemoteName.setError("Enter Remote name");
                         return;
                     }
-                   // saveRemote(mEdtRemoteName.getText().toString().trim());
+
+
+                    saveRemote(mEdtRemoteName.getText().toString().trim(), mdevicesubtype);
+                    hideSaveDialog();
+
                 }
             });
 
             relative_yes.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    relative_no.setBackgroundResource(R.drawable.background_button_login_gray);
+                    relative_yes.setBackgroundResource(R.drawable.background_decrease_corner);
                     Intent intent = new Intent(TVRemoteConfingActivity.this, DTHRemoteBrandListActivity.class);
                     startActivity(intent);
                 }
@@ -324,7 +346,8 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
             relative_no.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mDialog.dismiss();
+                    relative_no.setBackgroundResource(R.drawable.background_decrease_corner);
+                    relative_yes.setBackgroundResource(R.drawable.background_button_login_gray);
                 }
             });
 
@@ -348,18 +371,18 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
         filterArray[0] = new InputFilter.LengthFilter(25); //Remote Name max length to set only 25
         mEdtRemoteName.setFilters(filterArray);
 
-        ImageView iv_close =  mDialog.findViewById(R.id.iv_close);
+        ImageView iv_close = mDialog.findViewById(R.id.iv_close);
         Button mBtnCancel = mDialog.findViewById(R.id.btn_cancel);
         Button mBtnSave = mDialog.findViewById(R.id.btn_save);
 
-        remote_room_txt =  mDialog.findViewById(R.id.remote_room_txt);
-        mSpinnerMode =  mDialog.findViewById(R.id.remote_mode_spinner);
+        remote_room_txt = mDialog.findViewById(R.id.remote_room_txt);
+        mSpinnerMode = mDialog.findViewById(R.id.remote_mode_spinner);
 
-        mRemoteDefaultTemp =  mDialog.findViewById(R.id.edt_remote_tmp);
+        mRemoteDefaultTemp = mDialog.findViewById(R.id.edt_remote_tmp);
         mRemoteDefaultTemp.setText("");
         mEdtRemoteName.setText("");
 
-        mTxtBlasterName =  mDialog.findViewById(R.id.txt_blastername);
+        mTxtBlasterName = mDialog.findViewById(R.id.txt_blastername);
 
         mRemoteDefaultTemp.setError(null);
         mEdtRemoteName.requestFocus();
@@ -415,7 +438,9 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
                     Common.showToast("Select Mode");
                     return;
                 }
-                saveRemote(mEdtRemoteName.getText().toString().trim());
+
+                saveRemote(mEdtRemoteName.getText().toString().trim(), mdevicesubtype);
+
             }
         });
 
@@ -446,7 +471,7 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
      *
      * @param remoteName
      */
-    private void saveRemote(String remoteName) {
+    private void saveRemote(String remoteName, String mdevicesubtype) {
 
         if (!ActivityHelper.isConnectingToInternet(this)) {
             Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
@@ -454,21 +479,10 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
         }
 
 
-
-      /*  ActivityHelper.showProgressDialog(IRRemoteConfigActivity.this, "Please Wait...", false);
-        AddRemoteReq addRemoteReq = new AddRemoteReq(Common.getPrefValue(this, Constants.USER_ID), mIRDeviceId, mIrDeviceType, mBrandId, mIRBrandType, mCodeSet,
-                remoteName, mIRBLasterId, mIRBlasterModuleId, mRoomId,  mSpinnerMode.getSelectedItem().toString()+"-"+mRemoteDefaultTemp.getText().toString().trim(),
-                APIConst.PHONE_ID_KEY, APIConst.PHONE_TYPE_VALUE, brand_name, remote_codeset_id, model_number, onOffValue);
-        addRemoteReq.setUpdate_type(0);
-
-        Gson gson = new Gson();
-        String mStrOnOffReq = gson.toJson(addRemoteReq);
-        String url = ChatApplication.url + Constants.deviceadd;*/
-
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-        SpikeBotApi.getInstance().saveremote(mIRDeviceId, mIrDeviceType, remoteName, mIRBLasterId, mIRBlasterModuleId, mRoomId, mSpinnerMode.getSelectedItem().toString() + "-" + mRemoteDefaultTemp.getText().toString().trim(),
-                brand_name, remote_codeset_id, model_number, onOffValue, new DataResponseListener() {
+        SpikeBotApi.getInstance().saveremote(mIRDeviceId, mIrDeviceType, remoteName, mIRBLasterId, mIRBlasterModuleId, mRoomId, "off" + "-" + "",
+                brand_name, remote_codeset_id, model_number, onOffValue, mdevicesubtype, new DataResponseListener() {
                     @Override
                     public void onData_SuccessfulResponse(String stringResponse) {
                         try {
@@ -477,12 +491,24 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
                             String message = result.getString("message");
 
                             if (code == 200) {
+                                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                                 ChatApplication.isEditActivityNeedResume = true;
                                 hideSaveDialog();
                                 ChatApplication.logDisplay("remote res : " + result.toString());
                                 hideRespondView();
-                                Intent returnIntent = new Intent();
-                                setResult(Activity.RESULT_OK, returnIntent);
+
+
+                                Intent returnIntent;
+                                if (mdevicesubtype.equalsIgnoreCase("tv_dth")) {
+                                    returnIntent = new Intent(TVRemoteConfingActivity.this, TVRemote.class);
+                                    returnIntent.putExtra("from", "tv_dth");
+                                    returnIntent.putExtra("IR_BLASTER_ID", mIRDeviceId);
+                                    returnIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(returnIntent);
+                                } else {
+                                    returnIntent = new Intent();
+                                    setResult(Activity.RESULT_OK, returnIntent);
+                                }
                                 finish();
                             } else {
                                 Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
@@ -576,11 +602,12 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
     private void respondYesEvent() {
         if (RESPOND_CONST == 2) {
             resetConfig();
-           // showRemoteSaveDialog();
+            // showRemoteSaveDialog();
+
 
             showTvRemoteSaveDailog();
             return;
-        } else{
+        } else {
             setPowerValue(IRRemoteConfigActivity.Power.OFF);
         }
         RESPOND_CONST = 2; //send next request for off command
@@ -602,7 +629,7 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
         }
 
         mRespondView.setVisibility(View.VISIBLE);
-        mRespondView.setBackgroundColor(Color.parseColor("#20808080"));
+        mRespondView.setBackgroundResource(R.color.automation_blue);
     }
 
     private void hideLeftSlider() {
@@ -696,6 +723,11 @@ public class TVRemoteConfingActivity extends AppCompatActivity implements View.O
         RESPOND_CONST = 1;
         setPowerValue(IRRemoteConfigActivity.Power.ON);
         hideRespondView();
+    }
+
+    public static class Power {
+        public static String ON = "On";
+        public static String OFF = "Off";
     }
 }
 

@@ -67,8 +67,8 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
                 holder.tvUserName.setVisibility(View.GONE);
             }
 
-            if(deviceLog.getActivity_action().equalsIgnoreCase("End of Record")){
-                holder.txt_empty_view.setVisibility(View.GONE);
+            if(deviceLog.getActivity_action().toLowerCase().equalsIgnoreCase("end of record")){
+                holder.txt_empty_view.setVisibility(View.VISIBLE);
                 holder.txt_empty_view.setText(deviceLog.getActivity_type());
                 holder.tv_device_log_date.setVisibility(View.GONE);
                 holder.tv_device_log_type.setVisibility(View.GONE);
@@ -104,12 +104,12 @@ public class DeviceLogAdapter extends RecyclerView.Adapter<DeviceLogAdapter.View
                 holder.tv_device_description2.setTextColor(mContext.getResources().getColor(R.color.automation_red));
                 holder.tv_device_description3.setTextColor(mContext.getResources().getColor(R.color.automation_red));
             }else {
-                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
-                holder.tv_device_log_type.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
-                holder.tvUserName.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
-                holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
-                holder.tv_device_description2.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
-                holder.tv_device_description3.setTextColor(mContext.getResources().getColor(R.color.txtPanal));
+                holder.tv_device_log_date.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+                holder.tv_device_log_type.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+                holder.tvUserName.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+                holder.tv_device_description.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+                holder.tv_device_description2.setTextColor(mContext.getResources().getColor(R.color.automation_black));
+                holder.tv_device_description3.setTextColor(mContext.getResources().getColor(R.color.automation_black));
             }
             holder.tv_device_log_type.setText(deviceLog.getActivity_action() + " - " + deviceLog.getActivity_type());
 

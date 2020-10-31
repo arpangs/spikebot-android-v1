@@ -424,8 +424,8 @@ public class CameraPlayBack extends AppCompatActivity implements ExpandableTestA
         //http://home.deepfoods.net:10000/static/storage/volume/pi/1564123250335_hgTonaqUq-2019-07-26_13.20.mp4
 
         Intent intent = new Intent(CameraPlayBack.this, VideoViewPLayer.class);
-        intent.putExtra("videoUrl", ip + "" + cameraVO.getCamera_id() + cameraVO.getCamera_videopath());
-        intent.putExtra("videoUrl", ip + "" + cameraVO.getLoadingUrl());
+        intent.putExtra("videoUrl", Constants.startUrlhttp+"//"+ip + "" + cameraVO.getCamera_id() + cameraVO.getCamera_videopath());
+        intent.putExtra("videoUrl", Constants.startUrlhttp+"//"+ip + "" + cameraVO.getLoadingUrl());
         intent.putExtra("name", "" + cameraArrayList.get(group).getCamera_name());
         intent.putExtra("isCloudConnect", Main2Activity.isCloudConnected);
         startActivity(intent);
@@ -550,7 +550,7 @@ public class CameraPlayBack extends AppCompatActivity implements ExpandableTestA
 
     private String changeDateFormat(String str_date) {
         String date = null;
-        SimpleDateFormat format = new SimpleDateFormat(Constants.LOG_DATE_FORMAT_2);
+        SimpleDateFormat format = new SimpleDateFormat(Constants.LOG_DATE_FORMAT_3);
         date = format.format(getDate(str_date));
         return date;
     }

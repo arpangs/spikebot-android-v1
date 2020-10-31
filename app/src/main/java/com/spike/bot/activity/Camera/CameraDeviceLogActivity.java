@@ -6,13 +6,10 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Bundle;
-
 import android.text.TextUtils;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -34,32 +31,25 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.kp.core.ActivityHelper;
-import com.kp.core.GetJsonTask;
-import com.kp.core.ICallBack;
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.activity.DeviceLogActivity;
 import com.spike.bot.adapter.CameraLogAdapter;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
-import com.spike.bot.core.APIConst;
 import com.spike.bot.core.Common;
 import com.spike.bot.core.Constants;
 import com.spike.bot.model.CameraVO;
 import com.spike.bot.model.NotificationList;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 import static com.spike.bot.core.Constants.getNextDate;
 
@@ -69,31 +59,29 @@ import static com.spike.bot.core.Constants.getNextDate;
  */
 public class CameraDeviceLogActivity extends AppCompatActivity {
 
+    public static ArrayList<CameraVO> getCameraList = new ArrayList<>();
+    public static boolean isJetsonCameralog = false;
+    public static boolean isjetsonnotification = false;
     public RecyclerView rvDeviceLog;
     public RecyclerView rv_month_list;
     public LinearLayout ll_empty;
     public Toolbar toolbar;
     public TextView et_schedule_on_time, et_schedule_off_time;
-
     public boolean isLoading = false, isCompareDateValid = true, isFilterActive = false;
     public int notification_number = 0;
     public String camera_id = "", homecontroller_id = "", end_date = "", start_date = "", date_time = "", cameraIdTemp = "", jetson_id = "", cameralog = "",
             jetsoncameralog = "";
     public int mYear, mMonth, mDay;
     public int mHour, mMinute, mSecond;
-
     public Dialog dialog;
     /*Adapter */
     public LinearLayoutManager linearLayoutManager;
     public CameraLogAdapter cameraLogAdapter;
     public ArrayList<NotificationList> arrayList = new ArrayList<>();
     public ArrayList<NotificationList> arrayListTemp = new ArrayList<>();
-    public static ArrayList<CameraVO> getCameraList = new ArrayList<>();
     ArrayList datelist = new ArrayList();
     ArrayList monthlist = new ArrayList();
     int row_index = -1;
-    public static boolean isJetsonCameralog = false;
-    public static boolean isjetsonnotification = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -122,7 +110,20 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         isJetsonCameralog = getIntent().getExtras().getBoolean("isshowJestonCameraLog");
         // getCameraList = (ArrayList<CameraVO>) getIntent().getExtras().getSerializable("cameraList");
 
-        toolbar.setTitle("Camera Notifications");
+
+        try {
+            if (getIntent().hasExtra("from")) {
+                String title = getIntent().getStringExtra("from").equals("Jetson") ? "Jetson Logs" : "Camera Logs";
+                toolbar.setTitle(title);
+            } else {
+                toolbar.setTitle("Camera Notifications");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            toolbar.setTitle("Camera Notifications");
+        }
+
+
         rvDeviceLog = findViewById(R.id.rv_device_log);
         rv_month_list = findViewById(R.id.rv_monthlist);
         ll_empty = findViewById(R.id.ll_empty);
@@ -148,8 +149,9 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
             cameraLogAdapter.notifyDataSetChanged();
         }
 
-        start_date = "";
-        end_date = "";
+        /*as discuss with tester refresh shold not clear the date so commented the code*/
+//        start_date = "";
+//        end_date = "";
         notification_number = 0;
         camera_id = "" + cameraIdTemp;
         callCameraLog(camera_id, start_date, end_date, notification_number);
@@ -564,6 +566,47 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
         callCameraLog(camera_id, start_date, getNextDate(end_date), notification_number);
     }
 
+    /*use for camera unread count clear */
+    private void callupdateUnReadCameraLogs(final boolean b) {
+
+        if (!ActivityHelper.isConnectingToInternet(this)) {
+            Toast.makeText(this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (ChatApplication.url.contains("http://"))
+            ChatApplication.url = ChatApplication.url.replace("http://", "");
+
+        SpikeBotApi.getInstance().callupdateUnReadCameraLogs("camera", cameraIdTemp, new DataResponseListener() {
+            @Override
+            public void onData_SuccessfulResponse(String stringResponse) {
+                try {
+                    finish();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onData_FailureResponse() {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(CameraDeviceLogActivity.this, R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onData_FailureResponse_with_Message(String error) {
+                ActivityHelper.dismissProgressDialog();
+                Toast.makeText(CameraDeviceLogActivity.this, R.string.disconnect, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /*check unread count getting than clear count */
+    @Override
+    public void onBackPressed() {
+        callupdateUnReadCameraLogs(false);
+        super.onBackPressed();
+    }
 
     public class MonthAdapter extends RecyclerView.Adapter<MonthAdapter.MonthViewHolder> {
 
@@ -623,48 +666,5 @@ public class CameraDeviceLogActivity extends AppCompatActivity {
             }
         }
 
-    }
-
-    /*use for camera unread count clear */
-    private void callupdateUnReadCameraLogs(final boolean b) {
-
-        if (!ActivityHelper.isConnectingToInternet(this)) {
-            Toast.makeText(this.getApplicationContext(), R.string.disconnect, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (ChatApplication.url.contains("http://"))
-            ChatApplication.url = ChatApplication.url.replace("http://", "");
-
-        SpikeBotApi.getInstance().callupdateUnReadCameraLogs("camera", cameraIdTemp, new DataResponseListener() {
-            @Override
-            public void onData_SuccessfulResponse(String stringResponse) {
-                try {
-                    finish();
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onData_FailureResponse() {
-                ActivityHelper.dismissProgressDialog();
-                Toast.makeText(CameraDeviceLogActivity.this, R.string.disconnect, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onData_FailureResponse_with_Message(String error) {
-                ActivityHelper.dismissProgressDialog();
-                Toast.makeText(CameraDeviceLogActivity.this, R.string.disconnect, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-
-    /*check unread count getting than clear count */
-    @Override
-    public void onBackPressed() {
-        callupdateUnReadCameraLogs(false);
-        super.onBackPressed();
     }
 }

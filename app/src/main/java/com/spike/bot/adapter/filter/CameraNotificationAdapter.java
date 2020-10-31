@@ -1,16 +1,11 @@
 package com.spike.bot.adapter.filter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
 
-import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.SwitchCompat;
@@ -40,16 +35,15 @@ import java.util.List;
  */
 public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotificationAdapter.SensorViewHolder> {
 
-    private TempSensorInfoAdapter.OnNotificationContextMenu onNotificationContextMenu;
-    private Context mContext;
+    public GridLayoutManager gridLayoutManager;
+    public UpdateCameraAlert updateCameraAlert;
     ArrayList<CameraAlertList> arrayListLog = new ArrayList<>();
     ArrayList<CameraAlertList> temparrayListLog = new ArrayList<>();
     ArrayList<CameraVO> getCameraList = new ArrayList<>();
     ArrayList<CameraViewModel> arrayList;
     List<String> myList;
-
-    public GridLayoutManager gridLayoutManager;
-    public UpdateCameraAlert updateCameraAlert;
+    private TempSensorInfoAdapter.OnNotificationContextMenu onNotificationContextMenu;
+    private Context mContext;
 
 
     public CameraNotificationAdapter(Context context, GridLayoutManager gridLayoutManage, ArrayList<CameraAlertList> arrayListLog, ArrayList<CameraVO> getCameraList, UpdateCameraAlert updateCameraAlert) {
@@ -90,11 +84,9 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
         }
 
 
-        if (arrayListLog.get(position).getCameraIds() != null)
-        {
+        if (arrayListLog.get(position).getCameraIds() != null) {
             myList = new ArrayList<String>(Arrays.asList(arrayListLog.get(position).getCameraIds().split(",")));
-            if (myList.size() > 0)
-            {
+            if (myList.size() > 0) {
                 arrayList = new ArrayList<>();
                 for (int j = 0; j < myList.size(); j++) {
                     for (int i = 0; i < getCameraList.size(); i++) {
@@ -118,13 +110,14 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
                     }
                 }
 
-                if (arrayListLog.get(position).getIsOpen()) {
-                    holder.imgArrow.setImageDrawable(mContext.getResources().getDrawable(R.drawable.arrow_up2));
-                    holder.recyclerCamera.setVisibility(View.VISIBLE);
-                } else {
-                    holder.imgArrow.setImageDrawable(mContext.getResources().getDrawable(R.drawable.arrow_down2));
-                    holder.recyclerCamera.setVisibility(View.GONE);
-                }
+//                if (arrayListLog.get(position).getIsOpen()) {
+                holder.imgArrow.setImageDrawable(mContext.getResources().getDrawable(R.drawable.up));
+                holder.imgArrow.setVisibility(View.INVISIBLE);
+                holder.recyclerCamera.setVisibility(View.VISIBLE);
+//                } else {
+//                    holder.imgArrow.setImageDrawable(mContext.getResources().getDrawable(R.drawable.down));
+//                    holder.recyclerCamera.setVisibility(View.GONE);
+//                }
 
                 if (arrayListLog.get(position).getIsActive() == 1) {
                     holder.switchAlert.setChecked(true);
@@ -136,7 +129,7 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
         }
 
 
-        holder.linearCamera.setOnClickListener(new View.OnClickListener() {
+        /*holder.linearCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (arrayListLog.get(position).getIsOpen()) {
@@ -148,7 +141,7 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
                 }
                 notifyDataSetChanged();
             }
-        });
+        });*/
 
         if (Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
             if (Common.getPrefValue(mContext, Constants.USER_ID).equalsIgnoreCase(arrayListLog.get(position).getUser_id())) {
@@ -245,14 +238,14 @@ public class CameraNotificationAdapter extends RecyclerView.Adapter<CameraNotifi
 
         public SensorViewHolder(View view) {
             super(view);
-            imgArrow =  itemView.findViewById(R.id.imgArrow);
-            txtStartTime =  itemView.findViewById(R.id.txtStartTime);
-            txtEndTime =  itemView.findViewById(R.id.txtEndTime);
-            switchAlert =  itemView.findViewById(R.id.switchAlert);
-            imgMore =  itemView.findViewById(R.id.imgMore);
-            linearCamera =  itemView.findViewById(R.id.linearCamera);
-            recyclerCamera =  itemView.findViewById(R.id.recyclerCamera);
-            viewLine =  itemView.findViewById(R.id.viewLine);
+            imgArrow = itemView.findViewById(R.id.imgArrow);
+            txtStartTime = itemView.findViewById(R.id.txtStartTime);
+            txtEndTime = itemView.findViewById(R.id.txtEndTime);
+            switchAlert = itemView.findViewById(R.id.switchAlert);
+            imgMore = itemView.findViewById(R.id.imgMore);
+            linearCamera = itemView.findViewById(R.id.linearCamera);
+            recyclerCamera = itemView.findViewById(R.id.recyclerCamera);
+            viewLine = itemView.findViewById(R.id.viewLine);
         }
     }
 }

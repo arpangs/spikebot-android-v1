@@ -35,7 +35,7 @@
                 android:layout_height="@dimen/_25sdp"
                 android:layout_marginRight="@dimen/_5sdp"
                 android:layout_gravity="center"
-                android:src="@drawable/cross"/>
+                android:src="@drawable/round_cross"/>
 
         </LinearLayout>
 
@@ -53,7 +53,7 @@
             android:layout_gravity="center"
             android:layout_marginLeft="@dimen/_10sdp"
             android:layout_marginRight="@dimen/_10sdp"
-            android:layout_marginTop="@dimen/_25sdp"
+            android:layout_marginTop="@dimen/_10sdp"
             android:orientation="horizontal">
 
 
@@ -64,7 +64,7 @@
                 android:layout_marginBottom="@dimen/_5sdp"
                 android:layout_weight="1.2"
                 android:gravity="center|left|bottom"
-                android:hint="Smart Camera Name"
+                android:hint="Name"
                 android:fontFamily="Avenir-Heavy"
                 android:maxLength="16"
                 android:singleLine="true"
@@ -96,7 +96,7 @@
             android:layout_gravity="center|bottom"
             android:layout_marginLeft="@dimen/_10sdp"
             android:layout_marginRight="@dimen/_10sdp"
-            android:layout_marginTop="@dimen/_15sdp"
+
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -121,7 +121,7 @@
                 android:layout_marginRight="@dimen/_10sdp"
                 android:layout_weight="1"
                 android:gravity="center|left"
-                android:maxLength="16"
+                android:maxLength="50"
                 android:paddingBottom="@dimen/_15sdp"
                 android:singleLine="true"
                 android:textColor="@color/automation_black"
@@ -139,7 +139,7 @@
             android:layout_marginBottom="@dimen/_12sdp"
             android:layout_marginLeft="@dimen/_15sdp"
             android:layout_marginRight="@dimen/_15sdp"
-            android:layout_marginTop="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_15sdp"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatButton

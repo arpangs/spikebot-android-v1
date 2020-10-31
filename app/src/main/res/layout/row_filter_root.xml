@@ -36,7 +36,7 @@
 
         <ImageView
             android:id="@+id/root_arrow"
-            android:src="@drawable/arrow_down2"
+            android:src="@drawable/down"
             android:layout_weight="0.2"
             android:layout_gravity="center"
             android:layout_width="0dp"

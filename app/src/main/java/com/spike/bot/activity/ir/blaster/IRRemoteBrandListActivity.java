@@ -131,7 +131,7 @@ public class IRRemoteBrandListActivity extends AppCompatActivity implements IRRe
         ActivityHelper.showProgressDialog(IRRemoteBrandListActivity.this, "Please Wait...", false);
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
-        SpikeBotApi.getInstance().getIRDetailsList(new DataResponseListener() {
+        SpikeBotApi.getInstance().getIRDetailsList("1",new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 hideProgress();

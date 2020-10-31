@@ -2,7 +2,7 @@ package com.spike.bot.adapter;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.text.Html;
+import android.graphics.Color;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -101,8 +101,10 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
         switch (holder.viewType) {
             case VIEW_TYPE_SECTION:
                 final RoomVO section = (RoomVO) mDataArrayList.get(position);
-                String styledText = "<font color='#333333'>" + section.getRoomName() + "</font>";
-                holder.sectionTextView.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
+//                String styledText = "<font color='#333333'>" + section.getRoomName() + "</font>";
+//                holder.sectionTextView.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
+                holder.sectionTextView.setText(section.getRoomName());
+                holder.sectionTextView.setTextColor(Color.parseColor("#333333"));
 
                 if (section.isExpanded()) {
                     holder.sectionTextView.setSingleLine(false);
@@ -176,13 +178,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     }
                 });
 
-               /* holder.sectionToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        holder.sectionTextView.performClick();
-                    }
-                });
-*/
+
                 holder.txtTotalDevices.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -220,9 +216,9 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
 
 
                 if (section.isExpanded()) {
-                    holder.linear_top_section.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side_mood));
+                    holder.linear_top_section.setBackgroundColor(mContext.getResources().getColor(R.color.automation_white));
                 } else {
-                    holder.linear_top_section.setBackground(mContext.getDrawable(R.drawable.background_with_shadow_green));
+                    holder.linear_top_section.setBackground(mContext.getDrawable(R.drawable.background_with_shadow_new));
                 }
 
                 if (!Common.getPrefValue(mContext, Constants.USER_ADMIN_TYPE).equalsIgnoreCase("0")) {
@@ -297,11 +293,13 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
 
                 holder.itemTextView.setText(item.getDeviceName());
                 ChatApplication.logDisplay("status update room mood adapter device call " + item.getDeviceName());
-                if (item.getDevice_icon().equalsIgnoreCase("remote")) {
+                if (item.getDeviceType().toLowerCase().equalsIgnoreCase("remote")) {
+                    String deviceicon = item.getDevice_sub_type().toLowerCase();
+
                     if (item.getIsActive() == -1) {
-                        holder.iv_icon.setImageResource(Common.getIconInActive(item.getDeviceStatus(), item.getDevice_icon()));
+                        holder.iv_icon.setImageResource(Common.getIconInActive(item.getDeviceStatus(), "remote_" + deviceicon));
                     } else {
-                        holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(), item.getDevice_icon()));
+                        holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(), "remote_" + deviceicon));
                     }
                 } else {
                     if (item.getDevice_icon().equalsIgnoreCase("heavyload")) {
@@ -315,7 +313,11 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                             holder.iv_icon.setClickable(false);
                         }
                     } else {
-                        holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(), item.getDevice_icon()));
+                        if (item.getDevice_icon().toLowerCase().equals("ac")) {
+                            holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(), "switch_" + item.getDevice_icon()));
+                        } else {
+                            holder.iv_icon.setImageResource(Common.getIcon(item.getDeviceStatus(), item.getDevice_icon()));
+                        }
                     }
                 }
 
@@ -340,7 +342,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                         item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1 : 0);
                         notifyItemChanged(position, item);
                         //If Device icon Equal to Remote AC then open remote instead of call onOff Device item
-                        if (item.getDeviceType().equalsIgnoreCase("remote")) { //click on remote device id
+                        if (item.getDeviceType().toLowerCase().equalsIgnoreCase("remote")) { //click on remote device id
                             mItemClickListener.itemClicked(item, "isIRSensorOnClick");
                         } else {
 //                            item.setOldStatus(item.getDeviceStatus());
@@ -354,9 +356,9 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                 holder.iv_icon.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        if (item.getDeviceType().equalsIgnoreCase("remote")) { //click on remote device id
+                        if (item.getDeviceType().toLowerCase().equalsIgnoreCase("remote")) { //click on remote device id
                             mItemClickListener.itemClicked(item, "isIRSensorClick");
-                        } else if (item.getDeviceType().equalsIgnoreCase("heavyload")) {
+                        } else if (item.getDeviceType().toLowerCase().equalsIgnoreCase("heavyload")) {
                             mItemClickListener.itemClicked(item, "heavyloadlongClick");
                         } else if (item.getDeviceType().equalsIgnoreCase("3")) {
                             mItemClickListener.itemClicked(item, "philipslongClick");
@@ -365,7 +367,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     }
                 });
 
-                if (item.getDeviceType().equalsIgnoreCase("fan")) {
+                if (item.getDeviceType().toLowerCase().equalsIgnoreCase("fan")) {
 //                    if(Integer.parseInt(item.getDeviceId()) == 1 && Integer.parseInt(item.getDeviceType()) == 1){
                     holder.iv_icon.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
@@ -385,9 +387,9 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
                     holder.view.setOnLongClickListener(null);
                 }
 
-                if (item.getDeviceType().equalsIgnoreCase("remote") || item.getDeviceType().equalsIgnoreCase("heavyload")) {
+                if (item.getDeviceType().toLowerCase().equalsIgnoreCase("remote") || item.getDeviceType().equalsIgnoreCase("heavyload")) {
                     holder.imgLongClick.setVisibility(View.VISIBLE);
-                } else if (item.getDeviceType().equalsIgnoreCase("fan") || item.getDeviceType().equalsIgnoreCase("-1") || item.getDeviceType().equalsIgnoreCase("3")) {
+                } else if (item.getDeviceType().toLowerCase().equalsIgnoreCase("fan") || item.getDeviceType().equalsIgnoreCase("-1") || item.getDeviceType().equalsIgnoreCase("3")) {
                     holder.imgLongClick.setVisibility(View.VISIBLE);
                 } else {
                     if (item.getDeviceType().equalsIgnoreCase("1")) {
@@ -425,6 +427,7 @@ public class MoodExpandableGridAdapter extends RecyclerView.Adapter<MoodExpandab
         TextView txtTitalMood = dialog.findViewById(R.id.txtTitalMood);
 
         txtTitalMood.setText("Assign Number");
+        editKeyValue.setHint("Enter Number");
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

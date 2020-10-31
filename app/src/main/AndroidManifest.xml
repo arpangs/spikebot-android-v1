@@ -76,7 +76,7 @@
         android:allowClearUserData="true"
         android:networkSecurityConfig="@xml/network_http"
         android:name=".ChatApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher_round"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
@@ -531,6 +531,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
+        <activity android:name=".activity.Temperature.TemperatureGraphActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
         <activity android:name=".activity.Curtain.CurtainActivity"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait"
@@ -599,25 +604,30 @@
         <activity
             android:name="com.spike.bot.activity.TvDthRemote.TVRemote"
             android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
 
         <activity
             android:name="com.spike.bot.activity.TvDthRemote.TVRemoteBrandListActivity"
             android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
 
         <activity
             android:name="com.spike.bot.activity.TvDthRemote.TVRemoteConfingActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" />
 
         <activity
             android:name="com.spike.bot.activity.TvDthRemote.DTHRemoteBrandListActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" />
 
         <activity
             android:name="com.spike.bot.activity.TvDthRemote.DTHRemoteConfigActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" />
 
@@ -634,18 +644,20 @@
         </provider>
 
         <service
-            android:name="com.spike.bot.fcm.MyFirebaseMessagingService">
+            android:name="com.spike.bot.fcm.MyFirebaseMessagingService"
+            android:stopWithTask="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
 
-        <service
-            android:name="com.spike.bot.fcm.MyFirebaseInstanceIDService">
+       <!-- <service
+            android:name="com.spike.bot.fcm.MyFirebaseInstanceIDService"
+            android:stopWithTask="false">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
-        </service>
+        </service>-->
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
@@ -683,6 +695,7 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="b5a4b8890f9a237b26054ed7a0422a23e27f6f60" />
+
     </application>
 
 </manifest>

@@ -1,7 +1,6 @@
 package com.spike.bot.activity;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -10,11 +9,9 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Parcelable;
 import android.text.InputFilter;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -59,10 +56,12 @@ import com.spike.bot.activity.Sensor.GasSensorActivity;
 import com.spike.bot.activity.Sensor.MultiSensorActivity;
 import com.spike.bot.activity.Sensor.WaterSensorActivity;
 import com.spike.bot.activity.TTLock.YaleLockInfoActivity;
+import com.spike.bot.activity.TvDthRemote.TVRemote;
 import com.spike.bot.activity.ir.blaster.IRBlasterRemote;
 import com.spike.bot.adapter.CameraDetailAdapter;
 import com.spike.bot.adapter.PanelExpandableLayoutHelper;
 import com.spike.bot.adapter.SectionedExpandableGridAdapter;
+import com.spike.bot.adapter.sensorRoomDetails.SensorRoomDetailsGridAdapter;
 import com.spike.bot.api_retrofit.DataResponseListener;
 import com.spike.bot.api_retrofit.SpikeBotApi;
 import com.spike.bot.camera.CameraPlayer;
@@ -101,30 +100,206 @@ import static com.spike.bot.core.Common.showToast;
 
 public class RoomDetailActivity extends AppCompatActivity implements ItemClickListener, TempClickListener, SwipeRefreshLayout.OnRefreshListener, OnSmoothScrollList, CameraDetailAdapter.CameraClickListener,
         CameraDetailAdapter.JetsonClickListener, CameraDetailAdapter.ClickListener, View.OnClickListener {
+    public static Boolean isRefreshCheck = true;
+    public static DeviceVO tmpDeviceV0;
+    public static int tmpPosition = -1;
+    public PanelExpandableLayoutHelper sectionedExpandableLayoutHelper;
+    public CameraDetailAdapter cameraadapter;
     Toolbar toolbar;
     RecyclerView roomrecycleview;
     String room_id, jetson_id, camera_id, room_name, homecontrollerid, cloudurl = "", pir_device_on_off_timer = "30";
-    public static Boolean isRefreshCheck = true;
     RoomVO room;
-
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private NestedScrollView main_scroll;
-    public PanelExpandableLayoutHelper sectionedExpandableLayoutHelper;
-    public CameraDetailAdapter cameraadapter;
-    private ArrayList<PanelVO> panelList = new ArrayList<>();
-    private ArrayList<CameraVO> cameraList = new ArrayList<>();
-    public static DeviceVO tmpDeviceV0;
-    public static int tmpPosition = -1;
-    private Socket mSocket, cloudsocket;
     List<CameraCounterModel.Data.CameraCounterList> cameracounterlist;
     Dialog mPIRModedialog;
     boolean isPIREdit;
     TextView txt_empty_message;
+    LinearLayout card_layout, linear_empty_panel, linear_recording, linear_preview, linear_refresh, linear_log;
+    int mNoOfColumns;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private NestedScrollView main_scroll;
+    private ArrayList<PanelVO> panelList = new ArrayList<>();
+    private ArrayList<CameraVO> cameraList = new ArrayList<>();
+    private Socket mSocket, cloudsocket;
     private TextInputEditText edSensorName;
     private Spinner mDeviceTurnOnOffTimer;
     private Button btnPIRSave;
-    LinearLayout card_layout, linear_empty_panel, linear_recording, linear_preview, linear_refresh;
-    int mNoOfColumns;
+    private TextView nSensorpanelTitle;
+    private RecyclerView mSensorRecycle;
+    private SensorRoomDetailsGridAdapter SPAdapter;
+    private ArrayList<DeviceVO> mSensorlist;
+    /*change device status socket getting
+    like devic eon /  off , value change
+    * */
+    private Emitter.Listener changeDeviceStatus = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+                        try {
+                            //{"device_id":"1571671238168_3FH8phZUCh","device_type":"switch","device_status":0,"device_sub_status":0}
+                            JSONObject object = new JSONObject(args[0].toString());
+                            ChatApplication.logDisplay("status update panel device " + object.toString());
+                            String device_type = object.getString("device_type");
+                            String device_id = object.getString("device_id");
+                            String device_status = object.getString("device_status");
+
+                            String device_sub_status = "";
+
+                            if (object.has("device_sub_status")) {
+                                device_sub_status = object.getString("device_sub_status");
+                            }
+
+                            sectionedExpandableLayoutHelper.updateDeviceItem(device_type, device_id, device_status, device_sub_status);
+                            SPAdapter.updateStatus(device_type, device_id, device_status, device_sub_status);
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
+    /**
+     * Update panel status
+     * on, off
+     */
+    private Emitter.Listener panelStatus = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+
+                            ChatApplication.logDisplay("status update panel " + object.toString());
+
+                            String panel_id = object.optString("panel_id");
+                            String panelstatusValue = object.has("panel_status") ? object.getString("panel_status") : "";
+
+                            sectionedExpandableLayoutHelper.updatePanel(panel_id, panelstatusValue, "");
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+    };
+    /* door sensor open / close
+     * sensor temp , door , ir remote */
+    private Emitter.Listener changeModuleStatus = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+                        try {
+                            //{"module_id":"1573121550836_Prw60ijgq","is_active":"y"}
+                            JSONObject object = new JSONObject(args[0].toString());
+                            ChatApplication.logDisplay("changeModuleStatus is " + object);
+                            String module_id = object.optString("module_id");
+                            String is_active = object.optString("is_active");
+
+                            sectionedExpandableLayoutHelper.updateModuleActiveItem(module_id, is_active);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
+    /* uprecount like notification icon upper showing count*/
+    private Emitter.Listener unReadCount = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+                        try {
+                            // user_id, device_id, counter
+                            JSONObject object = new JSONObject(args[0].toString());
+                            ChatApplication.logDisplay("unReadCount is " + object);
+                            String device_id = object.getString("device_id");
+                            String counter = object.getString("counter");
+                            String user_id = object.getString("user_id");
+
+                            if (user_id.equalsIgnoreCase(Common.getPrefValue(RoomDetailActivity.this, Constants.USER_ID))) {
+                                sectionedExpandableLayoutHelper.updateBadgeCount(device_id, counter);
+
+                            }
+
+                            SPAdapter.updateCount(device_id, counter);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+    };
+    private Emitter.Listener changeIrBlasterTemperature = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+                            //  String user_id = object.getString("user_id");
+                            String ir_blaster_id = object.getString("ir_blaster_id");
+                            String temperature = object.getString("temperature");
+                            ChatApplication.logDisplay("ir remote temp socket" + object.toString());
+                            sectionedExpandableLayoutHelper.updateTempCount(ir_blaster_id, temperature);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
+    private Emitter.Listener updateCameraCounter = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (args != null) {
+
+                        try {
+                            JSONObject object = new JSONObject(args[0].toString());
+                            String user_id = object.getString("user_id");
+                            String camera_id = object.getString("user_id");
+                            int unseen_log = object.getInt("unseen_log");
+                            ChatApplication.logDisplay("camera counter socket" + object.toString());
+                            getCameraBadgeCount();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            });
+        }
+    };
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -152,26 +327,32 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
         linear_preview = findViewById(R.id.linear_preview);
         linear_refresh = findViewById(R.id.linear_refresh);
         linear_recording = findViewById(R.id.linear_recording);
+        linear_log = findViewById(R.id.linear_log);
         linear_empty_panel = findViewById(R.id.linear_empty_panel);
         txt_empty_message = findViewById(R.id.txt_empty_message);
         main_scroll = findViewById(R.id.main_scroll);
         swipeRefreshLayout = findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(this);
         roomrecycleview = findViewById(R.id.room_recycleview);
+        nSensorpanelTitle = findViewById(R.id.txt_title);
+        mSensorRecycle = findViewById(R.id.room_recycleview_sensor);
+
+        mSensorlist = new ArrayList<>();
 
         roomrecycleview.setLayoutManager(new LinearLayoutManager(RoomDetailActivity.this));
         if (!TextUtils.isEmpty(room_id)) {
             card_layout.setVisibility(View.GONE);
-            getRoomDetails();
+//            getRoomDetails(); // dev arp commented due to twice call api on load the activity on 27 aug 2020
             int orientation = this.getResources().getConfiguration().orientation;
             if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                 // code for portrait mode
-                mNoOfColumns = Utility.calculateNoOfColumns(getApplicationContext(),90);
+                mNoOfColumns = Utility.calculateNoOfColumns(getApplicationContext(), 90);
             } else {
                 // code for landscape mode
-                mNoOfColumns = Utility.calculateNoOfColumns(getApplicationContext(),90);
+                mNoOfColumns = Utility.calculateNoOfColumns(getApplicationContext(), 90);
             }
-            sectionedExpandableLayoutHelper = new PanelExpandableLayoutHelper(RoomDetailActivity.this, roomrecycleview, RoomDetailActivity.this, RoomDetailActivity.this, RoomDetailActivity.this,mNoOfColumns);
+//            sectionedExpandableLayoutHelper = new PanelExpandableLayoutHelper(RoomDetailActivity.this, roomrecycleview, RoomDetailActivity.this, RoomDetailActivity.this, RoomDetailActivity.this,mNoOfColumns);
+            sectionedExpandableLayoutHelper = new PanelExpandableLayoutHelper(RoomDetailActivity.this, roomrecycleview, RoomDetailActivity.this, RoomDetailActivity.this, RoomDetailActivity.this, 1);
             startSocketConnection();
         } else {
             card_layout.setVisibility(View.VISIBLE);
@@ -183,6 +364,7 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
         linear_recording.setOnClickListener(this);
         linear_preview.setOnClickListener(this);
         linear_refresh.setOnClickListener(this);
+        linear_log.setOnClickListener(this);
 
     }
 
@@ -195,13 +377,16 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             // code for portrait mode
 
-            mNoOfColumns = Utility.calculateNoOfColumns(getApplicationContext(), Float.parseFloat(getResources().getString(R.string.gridcolumnwidth)));
+            mNoOfColumns = Utility.calculateNoOfColumns(getApplicationContext(), Float.parseFloat(getResources().getString(R.string.gridSensorcolumnwidth)));
         } else {
             // code for landscape mode
-            mNoOfColumns = Utility.calculateNoOfColumns(getApplicationContext(),Float.parseFloat(getResources().getString(R.string.gridcolumnwidth)));
+            mNoOfColumns = Utility.calculateNoOfColumns(getApplicationContext(), Float.parseFloat(getResources().getString(R.string.gridSensorcolumnwidth)));
         }
-        sectionedExpandableLayoutHelper = new PanelExpandableLayoutHelper(RoomDetailActivity.this, roomrecycleview, RoomDetailActivity.this, RoomDetailActivity.this, RoomDetailActivity.this,mNoOfColumns);
+        sectionedExpandableLayoutHelper = new PanelExpandableLayoutHelper(RoomDetailActivity.this, roomrecycleview, RoomDetailActivity.this, RoomDetailActivity.this, RoomDetailActivity.this, mNoOfColumns);
         sectionedExpandableLayoutHelper.notifyDataSetChanged();
+
+        mSensorRecycle.setLayoutManager(new GridLayoutManager(this, mNoOfColumns));
+        SPAdapter.notifyDataSetChanged();
     }
 
     private void setAdapter() {
@@ -293,7 +478,7 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
             ChatApplication.logDisplay("socket is null");
         }
         if (!TextUtils.isEmpty(room_id)) {
-            getRoomDetails();
+            getRoomDetails(false);
         } else {
             getCameraDetails();
         }
@@ -339,7 +524,7 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
         } else {
             if (Common.getPrefValue(RoomDetailActivity.this, Constants.USER_ADMIN_TYPE).equals("1")) {
                 actionEdit.setVisible(true);
-            } else{
+            } else {
                 actionEdit.setVisible(false);
             }
 
@@ -375,7 +560,7 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
         return new BitmapDrawable(resizedBitmap);
     }
 
-    public void getRoomDetails() {
+    public void getRoomDetails(boolean isRefresh) {
         if (!ActivityHelper.isConnectingToInternet(this)) {
             showToast("" + R.string.disconnect);
             return;
@@ -386,7 +571,7 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
-        SpikeBotApi.getInstance().getRoomDetail(room_id, new DataResponseListener() {
+        SpikeBotApi.getInstance().getRoomDetail(room_id, isRefresh, new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
@@ -403,6 +588,7 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
                         if (panelList.size() == 0) {
                             linear_empty_panel.setVisibility(View.VISIBLE);
                             roomrecycleview.setVisibility(View.GONE);
+                            setSensor(panelList);
                         } else {
                             roomrecycleview.setVisibility(View.VISIBLE);
                             linear_empty_panel.setVisibility(View.GONE);
@@ -410,6 +596,7 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
                             sectionedExpandableLayoutHelper.notifyDataSetChanged();
                             String room_name = dataObject.getString("room_name");
                             toolbar.setTitle(room_name);
+                            setSensor(panelList);
                         }
                     }
                 } catch (Exception e) {
@@ -429,6 +616,45 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
                 sectionedExpandableLayoutHelper.setClickable(true);
             }
         });
+    }
+
+    private void setSensor(ArrayList<PanelVO> panelList) {
+        //todo
+
+
+        int orientation = this.getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            // code for portrait mode
+
+            mNoOfColumns = Utility.calculateNoOfColumns(getApplicationContext(), Float.parseFloat(getResources().getString(R.string.gridSensorcolumnwidth)));
+        } else {
+            // code for landscape mode
+            mNoOfColumns = Utility.calculateNoOfColumns(getApplicationContext(), Float.parseFloat(getResources().getString(R.string.gridSensorcolumnwidth)));
+        }
+
+        ArrayList<PanelVO> mSensorpanellist = new ArrayList<>();
+        for (PanelVO panelVO : panelList) {
+            if (panelVO.isSensorPanel()) {
+                mSensorpanellist.add(panelVO);
+            }
+        }
+
+        mSensorlist = new ArrayList<>();
+        for (PanelVO panelVO : mSensorpanellist) {
+            mSensorlist.addAll(panelVO.getDeviceList());
+        }
+
+        if (mSensorlist.size() > 0) {
+            nSensorpanelTitle.setVisibility(View.VISIBLE);
+            nSensorpanelTitle.setText("Sensor Panel");
+
+        } else {
+            nSensorpanelTitle.setVisibility(View.GONE);
+        }
+
+        mSensorRecycle.setLayoutManager(new GridLayoutManager(this, mNoOfColumns));
+        SPAdapter = new SensorRoomDetailsGridAdapter(mSensorlist, true, this, RoomDetailActivity.this, RoomDetailActivity.this);
+        mSensorRecycle.setAdapter(SPAdapter);
     }
 
     public void getCameraDetails() {
@@ -546,7 +772,7 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
             isRefreshCheck = true;
             ChatApplication.isCallDeviceList = true;
             swipeRefreshLayout.setRefreshing(true);
-            getRoomDetails();
+            getRoomDetails(true);
             sectionedExpandableLayoutHelper.setClickable(false);
         } else {
             isRefreshCheck = true;
@@ -583,6 +809,7 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
     public void itemClicked(PanelVO panelVO, String action) {
         if (action.equalsIgnoreCase("onOffclick")) {
             roomPanelOnOff(panelVO, null, "", panelVO.getPanelId(), panelVO.getPanel_status(), 2);
+
         }
     }
 
@@ -616,7 +843,7 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
             try {
                 int getDeviceSpecificValue = 0;
                 ChatApplication.logDisplay("fan speed is" + item.getDevice_sub_status());
-                if (!TextUtils.isEmpty(item.getDevice_sub_status())) {
+                if (!TextUtils.isEmpty(item.getDevice_sub_status()) && !item.getDevice_sub_status().equals("null")) {
                     getDeviceSpecificValue = Integer.parseInt(item.getDevice_sub_status());
                 }
                 FanDialog fanDialog = new FanDialog(RoomDetailActivity.this, item.getDeviceId(), item.getDeviceName(), getDeviceSpecificValue, new onCallback() {
@@ -723,7 +950,7 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
             }
         } else if (action.equalsIgnoreCase("heavyloadlongClick")) {
             Intent intent = new Intent(RoomDetailActivity.this, HeavyLoadDetailActivity.class);
-            intent.putExtra("getRoomName", item.getRoomName());
+            intent.putExtra("getRoomName", item.getDeviceName());
             intent.putExtra("getModuleId", item.getModuleId());
             intent.putExtra("device_id", item.getDeviceId());
             startActivity(intent);
@@ -746,11 +973,31 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
             callDoorRemotly(item);
         } else if (action.equalsIgnoreCase("isIRSensorLongClick")) {
 
-            Intent intent = new Intent(RoomDetailActivity.this, IRBlasterRemote.class);
+            Intent intent = new Intent();
+            switch (item.getDevice_sub_type().toLowerCase()) {
+
+                case "ac":
+                    intent = new Intent(RoomDetailActivity.this, IRBlasterRemote.class);
+                    break;
+                case "tv":
+                    intent = new Intent(RoomDetailActivity.this, TVRemote.class).putExtra("from", "tv");
+//                    intent = new Intent(RoomDetailActivity.this, TVRemote.class);
+                    break;
+                case "dth":
+                    intent = new Intent(RoomDetailActivity.this, TVRemote.class).putExtra("from", "dth");
+//                    intent = new Intent(RoomDetailActivity.this, TVRemote.class);
+                    break;
+
+                case "tv_dth":
+                    intent = new Intent(RoomDetailActivity.this, TVRemote.class).putExtra("from", "tv_dth");
+//                    intent = new Intent(RoomDetailActivity.this, TVRemote.class);
+                    break;
+            }
             intent.putExtra("IR_MODULE_ID", item.getModuleId());
             intent.putExtra("IR_BLASTER_ID", item.getDeviceId());
             intent.putExtra("ROOM_DEVICE_ID", item.getRoomDeviceId());
             startActivity(intent);
+
         } else if (action.equalsIgnoreCase("isLockLongClick")) {
 
             ChatApplication.logDisplay("yale door call is intent " + mSocket.connected());
@@ -760,6 +1007,9 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
             intent.putExtra("door_room_id", item.getRoomId());
             intent.putExtra("door_unread_count", item.getIs_unread());
             intent.putExtra("door_module_id", item.getModuleId());
+            intent.putExtra("panel_id", item.getPanel_id());
+            intent.putExtra("device_status", item.getDeviceStatus());
+
             startActivity(intent);
         } else if (action.equalsIgnoreCase("isPIRLongClick")) {
             //  if (item.getIsActive() != -1)
@@ -825,7 +1075,6 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
         });
     }
 
-
     public void showBottomSheetDialog(RoomVO roomVO) {
         View view = getLayoutInflater().inflate(R.layout.fragment_bottom_sheet_dialog, null);
 
@@ -871,7 +1120,6 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
         });
         newFragment.show(this.getFragmentManager(), "dialog");
     }
-
 
     /**
      * Delete Room
@@ -1103,7 +1351,6 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
         });
     }
 
-
     /*send ir remote command */
     private void sendRemoteCommand(final DeviceVO item, String philipslongClick) {
 
@@ -1116,7 +1363,7 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
 
-        SpikeBotApi.getInstance().SendRemoteCommand(item, new DataResponseListener() {
+        SpikeBotApi.getInstance().SendRemoteCommand(item, item.getDevice_sub_type(), new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
                 try {
@@ -1125,6 +1372,10 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
                     ChatApplication.logDisplay("result is ir " + result);
                     if (code == 200) {
                         ChatApplication.isMoodFragmentNeedResume = true;
+                    } else if (code == 500) {
+                        ChatApplication.showToast(RoomDetailActivity.this, result.getString("message"));
+                        SPAdapter.updateStatus(item.getDeviceType(), item.getDeviceId(), String.valueOf(item.getDeviceStatus()), item.getDevice_sub_status());
+                        Log.e("Log===>", "" + item.getDeviceType() + "  " + item.getDeviceId() + "  " + String.valueOf(item.getDeviceStatus() == 0 ? 1 : 0) + "   " + item.getDevice_sub_status());
                     } else {
                         sectionedExpandableLayoutHelper.updateDeviceBlaster(item.getDeviceId(), "" + item.getOldStatus());
                     }
@@ -1304,10 +1555,10 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
         mDeviceTurnOnOffTimer.setEnabled(false);
 
         if (item.getDevice_sub_type().equalsIgnoreCase("pir")) {
-            mImgPIRMode.setImageResource(R.drawable.switch_enable);
+            mImgPIRMode.setImageResource(R.drawable.panel_on);
             mDeviceTurnOnOffTimer.setEnabled(false);
         } else {
-            mImgPIRMode.setImageResource((R.drawable.switch_disable));
+            mImgPIRMode.setImageResource((R.drawable.panel_off));
         }
 
         mDialogEdit.setOnClickListener(new View.OnClickListener() {
@@ -1326,11 +1577,11 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
                     if (isPIREdit) {
 
                         if (item.getDevice_sub_type().equalsIgnoreCase("pir")) {
-                            mImgPIRMode.setImageResource(R.drawable.switch_disable);
+                            mImgPIRMode.setImageResource(R.drawable.panel_on);
                             item.setDevice_sub_type("normal");
                             mDeviceTurnOnOffTimer.setEnabled(false);
                         } else {
-                            mImgPIRMode.setImageResource(R.drawable.switch_enable);
+                            mImgPIRMode.setImageResource(R.drawable.panel_off);
                             item.setDevice_sub_type("pir");
                             mDeviceTurnOnOffTimer.setEnabled(true);
                         }
@@ -1406,7 +1657,7 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
                         //  Intent intent = new Intent(ChatApplication.getContext(), RoomDetailActivity.class);
                         // RoomDetailActivity.this.startActivity(intent);
                         mPIRModedialog.dismiss();
-                        getRoomDetails();
+                        getRoomDetails(false);
                     }
 
                 } catch (JSONException e) {
@@ -1554,7 +1805,8 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
 
 
                         if (Main2Activity.isCloudConnected) {
-                            url = Constants.CAMERA_DEEP + ":" + camera_vpn_port + "" + camera_url;
+//                            url = Constants.CAMERA_DEEP + ":" + camera_vpn_port + "" + camera_url;
+                            url = Constants.CAMERA_DEEP_VPN + ":" + camera_vpn_port + "" + camera_url;
                         } else {
 
 
@@ -1589,175 +1841,6 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
 
     }
 
-
-    /*change device status socket getting
-    like devic eon /  off , value change
-    * */
-    private Emitter.Listener changeDeviceStatus = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-                        try {
-                            //{"device_id":"1571671238168_3FH8phZUCh","device_type":"switch","device_status":0,"device_sub_status":0}
-                            JSONObject object = new JSONObject(args[0].toString());
-                            ChatApplication.logDisplay("status update panel device " + object.toString());
-                            String device_type = object.getString("device_type");
-                            String device_id = object.getString("device_id");
-                            String device_status = object.getString("device_status");
-                            String device_sub_status = object.getString("device_sub_status");
-
-                            sectionedExpandableLayoutHelper.updateDeviceItem(device_type, device_id, device_status, device_sub_status);
-
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-
-                    }
-                }
-            });
-        }
-    };
-    /**
-     * Update panel status
-     * on, off
-     */
-    private Emitter.Listener panelStatus = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-                        try {
-                            JSONObject object = new JSONObject(args[0].toString());
-
-                            ChatApplication.logDisplay("status update panel " + object.toString());
-
-                            String panel_id = object.optString("panel_id");
-                            String panelstatusValue = object.getString("panel_status");
-
-                            sectionedExpandableLayoutHelper.updatePanel(panel_id, panelstatusValue, "");
-
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                }
-            });
-        }
-    };
-
-    /* door sensor open / close
-     * sensor temp , door , ir remote */
-    private Emitter.Listener changeModuleStatus = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-                        try {
-                            //{"module_id":"1573121550836_Prw60ijgq","is_active":"y"}
-                            JSONObject object = new JSONObject(args[0].toString());
-                            ChatApplication.logDisplay("changeModuleStatus is " + object);
-                            String module_id = object.optString("module_id");
-                            String is_active = object.optString("is_active");
-
-                            sectionedExpandableLayoutHelper.updateModuleActiveItem(module_id, is_active);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }
-            });
-        }
-    };
-
-    /* uprecount like notification icon upper showing count*/
-    private Emitter.Listener unReadCount = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-                        try {
-                            // user_id, device_id, counter
-                            JSONObject object = new JSONObject(args[0].toString());
-                            ChatApplication.logDisplay("unReadCount is " + object);
-                            String device_id = object.getString("device_id");
-                            String counter = object.getString("counter");
-                            String user_id = object.getString("user_id");
-
-                            if (user_id.equalsIgnoreCase(Common.getPrefValue(RoomDetailActivity.this, Constants.USER_ID))) {
-                                sectionedExpandableLayoutHelper.updateBadgeCount(device_id, counter);
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener changeIrBlasterTemperature = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-
-                        try {
-                            JSONObject object = new JSONObject(args[0].toString());
-                            //  String user_id = object.getString("user_id");
-                            String ir_blaster_id = object.getString("ir_blaster_id");
-                            String temperature = object.getString("temperature");
-                            ChatApplication.logDisplay("ir remote temp socket" + object.toString());
-                            sectionedExpandableLayoutHelper.updateTempCount(ir_blaster_id, temperature);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener updateCameraCounter = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args != null) {
-
-                        try {
-                            JSONObject object = new JSONObject(args[0].toString());
-                            String user_id = object.getString("user_id");
-                            String camera_id = object.getString("user_id");
-                            int unseen_log = object.getInt("unseen_log");
-                            ChatApplication.logDisplay("camera counter socket" + object.toString());
-                            getCameraBadgeCount();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }
-            });
-        }
-    };
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -1777,6 +1860,22 @@ public class RoomDetailActivity extends AppCompatActivity implements ItemClickLi
                 break;
             case R.id.linear_refresh:
                 getCameraDetails();
+                break;
+            case R.id.linear_log:
+                Intent intent1 = new Intent(RoomDetailActivity.this, CameraDeviceLogActivity.class);
+                if (room_name.contains("Jetson")) {
+                    intent1.putExtra("isshowJestonCameraLog", true);
+                    intent1.putExtra("jetson_device_id", jetson_id);
+                    intent1.putExtra("cameraList", cameraList);
+                    intent1.putExtra("homecontrollerId", homecontrollerid);
+                } else {
+                    intent1.putExtra("cameralog", "cameralog");
+                    intent1.putExtra("cameraList", cameraList);
+                    intent1.putExtra("jetson_device_id", jetson_id);
+                    intent1.putExtra("cameraId", camera_id);
+                    intent1.putExtra("homecontrollerId", homecontrollerid);
+                }
+                startActivity(intent1);
                 break;
         }
     }

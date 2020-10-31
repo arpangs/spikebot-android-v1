@@ -87,8 +87,8 @@
 
                 <ImageView
                     android:id="@+id/iv_room_panel_add"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
                     android:layout_gravity="center_vertical"
                     android:adjustViewBounds="true"
                     android:padding="2dp"

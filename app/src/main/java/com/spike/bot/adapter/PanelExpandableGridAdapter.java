@@ -13,14 +13,15 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.spike.bot.ChatApplication;
 import com.spike.bot.R;
 import com.spike.bot.core.Common;
-import com.spike.bot.core.Constants;
 import com.spike.bot.customview.recycle.ItemClickListener;
 import com.spike.bot.customview.recycle.SectionStateChangeListener;
 import com.spike.bot.listener.OnSmoothScrollList;
@@ -33,12 +34,11 @@ import com.spike.bot.model.RoomVO;
 
 import java.util.ArrayList;
 
-
 public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpandableGridAdapter.ViewHolder> {
 
     //view type
     private static final int VIEW_TYPE_PANEL = R.layout.row_room_panel;
-    private static final int VIEW_TYPE_ITEM = R.layout.row_room_switch_item; //TODO : change this
+    private static final int VIEW_TYPE_ITEM = R.layout.row_room_switch_item_horizontal; //TODO : change this
     private static final int VIEW_TYPE_CAMERA = R.layout.row_camera_listview;
     //context
     private final Context mContext;
@@ -49,6 +49,7 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
     public boolean isClickable = true;
     public int sectionPosition = 0;
     CameraVO cameraVO = new CameraVO();
+    long mLastClickTime = 0;
     //data array
     private ArrayList<Object> mDataArrayList;
     private ArrayList<CameraCounterModel.Data> mCounterList;
@@ -59,7 +60,8 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
 
     public PanelExpandableGridAdapter(Context context, ArrayList<Object> dataArrayList, ArrayList<CameraCounterModel.Data> counterList,
                                       final GridLayoutManager gridLayout, ItemClickListener itemClickListener,
-                                      OnSmoothScrollList onSmoothScroll, TempClickListener tempClickListener, SectionStateChangeListener sectionStateChangeListener) {
+                                      OnSmoothScrollList onSmoothScroll, TempClickListener tempClickListener,
+                                      SectionStateChangeListener sectionStateChangeListener) {
         mContext = context;
         mItemClickListener = itemClickListener;
         mSectionStateChangeListener = sectionStateChangeListener;
@@ -92,7 +94,7 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
                     if (isCamera(position)) {
                         ffposition = isCamera(position) ? gridLayoutManager.getSpanCount() : 1;
                     } else {
-                        ffposition = isPanel(position) ? gridLayoutManager.getSpanCount() : 1;
+                        ffposition = isSection(position) || isPanel(position) ? gridLayoutManager.getSpanCount() : 1;
                     }
 
                     return ffposition;
@@ -101,6 +103,15 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    private boolean isSection(int position) {
+        try {
+            return mDataArrayList.get(position) instanceof RoomVO;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return false;
     }
 
 
@@ -115,6 +126,7 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
     private boolean isSwitch(int position) {
         return mDataArrayList.get(position) instanceof DeviceVO;
     }
+
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -140,27 +152,105 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
         switch (holder.viewType) {
             case VIEW_TYPE_PANEL:
 
+                sectionPosition = position;
+
                 ChatApplication.logDisplay("status update panel adapter");
                 if (position == 0) {
                     holder.view_line_top.setVisibility(View.GONE);
-                    holder.view_line_top.setBackgroundResource(R.color.automation_white);
                 } else {
-                    holder.view_line_top.setVisibility(View.VISIBLE);
+                    holder.view_line_top.setVisibility(View.GONE);
                 }
 
                 final PanelVO panel1 = (PanelVO) mDataArrayList.get(position);
+
+//                String mPanelName = Utility.capitalizeFirstLetterWord(panel1.getPanelName());
+                String mPanelName = panel1.getPanelName();
+
+                ChatApplication.logDisplay("expanded is or not " + panel1.isExpanded() + " " + panel1.getPanelName() + " " + panel1.getPanelId());
+                if (panel1.isExpanded()) {
+                    holder.sectionTextView.setMaxLines(2);
+                    if (panel1.getPanelName().length() >= 50) {
+                        mPanelName = "";
+                        String str[] = panel1.getPanelName().split(" ");
+                        int i = 0;
+                        for (String strVal : str) {
+                            i++;
+                            if (i <= 3) {
+                                mPanelName += strVal + " ";
+                                if (i == 3) {
+                                    mPanelName += "\n";
+                                }
+                            } else {
+                                mPanelName += strVal + " ";
+                            }
+                        }
+                    }
+                } else {
+
+                    if (panel1.getPanelName().length() >= 16) {
+                        //  roomName = section.getRoomName().substring(0, 16);
+                    }
+                    holder.sectionTextView.setMaxLines(2);
+                }
 
                 if (panel1.getDeviceList().size() == 0) {
                     holder.ll_background.setVisibility(View.GONE);
                 } else {
                     holder.ll_background.setVisibility(View.VISIBLE);
-                    holder.sectionTextView.setText(panel1.getPanelName());
+                    holder.sectionTextView.setText(mPanelName);
 
                     holder.sectionTextView.setText(Html.fromHtml("<u>Text to underline</u>"));
 
-                    String styledText = "<u><font>"+panel1.getPanelName()+"</font></u>";
+                    String styledText = "<font>" + mPanelName + "</font>";
                     holder.sectionTextView.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
                 }
+
+                if (panel1.isExpanded()) {
+                    holder.sectionTextView.setSingleLine(false);
+//                    holder.card_layout.setBackground(mContext.getDrawable(R.drawable.background_shadow_bottom_side)); // dev arp change drawable class on 23 june 2020
+                    holder.mPanelCardview.setElevation(10f);
+
+                } else {
+//                    holder.card_layout.setBackground(mContext.getDrawable(R.drawable.background_with_shadow_new));
+                    holder.sectionTextView.setSingleLine(true);
+                    holder.mPanelCardview.setElevation(10f);
+                }
+
+                holder.sectionToggleButton.setChecked(panel1.isExpanded());
+
+                holder.sectionToggleButton.setClickable(false);
+
+
+//                holder.sectionToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//                    @Override
+//                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//
+//                        if (!isClickable)
+//                            return;
+//                        mSectionStateChangeListener.onSectionStateChanged(panel1, !panel1.isExpanded());
+//                    }
+//                });
+
+                holder.paneltochlayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (!isClickable)
+                            return;
+
+                        mSectionStateChangeListener.onSectionStateChanged(panel1, !panel1.isExpanded());
+                    }
+                });
+
+//                holder.ll_background.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        if (!isClickable)
+//                            return;
+//
+//                        mSectionStateChangeListener.onSectionStateChanged(panel1, !panel1.isExpanded());
+//
+//                    }
+//                });
 
 
                 if (panel1.getPanel_status() == 1) {
@@ -191,10 +281,11 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
                                 holder.iv_room_panel_onoff.setImageResource(R.drawable.panel_off);
                                 Toast.makeText(mContext, "No active devices found in" + " " + panel1.getPanelName(), Toast.LENGTH_SHORT).show();
                             } else {
+//                                onSmoothScrollList.onPoisitionClick(position);
                                 panel1.setOldStatus(panel1.getPanel_status());
                                 panel1.setPanel_status(panel1.getPanel_status() == 0 ? 1 : 0);
-                                notifyItemChanged(position);
                                 mItemClickListener.itemClicked(panel1, "onOffclick");
+                                notifyItemChanged(position);
                             }
 
                         }
@@ -249,13 +340,27 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
                     holder.iv_icon_badge.setVisibility(View.GONE);
                     itemDeviceName = item.getDeviceName();
 
+
+                    if (item.getDeviceType().equalsIgnoreCase("heavyload")) {
+                        holder.img_device_sub_status_type.setVisibility(View.VISIBLE);
+                        holder.img_device_sub_status_type.setImageResource(R.drawable.graph);
+                    } else if ((item.getDeviceType().equalsIgnoreCase("fan") && item.getDevice_sub_type().equalsIgnoreCase("dimmer"))) {
+                        holder.img_device_sub_status_type.setVisibility(View.VISIBLE);
+                        holder.img_device_sub_status_type.setImageResource(R.drawable.fan_regulator);
+                    } else {
+                        holder.img_device_sub_status_type.setVisibility(View.GONE);
+                    }
+
+
                     if (item.getDevice_icon().equalsIgnoreCase("heavyload")) {
+
                         if (item.getIsActive() == 1) {
                             itemIcon = item.getDeviceStatus() == 1 ? R.drawable.high_wolt_on : R.drawable.high_wolt_off;
                         } else {
                             itemIcon = R.drawable.headload_inactive;
                         }
                     } else {
+
                         itemIcon = Common.getIcon(item.getDeviceStatus(), item.getDevice_icon());
                     }
 
@@ -268,6 +373,7 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
                     }
 
                     if (item.getDevice_icon().equalsIgnoreCase("bulb")) {
+
                         if (item.getIsActive() == 1) {
                             itemIcon = item.getDeviceStatus() == 1 ? R.drawable.oncfl : R.drawable.offcfl;
                         } else {
@@ -276,11 +382,23 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
                     }
 
                     if (item.getDevice_icon().equalsIgnoreCase("fan")) {
+
+
                         if (item.getIsActive() == 1) {
                             itemIcon = item.getDeviceStatus() == 1 ? R.drawable.onfan : R.drawable.offfan;
                         } else {
                             itemIcon = R.drawable.fan_off_inactive;
                         }
+
+                        holder.img_device_sub_status_type.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (item.getDeviceStatus() == 1) {
+                                    mItemClickListener.itemClicked(item, "longclick", position);
+
+                                }
+                            }
+                        });
                     }
 
                     if (item.getDevice_icon().equalsIgnoreCase("generic")) {
@@ -308,8 +426,8 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
                     }
 
 
-                } else {
-                    /*--Sensor type start--*/
+                    /*} else {
+                     *//*--Sensor type start--*//*
 
                     //onlydoor, subtype=1
                     //only lock, subtype=2
@@ -365,7 +483,7 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
                         //only lock, subtype=2
                         //door+lock, subtype=3
 
-                        /*only for door 1=close , 0=open*/
+                        *//*only for door 1=close , 0=open*//*
                         if (item.getIsActive() == -1) {
                             itemIcon = Common.getIconInActive(item.getDeviceStatus(), item.getDevice_icon());
                         } else {
@@ -609,7 +727,7 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
                         }
 
                     }
-
+*/
                 }
 
                 /*--End is sensor--*/
@@ -651,6 +769,12 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
 
                 holder.iv_icon.setImageResource(itemIcon);
                 holder.view.setId(position);
+                holder.itemTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        holder.iv_icon.performClick();
+                    }
+                });
                 holder.iv_icon.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -689,12 +813,14 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
                             } else if (item.getDevice_icon().equalsIgnoreCase("curtain")) {
                                 mItemClickListener.itemClicked(item, "curtain", position);
                             } else {
+
                                 mItemClickListener.itemClicked(item, "itemclick", position);
                             }
                         } else {
                             if (item.getDeviceType().equalsIgnoreCase("remote")) {
                                 tempClickListener.itemClicked(item, "isIRSensorClick", true, position);
                             } else {
+
                                 tempClickListener.itemClicked(item, "isSensorClick", true, position);
                             }
                         }
@@ -705,22 +831,59 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
                 //only lock, subtype=2
                 //door+lock, subtype=3
 
-                holder.iv_icon.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        if (!isClickable)
-                            return false;
-                        item.setOldStatus(item.getDeviceStatus());
-                        if (item.getIs_locked() == 1) {
+//                holder.iv_icon.setOnLongClickListener(new View.OnLongClickListener() {
+//                    @Override
+//                    public boolean onLongClick(View v) {
+//                        if (!isClickable)
+//                            return false;
+//                        item.setOldStatus(item.getDeviceStatus());
+//                        if (item.getIs_locked() == 1) {
+//
+//                            if (!item.getDeviceType().equalsIgnoreCase("pir_device")) {
+//                                item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1 : 0);
+//                                notifyItemChanged(position, item);
+//                            }
+//                        }
 
-                            if (!item.getDeviceType().equalsIgnoreCase("pir_device")) {
-                                item.setDeviceStatus(item.getDeviceStatus() == 0 ? 1 : 0);
-                                notifyItemChanged(position, item);
-                            }
+
+                holder.img_device_sub_status_type.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+//                                if (item.getDeviceStatus() == 1) {
+////                                    mItemClickListener.itemClicked(item, "longclick", position);
+//                                }
+
+                        switch (item.getDeviceType().toLowerCase()) {
+                            case "heavyload":
+                                tempClickListener.itemClicked(item, "heavyloadlongClick", true, position);
+                                break;
+                            case "3":
+                                tempClickListener.itemClicked(item, "philipslongClick", true, position);
+                                break;
+                            case "remote":
+                                tempClickListener.itemClicked(item, "isIRSensorLongClick", true, position);
+                                break;
+                            case "lock":
+                                tempClickListener.itemClicked(item, "isLockLongClick", true, position);
+                                break;
+                            case "switch":
+                                mItemClickListener.itemClicked(item, "longclick", position);
+                                break;
+//                                    case "lock":
+//                                    tempClickListener.itemClicked(item, "isPIRLongClick", true, position);
+//                                        break;
+
+
                         }
 
 
-                        if (item.getDeviceType().equalsIgnoreCase("heavyload")) {
+                    }
+                });
+
+
+
+
+                      /*  if (item.getDeviceType().equalsIgnoreCase("heavyload")) {
                             tempClickListener.itemClicked(item, "heavyloadlongClick", true, position);
                         } else if (item.getDeviceType().equalsIgnoreCase("3")) {
                             tempClickListener.itemClicked(item, "philipslongClick", true, position);
@@ -728,18 +891,18 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
                             tempClickListener.itemClicked(item, "isIRSensorLongClick", true, position);
                         } else if (item.getDeviceType().equalsIgnoreCase("lock")) {
                             tempClickListener.itemClicked(item, "isLockLongClick", true, position);
-                        } else if (item.getDeviceType().equalsIgnoreCase("pir_device")) {
+                        } else if (item.getDeviceType().equalsIgnoreCase("lock")) {
                             tempClickListener.itemClicked(item, "isPIRLongClick", true, position);
-                        }
-                        return false;
-                    }
-                });
+                        }*/
+//                        return false;
+//                    }
+//                });
 
 
                 if (item.getDeviceType().equals("remote") || item.getDeviceType().equalsIgnoreCase("heavyload") || item.getDeviceType().equalsIgnoreCase("fan") ||
                         item.getDeviceType().equalsIgnoreCase("2") || item.getDeviceType().equalsIgnoreCase("3") || item.getDeviceType().equalsIgnoreCase("lock")
                         || item.getDeviceType().equalsIgnoreCase("pir_device")) {
-                    holder.imgLongClick.setVisibility(View.VISIBLE);
+                    holder.imgLongClick.setVisibility(View.GONE);
                 } else {
                     if (!item.getDeviceType().equalsIgnoreCase("1")) {
                         holder.imgLongClick.setVisibility(View.GONE);
@@ -758,12 +921,23 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
                                 @Override
                                 public boolean onLongClick(View view) {
 
-                                    if (item.getDeviceStatus() == 1) {
+                                    /*if (item.getDeviceStatus() == 1) {
                                         mItemClickListener.itemClicked(item, "longclick", position);
-                                    }
+                                    }*/
                                     return true;
                                 }
                             });
+
+                            holder.img_device_sub_status_type.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    if (item.getDeviceStatus() == 1) {
+                                        mItemClickListener.itemClicked(item, "longclick", position);
+
+                                    }
+                                }
+                            });
+
                         } else {
                             holder.view.setOnLongClickListener(null);
                         }
@@ -803,9 +977,11 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
                     holder.txtCameraCount.setVisibility(View.VISIBLE);
                     if (!TextUtils.isEmpty(cameraVO.getIs_unread()) && Integer.parseInt(cameraVO.getIs_unread()) > 99) {
                         holder.txtCameraCount.setText("99+");
+                        holder.txtCameraCount.setBackground(mContext.getResources().getDrawable(R.drawable.badge_background_oval));
                     } else {
                         holder.txtCameraCount.setVisibility(View.VISIBLE);
                         holder.txtCameraCount.setText("" + cameraVO.getIs_unread());
+                        holder.txtCameraCount.setBackground(mContext.getResources().getDrawable(R.drawable.badge_background));
                     }
 
                 } else {
@@ -865,6 +1041,7 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
                 });
 
                 break;
+
         }
     }
 
@@ -898,11 +1075,14 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
     protected static class ViewHolder extends RecyclerView.ViewHolder {
         View view;
         int viewType;
-        ImageView iv_room_panel_onoff, view_line_top, iv_icon, imgLongClick, iv_icon_text, mImgCameraActive, imgLogCamera;
+        ImageView iv_room_panel_onoff, view_line_top, iv_icon, imgLongClick, iv_icon_text, mImgCameraActive, imgLogCamera, img_device_sub_status_type;
         TextView sectionTextView, itemTextView, iv_icon_badge, txt_temp_in_cf, txtCameraCount, txt_recording, txt_notify_label;
         RelativeLayout rel_main_view;
-        LinearLayout ll_background, ll_room_item;
+        LinearLayout ll_background, ll_room_item, card_layout, paneltochlayout;
         FrameLayout frame_camera_alert;
+        ToggleButton sectionToggleButton;
+        CardView mPanelCardview;
+
 
         public ViewHolder(View view, int viewType) {
             super(view);
@@ -917,16 +1097,21 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
                 txt_temp_in_cf = view.findViewById(R.id.txt_temp_in_cf);
                 imgLongClick = view.findViewById(R.id.imgLongClick);
                 mImgCameraActive = view.findViewById(R.id.iv_icon_active_camera);
+                img_device_sub_status_type = view.findViewById(R.id.iv_device_sub);
+
 
             } else if (viewType == VIEW_TYPE_PANEL) {
-
+                card_layout = view.findViewById(R.id.card_layout);
                 view_line_top = view.findViewById(R.id.view_line_top);
-
+                sectionToggleButton = view.findViewById(R.id.toggle_button_section_penel);//toggle_button_section
+                paneltochlayout = view.findViewById(R.id.toggle_button_section_penel_layout);
                 itemTextView = view.findViewById(R.id.heading);
                 sectionTextView = itemTextView;
                 iv_room_panel_onoff = view.findViewById(R.id.iv_room_panel_onoff);
                 ll_background = view.findViewById(R.id.ll_background);
                 txt_recording = view.findViewById(R.id.txt_recording);
+                mPanelCardview = view.findViewById(R.id.penal_cardview);
+
             } else if (viewType == VIEW_TYPE_CAMERA) {
                 itemTextView = view.findViewById(R.id.text_item);
                 iv_icon = view.findViewById(R.id.iv_icon);
@@ -935,7 +1120,6 @@ public class PanelExpandableGridAdapter extends RecyclerView.Adapter<PanelExpand
                 imgLogCamera = view.findViewById(R.id.imgLogCamera);
                 txtCameraCount = view.findViewById(R.id.txtCameraCount);
                 frame_camera_alert = view.findViewById(R.id.frame_camera_alert);
-
             }
         }
     }

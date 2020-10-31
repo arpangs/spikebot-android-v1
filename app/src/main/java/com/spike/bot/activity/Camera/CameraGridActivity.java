@@ -199,7 +199,8 @@ public class CameraGridActivity extends AppCompatActivity {
         for (int i = 0; i < cameraVOArrayList.size(); i++) {
             url = "";
             if (Main2Activity.isCloudConnected) {
-                url = Constants.CAMERA_DEEP + ":" + cameraVOArrayList.get(i).getCamera_vpn_port() + "" + cameraVOArrayList.get(i).getCamera_url();
+//                url = Constants.CAMERA_DEEP + ":" + cameraVOArrayList.get(i).getCamera_vpn_port() + "" + cameraVOArrayList.get(i).getCamera_url();
+                url = Constants.CAMERA_DEEP_VPN + ":" + cameraVOArrayList.get(i).getCamera_vpn_port() + "" + cameraVOArrayList.get(i).getCamera_url();  // change on 15 oct 2020 as per web developer instruction
             } else {
 
                 if (ChatApplication.url == null) {

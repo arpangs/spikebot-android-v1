@@ -430,12 +430,36 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                 public void run() {
                     if (args != null) {
 
-                        String device_count = args[0].toString();
+                        try {
 
-                        Log.i("total count", "\n total counter socket==" + device_count);
-                        ((Main2Activity) activity).setAllNotificationCount(Integer.parseInt(device_count));
+                            JSONObject object = new JSONObject(args[0].toString());
+                            Log.i("total count", "\n total counter socket==" + object);
+                            String user_id = object.getString("user_id");
+                            String device_counter = object.getString("counter");
+
+                            if (device_counter != null && (!device_counter.equalsIgnoreCase("null"))) {
+                                if (user_id.equalsIgnoreCase(Common.getPrefValue(activity, Constants.USER_ID))) {
+                                    ((Main2Activity) activity).setAllNotificationCount(Integer.parseInt(device_counter));
+                                }
+                            }
+//
+                            /*change on 25 sep 2020*/
+//                            String device_count = args[0].toString();
+//                            Log.i("total count", "\n total counter socket==" + device_count);
+//                            ((Main2Activity) activity).setAllNotificationCount(Integer.parseInt(device_count));
 
 
+                        } catch (Exception e) { /*for old code*/
+                            e.printStackTrace();
+                            String device_count = args[0].toString();
+                            Log.i("total count", "\n total counter socket==" + device_count);
+                            try {
+                                if (device_count != null)
+                                    ((Main2Activity) activity).setAllNotificationCount(Integer.parseInt(device_count));
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
                     }
                 }
             });
@@ -483,6 +507,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         }
                         Constants.startUrlset();
                         mSocket.emit("socketconnection", "android == startconnect  " + mSocket.id());
+//                        mSocket.emit("socketconnection", "android == startconnect  " + Common.getPrefValue(ChatApplication.getContext(), Constants.AUTHORIZATION_TOKEN));
 
                         socketOn();
                     } catch (Exception e) {
@@ -845,12 +870,14 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
         } else if (action.equalsIgnoreCase("icnLog")) {
             Intent intent = new Intent(activity, DeviceLogActivity.class);
+
             intent.putExtra("ROOM_ID", roomVO.getRoomId());
             intent.putExtra("activity_type", roomVO.getType());
             intent.putExtra("isCheckActivity", "room");
             intent.putExtra("isRoomName", "" + roomVO.getRoomName());
             startActivity(intent);
         } else if (action.equalsIgnoreCase("icnSch")) {
+            ChatApplication.CurrnetFragment = R.id.navigationDashboard;
             Intent intent = new Intent(activity, ScheduleListActivity.class);
             intent.putExtra("moodId3", roomVO.getRoomId());
             intent.putExtra("roomId", roomVO.getRoomId());
@@ -859,6 +886,8 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             intent.putExtra("isMoodAdapter", true);
             intent.putExtra("isActivityType", "1");
             intent.putExtra("isRoomMainFm", "room");
+            intent.putExtra("from", "fragment");
+
             startActivity(intent);
         } else if (action.equalsIgnoreCase("icnSensorLog")) {
             Intent intent = new Intent(activity, DeviceLogRoomActivity.class);
@@ -886,6 +915,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             Intent intent = new Intent(activity, RoomDetailActivity.class);
             intent.putExtra("camera_id", roomVO.getRoomId());
             intent.putExtra("room_name", roomVO.getRoomName());
+            intent.putExtra("homecontrollerId", homecontrollerid);
             startActivity(intent);
 
         } else if (action.equalsIgnoreCase("jetson_click")) {
@@ -903,6 +933,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             ChatApplication.logDisplay("room id is callingclick fire !! " + roomVO.getRoomId());
             startActivity(intent);
         }
+        ChatApplication.CurrnetFragment = R.id.navigationDashboard;
     }
 
     // Panel buttons click
@@ -939,6 +970,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
             startActivity(intent);
         } else if (action.equalsIgnoreCase("scheduleclick")) {
             Intent intent = new Intent(activity, ScheduleActivity.class);
+            ChatApplication.CurrnetFragment = R.id.navigationDashboard;
             intent.putExtra("item", item);
             intent.putExtra("schedule", true);
             startActivity(intent);
@@ -1232,7 +1264,9 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         if (cloudsocket != null && cloudsocket.connected()) {
         } else {
 
-            cloudurl = "https://live.spikebot.io:8443";
+//            cloudurl = "https://live.spikebot.io:8443";
+//            cloudurl = "https://beta.spikebot.io";
+            cloudurl = "https://live.spikebot.io";
             cloudsocket = app.getCloudSocket();
 
             if (cloudsocket != null) {
@@ -1646,7 +1680,8 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
 
                         if (Main2Activity.isCloudConnected) {
-                            url = Constants.CAMERA_DEEP + ":" + camera_vpn_port + "" + camera_url;
+//                            url = Constants.CAMERA_DEEP + ":" + camera_vpn_port + "" + camera_url;
+                            url = "rtmp://vpn.spikebot.io" + ":" + camera_vpn_port + "" + camera_url;
                         } else {
                             String tmpurl = ChatApplication.url + "" + camera_url;
                             url = tmpurl.replace("http", "rtmp").replace(":80", ""); //replace port number to blank String
@@ -2263,8 +2298,12 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         JSONObject dataObject = result.getJSONObject("data");
                         ((Main2Activity) activity).getUserDialogClick(true);
 
-                        all_notification_count = dataObject.optInt("total_unread_count");
-                        ((Main2Activity) activity).setAllNotificationCount(all_notification_count);
+                        try {  /* again open the notification counter from list api on 29 nov 2020 as discussed with parth*/
+                            all_notification_count = dataObject.optInt("total_unread_count");
+                            ((Main2Activity) activity).setAllNotificationCount(all_notification_count);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
                         if (gsonType == null) {
                             gsonType = new Gson();
@@ -2403,6 +2442,13 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                                 section1.setPanelList(panelList1);
                                 roomList.add(section1);
                             }
+
+                            /*camera device counting*/
+                            for (int i = 0; i < roomList.size(); i++) {
+                                if (roomList.get(i).getRoomId().startsWith("JETSON-")) {
+                                    roomList.get(i).setDevice_count("" + roomList.get(i).getPanelList().get(0).getCameraList().size());
+                                }
+                            }
                         }
 
                         sectionedExpandableLayoutHelper.addSectionList(roomList);
@@ -2526,6 +2572,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
 
         if (ChatApplication.url.contains("http://"))
             ChatApplication.url = ChatApplication.url.replace("http://", "");
+
         SpikeBotApi.getInstance().GetDeviceLocal(new DataResponseListener() {
             @Override
             public void onData_SuccessfulResponse(String stringResponse) {
@@ -2554,8 +2601,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                     webUrl = ChatApplication.url;
                     startSocketConnection();
                     startLiveSocketConnection();
-                    if (result.getInt("code") == 200)
-                    {
+                    if (result.getInt("code") == 200) {
                         if (gsonType == null) {
                             gsonType = new Gson();
                         }
@@ -2573,8 +2619,8 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
                         JSONObject dataObject = result.optJSONObject("data");
                         ((Main2Activity) activity).getUserDialogClick(true);
 
-                        all_notification_count = dataObject.optInt("total_unread_count");
-                        ((Main2Activity) activity).setAllNotificationCount(all_notification_count);
+//                        all_notification_count = dataObject.optInt("total_unread_count");
+//                        ((Main2Activity) activity).setAllNotificationCount(all_notification_count);
 
                         JSONArray userListArray = dataObject.getJSONArray("userList");
 
@@ -3029,8 +3075,7 @@ public class DashBoardFragment extends Fragment implements ItemClickListener, Se
         Constants.startUrlset();
 
         /*check is wifi or mobile network*/
-        if (ChatApplication.isCallDeviceList)
-        {
+        if (ChatApplication.isCallDeviceList) {
             ChatApplication app = ChatApplication.getInstance();
             app.closeSocket(webUrl);
             app.closecloudSocket(cloudurl);
